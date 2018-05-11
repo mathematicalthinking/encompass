@@ -1,0 +1,173 @@
+/*
+  Path plugins for restify
+  Protects against bad ObjectIDs (ENC-486)
+  Caches the path parts for future decisions
+*/
+
+var logger   = require('log4js').getLogger('sane'),
+    utils    = require('./requestHandler'),
+    util     = require('util'),
+    restify  = require('restify'),
+    _        = require('underscore'),
+    models   = require('../schemas');
+
+/*
+  @returns {Boolean} - is this request an /api/ request?
+*/
+function apiRequest(req) {
+  return !!req.getPath().match('/api');
+}
+
+/*
+  @returns {Array} [0] model [1] id
+*/
+function idRequest(req) {
+  var idRegExp = /\/api\/([a-z]*)\/(\w+)/;
+  return idRegExp.exec(req.getPath());
+}
+
+/*
+  formats request object to have
+    req.mf: {
+      path: {},
+      auth: {}
+    }
+*/
+function prep(options) {
+  function _prep(req, res, next) {
+    logger.info('req prep:', req.mf);
+    _.defaults(req, { mf: {} });
+    _.defaults(req.mf, { path: {} });
+    _.defaults(req.mf, { auth: {} });
+    logger.info('req prep:', req.mf);
+    return next();
+  }
+
+  return _prep;
+}
+
+/*
+*/
+function processPath(options) {
+  function _processPath(req, res, next) {
+    logger.info('req path:', req.mf);
+    if(!apiRequest(req)) {
+      return next();
+    }
+    // is this necessary since prep does same thing and is first in mw chain?
+    _.defaults(req, { mf: {} });
+    _.defaults(req.mf, { path: {} });
+
+    var pathRegExp = /\/api\/([a-z]*)\/?/;
+
+    // getPath is restify method - returns cleaned up url. e.g. /api/users
+    var match = pathRegExp.exec(req.getPath());
+    logger.info('req.getPath()', req.getPath());
+    logger.info('path match: ', match);
+    if(match) {
+      req.mf.path.model = match[1];
+    }
+
+    return (next());
+  }
+
+  return (_processPath);
+}
+
+/*
+  ENC-486 bad ObjectIDs crash the server
+*/
+function validateId(options) {
+  function _validateId(req, res, next) {
+    var match = idRequest(req);
+    if(!match) {
+      return next();
+    }
+
+    var id = req.params.id;
+    //http://stackoverflow.com/questions/11985228/mongodb-node-check-if-objectid-is-valid
+    var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+    if(!checkForHexRegExp.test(id)) {
+      //TODO this is sending a 500 error although its a 4xx
+      utils.sendError(new restify.InvalidArgumentError('bad object id'), res);
+      return next(false);
+    }
+
+    return next();
+
+  }
+
+  return _validateId;
+}
+
+// when the path is /api/workspaces return 'workspace'
+function getModel(req) {
+  var model = req.mf.path.model;
+  if(!model){ return; }
+  var singularModel = model.slice(0, -1);
+  return singularModel;
+}
+
+// when the path is /api/workspaces return 'Workspace'
+function getSchema(req) {
+  var model = getModel(req);
+  if(!model){ return; }
+  var schema = model.charAt(0).toUpperCase() + model.slice(1);
+  return schema;
+}
+
+function schemaHasWorkspace(schema) {
+  var mSchema = models[schema];
+  logger.info('schema:', schema);
+  logger.info('path mSchema: ', models[schema]);
+  if(!mSchema) {
+    return false;
+  }
+  logger.info(mSchema.schema.paths.workspace);
+  var hasWorkspace = !!mSchema.schema.paths.workspace;
+  return hasWorkspace;
+}
+
+/*
+   ENC-417 posts missing required data, crash the server
+*/
+
+function validateContent(options) {
+  function _validateContent(req, res, next) {
+    var checkForModRequest = /POST|PUT/;
+
+
+    // Ignore api requests that don't attempt to modify a value
+    if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
+      return next();
+    }
+
+    var model = getModel(req),
+        schema = getSchema(req),
+        data = req.body[model];
+
+    if(models[schema]) {
+      var required = models[schema].schema.requiredPaths();
+      var hasRequiredData = _.every(required, function(x) { return data[x]; });
+
+      if(!hasRequiredData) {
+        var error = 'Model %s is missing post/put data';
+        utils.sendError(new restify.InvalidContentError(util.format(error, schema), res));
+        return next(false);
+      }
+    }
+
+    return next();
+  }
+
+  return _validateContent;
+}
+
+module.exports.prep             = prep;
+module.exports.processPath      = processPath;
+module.exports.validateId       = validateId;
+module.exports.validateContent  = validateContent;
+module.exports.apiRequest       = apiRequest;
+module.exports.getModel         = getModel;
+module.exports.getSchema        = getSchema;
+module.exports.schemaHasWorkspace = schemaHasWorkspace;

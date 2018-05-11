@@ -1,0 +1,9 @@
+# Files
+mongo-set-a - mongodump dataset A: a clone of production from 20140714
+fixtures.js - fixtures for the test data
+pow         - test pow datasets (submissions)
+
+# Commands
+
+mongorestore -d encompass mongo-set-a # set your database up with a ton of production data
+  # http://localhost:8080/#/workspaces/53b585ec32f28632400012e4/work is particularly good

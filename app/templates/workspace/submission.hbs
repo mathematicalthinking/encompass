@@ -1,0 +1,37 @@
+<header class="{{makingSelection}}">
+  <h2>{{currentWorkspace.name}}</h2>
+  <span class="meta workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}"> by {{currentWorkspace.owner.displayName}} |</span>
+  <span class="meta">{{#link-to 'workspace.info'}}info{{/link-to}}</span>
+  <aside>
+    <!-- <a id="takeTour" {{action 'tour'}}>Take Tour</a> -->
+    {{! this needs to be here so the GuideJS can click it when done
+        we don't have a better way to propagate actions }}
+    <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
+  </aside>
+  <div class="clear"></div>
+</header>
+
+
+<div id="al_left">
+  {{! outlet folders}}
+  {{folder-list folders=currentWorkspace.folders workspace=currentWorkspace currentUser=currentUser fileSelection="fileSelectionInFolder" store=store }}
+</div>
+
+<!--section class="submissions"-->
+<div id="al_center" class="{{if makingSelection 'al_makeselect'}}">
+  {{!outlet submissions}}
+  {{submission-group submissions=currentWorkspace.submissions submission=model addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") currentUser=currentUser currentWorkspace=currentWorkspace}}
+</div>
+<!--/section-->
+
+<!--section class="right"-->
+<div id="al_right">
+  {{comment-list comments=currentWorkspace.comments  currentWorkspace=currentWorkspace currentSelection=currentSelection currentUser=currentUser currentSubmission=currentSubmission store=store allowedToComment=permittedToComment resetComment=(action "cancelComment")}}
+  {{! outlet comments}}
+</div>
+<!--/section-->
+
+{{#if showOverlay}}
+<div class="clear"></div>
+<div {{action 'popupMaskClicked'}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>
+{{/if}}

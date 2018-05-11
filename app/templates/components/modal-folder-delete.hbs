@@ -1,0 +1,15 @@
+<div class="overlay">
+  <div class="modal">
+    <form id="al_remove_folder">
+      <span class="al_sprite al_folder"></span> &rarr; <span class="al_sprite al_folder al_remove"></span><br>
+      Remove this folder?
+      <div class="al_foldername">
+        "{{folderName}}"
+      </div>
+      <div class="al_controller">
+        <a href="#" {{action "cancel"}} class="al_popup_close">CANCEL</a>
+        <a href="#" {{action "deleteFolder"}} class="al_popup_submit">REMOVE</a>
+      </div>
+    </form>
+  </div>
+</div>

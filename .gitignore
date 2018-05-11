@@ -1,0 +1,18 @@
+# node files
+node_modules/
+build/
+dependencies/compiled/*.*
+.grunt
+_SpecRunner.html
+error.out
+server.out
+
+# mac files
+.DS_Store
+
+
+# why?
+# test/runner.html
+# *.swp
+# *.swo
+# *.~

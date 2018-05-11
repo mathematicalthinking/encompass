@@ -1,0 +1,8 @@
+{{#link-to 'workspace.submission.selection' selection.submission selection classNames="selection_text"}}
+  {{!bind-attr class=":selectionLink selection.id:"}}
+  <span class="selectionLink">{{selection.text}}</span>
+  {{/link-to}}
+{{#if deleteSelection}}
+<span {{action 'deleteSelection' selection}} class="al_sprite delete_button"></span>
+{{/if}}
+

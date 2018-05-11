@@ -1,0 +1,13 @@
+<div class="overlay">
+  <div class="modal">
+
+    <form id="al_add_folder" {{action "save" on="submit"}} onsubmit="return false;">
+      <span class="al_sprite al_folder"></span>{{input value=newFolderName type="text" placeholder="Name of new folder" autofocus="autofocus"}} 
+      <div class="al_controller">
+        <a href="#" {{action "cancel"}} class="al_popup_close">CANCEL</a>
+        <a href="#" {{action "save"}} class="al_popup_submit">SAVE</a>
+      </div>
+    </form>
+
+  </div>
+</div>

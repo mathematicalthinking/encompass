@@ -1,0 +1,80 @@
+<header class="{{newCommentLabel}} {{if canComment can-comment}}">
+	<table>
+		<tr>
+			<td id="noticeTab" class="notice" {{action "setCommentLabel" 'notice'}}><span class="al_sprite al_notice"></span>I NOTICE</td>
+
+			<td id="wonderTab" class="wonder" {{action "setCommentLabel" 'wonder'}}><span class="al_sprite al_wonder"></span>I WONDER</td>
+
+			<td id="feedbackTab" class="feedback" {{action "setCommentLabel" 'feedback'}}><span class="al_sprite al_feedback"></span>FEEDBACK</td>
+		
+		</tr>
+	</table>
+</header>
+
+<div id="al_comments">
+	<form id="newForm">
+                {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    <div class="filterControl meta">
+      <a {{action 'toggleFilter'}}>
+        <img src="/img/glyphish/icons/icons-gray/19-gear-16.png" alt="filter"/>
+      </a>
+    </div>
+		<div class="al_controller">
+      {{#if canComment}}
+          <span class="meta">
+          {{#if newCommentParent}}*{{/if}}
+          {{#if doSearch}}+{{/if}}
+          {{#if searching}}...{{/if}}
+          </span>
+          <a class="al_popup_close" {{action "cancelComment"}}>CANCEL</a>
+          |
+		    	<button class="action_button comment save" tabindex=2 {{action "createComment"}}>SAVE</button>
+      {{else}}
+        <span class="meta">Search or make/choose a selection</span>
+      {{/if}}
+		</div>
+	</form>
+	<div class="clear"></div>
+</div>
+
+<div>
+        {{!#each comments as |comment|}}
+                <!--
+                <span>{{comment.text}}</span>
+                <br/>
+                -->
+                {{!partial "../comments/comment"}}
+        {{!/each}}
+</div>
+
+{{#if showFilter}}
+  <div class="filter">
+    <p>
+    <label>{{input type="checkbox" checked=filterComments}} filter comments</label>
+    {{#if filterComments}}
+      {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
+    {{/if}}
+    </p>
+    <p>
+    <label>{{input type="checkbox" checked=thisWorkspaceOnly}} this workspace only</label>
+    <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
+    </p>
+  </div>
+{{/if}}
+
+<div>
+	<form>
+		<div id="al_feedback_display" class="al_vertical_stretch">
+			<ul>
+				{{#each this.filteredComments as |comment|}}
+                                        {{workspace-comment comment=comment currentWorspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
+                                        {{!partial "../comments/comment"}}
+				{{/each}}
+			</ul>
+		</div>
+	</form>
+	<!--div class="al_general" title="Enable to add feedback unassociated with a selection">
+		<input type="checkbox" name="general"> General Comment
+	</div-->
+</div>
+

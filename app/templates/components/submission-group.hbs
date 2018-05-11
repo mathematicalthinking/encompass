@@ -1,0 +1,96 @@
+<header>
+    <!-- this is needed for click events from popup windows -->
+    <ul style="display:none;">
+      {{#each this.submissionThreadHeads as |threadHead|}}
+        <li >
+          {{#link-to 'workspace.submission' threadHead}}
+          <span class="submissionLink {{threadHead.id}}">
+              {{threadHead.student}}
+            </span>
+          {{/link-to}}
+        </li>
+      {{/each}}
+    </ul>
+<div class="selectBox">
+  <div class="selected"> 
+    <div class="studentItem">
+      {{currentStudent}}
+      <span class="selector" {{action 'toggleStudentList'}}></span>
+    </div>
+    {{#if showStudents}}
+    <ul id="studentList">
+    <!-- ENC-391, ENC-392, ENC-409 -->
+    <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above --> 
+      {{#each this.submissionThreadHeads as |threadHead|}}
+        <li class="studentItem" {{action 'toggleStudentList'}}>
+          {{#link-to 'workspace.submission' threadHead}}
+            <span>{{threadHead.student}}</span>
+          {{/link-to}}
+        </li>
+      {{/each}}
+   </ul>
+   {{/if}}
+  </div>
+</div>
+
+  <div class="breadcrumbs"> <!-- TODO itemController -->
+    {{#unless manyRevisions}}
+    <ul class="breadcrumbs">
+      {{#each this.currentRevisions as |rev|}}
+      <li>
+        <abbr title="{{unbound rev.label}}">
+        {{#link-to 'workspace.submission' rev.revision}} 
+        {{rev.index}}
+        {{#if rev.revision.selections }}*{{/if}} 
+        {{/link-to}}
+        </abbr>
+      </li> 
+      {{/each}}
+    </ul>
+    {{else}}
+    <ul class="breadcrumbs">
+      {{#with this.currentRevisions.firstObject as |firstRev|}}
+      <li>
+        <abbr title="{{unbound this.label}}">
+        {{#link-to 'workspace.submission' firstRev}}
+          {{this.index}} {{#if firstRev.selections}} * {{/if}}
+        {{/link-to}}
+        </abbr>
+      </li>
+      {{/with}}
+      <abbr title="Show All Revisions">
+        <div {{action 'showAllRevisions'}} class="truncate">
+          ...
+        </div>
+      </abbr>
+      {{#with currentRevisions.lastObject as |lastRev|}}
+      <li>
+        <abbr title="{{unbound this.label}}">
+        {{#link-to 'workspace.submission' lastRev}}
+          {{this.index}} {{#if lastRev.selections}} * {{/if}}
+        {{/link-to}}
+        </abbr>
+      </li>
+      {{/with}}
+    </ul>
+    {{/unless}}
+  </div>
+
+	<div class="al_controller">
+		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
+		<span class="al_number">
+      <span class="submission_index">
+        {{usersSubmissionIndex}}
+      </span>
+      / 
+      <span class="submission_count">
+        {{arrangedContent.length}}
+      </span>
+    </span>
+		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow" class="al_sprite al_arrow_right"></span>{{/link-to}}
+	</div>
+</header>
+
+{{!outlet submission}}
+{{workspace-submission currentSubmission=submission addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") currentUser=currentUser currentWorkspace=currentWorkspace currentSelection=this.currentSelection}}
+

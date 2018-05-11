@@ -1,0 +1,13 @@
+<section class="newUser">
+  <h2>Create New User</h2>
+  <form id="newUser">
+    Name:
+    {{input type="text" value=newUserName classNames="displayName"}}
+    (PoW) Username:
+    {{input type="text" value=newUserUsername classNames="userName" key-press='checkUsername'}}
+    Authorized:
+    {{input type="checkbox" name=newUserAuthorized checked=newUserAuthorized classNames="isAuthorized"}}
+    <button class="newUser" {{action 'newUser'}}>add user</button>
+  </form>
+  <p>Users are automatically created on log in, however if you want to create them ahead of time (so that they are authorized) you can do that here.</p>
+</section>
