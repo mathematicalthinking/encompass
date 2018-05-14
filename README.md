@@ -8,7 +8,7 @@ solving. For more about the project see [Github Repo](http://github.com/mathemat
 
 * For non-commercial uses, this application is licensed under the [AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
 * Any use of EnCOMPASS for commercial purposes is subject to and requires a special license to be negotiated with Mathematical Thinking.
-* See [EnCOMPASS license details](http://files.mathematicalthinking.org/encompass/license.html)
+* See [EnCOMPASS license details](http://files.mathematicalthinking.org/encompass/license)
 
 
 ## Installation
