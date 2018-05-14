@@ -16,16 +16,14 @@ var utils  = require('./datasource/api/requestHandler');
 
 var nconf = config.nconf;
 var dbConf = nconf.get('database');
-console.log('host: ', dbConf.host);
-console.log('name: ', dbConf.name);
-console.log('pass:', dbConf.pass);
-// mongoose.connect(dbConf.host,dbConf.name, {
-//   user: dbConf.user,
-//   pass: dbConf.pass
-// });
- var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
 
-mongoose.connect(uri);
+mongoose.connect(dbConf.host,dbConf.name, {
+  user: dbConf.user,
+  pass: dbConf.pass
+});
+//  var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
+
+// mongoose.connect(uri);
 var db = mongoose.connection;
 db.on('error', function(err){
   console.trace(err);
