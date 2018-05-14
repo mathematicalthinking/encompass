@@ -691,7 +691,6 @@ function sendWorkspaces(req, res, next) {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
       };
-      logger.info('wses: ', response.workspaces);
       if(req.body) {
         if(req.body.hasOwnProperty('importRequest')) {
           response = {importRequest: req.body.importRequest};
