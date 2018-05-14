@@ -53,7 +53,7 @@ function duplicates(submissions) {
   var count = submissions.length;
   var dups = [];
 
-  submissions.sort(function (a, b) { 
+  submissions.sort(function (a, b) {
     return (a.powId > b.powId) ? 1 : ((a.powId < b.powId) ? -1 : 0);
   });
 
@@ -104,7 +104,7 @@ function toQueryString(options, allowed) {
   if(query.id) { //Ignore all other options if submission ids are given
     query = {id: query.id};
   }
-  
+
   return qs.stringify(query);
 }
 
@@ -123,11 +123,11 @@ function toQueryString(options, allowed) {
   *         + puzzle {Int}             | - One or more of these 5 are required
   *         + submitter {String}       |
   *         + submissions {Int/Array} _|
-  *         + since_date {Int} (optional) - 
+  *         + since_date {Int} (optional) -
   *         + max_date {Int} (optional)    |
   *         + since_id {Int} (optional)    | - These 4 can be used in place of submissions if submissions is an empty array
   *         + max_id {Int} (optional) -----
-  *         + source (optional file or url path) 
+  *         + source (optional file or url path)
   *           - file source paths only use user and/or collection
   *        The returned object will contain the following fields:
   *         + success (bool - did import succeed?)
@@ -163,7 +163,7 @@ function cache(options) {
     options.puzzle,
     options.submissions,
   ];
- 
+
   var report = {
     success: false,
     importer: options.user,
@@ -176,32 +176,32 @@ function cache(options) {
 
   var result = Q.defer();
 
-  var hasRequiredUrlOptions = _.any(required); 
+  var hasRequiredUrlOptions = _.any(required);
   var hasRequiredFileOptions =_.any([options.user,  options.teacher, options.collection]);
 
 /**
   * @description This callback runs toSubmission on a JSON array
-  * @see [toSubmission](./api/submissionApi) 
+  * @see [toSubmission](./api/submissionApi)
   */
- 
+
   var processJSON = function(json) {
-    try { 
-//    console.debug(json[0]); // Useful for checking the format of the json
-      
+    try {
+//    logger.debug(json[0]); // Useful for checking the format of the json
+
       if(options.collection) {
         json.forEach(api.toPDSubmission);
       } else {
         json.forEach(api.toSubmission);
       }
     }
-    catch (e) { 
+    catch (e) {
       e.info = "Invalid JSON: Could not convert to submission";
-      return Q.reject(e); 
+      return Q.reject(e);
     }
 
     report.imported = json.length;
     report.duplicates = duplicates(json).length;
-    
+
     return new Q(json);
   };
 
@@ -215,12 +215,12 @@ function cache(options) {
 
     // We should be using JSON.parse here, but it currently fails (maybe PoW JSON needs some escaping?)
     if( _.isArray(body) ) {
-      try { 
-        json = eval(body); 
-      } 
-      catch (e) { 
+      try {
+        json = eval(body);
+      }
+      catch (e) {
         e.info = "Invalid JSON: Could not parse to response";
-        return Q.reject(e); 
+        return Q.reject(e);
       }
 
       return new Q(json);
@@ -229,45 +229,45 @@ function cache(options) {
       error = new Error('Invalid Data Received!');
       error.name = 'Response Error';
 
-      return Q.reject(error);  
+      return Q.reject(error);
     }
   };
 
   var save = function(data) {
     connect();
- 
+
     var total = data.length;
-    
+
     if( total > 0 ) {
       data.forEach(function (obj) {
         var Model = obj.constructor;
         var upsertData = obj.toObject();
         var query = { powId: obj.powId };
 
-        /* ENC-433, ENC-475, ENC-477, ENC-508 
+        /* ENC-433, ENC-475, ENC-477, ENC-508
          * Keep existing Encompass relationships & properties when caching submissions
          */
         delete upsertData._id;
         delete upsertData.workspaces;
-        delete upsertData.selections; 
+        delete upsertData.selections;
         delete upsertData.comments;
         delete upsertData.responses;
         delete upsertData.isTrashed;
-        
+
         if(options.collection) {
           upsertData.pdSet = options.collection;
         }
-  
+
         if(options.user) {
           upsertData.teacher = {username: options.user};
           query["teacher.username"] = options.user;
         }
 
-  
+
         Model.update(query, upsertData, {upsert: true}, function(err, affected, details){
           if(err) {
-            err.info = "Save Failed: Unable to cache data";  
-            return Q.reject(err); 
+            err.info = "Save Failed: Unable to cache data";
+            return Q.reject(err);
           }
 
           if(details.updatedExisting) {
@@ -284,7 +284,7 @@ function cache(options) {
         });
       });
     }
-    else { 
+    else {
       report.success = true;
       result.resolve(report);
     }
@@ -314,7 +314,7 @@ function cache(options) {
       return result.promise;
     }
 
-    readFile(options.source, 'utf8') 
+    readFile(options.source, 'utf8')
       .then(JSON.parse)
       .then(processJSON)
       .done(save, logError);
@@ -327,14 +327,14 @@ function cache(options) {
     var query = toQueryString(options, allowed);
     var restEndpoint = (options.submissions) ? config.getUrl : config.searchUrl;
 
-    var params = { 
+    var params = {
       uri: restEndpoint.concat("?", query),
       json: true,
       followRedirect: false,
       method: 'GET',
       headers: key
     };
-    
+
     console.log(params.uri);
     readUrl(params)
       .then(processResponse)

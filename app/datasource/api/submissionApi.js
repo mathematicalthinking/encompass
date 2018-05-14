@@ -314,7 +314,7 @@ function importSubmissions(req, res, next) {
   options.user = user.username; // Add the cache user option with the logged in user
   delete options.folders; // Remove the folders option since cache doesn't use it
 
-  //console.debug(params, options);
+  //logger.debug(params, options);
 
   // Create Workspace Request
   var requestWorkspaces = function(report) {
@@ -331,7 +331,7 @@ function importSubmissions(req, res, next) {
   var finish = next.bind(this, false);
 
   var onReject = function(error) {
-    console.debug(error);
+    logger.debug(error);
     utils.sendError(new errors.RestError(error), res);
   };
 

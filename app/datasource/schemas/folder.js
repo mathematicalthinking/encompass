@@ -32,7 +32,7 @@ var FolderSchema = new Schema({
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
-  */ 
+  */
 FolderSchema.pre('save', function (next) {
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -40,7 +40,7 @@ FolderSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */
@@ -55,21 +55,21 @@ FolderSchema.pre('save', function (next) {
   }
 });
 
-/*  + Folder parent/child relationships are updated */ 
+/*  + Folder parent/child relationships are updated */
 FolderSchema.pre('save', function (next) {
   var hasWorkspace = this.workspace;
 
   var folder = this;
-  
+
   mongoose.models.Folder.findById(folder.id, function(err, dbFolder) {
     if(dbFolder && (dbFolder.parent !== folder.parent)) {
-      console.debug('parent of ' + folder.id + ' (' + folder.name + 
+      console.log('parent of ' + folder.id + ' (' + folder.name +
         ') changing from ' + dbFolder.parent + ' to ' + folder.parent);
       if(dbFolder.parent) {
-        mongoose.models.Folder.findByIdAndUpdate(dbFolder.parent, 
+        mongoose.models.Folder.findByIdAndUpdate(dbFolder.parent,
           {$pull: { children: folder } },
           function (err) {
-            console.debug('dropped folder ' + folder.name + ' from children of ' + dbFolder.parent);
+            console.log('dropped folder ' + folder.name + ' from children of ' + dbFolder.parent);
             if(err) { throw new Error(err); }
           });
       }
@@ -77,7 +77,7 @@ FolderSchema.pre('save', function (next) {
 
     /* @todo Verify Workspaces */
     if (hasWorkspace) {
-      next(); 
+      next();
     } else {
       next( new Error("workspace is required") );
     }
@@ -118,14 +118,14 @@ FolderSchema.post('save', function (folder) {
     mongoose.models.Workspace.update({_id: folder.workspace},
       {$addToSet: {'folders': folder}},
       function (err, affected, results) {
-        if (err) { throw new Error(err.message); } 
+        if (err) { throw new Error(err.message); }
       });
 
     if (!!folder.parent) {
       mongoose.models.Folder.findByIdAndUpdate(folder.parent,
         {$addToSet: {'children': folder}},
         function (err, affected, results) {
-          if (err) { throw new Error(err.message); } 
+          if (err) { throw new Error(err.message); }
         });
     }
   }
