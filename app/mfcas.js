@@ -9,7 +9,7 @@ var config   = require('./config'),
     //CAS      = require('cas'),
     logger   = require('log4js').getLogger('mfcas'),
     Q        = require('q'),
-    uuid     = require('node-uuid'),
+    uuid     = require('uuid'),
     cookie   = require('cookie'),
     util     = require('util'),
     models   = require('./datasource/schemas'),
@@ -66,8 +66,6 @@ function back(req, res, next) {
     };
 
     logger.warn("Validating token at: " + reqObj.url );
-
-    // validate token
     request.post( reqObj, function( err, resp, body ){
       if( err || (body.indexOf( SUCCESS ) === -1) ){
         logger.warn( err );
@@ -85,7 +83,6 @@ function back(req, res, next) {
 
       // Return user if passed, otherwise return guest
       var getUser = function(user) {
-        logger.info('user param in getUser', user);
         return (user) ? user : guest;
       };
 
@@ -100,7 +97,6 @@ function back(req, res, next) {
       // Get User > Update History > Import Submissions > Login User > Start Session
       logger.info('Find user ' + guest.username);
       findUser({username: guest.username})
-        // call getUser with the user object returned from findUser
         .then(getUser)
         .then(function(user) {
           user.history.push({event:'Login', time: start, creator: guest.username});
@@ -124,13 +120,9 @@ function back(req, res, next) {
               updateUser({username: user.username}, {$push: {history: imported}}, {upsert: true});
             });
         })*/
-        // updates key on existing user or inserts new user record if new user
         .then( updateUser({username: guest.username}, {key: guest.key}, {upsert: true}) )
-        // sets cookie on res with key'EncAuth' and value equal to the user's key
-        // done terminates promise chain
         .done(startSession, res.send);
     });
-  // if token is undefined
   } else {
     res.send("why are you here without a token?");
   }

@@ -10,7 +10,8 @@ var mongoose = require('mongoose'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 
 module.exports.get = {};
@@ -34,8 +35,8 @@ function getSelections(req, res, next) {
   models.Selection.find(criteria)
     .exec(function(err, selections) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       console.log(selections.length);
@@ -60,10 +61,10 @@ function getSelection(req, res, next) {
   models.Selection.findById(req.params.id)
     .exec(function(err, selection) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
-      
+
       var data = {'selection': selection};
       utils.sendResponse(res, data);
       next();
@@ -82,19 +83,19 @@ function postSelection(req, res, next) {
 
   var user = auth.requireUser(req);
   var workspaceId = req.body.selection.workspace;
-  
+
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "SELECTIONS")) {
       var selection = new models.Selection(req.body.selection);
       selection.createdBy = user;
       selection.createDate = Date.now();
-      
+
       selection.save(function(err, doc) {
         if(err) {
-          logger.error(err); 
-          utils.sendError(new restify.InternalError(err.message), res); 
+          logger.error(err);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
-        
+
         var data = {'selection': doc};
         utils.sendResponse(res, data);
         next();
@@ -122,8 +123,8 @@ function putSelection(req, res, next) {
     logger.warn("Putting Selection 2");
     if(err) {
       logger.warn("Putting Selection 3");
-      logger.error(err); 
-      utils.sendError(new restify.InternalError(err.message + "\nOh Nos Failed to find selection!"), res); 
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message + "\nOh Nos Failed to find selection!"), res);
     }
 
       logger.warn("Putting Selection 4");
@@ -137,8 +138,8 @@ function putSelection(req, res, next) {
     doc.save(function (err, selection) {
       logger.warn("Tried to save selectoin!");
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       var data = {'selection': selection};

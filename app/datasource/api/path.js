@@ -9,7 +9,8 @@ var logger   = require('log4js').getLogger('sane'),
     util     = require('util'),
     restify  = require('restify'),
     _        = require('underscore'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
@@ -26,20 +27,11 @@ function idRequest(req) {
   return idRegExp.exec(req.getPath());
 }
 
-/*
-  formats request object to have
-    req.mf: {
-      path: {},
-      auth: {}
-    }
-*/
 function prep(options) {
   function _prep(req, res, next) {
-    logger.info('req prep:', req.mf);
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
-    logger.info('req prep:', req.mf);
     return next();
   }
 
@@ -50,20 +42,16 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-    logger.info('req path:', req.mf);
+
     if(!apiRequest(req)) {
       return next();
     }
-    // is this necessary since prep does same thing and is first in mw chain?
+
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
 
     var pathRegExp = /\/api\/([a-z]*)\/?/;
-
-    // getPath is restify method - returns cleaned up url. e.g. /api/users
     var match = pathRegExp.exec(req.getPath());
-    logger.info('req.getPath()', req.getPath());
-    logger.info('path match: ', match);
     if(match) {
       req.mf.path.model = match[1];
     }
@@ -89,7 +77,7 @@ function validateId(options) {
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       //TODO this is sending a 500 error although its a 4xx
-      utils.sendError(new restify.InvalidArgumentError('bad object id'), res);
+      utils.sendError(new errors.InvalidArgumentError('bad object id'), res);
       return next(false);
     }
 
@@ -118,12 +106,9 @@ function getSchema(req) {
 
 function schemaHasWorkspace(schema) {
   var mSchema = models[schema];
-  logger.info('schema:', schema);
-  logger.info('path mSchema: ', models[schema]);
   if(!mSchema) {
     return false;
   }
-  logger.info(mSchema.schema.paths.workspace);
   var hasWorkspace = !!mSchema.schema.paths.workspace;
   return hasWorkspace;
 }
@@ -152,7 +137,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError(new restify.InvalidContentError(util.format(error, schema), res));
+        utils.sendError(new errors.InvalidContentError(util.format(error, schema), res));
         return next(false);
       }
     }

@@ -9,7 +9,8 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
-    utils    = require('./requestHandler');
+    utils    = require('./requestHandler'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -27,27 +28,27 @@ function makeGuest() {
 /**
   * @public
   * @method sendUsers
-  * @description __URL__: /api/users 
+  * @description __URL__: /api/users
   * @returns {Object} A 'named' array of all user objects
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
-           
-           The front-end should be sending ?alias=current and we should respond with a guest user 
-           if they aren't logged in. The front-end requires an _id field always, so the guest is 
-           user._id=1. This could easily be changed to return all users currently logged in with 
-           the current user having a flag: isMe=true then the client would filter currentUser for isMe 
+
+           The front-end should be sending ?alias=current and we should respond with a guest user
+           if they aren't logged in. The front-end requires an _id field always, so the guest is
+           user._id=1. This could easily be changed to return all users currently logged in with
+           the current user having a flag: isMe=true then the client would filter currentUser for isMe
            and do whatever they want with the rest of the users
 */
 function sendUsers(req, res, next) {
   var user = auth.getUser(req);
 
-  if(!user) { 
+  if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
     return next();
   }
 
-  if(req.query.alias === 'current') { 
+  if(req.query.alias === 'current') {
     // if all they wanted was the current user, fine
     utils.sendResponse(res, {user: [user]});
     return next();
@@ -63,8 +64,8 @@ function sendUsers(req, res, next) {
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
-      if(err) { utils.sendError(new restify.InternalError(err.message), res); }
-  
+      if(err) { utils.sendError(new errors.InternalError(err.message), res); }
+
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
         delete doc.history; //don't send user history out
@@ -89,8 +90,8 @@ function sendUser(req, res, next) {
   models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
-      if(err) { 
-        utils.sendError(new restify.InternalError(err.message), res); 
+      if(err) {
+        utils.sendError(new errors.InternalError(err.message), res);
       }
       var data = {'user': doc};
       delete data.user.key; //hide key
@@ -113,25 +114,25 @@ function postUser(req, res, next) {
 
   var user = auth.requireUser(req);
   if (!user.isAdmin) {
-    utils.sendError(new restify.NotAuthorizedError('You do not have permissions to do this'), res);
+    utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
     return next(false);
   }
 
   var newUser = new models.User(req.body.user);
 
   models.User.findOne({username: newUser.username}, function(err, found){
-    if (err || !found) { 
+    if (err || !found) {
       newUser.save(function(err, saved) {
-        if (err) { 
+        if (err) {
           logger.error(err);
-          utils.sendError(new restify.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
         var data = {'user': saved};
         utils.sendResponse(res, data);
         next();
       });
-    } else { 
-      utils.sendError(new restify.InvalidContentError('User: ' + newUser.username + ' already exists!'), res);
+    } else {
+      utils.sendError(new errors.InvalidContentError('User: ' + newUser.username + ' already exists!'), res);
     }
   });
 }
@@ -150,16 +151,16 @@ function putUser(req, res, next) {
   delete req.body.user.username;
   delete req.body.user.createDate;
   delete req.body.user.key;
-  
+
   var user = auth.requireUser(req);
   if (user.isAdmin) {
-    models.User.findByIdAndUpdate(req.params.id, 
+    models.User.findByIdAndUpdate(req.params.id,
       /* Admins can update all editable fields for any user */
-      req.body.user, 
+      req.body.user,
       function (err, doc) {
-        if (err) { 
+        if (err) {
           logger.error(err);
-          utils.sendError(new restify.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
 
         var data = {'user': doc};
@@ -168,7 +169,7 @@ function putUser(req, res, next) {
   } else {
     /* non-admins can only update themselves */
     if (req.params.id !== user.id) {
-      utils.sendError(new restify.NotAuthorizedError('You do not have permissions to do this'), res);
+      utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
       return;
     }
 
@@ -178,9 +179,9 @@ function putUser(req, res, next) {
         seenTour: req.body.user.seenTour
       },
       function (err, doc) {
-        if (err) { 
+        if (err) {
           logger.error(err);
-          utils.sendError(new restify.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
 
         var data = {'user': doc};

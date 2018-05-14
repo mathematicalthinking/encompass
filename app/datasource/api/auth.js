@@ -12,7 +12,8 @@ var mongoose = require('mongoose'),
     _        = require('underscore'),
     path     = require('./path'),
     cache    = require('./cache'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 /*
   @returns {Object} user as cached from processToken, fetchUser
@@ -47,23 +48,18 @@ function processToken(options) {
     if(!path.apiRequest(req)) {
       return next();
     }
-    // is this necessary?
-    logger.info('procToken: ', req.mf);
+
     _.defaults(req, { mf: { auth: {} } });
 
     var header = req.header('Cookie');
-    logger.info('procTok: ', header);
     if(!header) {
       logger.debug('no token found');
       return (next());
     }
 
-    // should this handle cases where the
-    // EncAuth cookie is undefined?
     var key = cookie.parse(header).EncAuth;
     req.mf.auth.token = key;
     logger.trace('token processed: ' + key);
-    logger.info('req.mf: ', req.mf);
 
     return (next());
   }
@@ -82,7 +78,7 @@ function fetchUser(options) {
     if(!path.apiRequest(req)) {
       return next();
     }
-    // is this necessary?
+
     _.defaults(req, { mf: { auth: {} } });
 
     var token = req.mf.auth.token;
@@ -91,25 +87,23 @@ function fetchUser(options) {
       return (next());
     }
 
-    models.User.findOneAndUpdate({key: token}, {lastSeen: new Date()}, {}, function(err, user) {
+    models.User.findOneAndUpdate({key: token}, {lastSeen: new Date()}, {new:true}, function(err, user) {
       if(err) {
         logger.error(err);
-        return (next(new restify.InternalError(err.message)));
+        return (next(new errors.InternalError(err.message)));
       } else {
         if(user) {
-          logger.info('fetchUser req.url: ', req.url);
           var url = req.url;
           var len = url.length;
           if(len > 50) {
             url = url.substring(0,50) + '... (' + len + ')';
           }
           logger.info(user.get('username') + ' ' + req.method + ' ' + url);
-          // .toObject() converts mongoose doc into plain js object
           req.mf.auth.user = user.toObject();
 
           return (next());
         } else {
-          var error = new restify.InvalidCredentialsError('No user with key:' + token);
+          var error = new errors.InvalidCredentialsError('No user with key:' + token);
           logger.error(error);
           return (next(error));
         }
@@ -127,24 +121,26 @@ function fetchUser(options) {
 */
 function protect(options) {
   function _protect(req, res, next) {
-
+    logger.info('in protect');
     // we're not interested in protecting non-api requests
     if(!path.apiRequest(req)) {
       return next();
     }
-    // is this necessary?
+
     _.defaults(req, { mf: { auth: {} } });
 
     var user = getUser(req);
-
+    console.log('user in portect', user);
     var openPaths = ['/api/users', '/api/stats'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.getPath());
+    console.log('isOpenRequest: ', req.getPath(), ' : ', openRequest);
     if(openRequest && req.method === 'GET') {
       return next();
     }
-
+    logger.info('user: ', user);
+    logger.info('isAdmin:', user.isAdmin);
     var userAuthz = (user && (user.isAdmin || user.isAuthorized));
 
     var notAuthn = !user;
@@ -157,6 +153,7 @@ function protect(options) {
     }
 
     if(notAuthz) {
+      console.log('not authorized in protected');
       res.send(403);
       return next(false); //stop the chain
     }
@@ -167,8 +164,6 @@ function protect(options) {
   return (_protect);
 }
 
-// returns workspaces where either the user is the
-// owner or editor of the ws or if the ws mode is public
 function accessibleWorkspacesQuery(user) {
   return {$or: [
     {owner: user},

@@ -9,7 +9,8 @@ var mongoose = require('mongoose'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -32,10 +33,10 @@ function getTaggings(req, res, next) {
   models.Tagging.find(criteria)
     .exec(function(err, tags) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
-      
+
       var data = {'tagging': tags};
       utils.sendResponse(res, data);
       next();
@@ -46,7 +47,7 @@ function getTaggings(req, res, next) {
   * @public
   * @method getTagging
   * @description __URL__: /api/taggings/:id
-  * @returns {Object} A 'named' tagging object 
+  * @returns {Object} A 'named' tagging object
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
@@ -55,8 +56,8 @@ function getTagging(req, res, next) {
   models.Tagging.findById(req.params.id)
     .exec(function(err, tags) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       var data = {'tagging': tags};
@@ -83,13 +84,13 @@ function postTagging(req, res, next) {
       var tagging = new models.Tagging(req.body.tagging);
       tagging.createdBy = user;
       tagging.createDate = Date.now();
-    
+
       tagging.save(function(err, doc) {
         if(err) {
-          logger.error(err); 
-          utils.sendError(new restify.InternalError(err.message), res); 
+          logger.error(err);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
-    
+
         var data = {'tagging': doc};
         utils.sendResponse(res, data);
         next();
@@ -119,8 +120,8 @@ function putTagging(req, res, next) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {
           if(err) {
-            logger.error(err); 
-            utils.sendError(new restify.InternalError(err.message), res); 
+            logger.error(err);
+            utils.sendError(new errors.InternalError(err.message), res);
           }
 
           for(var field in req.body.tagging) {
@@ -131,8 +132,8 @@ function putTagging(req, res, next) {
 
           doc.save(function (err, tagging) {
             if(err) {
-              logger.error(err); 
-              utils.sendError(new restify.InternalError(err.message), res); 
+              logger.error(err);
+              utils.sendError(new errors.InternalError(err.message), res);
             }
 
             var data = {'tagging': tagging};

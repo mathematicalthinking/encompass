@@ -5,7 +5,7 @@
   * @since 1.0.3
   */
 var config   = require('./config'),
-    uuid     = require('node-uuid'),
+    uuid     = require('uuid'),
     cookie   = require('cookie'),
     models   = require('./datasource/schemas'),
     util     = require('util');
@@ -18,20 +18,20 @@ function fakeLogin(req, res, next) {
 
   // Create the user
   var user = new models.User({
-    username: name, 
+    username: name,
     key: key
   });
 
   var upsertData = user.toObject();
   delete upsertData._id;
   delete upsertData.history;
-  
+
   // Create login event
   var loggedIn = user.history.create({
-    event: 'Login', 
+    event: 'Login',
     creator: name,
     message: util.format("User %s (fake) logged in", name)
-  }); 
+  });
 
 
   models.User.update({username: name}, upsertData, {upsert: true}, function(err, count, result) {

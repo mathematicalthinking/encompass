@@ -32,7 +32,7 @@ nconf.defaults({
     host: 'localhost',
     name: mainDB,
     user: 'encompass',
-    pass: '',
+    pass: 'password',
     port: 27017,
     collections: [ "workspaces",
                    "folders",
@@ -41,7 +41,7 @@ nconf.defaults({
                    "comments"
                  ]
   },
-  cache: { 
+  cache: {
     key: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
     file: 'test/data/defaultPd.json',
     searchUrl: 'http://mathforum.org/pows/rest/submission/search',
