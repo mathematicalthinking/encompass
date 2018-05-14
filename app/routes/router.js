@@ -34,6 +34,7 @@
 Encompass.Router.map(function() {
   this.route("login");
   this.route("unauthorized");
+  this.route("license");
 
   /*
   this.resource("comments", function(){
@@ -91,5 +92,5 @@ Encompass.Router.map(function() {
       //this.route("print");
     });
   });
-  this.route("logout"); 
+  this.route("logout");
 });
