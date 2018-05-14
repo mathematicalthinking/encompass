@@ -24,10 +24,10 @@ Instructions for getting started with this setup, are located [Github Repo](http
 ## Local Development Environment Setup
 
 1. Install NVM
-2. Install node version 6.10.0
-  * `nvm install 6.10.0`
-  * `nvm use 6.10.0`
-3. Install MongoDB (e.g. version 3.6.1)
+2. Install node version 8.6.0
+  * `nvm install 8.6.0`
+  * `nvm use 8.6.0`
+3. Install MongoDB version 3.4.10
   * Run `mongod` in terminal to start the mongo daemon
 4. From root directory run `scripts/prep.sh`
   * Checks requirements (node, npm, mongo) and installs dependencies
