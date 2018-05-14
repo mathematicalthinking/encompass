@@ -126,7 +126,7 @@ function protect(options) {
     if(!path.apiRequest(req)) {
       return next();
     }
-
+    console.log('isapi:', path.apiRequest(req));
     _.defaults(req, { mf: { auth: {} } });
 
     var user = getUser(req);
@@ -139,8 +139,6 @@ function protect(options) {
     if(openRequest && req.method === 'GET') {
       return next();
     }
-    logger.info('user: ', user);
-    logger.info('isAdmin:', user.isAdmin);
     var userAuthz = (user && (user.isAdmin || user.isAuthorized));
 
     var notAuthn = !user;
