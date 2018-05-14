@@ -21,8 +21,9 @@ mongoose.connect(dbConf.host,dbConf.name, {
   user: dbConf.user,
   pass: dbConf.pass
 });
-//  var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
 
+// mongo >=3.6
+//  var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
 // mongoose.connect(uri);
 var db = mongoose.connection;
 db.on('error', function(err){
