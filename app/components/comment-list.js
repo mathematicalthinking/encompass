@@ -26,12 +26,12 @@ Encompass.CommentListComponent = Ember.Component.extend({
       placeholder: 'I wonder...'
     },
     feedback: {
-      placeholder:['Interesting...', 'Did you try...', 'What about...', 'I am interested in...', 
+      placeholder:['Interesting...', 'Did you try...', 'What about...', 'I am interested in...',
         'I would like...', 'Seems promising...', 'What if...', 'How do you know...', 'Can you say more...'],
       useForResponse: true
     }
   },
-  
+
   newCommentPlaceholder: function() {
     var placeholder = this.labels[this.get('newCommentLabel')].placeholder;
     if(_.isArray(placeholder)) {
@@ -110,7 +110,7 @@ Encompass.CommentListComponent = Ember.Component.extend({
       var currentSubmission = this.get( 'currentSubmission' );
       console.log("Sumbission: " + currentSubmission.get("submissionId") );
       console.log("Selection: " + selection.get("selectionId") );
-      
+
       var data = {
         text: text,
         label: label,
