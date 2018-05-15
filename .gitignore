@@ -15,6 +15,9 @@ server.out
 # mac files
 .DS_Store
 
+#vs code
+.vscode
+
 # why?
 # test/runner.html
 # *.swp
