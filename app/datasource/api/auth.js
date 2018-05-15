@@ -121,7 +121,6 @@ function fetchUser(options) {
 */
 function protect(options) {
   function _protect(req, res, next) {
-    logger.info('in protect');
     // we're not interested in protecting non-api requests
     if(!path.apiRequest(req)) {
       return next();
@@ -130,7 +129,6 @@ function protect(options) {
     _.defaults(req, { mf: { auth: {} } });
 
     var user = getUser(req);
-    console.log('user in portect', user);
     var openPaths = ['/api/users', '/api/stats'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this

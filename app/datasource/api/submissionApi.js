@@ -298,7 +298,7 @@ function putSubmission(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function importSubmissions(req, res, next) {
-
+  console.log('IMPORTING SUBMISSIONS...');
   var user = auth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
   var params = JSON.parse( JSON.stringify(req.body.importRequest) );
@@ -314,7 +314,7 @@ function importSubmissions(req, res, next) {
   options.user = user.username; // Add the cache user option with the logged in user
   delete options.folders; // Remove the folders option since cache doesn't use it
 
-  //logger.debug(params, options);
+  logger.debug(params, options);
 
   // Create Workspace Request
   var requestWorkspaces = function(report) {
