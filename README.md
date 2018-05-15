@@ -23,17 +23,21 @@ Instructions for getting started with this setup, are located [Github Repo](http
 
 ## Local Development Environment Setup
 
-1. Install NVM
-2. Install node version 8.6.0
-  * `nvm install 8.6.0`
-  * `nvm use 8.6.0`
-3. Install MongoDB version 3.4.10
+1. Install node version 8+
+2. Install MongoDB version 3.4.10
   * Run `mongod` in terminal to start the mongo daemon
-4. From root directory run `scripts/prep.sh`
-  * Checks requirements (node, npm, mongo) and installs dependencies
-5. From loginService directory run node server.js
+3. `npm install -g`:
+  * `grunt`
+  * `grunt-cli`
+  * `mocha-casperjs chai casper-chai`
+4. `npm install` for the rest of the dependencies
+5. Download loginService directory
+  * `npm install`
+  * `npm run`
   * Login service will be running on port 3000
-6. From root directory run `grunt`
+6. Download existing encompass database
+  * `mongorestore -d encompass filepath`
+7. From root directory run `grunt`
   * Visit app at <http://localhost:8080>
 
 ## Issues
