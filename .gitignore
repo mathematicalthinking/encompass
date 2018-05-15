@@ -1,6 +1,11 @@
 # node files
 node_modules/
-build/
+
+# build files
+build/.test/*.*
+build/application-prod.js
+build/application.js
+build/common_bundle.js
 dependencies/compiled/*.*
 .grunt
 _SpecRunner.html
@@ -10,6 +15,8 @@ server.out
 # mac files
 .DS_Store
 
+#vs code
+.vscode
 
 # why?
 # test/runner.html

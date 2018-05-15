@@ -91,5 +91,5 @@ Encompass.Router.map(function() {
       //this.route("print");
     });
   });
-  this.route("logout"); 
+  this.route("logout");
 });

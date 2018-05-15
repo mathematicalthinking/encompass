@@ -14,7 +14,8 @@ var mongoose = require('mongoose'),
     data   = require('./data'),
     _      = require('underscore'),
     Q      = require('q'),
-    helper = require('util');
+    helper = require('util'),
+    errors = require('restify-errors');
 
 
 module.exports.get = {};
@@ -95,7 +96,7 @@ function getWorkspace(id, callback) {
 /**
   * @private
   * @method getWorkspaceWithDependencies
-  * @description Due to the way Ember sideloads data, we need to flatten a retrieved workspace 
+  * @description Due to the way Ember sideloads data, we need to flatten a retrieved workspace
   *              to expose some of its nested properties.
   * @param {String} id The ID of the workspace to retrieve
   * @param {Function} callback Accepts a single argument - the flattened workspace
@@ -155,7 +156,7 @@ function sendWorkspace(req, res, next) {
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
     } else {
-      getWorkspace(req.params.id, function(data) { 
+      getWorkspace(req.params.id, function(data) {
         if(!data) {
           return utils.sendCustomError(404, 'no such workspace', res);
         }
@@ -201,7 +202,7 @@ function putWorkspace(req, res, next) {
   * @param  {Object}   workspaces      A mongoose collection of workspaces (we use .forEach on it)
   * @param  {Object}   submissionSet   A mongoose collection of submissions
   * @return {Promise}   Resolves when each of the workspaces have been updated
-  * @todo It would be nice to record what is coming and going and notify the user that there are new submissions, 
+  * @todo It would be nice to record what is coming and going and notify the user that there are new submissions,
   *       or catch the case when submissions drop out (that you did work on?)
  */
 function updateWorkspaces(workspaces, submissionSet){
@@ -214,7 +215,7 @@ function updateWorkspaces(workspaces, submissionSet){
     var promise = Q.defer();
     var opts = {path: 'pdSrcId', model: 'PDSubmission'};
     var isSubDoc = (typeof doc.ownerDocument) === 'function';
-    
+
     if(!isSubDoc) {
       doc.populate(opts, function(err, submission) {
         if(submission.pdSrcId) {
@@ -240,26 +241,26 @@ function updateWorkspaces(workspaces, submissionSet){
         return;
       }
 
-      var transformExistingSubmissions = Q.all( ws.submissions.map(function(obj) { 
+      var transformExistingSubmissions = Q.all( ws.submissions.map(function(obj) {
         var sub = obj.toJSON({transform: insertPowId});
         return sub;
       }));
 
-      var transformNewSubmissions = Q.all( subset.submissions.map(function(obj) { 
+      var transformNewSubmissions = Q.all( subset.submissions.map(function(obj) {
         var sub = obj.toJSON({transform: insertPowId});
         return sub;
       }));
 
-      /** ENC-579: We need the powIds of both the existing submissions, and the new submissionSet 
+      /** ENC-579: We need the powIds of both the existing submissions, and the new submissionSet
         * in order to compare and avoid duplication
         */
-      transformExistingSubmissions.then(function(old) { 
+      transformExistingSubmissions.then(function(old) {
         transformNewSubmissions.then(function(newer) {
           var sorted = _.sortBy(newer, 'createDate');
           var startDates = [ws.submissionSet.description.firstSubmissionDate, _.first(sorted).createDate];
           var endDates = [ws.submissionSet.description.lastSubmissionDate, _.last(sorted).createDate];
           var existing = _.pluck(old, 'powId');
-          var toAdd = _.reject(newer, function(submission) { 
+          var toAdd = _.reject(newer, function(submission) {
             return (existing.indexOf(submission.powId) > -1);
           });
           var pdA = old[0].pdSet;
@@ -281,7 +282,7 @@ function updateWorkspaces(workspaces, submissionSet){
   workspaces.forEach(function(workspace) {
     tasks.push(models.Workspace.findById(workspace._id)
       .populate('submissions')
-      .exec(updateWorkspace)); 
+      .exec(updateWorkspace));
   });
 
   return Q.all(tasks);
@@ -310,9 +311,9 @@ function newFolderStructure(user, ws, folderSetName) {
   if(folderSetName === 'simple') {
     //yes, we could do data[folderSetName] but that requires a lot of sanitizing
     //since we are getting the param from the request
-    folders = data.simple; 
+    folders = data.simple;
   }
-  
+
   folders.forEach(function(folder){
     var folderPromise = new mongoose.Promise();
     var f = new models.Folder({
@@ -395,7 +396,7 @@ function nameWorkspace(submissionSet, user) {
  */
 function newWorkspace(submissionSet, user, folderSetName) {
   var workspace = new models.Workspace({
-    name: nameWorkspace(submissionSet, user), 
+    name: nameWorkspace(submissionSet, user),
     submissionSet: submissionSet,
     owner: user,
     submissions: submissionSet.submissions,
@@ -444,7 +445,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
     if(workspaces.length) {
       logger.info('there is already a workspace for this');
       //promise.resolve();
-      
+
       //updates it
       updateWorkspaces(workspaces, submissionSet).then(function(result){
         promise.resolve();
@@ -494,12 +495,12 @@ function setTeacher(obj, ind, arr) {
   * @private
   * @method prepareUserSubmissions
   * @description Retrieves PD submissions that the user wants, and
-                 makes them available to them if they don't have 
+                 makes them available to them if they don't have
                  copies already.'
   * @param {Object} user The user requesting the submissions
   * @param {String} pdSet The name of the PD submission set desired
   * @param {Function} callback Should handle retrieved submissions
- */ 
+ */
 function prepareUserSubmissions(user, pdSet, folderSet, callback) {
   if (!pdSet) { pdSet = 'default'; }
 
@@ -524,7 +525,7 @@ function prepareUserSubmissions(user, pdSet, folderSet, callback) {
 
         models.Submission.create(docs, function(err, docs) {
           if(err) {
-            logger.error(err); 
+            logger.error(err);
             callback(err);
           }
           logger.debug('copied PDSubmissions');
@@ -547,28 +548,27 @@ function prepareUserSubmissions(user, pdSet, folderSet, callback) {
   * @param {Object} groupOpts How to group the now sorted submissions
   * @param {Object} inclusions Any computed or nested properties we would like to use
   * @param {Function} callback Should accept an error, and the packagedSubmissions
- */ 
+ */
 function packageSubmissions (matchOpts, sortOpts, groupOpts, inclusions, callback) {
-
-  models.Submission.aggregate(
+  logger.info('running packageSubmissions');
+  models.Submission.aggregate([
     { $match: matchOpts },
     { $sort:  sortOpts },
     { $group: groupOpts },
-    { $project: inclusions },
-    callback
-  );
+    { $project: inclusions }]).exec(callback);
+
 }
 
 /**
   * @private
   * @method prepareAndUpdateWorkspaces
-  * @description This looks at all of the users submissions 
+  * @description This looks at all of the users submissions
                  (submissions where the `user.username` matches `submission.teacher.username`)
   *              Groups the submissions by the class (aka Group) and problem
   *              and "handles" each of those groups (@see handleSubmissionSets)
-  * @param  {User}  user 
+  * @param  {User}  user
   * @param  {Function}  callback    the function to execute when all of the submission sets have been handled, no parameters passed
-  * 
+  *
   * @see `handleSubmissionSets`
   * @see `prepareUserSubmissions`
   * @see `packageSubmissions`
@@ -595,9 +595,9 @@ function packageSubmissions (matchOpts, sortOpts, groupOpts, inclusions, callbac
   *  }]
  */
 function prepareAndUpdateWorkspaces(user, callback) {
-
+  logger.info('in prepupdws');
   prepareUserSubmissions(user, null, null, function () {
-    var matchBy = { 
+    var matchBy = {
       "teacher.username": user.username,
       $or: [
         {"workspaces": null},  //and that aren't already in a workspace | @todo: might be in another user's workspace you know...
@@ -607,9 +607,9 @@ function prepareAndUpdateWorkspaces(user, callback) {
       "isTrashed": {$in: [null, false]} //submissions that are not deleted
     };
     var sortBy = { "createDate": 1 };
-    var groupBy = { 
-      _id: { 
-        group: "$clazz.clazzId", 
+    var groupBy = {
+      _id: {
+        group: "$clazz.clazzId",
         pub: "$publication.publicationId",
         puzzle: "$publication.puzzle.puzzleId",
         name:  "$clazz.name",
@@ -650,17 +650,18 @@ function prepareAndUpdateWorkspaces(user, callback) {
     };
 
     packageSubmissions(matchBy, sortBy, groupBy, include, function (err, results) {
-      if(err) { callback( new Error( err.message ) ); }
-      
+      logger.info('pkg sub callback in');
+      if(err) { logger.info('in error block pkgsub');callback( new Error( err.message ) ); }
+
       var submissionSets = _.pluck(results, 'submissionSet');
       console.log('We got '+ submissionSets.length + 'sets');
       console.log('We got '+ submissionSets.submissions + 'sets');
-      
+
       submissionSets = _.reject(submissionSets, function (set) {
         //why would we be getting these?
         return  (!(set.criteria && set.description && set.submissions));
       });
-        
+
       handleSubmissionSets(submissionSets, user).then(function() {
         callback();
       });
@@ -677,10 +678,12 @@ function prepareAndUpdateWorkspaces(user, callback) {
   */
 function sendWorkspaces(req, res, next) {
   var user = auth.requireUser(req);
+  logger.info('in sendWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
   prepareAndUpdateWorkspaces(user, function(err){
     if(err){
       utils.sendError(err, res);
+      logger.error('error preparing and updating ws');
     }
 
     models.Workspace.find(auth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
@@ -688,7 +691,6 @@ function sendWorkspaces(req, res, next) {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
       };
-      
       if(req.body) {
         if(req.body.hasOwnProperty('importRequest')) {
           response = {importRequest: req.body.importRequest};
@@ -701,8 +703,10 @@ function sendWorkspaces(req, res, next) {
 }
 
 function postWorkspace(req, res, next) {
-  next(new restify.BadMethodError('This action is not yet supported!'));
-}
+  logger.info('IN POSTWORKSPACE!!');
+  // next(new Error('TESTING next(new ERROR'));
+  next(new errors.BadMethodError('This action is not yet supported!'));
+ }
 
 /**
   * @public
@@ -726,7 +730,7 @@ function newWorkspaceRequest(req, res, next) {
 
   //copy over all of the pdsubmissions
   prepareUserSubmissions(user, pdSetName, folderSetName, function () {
-    var matchBy = { 
+    var matchBy = {
       "teacher.username": user.username,
       "pdSet": pdSetName, // submissions that belong to our pdSet
       $or: [
@@ -738,9 +742,9 @@ function newWorkspaceRequest(req, res, next) {
     };
 
     var sortBy = { "createDate": 1 };
-    var groupBy = { 
-      _id: { 
-        group: "$clazz.clazzId", 
+    var groupBy = {
+      _id: {
+        group: "$clazz.clazzId",
         puzzle: "$publication.puzzle.puzzleId",
         name:  "$clazz.name",
         title:  "$publication.puzzle.title"
@@ -778,14 +782,14 @@ function newWorkspaceRequest(req, res, next) {
 
     packageSubmissions(matchBy, sortBy, groupBy, include, function (err, results) {
       if(err) { throw new Error( err.message ); }
-      
+
       var submissionSets = _.pluck(results, 'submissionSet');
       logger.info('package submissions: ' + submissionSets.length);
-      
+
       submissionSets = _.reject(submissionSets, function (set) {
         return  (!(set.criteria && set.description && set.submissions));
       });
-        
+
       handleSubmissionSets(submissionSets, user, folderSetName).then(function() {
         sendWorkspaces(req, res, next);
       });

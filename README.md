@@ -8,7 +8,7 @@ solving. For more about the project see [Github Repo](http://github.com/mathemat
 
 * For non-commercial uses, this application is licensed under the [AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
 * Any use of EnCOMPASS for commercial purposes is subject to and requires a special license to be negotiated with Mathematical Thinking.
-* See [EnCOMPASS license details](http://files.mathematicalthinking.org/encompass/license.html)
+* See [EnCOMPASS license details](http://files.mathematicalthinking.org/encompass/license)
 
 
 ## Installation
@@ -24,10 +24,10 @@ Instructions for getting started with this setup, are located [Github Repo](http
 ## Local Development Environment Setup
 
 1. Install NVM
-2. Install node version 6.10.0
-  * `nvm install 6.10.0`
-  * `nvm use 6.10.0`
-3. Install MongoDB (e.g. version 3.6.1)
+2. Install node version 8.6.0
+  * `nvm install 8.6.0`
+  * `nvm use 8.6.0`
+3. Install MongoDB version 3.4.10
   * Run `mongod` in terminal to start the mongo daemon
 4. From root directory run `scripts/prep.sh`
   * Checks requirements (node, npm, mongo) and installs dependencies

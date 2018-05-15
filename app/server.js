@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     restify  = require('restify'),
     cas      = require('./mfcas'),
     fake     = require('./fake_login'),
-    uuid     = require('node-uuid'),
+    uuid     = require('uuid'),
     cookie   = require('cookie'),
     api      = require('./datasource/api'),
     auth     = require('./datasource/api/auth'),
@@ -16,10 +16,15 @@ var utils  = require('./datasource/api/requestHandler');
 
 var nconf = config.nconf;
 var dbConf = nconf.get('database');
+
 mongoose.connect(dbConf.host,dbConf.name, {
   user: dbConf.user,
   pass: dbConf.pass
 });
+
+// mongo >=3.6
+//  var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
+// mongoose.connect(uri);
 var db = mongoose.connection;
 db.on('error', function(err){
   console.trace(err);
@@ -27,8 +32,8 @@ db.on('error', function(err){
 });
 
 var server = restify.createServer();
-server.use(restify.bodyParser({mapParams: false}));
-server.use(restify.queryParser({mapParams: false}));
+server.use(restify.plugins.bodyParser({mapParams: false}));
+server.use(restify.plugins.queryParser({mapParams: false}));
 server.use(path.prep());
 server.use(path.processPath());
 server.use(auth.processToken());
@@ -91,7 +96,7 @@ server.post({
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
 
 //Catch-all and serve from the build directory
-server.get(/.*/, restify.serveStatic({
+server.get(/.*/, restify.plugins.serveStatic({
   directory: 'build/',
   'default': 'index.html'
 }));

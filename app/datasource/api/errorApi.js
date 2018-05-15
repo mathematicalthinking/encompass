@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -33,9 +34,9 @@ function postError(req, res, next) {
   error.save(function(err, doc) {
     if(err) {
       logger.error(err);
-      utils.sendError(new restify.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
-    
+
     var data = {'error': doc};
     utils.sendResponse(res, data);
     next();

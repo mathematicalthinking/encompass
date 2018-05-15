@@ -1,5 +1,5 @@
 /**
-  * # Comment API 
+  * # Comment API
   * @description This is the API for comment based requests
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
     models   = require('../schemas'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    utils    = require('./requestHandler');
+    utils    = require('./requestHandler'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -36,7 +37,7 @@ function getComments(req, res, next) {
     criteria.$and.push({text: regExp});
   }
 
-  var myCommentsOnly = (req.query.myCommentsOnly === 'true'); 
+  var myCommentsOnly = (req.query.myCommentsOnly === 'true');
   if(myCommentsOnly) {
     criteria.$and.push({createdBy: user});
   }
@@ -60,8 +61,8 @@ function getComments(req, res, next) {
     .populate('createdBy')
     .exec(function(err, comments) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       var data = {'comment': []};
@@ -114,10 +115,10 @@ function getComment(req, res, next) {
   models.Comment.findById(req.params.id)
     .exec(function(err, comment) {
       if(err) {
-        logger.error(err); 
-        utils.sendError(new restify.InternalError(err.message), res); 
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
-  
+
       var data = {'comment': comment};
       utils.sendResponse(res, data);
       next();
@@ -133,7 +134,7 @@ function getComment(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function postComment(req, res, next) {
-  
+
   var user = auth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
@@ -141,13 +142,13 @@ function postComment(req, res, next) {
       var comment = new models.Comment(req.body.comment);
       comment.createdBy = user;
       comment.createDate = Date.now();
-      
+
       comment.save(function(err, doc) {
         if(err) {
-          logger.error(err); 
-          utils.sendError(new restify.InternalError(err.message), res); 
+          logger.error(err);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
-        
+
         var data = {'comment': doc};
         utils.sendResponse(res, data);
         next();
@@ -177,20 +178,20 @@ function putComment(req, res, next) {
       models.Comment.findById(req.params.id,
         function (err, doc) {
           if(err) {
-            logger.error(err); 
-            utils.sendError(new restify.InternalError(err.message), res); 
+            logger.error(err);
+            utils.sendError(new errors.InternalError(err.message), res);
           }
 
           for(var field in req.body.comment) {
             if((field !== '_id') && (field !== undefined)) {
-              doc[field] = req.body.comment[field]; 
+              doc[field] = req.body.comment[field];
             }
           }
-          
+
           doc.save(function (err, comment) {
             if(err) {
-              logger.error(err); 
-              utils.sendError(new restify.InternalError(err.message), res); 
+              logger.error(err);
+              utils.sendError(new errors.InternalError(err.message), res);
             }
 
             var data = {'comment': comment};
