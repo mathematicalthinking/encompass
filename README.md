@@ -1,8 +1,6 @@
 
 # ENCOMPASS
-The ENCOMPASS application is a web application designed to aid the professional development of teachers
-in the education of their students through designing, using and studying rubrics for student problem
-solving. For more about the project see [Github Repo](http://github.com/mathematicalthinking/encompass)
+ENCOMPASS is a web application designed to facilitate the process of learning from and providing feedback on student work, for both individual teachers and for collaborative and professional development purposes. For more about the project see [Github Repo](http://github.com/mathematicalthinking/encompass)
 
 ## License
 
@@ -31,7 +29,7 @@ Instructions for getting started with this setup, are located [Github Repo](http
   * `grunt-cli`
   * `mocha-casperjs chai casper-chai`
 4. `npm install` for the rest of the dependencies
-5. Download loginService directory
+5. Clone [loginService Repo](https://github.com/mathematicalthinking/loginService)
   * `npm install`
   * `npm run`
   * Login service will be running on port 3000

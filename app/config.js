@@ -32,7 +32,7 @@ nconf.defaults({
     host: 'localhost',
     name: mainDB,
     user: 'encompass',
-    pass: 'password',
+    pass: '',
     port: 27017,
     collections: [ "workspaces",
                    "folders",
