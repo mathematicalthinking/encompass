@@ -31,7 +31,7 @@ Instructions for getting started with this setup, are located [Github Repo](http
   * `grunt-cli`
   * `mocha-casperjs chai casper-chai`
 4. `npm install` for the rest of the dependencies
-5. Download loginService directory
+5. Download [loginService Repo](https://github.com/mathematicalthinking/loginService)
   * `npm install`
   * `npm run`
   * Login service will be running on port 3000
