@@ -18,6 +18,9 @@ server.out
 #vs code
 .vscode
 
+#env 
+.env
+
 # why?
 # test/runner.html
 # *.swp
