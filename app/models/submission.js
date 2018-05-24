@@ -12,28 +12,28 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   uploadedFile: DS.attr(),
   //teacher, class, puzzle TODO
   //teacher: DS.belongsTo(App.User, {embedded:'always'}),
-  selections: DS.hasMany('selection', {async: true}),
-  comments: DS.hasMany('comment', {async: true}),
-  workspaces: DS.hasMany('workspace', {async: true}),
-  responses:  DS.hasMany('response', {async: true}),
-  
-  folders: function(){
+  selections: DS.hasMany('selection', { async: true }),
+  comments: DS.hasMany('comment', { async: true }),
+  workspaces: DS.hasMany('workspace', { async: true }),
+  responses: DS.hasMany('response', { async: true }),
+
+  folders: function () {
     var folders = [];
-    this.get('selections').forEach(function(selection){
+    this.get('selections').forEach(function (selection) {
       folders.pushObjects(selection.get('folders'));
     });
     return folders.uniq();
   }.property('selections.[].folders'),
 
-  selectedComments: function(){
+  selectedComments: function () {
     return this.get('comments').filterBy('useForResponse', true);
   }.property('comments.[].useForResponse'),
-  
-  puzzle: function(){
+
+  puzzle: function () {
     return this.get('publication.puzzle');
   }.property(),
-  
-  puzzleUrl: function(){
+
+  puzzleUrl: function () {
     return '/library/go.html?destination=' + this.get('puzzle.puzzleId');
   }.property(),
 
@@ -43,26 +43,26 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   }.property(),
   */
 
-  imageUrl: function(){
-    return 'http://mathforum.org/pows/uploaded-images/' + this.get('attachment.savedFileName');
+  imageUrl: function () {
+    return 'http://mathforum.org/encpows/uploaded-images/' + this.get('attachment.savedFileName');
   }.property(),
-  
-  student: function() {
+
+  student: function () {
     var student = this.get('creator.safeName');
-    return student;  
+    return student;
   }.property('creator.safeName'),
-  
-  label: function(){
+
+  label: function () {
     var label = this.get('student');
     var createDate = this.get('createDate');
-    if(createDate) {
+    if (createDate) {
       label += ' on ' + moment(createDate).format('l');
     }
     label += ' (' + this.get('data.thread.threadId') + ')';
     return label;
   }.property('student', 'createDate', 'data.thread.threadId'),
-  
-  isStatic: function(){
+
+  isStatic: function () {
     return !this.get('powId');
   }.property('powId')
 });
