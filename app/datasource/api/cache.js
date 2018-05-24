@@ -7,17 +7,17 @@
   */
 
 var mongoose = require('mongoose'),
-    fs = require('fs'),
-    request = require('request'),
-    qs = require('querystring'),
-    Q = require('q'),
-    _ = require('underscore'),
-    api = require('./submissionApi'),
-    models = require('../schemas/submission'),
-    db = require('../../config').nconf.get('database'),
-    config = require('../../config').nconf.get('cache'),
-    utils    = require('./requestHandler'),
-    logger   = require('log4js').getLogger('server');
+  fs = require('fs'),
+  request = require('request'),
+  qs = require('querystring'),
+  Q = require('q'),
+  _ = require('underscore'),
+  api = require('./submissionApi'),
+  models = require('../schemas/submission'),
+  db = require('../../config').nconf.get('database'),
+  config = require('../../config').nconf.get('cache'),
+  utils = require('./requestHandler'),
+  logger = require('log4js').getLogger('server');
 
 /*
  * @description Regex for url
@@ -38,8 +38,8 @@ var readUrl = Q.denodeify(request);
  * @description Connect to the database
  */
 function connect() {
-  if ( mongoose.connection.readyState !== mongoose.Connection.STATES.connected ) {
-    var opts = {user: db.user, pass: db.pass};
+  if (mongoose.connection.readyState !== mongoose.Connection.STATES.connected) {
+    var opts = { user: db.user, pass: db.pass };
     mongoose.connect(db.host, db.name, db.port, opts);
     mongoose.connection.on('error', console.error.bind(console, 'connection error'));
   }
@@ -57,9 +57,9 @@ function duplicates(submissions) {
     return (a.powId > b.powId) ? 1 : ((a.powId < b.powId) ? -1 : 0);
   });
 
-  for (var i = 0; i < count-1; i++) {
-    if( submissions[i+1].powId === submissions[i].powId ) {
-      dups.push( submissions[i].powId );
+  for (var i = 0; i < count - 1; i++) {
+    if (submissions[i + 1].powId === submissions[i].powId) {
+      dups.push(submissions[i].powId);
     }
   }
 
@@ -73,36 +73,36 @@ function duplicates(submissions) {
 function toQueryString(options, allowed) {
   var query = {};
 
-  for(var key in options) {
-    if( _.contains(allowed, key) ) {
+  for (var key in options) {
+    if (_.contains(allowed, key)) {
       var alias = key;
 
-      switch(key) {
-      case 'teacher':
-        alias = 'teacher_username';
-        break;
-      case 'publication':
-        alias = 'publication_id';
-        break;
-      case 'puzzle':
-        alias = 'puzzle_id';
-        break;
-      case 'submissions':
-        alias = 'id';
-        break;
-      case 'submitter':
-        alias = 'creator_username';
-        break;
-      case 'default':
-        alias = key;
+      switch (key) {
+        case 'teacher':
+          alias = 'teacher_username';
+          break;
+        case 'publication':
+          alias = 'publication_id';
+          break;
+        case 'puzzle':
+          alias = 'puzzle_id';
+          break;
+        case 'submissions':
+          alias = 'id';
+          break;
+        case 'submitter':
+          alias = 'creator_username';
+          break;
+        case 'default':
+          alias = key;
       }
 
       query[alias] = options[key];
     }
   }
 
-  if(query.id) { //Ignore all other options if submission ids are given
-    query = {id: query.id};
+  if (query.id) { //Ignore all other options if submission ids are given
+    query = { id: query.id };
   }
 
   return qs.stringify(query);
@@ -137,15 +137,15 @@ function toQueryString(options, allowed) {
   */
 function cache(options) {
 
-  if(options.teacher && !options.user) {
+  if (options.teacher && !options.user) {
     options.user = options.teacher;
   }
 
   var allowed = [
-//    'user',
+    //    'user',
     'teacher',
     'submitter',
-//    'collection',
+    //    'collection',
     'publication',
     'puzzle',
     'class_id',
@@ -177,18 +177,18 @@ function cache(options) {
   var result = Q.defer();
 
   var hasRequiredUrlOptions = _.any(required);
-  var hasRequiredFileOptions =_.any([options.user,  options.teacher, options.collection]);
+  var hasRequiredFileOptions = _.any([options.user, options.teacher, options.collection]);
 
-/**
-  * @description This callback runs toSubmission on a JSON array
-  * @see [toSubmission](./api/submissionApi)
-  */
+  /**
+    * @description This callback runs toSubmission on a JSON array
+    * @see [toSubmission](./api/submissionApi)
+    */
 
-  var processJSON = function(json) {
+  var processJSON = function (json) {
     try {
-//    logger.debug(json[0]); // Useful for checking the format of the json
+      //    logger.debug(json[0]); // Useful for checking the format of the json
 
-      if(options.collection) {
+      if (options.collection) {
         json.forEach(api.toPDSubmission);
       } else {
         json.forEach(api.toSubmission);
@@ -205,17 +205,17 @@ function cache(options) {
     return new Q(json);
   };
 
-/**
-  * @description This callback handles the response of an HTTP request
-  */
-  var processResponse = function(response) {
+  /**
+    * @description This callback handles the response of an HTTP request
+    */
+  var processResponse = function (response) {
     console.log('response body in processResponse: ', response[1]);
     var body = response[1];
     var json;
     var error;
 
     // We should be using JSON.parse here, but it currently fails (maybe PoW JSON needs some escaping?)
-    if( _.isArray(body) ) {
+    if (_.isArray(body)) {
       try {
         json = eval(body);
       }
@@ -234,12 +234,12 @@ function cache(options) {
     }
   };
 
-  var save = function(data) {
+  var save = function (data) {
     connect();
 
     var total = data.length;
 
-    if( total > 0 ) {
+    if (total > 0) {
       data.forEach(function (obj) {
         var Model = obj.constructor;
         var upsertData = obj.toObject();
@@ -255,30 +255,29 @@ function cache(options) {
         delete upsertData.responses;
         delete upsertData.isTrashed;
 
-        if(options.collection) {
+        if (options.collection) {
           upsertData.pdSet = options.collection;
         }
 
-        if(options.user) {
-          upsertData.teacher = {username: options.user};
+        if (options.user) {
+          upsertData.teacher = { username: options.user };
           query["teacher.username"] = options.user;
         }
 
 
-        Model.update(query, upsertData, {upsert: true}, function(err, affected, details){
-          if(err) {
+        Model.update(query, upsertData, { upsert: true }, function (err, affected) {
+          if (err) {
             err.info = "Save Failed: Unable to cache data";
             return Q.reject(err);
           }
-
-          if(details.updatedExisting) {
+          if (affected.nModified) {
             report.updatedExisting += 1;
           } else {
             report.addedNew += 1;
           }
 
           total--;
-          if(total === 0) {
+          if (total === 0) {
             report.success = true;
             result.resolve(report);
           }
@@ -291,12 +290,12 @@ function cache(options) {
     }
   };
 
-  var logError = function(err) {
+  var logError = function (err) {
     report.error = err;
     result.reject(report.error);
   };
 
-  if(!options.source && !hasRequiredUrlOptions) {
+  if (!options.source && !hasRequiredUrlOptions) {
     report.error = new Error('Required arguments not provided');
     report.error.name = 'Missing Arguments';
 
@@ -306,8 +305,8 @@ function cache(options) {
     return result.promise;
   }
 
-  if(options.source && !isUrl.test(options.source)) {
-    if(!hasRequiredFileOptions) {
+  if (options.source && !isUrl.test(options.source)) {
+    if (!hasRequiredFileOptions) {
       report.error = new Error('Required arguments not provided');
       report.error.name = 'Missing Arguments';
 
@@ -323,8 +322,8 @@ function cache(options) {
     return new Q(result.promise);
   }
 
-  if(hasRequiredUrlOptions) {
-    var key   = utils.generateApiKey(Date.now());
+  if (hasRequiredUrlOptions) {
+    var key = utils.generateApiKey(Date.now());
     var query = toQueryString(options, allowed);
     var restEndpoint = (options.submissions) ? config.getUrl : config.searchUrl;
 
