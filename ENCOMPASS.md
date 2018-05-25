@@ -39,6 +39,11 @@ Instructions for getting started with this setup, are located [Github Repo](http
 7. From root directory run `grunt`
   * Visit app at <http://localhost:8080>
 
+## Pull Requests
+
+See [pull requests instructions](https://github.com/mathematicalthinking/encompass/blob/master/docs/GitForkRepo.md)
+
+
 ## Issues
 
 We are using Github for issues
