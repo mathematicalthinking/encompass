@@ -14,7 +14,7 @@
 ## More Work to do
 * Go to Step 1 in Git Rebase flow.
 
-## Pull Reqeust Accepted? 
+## Pull Request Accepted? 
 1. `git checkout master`
 1. `git pull --rebase upstream master`
 1. `git push origin master`
