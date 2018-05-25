@@ -1,0 +1,16 @@
+{
+  "port": 10202,
+  "cas": {
+    "service": "http://dev.mathforum.org:10202/back"
+  },
+  "database": {
+    "name": "encompass",
+    "user": "encompass"
+  },
+  "logs": {
+    "server":  "ERROR"
+  },
+  "test": {
+    "host": "http://dev.mathforum.org:10202"
+  }
+}

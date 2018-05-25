@@ -1,0 +1,103 @@
+<aside>
+  <table>
+    <tr>
+      <td>
+        {{#if showingSelections}}
+          <span {{action 'hideSelections'}} class="al_sprite al_hide_selections"></span>
+        {{else}}
+          <span {{action 'showSelections'}} class="al_sprite al_show_selections"></span>
+        {{/if}}
+      </td>
+      {{#if this.canSelect}}
+        <td>
+          <label class="makingSelection">
+            {{input type="checkbox" disabled=showingSelections checked=makingSelection}}
+            <span class="al_sprite al_makeselections"></span>
+          </label>
+        </td>
+      {{/if}}
+      <td>
+        <a class='puzzle' target="_blank" href="{{currentSubmission.puzzleUrl}}">
+          {{currentSubmission.puzzle.title}} 
+          <img src="/img/glyphish/icons/icons-gray/212-action2-16.png"/>
+        </a>
+      </td>
+      <td>
+        {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
+          Respond
+        {{/link-to}}
+        {{#if currentSubmission.responses.length}}
+          <span class="meta response-count existing" title="existing response count">
+            ({{currentSubmission.responses.length}})
+          </span>
+        {{/if}}
+      </td>
+    </tr>
+  </table>
+</aside>
+
+<div id="al_submission" class="al_vertical_stretch">
+  {{#if showSelectableView}}
+    <h3>Selectabe View!</h3>
+    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"}}
+      <div id="submission_container">
+        <div class="submission short">
+          {{{currentSubmission.shortAnswer}}}
+        </div>
+        <div class="submission long">
+          {{{currentSubmission.longAnswer}}}
+        </div>
+      </div>
+    {{/selectable-area}}
+  {{else}}
+    <div class="submission short">
+      {{{currentSubmission.shortAnswer}}}
+    </div>
+    <div class="submission long">
+      {{{currentSubmission.longAnswer}}}
+    </div>
+  {{/if}}
+
+  {{#if currentSubmission.attachment.savedFileName}}
+  <div id="submission_images">
+    <a target="_blank" href="{{unbound currentSubmission.imageUrl}}">
+      <img src="{{currentSubmission.imageUrl}}" alt="Login to the PoWs to see image"/>
+    </a>
+  </div>
+  {{/if}}
+</div><!--/al_submission-->
+
+
+  <div id="submission_selections">
+    {{!-- lets leave the help text out
+      <p class="al_small">Below are the selections that have been made.  
+        {{#if canSelect}}
+          You can file them by dragging them to a folder on the left.
+        {{/if}}
+      </p>
+    --}}
+
+
+    {{#unless currentSubmission.selections.length}}
+      <p class="al_small">No selections have been made yet.  
+        {{#if canSelect}}
+          Click "make selection" above and highlight some text in the submission.
+        {{/if}}
+      </p>
+    {{/unless}}
+
+    <ul>
+    {{#each this.workspaceSelections as |selection|}}
+      <li class="selection">
+        {{#unless selection.isTrashed}}
+          {{#if canSelect}}
+            {{draggable-selection selection=selection deleteSelection=(action "deleteSelection") }}
+          {{else}}
+            
+          <span class="selection_text selectionLink {{id}}">{{selection.text}}</span>
+          {{/if}}
+        {{/unless}}
+      </li>
+    {{/each}}
+    </ul>
+  </div>

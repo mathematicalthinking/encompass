@@ -1,0 +1,28 @@
+# node files
+node_modules/
+
+# build files
+build/.test/*.*
+build/application-prod.js
+build/application.js
+build/common_bundle.js
+dependencies/compiled/*.*
+.grunt
+_SpecRunner.html
+error.out
+server.out
+
+# mac files
+.DS_Store
+
+#vs code
+.vscode
+
+#env 
+.env
+
+# why?
+# test/runner.html
+# *.swp
+# *.swo
+# *.~

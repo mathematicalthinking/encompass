@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>QUnit basic example</title>
+  <link rel="stylesheet" href="support/qunit-1.23.1.css">
+  <link rel="stylesheet" href="../../build/base.css">
+  <link rel="stylesheet" href="../../build/guiders.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+
+  <div id="testing-location"></div>
+
+  <script type="text/javascript" src="support/qunit-1.23.1.js"></script>
+  <script type="text/javascript" src="support/sinon-1.12.2.js"></script>
+
+  <script type="text/javascript">
+    TESTING = true;  
+  </script>
+
+  <script src="../../build/application.js"></script>
+  <script src="../../test/data/fixtures.js"></script>
+  <script src="../../build/common_bundle.js"></script>
+  <script src="../../build/guiders.js"></script>
+  <!--
+  <script type="text/javascript" src="support/ember-qunit-globals-main.js"></script>
+  -->
+
+  <!--
+  <script type="text/javascript" src="models/user-spec.js"></script>
+  <script type="text/javascript" src="models/submission-spec.js"></script>
+  <script type="text/javascript" src="models/selection-spec.js"></script>
+  <script type="text/javascript" src="models/pdSet-spec.js"></script>
+  <script type="text/javascript" src="controllers/folders-spec.js"></script>
+  <script type="text/javascript" src="controllers/folder-spec.js"></script>
+  <script type="text/javascript" src="controllers/tagging-spec.js"></script>
+  -->
+
+<!-- old specs needing rewrites
+  <script type="text/javascript" src="controllers/comments-spec.js"></script>
+  <script type="text/javascript" src="workspaces-spec.js"></script>
+  <script type="text/javascript" src="workspace-info-spec.js"></script>
+  <script type="text/javascript" src="workspace-new-spec.js"></script>
+  <script type="text/javascript" src="users-spec.js"></script>
+  <script type="text/javascript" src="responses-spec.js"></script>
+-->
+</body>
+</html>

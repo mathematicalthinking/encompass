@@ -1,0 +1,259 @@
+<div style="position:fixed; width:100%; z-index:2;">
+<div id="folder_header">
+  <div id="menubar">
+    <span class="al_sprite al_folder al_open"></span>
+    <h1> {{name}} </h1>
+  </div>
+  <div id="statusbar">
+    <span>{{selectionGroups.length}} submission(s), </span>
+    <span>{{_selections.length}} selection(s)</span>
+  </div>
+</div>
+
+
+<div id="controls"> Browse: 
+  {{input type="radio" name="browser2" value="0" default="true" click=(action "radioSelect" 1)}} <label>By Student</label>
+  {{input type="radio" name="browser2" value="1" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
+  <label id="showSubFolders">
+    {{input type="checkbox" checked=includeSubfolders}}
+    Include Sub-Folders
+  </label>
+</div>
+</div>
+<div style="height:79px"></div>
+<div id="subcontrols">
+  Show: 
+  {{#if bySubmission}}
+  <ul>
+    
+    <li><label id="showEvidence">
+      {{input type="checkbox" name=showSubmissionSelections checked=showSubmissionSelections}}
+      Evidence
+    </label></li>
+
+    {{#if showSubmissionSelections}}
+      <li><ul>
+      <li><label id="showSubmComments">
+        {{input type="checkbox" name=showSubmissionSelectionsComments checked=showSubmissionSelectionsComments}}
+        Comments
+      </label></li>
+
+      <li><label id="showSubmFolders">
+        {{input type="checkbox" name=showSubmissionSelectionsFolders checked=showSubmissionSelectionsFolders}}
+        Folders
+      </label></li>
+
+      </ul></li>
+    {{/if}}
+
+<!-- Do we need these?
+    <li><label>
+      {{!input type="checkbox" name=showSubmissionComments checked=showSubmissionComments}}
+      comments
+    </label></li>
+
+    <li><label>
+      {{!input type="checkbox" name=showSubmissionFolders checked=showSubmissionFolders}}
+      folders
+    </label></li>
+-->
+    </ul>
+  {{/if}}
+  {{#if bySelection}}
+    <label id="showSubmissions">
+      {{input type="checkbox" checked=showSelectionSubmission}}
+      Student
+    </label>
+
+    <label id="showSelComments">
+      {{input type="checkbox" checked=showSelectionComments}}
+      Comments
+    </label>
+
+    <label id="showSelFolders">
+      {{input type="checkbox" checked=showSelectionFolders}}
+      Folders
+    </label>
+  {{/if}}
+</div>
+
+<div class="al_wtf">
+{{#if bySubmission}}
+<table align="right" id="folder_contents">
+  <!-- <caption>Submissions</caption> -->
+  <thead>
+    <tr class="header">
+      <th>Student</th>
+
+      {{#if showSubmissionComments}}
+        <th>Comments</th>
+      {{/if}}
+
+      {{#if showSubmissionFolders}}
+        <th>Folders</th>
+      {{/if}}
+
+      {{#if showSubmissionSelections}}
+        <th>Evidence</th>
+      {{/if}}
+
+    </tr>
+  </thead>
+  <tbody>
+    {{#each selectedSubmissions as |sub|}}
+    <tr>
+      <td>
+        <a class="highlight" {{action 'changeSubmission' sub}}>
+          {{sub.student}}
+        </a>
+      </td>
+      {{#if showSubmissionComments}}
+        <td>
+          <ul>
+          {{#each sub.comments as |com|}}
+            <li>
+              {{com.text}}
+            </li>
+          {{/each}}
+          </ul>
+        </td>
+      {{/if}}
+      {{#if showSubmissionFolders}}
+        <td style="white-space: nowrap;">
+          <ul>
+            {{#each sub.folders as |folder|}}
+              <li>{{folder.name}}</li>
+            {{/each}}
+          </ul>
+        </td>
+      {{/if}}
+      {{#if showSubmissionSelections}}
+        <td>
+          {{#if showSubmissionSelectionsStuff}}
+          <table style="width: 100%">
+            <thead>
+              <tr>
+                <th style="width: 30%">Selection</th>
+          
+                {{#if showSubmissionSelectionsComments}}
+                  <th style="width: 30%">Comments</th>
+                {{/if}}
+
+                {{#if showSubmissionSelectionsFolders}}
+                  <th style="width: 30%">Folders</th>
+                {{/if}}
+              </tr>
+            </thead>
+            <tbody>
+              {{#each sub.selections as |sel|}}
+              <tr>
+                <td>
+                  {{draggable-selection selection=sel}}
+                  <br/>
+                </td>
+
+                {{#if showSubmissionSelectionsComments}}
+                  <td>
+                    <ul>
+                      {{#each sel.comments as |comment|}}
+                        <li>{{comment.text}}</li>
+                      {{/each}}
+                    </ul>
+                  </td>
+                {{/if}}
+                
+                {{#if showSubmissionSelectionsFolders}}
+                  <td>
+                    <ul>
+                      {{#each sel.folders as |folder|}}
+                        <li>
+                          {{folder.name}}
+                          {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
+                            <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                          {{/if}}
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </td>
+                {{/if}}
+              </tr>
+              {{/each}}
+            </tbody>
+        </table>
+        {{/if}}
+        </td>
+      {{/if}}
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{/if}}
+
+{{#if bySelection}}
+  <table id="folder_contents" align="right">
+    <!-- <caption>Evidence</caption> -->
+    <thead>
+      <tr class="header">
+        <th style="width: 30%">Selection</th>
+
+        {{#if showSelectionSubmission}}
+          <th style="width: 20%">Student</th>
+        {{/if}}
+  
+        {{#if showSelectionComments}}
+          <th style="width: 30%">Comments</th>
+        {{/if}}
+
+        {{#if showSelectionFolders}}
+          <th style="width: 20%; white-space:nowrap;">Folders</th>
+        {{/if}}
+      </tr>
+    </thead>
+    <tbody>
+      {{#each evidence as |sel|}}
+      <tr>
+        <td>
+          {{draggable-selection selection=sel}}
+        </td>
+
+        {{#if showSelectionSubmission}}
+          <td>
+            <a class="highlight" {{action 'changeSubmission' sel.submission}}>
+              {{sel.submission.student}}
+            </a>
+          </td>
+        {{/if}}
+  
+
+        {{#if showSelectionComments}}
+          <td>
+            <ul>
+              {{#each sel.comments as |comment|}}
+                <li>{{comment.text}}</li>
+              {{/each}}
+            </ul>
+          </td>
+        {{/if}}
+        
+        {{#if showSelectionFolders}}
+          <td style="white-space: nowrap;">
+            <ul>
+              {{#each sel.folders as |folder|}}
+                <li>
+                  {{folder.name}}
+                  {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
+                    <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                  {{/if}}
+                </li>
+              {{/each}}
+            </ul>
+          </td>
+        {{/if}}
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/if}}
+
+</div>
+

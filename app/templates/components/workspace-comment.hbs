@@ -1,0 +1,30 @@
+    {{#if permittedToComment}}
+      <a 
+          {{! action (action reuseComment comment)}} 
+          {{action reuseComment comment}} 
+          title="reuse ths comment">
+        {{#if comment.children.length}}
+          {{comment.children.length}}
+        {{else}}
+          +
+        {{/if}}
+      </a>
+  	{{/if}}
+    {{#if canDelete}}
+  	  <span {{action deleteComment comment}} class="al_sprite delete_button"></span>
+    {{/if}}
+  	<p>
+      {{#if isForCurrentWorkspace}}
+        {{#link-to 'workspace.submission.selection' selection.submission selection classNames="comment"}}
+          {{comment.text}}
+        {{/link-to}}
+      {{else}}
+      <a class="newWindow" target="_blank" href="{{selection.link}}">{{comment.text}}</a>
+      {{/if}}
+    </p>
+      <p class="meta">
+        by <span class="creator">{{comment.createdBy.username}}</span>
+        in <span class="workspace">{{comment.workspace.name}}</span>
+      </p>
+  	<span class="al_sprite comment_label"></span>
+  	<div class="clear"></div>
