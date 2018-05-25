@@ -21,6 +21,7 @@ Instructions for getting started with this setup, are located [Github Repo](http
 
 ## Local Development Environment Setup
 
+1. Fork this repo ([instructions](https://github.com/mathematicalthinking/encompass/blob/master/docs/GitForkRepo.md))
 1. Install node version 8+
 2. Install MongoDB version 3.4.10
   * Run `mongod` in terminal to start the mongo daemon
