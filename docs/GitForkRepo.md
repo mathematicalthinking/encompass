@@ -8,3 +8,4 @@
 1. cd encompass
 1. git remote add upstream git@github.com:mathematicalthinking/encompass.git
 1. git remote -v (to confirm)
+
