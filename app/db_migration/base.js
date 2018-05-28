@@ -35,7 +35,11 @@ function getAnswersFromSubmissions() {
             ans.problemId = prob[0]._id;
             return models.Section.find({ sectionId: sub.clazz.clazzId })
               .then((sect) => {
-                ans.sectionId = sect._id;
+                if (sect.length > 0) {
+                  ans.sectionId = sect[0]._id;
+                } else {
+                  ans.sectionId = null;
+                }
                 return ans;
               });
           });
