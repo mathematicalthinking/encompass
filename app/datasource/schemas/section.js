@@ -14,11 +14,12 @@ var SectionSchema = new Schema({
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   //====
-  name: { type: String, required: true },
-  schoolId: String,
-  teachers: [{ type: String }],
+  name: { type: String },
+  schoolId: { type: String },
+  sectionId: { type: Number },
+  teachers: [{ type: ObjectId, ref: 'User' }],
   students: [{ type: String }],
-  problems: [{ type: String }],
+  problems: [{ type: ObjectId, ref: 'Problem' }],
 }, { versionKey: false });
 
 /**

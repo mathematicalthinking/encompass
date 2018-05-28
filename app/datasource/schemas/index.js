@@ -10,20 +10,24 @@
   */
 
 ["tagging",
- "error",
- "folder",
- "workspace",
- "selection",
- "submission",
- "comment",
- "response",
- "user"
+  "error",
+  "folder",
+  "workspace",
+  "selection",
+  "submission",
+  "comment",
+  "response",
+  "user",
+  "problem",
+  "answer",
+  "section",
+  "category"
 ].forEach(function (path) {
-    var module = require('./' + path);
+  var module = require('./' + path);
 
-    for (var i in module) {
-        if( module.hasOwnProperty(i) ){
-          exports[i] = module[i];
-        }
+  for (var i in module) {
+    if (module.hasOwnProperty(i)) {
+      exports[i] = module[i];
     }
+  }
 });

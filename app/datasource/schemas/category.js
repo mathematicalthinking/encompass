@@ -5,29 +5,23 @@ var mongoose = require('mongoose'),
 
 /**
   * @public
-  * @class Problem
-  * @description Problems are submitted by teachers
+  * @class Category
+  * @description Categorys are text documents based on selections and comments
   */
-var ProblemSchema = new Schema({
+var CategorySchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   //====
-  name: { type: String },
-  text: { type: String },
-  image: { type: String },
-  url: { type: String },
-  additionalInfo: { type: String },
-  isPublic: { type: Boolean, default: false },
-  access: { groups: [{ type: ObjectId, ref: 'Group' }], individuals: [{ type: ObjectId, ref: 'User' }] }
+  name: { type: String }
 }, { versionKey: false });
 
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
   */
-// ProblemSchema.pre('save', function (next) {
+// CategorySchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
 //       arr[ind] = mongoose.Types.ObjectId(elem);
@@ -52,16 +46,16 @@ var ProblemSchema = new Schema({
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
-// ProblemSchema.post('save', function (Problem) {
-//   var update = { $addToSet: { 'Problems': Problem } };
-//   if (Problem.isTrashed) {
-//     var ProblemIdObj = mongoose.Types.ObjectId(Problem._id);
+// CategorySchema.post('save', function (Category) {
+//   var update = { $addToSet: { 'Categorys': Category } };
+//   if (Category.isTrashed) {
+//     var CategoryIdObj = mongoose.Types.ObjectId(Category._id);
 //     /* + If deleted, all references are also deleted */
-//     update = { $pull: { 'Problems': ProblemIdObj } };
+//     update = { $pull: { 'Categorys': CategoryIdObj } };
 //   }
 
-//   if (Problem.workspace) {
-//     mongoose.models.Workspace.update({ '_id': Problem.workspace },
+//   if (Category.workspace) {
+//     mongoose.models.Workspace.update({ '_id': Category.workspace },
 //       update,
 //       function (err, affected, result) {
 //         if (err) {
@@ -70,8 +64,8 @@ var ProblemSchema = new Schema({
 //       });
 //   }
 
-//   if (Problem.submission) {
-//     mongoose.models.Submission.update({ '_id': Problem.submission },
+//   if (Category.submission) {
+//     mongoose.models.Submission.update({ '_id': Category.submission },
 //       update,
 //       function (err, affected, result) {
 //         if (err) {
@@ -82,4 +76,4 @@ var ProblemSchema = new Schema({
 
 // });
 
-module.exports.Problem = mongoose.model('Problem', ProblemSchema);
+module.exports.Category = mongoose.model('Category', CategorySchema);

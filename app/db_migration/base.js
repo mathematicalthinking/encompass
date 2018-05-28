@@ -1,15 +1,5 @@
-const models = require('../schemas');
+const models = require('../datasource/schemas');
 const _ = require('underscore');
-
-function getPowSubmissions(cb) {
-  models.Submission.find({ powId: { $exists: true } })
-    .then((submissions) => {
-      cb(submissions);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
 
 function getProblemsFromPowIds() {
   return models.Submission.find({ powId: { $exists: true } })
@@ -97,20 +87,47 @@ function getSectionsFromSubmissions() {
         let sect = {
           sectionId: tup[0],
           name: tup[1].name,
-          teachers: tup[1].teachers,
-          students: tup[1].students,
-          problems: tup[1].problems
+          students: tup[1].students
         };
-        return sect;
+
+        let probIds = tup[1].problems.map((prob) => {
+          return models.Problem.find({ name: prob })
+            .then((prob) => {
+              return prob[0]._id;
+            });
+        });
+
+        return Promise.all(probIds)
+          .then((ids) => {
+            sect.problems = ids;
+            return;
+          })
+          .then(() => {
+            let teacherIds = tup[1].teachers.map((username) => {
+              return models.User.find({ username: username })
+                .then((user) => {
+                  return user[0]._id;
+                });
+            });
+
+            return Promise.all(teacherIds)
+              .then((ids) => {
+                sect.teachers = ids;
+                return sect;
+              });
+          });
       });
 
-      return models.Section.insertMany(inserts, (err, sections) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(`Inserted ${sections.length} sections.`);
-        }
-      });
+      return Promise.all(inserts)
+        .then((sects) => {
+          return models.Section.insertMany(sects, (err, sections) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(`Inserted ${sections.length} sections.`);
+            }
+          });
+        });
     })
     .catch(err => console.log(err));
 }
@@ -121,6 +138,6 @@ function migrate() {
     .then(getSectionsFromSubmissions)
     .catch(console.log);
 }
-//migrate();
+migrate();
 
 
