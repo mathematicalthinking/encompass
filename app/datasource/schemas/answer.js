@@ -15,6 +15,7 @@ var AnswerSchema = new Schema({
   isTrashed: { type: Boolean, 'default': false },
   //====
   studentId: { type: ObjectId, ref: 'User' },
+  studentName: { type: String },
   problemId: { type: ObjectId, ref: 'Problem' },
   answer: { type: String },
   explanation: { type: String },

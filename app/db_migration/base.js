@@ -25,15 +25,19 @@ function getAnswersFromSubmissions() {
   return models.Submission.find({ powId: { $exists: true } })
     .then((subs) => {
       let answers = subs.map((sub) => {
+        let ans = {
+          studentName: sub.creator.safeName,
+          answer: sub.shortAnswer,
+          explanation: sub.longAnswer,
+        };
         return models.Problem.find({ name: `PoW #${sub.powId}` })
           .then((prob) => {
-            return {
-              name: sub.creator.safeName,
-              answer: sub.shortAnswer,
-              explanation: sub.longAnswer,
-              section: sub.clazz.name || null,
-              problem: prob[0]._id,
-            };
+            ans.problemId = prob[0]._id;
+            return models.Section.find({ sectionId: sub.clazz.clazzId })
+              .then((sect) => {
+                ans.sectionId = sect._id;
+                return ans;
+              });
           });
       });
       return Promise.all(answers);
@@ -134,8 +138,8 @@ function getSectionsFromSubmissions() {
 
 function migrate() {
   getProblemsFromPowIds()
-    .then(getAnswersFromSubmissions)
     .then(getSectionsFromSubmissions)
+    .then(getAnswersFromSubmissions)
     .catch(console.log);
 }
 migrate();
