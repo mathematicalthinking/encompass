@@ -1,13 +1,38 @@
 const models = require('../datasource/schemas');
 const _ = require('underscore');
 
-function getProblemsFromPowIds() {
-  return models.Submission.find({ powId: { $exists: true } })
+// function getProblemsFromPowIds() {
+//   return models.Submission.find({ powId: { $exists: true } })
+//     .then((subs) => {
+//       let problems = subs.map((sub) => {
+//         return { name: `PoW #${sub.powId}` };
+//       });
+//       let uniques = _.uniq(problems);
+//       models.Problem.insertMany(uniques, (err, probs) => {
+//         if (err) {
+//           console.log(err);
+//         }
+//         console.log(`Inserted ${probs.length} problems.`);
+//       });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
+
+function getProblemsFromPuzzleIds() {
+  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
     .then((subs) => {
       let problems = subs.map((sub) => {
-        return { name: `PoW #${sub.powId}` };
+        let res = {
+          title: sub.publication.puzzle.title,
+          puzzleId: sub.publication.puzzle.puzzleId
+        };
+        return res;
       });
-      let uniques = _.uniq(problems);
+      let uniques = _.uniq(problems, (prob) => {
+        return prob.puzzleId;
+      });
       models.Problem.insertMany(uniques, (err, probs) => {
         if (err) {
           console.log(err);
@@ -21,15 +46,16 @@ function getProblemsFromPowIds() {
 }
 
 function getAnswersFromSubmissions() {
-  return models.Submission.find({ powId: { $exists: true } })
+  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
     .then((subs) => {
       let answers = subs.map((sub) => {
         let ans = {
           studentName: sub.creator.safeName,
           answer: sub.shortAnswer,
           explanation: sub.longAnswer,
+          createDate: sub.createDate
         };
-        return models.Problem.find({ name: `PoW #${sub.powId}` })
+        return models.Problem.find({ puzzleId: sub.publication.puzzle.puzzleId })
           .then((prob) => {
             ans.problemId = prob[0]._id;
             return models.Section.find({ sectionId: sub.clazz.clazzId })
@@ -46,6 +72,7 @@ function getAnswersFromSubmissions() {
       return Promise.all(answers);
     })
     .then((answers) => {
+      console.log(answers[0]);
       models.Answer.insertMany(answers, (err, answers) => {
         if (err) {
           console.log(err);
@@ -60,7 +87,7 @@ function getAnswersFromSubmissions() {
 }
 
 function getSectionsFromSubmissions() {
-  return models.Submission.find({ powId: { $exists: true } })
+  return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
     .then((subs) => {
       let sections = {};
       subs.forEach((sub) => {
@@ -71,7 +98,7 @@ function getSectionsFromSubmissions() {
             sections[clazzId].name = sub.clazz.name;
             sections[clazzId].teachers = [sub.teacher.username];
             sections[clazzId].students = [sub.creator.safeName];
-            sections[clazzId].problems = [`PoW #${sub.powId}`];
+            sections[clazzId].problems = [sub.publication.puzzle.puzzleId];
           } else {
             if (!sections[clazzId].name) {
               sections[clazzId].name = sub.clazz.name;
@@ -82,8 +109,8 @@ function getSectionsFromSubmissions() {
             if (!_.contains(sections[clazzId].students, sub.creator.safeName)) {
               sections[clazzId].students.push(sub.creator.safeName);
             }
-            if (!_.contains(sections[clazzId].problems, `PoW #${sub.powId}`)) {
-              sections[clazzId].problems.push(`PoW #${sub.powId}`);
+            if (!_.contains(sections[clazzId].problems, sub.publication.puzzle.puzzleId)) {
+              sections[clazzId].problems.push(sub.publication.puzzle.puzzleId);
             }
           }
         }
@@ -98,7 +125,7 @@ function getSectionsFromSubmissions() {
         };
 
         let probIds = tup[1].problems.map((prob) => {
-          return models.Problem.find({ name: prob })
+          return models.Problem.find({ puzzleId: prob })
             .then((prob) => {
               return prob[0]._id;
             });
@@ -140,11 +167,11 @@ function getSectionsFromSubmissions() {
 }
 
 function migrate() {
-  getProblemsFromPowIds()
+  getProblemsFromPuzzleIds()
     .then(getSectionsFromSubmissions)
     .then(getAnswersFromSubmissions)
     .catch(console.log);
 }
-migrate();
+//migrate();
 
 

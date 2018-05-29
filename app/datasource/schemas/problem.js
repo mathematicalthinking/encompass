@@ -14,7 +14,8 @@ var ProblemSchema = new Schema({
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   //====
-  name: { type: String },
+  title: { type: String },
+  puzzleId: { type: Number },
   text: { type: String },
   image: { type: String },
   url: { type: String },
