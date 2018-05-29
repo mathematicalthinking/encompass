@@ -166,6 +166,23 @@ function getSectionsFromSubmissions() {
     .catch(err => console.log(err));
 }
 
+// function addSectionstoUsers() {
+//   return models.Submission.find({ 'clazz.clazzId': { $exists: true } })
+//     .then((subs) => {
+//       let userSections = subs.map((sub) => {
+//         let res = {};
+//         let sectionId = sub.clazz.clazzId;
+//         if (sub.teacher.username) {
+//           if (!res[sectionId]) {
+//             res[sectionId] = [sub.teacher.username]
+//           } else {
+//             res[sectionId].push(sub.teacher.username);
+//           }
+//         }
+//       });
+//     })
+// }
+
 function migrate() {
   getProblemsFromPuzzleIds()
     .then(getSectionsFromSubmissions)

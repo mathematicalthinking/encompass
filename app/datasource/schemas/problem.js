@@ -18,10 +18,10 @@ var ProblemSchema = new Schema({
   puzzleId: { type: Number },
   text: { type: String },
   image: { type: String },
-  url: { type: String },
+  sourceUrl: { type: String },
   additionalInfo: { type: String },
   isPublic: { type: Boolean, default: false },
-  access: { groups: [{ type: ObjectId, ref: 'Group' }], individuals: [{ type: ObjectId, ref: 'User' }] }
+  categories: [{ type: ObjectId, ref: 'Category' }]
 }, { versionKey: false });
 
 /**

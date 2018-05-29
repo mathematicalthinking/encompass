@@ -20,6 +20,7 @@ var AnswerSchema = new Schema({
   answer: { type: String },
   explanation: { type: String },
   sectionId: { type: ObjectId, ref: 'Section' },
+  isSubmitted: { type: Boolean }
 }, { versionKey: false });
 
 /**
