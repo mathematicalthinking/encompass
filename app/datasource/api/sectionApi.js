@@ -54,7 +54,6 @@ const getSections = (req, res, next) => {
   */
 
 const getSection = (req, res, next) => {
-  console.log("request info: ",req.mf);
   models.Section.findById(req.params.id)
   .exec((err, section) => {
     if (err) {
@@ -77,7 +76,6 @@ const getSection = (req, res, next) => {
   */
 
 const postSection = (req, res, next) => {
-  console.log("hitting the post route");
   const user = auth.requireUser(req);
   // do we want to check if the user is allows to create sections?
   const section = new models.Section(req.body.section);

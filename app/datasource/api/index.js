@@ -26,6 +26,7 @@ exports.put = {};
  "problemApi",
  "answerApi",
  "sectionApi",
+ "categoryApi",
  "about",
  "stats",
  "cache",

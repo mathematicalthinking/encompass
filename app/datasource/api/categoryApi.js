@@ -1,6 +1,6 @@
 /**
-  * # Answer API
-  * @description This is the API for answer based requests
+  * # Category API
+  * @description This is the API for category based requests
   * @author Michael McVeigh
 */
 
@@ -20,24 +20,24 @@ module.exports.put = {};
 
 /**
   * @public
-  * @method getAnswers
-  * @description __URL__: /api/answers
-  * @returns {Object} An array of answer objects
+  * @method getCategories
+  * @description __URL__: /api/categories
+  * @returns {Object} An array of category objects
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
 
-const getAnswers = (req, res, next) => {
+const getCategories = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
   const user = auth.requireUser(req);
-  models.Answer.find(criteria)
-  .exec((err, answers) => {
+  models.Category.find(criteria)
+  .exec((err, categories) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'answers': answers};
+    const data = {'categories': categories};
     utils.sendResponse(res, data);
     next();
   });
@@ -45,23 +45,22 @@ const getAnswers = (req, res, next) => {
 
 /**
   * @public
-  * @method getAnswer
-  * @description __URL__: /api/answer/:id
-  * @returns {Object} An answer object
+  * @method getCategory
+  * @description __URL__: /api/category/:id
+  * @returns {Object} An category object
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
 
-const getAnswer = (req, res, next) => {
-  console.log("request info: ",req.mf);
-  models.Answer.findById(req.params.id)
-  .exec((err, answer) => {
+const getCategory = (req, res, next) => {
+  models.Category.findById(req.params.id)
+  .exec((err, category) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'answer': answer};
+    const data = {'category': category};
     utils.sendResponse(res, data);
     next();
   });
@@ -69,25 +68,25 @@ const getAnswer = (req, res, next) => {
 
 /**
   * @public
-  * @method postAnswer
-  * @description __URL__: /api/answers
+  * @method postCategory
+  * @description __URL__: /api/categories
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
 
-const postAnswer = (req, res, next) => {
+const postCategory = (req, res, next) => {
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create answers?
-  const answer = new models.Answer(req.body.answer);
-  answer.createdBy = user;
-  answer.createdDate = Date.now();
-  answer.save((err, doc) => {
+  // do we want to check if the user is allows to create categories?
+  const category = new models.Category(req.body.category);
+  category.createdBy = user;
+  category.createdDate = Date.now();
+  category.save((err, doc) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'answer': doc};
+    const data = {'category': doc};
     utils.sendResponse(res, data);
     next();
   });
@@ -95,40 +94,40 @@ const postAnswer = (req, res, next) => {
 
 /**
   * @public
-  * @method putAnswer
-  * @description __URL__: /api/answers/:id
+  * @method putCategory
+  * @description __URL__: /api/categories/:id
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
 
-const putAnswer = (req, res, next) => {
+const putCategory = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
-  // if they created the answer?
-  models.Answer.findById(req.params.id, (err, doc) => {
+  // if they created the category?
+  models.Category.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
-    for(var field in req.body.answer) {
+    for(var field in req.body.category) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.answer[field];
+        doc[field] = req.body.category[field];
       }
     }
-    doc.save((err, answer) => {
+    doc.save((err, category) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
       }
-      const data = {'answer': answer};
+      const data = {'category': category};
       utils.sendResponse(res, data);
     });
   });
 };
 
-module.exports.get.answers = getAnswers;
-module.exports.get.answer = getAnswer;
-module.exports.post.answer = postAnswer;
-module.exports.put.answer = putAnswer;
+module.exports.get.categories = getCategories;
+module.exports.get.category = getCategory;
+module.exports.post.category = postCategory;
+module.exports.put.category = putCategory;

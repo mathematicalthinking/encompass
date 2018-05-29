@@ -72,7 +72,9 @@ server.get('/api/problems/:id', api.get.problem);
 server.get('/api/answers', api.get.answers);
 server.get('/api/answers/:id', api.get.answer);
 server.get('/api/sections', api.get.sections);
-server.get('/api/sections/:id', api.get.sections);
+server.get('/api/sections/:id', api.get.section);
+server.get('/api/sections', api.get.categories);
+server.get('/api/sections/:id', api.get.category);
 
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
@@ -86,6 +88,7 @@ server.post('/api/taggings', api.post.tagging);
 server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
+server.post('/api/sections/:id', api.post.category);
 
 server.put('/api/folders/:id', api.put.folder);
 server.put('/api/submissions/:id', api.put.submission);
@@ -98,6 +101,7 @@ server.put('/api/workspaces/:id', api.put.workspace);
 server.put('/api/problems/:id', api.put.problem);
 server.put('/api/answers/:id', api.put.problem);
 server.put('/api/sections/:id', api.put.problem);
+server.put('/api/sections/:id', api.put.category);
 
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);

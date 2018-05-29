@@ -76,8 +76,6 @@ const getProblem = (req, res, next) => {
   */
 
 const postProblem = (req, res, next) => {
-  console.log("hitting the post route");
-  console.log(req.body)
   const user = auth.requireUser(req);
   // do we want to check if the user is allows to create problems?
   const problem = new models.Problem(req.body.problem);
