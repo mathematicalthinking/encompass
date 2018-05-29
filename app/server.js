@@ -67,6 +67,8 @@ server.get('/api/responses', api.get.responses);
 server.get('/api/responses/:id', api.get.response);
 server.get('/api/taggings', api.get.taggings);
 server.get('/api/taggings/:id', api.get.tagging);
+server.get('/api/problems', api.get.problems);
+server.get('/api/problems/:id', api.get.problem);
 
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
@@ -77,6 +79,7 @@ server.post('/api/selections', api.post.selection);
 server.post('/api/comments', api.post.comment);
 server.post('/api/responses', api.post.response);
 server.post('/api/taggings', api.post.tagging);
+server.post('/api/problems', api.post.problem);
 
 server.put('/api/folders/:id', api.put.folder);
 server.put('/api/submissions/:id', api.put.submission);
@@ -86,6 +89,8 @@ server.put('/api/responses/:id', api.put.response);
 server.put('/api/taggings/:id', api.put.tagging);
 server.put('/api/users/:id', api.put.user);
 server.put('/api/workspaces/:id', api.put.workspace);
+server.put('/api/problems/:id', api.put.problem);
+
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 
