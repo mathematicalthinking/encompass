@@ -24,6 +24,7 @@ exports.put = {};
  "commentApi",
  "responseApi",
  "problemApi",
+ "answerApi",
  "about",
  "stats",
  "cache",

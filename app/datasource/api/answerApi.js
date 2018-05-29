@@ -1,6 +1,6 @@
 /**
-  * # Problem API
-  * @description This is the API for problem based requests
+  * # Answer API
+  * @description This is the API for answer based requests
   * @author Michael McVeigh
 */
 
@@ -20,24 +20,24 @@ module.exports.put = {};
 
 /**
   * @public
-  * @method getProblems
-  * @description __URL__: /api/problems
-  * @returns {Object} An array of problem objects
+  * @method getAnswers
+  * @description __URL__: /api/answers
+  * @returns {Object} An array of answer objects
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
 
-const getProblems = (req, res, next) => {
+const getAnswers = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
   const user = auth.requireUser(req);
-  models.Problem.find(criteria)
-  .exec((err, problems) => {
+  models.Answer.find(criteria)
+  .exec((err, answers) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'problems': problems};
+    const data = {'answers': answers};
     utils.sendResponse(res, data);
     next();
   });
@@ -45,22 +45,23 @@ const getProblems = (req, res, next) => {
 
 /**
   * @public
-  * @method getProblem
-  * @description __URL__: /api/problem/:id
-  * @returns {Object} An problem object
+  * @method getAnswer
+  * @description __URL__: /api/answer/:id
+  * @returns {Object} An answer object
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
 
-const getProblem = (req, res, next) => {
-  models.Problem.findById(req.params.id)
-  .exec((err, problem) => {
+const getAnswer = (req, res, next) => {
+  console.log("request info: ",req.mf);
+  models.Answer.findById(req.params.id)
+  .exec((err, answer) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'problem': problem};
+    const data = {'answer': answer};
     utils.sendResponse(res, data);
     next();
   });
@@ -68,27 +69,26 @@ const getProblem = (req, res, next) => {
 
 /**
   * @public
-  * @method postProblem
-  * @description __URL__: /api/problems
+  * @method postAnswer
+  * @description __URL__: /api/answers
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
 
-const postProblem = (req, res, next) => {
+const postAnswer = (req, res, next) => {
   console.log("hitting the post route");
-  console.log(req.body)
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create problems?
-  const problem = new models.Problem(req.body.problem);
-  problem.createdBy = user;
-  problem.createdDate = Date.now();
-  problem.save((err, doc) => {
+  // do we want to check if the user is allows to create answers?
+  const answer = new models.Answer(req.body.answer);
+  answer.createdBy = user;
+  answer.createdDate = Date.now();
+  answer.save((err, doc) => {
     if (err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    const data = {'problem': doc};
+    const data = {'answer': doc};
     utils.sendResponse(res, data);
     next();
   });
@@ -96,40 +96,40 @@ const postProblem = (req, res, next) => {
 
 /**
   * @public
-  * @method putProblem
-  * @description __URL__: /api/problems/:id
+  * @method putAnswer
+  * @description __URL__: /api/answers/:id
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
 
-const putProblem = (req, res, next) => {
+const putAnswer = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
-  // if they created the problem?
-  models.Problem.findById(req.params.id, (err, doc) => {
+  // if they created the answer?
+  models.Answer.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
-    for(var field in req.body.problem) {
+    for(var field in req.body.answer) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.problem[field];
+        doc[field] = req.body.answer[field];
       }
     }
-    doc.save((err, problem) => {
+    doc.save((err, answer) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
       }
-      const data = {'problem': problem};
+      const data = {'answer': answer};
       utils.sendResponse(res, data);
     });
   });
 };
 
-module.exports.get.problems = getProblems;
-module.exports.get.problem = getProblem;
-module.exports.post.problem = postProblem;
-module.exports.put.problem = putProblem;
+module.exports.get.answers = getAnswers;
+module.exports.get.answer = getAnswer;
+module.exports.post.answer = postAnswer;
+module.exports.put.answer = putAnswer;
