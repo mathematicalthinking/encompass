@@ -3,9 +3,9 @@ const assert = require('assert');
 
 const host = 'http://localhost:8080';
 
-describe('Load a Page', function () {
+xdescribe('Load a Page', function () {
   // Recommended: 5s locally, 10s to remote server, 30s from airplane ¯\_(ツ)_/¯
-  this.timeout('30s');
+  this.timeout('10s');
 
   let nightmare = null;
   beforeEach(() => {
@@ -74,9 +74,7 @@ describe('Load a Page', function () {
 
   describe('Navbar', () => {
     const elements = ['workspaces', 'responses', 'users', 'logout'];
-
-
-
+    
     function verifyNavElement(navElement) {
       describe(navElement, () => {
         it('link should exist', (done) => {

@@ -395,6 +395,7 @@ function nameWorkspace(submissionSet, user) {
   * @return {Promise}   resolves when the workspace is stored
  */
 function newWorkspace(submissionSet, user, folderSetName) {
+  console.log('CREATING NEW WORKSPACE...');
   var workspace = new models.Workspace({
     name: nameWorkspace(submissionSet, user),
     submissionSet: submissionSet,
@@ -428,21 +429,29 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
   // See prepareAndUpdateWorkspaces for what criteria we're looking at here
   for (var key in submissionSet.criteria) {
     if( submissionSet.criteria.hasOwnProperty(key) ) {
+      console.log('key: ', key);
+      console.log('key value: ', submissionSet.criteria[key]);
       var criterion = {};
-      criterion[prefix.concat(key)] = submissionSet.criteria[key];
-      criteria.$and.push(criterion);
+      if (!_.isEmpty(submissionSet.criteria[key])) {
+        criterion[prefix.concat(key)] = submissionSet.criteria[key];
+        criteria.$and.push(criterion);
+      }
+      
     }
   }
   criteria.$and.push({owner: user}); //limit this to workspaces for the current user only
 //  criteria.$and.push({pdSet: submissionSet.description.pdSource}); //limit this to workspaces for the current user only
 
   // Looks for existing workspaces for this user for the submission set
+  console.log('CRITERIA', criteria);
   models.Workspace.find(criteria).exec(function(err, workspaces){
+  
     if(err){
       logger.error(err);
     }
     // if it finds a workspace
     if(workspaces.length) {
+      console.log(`${workspaces.length} workspaces found for criteria ${criteria}`);
       logger.info('there is already a workspace for this');
       //promise.resolve();
 
@@ -452,7 +461,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
       });//
     } else {
     // if not, make a new one
-      return newWorkspace(submissionSet, user, folderSetName).then(function(){
+    return newWorkspace(submissionSet, user, folderSetName).then(function(){
         promise.resolve();
       });
     }
@@ -510,6 +519,7 @@ function prepareUserSubmissions(user, pdSet, folderSet, callback) {
     if(err) {logger.error(err); callback(err);}
 
     if(docs.length) {
+      console.log('docs[0]: ', docs[0]);
       logger.info('user: ' + user.username + ' already has ' + docs.length + ' pd submissions for ' + pdSet + ', not copying');
       logger.debug('... in workspaces ' + docs[0].get('workspaces'));
       callback();
@@ -722,7 +732,7 @@ function postWorkspace(req, res, next) {
   * @callback `sendWorkspaces`
  */
 function newWorkspaceRequest(req, res, next) {
-
+  console.log('CREATING NEW WORKSPACE');
   var user = auth.requireUser(req);
   var pdSetName = req.body.newWorkspaceRequest.pdSetName;
   var folderSetName = req.body.newWorkspaceRequest.folderSetName;
