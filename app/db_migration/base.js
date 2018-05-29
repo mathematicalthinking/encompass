@@ -5,8 +5,7 @@ function getProblemsFromPowIds() {
   return models.Submission.find({ powId: { $exists: true } })
     .then((subs) => {
       let problems = subs.map((sub) => {
-        let prob = models.Problem({ name: `PoW #${sub.powId}` });
-        return prob;
+        return { name: `PoW #${sub.powId}` };
       });
       let uniques = _.uniq(problems);
       models.Problem.insertMany(uniques, (err, probs) => {
