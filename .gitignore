@@ -1,6 +1,9 @@
 # node files
 node_modules/
 
+# for security
+config.json
+
 # build files
 build/.test/*.*
 build/application-prod.js
@@ -18,7 +21,7 @@ server.out
 #vs code
 .vscode
 
-#env 
+#env
 .env
 
 # why?
