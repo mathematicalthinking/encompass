@@ -189,6 +189,8 @@ function migrate() {
     .then(getAnswersFromSubmissions)
     .catch(console.log);
 }
-//migrate();
+// run this only when loading in new data from POWS
+//   or when rebuilding POWS replacements (answers, problems, sections)
+// migrate();
 
 
