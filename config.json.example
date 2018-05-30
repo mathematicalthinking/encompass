@@ -1,16 +1,24 @@
 {
-  "port": 10202,
+  "port": 8080,
   "cas": {
-    "service": "http://dev.mathforum.org:10202/back"
+    "service": "http://localhost:8080/back"
   },
   "database": {
     "name": "encompass",
     "user": "encompass"
   },
   "logs": {
-    "server":  "ERROR"
+    "server":  "DEBUG",
+    "auth":  "DEBUG",
+    "console":  "DEBUG",
+    "misc":  "DEBUG"
   },
   "test": {
-    "host": "http://dev.mathforum.org:10202"
+    "host": "http://localhost:8088"
+  },
+  "cache": {
+    "key": "CACHE_KEY",
+    "searchUrl": "POW_SEARCH_URL",
+    "getUrl": "POW_GET_URL"
   }
 }
