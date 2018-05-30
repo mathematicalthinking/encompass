@@ -32,10 +32,13 @@ Instructions for getting started with this setup, are located [Github Repo](http
 4. `npm install` for the rest of the dependencies
 5. Clone [loginService Repo](https://github.com/mathematicalthinking/loginService)
   * `npm install`
-  * `npm run`
+  * `npm start`
   * Login service will be running on port 3000
 6. Download existing encompass database
   * `mongorestore -d encompass filepath`
+6. Setting up cache values (with information to be kept private and not in repo)
+  * `cp config.json.example config.json`
+  * edit values as given to you from cohort.
 7. From root directory run `grunt`
   * Visit app at <http://localhost:8080>
 
