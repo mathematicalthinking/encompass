@@ -10,8 +10,8 @@ var mongoose = require('mongoose'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
-  permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler'),
+  permissions = require('../../../common/permissions'),
+  utils = require('./requestHandler'),
   errors = require('restify-errors');
 
 module.exports.get = {};
@@ -77,7 +77,7 @@ const getSection = (req, res, next) => {
 
 const postSection = (req, res, next) => {
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create sections?
+  // do we want to check if the user is allowed to create sections?
   const section = new models.Section(req.body.section);
   section.createdBy = user;
   section.createdDate = Date.now();
@@ -111,9 +111,15 @@ const putSection = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
-    for(var field in req.body.section) {
+    for(let field in req.body.section) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.section[field];
+        // overwrite primitive types or add to array
+        if (field === 'teachers' || field === 'students' || field === 'problems') {
+          doc[field].push(req.body.section[field]);
+        }
+        else {
+          doc[field] = req.body.section[field];
+        }
       }
     }
     doc.save((err, section) => {

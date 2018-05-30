@@ -111,9 +111,14 @@ const putProblem = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
-    for(var field in req.body.problem) {
+    for(let field in req.body.problem) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.problem[field];
+        if (field === 'categories') {
+          doc[field].push(req.body.problem.field);
+        }
+        else{
+          doc[field] = req.body.problem[field];
+        }
       }
     }
     doc.save((err, problem) => {

@@ -78,7 +78,7 @@ const getAnswer = (req, res, next) => {
 
 const postAnswer = (req, res, next) => {
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create answers?
+  // what permissions are needed to post and answer
   const answer = new models.Answer(req.body.answer);
   answer.createdBy = user;
   answer.createdDate = Date.now();
@@ -102,6 +102,10 @@ const postAnswer = (req, res, next) => {
   * @throws {RestError} Something? went wrong
   */
 
+// We may not want a put method for this resource.
+// Because we want to have a complete history of the student's responses
+// we should just add a brand new answer document - and we can tell it's
+// connected to other
 const putAnswer = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
@@ -112,7 +116,7 @@ const putAnswer = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
-    for(var field in req.body.answer) {
+    for(let field in req.body.answer) {
       if((field !== '_id') && (field !== undefined)) {
         doc[field] = req.body.answer[field];
       }
