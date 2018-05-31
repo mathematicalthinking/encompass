@@ -165,13 +165,17 @@ function accessibleWorkspacesQuery(user) {
     {owner: user},
     {mode: 'public'},
     {editors: user}
-  ]};
+  ], isTrashed: false};
 }
 
 function loadAccessibleWorkspaces(options) {
+  
   function _loadAccessibleWorkspaces(req, res, next) {
+    console.log('req: ', req);
+    console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
+    console.log('schema', path.schemaHasWorkspace(schema));
     if(!user || !path.schemaHasWorkspace(schema)) {
       return (next()); //no user, no workspaces - revisit when public means public
     }

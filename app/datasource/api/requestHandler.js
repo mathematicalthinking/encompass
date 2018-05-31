@@ -72,7 +72,7 @@ function buildCriteria(req) {
       ]
     }
   ];
-
+  console.log('req.mf.auth.workspaces: ',req.mf.auth.workspaces);
   if(req.mf.auth.workspaces) {
     criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });
   }
