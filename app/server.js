@@ -99,6 +99,8 @@ server.put('/api/taggings/:id', api.put.tagging);
 server.put('/api/users/:id', api.put.user);
 server.put('/api/workspaces/:id', api.put.workspace);
 server.put('/api/problems/:id', api.put.problem);
+server.put('/api/problems/addCategory/:id', api.put.problem.addCategory);
+server.put('/api/problems/removeCategory/:id', api.put.problem.removeCategory);
 server.put('/api/answers/:id', api.put.problem);
 server.put('/api/sections/:id', api.put.problem);
 server.put('/api/sections/:id', api.put.category);

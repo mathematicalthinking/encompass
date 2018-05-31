@@ -112,13 +112,8 @@ const putProblem = (req, res, next) => {
     }
     // make the updates
     for(let field in req.body.problem) {
-      if((field !== '_id') && (field !== undefined)) {
-        if (field === 'categories') {
-          doc[field].push(req.body.problem.field);
-        }
-        else{
-          doc[field] = req.body.problem[field];
-        }
+      if((field !== '_id') && (field !== undefined) && (field !== 'categories')) {
+        doc[field] = req.body.problem[field];
       }
     }
     doc.save((err, problem) => {
@@ -132,7 +127,77 @@ const putProblem = (req, res, next) => {
   });
 };
 
+/**
+  * @public
+  * @method addCategory
+  * @description __URL__: /api/problems/addCategory/:id
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+
+const addCategory = (req, res, next) => {
+  console.log('adding category')
+  const user = auth.requireUser(req);
+  models.Problem.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    console.log(doc);
+    // doing a simple arr.push() was throwing an error because it was
+    // invoking mongoose's deprectated $pushAll method. Using the
+    // method below uses $set and thus works. 
+    doc.categories = doc.categories.concat([req.body.categoryId]);
+    console.log(doc);
+    doc.save((err, problem) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'problem': problem};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+
+/**
+  * @public
+  * @method removeCategory
+  * @description __URL__: /api/problems/removeCategory/:id
+  * @body {categoryId: id}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+
+const removeCategory = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Problem.findById(req.params.id, (err, doc) => {
+    if (err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+    }
+    // remove category using the category Id
+    doc.categories = _.without(doc.categories, _.findWhere(doc.categories, {
+      id: req.body.id
+    }));
+    doc.save((err, problem) => {
+      if (err) {
+        logger.error(err);
+        utilsSendError(new errors.InternalError(err.message), res);
+      }
+      const data = {'problem': problem};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+
 module.exports.get.problems = getProblems;
 module.exports.get.problem = getProblem;
 module.exports.post.problem = postProblem;
 module.exports.put.problem = putProblem;
+module.exports.put.problem.addCategory = addCategory;
+module.exports.put.problem.removeCategory = removeCategory;
