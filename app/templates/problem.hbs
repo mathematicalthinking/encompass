@@ -3,9 +3,9 @@
     <div class="clear"></div>
 </header>
 
-<section class="newWorkspace sanity">
+<section class="newWorkspace">
     <section class="third submissions">
-        <form id='powImportForm' class='properForm'>
+        <form id='problem' class='properForm'>
             <fieldset>
                 <ol>
                     <li>
@@ -26,7 +26,10 @@
                     </li>
                     <li>
                         <label for="isPublic">Public</label>
-                        {{input id="isPublic" type="text" value=isPublic placeholder="do you want this to be public"}}
+                        {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
+                        <label>Yes</label>
+                        {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
+                        <label>No</label>
                     </li>
                 </ol>
             </fieldset>
@@ -34,7 +37,7 @@
     </section>
     <div style="clear: left"></div>
     <section class="submit">
-        <button class="action_button" {{action 'createWorkspace'}}>
+        <button class="action_button" {{action 'createProblem'}}>
             Create Problem
         </button>
     </section>
