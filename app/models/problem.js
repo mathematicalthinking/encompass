@@ -9,7 +9,8 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
     isPublic: DS.attr('boolean', {
         defaultValue: false
     }),
-    categories: DS.hasMany('category', {
-        async: true
-    }),
+    categories: DS.attr('string'),
 });
+    // categories: DS.('category', {
+    //     async: true
+    // })
