@@ -148,7 +148,9 @@ const addCategory = (req, res, next) => {
     // doing a simple arr.push(id) was throwing an error because it was
     // invoking mongoose's deprectated $pushAll method. Using the
     // method below uses $set and thus works.
-    doc.categories = doc.categories.concat([req.body.categoryId]);
+    if (doc.categories.indexOf(req.body.categoryId) === -1){
+      doc.categories = doc.categories.concat([req.body.categoryId]);
+    }
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);

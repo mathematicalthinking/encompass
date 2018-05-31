@@ -150,7 +150,9 @@ const addTeacher = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.teachers = doc.teachers.concat([req.body.teacherId]);
+    if (doc.teachers.indexOf(req.body.teacherId) === -1){
+      doc.teachers = doc.teachers.concat([req.body.teacherId]);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
@@ -209,7 +211,9 @@ const addStudent = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.students = doc.students.concat([req.body.studentName]);
+    if (doc.students.indexOf(req.body.studentName) === -1){
+      doc.students = doc.students.concat([req.body.studentName]);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
@@ -267,7 +271,9 @@ const addProblem = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.problems = doc.problems.concat([req.body.problemId]);
+    if (doc.problems.indexOf(req.body.problemId) === -1){
+      doc.problems = doc.problems.concat([req.body.problemId]);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
