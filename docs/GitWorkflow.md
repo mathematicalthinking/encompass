@@ -9,10 +9,10 @@
 1. `git add/git commit` (on feature branch)
 1. `git pull --rebase upstream master`
 1. `git push origin feature-branch`
-1. Submit pull request (your feature branch to origin master)
+1. Submit pull request (your feature branch to upstream master)
 
-## More Work to do
-* Go to Step 1 in Git Rebase flow.
+## More Work to do (Pull Request not accepted)
+* Go to Step 5 in Git Rebase flow.
 
 ## Pull Request Accepted? 
 1. `git checkout master`
@@ -28,4 +28,4 @@
 ## Troubleshooting
 * `git remote -v` to see remote origins
 * `git remote add upstream https://github.com/mathematicalthinking/encompass.git`
-* if existing upsteam `git remote rm upstream`
+* if existing upstream `git remote rm upstream`
