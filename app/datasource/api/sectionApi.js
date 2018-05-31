@@ -182,7 +182,9 @@ const removeTeacher = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.teachers = doc.teachers.splice(doc.teachers.indexOf(req.body.teacherId), 1);
+    if (doc.teachers.indexOf(req.body.teacherId) !== -1) {
+      doc.teachers.splice(doc.teachers.indexOf(req.body.teacherId), 1);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
@@ -242,7 +244,9 @@ const removeStudent = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.students = doc.students.splice(doc.students.indexOf(req.body.studentName), 1);
+    if (docs.students.indexOf(req.body.studentName) !== -1) {
+      doc.students.splice(doc.students.indexOf(req.body.studentName), 1);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
@@ -302,7 +306,9 @@ const removeProblem = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    doc.problems = doc.problems.splice(doc.problems.indexOf(req.body.problemId), 1);
+    if (doc.problems.indexOf(req.body.problemId) !== -1){
+      doc.problems.splice(doc.problems.indexOf(req.body.problemId), 1);
+    }
     doc.save((err, section) => {
       if (err) {
         logger.error(err);

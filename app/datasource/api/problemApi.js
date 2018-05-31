@@ -180,8 +180,11 @@ const removeCategory = (req, res, next) => {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    // remove category using the category Id
-    doc.categories = doc.categories.splice(doc.categories.indexOf(req.body.categoryId), 1);
+    // check to make sure the id being removed actually exists
+    if (doc.categories.indexOf(req.body.categoryId) !== -1) {
+      // remove category using the category Id
+      doc.categories.splice(doc.categories.indexOf(req.body.categoryId), 1);
+    }
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
