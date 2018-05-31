@@ -30,7 +30,7 @@ Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin
 
             request.save().then(function (obj) {
                 var result = obj.get('results');
-                console.log('it worked!')
+                console.log('it worked!');
                 console.log(result);
                 //var output = "Imported %@1 submissions!".fmt(result.imported);
                 var output = `Problem name: ${result}!`;

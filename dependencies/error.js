@@ -7,8 +7,8 @@ function errorHandler(error) {
     arguments: arguments
   });
 
-  var errorMsg = 'There was an error.  We recommend reloading the page to ensure your data has been saved and to prevent further errors';
-  //var errorMsg = error;
+  // var errorMsg = 'There was an error.  We recommend reloading the page to ensure your data has been saved and to prevent further errors';
+  var errorMsg = error;
 
   window.alert(errorMsg);
 };
