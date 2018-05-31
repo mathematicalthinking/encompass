@@ -807,8 +807,37 @@ function newWorkspaceRequest(req, res, next) {
   });
 }
 
+/**
+  * @public
+  * @method getWorkspaces
+  * @description __URL__: /api/workspaces (also the endpoint for importRequests)
+  * @returns {Object} A 'named' array of workspace objects by creator
+  * @throws {RestError} Something? went wrong
+  */
+ function getWorkspaces(req, res, next) {
+  var user = auth.requireUser(req);
+  logger.info('in getWorkspaces');
+  logger.debug('looking for workspaces for user id' + user._id);
+  let criteria = utils.buildCriteria(req);
+  console.log('criteria getWses', criteria);
+    models.Workspace.find(auth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+      var response = {
+        workspaces: workspaces,
+        meta: { sinceToken: new Date() }
+      };
+      if(req.body) {
+        if(req.body.hasOwnProperty('importRequest')) {
+          response = {importRequest: req.body.importRequest};
+        }
+      }
+
+      utils.sendResponse(res, response);
+    });
+  
+}
+
 module.exports.get.workspace = sendWorkspace;
-module.exports.get.workspaces = sendWorkspaces;
+module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
 module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
