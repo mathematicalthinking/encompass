@@ -7,13 +7,13 @@ function ajaxCounter(name) {
 
 $(document).ajaxStart(function() {
   $("#loading").show();
-  console.log('loading');
+  // console.log('loading');
   window.ajaxBatchRequestCount = 0;
 });
 
 $(document).ajaxStop(function() {
   $("#loading").hide();
-  console.log('done loading');
+  // console.log('done loading');
   if(/http:\/\/localhost/.test(window.location.href)){
     $('#devTool').text(window.ajaxBatchRequestCount + 
         ' requests made, total: ' + 
