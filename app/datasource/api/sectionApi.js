@@ -26,7 +26,7 @@ module.exports.put = {};
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
-  */
+*/
 
 const getSections = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
@@ -51,7 +51,7 @@ const getSections = (req, res, next) => {
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
-  */
+*/
 
 const getSection = (req, res, next) => {
   models.Section.findById(req.params.id)
@@ -73,7 +73,7 @@ const getSection = (req, res, next) => {
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
-  */
+*/
 
 const postSection = (req, res, next) => {
   const user = auth.requireUser(req);
@@ -99,7 +99,7 @@ const postSection = (req, res, next) => {
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
-  */
+*/
 
 const putSection = (req, res, next) => {
   const user = auth.requireUser(req);
@@ -133,7 +133,189 @@ const putSection = (req, res, next) => {
   });
 };
 
+/**
+  * @public
+  * @method addTeacher
+  * @description __URL__: /api/sections/addTeacher/:id
+  * @body {teacherId: ObjectId}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const addTeacher = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.teachers = doc.teachers.concat([req.body.teacherId]);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+
+/**
+  * @public
+  * @method removeTeacher
+  * @description __URL__: /api/sections/removeTeacher/:id
+  * @body {teacherId: ObjectId}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const removeTeacher = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.teachers = doc.teachers.splice(doc.teachers.indexOf(req.body.teacherId), 1);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+/**
+  * @public
+  * @method addStudent
+  * @description __URL__: /api/sections/addStudent/:id
+  * @body {studentName: String}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const addStudent = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.students = doc.students.concat([req.body.studentName]);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+/**
+  * @public
+  * @method removeStudent
+  * @description __URL__: /api/sections/removeStudent/:id
+  * @body {studentName: String}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const removeStudent = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.students = doc.students.splice(doc.students.indexOf(req.body.studentName), 1);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+/**
+  * @public
+  * @method addProblem
+  * @description __URL__: /api/sections/addProblem/:id
+  * @body {problemId: ObjectId}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const addProblem = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.problems = doc.problems.concat([req.body.problemId]);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+/**
+  * @public
+  * @method removeProblem
+  * @description __URL__: /api/sections/removeProblem:id
+  * @body {problemId: ObjectId}
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+*/
+const removeProblem = (req, res, next) => {
+  const user = auth.requireUser(req);
+  models.Section.findById(req.params.id, (err, doc) => {
+    if(err) {
+      logger.error(err);
+      utils.sendError(new errors.InternalError(err.message), res);
+      return;
+    }
+    doc.problems = doc.problems.splice(doc.problems.indexOf(req.body.problemId), 1);
+    doc.save((err, section) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError(new errors.InternalError(err.message), res);
+        return
+      }
+      const data = {'section': section};
+      utils.sendResponse(res, data);
+    })
+  })
+}
+
 module.exports.get.sections = getSections;
 module.exports.get.section = getSection;
 module.exports.post.section = postSection;
 module.exports.put.section = putSection;
+module.exports.put.section.addTeacher = addTeacher;
+module.exports.put.section.removeTeacher = removeTeacher;
+module.exports.put.section.addStudent = addStudent;
+module.exports.put.section.removeStudent = removeStudent;
+module.exports.put.section.addProblem = addProblem;
+module.exports.put.section.removeProblem = removeProblem;

@@ -131,13 +131,13 @@ const putProblem = (req, res, next) => {
   * @public
   * @method addCategory
   * @description __URL__: /api/problems/addCategory/:id
+  * @body {categoryId: ObjectId}
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
   */
 
 const addCategory = (req, res, next) => {
-  console.log('adding category')
   const user = auth.requireUser(req);
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
@@ -145,12 +145,10 @@ const addCategory = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    console.log(doc);
-    // doing a simple arr.push() was throwing an error because it was
+    // doing a simple arr.push(id) was throwing an error because it was
     // invoking mongoose's deprectated $pushAll method. Using the
-    // method below uses $set and thus works. 
+    // method below uses $set and thus works.
     doc.categories = doc.categories.concat([req.body.categoryId]);
-    console.log(doc);
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
@@ -167,7 +165,7 @@ const addCategory = (req, res, next) => {
   * @public
   * @method removeCategory
   * @description __URL__: /api/problems/removeCategory/:id
-  * @body {categoryId: id}
+  * @body {categoryId: ObjectId}
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
@@ -181,9 +179,7 @@ const removeCategory = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
     }
     // remove category using the category Id
-    doc.categories = _.without(doc.categories, _.findWhere(doc.categories, {
-      id: req.body.id
-    }));
+    doc.categories = doc.categories.splice(doc.categories.indexOf(req.body.categoryId), 1);
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);

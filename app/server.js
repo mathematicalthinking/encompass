@@ -88,7 +88,6 @@ server.post('/api/taggings', api.post.tagging);
 server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
-server.post('/api/sections/:id', api.post.category);
 
 server.put('/api/folders/:id', api.put.folder);
 server.put('/api/submissions/:id', api.put.submission);
@@ -104,6 +103,13 @@ server.put('/api/problems/removeCategory/:id', api.put.problem.removeCategory);
 server.put('/api/answers/:id', api.put.problem);
 server.put('/api/sections/:id', api.put.problem);
 server.put('/api/sections/:id', api.put.category);
+server.put('/api/sections/addTeacher/:id', api.put.section.addTeacher);
+server.put('/api/sections/removeTeacher/:id', api.put.section.removeTeacher);
+server.put('/api/sections/addStudent/:id', api.put.section.addStudent);
+server.put('/api/sections/removeStudent/:id', api.put.section.removeStudent);
+server.put('/api/sections/addProblem/:id', api.put.section.addProblem);
+server.put('/api/sections/removeProblem/:id', api.put.section.removeProblem);
+
 
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
