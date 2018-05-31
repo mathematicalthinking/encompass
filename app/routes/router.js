@@ -34,6 +34,7 @@
 Encompass.Router.map(function() {
   this.route("login");
   this.route("unauthorized");
+  this.route("problem");
 
   /*
   this.resource("comments", function(){

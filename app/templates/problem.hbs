@@ -1,0 +1,41 @@
+<header>
+    <h2>Create New Problem</h2>
+    <div class="clear"></div>
+</header>
+
+<section class="newWorkspace sanity">
+    <section class="third submissions">
+        <form id='powImportForm' class='properForm'>
+            <fieldset>
+                <ol>
+                    <li>
+                        <label for="title">Problem Name</label>
+                        {{input id="title" type="text" value=title disabled=canEdit placeholder="enter problem name"}}
+                    </li>
+                    <li>
+                        <label for="text">Problem Question</label>
+                        {{input id="text" type="text" value=text placeholder="enter problem question"}}
+                    </li>
+                    <li>
+                        <label for="categories">Problem Category</label>
+                        {{input id="categories" type="text" value=categories placeholder="enter a category"}}
+                    </li>
+                    <li>
+                        <label for="additionalInfo">Additional Info</label>
+                        {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
+                    </li>
+                    <li>
+                        <label for="isPublic">Public</label>
+                        {{input id="isPublic" type="text" value=isPublic placeholder="do you want this to be public"}}
+                    </li>
+                </ol>
+            </fieldset>
+        </form>
+    </section>
+    <div style="clear: left"></div>
+    <section class="submit">
+        <button class="action_button" {{action 'createWorkspace'}}>
+            Create Problem
+        </button>
+    </section>
+</section>
