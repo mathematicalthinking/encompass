@@ -9,8 +9,8 @@ Encompass.WorkspacesNewRoute = Ember.Route.extend({
   },
 
   actions: {
-    willTransition: function() {
-      this.send('reload');
-    }
+    // willTransition: function() {
+    //   this.send('reload');
+    // }
   }
 });
