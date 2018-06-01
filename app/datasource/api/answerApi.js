@@ -99,13 +99,10 @@ const postAnswer = (req, res, next) => {
   * @description __URL__: /api/answers/:id
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
+  * @throws {BadRequest} Answer is not editable
   * @throws {RestError} Something? went wrong
   */
 
-// We may not want a put method for this resource.
-// Because we want to have a complete history of the student's responses
-// we should just add a brand new answer document - and we can tell it's
-// connected to other
 const putAnswer = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
@@ -113,7 +110,13 @@ const putAnswer = (req, res, next) => {
   models.Answer.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError(new errors.InternalError(err.message), res);
+    }
+    // if this has been submitted it is no longer editable
+    // return an error
+    if (doc.isSubmitted) {
+      logger.error("answer already submitted")
+      return utils.sendCustomError(new errors.NotAuthorizedError(403), res);
     }
     // make the updates
     for(let field in req.body.answer) {

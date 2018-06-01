@@ -1,7 +1,6 @@
 /**
   * # Problem API
   * @description This is the API for problem based requests
-  * @author Michael McVeigh
 */
 
 var mongoose = require('mongoose'),
@@ -31,6 +30,7 @@ module.exports.put = {};
 const getProblems = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
   const user = auth.requireUser(req);
+  // add permissions here
   models.Problem.find(criteria)
   .exec((err, problems) => {
     if (err) {
@@ -54,6 +54,8 @@ const getProblems = (req, res, next) => {
   */
 
 const getProblem = (req, res, next) => {
+  const user = auth.requireUser(req);
+  // add permissions here
   models.Problem.findById(req.params.id)
   .exec((err, problem) => {
     if (err) {
@@ -77,7 +79,7 @@ const getProblem = (req, res, next) => {
 
 const postProblem = (req, res, next) => {
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create problems?
+  // Add permission checks here
   const problem = new models.Problem(req.body.problem);
   problem.createdBy = user;
   problem.createdDate = Date.now();
@@ -96,6 +98,8 @@ const postProblem = (req, res, next) => {
   * @public
   * @method putProblem
   * @description __URL__: /api/problems/:id
+  * @description cannot make changes to the categories with putProblem
+  *              use addCategory or removeCategory
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data update failed
   * @throws {RestError} Something? went wrong
@@ -103,14 +107,13 @@ const postProblem = (req, res, next) => {
 
 const putProblem = (req, res, next) => {
   const user = auth.requireUser(req);
-  // what check do we want to perform if the user can edit
-  // if they created the problem?
+  // Add permission checks here
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    // make the updates
+    // make the updates, but don't update categories or _id
     for(let field in req.body.problem) {
       if((field !== '_id') && (field !== undefined) && (field !== 'categories')) {
         doc[field] = req.body.problem[field];
@@ -145,10 +148,11 @@ const addCategory = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    // doing a simple arr.push(id) was throwing an error because it was
-    // invoking mongoose's deprectated $pushAll method. Using the
-    // method below uses $set and thus works.
+    // only add a category if it's new
     if (doc.categories.indexOf(req.body.categoryId) === -1){
+      // doing a simple arr.push(id) was throwing an error because it was
+      // invoking mongoose's deprectated $pushAll method. Using the
+      // concat() method below uses $set and thus works.
       doc.categories = doc.categories.concat([req.body.categoryId]);
     }
     doc.save((err, problem) => {
@@ -180,7 +184,7 @@ const removeCategory = (req, res, next) => {
       logger.error(err);
       utils.sendError(new errors.InternalError(err.message), res);
     }
-    // check to make sure the id being removed actually exists
+    // only attempt to remove if the category exists
     if (doc.categories.indexOf(req.body.categoryId) !== -1) {
       // remove category using the category Id
       doc.categories.splice(doc.categories.indexOf(req.body.categoryId), 1);

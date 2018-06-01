@@ -77,7 +77,7 @@ const getCategory = (req, res, next) => {
 
 const postCategory = (req, res, next) => {
   const user = auth.requireUser(req);
-  // do we want to check if the user is allows to create categories?
+  // who can create categories - add permission here
   const category = new models.Category(req.body.category);
   category.createdBy = user;
   category.createdDate = Date.now();
@@ -103,8 +103,7 @@ const postCategory = (req, res, next) => {
 
 const putCategory = (req, res, next) => {
   const user = auth.requireUser(req);
-  // what check do we want to perform if the user can edit
-  // if they created the category?
+  // Who can edit the category?
   models.Category.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);

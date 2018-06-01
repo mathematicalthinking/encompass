@@ -182,6 +182,7 @@ const removeTeacher = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
+    // only remove teacher if they exist
     if (doc.teachers.indexOf(req.body.teacherId) !== -1) {
       doc.teachers.splice(doc.teachers.indexOf(req.body.teacherId), 1);
     }
@@ -213,6 +214,7 @@ const addStudent = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
+    // only add the student if they're not already in the section
     if (doc.students.indexOf(req.body.studentName) === -1){
       doc.students = doc.students.concat([req.body.studentName]);
     }
@@ -244,7 +246,8 @@ const removeStudent = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
-    if (docs.students.indexOf(req.body.studentName) !== -1) {
+    // ensure the student is in this section before removing
+    if (doc.students.indexOf(req.body.studentName) !== -1) {
       doc.students.splice(doc.students.indexOf(req.body.studentName), 1);
     }
     doc.save((err, section) => {
@@ -275,6 +278,7 @@ const addProblem = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
+    // only add unique problems to the section
     if (doc.problems.indexOf(req.body.problemId) === -1){
       doc.problems = doc.problems.concat([req.body.problemId]);
     }
@@ -306,6 +310,7 @@ const removeProblem = (req, res, next) => {
       utils.sendError(new errors.InternalError(err.message), res);
       return;
     }
+    // only remove problem if its in this section
     if (doc.problems.indexOf(req.body.problemId) !== -1){
       doc.problems.splice(doc.problems.indexOf(req.body.problemId), 1);
     }
