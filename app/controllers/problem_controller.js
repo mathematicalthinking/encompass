@@ -32,18 +32,7 @@ Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin
                 var result = obj.get('results');
                 console.log('it worked!')
                 console.log(result);
-                //var output = "Imported %@1 submissions!".fmt(result.imported);
                 var output = `Problem name: ${result}!`;
-
-                if (result.updatedExisting) {
-                    output += "\nYou have workspace(s) for these!";
-                }
-
-                if (window.confirm(output)) {
-                    if (result.imported > 0) {
-                        window.location.reload();
-                    }
-                }
             });
         }
     }
