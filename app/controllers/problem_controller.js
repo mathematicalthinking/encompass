@@ -7,7 +7,6 @@
 
 Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
     canEdit: Ember.computed.not('currentUser.isAdmin'),
-    teacher: Ember.computed.oneWay('currentUser.username'),
 
     actions: {
         radioSelect: function (value) {
@@ -17,6 +16,8 @@ Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin
         createProblem: function () {
             var controller = this;
             var createProblemData = { /*jshint camelcase: false */
+                createdBy: this.get('currentUser'),
+                createDate: new Date(),
                 title: this.get('title'),
                 text: this.get('text'),
                 categories: this.get('categories'),
