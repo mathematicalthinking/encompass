@@ -1,12 +1,12 @@
-/** 
+/**
   * # API
-  * @description This is the RESTful API for Encompass. 
+  * @description This is the RESTful API for Encompass.
   *              We are using Node's [Restify](http://mcavage.me/node-restify/) for this.
-  *              In this directory we define various methods for handling requests. 
-  *              This file is a convenience that allows us to require the API elsewhere by 
-  *              just requiring this dir. 
+  *              In this directory we define various methods for handling requests.
+  *              This file is a convenience that allows us to require the API elsewhere by
+  *              just requiring this dir.
   *              Routing to these methods is done in [server.js](../../server.html)
-  * @todo Refactor 
+  * @todo Refactor
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
@@ -23,9 +23,13 @@ exports.put = {};
  "submissionApi",
  "commentApi",
  "responseApi",
+ "problemApi",
+ "answerApi",
+ "sectionApi",
+ "categoryApi",
  "about",
  "stats",
- "cache"
+ "cache",
 ].forEach(function (path) {
     var module = require('./' + path);
 

@@ -67,6 +67,14 @@ server.get('/api/responses', api.get.responses);
 server.get('/api/responses/:id', api.get.response);
 server.get('/api/taggings', api.get.taggings);
 server.get('/api/taggings/:id', api.get.tagging);
+server.get('/api/problems', api.get.problems);
+server.get('/api/problems/:id', api.get.problem);
+server.get('/api/answers', api.get.answers);
+server.get('/api/answers/:id', api.get.answer);
+server.get('/api/sections', api.get.sections);
+server.get('/api/sections/:id', api.get.section);
+server.get('/api/sections', api.get.categories);
+server.get('/api/sections/:id', api.get.category);
 
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
@@ -77,6 +85,9 @@ server.post('/api/selections', api.post.selection);
 server.post('/api/comments', api.post.comment);
 server.post('/api/responses', api.post.response);
 server.post('/api/taggings', api.post.tagging);
+server.post('/api/problems', api.post.problem);
+server.post('/api/answers', api.post.answer);
+server.post('/api/sections', api.post.section);
 
 server.put('/api/folders/:id', api.put.folder);
 server.put('/api/submissions/:id', api.put.submission);
@@ -86,6 +97,20 @@ server.put('/api/responses/:id', api.put.response);
 server.put('/api/taggings/:id', api.put.tagging);
 server.put('/api/users/:id', api.put.user);
 server.put('/api/workspaces/:id', api.put.workspace);
+server.put('/api/problems/:id', api.put.problem);
+server.put('/api/problems/addCategory/:id', api.put.problem.addCategory);
+server.put('/api/problems/removeCategory/:id', api.put.problem.removeCategory);
+server.put('/api/answers/:id', api.put.problem);
+server.put('/api/sections/:id', api.put.problem);
+server.put('/api/sections/:id', api.put.category);
+server.put('/api/sections/addTeacher/:id', api.put.section.addTeacher);
+server.put('/api/sections/removeTeacher/:id', api.put.section.removeTeacher);
+server.put('/api/sections/addStudent/:id', api.put.section.addStudent);
+server.put('/api/sections/removeStudent/:id', api.put.section.removeStudent);
+server.put('/api/sections/addProblem/:id', api.put.section.addProblem);
+server.put('/api/sections/removeProblem/:id', api.put.section.removeProblem);
+
+
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 
