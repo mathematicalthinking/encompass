@@ -6,8 +6,6 @@
  */
 
 Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
-    canEdit: Ember.computed.not('currentUser.isAdmin'),
-
     actions: {
         radioSelect: function (value) {
             this.set('isPublic', value);
@@ -15,7 +13,8 @@ Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin
 
         createProblem: function () {
             var controller = this;
-            var createProblemData = { /*jshint camelcase: false */
+            console.log('Create Problem is called');
+            var createProblemData = this.store.createRecord('problem', {
                 createdBy: this.get('currentUser'),
                 createDate: new Date(),
                 title: this.get('title'),
@@ -23,18 +22,21 @@ Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin
                 categories: this.get('categories'),
                 additionalInfo: this.get('additionalInfo'),
                 isPublic: this.get('isPublic'),
-            };
-            console.log(createProblemData);
-
-            var request = this.store.createRecord('problem', createProblemData);
-            var output;
-
-            request.save().then(function (obj) {
-                var result = obj.get('results');
-                console.log('it worked!');
-                console.log(result);
-                var output = `Problem name: ${result}!`;
             });
+            createProblemData.save();
+            console.log('Problem Data: ' + createProblemData);
+
+            // var request = this.store.createRecord('problem', createProblemData);
+            // var output;
+
+            // request.save().then(function (obj) {
+            //     var result = obj.get('results');
+            //     console.log('it worked!');
+            //     console.log(result);
+            //     var output = `Problem name: ${result}!`;
+            //     controller.transitionToRoute('index');
+            // });
+
         }
     }
 });

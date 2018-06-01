@@ -1,5 +1,5 @@
 function errorHandler(error) {
-  console.error('an error occured: ' + JSON.stringify(error) );
+  console.log('an error occured: ' + JSON.stringify(error) );
   Ember.$.post('/api/errors', {
     error: error,
     stack: error.stack,
