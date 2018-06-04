@@ -34,6 +34,7 @@
 Encompass.Router.map(function() {
   this.route("login");
   this.route("unauthorized");
+
   /*
   this.resource("comments", function(){
     this.route("index", {path: "/"}); //this might show the list of comments, but is here for testing for now

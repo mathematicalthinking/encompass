@@ -23,15 +23,11 @@ describe("Permissions: A Workspace", function() {
         if(prop === 'owner') {
           return emberUser;
         }
-<<<<<<< HEAD
-        // TODO: refactor
-=======
 
   /*
   WE CHANGED THE FUNCTION IN THE COMMON/PROPERTIES.JS FILE SO NOW UNLESS WE COMMENT OUT THIS PART OF THE CODE
   THE TEST WILL THROW AN ERROR.
   */
->>>>>>> 5f3278653fbbe12e3562e5187f3e5e0b9b21be35
         // if(prop === 'editors') {
         //   return {
         //     content: undefined,

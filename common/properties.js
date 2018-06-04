@@ -56,13 +56,7 @@ module.exports = {
     // ember arrays have toArray method which
     // converts the enumerable into a genuine array
     if(_.has(user, 'content') && (user.isLoaded || user.isFulfilled)) {
-<<<<<<< HEAD
       return this.resolveUsername('content._internalModel._data.username');
-=======
-      // WE CHANGED THIS TO GET THE USERNAME FROM THE USER INTERNAL MODEL INSTEAD OF MAPPING AN ARRAY
-      var username = user.get('user.content._internalModel._data.username');
-      return this.resolveUsername(username);
->>>>>>> 5f3278653fbbe12e3562e5187f3e5e0b9b21be35
     }
     // if we got a list, send it back resolved
 

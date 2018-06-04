@@ -192,11 +192,7 @@ const removeCategory = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-<<<<<<< HEAD
         utils.SendError(new errors.InternalError(err.message), res);
-=======
-        // utilsSendError(new errors.InternalError(err.message), res);
->>>>>>> 5f3278653fbbe12e3562e5187f3e5e0b9b21be35
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
