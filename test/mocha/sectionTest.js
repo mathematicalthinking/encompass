@@ -42,7 +42,6 @@ describe('/POST section', () => {
 describe('/PUT update section name', () => {
   it('should change the section name to phils class', done => {
     let url = baseUrl + fixtures.section.validSection._id;
-    console.log("URL: ", url);
     chai.request('http://localhost:8080')
     .put(url)
     .set('Cookie', userCredentials)
