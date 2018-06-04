@@ -18,7 +18,7 @@
     <h2>Submissions</h2>
     <div>
       {{input type="radio" name="importMode" class="pdImport" value="0" click=(action "radioSelect" 0)}} <label>PD</label>
-      {{input type="radio" name="importMode" class="pdImport" value="1" click=(action "radioSelect" 1)}} <label>PoW</label>
+      {{input type="radio" name="importMode" class="powImport" value="1" click=(action "radioSelect" 1)}} <label>PoW</label>
     {{#if isPdImport}}
       <p>
         One or more workspaces will be created with the submissions from the 
