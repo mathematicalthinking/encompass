@@ -105,6 +105,16 @@ const putSection = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
   // if they created the section?
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  console.log("PARAMS");
+  
+  console.log(req.params);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -116,8 +126,6 @@ const putSection = (req, res, next) => {
         doc[field] = req.body.section[field];
       }
     }
-    console.log("INSIDE SECTION ROUTE");
-    console.log("UPDATED DOC: ", doc);
     doc.save((err, section) => {
       if (err) {
         logger.error(err);

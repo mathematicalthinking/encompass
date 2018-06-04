@@ -2,6 +2,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const fixtures = require('./fixtures.js');
+const userCredentials = 'loginSessionUser=steve; EncAuth=ff6d8301-dd2f-4a83-9e3e-1ff4a459a292';
+let url = "/api/sections/";
 // const app = require('../../app/server');
 
 chai.use(chaiHttp);
@@ -10,8 +12,8 @@ chai.use(chaiHttp);
 describe('/GET sections', () => {
   it('should get all sections', done => {
     chai.request('http://localhost:8080')
-    .get('/api/sections')
-    .set('Cookie', 'loginSessionUser=steve; EncAuth=a4903119-fee7-4403-a6b7-fc14c3e5a706') // what to do about this?
+    .get(url)
+    .set('Cookie', userCredentials) // what to do about this?
     .end((err, res) => {
       expect(res).to.have.status(200);
       expect(res.body).to.have.all.keys('sections');
@@ -26,8 +28,8 @@ describe('/GET sections', () => {
 describe('/POST section', () => {
   it('should post a new section', done => {
     chai.request('http://localhost:8080')
-    .post('/api/sections')
-    .set('Cookie', 'loginSessionUser=steve; EncAuth=a4903119-fee7-4403-a6b7-fc14c3e5a706')
+    .post(url)
+    .set('Cookie', userCredentials)
     .send(fixtures.section.validSection)
     .end((err, res) => {
       expect(res).to.have.status(200);
@@ -40,13 +42,14 @@ describe('/POST section', () => {
 /** PUT name**/
 describe('/PUT update section name', () => {
   it('should change the section name to phils class', done => {
+    url += fixtures.section.validSection._id;
+    console.log("URL: ", url);
     chai.request('http://localhost:8080')
-    .put(`/api/sections/5b15522cdfa1745d8ca72277`)
-    .set('Cookie', 'loginSessionUser=steve; EncAuth=a4903119-fee7-4403-a6b7-fc14c3e5a706')
+    .put(url)
+    .set('Cookie', userCredentials)
     .send({section: {name: 'phils class'}})
     .end((err, res) => {
       expect(res).to.have.status(200);
-      console.log(res.body);
       expect(res.body.section).to.have.any.keys('sectionId', 'name', 'problems', 'students', 'teachers');
       expect(res.body.section.name).to.eql('phils class');
       done();
@@ -54,20 +57,55 @@ describe('/PUT update section name', () => {
   });
 });
 
-/** Add teachers **/
-// describe('add teachers', () => {});
-//
+// /** Add teachers **/
+// describe('add teacher to section', () => {
+//   it('should add one teacher to the section', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/addTeacher/ ${fixtures.section.validSection.sectionId} `)
+//     .set('Cookie', userCredentials)
+//     .send({teacherId: ''})
+//     .end((err, res) => {
+//       expect(res).to.have.status(200);
+//     });
+//   });
+// });
+
 // /** Remove teachers **/
-// describe('remove teachers', () => {});
+// describe('remove teacher from section', () => {
+//   it('should change the section name to phils class', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/${fixtures.section.validSection.sectionId}`)
+//     .set('Cookie', userCredentials)
+// });
 //
 // /** Add students **/
-// describe('add students', () => {});
+// describe('add students', () => {
+//   it('should change the section name to phils class', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/${fixtures.section.validSection.sectionId}`)
+//     .set('Cookie', userCredentials)
+// });
 //
 // /** Remove students **/
-// describe('remove students', () => {});
+// describe('remove students', () => {
+//   it('should change the section name to phils class', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/${fixtures.section.validSection.sectionId}`)
+//     .set('Cookie', userCredentials)
+// });
 //
 // /** Add problems **/
-// describe('add problems', () => {});
+// describe('add problems', () => {
+//   it('should change the section name to phils class', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/${fixtures.section.validSection.sectionId}`)
+//     .set('Cookie', userCredentials)
+// });
 //
 // /** remove problems **/
-// describe('remove problems', () => {});
+// describe('remove problems', () => {
+//   it('should change the section name to phils class', done => {
+//     chai.request('http://localhost:8080')
+//     .put(`/api/sections/${fixtures.section.validSection.sectionId}`)
+//     .set('Cookie', userCredentials)
+// });

@@ -38,7 +38,7 @@ module.exports = {
   },
   section: {
     validSection: {
-      sectionId: 'h3dk43t435fklhur82hjio23rgh7',
+      _id: 'h3dk43t435fklhur82hjio23rgh7',
       name: 'MIKEs test class',
       problems: [],
       students: [],
