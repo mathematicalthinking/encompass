@@ -18,9 +18,11 @@
   "globals": {
     "$": true,
     "_": true,
+    "after": true,
     "andThen": true,
     "asyncSpecWait": true,
     "asyncSpecDone": true,
+    "before": true,
     "beforeEach": true,
     "console": true,
     "click": true,
