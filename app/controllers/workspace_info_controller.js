@@ -10,6 +10,7 @@ Encompass.WorkspaceInfoController = Ember.Controller.extend(Encompass.CurrentUse
   comments: Ember.inject.controller(),
 
   isEditing: false,
+  selectedValue: null,
   searchText: "",
   searchResults: function() {
     var searchText = this.get('searchText');
@@ -37,10 +38,16 @@ Encompass.WorkspaceInfoController = Ember.Controller.extend(Encompass.CurrentUse
         workspace.get('editors').pushObject(editor);
       }
     },
+    changeMode: function() {
+      var mode = this.get('selectedMode');
+      var workspace = this.get('model');
+      workspace.set('mode', mode);
+    },
     editWorkspace: function(){
       this.set('isEditing', true);
     },
     saveWorkspace: function(){
+      this.actions.changeMode.call(this);
       var workspace = this.get('model');
       var controller = this;
       workspace.save().then(function(){

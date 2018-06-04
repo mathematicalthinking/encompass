@@ -63,9 +63,9 @@
         <th>Mode</th>
         <td>
           {{#if isEditing}}
-            {{view "select" content=modes selection=mode classNames="workspaceMode"}}
+            {{my-select-mode content=modes action=(action (mut selectedMode))}}
           {{else}}
-            {{mode}}
+            {{model.mode}}
           {{/if}}
         </td>
       </tr>
