@@ -171,7 +171,6 @@ function accessibleWorkspacesQuery(user) {
 function loadAccessibleWorkspaces(options) {
   
   function _loadAccessibleWorkspaces(req, res, next) {
-    console.log('req: ', req);
     console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
