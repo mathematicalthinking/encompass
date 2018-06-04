@@ -157,13 +157,13 @@ const addTeacher = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 
 /**
   * @public
@@ -194,9 +194,9 @@ const removeTeacher = (req, res, next) => {
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 /**
   * @public
   * @method addStudent
@@ -222,13 +222,13 @@ const addStudent = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 /**
   * @public
   * @method removeStudent
@@ -254,13 +254,13 @@ const removeStudent = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 /**
   * @public
   * @method addProblem
@@ -286,13 +286,13 @@ const addProblem = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 /**
   * @public
   * @method removeProblem
@@ -318,13 +318,13 @@ const removeProblem = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 
 module.exports.get.sections = getSections;
 module.exports.get.section = getSection;

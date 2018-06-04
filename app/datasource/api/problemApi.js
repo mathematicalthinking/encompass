@@ -159,13 +159,13 @@ const addCategory = (req, res, next) => {
       if (err) {
         logger.error(err);
         utils.sendError(new errors.InternalError(err.message), res);
-        return
+        return;
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 
 /**
   * @public
@@ -192,13 +192,13 @@ const removeCategory = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-        utilsSendError(new errors.InternalError(err.message), res);
+        utils.SendError(new errors.InternalError(err.message), res);
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
-    })
-  })
-}
+    });
+  });
+};
 
 module.exports.get.problems = getProblems;
 module.exports.get.problem = getProblem;
