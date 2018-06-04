@@ -34,7 +34,6 @@
 Encompass.Router.map(function() {
   this.route("login");
   this.route("unauthorized");
-
   /*
   this.resource("comments", function(){
     this.route("index", {path: "/"}); //this might show the list of comments, but is here for testing for now
@@ -81,6 +80,7 @@ Encompass.Router.map(function() {
       });
     });
   });
+  this.route("problem");
   this.route("responses", function(){
     this.route("responses.new", {resetNamespace: true, path: '/new'}, function() {
       this.route("submission", {path: '/submission/:submission_id'});

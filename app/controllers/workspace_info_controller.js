@@ -12,6 +12,7 @@ Encompass.WorkspaceInfoController = Ember.Controller.extend(Encompass.CurrentUse
   isEditing: false,
   selectedValue: null,
   searchText: "",
+
   searchResults: function() {
     var searchText = this.get('searchText');
     searchText = searchText.replace(/\W+/g, "");
