@@ -6,11 +6,11 @@
 module.exports = {
   answer: {
     validAnswer: {
-      studentName: '',
-      answer: '',
-      explanation: '',
-      problemId: '',
-      sectionId: '',
+      studentName: 'bill',
+      answer: '4',
+      explanation: 'I put 2 and 2 together',
+      problemId: '5b0d939baca0b80f78807cf5',
+      sectionId: '5b15522cdfa1745d8ca72277',
     },
     invalidAnswer: {
       id: '',
