@@ -3,7 +3,7 @@ const assert = require('assert');
 
 const host = 'http://localhost:8080';
 
-xdescribe('Load a Page', function () {
+describe('Load a Page', function () {
   // Recommended: 5s locally, 10s to remote server, 30s from airplane ¯\_(ツ)_/¯
   this.timeout('10s');
 
@@ -74,7 +74,7 @@ xdescribe('Load a Page', function () {
 
   describe('Navbar', () => {
     const elements = ['workspaces', 'responses', 'users', 'logout'];
-    
+
     function verifyNavElement(navElement) {
       describe(navElement, () => {
         it('link should exist', (done) => {
