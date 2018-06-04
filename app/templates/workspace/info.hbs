@@ -63,7 +63,10 @@
         <th>Mode</th>
         <td>
           {{#if isEditing}}
-            {{view "select" content=modes selection=mode classNames="workspaceMode"}}
+            {{input type="radio" name="mode" class="isPublic" value="public" click=(action "radioSelect" public)}}
+            <label>Public</label>
+            {{input type="radio" name="mode" class="isPrivate" value="private" click=(action "radioSelect" private)}}
+            <label>Private</label>
           {{else}}
             {{mode}}
           {{/if}}

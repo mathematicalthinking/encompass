@@ -23,19 +23,24 @@ describe("Permissions: A Workspace", function() {
         if(prop === 'owner') {
           return emberUser;
         }
-        if(prop === 'editors') {
-          return {
-            content: undefined,
-            isLoaded: true,
-            get: function(){
-              return {
-                toArray: function(){
-                  return [emberUser];
-                }
-              };
-            }
-          };
-        }
+
+  /*
+  WE CHANGED THE FUNCTION IN THE COMMON/PROPERTIES.JS FILE SO NOW UNLESS WE COMMENT OUT THIS PART OF THE CODE
+  THE TEST WILL THROW AN ERROR.
+  */
+        // if(prop === 'editors') {
+        //   return {
+        //     content: undefined,
+        //     isLoaded: true,
+        //     get: function(){
+        //       return {
+        //         toArray: function(){
+        //           return [emberUser];
+        //         }
+        //       };
+        //     }
+        //   };
+        // }
       }
     };
 

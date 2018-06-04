@@ -1,42 +1,36 @@
 /**
- * # Workspaces New Controller
- * @description This controller for creating a new workspace
- * @author Damola Mabogunje <damola@mathforum.org>
- * @since 1.0.1
+ * # Create a Problem Controller
+ * @description This controller for creating a new problem
+ * @author Philip Wisner
+ * @since 1.0.0
  */
 
 Encompass.ProblemController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
-    actions: {
-        radioSelect: function (value) {
-            this.set('isPublic', value);
-        },
+  actions: {
+    // This action just sets whatever the value of the selected radio button is to the value for is Public
+    radioSelect: function (value) {
+      this.set('isPublic', value);
+    },
 
-        createProblem: function () {
-            var controller = this;
-            console.log('Create Problem is called');
-            var createProblemData = this.store.createRecord('problem', {
-                createdBy: this.get('currentUser'),
-                createDate: new Date(),
-                title: this.get('title'),
-                text: this.get('text'),
-                categories: this.get('categories'),
-                additionalInfo: this.get('additionalInfo'),
-                isPublic: this.get('isPublic'),
-            });
-            createProblemData.save();
-            console.log('Problem Data: ' + createProblemData);
-
-            // var request = this.store.createRecord('problem', createProblemData);
-            // var output;
-
-            // request.save().then(function (obj) {
-            //     var result = obj.get('results');
-            //     console.log('it worked!');
-            //     console.log(result);
-            //     var output = `Problem name: ${result}!`;
-            //     controller.transitionToRoute('index');
-            // });
-
-        }
+    createProblem: function () {
+      var createdBy = this.get('currentUser');
+      var title = this.get('title');
+      var text = this.get('text');
+      var categories = [];
+      var additionalInfo = this.get('additionalInfo');
+      var isPublic = this.get('isPublic');
+      console.log('Create Problem is called');
+      var createProblemData = this.store.createRecord('problem', {
+        createdBy: createdBy,
+        createDate: new Date(),
+        title: title,
+        text: text,
+        // categories: categories,
+        additionalInfo: additionalInfo,
+        isPublic: isPublic,
+      });
+      createProblemData.save();
+      console.log('Problem Data: ' + createProblemData);
     }
+  }
 });
