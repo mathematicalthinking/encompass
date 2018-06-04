@@ -115,7 +115,7 @@ const putAnswer = (req, res, next) => {
     // if this has been submitted it is no longer editable
     // return an error
     if (doc.isSubmitted) {
-      logger.error("answer already submitted")
+      logger.error("answer already submitted");
       return utils.sendCustomError(new errors.NotAuthorizedError(403), res);
     }
     // make the updates
