@@ -1,0 +1,12 @@
+{{! app/templates/components/my-select.hbs}}
+<select {{action 'selectChange' on='change'}}>
+  {{#if prompt}}
+    <option value="">{{prompt}}</option>
+  {{/if}}
+  {{#each content key="@index" as |item|}}
+    <option value="{{item}}" selected={{is-equal item selectedValue}}>
+      {{item}}
+      {{!item.label}}
+    </option>
+  {{/each}}
+</select>
