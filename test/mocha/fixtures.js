@@ -38,8 +38,8 @@ module.exports = {
   },
   section: {
     validSection: {
-      sectionId: '',
-      name: '',
+      sectionId: 'h3dk43t435fklhur82hjio23rgh7',
+      name: 'MIKEs test class',
       problems: [],
       students: [],
       teachers: [],

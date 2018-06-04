@@ -113,15 +113,11 @@ const putSection = (req, res, next) => {
     // make the updates
     for(let field in req.body.section) {
       if((field !== '_id') && (field !== undefined)) {
-        // overwrite primitive types or add to array
-        if (field === 'teachers' || field === 'students' || field === 'problems') {
-          doc[field].push(req.body.section[field]);
-        }
-        else {
-          doc[field] = req.body.section[field];
-        }
+        doc[field] = req.body.section[field];
       }
     }
+    console.log("INSIDE SECTION ROUTE");
+    console.log("UPDATED DOC: ", doc);
     doc.save((err, section) => {
       if (err) {
         logger.error(err);

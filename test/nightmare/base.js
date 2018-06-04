@@ -74,7 +74,7 @@ describe('Load a Page', function () {
 
   describe('Navbar', () => {
     const elements = ['workspaces', 'responses', 'users', 'logout'];
-    
+
     function verifyNavElement(navElement) {
       describe(navElement, () => {
         it('link should exist', (done) => {
