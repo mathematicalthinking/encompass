@@ -105,16 +105,6 @@ const putSection = (req, res, next) => {
   const user = auth.requireUser(req);
   // what check do we want to perform if the user can edit
   // if they created the section?
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  console.log("PARAMS");
-  
-  console.log(req.params);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
