@@ -26,8 +26,8 @@ module.exports = {
   },
   problem: {
     validProblem: {
-      title: '',
-      puzzleId: '', // if this is coming from PoWs otherwise null
+      title: 'test math problem',
+      puzzleId: '400000', // if this is coming from PoWs otherwise null
       categories: []
     },
     invalidProblem: {
