@@ -81,6 +81,7 @@ Encompass.Router.map(function() {
       });
     });
   });
+  this.route("problem");
   this.route("responses", function(){
     this.route("responses.new", {resetNamespace: true, path: '/new'}, function() {
       this.route("submission", {path: '/submission/:submission_id'});
