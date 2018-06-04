@@ -14,12 +14,21 @@ $(document).ajaxStart(function() {
 $(document).ajaxStop(function() {
   $("#loading").hide();
   // console.log('done loading');
+<<<<<<< HEAD
   if(/http:\/\/localhost/.test(window.location.href)){
     $('#devTool').text(window.ajaxBatchRequestCount + 
         ' requests made, total: ' + 
         window.ajaxWindowRequestCount +
         Array(window.ajaxBatchRequestCount).join("!"));
   }
+=======
+  // if(/http:\/\/localhost/.test(window.location.href)){
+  //   $('#devTool').text(window.ajaxBatchRequestCount + 
+  //       ' requests made, total: ' + 
+  //       window.ajaxWindowRequestCount +
+  //       Array(window.ajaxBatchRequestCount).join("!"));
+  // }
+>>>>>>> 5f3278653fbbe12e3562e5187f3e5e0b9b21be35
 });
 
 $(document).ajaxSuccess(function() {
@@ -43,7 +52,7 @@ $(document).ajaxError(function(e, xhr, settings, errorText){
       status: xhr.status,
     }
     $.post('/api/errors', error).always(function(){
-      window.alert('There was an error, we recommend refreshing the page to make sure your data is up-to-date');
+      window.alert(err);
     });
   }
 });
