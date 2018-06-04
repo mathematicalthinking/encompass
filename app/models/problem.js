@@ -14,3 +14,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   // }),
 });
 
+/*
+  Categories is commented out because the backend model is currently
+  expecting an array of category ids which we do not have yet
+*/

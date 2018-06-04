@@ -5,5 +5,5 @@
   * @since 1.0.2
 */
 Encompass.UsersController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
-  currentUser: Encompass.curentUser
+  currentUser: Encompass.currentUser
 });
