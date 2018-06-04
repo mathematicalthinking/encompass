@@ -7,7 +7,7 @@ const expect = chai.expect;
 const host = 'http://localhost:8080';
 
 describe('Visiting Workspace Creation', function() {
-  const username = 'steve'
+  const username = 'steve';
   let nightmare = null;
   this.timeout('10s');
   before(() => {
@@ -24,6 +24,10 @@ describe('Visiting Workspace Creation', function() {
     .wait('section.newWorkspace.sanity');
   });
 
+  after(() => {
+    nightmare.end();
+  });
+
   describe('should display an overview, and some sections', () => {
     const els = ['overview', 'third.submissions', 'third.folders', 'third.permissions', 'submit>button'];
 
@@ -34,7 +38,7 @@ describe('Visiting Workspace Creation', function() {
         name = el.slice(periodIndex + 1) + ' section';
       }
       if (el === 'submit>button') {
-        name = 'submit button'
+        name = 'submit button';
       }
       it(`should display ${name}`, (done) => {
         nightmare
