@@ -7,6 +7,7 @@ const assert = chai.assert;
 const host = 'http://localhost:8080'
 const login = 'http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:8080/back';
 const user = 'casper';
+
 describe('Home Page', function() {
   this.timeout('10s');
   let driver = null;
@@ -19,13 +20,13 @@ describe('Home Page', function() {
   after(() => {
     driver.quit();
   });
+
   it('should load without error', async function() {
     try {
     await driver.get(host);
     }catch(err) {
       console.log(err);
     }
-    
   });
 
   it('login button should be visible', async function() {
@@ -92,7 +93,6 @@ describe('Home Page', function() {
           expect(isVisible).to.be.true;
     });
   }
-
     elements.forEach((el) => {
       verifyNavElement(el);
     });
