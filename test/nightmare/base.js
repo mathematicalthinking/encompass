@@ -15,7 +15,7 @@ describe('Base', function() {
 
   after(() => {
     nightmare.end();
-  })
+  });
 
   describe('/ (Home Page)', () => {
     it('should load without error', (done) => {

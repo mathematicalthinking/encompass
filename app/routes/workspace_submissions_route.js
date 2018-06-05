@@ -12,4 +12,8 @@ Encompass.WorkspaceSubmissionsRoute = Ember.Route.extend({
     return workspace.get('submissions');
   },
 
+  afterModel: function(submissions) {
+    console.log('submissions in after model ws.submissions', submissions);
+  }
+
 });

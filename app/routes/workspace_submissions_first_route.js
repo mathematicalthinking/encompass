@@ -13,6 +13,7 @@ Encompass.WorkspaceSubmissionsFirstRoute = Ember.Route.extend({
   },
 
   afterModel: function(submissions, transition) {
+    console.log('in after model.. NOT', submissions);
     var workspace = this.modelFor('workspace');
     console.log("W-S First Route, num of submissions: " + submissions.get('length') );
     if(submissions.get('length') > 0) {

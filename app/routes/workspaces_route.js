@@ -6,5 +6,6 @@
   */
 Encompass.WorkspacesRoute = Ember.Route.extend({
   renderTemplate: function(){
+    console.log('rendering workspaces template');
   }
 });

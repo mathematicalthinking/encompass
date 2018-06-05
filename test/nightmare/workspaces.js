@@ -8,25 +8,28 @@ const host = 'http://localhost:8080';
 
 describe('Visiting Workspaces', function() {
   let nightmare = null;
-  this.timeout('20s');
+  this.timeout('30s');
   before(() => {
-    nightmare = new Nightmare({show: true});
+    console.log('1');
+    nightmare = new Nightmare({openDevTools: {
+      mode: 'detach'
+    },show: true});
     nightmare
     .viewport(1024,768)
     // .goto(`${host}`)
     // .wait('a[href="login"]')
     // .click('a[href="login"]')
-    // .wait()
+    // .wait('input[name="username"]')
     // .type('input[name="username"]', 'steve')
-    // .type('input[name="password"]', 'mf3210')
+    // .type('input[name="password"', 'mf3210')
     // .click('input[type="submit"]')
     // .wait('a[href="#/workspaces"')
     // .click('a[href="#/workspaces"')
     // .wait('table#workspace_listing');
     .goto(`${host}/devonly/fakelogin/casper`)
-    .wait('.ember-view')
+    .wait('a[href="#/workspaces"')
     .click('a[href="#/workspaces"')
-    .wait('table#workspace_listing')
+    .wait('table#workspace_listing');
   });
 
   after(() => {
@@ -34,6 +37,7 @@ describe('Visiting Workspaces', function() {
   });
 
   it('should land us at /workspaces', (done) => {
+    console.log('2');
     nightmare
       .url()
       .then((url) => {
@@ -44,6 +48,7 @@ describe('Visiting Workspaces', function() {
     });
 
   it('should display several workspaces', function(done) {
+    console.log('3');
     nightmare
     .evaluate(() => {
       return [...document.querySelectorAll('.workspace_name')]
@@ -58,27 +63,18 @@ describe('Visiting Workspaces', function() {
     .catch(done);
   });
 
-  describe('Visiting Frog Farming', () => {
-    before(() => {
+  // describe('Visiting Frog Farming', () => {
+    it('should work', (done) => {
+      console.log('4');
       nightmare
-      .click('a[href="#/workspaces/53df8c4c3491b46d73000211/info"]')
-      .wait(1000)
-      .click('a[href="#/workspaces/53df8c4c3491b46d73000211/work"]')
       .wait(3000)
-      .screenshot('loading.png');
-    });
-
-    it('should display a bunch of submissions', (done) => {
-      nightmare
-      .url().then((url) => {
+      .click('a[href="#/workspaces/54e7a2bcc7e6d8994400000b/work"]')
+      .wait(5000)
+      .then((url) => {
         console.log(url);
         done();
       })
       .catch(done);
     });
-  });
-
-  
-
-  
+  // });
 });

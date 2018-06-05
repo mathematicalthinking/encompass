@@ -11,7 +11,7 @@ describe('Visiting Workspace Creation', function() {
   let nightmare = null;
   this.timeout('10s');
   before(() => {
-    nightmare = new Nightmare();
+    nightmare = new Nightmare({show: true, mode: 'detach'});
     nightmare
     .goto(`${host}`)
     .wait('a[href="login"]')
