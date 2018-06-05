@@ -6,11 +6,10 @@
 <section>
   <nav class="users actions listing al_vertical_stretch">
     <ul class="actions">
-      <li>{{#link-to 'problem.new'}}New Problem{{/link-to}}</li>
+      <li>{{#link-to 'problems.new'}}New Problem{{/link-to}}</li>
     </ul>
     <ul class="listing">
       {{#each model as |problem|}}
-      <li class="none">{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       <li>Problem Question: {{problem.text}}</li>
       <li>Public? {{problem.isPublic}}</li>
       {{/each}}
