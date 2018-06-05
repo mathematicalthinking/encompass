@@ -2,9 +2,11 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const fixtures = require('./fixtures.js');
+// If you are getting 401 errors with these tests yo u may need to change
+// the userCredentials variable. Go to the network tab of the dev tools in your
+// browser and find the value of Cookie. Paste it in here
 const userCredentials = 'loginSessionUser=steve; EncAuth=ff6d8301-dd2f-4a83-9e3e-1ff4a459a292';
 const baseUrl = "/api/sections/";
-
 chai.use(chaiHttp);
 
 /** GET **/
