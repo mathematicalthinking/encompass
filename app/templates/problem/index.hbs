@@ -1,0 +1,21 @@
+<header>
+  <h2>Problem</h2>
+  <div class="clear"></div>
+</header>
+
+<section>
+  <nav class="users actions listing al_vertical_stretch">
+    <ul class="actions">
+      <li>{{#link-to 'problem.new'}}New Problem{{/link-to}}</li>
+    </ul>
+    <ul class="listing">
+      {{#each model as |problem|}}
+      <li class="none">Problem Name: {{problem.title}}</li>
+      <li>Problem Question: {{problem.text}}</li>
+      <li>Public? {{problem.isPublic}}</li>
+      {{/each}}
+    </ul>
+  </nav>
+  <div class="clear" />
+
+</section>
