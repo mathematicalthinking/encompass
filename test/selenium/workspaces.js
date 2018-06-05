@@ -23,8 +23,10 @@ describe('Visiting Workspaces', function() {
     let url;
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
-      await driver.findElement(By.css('a[href="#/workspaces"]')).sendKeys('webdriver', Key.RETURN);
-      await driver.findElement(By.id('workspace_listing'));
+      let button = await driver.wait(until.elementLocated(By.css('a[href="#/workspaces"]')), 3000);
+      await button.click();
+      //sendKeys('webdriver', Key.RETURN);
+      await driver.wait(until.elementLocated(By.id('workspace_listing')), 5000);
       url = await driver.getCurrentUrl();
     }catch(err) {
       console.log(err);
@@ -41,7 +43,7 @@ describe('Visiting Workspaces', function() {
       names = await Promise.all(workspaces.map((el) => {
         return el.getText();
       }));
-      await driver.sleep(3000);
+      await driver.sleep(2000);
     }catch(err) {
       console.log(err);
     }
@@ -54,7 +56,8 @@ describe('Visiting Workspaces', function() {
       let url;
       let workspaceId = '53df8c4c3491b46d73000211';
       try {
-      await driver.findElement(By.css(`a[href="#/workspaces/${workspaceId}/work"]`)).sendKeys('webdriver', Key.RETURN);
+      let frogFarming = await driver.findElement(By.css(`a[href="#/workspaces/${workspaceId}/work"]`));
+      await frogFarming.click();
       await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
       url = await driver.getCurrentUrl();
       }catch(err) {
@@ -74,11 +77,180 @@ describe('Visiting Workspaces', function() {
       } catch(err) {
         console.log(err);
       }
-      expect(isRightArrow).to.be.true;
-      expect(isLeftArrow).to.be.true;
+      expect(isRightArrow).to.eql(true);
+      expect(isLeftArrow).to.eql(true);
       expect(breadcrumbs).to.contain('1');
     });
-  });
+
+    it('should display a select box for students', async function() {
+      let studentItem;
+      let studentList;
+      let firstItem;
+      try {
+        studentItem = await driver.wait(until.elementLocated(By.css('div.selectBox')), 3000).isDisplayed();
+        firstItem = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
+        studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
+
+      } catch(err) {
+        console.log(err);
+      }
+      expect(studentItem).to.eql(true);
+      expect(studentList).to.not.exist;
+      expect(firstItem).to.contain('Adelina S.');
+    });
+
+    
+  
+      // it('should be on first submission', function() {
+      //   'span.submission_index'.should.have.text(/^\W+1\W+$/);
+      // });
+  
+      it('should show the short answer', async function() {
+        let shortText;
+        let isVisible;
+        try {
+          let shortAnswer = await driver.wait(until.elementLocated(By.id('node-1')), 3000);
+          if (shortAnswer) {
+            isVisible = await shortAnswer.isDisplayed();
+            shortText = await shortAnswer.getText();
+          }
+        } catch(err) {
+          console.log(err);
+        }
+        expect(isVisible).to.eql(true);
+        expect(shortText).to.contain('LOL');
+      });
+  
+      it('should show the long answer', async function() {
+        let longText;
+        let isVisible;
+        try {
+          let longAnswer = await driver.wait(until.elementLocated(By.id('node-2')), 3000);
+          if (longAnswer) {
+            isVisible = await longAnswer.isDisplayed();
+            longText = await longAnswer.getText();
+          }
+        } catch(err) {
+          console.log(err);
+        }
+        expect(isVisible).to.eql(true);
+        expect(longText).to.contain('Well, first I narrowed 36 meters down to 12 meters I got these 2 pens:');
+      });
+  
+      it('should have selecting enabled by default', async function() {
+        let checkbox;
+        let isEnabled;
+        try {
+          let checkbox = await driver.wait(until.elementLocated(By.css('label.makingSelection>input')), 3000);
+          if (checkbox) {
+            isVisible = await checkbox.isDisplayed();
+            isEnabled = await checkbox.getAttribute('checked');
+          }
+        } catch(err) {
+          console.log(err);
+        }
+        expect(isVisible).to.eql(true);
+        expect(isEnabled).to.eql('true');
+      });
+    });
+
+    describe('clicking on the student dropdown', function() {
+      let selectBox;
+      let names;
+      let studentList;
+      before(async function() {
+        try {
+          selectBox = await driver.findElement(By.css('div.selectBox span.selector'));
+          await selectBox.click();
+          studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
+        }catch(err) {
+          console.log(err);
+        }
+      });
+
+      it('should display a bunch of students', async function() {
+        let students;
+        try {
+          students = await studentList.findElements(By.css('li.studentItem'));
+          names = await Promise.all(students.map((el) => {
+            return el.getText();
+          }));
+        }catch(err) {
+          console.log(err);
+        }
+        expect(students.length).to.be.above(8);
+      });
+
+      it('should display the students in order', function() {
+        expect(names[0]).to.equal('Adelina S.');
+        expect(names[names.length - 1]).to.equal('Zach W.');
+      });
+
+      it('should hide the list of students if clicked', async function() {
+        let studentList;
+        try{
+          await selectBox.click();
+          studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
+        }catch(err) {
+          console.log(err);
+        }
+        expect(studentList).to.not.exist;
+      });
+    });
+
+    describe('clicking the prev/next arrows', function() {
+      // The arrow clicks only seem to work once each way?
+      let afterLeftClick;
+      let afterRightClick;
+      
+      it('should change the current student', async function() {
+        try {
+          let leftArrow = await driver.wait(until.elementLocated(By.id('leftArrow')), 3000);
+          await leftArrow.click();
+          afterLeftClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
+          
+          let rightArrow = await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
+          await rightArrow.click();
+          afterRightClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
+        }catch(err) {
+          console.log(err);
+        }
+        expect(afterLeftClick).to.eql('Zach W.');
+        expect(afterRightClick).to.eql('Adelina S.');
+      });
+    });
+
+    describe('Visiting a Selection in Baffling Brother', function() {
+      before(async function() {
+        let selectionDiv = await driver.wait(until.elementLocated(By.id('submission_selections')), 3000);
+        let selections = await selectionDiv.findElements(By.css('li.selection'));
+        let firstSelection = await selections[0];
+        console.log(selections);
+        let link = await firstSelection.findElement(By.tagName('a'));
+        await link.click();
+        await driver.sleep(5000);
+
+        //casper.waitForSelector('li.notice.relevance-3');
+      });
+    
+      it('should display a bunch of submissions', async function() {
+        await driver.getCurrentUrl();
+        // expect(/workspaces\/.*\/submissions\/.*\/selections\//).to.matchCurrentUrl;
+        // 'span.submission_count'.should.contain.text('500');
+        // 'span.submission_index'.should.contain.text('256');
+      });
+    
+      // it('should display a bunch of comments', function() {
+      //   'Good example of using Alg to solve the Extra'.should.be.textInDom;
+      //   'li.notice.relevance-3'.should.contain.text('Good example of using Alg to solve the Extra');
+      //   "$('#al_feedback_display>ul>li').length".should.evaluate.to.be.above(10);
+      // });
+    
+      // it('should display a bunch of folders', function() {
+      //   "Doesn't Explain Original Eqn".should.be.textInDom;
+      //   "$('li.folderItem').length".should.evaluate.to.be.above(4);
+      // });
+    });
 });
 
   

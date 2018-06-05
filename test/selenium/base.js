@@ -39,7 +39,7 @@ describe('Home Page', function() {
     }catch(err) {
       console.log(err);
     }
-   expect(isDisplayed).to.be.true;
+   expect(isDisplayed).to.eql(true);
   });
 
   it('should display login page after clicking login', async function() {
@@ -59,7 +59,7 @@ describe('Home Page', function() {
       console.log(err);
     }
     expect(url).to.equal(login);
-    expect(isUsername).to.be.true;
+    expect(isUsername).to.eql.true;
     expect(isPassword).to.be.true;
     expect(isSubmit).to.be.true;
   });
