@@ -1,13 +1,12 @@
 /**
- * # CAS Login API
- * @description This is the API for logging into Encompass via CAS
- * @authors Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>
+ * # Passport Login API
+ * @description This is the API for logging into Encompass via Passport (express app)
+ * @author Philip Wisner
  * @since 1.0.0
- * @todo Integrate this with the api module using best practices
  */
+
 var config = require('./config'),
-  //CAS      = require('cas'),
-  logger = require('log4js').getLogger('mfcas'),
+  logger = require('log4js').getLogger('passport'),
   Q = require('q'),
   uuid = require('uuid'),
   cookie = require('cookie'),
@@ -28,12 +27,12 @@ function login(req, res, next) {
   res.send(301);
 }
 
-function signup(req, res, next) {
-  /* jshint camelcase: false */
-  logger.debug("SSO base url: " + ssoConf.baseUrl);
-  res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=' + ssoConf.service);
-  res.send(301);
-}
+// function signup(req, res, next) {
+//   /* jshint camelcase: false */
+//   logger.debug("SSO base url: " + ssoConf.baseUrl);
+//   res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=' + ssoConf.service);
+//   res.send(301);
+// }
 
 function logout(req, res, next) {
   /* jshint camelcase: false */
@@ -46,6 +45,8 @@ function logout(req, res, next) {
   res.header('Location', ssoConf.baseUrl + '/logout');
   res.send(301);
 }
+
+
 
 /*
   handle the return from cas
@@ -162,6 +163,6 @@ function back(req, res, next) {
 }
 
 module.exports.login = login;
-module.exports.signup = signup;
+// module.exports.signup = signup;
 module.exports.logout = logout;
 module.exports.back = back;
