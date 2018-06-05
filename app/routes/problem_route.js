@@ -2,8 +2,7 @@ Encompass.ProblemRoute = Ember.Route.extend({
   model: function () {
 		var store = this.get('store');
     var problems = store.findAll('problem');
-    console.log('problems model route called!!');
-    console.log(problems);
+    // Filter only problems by current logged in user
     return problems;
   },
 
