@@ -21,21 +21,18 @@ var webConf = config.nconf.get('web');
 
 //just send the user to cas
 function login(req, res, next) {
-  /* jshint camelcase: false */
   logger.debug("SSO base url: " + ssoConf.baseUrl);
-  res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=' + ssoConf.service);
+  res.header('Location', ssoConf.baseUrl + '/login');
   res.send(301);
 }
 
-// function signup(req, res, next) {
-//   /* jshint camelcase: false */
-//   logger.debug("SSO base url: " + ssoConf.baseUrl);
-//   res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=' + ssoConf.service);
-//   res.send(301);
-// }
+function signup(req, res, next) {
+  logger.debug("SSO base url: " + ssoConf.baseUrl);
+  res.header('Location', ssoConf.baseUrl + '/signup' + ssoConf.service);
+  res.send(301);
+}
 
 function logout(req, res, next) {
-  /* jshint camelcase: false */
   // drop the cookie
   res.header('Set-Cookie', cookie.serialize('EncAuth', 'deleted', {
     path: '/',
@@ -47,9 +44,8 @@ function logout(req, res, next) {
 }
 
 
-
 /*
-  handle the return from cas
+  handle the return from passport
   we'll have a token parameter that we validate and get the username from
   we issue a key for them, a uuid cookie: EncAuth
   and store that key in the DB with their user record (which we create on the fly if necessary)
@@ -163,6 +159,6 @@ function back(req, res, next) {
 }
 
 module.exports.login = login;
-// module.exports.signup = signup;
+module.exports.signup = signup;
 module.exports.logout = logout;
 module.exports.back = back;

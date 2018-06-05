@@ -3,12 +3,12 @@ var mongoose = require('mongoose'),
     config = require('./config'),
     restify = require('restify'),
     cas = require('./mfcas'),
-    passport = require('./passport'),
-    auth = require('./auth'),
+    // passport = require('./passport'),
     fake = require('./fake_login'),
     uuid = require('uuid'),
     cookie = require('cookie'),
     api = require('./datasource/api'),
+    auth = require('./datasource/api/auth'),
     path = require('./datasource/api/path'),
     fixed = require('./datasource/fixed');
 
@@ -46,14 +46,14 @@ server.use(path.validateId());
 server.use(path.validateContent());
 
 server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-// server.get('/login', cas.sendToCas);
-// server.get('/logout', cas.logout);
-// server.get('/back', cas.returnFromCas);
+server.get('/login', cas.sendToCas);
+server.get('/logout', cas.logout);
+server.get('/back', cas.returnFromCas);
 
 // Use passport file for authentication instead of mfcas
-server.get('/login', passport.login);
-server.get('/logout', passport.logout);
-server.get('/back', passport.back);
+// server.get('/login', passport.login);
+// server.get('/logout', passport.logout);
+// server.get('/back', passport.back);
 
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', api.get.user);
