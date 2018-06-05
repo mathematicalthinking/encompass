@@ -67,9 +67,7 @@ describe('Visiting Workspaces', function() {
     it('should work', (done) => {
       console.log('4');
       nightmare
-      .wait(3000)
-      .click('a[href="#/workspaces/54e7a2bcc7e6d8994400000b/work"]')
-      .wait(5000)
+      .goto('http://localhost:8080/#/workspaces/53df8c4c3491b46d73000211/submissions/53df8c4c3491b46d73000201')
       .then((url) => {
         console.log(url);
         done();
