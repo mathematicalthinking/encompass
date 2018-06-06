@@ -100,15 +100,15 @@ server.put('/api/workspaces/:id', api.put.workspace);
 server.put('/api/problems/:id', api.put.problem);
 server.put('/api/problems/addCategory/:id', api.put.problem.addCategory);
 server.put('/api/problems/removeCategory/:id', api.put.problem.removeCategory);
-server.put('/api/answers/:id', api.put.problem);
-server.put('/api/sections/:id', api.put.problem);
-server.put('/api/sections/:id', api.put.category);
+server.put('/api/answers/:id', api.put.answer);
+server.put('/api/sections/:id', api.put.section);
 server.put('/api/sections/addTeacher/:id', api.put.section.addTeacher);
 server.put('/api/sections/removeTeacher/:id', api.put.section.removeTeacher);
 server.put('/api/sections/addStudent/:id', api.put.section.addStudent);
 server.put('/api/sections/removeStudent/:id', api.put.section.removeStudent);
 server.put('/api/sections/addProblem/:id', api.put.section.addProblem);
 server.put('/api/sections/removeProblem/:id', api.put.section.removeProblem);
+server.put('/api/categories/:id', api.put.category);
 
 
 server.get('/api/stats', api.get.stats);

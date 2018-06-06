@@ -1,7 +1,7 @@
 /** # Grunt Configuration
  * @description We are using [Grunt](http://gruntjs.com/) the Javascript Task Runner
  *              for building and compiling the app. Below is the configuration.
- * @see [Grunt](http://gruntjs.com/) 
+ * @see [Grunt](http://gruntjs.com/)
  * @authors Amir Tahvildaran <amir@mathforum.org>
  * @since 1.0.0
 */
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
     },
 
     /*
-      Browserify is similar to neuter 
+      Browserify is similar to neuter
       We should probably choose one but javascript
       modules are just insane at the moment (RequireJS, AMD, ...)
     */
@@ -139,7 +139,7 @@ module.exports = function(grunt) {
     },
 
     /*
-      Also run jasmine-node for mongoose unit tests 
+      Also run jasmine-node for mongoose unit tests
     */
     jasmine_node: {
       projectRoot: '.',
@@ -183,7 +183,16 @@ module.exports = function(grunt) {
       }
     },
 
-    /* 
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec',
+        },
+        src: ['test/mocha/*.js']
+      }
+    },
+
+    /*
       Reads the projects .js files and generates documentation in the docs folder
     */
     groc: {
@@ -194,7 +203,7 @@ module.exports = function(grunt) {
       }
     },
 
-    /* 
+    /*
       Reads the projects .jshintrc file and applies coding
       standards. Doesn't lint the dependencies or test
       support files.
@@ -206,7 +215,7 @@ module.exports = function(grunt) {
       }
     },
 
-    /* 
+    /*
       Finds Handlebars templates and precompiles them into functions.
       The provides two benefits:
 
@@ -294,6 +303,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-jasmine-node');
   grunt.loadNpmTasks('grunt-mocha-casperjs');
+  grunt.loadNpmTasks('grunt-mocha-test');
   //grunt.loadNpmTasks('grunt-casperjs-plugin');
   grunt.loadNpmTasks('grunt-groc');
 
@@ -315,7 +325,7 @@ module.exports = function(grunt) {
   /*
     Execute all of the tests (jshint too)
   */
-  grunt.registerTask('tests', ['jshint', 'jasmine']); // jqunit
+  grunt.registerTask('tests', ['jshint', 'jasmine', 'mochaTest']); // jqunit
 
   grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
 
