@@ -28,5 +28,39 @@ const getWebElements = async function(webDriver, selector) {
   return webElements;
 }
 
+const navigateAndWait = async function(webDriver, url, selector, timeout) {
+  await webDriver.get(url);
+  return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+}
+
+const matchElementText = async function(webDriver, selector, expected) {
+  let text;
+  try {
+    let element = await webDriver.findElement(By.css(selector));
+    if(element) {
+      text = await element.getText();
+    }
+  }catch(err) {
+    console.log(err);
+  }
+  return Promise.resolve(expect(text).to.match(expected));
+}
+
+const doesElementContainText = async function(webDriver, selector, expected) {
+  let text;
+  try {
+    let element = await webDriver.findElement(By.css(selector));
+    if(element) {
+      text = await element.getText();
+    }
+  }catch(err) {
+    console.log(err);
+  }
+  return Promise.resolve(expect(text).to.contain(expected));
+}
+
 module.exports.isVisibleInDOM = isVisibleInDOM;
 module.exports.getWebElements = getWebElements;
+module.exports.navigateAndWait = navigateAndWait;
+module.exports.matchElementText = matchElementText;
+module.exports.doesElementContainText = doesElementContainText;

@@ -28,7 +28,7 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38e83b48b12793f0010de`);
+      await driver.get(`${host}#/workspaces/53df8c4c3491b46d73000211/submissions/53df8c4c3491b46d73000201/selections/5af5a5bb67ca2205deac50c6`);
       await driver.wait(until.elementLocated(By.css('span.selectionLink')), 3000);
     });
   
@@ -37,40 +37,47 @@ describe('Responses', function() {
       try {
         isVisible = await helpers.isVisibleInDOM(driver, 'a.respond');
       }catch(err) {
-
+        console.log(err);
       }
       expect(isVisible).to.eql(true);
     });
   });
 
-  xdescribe('Visiting a submission response url', function() {
-    before(function() {
-      casper.thenOpen(host + '/#/responses/new/submission/543e9644729e9ef59ba812f3');
-      casper.waitForSelector('#moreDetails');
+  describe('Visiting a submission response url', function() {
+    before(async function() {
+      try {
+        await driver.findElement(By.css('a.respond')).sendKeys('webdriver', Key.RETURN);
+        await driver.wait(until.elementLocated(By.css('#moreDetails')),3000);
+        await driver.sleep(3000);
+      }catch(err) {
+        console.log(err);
+      }
     });
 
 
-    it('should advertise being a new response', function() {
-      'section.response>h1'.should.have.text(/New\W+Response/);
+    it('should advertise being a new response', async function() {
+      await helpers.matchElementText(driver, 'section.response>h1', /New\W+Response/);
+      //expect(text).to.match(/New\W+Response/);
     });
 
-    it('should be addressed to the student', function() {
-      '#responding-to'.should.have.text('Jhanvee P.');
+    it('should be addressed to the student', async function() {
+      await helpers.doesElementContainText(driver, '#responding-to', 'Adelina S.');
+      //'#responding-to'.should.have.text('Jhanvee P.');
     });
 
-    it('should have response text', function() {
+    xit('should have response text', function() {
       'You wrote'.should.be.textInDOM;
       'this ends up an identity statement'.should.be.textInDOM;
       'Good example of using Alg to solve the Extra'.should.be.textInDOM;
     });
 
-    it('should have buttons', function() {
+    xit('should have buttons', function() {
       'button.edit:enabled'.should.be.inDOM;
       'button.save:disabled'.should.be.inDOM;
       'button.send:enabled'.should.be.inDOM;
     });
 
-    it('should display a summary and a more details link', function() {
+    xit('should display a summary and a more details link', function() {
       'This response was generated from'.should.be.textInDOM;
       //'a.other.response'.should.be.inDOM; TODO Test for other responses (needs a submission with multiple responses)
       'a.workspace'.should.be.inDOM;
