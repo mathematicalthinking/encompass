@@ -59,7 +59,7 @@ describe('Home Page', function() {
       console.log(err);
     }
     expect(url).to.equal(login);
-    expect(isUsername).to.eql.true;
+    expect(isUsername).to.eql(true);
     expect(isPassword).to.be.true;
     expect(isSubmit).to.be.true;
   });

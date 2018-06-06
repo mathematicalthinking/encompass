@@ -230,7 +230,6 @@ describe('Visiting Workspaces', function() {
           let link = await driver.wait(until.elementLocated(By.css(`a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}`)), 3000);  
           if(link) {
             await link.click();
-            await(driver.sleep(5000));
           }
           await driver.wait(until.elementLocated(By.css('div#al_feedback_display')), 3000);
         }catch(err) {
@@ -282,6 +281,74 @@ describe('Visiting Workspaces', function() {
         expect(folderNames[0]).to.contain('for feedback');
       });
     });
+
+    // Consider moving into test/casper/folders
+  describe('Visiting a Folder from Frog Farming', function() {
+    before(function() {
+      // casper.start(host + '/devonly/fakelogin/casper');
+      // casper.thenOpen(host + '/#/workspaces/543e96757112056b290001fa/work');
+      // casper.waitForSelector('span.submission_count');
+    });
+
+    // function validateFolderPopup(button) { 
+    //   it('should popup a seperate window', function() {
+    //     casper.click(button);
+
+    //     casper.waitForPopup(/workspaces\/.*\/folders\//, function() {
+    //       expect(casper.popups.length).to.equal(1);
+    //     });
+
+    //     casper.withPopup(/workspaces\/.*\/folders\//, function() {
+    //       'h1'.should.contain.text('Quotable!');
+    //     });
+    //   });
+    // }
+
+    // describe('clicking the submission count', function() {
+    //   var button = 'li.folderItem:last-of-type aside>div.al_indicator:first-child';
+    //   validateFolderPopup(button);
+    // });
+
+    // describe('clicking the selection count', function() {
+    //   var button = 'li.folderItem:last-of-type aside>div.al_indicator:last-child';
+    //   validateFolderPopup(button);
+    // });
+
+    describe('clicking the folder icon', function() {
+      
+      
+      
+      it('should display sub-folders (if any)', async function() {
+        let folders;
+        let interpretationFolder;
+        let subFolderList;
+        let subFolders;
+
+        try {
+          subFolderList = await driver.wait(until.elementsLocated(By.css('li>ul.subfolders')), 1000);
+        }catch(err) {
+          console.log(err);
+        }
+        expect(subFolderList).to.not.exist;
+
+        try {
+          let links = await driver.wait(until.elementsLocated(By.css('span.toggle-icon.branch')), 3000);
+          if (links) {
+            await links[0].click();
+            await driver.sleep(3000);
+            subFolderList = await driver.wait(until.elementLocated(By.css('ul.subfolders')))
+            if (subFolderList) {
+              subFolders = await subFolderList.findElements(By.css('.folderItem'));
+            }
+          }
+        }catch(err) {
+          console.log(err);
+        }
+        expect(subFolderList).to.exist;
+        expect(subFolders.length).to.eql(4);
+      });
+    });
+  });
 });
 
   
