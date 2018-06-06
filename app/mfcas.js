@@ -6,7 +6,7 @@
   * @todo Integrate this with the api module using best practices
   */
 var config   = require('./config'),
-    //CAS      = require('cas'),
+    // CAS      = require('cas'),
     logger   = require('log4js').getLogger('mfcas'),
     Q        = require('q'),
     uuid     = require('uuid'),
