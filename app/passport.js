@@ -21,8 +21,9 @@ var webConf = config.nconf.get('web');
 
 //just send the user to cas
 function login(req, res, next) {
+  console.log('in passport login');
   logger.debug("SSO base url: " + ssoConf.baseUrl);
-  res.header('Location', ssoConf.baseUrl + '/login' + '/?SsoReturnUrl=' + ssoConf.service);
+  res.header('Location', ssoConf.baseUrl + '/login');
   res.send(301);
 }
 
