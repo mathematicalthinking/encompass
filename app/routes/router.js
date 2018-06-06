@@ -82,11 +82,11 @@ Encompass.Router.map(function() {
     });
   });
   // this.route("problem");
-  this.route("problems", function () {
-    this.route("problem", {resetNamespace: true, path: ':problem_id'}, function () {
+  this.route("problems", function(){
+    this.route("problem", {resetNamespace: true, path: ':problem'}, function() {
     });
     this.route("new");
-   });
+    });
   this.route("responses", function(){
     this.route("responses.new", {resetNamespace: true, path: '/new'}, function() {
       this.route("submission", {path: '/submission/:submission_id'});

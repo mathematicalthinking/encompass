@@ -10,6 +10,7 @@
     </ul>
     <ul class="listing">
       {{#each model as |problem|}}
+      <li>Problem Name: {{problem.title}}</li>
       <li>Problem Question: {{problem.text}}</li>
       <li>Public? {{problem.isPublic}}</li>
       {{/each}}
