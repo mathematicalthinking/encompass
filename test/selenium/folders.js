@@ -70,14 +70,16 @@ describe('Folders', function() {
       let isShowEvidence;
       let isShowComments;
       let isShowFolders;
+      let isShowSubmFolders;
       
       try {
       isViewControls = await helpers.isVisibleInDOM(driver, '#controls');
       isSubControls = await helpers.isVisibleInDOM(driver, '#subcontrols');
       browserInputs = await helpers.getWebElements(driver, 'input[name="browser2"]');
-      isShowEvidence = await helpers.isVisibleInDOM(driver, '#showEvidence');
-      isShowComments = await helpers.isVisibleInDOM(driver, '#showSubmComments');
-      isShowFolders = await helpers.isVisibleInDOM(driver, '#showSubmFolders');
+      isShowEvidence = await helpers.isVisibleInDOM(driver, 'label#showEvidence>input');
+      isShowComments = await helpers.isVisibleInDOM(driver, 'label#showSubmComments>input');
+      isShowFolders = await helpers.isVisibleInDOM(driver, 'label#showSubFolders>input');
+      isShowSubmFolders = await helpers.isVisibleInDOM(driver, 'label#showSubmFolders>input');
       }catch(err) {
         console.log(err);
       }
@@ -88,20 +90,53 @@ describe('Folders', function() {
       expect(isShowEvidence).to.eql(true);
       expect(isShowFolders).to.eql(true);
     });
-  
-    xit('should have default view options selected', function() {
-      'label#browseByStudent>input'.should.have.attribute('checked').and.contain('checked');
-      'label#showSubFolders>input'.should.have.attribute('checked').and.contain('checked');
-      'label#showEvidence>input'.should.have.attribute('checked').and.contain('checked');
-      'label#showSubmFolders>input'.should.have.attribute('checked').and.contain('checked');
+
+    it('should have default view options selected', async function() {
+      // Should discuss which view options we want pre-selected
+      let isShowSubFoldersChecked;
+      let isShowSubmFoldersChecked;
+      try {
+        let showSubFolders = await helpers.getWebElements(driver, 'label#showSubFolders>input');
+        if (!_.isEmpty(showSubFolders)) {
+          isShowSubFoldersChecked = await showSubFolders[0].getAttribute('checked');
+        }
+        let showSubmFolders = await helpers.getWebElements(driver, 'label#showSubmFolders>input');
+        if(!_.isEmpty(showSubmFolders)) {
+          isShowSubmFoldersChecked = await showSubFolders[0].getAttribute('checked');
+        }
+      }catch(err) {
+        console.log(err);
+      }
+
+      expect(isShowSubFoldersChecked).to.eql('true');
+      expect(isShowSubmFoldersChecked).to.eql('true');
+      
+      // TODO?: Currently these inputs do not have ids
+      // 'label#browseByStudent>input'.should.have.attribute('checked').and.contain('checked');
+      //'label#showEvidence>input'.should.have.attribute('checked').and.contain('checked');
+      
     });
 
-    xit('should display a table of submission/selection data', function() {
-      'table#folder_contents'.should.be.inDOM;
-      "$('table#folder_contents>tbody>tr').length".should.evaluate.to.be.at.least('13');
-      'table#folder_contents>tbody'.should.contain.text('Quotable!');
-      //'table#folder_contents>tbody'.should.contain.text('Gabriella');
-      'table#folder_contents>tbody'.should.contain.text("If it was a negative it wouldn't work.");
+    it('should display a table of submission/selection data', async function() {
+      let isTableVisible;
+      let tableLength;
+
+      try{
+        isTableVisible = await helpers.isVisibleInDOM(driver, 'table#folder_contents');
+        let tableRows = await helpers.getWebElements(driver, 'table#folder_contents>tbody>tr');
+        tableLength = tableRows.length;
+      }catch(err) {
+        console.log(err);
+      }
+      
+      expect(isTableVisible).to.eql(true);
+      expect(tableLength).to.be.above(7);
+      
+      // Would these tests actually be useful?
+      
+      // 'table#folder_contents>tbody'.should.contain.text('Improve');
+      // //'table#folder_contents>tbody'.should.contain.text('Peg C.');
+      // 'table#folder_contents>tbody'.should.contain.text("think with Steve about the triangle problem");
     });
   });
 });
