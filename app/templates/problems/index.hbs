@@ -11,10 +11,13 @@
     <ul class="listing">
       {{#each model as |problem|}}
       <li>Problem Name: {{problem.title}}</li>
+       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       <li>Problem Question: {{problem.text}}</li>
       <li>Public? {{problem.isPublic}}</li>
       {{/each}}
     </ul>
   </nav>
 </section>
+
+
 
