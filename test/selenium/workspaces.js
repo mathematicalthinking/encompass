@@ -2,6 +2,7 @@ const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
+const _ = require('underscore');
 
 const host = 'http://localhost:8080';
 const user = 'casper';
@@ -198,7 +199,7 @@ describe('Visiting Workspaces', function() {
       });
     });
 
-    describe('clicking the prev/next arrows', function() {
+    xdescribe('clicking the prev/next arrows', function() {
       // The arrow clicks only seem to work once each way?
       let afterLeftClick;
       let afterRightClick;
@@ -220,36 +221,66 @@ describe('Visiting Workspaces', function() {
       });
     });
 
-    describe('Visiting a Selection in Baffling Brother', function() {
+    describe('Visiting a Selection in Frog Farming', function() {
       before(async function() {
-        let selectionDiv = await driver.wait(until.elementLocated(By.id('submission_selections')), 3000);
-        let selections = await selectionDiv.findElements(By.css('li.selection'));
-        let firstSelection = await selections[0];
-        console.log(selections);
-        let link = await firstSelection.findElement(By.tagName('a'));
-        await link.click();
-        await driver.sleep(5000);
-
-        //casper.waitForSelector('li.notice.relevance-3');
+        let workspaceId = '53df8c4c3491b46d73000211';
+        let submissionId = '53df8c4c3491b46d73000201';
+        let selectionId = '5af1d80af7af8705db2ce83e';
+        try{
+          let link = await driver.wait(until.elementLocated(By.css(`a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}`)), 3000);  
+          if(link) {
+            await link.click();
+            await(driver.sleep(5000));
+          }
+          await driver.wait(until.elementLocated(By.css('div#al_feedback_display')), 3000);
+        }catch(err) {
+          console.log(err);
+        }
       });
     
       it('should display a bunch of submissions', async function() {
-        await driver.getCurrentUrl();
-        // expect(/workspaces\/.*\/submissions\/.*\/selections\//).to.matchCurrentUrl;
+        let currentUrl;
+        try {
+          currentUrl = await driver.getCurrentUrl();
+        }catch(err) {
+          console.log(err);
+        }
+        expect(currentUrl).to.match(/workspaces\/.*\/submissions\/.*\/selections\//);
         // 'span.submission_count'.should.contain.text('500');
         // 'span.submission_index'.should.contain.text('256');
       });
     
-      // it('should display a bunch of comments', function() {
-      //   'Good example of using Alg to solve the Extra'.should.be.textInDom;
-      //   'li.notice.relevance-3'.should.contain.text('Good example of using Alg to solve the Extra');
-      //   "$('#al_feedback_display>ul>li').length".should.evaluate.to.be.above(10);
-      // });
+      it('should display a bunch of comments', async function() {
+        let comments;
+        let commentsText;
+        try {
+          comments = await driver.findElements(By.css('#al_feedback_display>ul>li'));
+          commentsText = await Promise.all(comments.map((el) => {
+            return el.getText();
+          }))
+        }catch(err) {
+          console.log(err);
+        }
+        expect(comments.length).to.be.above(4);
+        expect(commentsText[0]).to.contain('Interesting parallel');
+      });
     
-      // it('should display a bunch of folders', function() {
-      //   "Doesn't Explain Original Eqn".should.be.textInDom;
-      //   "$('li.folderItem').length".should.evaluate.to.be.above(4);
-      // });
+      it('should display a bunch of folders', async function() {
+        let folders;
+        let folderNames;
+        try {
+          folders = await driver.wait(until.elementsLocated(By.css('#al_folders>li')), 3000);
+          if(!_.isEmpty(folders)) {
+            folderNames = await Promise.all(folders.map((el) => {
+              return el.getText();
+            }));
+          }
+        }catch(err) {
+          console.log(err);
+        }
+        expect(folders.length).to.be.above(5);
+        expect(folderNames[0]).to.contain('for feedback');
+      });
     });
 });
 
