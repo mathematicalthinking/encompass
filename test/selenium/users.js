@@ -34,7 +34,6 @@ describe('Users', function() {
       let options = await driver.manage();
       await options.deleteAllCookies();
       let cookies = await options.getCookies();
-      console.log(cookies);
     }catch(err) {
       console.log(err);
     }
