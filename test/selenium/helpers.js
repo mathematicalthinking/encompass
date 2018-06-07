@@ -71,9 +71,40 @@ const isTextInDom = async function(webDriver, text) {
   return isInDom;
 }
 
+const findAndClickElement = async function(webDriver, selector) {
+  let elements = await getWebElements(webDriver, selector);
+  if (elements.length > 0) {
+    return await elements[0].click();
+  }
+  return;
+}
+
+const waitForSelector = async function(webDriver, selector) {
+  try {
+    return await webDriver.wait(until.elementLocated(By.css(selector)));
+  }catch(err) {
+    console.log(err);
+  }
+}
+
+const findInputAndType = async function(webDriver, selector, text) {
+  try {
+    let input = await getWebElements(webDriver, selector);
+      if (input.length > 0) {
+        return await input[0].sendKeys(text);
+    }
+  }catch(err) {
+    console.log(err);
+  }
+  return;
+}; 
+
 module.exports.isVisibleInDOM = isVisibleInDOM;
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
 module.exports.findAndGetText = findAndGetText;
 module.exports.isTextInDom = isTextInDom;
+module.exports.findAndClickElement = findAndClickElement;
+module.exports.waitForSelector = waitForSelector;
+module.exports.findInputAndType = findInputAndType;
