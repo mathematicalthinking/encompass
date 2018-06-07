@@ -9,7 +9,8 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
-    utils    = require('./requestHandler');
+    utils    = require('./requestHandler'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -63,7 +64,7 @@ function sendUsers(req, res, next) {
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
-      if(err) { utils.sendError(new err.InternalError(err.message), res); }
+      if(err) { utils.sendError(new errors.InternalError(err.message), res); }
 
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
@@ -90,7 +91,7 @@ function sendUser(req, res, next) {
     .lean()
     .exec(function(err, doc) {
       if(err) {
-        utils.sendError(new err.InternalError(err.message), res);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
       var data = {'user': doc};
       delete data.user.key; //hide key
@@ -109,11 +110,11 @@ function sendUser(req, res, next) {
   * @throws {InvalidContentError} User already exists
   * @throws {RestError} Something? went wrong
   */
-function postUser(err, req, res, next) {
+function postUser(req, res, next) {
 
   var user = auth.requireUser(req);
   if (!user.isAdmin) {
-    utils.sendError(new err.NotAuthorizedError('You do not have permissions to do this'), res);
+    utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
     return next(false);
   }
 
@@ -124,14 +125,14 @@ function postUser(err, req, res, next) {
       newUser.save(function(err, saved) {
         if (err) {
           logger.error(err);
-          utils.sendError(new err.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
         var data = {'user': saved};
         utils.sendResponse(res, data);
         next();
       });
     } else {
-      utils.sendError(new err.InvalidContentError('User: ' + newUser.username + ' already exists!'), res);
+      utils.sendError(new errors.InvalidContentError('User: ' + newUser.username + ' already exists!'), res);
     }
   });
 }
@@ -144,7 +145,7 @@ function postUser(err, req, res, next) {
   * @throws {InternalError} Data save failed
   * @throws {RestError} Something? went wrong
   */
-function putUser(err, req, res, next) {
+function putUser(req, res, next) {
 
   /* These fields are uneditable */
   delete req.body.user.username;
@@ -159,7 +160,7 @@ function putUser(err, req, res, next) {
       function (err, doc) {
         if (err) {
           logger.error(err);
-          utils.sendError(new err.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
 
         var data = {'user': doc};
@@ -168,7 +169,7 @@ function putUser(err, req, res, next) {
   } else {
     /* non-admins can only update themselves */
     if (req.params.id !== user.id) {
-      utils.sendError(new err.NotAuthorizedError('You do not have permissions to do this'), res);
+      utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
       return;
     }
 
@@ -180,7 +181,7 @@ function putUser(err, req, res, next) {
       function (err, doc) {
         if (err) {
           logger.error(err);
-          utils.sendError(new err.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
 
         var data = {'user': doc};

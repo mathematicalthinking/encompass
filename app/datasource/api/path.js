@@ -10,6 +10,7 @@ var logger   = require('log4js').getLogger('sane'),
     express  = require('express'),
     _        = require('underscore'),
     models   = require('../schemas'),
+    errors = require('restify-errors');
     expressPath =  require('path');
 
 /*
@@ -43,7 +44,7 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-    console.log('in process path');
+    console.log('in process path')
     if(!apiRequest(req)) {
       return next();
     }
@@ -67,7 +68,7 @@ function processPath(options) {
   ENC-486 bad ObjectIDs crash the server
 */
 function validateId(options) {
-  function _validateId(err, req, res, next) {
+  function _validateId(req, res, next) {
     console.log('inside validate Id');
     var match = idRequest(req);
     if(!match) {
@@ -79,7 +80,7 @@ function validateId(options) {
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       //TODO this is sending a 500 error although its a 4xx
-      utils.sendError(new err.InvalidArgumentError('bad object id'), res);
+      utils.sendError(new errors.InvalidArgumentError('bad object id'), res);
       return next(false);
     }
 
@@ -120,7 +121,7 @@ function schemaHasWorkspace(schema) {
 */
 
 function validateContent(options) {
-  function _validateContent(err, req, res, next) {
+  function _validateContent(req, res, next) {
     console.log('inside validateContent');
     var checkForModRequest = /POST|PUT/;
 
@@ -140,7 +141,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError(new err.InvalidContentError(util.format(error, schema), res));
+        utils.sendError(new errors.InvalidContentError(util.format(error, schema), res));
         return next(false);
       }
     }
