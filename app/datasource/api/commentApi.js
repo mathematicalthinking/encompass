@@ -5,7 +5,7 @@
   * @since 1.0.0
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     _        = require('underscore'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),

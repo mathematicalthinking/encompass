@@ -1,5 +1,5 @@
 /*
- * Hey! This is an Ember application. It's built using a 
+ * Hey! This is an Ember application. It's built using a
  * neuter task (see this project's Gruntfile for what that means).
  *
  * `require`s in this file will be stripped and replaced with
@@ -31,7 +31,7 @@ require('dependencies/jq.keys');
 */
 require('dependencies/handlebars-runtime');
 
-/** This is Ember. I think you'll like it 
+/** This is Ember. I think you'll like it
  * The window.ENV setting enables the {{control}} helper in Ember templates
  * Must be set before ember is required
  */
@@ -56,7 +56,7 @@ require('dependencies/ajax');
   this file is generated as part of the build process.
   If you haven't run that yet, you won't see it.
 
-  It is excluded from git commits since it's a 
+  It is excluded from git commits since it's a
   generated file.
 */
 require('dependencies/compiled/templates');
@@ -113,11 +113,11 @@ Encompass.StoreService = DS.Store.extend(Encompass.CacheableModels, {
 });
 
 /* Raw transformation type for sending data over without serialization
-   -- We probably want to move this into a transformations folder 
+   -- We probably want to move this into a transformations folder
       if we end up needing others
 */
 Encompass.RawTransform = DS.Transform.extend({
-  
+
   deserialize: function(serialized) {
     return serialized;
   },
@@ -128,8 +128,8 @@ Encompass.RawTransform = DS.Transform.extend({
 });
 
 
-/* 
- * Model layer. 
+/*
+ * Model layer.
  * Ember.Object itself provides most of what
  * model layers elsewhere provide. Since TodoMVC
  * doesn't communicate with a server, plain
@@ -146,7 +146,7 @@ require('app/models/*');
 */
 require('app/controllers/*');
 
-/* 
+/*
  * States (i.e. Routes)
  * Handles serialization of the application's current state
  * which results in view hierarchy updates. Responds to

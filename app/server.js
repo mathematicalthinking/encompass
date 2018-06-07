@@ -1,40 +1,79 @@
 /* exported mongoose */
-var mongoose = require('mongoose'),
-  config = require('./config'),
-  restify = require('restify'),
-  cas = require('./mfcas'),
-  fake = require('./fake_login'),
-  uuid = require('uuid'),
-  cookie = require('cookie'),
-  api = require('./datasource/api'),
-  auth = require('./datasource/api/auth'),
-  path = require('./datasource/api/path'),
-  fixed = require('./datasource/fixed');
+const express = require('express'),
+      mongoose = require('mongoose'),
+      config = require('./config'),
+      expressPath = require('path'),
+      cookieParser = require('cookie-parser'),
+      bodyParser = require('body-parser'),
+      logger = require('morgan'),
+      http = require('http'),
+      // passport = require('passport'),
+      session = require('express-session'),
+      cas = require('./mfcas'),
+      // passport = require('./passport'),
+      fake = require('./fake_login'),
+      uuid = require('uuid'),
+      cookie = require('cookie'),
+      api = require('./datasource/api'),
+      auth = require('./datasource/api/auth'),
+      path = require('./datasource/api/path'),
+      fixed = require('./datasource/fixed');
 
-var models = require('./datasource/schemas');
-var utils = require('./datasource/api/requestHandler');
-var dbMigration = require('../app/db_migration/base');
+const models = require('./datasource/schemas');
+const utils = require('./datasource/api/requestHandler');
+const dbMigration = require('../app/db_migration/base');
 
-var nconf = config.nconf;
-var dbConf = nconf.get('database');
+const nconf = config.nconf;
+const dbConf = nconf.get('database');
+
+const server = express();
+
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
   pass: dbConf.pass
 });
 
+const port = '8080';
+server.set('port', port);
+
+const mainServer = http.createServer(server);
+
+mainServer.listen(port);
+
+
 // mongo >=3.6
-//  var uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
+//  const uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
 // mongoose.connect(uri);
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', function (err) {
   console.trace(err);
   process.exit(1);
 });
 
-var server = restify.createServer();
-server.use(restify.plugins.bodyParser({ mapParams: false }));
-server.use(restify.plugins.queryParser({ mapParams: false }));
+server.use(session({
+  secret: 'passport-app',
+  resave: true,
+  saveUninitialized: true,
+}));
+
+server.set('views', expressPath.join(__dirname, 'views'));
+server.set('view engine', 'ejs');
+
+
+//PASSPORT
+// configure(passport);
+// app.use(passport.initialize());
+// app.use(passport.session());
+// app.use(flash());
+
+//MIDDLEWARE
+server.use(logger('dev'));
+server.use(express.json());
+server.use(express.urlencoded({
+  extended: false
+}));
+server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
 server.use(auth.processToken());
@@ -48,6 +87,12 @@ server.get('/devonly/fakelogin/:username', fake.fakeLogin);
 server.get('/login', cas.sendToCas);
 server.get('/logout', cas.logout);
 server.get('/back', cas.returnFromCas);
+
+// Use passport file for authentication instead of mfcas
+// server.get('/login', passport.login);
+// server.get('/logout', passport.logout);
+// server.get('/back', passport.back);
+
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', api.get.user);
 server.get('/api/workspaces', api.get.workspaces);
@@ -114,6 +159,8 @@ server.put('/api/categories/:id', api.put.category);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 
+server.get(/.*/, express.static('build'));
+
 server.post({
   name: 'newWorkspaces',
   path: '/api/newWorkspaceRequests',
@@ -122,11 +169,27 @@ server.post({
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
 
 //Catch-all and serve from the build directory
-server.get(/.*/, restify.plugins.serveStatic({
-  directory: 'build/',
-  'default': 'index.html'
-}));
 
-server.listen(nconf.get('port'), function () {
-  console.info('%s listening at %s', server.name, server.url);
+// server.use(express.static(path.join(__dirname, 'build/')));
+
+
+
+
+server.use(function (req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
+
+// error handler
+server.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = mainServer;

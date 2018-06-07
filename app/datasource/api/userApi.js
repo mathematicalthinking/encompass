@@ -5,7 +5,7 @@
   */
 var mongoose = require('mongoose'),
     cookie   = require('cookie'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
