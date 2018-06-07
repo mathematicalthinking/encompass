@@ -9,8 +9,7 @@ var mongoose = require('mongoose'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    models   = require('../schemas'),
-    errors = require('restify-errors');
+    models   = require('../schemas');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -34,7 +33,7 @@ function getTaggings(req, res, next) {
     .exec(function(err, tags) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
 
       var data = {'tagging': tags};
@@ -57,7 +56,7 @@ function getTagging(req, res, next) {
     .exec(function(err, tags) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
 
       var data = {'tagging': tags};
@@ -88,7 +87,7 @@ function postTagging(req, res, next) {
       tagging.save(function(err, doc) {
         if(err) {
           logger.error(err);
-          utils.sendError(new errors.InternalError(err.message), res);
+          utils.sendError(new err.InternalError(err.message), res);
         }
 
         var data = {'tagging': doc};
@@ -121,7 +120,7 @@ function putTagging(req, res, next) {
         function (err, doc) {
           if(err) {
             logger.error(err);
-            utils.sendError(new errors.InternalError(err.message), res);
+            utils.sendError(new err.InternalError(err.message), res);
           }
 
           for(var field in req.body.tagging) {
@@ -133,7 +132,7 @@ function putTagging(req, res, next) {
           doc.save(function (err, tagging) {
             if(err) {
               logger.error(err);
-              utils.sendError(new errors.InternalError(err.message), res);
+              utils.sendError(new err.InternalError(err.message), res);
             }
 
             var data = {'tagging': tagging};

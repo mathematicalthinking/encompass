@@ -11,8 +11,7 @@ var mongoose = require('mongoose'),
   models = require('../schemas'),
   auth = require('./auth'),
   permissions = require('../../../common/permissions'),
-  utils = require('./requestHandler'),
-  errors = require('restify-errors');
+  utils = require('./requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -35,7 +34,7 @@ const getSections = (req, res, next) => {
   .exec((err, sections) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
     }
     const data = {'sections': sections};
     utils.sendResponse(res, data);
@@ -58,7 +57,7 @@ const getSection = (req, res, next) => {
   .exec((err, section) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
     }
     const data = {'section': section};
     utils.sendResponse(res, data);
@@ -84,7 +83,7 @@ const postSection = (req, res, next) => {
   section.save((err, doc) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
     }
     const data = {'section': doc};
     utils.sendResponse(res, data);
@@ -108,7 +107,7 @@ const putSection = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
     }
     // make the updates
     for(let field in req.body.section) {
@@ -119,7 +118,7 @@ const putSection = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -141,7 +140,7 @@ const addTeacher = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     if (doc.teachers.indexOf(req.body.teacherId) === -1){
@@ -150,7 +149,7 @@ const addTeacher = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};
@@ -173,7 +172,7 @@ const removeTeacher = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     // only remove teacher if they exist
@@ -183,7 +182,7 @@ const removeTeacher = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};
@@ -205,7 +204,7 @@ const addStudent = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     // only add the student if they're not already in the section
@@ -215,7 +214,7 @@ const addStudent = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};
@@ -237,7 +236,7 @@ const removeStudent = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     // ensure the student is in this section before removing
@@ -247,7 +246,7 @@ const removeStudent = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};
@@ -269,7 +268,7 @@ const addProblem = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     // only add unique problems to the section
@@ -279,7 +278,7 @@ const addProblem = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};
@@ -301,7 +300,7 @@ const removeProblem = (req, res, next) => {
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
       return;
     }
     // only remove problem if its in this section
@@ -311,7 +310,7 @@ const removeProblem = (req, res, next) => {
     doc.save((err, section) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
         return;
       }
       const data = {'section': section};

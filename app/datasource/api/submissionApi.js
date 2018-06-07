@@ -13,8 +13,7 @@ var mongoose = require('mongoose'),
     util     = require('util'),
     auth     = require('./auth'),
     models   = require('../schemas'),
-    spaces   = require('./workspaceApi'),
-    errors = require('restify-errors');
+    spaces   = require('./workspaceApi');
 
     module.exports.get = {};
     module.exports.post = {};
@@ -106,7 +105,7 @@ function getSubmissions(req, res, next) {
     .exec(function(err, submissions) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
 
       var data = {'submission': submissions};
@@ -142,7 +141,7 @@ function getLatestUserSubmission (username, callback) {
   * @description __URL__: /api/PDSets
   * @see [aggregate](http://mongoosejs.com/docs/api.html#aggregate_Aggregate)
   * @returns {Object} A 'named' array of submission objects: according to specified criteria
-  * @todo Needs to throw/return errors if any
+  * @todo Needs to throw/return err if any
   * @howto Because a pdSet is defined by a nested property on a submission as opposed to
            being an actual object containing submissions, here we create the PDset objects
            by aggregating and projecting the nested properties of submissions.
@@ -189,7 +188,7 @@ function getSubmission(req, res, next) {
     function(err, submission) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
 
       var data = {'submission': submission};
@@ -206,7 +205,7 @@ function getSubmission(req, res, next) {
   * @throws {InternalError} Data save failed
   * @throws {RestError} Something? went wrong
   */
-function postSubmission(req, res, next) {
+function postSubmission(err, req, res, next) {
   var isAnonymousPost = (!!req.headers.secret && !!req.headers.time); // Note: We assume the header if present, is correctly formatted
   var postData = req.body;
   delete postData._id;
@@ -240,12 +239,12 @@ function postSubmission(req, res, next) {
         });
       }
       catch (error) {
-        utils.sendError(new errors.InternalError(error.message), res);
+        utils.sendError(new err.InternalError(error.message), res);
         next();
       }
     }
   } else {
-    utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
+    utils.sendError(new err.NotAuthorizedError('You do not have permissions to do this'), res);
     next();
   }
   return next();
@@ -264,7 +263,7 @@ function putSubmission(req, res, next) {
   models.Submission.findById(req.params.id, function (err, doc) {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      utils.sendError(new err.InternalError(err.message), res);
     }
 
     for(var field in req.body.submission) {
@@ -276,7 +275,7 @@ function putSubmission(req, res, next) {
     doc.save(function (err, submission) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        utils.sendError(new err.InternalError(err.message), res);
       }
 
       var data = {'submission': submission};
@@ -297,7 +296,7 @@ function putSubmission(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function importSubmissions(req, res, next) {
+function importSubmissions(err, req, res, next) {
   console.log('IMPORTING SUBMISSIONS...');
   var user = auth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
@@ -332,7 +331,7 @@ function importSubmissions(req, res, next) {
 
   var onReject = function(error) {
     logger.debug(error);
-    utils.sendError(new errors.RestError(error), res);
+    utils.sendError(new err.RestError(error), res);
   };
 
   /*

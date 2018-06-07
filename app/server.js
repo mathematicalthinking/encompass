@@ -57,7 +57,6 @@ server.use(session({
   saveUninitialized: true,
 }));
 
-server.set('views', expressPath.join(__dirname, 'views'));
 server.set('view engine', 'ejs');
 
 
