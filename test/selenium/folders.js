@@ -1,7 +1,6 @@
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
-const assert = chai.assert;
 const _ = require('underscore');
 const helpers = require('./helpers');
 
@@ -64,31 +63,13 @@ describe('Folders', function() {
     });
 
     it('should display view controls', async function() {
-      let isViewControls;
-      let isSubControls;
-      let browserInputs;
-      let isShowEvidence;
-      let isShowComments;
-      let isShowFolders;
-      let isShowSubmFolders;
-      
-      try {
-      isViewControls = await helpers.isVisibleInDOM(driver, '#controls');
-      isSubControls = await helpers.isVisibleInDOM(driver, '#subcontrols');
-      browserInputs = await helpers.getWebElements(driver, 'input[name="browser2"]');
-      isShowEvidence = await helpers.isVisibleInDOM(driver, 'label#showEvidence>input');
-      isShowComments = await helpers.isVisibleInDOM(driver, 'label#showSubmComments>input');
-      isShowFolders = await helpers.isVisibleInDOM(driver, 'label#showSubFolders>input');
-      isShowSubmFolders = await helpers.isVisibleInDOM(driver, 'label#showSubmFolders>input');
-      }catch(err) {
-        console.log(err);
-      }
-      expect(isViewControls).to.eql(true);
-      expect(isSubControls).to.eql(true);
-      expect(browserInputs.length).to.eql(2);
-      expect(isShowComments).to.eql(true);
-      expect(isShowEvidence).to.eql(true);
-      expect(isShowFolders).to.eql(true);
+      expect(await helpers.isElementVisible(driver, '#controls')).to.eql(true);
+      expect(await helpers.isElementVisible(driver, '#subcontrols')).to.eql(true);
+      expect(await helpers.getWebElements(driver, 'input[name="browser2"]')).to.have.lengthOf(2);
+      expect(await helpers.isElementVisible(driver, 'label#showEvidence>input')).to.eql(true);
+      expect(await helpers.isElementVisible(driver, 'label#showSubmComments>input')).to.eql(true);
+      expect(await helpers.isElementVisible(driver, 'label#showSubFolders>input')).to.eql(true);
+      expect(await helpers.isElementVisible(driver, 'label#showSubmFolders>input')).to.eql(true);
     });
 
     it('should have default view options selected', async function() {
@@ -122,7 +103,7 @@ describe('Folders', function() {
       let tableLength;
 
       try{
-        isTableVisible = await helpers.isVisibleInDOM(driver, 'table#folder_contents');
+        isTableVisible = await helpers.isElementVisible(driver, 'table#folder_contents');
         let tableRows = await helpers.getWebElements(driver, 'table#folder_contents>tbody>tr');
         tableLength = tableRows.length;
       }catch(err) {

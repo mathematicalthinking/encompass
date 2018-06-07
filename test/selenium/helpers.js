@@ -72,17 +72,6 @@ const isTextInDom = async function(webDriver, text) {
   return isInDom;
 }
 
-// const validateGroup = async function(webDriver, selectors, validator) {
-//   if (!_.isArray(selectors)) {
-//     return;
-//   }
-//   for (let selector of selectors) {
-//     it(`${selector} should exist`, async function() {
-//       expect(await validator(webDriver, selector)).
-//     });
-//   }
-// }
-
 module.exports.isVisibleInDOM = isVisibleInDOM;
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
