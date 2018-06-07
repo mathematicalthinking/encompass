@@ -17,7 +17,7 @@ var logger   = require('log4js').getLogger('sane'),
   @returns {Boolean} - is this request an /api/ request?
 */
 function apiRequest(req) {
-  return !!req.expressPath('/api');
+  return !!req.path.match('/api');
 }
 
 /*
@@ -53,7 +53,7 @@ function processPath(options) {
     _.defaults(req.mf, { path: {} });
 
     var pathRegExp = /\/api\/([a-z]*)\/?/;
-    var match = pathRegExp.exec(req.expressPath());
+    var match = pathRegExp.exec(req.path);
     if(match) {
       req.mf.path.model = match[1];
     }

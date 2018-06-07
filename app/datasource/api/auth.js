@@ -132,8 +132,8 @@ function protect(options) {
     var openPaths = ['/api/users', '/api/stats'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
-    var openRequest = _.contains(openPaths, req.getPath());
-    console.log('isOpenRequest: ', req.getPath(), ' : ', openRequest);
+    var openRequest = _.contains(openPaths, req.path);
+    console.log('isOpenRequest: ', req.path, ' : ', openRequest);
     if(openRequest && req.method === 'GET') {
       return next();
     }
