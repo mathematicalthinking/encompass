@@ -45,6 +45,7 @@
     "test": true,
     "visit": true,
     "xit": true,
+    "xdescribe": true,
     "DS": true,
     "Ember": true,
     "Encompass": true,

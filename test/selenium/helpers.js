@@ -4,7 +4,6 @@ const expect = chai.expect;
 const assert = chai.assert;
 const _ = require('underscore');
 
-
 const isVisibleInDOM = async function (webDriver, selector) {
   let isVisible = false;
   try {
