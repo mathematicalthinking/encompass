@@ -282,7 +282,8 @@ describe('Visiting Workspaces', function() {
       });
     });
 
-    // Consider moving into test/casper/folders
+    // Consider moving into folders.js
+    // Should there be popup functionality?
   describe('Visiting a Folder from Frog Farming', function() {
     before(function() {
       // casper.start(host + '/devonly/fakelogin/casper');
@@ -315,9 +316,6 @@ describe('Visiting Workspaces', function() {
     // });
 
     describe('clicking the folder icon', function() {
-      
-      
-      
       it('should display sub-folders (if any)', async function() {
         let folders;
         let interpretationFolder;
