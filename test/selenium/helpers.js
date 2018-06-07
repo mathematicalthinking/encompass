@@ -4,19 +4,6 @@ const expect = chai.expect;
 const assert = chai.assert;
 const _ = require('underscore');
 
-const isVisibleInDOM = async function (webDriver, selector) {
-  let isVisible = false;
-  try {
-    const webElements = await webDriver.findElements(By.css(selector));
-    if (!_.isEmpty(webElements)) {
-      isVisible = true;
-    }
-  }catch(err) {
-    console.log(err);
-  }
-  return Promise.resolve(isVisible);
-}
-
 const isElementVisible = async function(webDriver, selector) {
   let isVisible = false;
   try {
@@ -38,12 +25,12 @@ const getWebElements = async function(webDriver, selector) {
     console.log(err);
   }
   return webElements;
-}
+};
 
 const navigateAndWait = async function(webDriver, url, selector, timeout) {
   await webDriver.get(url);
   return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
-}
+};
 
 const findAndGetText = async function(webDriver, selector) {
   let text;
@@ -69,7 +56,7 @@ const isTextInDom = async function(webDriver, text) {
     console.log(err);
   }
   return isInDom;
-}
+};
 
 const findAndClickElement = async function(webDriver, selector) {
   let elements = await getWebElements(webDriver, selector);
@@ -77,7 +64,7 @@ const findAndClickElement = async function(webDriver, selector) {
     return await elements[0].click();
   }
   return;
-}
+};
 
 const waitForSelector = async function(webDriver, selector) {
   try {
@@ -85,7 +72,7 @@ const waitForSelector = async function(webDriver, selector) {
   }catch(err) {
     console.log(err);
   }
-}
+};
 
 const findInputAndType = async function(webDriver, selector, text) {
   try {
@@ -99,7 +86,6 @@ const findInputAndType = async function(webDriver, selector, text) {
   return;
 }; 
 
-module.exports.isVisibleInDOM = isVisibleInDOM;
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;

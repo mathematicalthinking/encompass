@@ -128,16 +128,15 @@ describe('Users', function() {
 
     function validateUsersPage(){
       it('should show/hide various editable fields', async function(){
-        
+        const inputs = ['input.userName', 'button.clearTour', 'input.isAdmin', 'input.isAuthorized'];
         expect(await helpers.isTextInDom(driver, admin)).to.be.true;
         
         await helpers.findAndClickElement(driver, 'button.editUser');
+        
         // should there be an input to change username?
-        expect(await helpers.isElementVisible(driver, 'input.userName')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'button.clearTour')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.isAdmin')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
-
+        for (let input of inputs) {
+          expect(await helpers.isElementVisible(driver, input)).to.be.true;
+        }
         await helpers.findAndClickElement(driver, 'button.saveUser');
       });
     }
@@ -155,7 +154,7 @@ describe('Users', function() {
       });
 
       it('should let you create a new authorized user', async function() {
-        let username = `${admin}test11`
+        let username = `${admin}test19`
         await helpers.findInputAndType(driver, 'form#newUser input.displayName', 'TEST');
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
