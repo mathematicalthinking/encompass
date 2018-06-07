@@ -70,7 +70,6 @@ describe('Users', function() {
      });
      validateAnon();
    });
-
   });
   
   describe('Logged in as a regular user', function() {
@@ -95,7 +94,6 @@ describe('Users', function() {
         try {
           await driver.findElement(By.css('a.menu.users')).click();
           await driver.wait(until.elementLocated(By.css('a.user')));
-          //await driver.sleep(3000);
         }catch(err) {
           console.log(err);
         }
@@ -109,7 +107,6 @@ describe('Users', function() {
         before(async function() {
           await helpers.findAndClickElement(driver, `a[href$="${regularUser}"]`);
           await helpers.waitForSelector(driver, 'article.user');
-          //await driver.sleep(3000);
         });
         describe('user info table', function() {
           validateUsersPage();
