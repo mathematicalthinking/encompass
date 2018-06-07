@@ -18,6 +18,19 @@ const isVisibleInDOM = async function (webDriver, selector) {
   return Promise.resolve(isVisible);
 }
 
+const isElementVisible = async function(webDriver, selector) {
+  let isVisible = false;
+  try {
+    const webElements = await webDriver.findElements(By.css(selector));
+      if(webElements.length === 1) {
+        isVisible = await webElements[0].isDisplayed();
+      }
+  }catch(err) {
+    console.log(err);
+  }
+  return isVisible;
+};
+
 const getWebElements = async function(webDriver, selector) {
   let webElements = [];
   try {
@@ -33,34 +46,45 @@ const navigateAndWait = async function(webDriver, url, selector, timeout) {
   return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 }
 
-const matchElementText = async function(webDriver, selector, expected) {
+const findAndGetText = async function(webDriver, selector) {
   let text;
   try {
-    let element = await webDriver.findElement(By.css(selector));
-    if(element) {
-      text = await element.getText();
+    let webElements = await webDriver.findElements(By.css(selector));
+    if(webElements.length === 1) {
+      text = await webElements[0].getText();
     }
   }catch(err) {
     console.log(err);
   }
-  return Promise.resolve(expect(text).to.match(expected));
+  return text;
+};
+
+const isTextInDom = async function(webDriver, text) {
+  let isInDom;
+  try {
+    let pageSource = await webDriver.getPageSource();
+    isInDom = pageSource.includes(text);
+  }catch(err) {
+    console.log(err);
+  }
+  console.log('is', isInDom);
+  return isInDom;
 }
 
-const doesElementContainText = async function(webDriver, selector, expected) {
-  let text;
-  try {
-    let element = await webDriver.findElement(By.css(selector));
-    if(element) {
-      text = await element.getText();
-    }
-  }catch(err) {
-    console.log(err);
-  }
-  return Promise.resolve(expect(text).to.contain(expected));
-}
+// const validateGroup = async function(webDriver, selectors, validator) {
+//   if (!_.isArray(selectors)) {
+//     return;
+//   }
+//   for (let selector of selectors) {
+//     it(`${selector} should exist`, async function() {
+//       expect(await validator(webDriver, selector)).
+//     });
+//   }
+// }
 
 module.exports.isVisibleInDOM = isVisibleInDOM;
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
-module.exports.matchElementText = matchElementText;
-module.exports.doesElementContainText = doesElementContainText;
+module.exports.isElementVisible = isElementVisible;
+module.exports.findAndGetText = findAndGetText;
+module.exports.isTextInDom = isTextInDom;
