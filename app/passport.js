@@ -28,7 +28,7 @@ function login(req, res, next) {
 
 function signup(req, res, next) {
   logger.debug("SSO base url: " + ssoConf.baseUrl);
-  res.header('Location', ssoConf.baseUrl + '/signup' + ssoConf.service);
+  res.header('Location', ssoConf.baseUrl + '/signup');
   res.send(301);
 }
 
