@@ -5,7 +5,7 @@
   * @since 1.0.0
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger = require('log4js').getLogger('server'),
     models = require('../schemas'),
     auth   = require('./auth'),
@@ -436,7 +436,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
         criterion[prefix.concat(key)] = submissionSet.criteria[key];
         criteria.$and.push(criterion);
       }
-      
+
     }
   }
   criteria.$and.push({owner: user}); //limit this to workspaces for the current user only
@@ -445,7 +445,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
   // Looks for existing workspaces for this user for the submission set
   console.log('CRITERIA', criteria);
   models.Workspace.find(criteria).exec(function(err, workspaces){
-  
+
     if(err){
       logger.error(err);
     }
@@ -833,7 +833,7 @@ function newWorkspaceRequest(req, res, next) {
 
       utils.sendResponse(res, response);
     });
-  
+
 }
 
 module.exports.get.workspace = sendWorkspace;

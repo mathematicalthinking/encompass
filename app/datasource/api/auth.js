@@ -1,5 +1,5 @@
 /*
-  Auth plugins for restify
+  Auth plugins for express
   Protects against updates from anon users
   Caches the user for subsequent auth decisions
   Updates the user's lastSeen time
@@ -8,7 +8,7 @@
 var mongoose = require('mongoose'),
     cookie   = require('cookie'),
     logger   = require('log4js').getLogger('auth'),
-    restify  = require('restify'),
+    express  = require('express'),
     _        = require('underscore'),
     path     = require('./path'),
     cache    = require('./cache'),
@@ -44,7 +44,7 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-
+    console.log('inside processToken');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -74,7 +74,7 @@ function processToken(options) {
 */
 function fetchUser(options) {
   function _fetchUser(req, res, next) {
-
+    console.log('inside fetch user');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -169,7 +169,7 @@ function accessibleWorkspacesQuery(user) {
 }
 
 function loadAccessibleWorkspaces(options) {
-  
+
   function _loadAccessibleWorkspaces(req, res, next) {
     console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);

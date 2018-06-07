@@ -7,16 +7,17 @@
 var logger   = require('log4js').getLogger('sane'),
     utils    = require('./requestHandler'),
     util     = require('util'),
-    restify  = require('restify'),
+    express  = require('express'),
     _        = require('underscore'),
     models   = require('../schemas'),
     errors = require('restify-errors');
+    expressPath =  require('path');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
 */
 function apiRequest(req) {
-  return !!req.getPath().match('/api');
+  return !!req.expressPath('/api');
 }
 
 /*
@@ -24,11 +25,12 @@ function apiRequest(req) {
 */
 function idRequest(req) {
   var idRegExp = /\/api\/([a-z]*)\/(\w+)/;
-  return idRegExp.exec(req.getPath());
+  return idRegExp.exec(req.expressPath);
 }
 
 function prep(options) {
   function _prep(req, res, next) {
+    console.log('prep is called');
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
@@ -42,7 +44,7 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-
+    console.log('in process path')
     if(!apiRequest(req)) {
       return next();
     }
@@ -51,7 +53,7 @@ function processPath(options) {
     _.defaults(req.mf, { path: {} });
 
     var pathRegExp = /\/api\/([a-z]*)\/?/;
-    var match = pathRegExp.exec(req.getPath());
+    var match = pathRegExp.exec(req.expressPath());
     if(match) {
       req.mf.path.model = match[1];
     }
@@ -67,6 +69,7 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
+    console.log('inside validate Id');
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -119,6 +122,7 @@ function schemaHasWorkspace(schema) {
 
 function validateContent(options) {
   function _validateContent(req, res, next) {
+    console.log('inside validateContent');
     var checkForModRequest = /POST|PUT/;
 
 
