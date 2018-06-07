@@ -63,11 +63,12 @@ const isTextInDom = async function(webDriver, text) {
   let isInDom;
   try {
     let pageSource = await webDriver.getPageSource();
-    isInDom = pageSource.includes(text);
+    if (typeof pageSource === 'string') {
+      isInDom = pageSource.includes(text);
+    }
   }catch(err) {
     console.log(err);
   }
-  console.log('is', isInDom);
   return isInDom;
 }
 
