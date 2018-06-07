@@ -16,7 +16,7 @@ describe('Users', function() {
       .forBrowser('chrome')
       .build();
     // try {
-    //   await driver.get(`${host}/devonly/fakelogin/${user}`);
+    //   await driver.get(`${host}/devonly/fakelogin/${regularUser}`);
     // }catch(err) {
     //   console.log(err);
     // }
@@ -28,43 +28,50 @@ describe('Users', function() {
 
   //apparently we can't clear out the cookies
   // when running mocha-casperjs *.js
-  //describe('Anonymously', function() {
-  //  before(function() {
-  //    phantom.clearCookies();
-  //    casper.start(host+'/#/users');
-  //    casper.thenOpen(host + '/#/users');
-  //    casper.waitForSelector('a.user');
-  //  });
-  //
-  //  function validateAnon(){
-  //    it('should show various fields', function(){
-  //      'Display Name'.should.be.textInDOM;
-  //    });
-  //  }
+  describe('Anonymously', function() {
+   before(async function() {
+    try {
+      let options = await driver.manage();
+      await options.deleteAllCookies();
+      let cookies = await options.getCookies();
+      console.log(cookies);
+    }catch(err) {
+      console.log(err);
+    }
+    await helpers.navigateAndWait(driver, `${host}`, 'a.users');
+    await helpers.findAndClickElement(driver, 'a.users');
+    await driver.sleep(3000);
+   });
+  
+   function validateAnon(){
+     it('should show various fields', async function(){
+      expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true; 
+     });
+   }
 
-  //  describe('Visiting the users page', function() {
-  //    it('there is only one user in the list', function() {
-  //      "$('a.user').length".should.evaluate.to.equal(1);
-  //      'a.user'.should.have.text('anon');
-  //    });
+   describe('Visiting the users page', function() {
+     it('there is only one user in the list', async function() {
+      expect(await helpers.getWebElements(driver, 'a.user')).to.have.lengthOf(1);
+      expect(await helpers.findAndGetText(driver, 'a.user')).to.eql('anon');
+     });
 
-  //    describe('clicking the user link', function() {
-  //      before(function() {
-  //        casper.click('a.user');
-  //        casper.waitForSelector('article.user');
-  //      });
-  //      validateAnon();
-  //    });
-  //  });
+     describe('clicking the user link', function() {
+       before(async function() {
+         await helpers.findAndClickElement(driver, 'a.user');
+         await helpers.waitForSelector(driver, 'article.user');
+       });
+       validateAnon();
+     });
+   });
 
-  //  describe('Visiting a user page directly', function() {
-  //    before(function() {
-  //      casper.open(host + '/#/users/anon');
-  //    });
-  //    validateAnon();
-  //  });
+   describe('Visiting a user page directly', function() {
+     before(async function() {
+      await helpers.navigateAndWait(driver, `${host}/#/users/anon`, 'a.user');
+     });
+     validateAnon();
+   });
 
-  //});
+  });
   
   describe('Logged in as a regular user', function() {
     before(async function() {
@@ -153,8 +160,8 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
       });
 
-      it('should let you create a new authorized user', async function() {
-        let username = `${admin}test19`
+      xit('should let you create a new authorized user', async function() {
+        let username = `${admin}test111`
         await helpers.findInputAndType(driver, 'form#newUser input.displayName', 'TEST');
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
