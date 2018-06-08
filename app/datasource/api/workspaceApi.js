@@ -33,7 +33,7 @@ module.exports.put = {};
   * @todo This should really accept a node-style callback
   */
 function getWorkspace(id, callback) {
-  console.log('in getWorkspace');
+  console.log('in getWorkspace', id);
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
@@ -102,6 +102,7 @@ function getWorkspace(id, callback) {
   *       + Could be simpler. Needs refactoring
   */
 function getWorkspaceWithDependencies(id, callback) {
+  console.log('id in get ws with depends', id);
   models.Workspace.findById(id)
     .exec(
       function(err, workspace) {
