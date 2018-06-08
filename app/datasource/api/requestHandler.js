@@ -79,8 +79,7 @@ const sendError = {
       error: err || 'Rest error'
     });
     }
-
-}
+};
 
 // function sendError(error, res) {
 //   logger.error(error);
@@ -257,7 +256,6 @@ function isValidApiKey(secret, timestamp) {
 
 module.exports.sendResponse = sendResponse;
 module.exports.sendError = sendError;
-module.exports.sendCustomError = sendCustomError;
 module.exports.buildCriteria = buildCriteria;
 module.exports.modelize = modelize;
 module.exports.generateApiSecret = generateApiSecret;
