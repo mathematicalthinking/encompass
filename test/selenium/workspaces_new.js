@@ -47,7 +47,8 @@ describe('Visiting Workspace Creation', function() {
   describe('clicking the pow import option', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, 'input.powImport');
-      await helpers.waitForSelector(driver, '.ember-view');
+      await helpers.waitForSelector(driver, 'form#powImportForm');
+      driver.sleep(3000);
     });
     it('should change the displayed import form', async function() {
       expect(await helpers.isElementVisible(driver, 'form#powImportForm')).to.be.true;

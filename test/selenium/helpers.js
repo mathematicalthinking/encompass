@@ -1,7 +1,4 @@
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
 const _ = require('underscore');
 
 const isElementVisible = async function(webDriver, selector) {

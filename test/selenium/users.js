@@ -26,8 +26,6 @@ describe('Users', function() {
     driver.quit();
   });
 
-  //apparently we can't clear out the cookies
-  // when running mocha-casperjs *.js
   describe('Anonymously', function() {
    before(async function() {
     try {

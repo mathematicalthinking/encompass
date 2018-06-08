@@ -2,7 +2,8 @@ const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
-
+const helpers = require('./helpers');
+console.log('node_env', process.env.NODE_ENV);
 
 const host = 'http://localhost:8080'
 const login = 'http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:8080/back';
@@ -22,24 +23,11 @@ describe('Home Page', function() {
   });
 
   it('should load without error', async function() {
-    try {
-    await driver.get(host);
-    }catch(err) {
-      console.log(err);
-    }
+    await helpers.navigateAndWait(driver, host, 'a[href="login"]');
   });
 
   it('login button should be visible', async function() {
-    let button;
-    let isDisplayed;
-    try {
-      button = await driver.findElement(By.css('a[href="login"]'));
-      isDisplayed = await button.isDisplayed();
-
-    }catch(err) {
-      console.log(err);
-    }
-   expect(isDisplayed).to.eql(true);
+    expect(await helpers.isElementVisible(driver, 'a[href="login"]')).to.be.true;
   });
 
   it('should display login page after clicking login', async function() {
@@ -47,7 +35,6 @@ describe('Home Page', function() {
     let isUsername;
     let isPassword;
     let isSubmit;
-
     try {
       await driver.findElement(By.css('a[href="login"]')).sendKeys('webdriver', Key.RETURN);
       await driver.sleep(1000);
