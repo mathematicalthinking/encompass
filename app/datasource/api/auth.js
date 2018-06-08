@@ -141,7 +141,8 @@ function protect(options) {
 
     var notAuthn = !user;
     var notAuthz = !userAuthz;
-
+    console.log('isNotAuthenticated', notAuthn );
+    console.log('is not Authorized: ', notAuthz);
     if(notAuthn) {
       res.setHeader('www-authenticate', 'CasLogin');
       res.send(401);

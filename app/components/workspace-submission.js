@@ -12,6 +12,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend({
   /* Next: get selections to show up */
 
   workspaceSelections: function() {
+    console.log('curr sub',this.currentSubmission);
     var selections = this.currentSubmission.get('selections');
     var comp = this;
     var selectionsInWorkspace = null;

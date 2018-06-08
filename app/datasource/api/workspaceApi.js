@@ -34,6 +34,7 @@ module.exports.put = {};
   * @todo This should really accept a node-style callback
   */
 function getWorkspace(id, callback) {
+  console.log('in getWorkspace');
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
@@ -47,7 +48,6 @@ function getWorkspace(id, callback) {
     var data = {
       workspace: ws
     };
-
     var dataMap = {
       'selections':  'selection',
       'submissions': 'submission',
@@ -87,8 +87,6 @@ function getWorkspace(id, callback) {
       }
       data[modelName] = _.values(relatedData[key]);
     });
-
-
     callback(data);
   });
 }
@@ -150,13 +148,16 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
+  
   var user = auth.requireUser(req);
+  console.log('in sendWorkspace', user.username);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(!permissions.userCanLoadWorkspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
     } else {
       getWorkspace(req.params.id, function(data) {
+        console.log(`${user} has permission to load workspace #${req.params.id}`);
         if(!data) {
           return utils.sendCustomError(404, 'no such workspace', res);
         }
