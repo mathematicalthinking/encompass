@@ -4,7 +4,8 @@
   "description": "enCOMPASS",
   "main": "app/server.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test"
   },
   "repository": {
     "type": "git",
