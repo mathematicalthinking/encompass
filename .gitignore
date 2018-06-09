@@ -15,6 +15,9 @@ _SpecRunner.html
 error.out
 server.out
 
+#db backups
+app/db_migration/data
+
 # mac files
 .DS_Store
 
