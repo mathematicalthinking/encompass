@@ -16,7 +16,29 @@ var utils = require('./datasource/api/requestHandler');
 var dbMigration = require('../app/db_migration/base');
 
 var nconf = config.nconf;
-var dbConf = nconf.get('database');
+
+let port = nconf.get('port');
+let dbConf = nconf.get('database');
+switch(process.env.NODE_ENV) {
+  case 'development':
+    console.log("NODE_ENV == development");
+    port = nconf.get('devPort');
+    dbConf.name = nconf.get('devDBName');
+    break;
+  case 'test':
+    console.log("NODE_ENV == test");
+    port = nconf.get('testPort');
+    dbConf.name = nconf.get('testDBName');
+    break;
+  case 'production':
+    console.log("NODE_ENV == production");
+    port = nconf.get('prodPort');
+    dbConf.name = nconf.get('prodDBName');
+    break;
+}
+
+console.info (`Port: ${port.toString()}`);
+console.info (`db name: ${dbConf.name}`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
@@ -127,6 +149,6 @@ server.get(/.*/, restify.plugins.serveStatic({
   'default': 'index.html'
 }));
 
-server.listen(nconf.get('port'), function () {
+server.listen(port, function () {
   console.info('%s listening at %s', server.name, server.url);
 });
