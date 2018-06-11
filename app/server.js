@@ -49,17 +49,11 @@ switch(process.env.NODE_ENV) {
 console.info (`Port: ${port.toString()}`);
 console.info (`db name: ${dbConf.name}`);
 
-mongoose.connect(dbConf.host, dbConf.name, {
-  user: dbConf.user,
-  pass: dbConf.pass
-});
-
 server.set('port', port);
 
 const mainServer = http.createServer(server);
 
 mainServer.listen(port);
-
 
 // mongo >=3.6
 //  const uri = `mongodb://${dbConf.user}:${dbConf.pass}@${dbConf.host}:27017/${dbConf.name}`;
@@ -92,6 +86,7 @@ server.use(express.urlencoded({
   extended: false
 }));
 server.use(cookieParser());
+server.use(bodyParser());
 server.use(path.prep());
 server.use(path.processPath());
 server.use(auth.processToken());

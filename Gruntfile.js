@@ -345,8 +345,7 @@ module.exports = function(grunt) {
         //Shared Options Hash
       },
       dev : {
-        NODE_ENV : grunt.option('environment') || 'development',
-        DEST     : 'temp'
+        NODE_ENV : grunt.option('environment') || 'development'
       },
       test: {
         NODE_ENV: 'test'
