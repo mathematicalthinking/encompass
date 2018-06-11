@@ -3,11 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../../app/db_migration/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -19,6 +19,7 @@ describe('Responses', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+    await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
@@ -32,7 +33,7 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      await driver.get(`${host}#/workspaces/53df8c4c3491b46d73000211/submissions/53df8c4c3491b46d73000201/selections/5af5a5bb67ca2205deac50c6`);
+      await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`);
       await driver.wait(until.elementLocated(By.css('span.selectionLink')), 3000);
     });
 
@@ -61,7 +62,7 @@ describe('Responses', function() {
 
     it('should be addressed to the student', async function() {
       let text = await helpers.findAndGetText(driver, '#responding-to');
-      expect(text).to.equal('Adelina S.');
+      expect(text).to.equal('Andrew S.');
     });
 
     // Unclear fhat 'You wrote' is referring to?

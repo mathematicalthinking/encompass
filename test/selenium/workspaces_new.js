@@ -3,10 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../../app/db_migration/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -18,6 +19,7 @@ describe('Visiting Workspace Creation', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+      await dbSetup.prepTestDb();
 
       await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${user}`,'a[href="#/workspaces/new"');
       await helpers.findAndClickElement(driver, 'a[href="#/workspaces/new"');

@@ -3,16 +3,18 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../../app/db_migration/restore');
 
 const host = `http://localhost:${port}`
-const regularUser = 'notadmin';
+const regularUser = 'absvalteaching';
 const admin = 'steve';
 
 describe('Users', function() {
+  console.log('node env user tests', process.env.NODE_ENV);
   this.timeout('10s');
   let driver = null;
   before(async function() {
@@ -24,6 +26,7 @@ describe('Users', function() {
     // }catch(err) {
     //   console.log(err);
     // }
+    await dbSetup.prepTestDb();
   });
 
   after(() => {
@@ -158,9 +161,10 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
       });
 
-      xit('should let you create a new authorized user', async function() {
-        let username = `${admin}test111`
-        await helpers.findInputAndType(driver, 'form#newUser input.displayName', 'TEST');
+      it('should let you create a new authorized user', async function() {
+        let username = `muzzy`
+        let displayName = 'muzzy'
+        await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
         await helpers.waitForSelector(driver, 'ul.listing');

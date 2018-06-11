@@ -3,11 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../../app/db_migration/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -19,6 +19,7 @@ describe('Comments', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+      await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
@@ -31,7 +32,7 @@ describe('Comments', function() {
   });
 
   describe('Visiting a Selection in ESI 2014 Wednesday Reflection', function() {
-    const comment = 'new comment from casper ' + new Date().getTime();
+    const comment = `new comment from ${user} ${new Date().getTime()}`;
     let saveButton;
     before(async function() {
       try {

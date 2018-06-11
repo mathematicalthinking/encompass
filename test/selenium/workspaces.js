@@ -3,21 +3,24 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
+const dbSetup = require('../../app/db_migration/restore');
+const helpers = require('./helpers');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
+const fakeLoginUrl = `${host}/devonly/fakelogin/${user}`;
 
 describe('Visiting Workspaces', function() {
   this.timeout('10s');
   let driver = null;
-  before(() => {
+  before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+    await dbSetup.prepTestDb();
   });
 
   after(() => {
@@ -26,82 +29,56 @@ describe('Visiting Workspaces', function() {
 
   it('should land us at /workspaces', async function() {
     let url;
+    await helpers.navigateAndWait(driver, fakeLoginUrl, 'a[href="#/workspaces"]', 3000);
+    await helpers.findAndClickElement(driver, 'a[href="#/workspaces"]');
+    await helpers.waitForSelector(driver, '#workspace_listing');
+
     try {
-      await driver.get(`${host}/devonly/fakelogin/${user}`);
-      let button = await driver.wait(until.elementLocated(By.css('a[href="#/workspaces"]')), 3000);
-      await button.click();
-      //sendKeys('webdriver', Key.RETURN);
-      await driver.wait(until.elementLocated(By.id('workspace_listing')), 5000);
       url = await driver.getCurrentUrl();
     }catch(err) {
       console.log(err);
     }
     expect(url).to.equal(`${host}/#/workspaces`);
-
   });
 
-  it('should display a bunch of workspaces', async function() {
-    let workspaces;
+  it('should display 2 workspaces', async function() {
     let names;
+    let workspaces = await helpers.getWebElements(driver, 'span.workspace_info');
+
     try {
-      workspaces = await driver.findElements(By.css('span.workspace_info'));
       names = await Promise.all(workspaces.map((el) => {
         return el.getText();
       }));
-      await driver.sleep(2000);
     }catch(err) {
       console.log(err);
     }
-    expect(names.length).to.be.above(2);
-
+    expect(names.length).to.eql(2);
   });
 
-  describe('visiting Frog Farming / Grade 4', function() {
+  describe('Visiting ESI 2014 Wednesday Reflection', function() {
+    let workspaceId = '53e36522b48b12793f000d3b';
     it('should render workspace', async function() {
       let url;
-      let workspaceId = '53df8c4c3491b46d73000211';
+      await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/work"]`);
+      await helpers.waitForSelector(driver, '#rightArrow');
       try {
-      let frogFarming = await driver.findElement(By.css(`a[href="#/workspaces/${workspaceId}/work"]`));
-      await frogFarming.click();
-      await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
-      url = await driver.getCurrentUrl();
+        url = await driver.getCurrentUrl();
       }catch(err) {
         console.log(err);
       }
-      expect(url).to.equal(`${host}/#/workspaces/${workspaceId}/submissions/53df8c4c3491b46d73000201`);
+      expect(url).to.equal(`${host}/#/workspaces/${workspaceId}/submissions/53e36522729e9ef59ba7f4de`);
     });
 
     it('should display submission navigation arrows, and revision links', async function() {
-      let isRightArrow;
-      let isLeftArrow;
-      let breadcrumbs;
-      try {
-        isRightArrow = await driver.findElement(By.id('rightArrow')).isDisplayed();
-        isLeftArrow = await driver.findElement(By.id('leftArrow')).isDisplayed();
-        breadcrumbs = await driver.findElement(By.css('ul.breadcrumbs')).getText();
-      } catch(err) {
-        console.log(err);
-      }
-      expect(isRightArrow).to.eql(true);
-      expect(isLeftArrow).to.eql(true);
-      expect(breadcrumbs).to.contain('1');
+      expect(await helpers.isElementVisible(driver, '#rightArrow')).to.be.true;
+      expect(await helpers.isElementVisible(driver, '#leftArrow')).to.be.true;
+      expect(await helpers.findAndGetText(driver, 'ul.breadcrumbs')).to.contain('1');
     });
 
     it('should display a select box for students', async function() {
-      let studentItem;
-      let studentList;
-      let firstItem;
-      try {
-        studentItem = await driver.wait(until.elementLocated(By.css('div.selectBox')), 3000).isDisplayed();
-        firstItem = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
-        studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
-
-      } catch(err) {
-        console.log(err);
-      }
-      expect(studentItem).to.eql(true);
-      expect(studentList).to.not.exist;
-      expect(firstItem).to.contain('Adelina S.');
+      expect(await helpers.isElementVisible(driver, 'div.selectBox')).to.eql(true);
+      expect(await helpers.findAndGetText(driver, 'div.studentItem')).to.contain('Andrew S.');
+      expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
     });
 
 
@@ -111,35 +88,13 @@ describe('Visiting Workspaces', function() {
       // });
 
       it('should show the short answer', async function() {
-        let shortText;
-        let isVisible;
-        try {
-          let shortAnswer = await driver.wait(until.elementLocated(By.id('node-1')), 3000);
-          if (shortAnswer) {
-            isVisible = await shortAnswer.isDisplayed();
-            shortText = await shortAnswer.getText();
-          }
-        } catch(err) {
-          console.log(err);
-        }
-        expect(isVisible).to.eql(true);
-        expect(shortText).to.contain('LOL');
+        expect(await helpers.isElementVisible(driver, '#node-1')).to.eql(true);
+        expect(await helpers.findAndGetText(driver, '#node-1')).to.contain('The most useful part of today was having Max');
       });
 
       it('should show the long answer', async function() {
-        let longText;
-        let isVisible;
-        try {
-          let longAnswer = await driver.wait(until.elementLocated(By.id('node-2')), 3000);
-          if (longAnswer) {
-            isVisible = await longAnswer.isDisplayed();
-            longText = await longAnswer.getText();
-          }
-        } catch(err) {
-          console.log(err);
-        }
-        expect(isVisible).to.eql(true);
-        expect(longText).to.contain('Well, first I narrowed 36 meters down to 12 meters I got these 2 pens:');
+        expect(await helpers.isElementVisible(driver, '#node-2')).to.be.true;
+        expect(await helpers.findAndGetText(driver, '#node-2')).to.contain('See above.');
       });
 
       it('should have selecting enabled by default', async function() {
@@ -167,7 +122,7 @@ describe('Visiting Workspaces', function() {
         try {
           selectBox = await driver.findElement(By.css('div.selectBox span.selector'));
           await selectBox.click();
-          studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
+          studentList = await helpers.waitForSelector(driver, '#studentList');
         }catch(err) {
           console.log(err);
         }
@@ -183,23 +138,22 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(students.length).to.be.above(8);
+        expect(students.length).to.eql(16);
       });
 
       it('should display the students in order', function() {
-        expect(names[0]).to.equal('Adelina S.');
-        expect(names[names.length - 1]).to.equal('Zach W.');
+        expect(names[0]).to.equal('Andrew S.');
+        expect(names[names.length - 1]).to.equal('Peg C.');
       });
 
       it('should hide the list of students if clicked', async function() {
         let studentList;
         try{
           await selectBox.click();
-          studentList = await driver.wait(until.elementLocated(By.id('studentList')), 3000);
         }catch(err) {
           console.log(err);
         }
-        expect(studentList).to.not.exist;
+        expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
       });
     });
 
@@ -220,25 +174,18 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(afterLeftClick).to.eql('Zach W.');
-        expect(afterRightClick).to.eql('Adelina S.');
+        expect(afterLeftClick).to.eql('Tyler K.');
+        expect(afterRightClick).to.eql('Carty L.');
       });
     });
 
-    describe('Visiting a Selection in Frog Farming', function() {
+    describe('Visiting a Selection in ESI 2014', function() {
       before(async function() {
-        let workspaceId = '53df8c4c3491b46d73000211';
-        let submissionId = '53df8c4c3491b46d73000201';
-        let selectionId = '5af1d80af7af8705db2ce83e';
-        try{
-          let link = await driver.wait(until.elementLocated(By.css(`a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}`)), 3000);
-          if(link) {
-            await link.click();
-          }
-          await driver.wait(until.elementLocated(By.css('div#al_feedback_display')), 3000);
-        }catch(err) {
-          console.log(err);
-        }
+        let workspaceId = '53e36522b48b12793f000d3b';
+        let submissionId = '53e36522729e9ef59ba7f4de';
+        let selectionId = '53e38ec2b48b12793f0010e2';
+        await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}"]`);
+        await helpers.waitForSelector(driver, 'div#al_feedback_display');
       });
 
       it('should display a bunch of submissions', async function() {
@@ -264,8 +211,8 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(comments.length).to.be.above(4);
-        expect(commentsText[0]).to.contain('Interesting parallel');
+        expect(comments.length).to.eql(8);
+        expect(commentsText[0]).to.contain('I spoke with Michael about the balance');
       });
 
       it('should display a bunch of folders', async function() {
@@ -281,14 +228,14 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(folders.length).to.be.above(5);
-        expect(folderNames[0]).to.contain('for feedback');
+        expect(folders.length).to.eql(5);
+        expect(folderNames[0]).to.contain('follow up');
       });
     });
 
     // Consider moving into folders.js
     // Should there be popup functionality?
-  describe('Visiting a Folder from Frog Farming', function() {
+  describe('Visiting a Folder from Feathers and Fur', function() {
     before(function() {
       // casper.start(host + '/devonly/fakelogin/casper');
       // casper.thenOpen(host + '/#/workspaces/543e96757112056b290001fa/work');
@@ -347,7 +294,7 @@ describe('Visiting Workspaces', function() {
           console.log(err);
         }
         expect(subFolderList).to.exist;
-        expect(subFolders.length).to.eql(4);
+        expect(subFolders.length).to.eql(5);
       });
     });
   });

@@ -3,10 +3,10 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const _ = require('underscore');
 const helpers = require('./helpers');
+const dbSetup = require('../../app/db_migration/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -18,6 +18,7 @@ describe('Folders', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+    await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
