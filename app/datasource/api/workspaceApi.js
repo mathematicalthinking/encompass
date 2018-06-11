@@ -5,7 +5,7 @@
   * @since 1.0.0
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger = require('log4js').getLogger('server'),
     models = require('../schemas'),
     auth   = require('./auth'),
@@ -14,8 +14,7 @@ var mongoose = require('mongoose'),
     data   = require('./data'),
     _      = require('underscore'),
     Q      = require('q'),
-    helper = require('util'),
-    errors = require('restify-errors');
+    helper = require('util');
 
 
 module.exports.get = {};
@@ -437,7 +436,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
         criterion[prefix.concat(key)] = submissionSet.criteria[key];
         criteria.$and.push(criterion);
       }
-      
+
     }
   }
   criteria.$and.push({owner: user}); //limit this to workspaces for the current user only
@@ -446,7 +445,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
   // Looks for existing workspaces for this user for the submission set
   console.log('CRITERIA', criteria);
   models.Workspace.find(criteria).exec(function(err, workspaces){
-  
+
     if(err){
       logger.error(err);
     }
@@ -716,7 +715,7 @@ function sendWorkspaces(req, res, next) {
 function postWorkspace(req, res, next) {
   logger.info('IN POSTWORKSPACE!!');
   // next(new Error('TESTING next(new ERROR'));
-  next(new errors.BadMethodError('This action is not yet supported!'));
+  next(utils.sendError.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
  }
 
 /**
@@ -834,7 +833,7 @@ function newWorkspaceRequest(req, res, next) {
 
       utils.sendResponse(res, response);
     });
-  
+
 }
 
 module.exports.get.workspace = sendWorkspace;

@@ -5,14 +5,13 @@
   * @since 1.0.4
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
-    models   = require('../schemas'),
-    errors = require('restify-errors');
+    models   = require('../schemas');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -34,7 +33,7 @@ function postError(req, res, next) {
   error.save(function(err, doc) {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
 
     var data = {'error': doc};

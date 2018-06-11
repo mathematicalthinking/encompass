@@ -1,5 +1,5 @@
 /*
-  Auth plugins for restify
+  Auth plugins for express
   Protects against updates from anon users
   Caches the user for subsequent auth decisions
   Updates the user's lastSeen time
@@ -8,12 +8,12 @@
 var mongoose = require('mongoose'),
     cookie   = require('cookie'),
     logger   = require('log4js').getLogger('auth'),
-    restify  = require('restify'),
+    express  = require('express'),
     _        = require('underscore'),
     path     = require('./path'),
     cache    = require('./cache'),
     models   = require('../schemas'),
-    errors = require('restify-errors');
+    utils = require('./requestHandler');
 
 /*
   @returns {Object} user as cached from processToken, fetchUser
@@ -44,7 +44,7 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-
+    console.log('inside processToken');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -74,7 +74,7 @@ function processToken(options) {
 */
 function fetchUser(options) {
   function _fetchUser(req, res, next) {
-
+    console.log('inside fetch user');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -90,7 +90,7 @@ function fetchUser(options) {
     models.User.findOneAndUpdate({key: token}, {lastSeen: new Date()}, {new:true}, function(err, user) {
       if(err) {
         logger.error(err);
-        return (next(new errors.InternalError(err.message)));
+        return (next(utils.sendError.InternalError(err, res))); // not sure what this should be changed to
       } else {
         if(user) {
           var url = req.url;
@@ -103,7 +103,7 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = new errors.InvalidCredentialsError('No user with key:' + token);
+          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token); // not sure what this should be changed to
           logger.error(error);
           return (next(error));
         }
@@ -132,8 +132,8 @@ function protect(options) {
     var openPaths = ['/api/users', '/api/stats'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
-    var openRequest = _.contains(openPaths, req.getPath());
-    console.log('isOpenRequest: ', req.getPath(), ' : ', openRequest);
+    var openRequest = _.contains(openPaths, req.path);
+    console.log('isOpenRequest: ', req.path, ' : ', openRequest);
     if(openRequest && req.method === 'GET') {
       return next();
     }
@@ -170,7 +170,7 @@ function accessibleWorkspacesQuery(user) {
 }
 
 function loadAccessibleWorkspaces(options) {
-  
+
   function _loadAccessibleWorkspaces(req, res, next) {
     console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);

@@ -5,13 +5,12 @@
   * @since 1.0.0
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    models   = require('../schemas'),
-    errors = require('restify-errors');
+    models   = require('../schemas');
 
 
 module.exports.get = {};
@@ -36,7 +35,7 @@ function getSelections(req, res, next) {
     .exec(function(err, selections) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       console.log(selections.length);
@@ -62,7 +61,7 @@ function getSelection(req, res, next) {
     .exec(function(err, selection) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'selection': selection};
@@ -93,7 +92,7 @@ function postSelection(req, res, next) {
       selection.save(function(err, doc) {
         if(err) {
           logger.error(err);
-          utils.sendError(new errors.InternalError(err.message), res);
+          return utils.sendError.InternalError(err, res);
         }
 
         var data = {'selection': doc};
@@ -124,7 +123,7 @@ function putSelection(req, res, next) {
     if(err) {
       logger.warn("Putting Selection 3");
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message + "\nOh Nos Failed to find selection!"), res);
+      return utils.sendError.InternalError(err, res);
     }
 
       logger.warn("Putting Selection 4");
@@ -139,7 +138,7 @@ function putSelection(req, res, next) {
       logger.warn("Tried to save selectoin!");
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'selection': selection};

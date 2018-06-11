@@ -4,14 +4,13 @@
 */
 
 var mongoose = require('mongoose'),
-  restify = require('restify'),
+  express = require('express'),
   _ = require('underscore'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler'),
-  errors = require('restify-errors');
+  utils    = require('./requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -35,7 +34,7 @@ const getProblems = (req, res, next) => {
   .exec((err, problems) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'problems': problems};
     utils.sendResponse(res, data);
@@ -60,7 +59,7 @@ const getProblem = (req, res, next) => {
   .exec((err, problem) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'problem': problem};
     utils.sendResponse(res, data);
@@ -86,7 +85,7 @@ const postProblem = (req, res, next) => {
   problem.save((err, doc) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'problem': doc};
     utils.sendResponse(res, data);
@@ -111,7 +110,7 @@ const putProblem = (req, res, next) => {
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     // make the updates, but don't update categories or _id
     for(let field in req.body.problem) {
@@ -122,7 +121,7 @@ const putProblem = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
@@ -145,8 +144,7 @@ const addCategory = (req, res, next) => {
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
-      return;
+      return utils.sendError.InternalError(err, res);
     }
     // only add a category if it's new
     if (doc.categories.indexOf(req.body.categoryId) === -1){
@@ -158,8 +156,7 @@ const addCategory = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
-        return;
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
@@ -182,7 +179,7 @@ const removeCategory = (req, res, next) => {
   models.Problem.findById(req.params.id, (err, doc) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     // only attempt to remove if the category exists
     if (doc.categories.indexOf(req.body.categoryId) !== -1) {
@@ -192,7 +189,7 @@ const removeCategory = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-        utils.SendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);

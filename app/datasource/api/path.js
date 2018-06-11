@@ -7,16 +7,15 @@
 var logger   = require('log4js').getLogger('sane'),
     utils    = require('./requestHandler'),
     util     = require('util'),
-    restify  = require('restify'),
+    express  = require('express'),
     _        = require('underscore'),
-    models   = require('../schemas'),
-    errors = require('restify-errors');
+    models   = require('../schemas');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
 */
 function apiRequest(req) {
-  return !!req.getPath().match('/api');
+  return !!req.path.match('/api');
 }
 
 /*
@@ -24,11 +23,12 @@ function apiRequest(req) {
 */
 function idRequest(req) {
   var idRegExp = /\/api\/([a-z]*)\/(\w+)/;
-  return idRegExp.exec(req.getPath());
+  return idRegExp.exec(req.path);
 }
 
 function prep(options) {
   function _prep(req, res, next) {
+    console.log('prep is called');
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
@@ -42,7 +42,7 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-
+    console.log('in process path');
     if(!apiRequest(req)) {
       return next();
     }
@@ -51,7 +51,7 @@ function processPath(options) {
     _.defaults(req.mf, { path: {} });
 
     var pathRegExp = /\/api\/([a-z]*)\/?/;
-    var match = pathRegExp.exec(req.getPath());
+    var match = pathRegExp.exec(req.path);
     if(match) {
       req.mf.path.model = match[1];
     }
@@ -67,6 +67,7 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
+    console.log('inside validate Id');
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -77,7 +78,7 @@ function validateId(options) {
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       //TODO this is sending a 500 error although its a 4xx
-      utils.sendError(new errors.InvalidArgumentError('bad object id'), res);
+      utils.sendError.InvalidArgumentError('bad object id', res);
       return next(false);
     }
 
@@ -119,6 +120,7 @@ function schemaHasWorkspace(schema) {
 
 function validateContent(options) {
   function _validateContent(req, res, next) {
+    console.log('inside validateContent');
     var checkForModRequest = /POST|PUT/;
 
 
@@ -137,7 +139,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError(new errors.InvalidContentError(util.format(error, schema), res));
+        utils.sendError.InvalidContentError(util.format(error, schema), res);
         return next(false);
       }
     }

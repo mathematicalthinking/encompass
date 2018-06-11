@@ -5,14 +5,13 @@
   * @since 1.0.0
   */
 var mongoose = require('mongoose'),
-    restify  = require('restify'),
+    express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
-    models   = require('../schemas'),
-    errors = require('restify-errors');
+    models   = require('../schemas');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -30,7 +29,7 @@ function getFolder(req, res, next) {
     .exec(function(err, doc){
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'folder': doc};
@@ -64,7 +63,7 @@ function getFolders(req, res, next) {
   models.Folder.find(criteria).exec(function(err, docs) {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
 
     var data = {'folder': docs};
@@ -95,7 +94,7 @@ function postFolder(req, res, next) {
       folder.save(function(err, doc) {
         if(err) {
           logger.error(err);
-          utils.sendError(new errors.InternalError(err.message), res);
+          return utils.sendError.InternalError(err, res);
         }
 
         var data = {'folder': doc};
@@ -129,7 +128,7 @@ function putFolder(req, res, next) {
         function (err, doc) {
           if(err) {
             logger.error(err);
-            utils.sendError(new errors.InternalError(err.message), res);
+            return utils.sendError.InternalError(err, res);
           }
 
           for(var field in req.body.folder) {

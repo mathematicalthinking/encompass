@@ -5,14 +5,13 @@
 */
 
 var mongoose = require('mongoose'),
-  restify = require('restify'),
+  express = require('express'),
   _ = require('underscore'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler'),
-  errors = require('restify-errors');
+  utils    = require('./requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -35,7 +34,7 @@ const getAnswers = (req, res, next) => {
   .exec((err, answers) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'answers': answers};
     utils.sendResponse(res, data);
@@ -59,7 +58,7 @@ const getAnswer = (req, res, next) => {
   .exec((err, answer) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'answer': answer};
     utils.sendResponse(res, data);
@@ -85,7 +84,7 @@ const postAnswer = (req, res, next) => {
   answer.save((err, doc) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     const data = {'answer': doc};
     utils.sendResponse(res, data);
@@ -110,13 +109,13 @@ const putAnswer = (req, res, next) => {
   models.Answer.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      return utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
     // if this has been submitted it is no longer editable
     // return an error
     if (doc.isSubmitted) {
       logger.error("answer already submitted");
-      return utils.sendCustomError(new errors.NotAuthorizedError(403), res);
+      return utils.sendError.NotAuthorizedError('Not Authorized', res);
     }
     // make the updates
     for(let field in req.body.answer) {
@@ -127,7 +126,7 @@ const putAnswer = (req, res, next) => {
     doc.save((err, answer) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'answer': answer};
       utils.sendResponse(res, data);
