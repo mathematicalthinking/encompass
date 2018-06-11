@@ -12,7 +12,8 @@ var mongoose = require('mongoose'),
     _        = require('underscore'),
     path     = require('./path'),
     cache    = require('./cache'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    utils = require('./requestHandler');
 
 /*
   @returns {Object} user as cached from processToken, fetchUser
@@ -89,7 +90,7 @@ function fetchUser(options) {
     models.User.findOneAndUpdate({key: token}, {lastSeen: new Date()}, {new:true}, function(err, user) {
       if(err) {
         logger.error(err);
-        return (next(new errors.InternalError(err.message))); // not sure what this should be changed to
+        return (next(utils.sendError.InternalError(err, res))); // not sure what this should be changed to
       } else {
         if(user) {
           var url = req.url;
@@ -102,7 +103,7 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = new errors.InvalidCredentialsError('No user with key:' + token); // not sure what this should be changed to
+          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token); // not sure what this should be changed to
           logger.error(error);
           return (next(error));
         }

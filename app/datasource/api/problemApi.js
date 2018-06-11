@@ -145,7 +145,6 @@ const addCategory = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // only add a category if it's new
     if (doc.categories.indexOf(req.body.categoryId) === -1){
@@ -158,7 +157,6 @@ const addCategory = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);

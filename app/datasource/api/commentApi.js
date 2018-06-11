@@ -190,7 +190,7 @@ function putComment(req, res, next) {
           doc.save(function (err, comment) {
             if(err) {
               logger.error(err);
-              return utils.sendError.InternalError(message, res);
+              return utils.sendError.InternalError(err, res);
             }
 
             var data = {'comment': comment};

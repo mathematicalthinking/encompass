@@ -141,7 +141,6 @@ const addTeacher = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     if (doc.teachers.indexOf(req.body.teacherId) === -1){
       doc.teachers = doc.teachers.concat([req.body.teacherId]);
@@ -150,7 +149,6 @@ const addTeacher = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -173,7 +171,6 @@ const removeTeacher = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // only remove teacher if they exist
     if (doc.teachers.indexOf(req.body.teacherId) !== -1) {
@@ -183,7 +180,6 @@ const removeTeacher = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -205,7 +201,6 @@ const addStudent = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // only add the student if they're not already in the section
     if (doc.students.indexOf(req.body.studentName) === -1){
@@ -215,7 +210,6 @@ const addStudent = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -237,7 +231,6 @@ const removeStudent = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // ensure the student is in this section before removing
     if (doc.students.indexOf(req.body.studentName) !== -1) {
@@ -247,7 +240,6 @@ const removeStudent = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -269,7 +261,6 @@ const addProblem = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // only add unique problems to the section
     if (doc.problems.indexOf(req.body.problemId) === -1){
@@ -279,7 +270,6 @@ const addProblem = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
@@ -301,7 +291,6 @@ const removeProblem = (req, res, next) => {
     if(err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
-      return;
     }
     // only remove problem if its in this section
     if (doc.problems.indexOf(req.body.problemId) !== -1){
@@ -311,7 +300,6 @@ const removeProblem = (req, res, next) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
-        return;
       }
       const data = {'section': section};
       utils.sendResponse(res, data);
