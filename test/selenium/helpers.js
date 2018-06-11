@@ -81,7 +81,7 @@ const findInputAndType = async function(webDriver, selector, text) {
     console.log(err);
   }
   return;
-}; 
+};
 
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
