@@ -329,17 +329,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    env : {
-      options : {
-        //Shared Options Hash
-      },
-      dev : {
-        NODE_ENV : grunt.option('environment') || 'development'
-      },
-      test: {
-        NODE_ENV: 'test'
-      }
-    },
   });
 
   grunt.loadNpmTasks('grunt-browserify');
