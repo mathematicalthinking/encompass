@@ -50,7 +50,6 @@
     "grunt-qunit-junit": "^0.3.1",
     "grunt-env": "0.4.4",
     "grunt-shell": "2.1.0",
-    "hoek": "^5.0.3",
     "http": "0.0.0",
     "http-errors": "^1.6.3",
     "i": "^0.3.6",
@@ -62,9 +61,6 @@
     "nodemon": "^1.17.5",
     "q": "^1.5.1",
     "request": "^2.85.0",
-    "restify": "^5.0.0",
-    "restify-errors": "^6.0.0",
-    "restify-plugins": "^1.6.0",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "underscore": "^1.9.0",
     "uuid": "^3.2.1"
