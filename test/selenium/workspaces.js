@@ -292,5 +292,3 @@ describe('Visiting Workspaces', function() {
     });
   });
 });
-
-

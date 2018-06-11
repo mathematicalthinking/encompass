@@ -28,6 +28,7 @@ const server = express();
 
 let port = nconf.get('port');
 let dbConf = nconf.get('database');
+
 switch(process.env.NODE_ENV) {
   case 'development':
     console.log("NODE_ENV == development");
@@ -45,6 +46,11 @@ switch(process.env.NODE_ENV) {
     dbConf.name = nconf.get('prodDBName');
     break;
 }
+
+mongoose.connect(dbConf.host, dbConf.name, {
+  user: dbConf.user,
+  pass: dbConf.pass
+});
 
 console.info (`Port: ${port.toString()}`);
 console.info (`db name: ${dbConf.name}`);

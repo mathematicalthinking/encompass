@@ -26,7 +26,7 @@ module.exports = function(grunt) {
         }
       }
     },
-    
+
 
     /*
      * Set Node environment using grunt-env

@@ -37,15 +37,15 @@ describe('Home Page', function () {
     let url;
     await helpers.findAndClickElement(driver, 'a[href="login"]');
     await helpers.waitForSelector(driver, 'input[name=username]');
-    
+
     try {
       url = await driver.getCurrentUrl();
     }catch(err) {
       console.log(err);
     }
     expect(url).to.eql(login);
-    expect(await helpers.isElementVisible(driver, 'input[name=username]')).to.be.true;  
-    expect(await helpers.isElementVisible(driver, 'input[name=password]')).to.be.true;   
+    expect(await helpers.isElementVisible(driver, 'input[name=username]')).to.be.true;
+    expect(await helpers.isElementVisible(driver, 'input[name=password]')).to.be.true;
     expect(await helpers.isElementVisible(driver, 'input[type=submit]')).to.be.true;
   });
 
@@ -53,11 +53,11 @@ describe('Home Page', function () {
     let url;
     let greeting;
     let message;
-    
+
     try {
       await helpers.findInputAndType(driver, 'input[name=username]', user);
       await helpers.findAndClickElement(driver, 'input[type=submit]');
-    
+
       greeting = await helpers.waitForSelector(driver, '#al_welcome');
       url = await driver.getCurrentUrl();
       message = await greeting.getText();

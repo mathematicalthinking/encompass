@@ -15,7 +15,7 @@ const collections = ["Tagging",
 "Category"
 ];
 // Criteria for deciding which workspaces to keep
-// Current buildCriteria function uses greater than these values 
+// Current buildCriteria function uses greater than these values
 const workspaceMinimum = {
   submissions: 3,
   comments: 0,
@@ -66,12 +66,12 @@ async function removeTrashedDocuments() {
   return trashed;
 }
 
-// collections where the schema has a workspace field which contains a single 
+// collections where the schema has a workspace field which contains a single
 // reference to a workspace ObjectId
 const belongsToWs = ['Selection', 'Comment', 'Response', 'Folder']
 
 // removes all documents whose workspace field references a workspace
-// ObjectId that no longer exists in database 
+// ObjectId that no longer exists in database
 async function removeOrphanedFromWs(collection) {
   let deleted = 0;
   let model = models[collection];
@@ -86,7 +86,7 @@ async function removeOrphanedFromWs(collection) {
         let ws = await models.Workspace.findById(wsId);
         if (ws !== null && ws !== undefined) {
           shouldDelete = false;
-        } 
+        }
       }
        if (shouldDelete) {
           await model.deleteOne({_id: doc._id});
@@ -96,7 +96,7 @@ async function removeOrphanedFromWs(collection) {
     }catch(err) {
       console.log(err);
   }
-  
+
   console.log(`Deleted ${deleted} ${collection}s`);
   return deleted;
 }
@@ -156,7 +156,7 @@ async function removeOrphanedWorkspaces() {
   return results;
 }
 
-// submissions contain a workspaces field which is an array 
+// submissions contain a workspaces field which is an array
 // of workspace ObjectId references
 // deletes submissions that contain a reference to deleted workspaces
 // otherwise app throws an error when navigating in the workspace
@@ -186,7 +186,7 @@ async function removeOrphanedSubs() {
   }catch(err) {
     console.log(err);
   }
-  
+
   console.log(`Deleted ${deleted} submissionss`);
 }
 
@@ -207,7 +207,7 @@ async function removeIrrelevantUsers() {
       let ownerId = ws.owner;
       let editorIds = ws.editors;
       console.log(typeof ownerId);
-      
+
       if (ownerId) {
         relevantUserIds.push(ownerId);
       }

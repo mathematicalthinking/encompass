@@ -102,4 +102,3 @@ describe('Visiting Workspace Creation', function() {
     });
   });
 });
-
