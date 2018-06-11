@@ -24,17 +24,36 @@ const utils = require('./datasource/api/requestHandler');
 const dbMigration = require('../app/db_migration/base');
 
 const nconf = config.nconf;
-const dbConf = nconf.get('database');
-
 const server = express();
 
+let port = nconf.get('port');
+let dbConf = nconf.get('database');
+switch(process.env.NODE_ENV) {
+  case 'development':
+    console.log("NODE_ENV == development");
+    port = nconf.get('devPort');
+    dbConf.name = nconf.get('devDBName');
+    break;
+  case 'test':
+    console.log("NODE_ENV == test");
+    port = nconf.get('testPort');
+    dbConf.name = nconf.get('testDBName');
+    break;
+  case 'production':
+    console.log("NODE_ENV == production");
+    port = nconf.get('prodPort');
+    dbConf.name = nconf.get('prodDBName');
+    break;
+}
+
+console.info (`Port: ${port.toString()}`);
+console.info (`db name: ${dbConf.name}`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
   pass: dbConf.pass
 });
 
-const port = '8080';
 server.set('port', port);
 
 const mainServer = http.createServer(server);
@@ -166,13 +185,6 @@ server.post({
 }, api.post.newWorkspaceRequest);
 
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
-
-//Catch-all and serve from the build directory
-
-// server.use(express.static(path.join(__dirname, 'build/')));
-
-
-
 
 server.use(function (req, res, next) {
   var err = new Error('Not Found');

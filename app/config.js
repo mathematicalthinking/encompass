@@ -6,8 +6,6 @@ var fs = require('fs'),
   build = process.env.BUILD;
 
 
-var mainDB = 'encompass';
-var testDB = 'encompass_test';
 var today = new Date();
 var aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
 
@@ -17,6 +15,9 @@ nconf.add('release', { type: 'file', file: 'release.json' });
 
 nconf.defaults({
   port: '8080',
+  devPort: '8080',
+  testPort: '8082',
+  prodPort: '80',
   web: {
     base: '/'
   },
@@ -28,9 +29,12 @@ nconf.defaults({
     //validateUrl: "/SSO/TmfCheckToken.ashx"
     service: 'http://localhost:8080/back',
   },
+  devDBName: 'encompass',
+  testDBName: 'encompass_test',
+  prodDBName: 'encompass',
   database: {
     host: 'localhost',
-    name: mainDB,
+    name: 'encompass',
     user: 'encompass',
     pass: '',
     port: 27017,
@@ -47,19 +51,6 @@ nconf.defaults({
     searchUrl: process.env.POW_SEARCH_URL,
     getUrl: process.env.POW_GET_URL,
     fromDate: aYearAgo.getTime()
-  },
-  testDB: { // Database settings for running integration tests
-    host: 'localhost',
-    name: testDB,
-    user: 'encompass',
-    pass: '',
-    port: 27017,
-    collections: ["workspaces",
-      "folders",
-      "submissions",
-      "selections",
-      "comments"
-    ]
   },
   logs: {
     server: 'ERROR',

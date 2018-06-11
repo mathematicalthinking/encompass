@@ -1,13 +1,17 @@
-const {Builder, By, Key, until} = require('selenium-webdriver')
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
+const {Builder, By, Key, until} = require('selenium-webdriver');
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
 const helpers = require('./helpers');
 console.log('node_env', process.env.NODE_ENV);
 
-const host = 'http://localhost:8080'
-const login = 'http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:8080/back';
-const user = 'casper';
+const host = `http://localhost:${port}`
+const login = `http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:${port}/back`;
+const user = 'steve';
 
 describe('Home Page', function() {
   this.timeout('10s');
@@ -17,7 +21,7 @@ describe('Home Page', function() {
       .forBrowser('chrome')
       .build();
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -70,7 +74,7 @@ describe('Home Page', function() {
   describe('NavBar', async function() {
     const elements = ['workspaces', 'responses', 'users', 'logout', 'problem', 'workspaces/new', 'users/new'];
     function verifyNavElement(navElement) {
-      let isVisible;  
+      let isVisible;
       it(`${navElement} link should exist`, async function() {
           try {
             isVisible = await driver.findElement(By.css(`a[href="#/${navElement}"]`)).isDisplayed();
@@ -86,4 +90,4 @@ describe('Home Page', function() {
   });
 });
 
-  
+

@@ -1,11 +1,15 @@
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
 const _ = require('underscore');
 const helpers = require('./helpers');
 
-const host = 'http://localhost:8080';
-const user = 'casper';
+const host = `http://localhost:${port}`
+const user = 'steve';
 
 describe('Folders', function() {
   this.timeout('10s');
@@ -20,7 +24,7 @@ describe('Folders', function() {
       console.log(err);
     }
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -36,7 +40,7 @@ describe('Folders', function() {
     });
 
     it('should display the folder name', async function() {
-      let name; 
+      let name;
       try {
         let header = await driver.findElements(By.css('div#menubar>h1'));
         if (!_.isEmpty(header)) {
@@ -91,11 +95,11 @@ describe('Folders', function() {
 
       expect(isShowSubFoldersChecked).to.eql('true');
       expect(isShowSubmFoldersChecked).to.eql('true');
-      
+
       // TODO?: Currently these inputs do not have ids
       // 'label#browseByStudent>input'.should.have.attribute('checked').and.contain('checked');
       //'label#showEvidence>input'.should.have.attribute('checked').and.contain('checked');
-      
+
     });
 
     it('should display a table of submission/selection data', async function() {
@@ -109,12 +113,12 @@ describe('Folders', function() {
       }catch(err) {
         console.log(err);
       }
-      
+
       expect(isTableVisible).to.eql(true);
       expect(tableLength).to.be.above(7);
-      
+
       // Would these tests actually be useful?
-      
+
       // 'table#folder_contents>tbody'.should.contain.text('Improve');
       // //'table#folder_contents>tbody'.should.contain.text('Peg C.');
       // 'table#folder_contents>tbody'.should.contain.text("think with Steve about the triangle problem");
