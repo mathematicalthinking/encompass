@@ -227,17 +227,6 @@ module.exports = function(grunt) {
         src: ['test/casper/*.js']
       }
     },
-<<<<<<< HEAD
-=======
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'spec',
-        },
-        src: ['test/mocha/*.js', 'test/selenium/*.js']
-      }
-    },
->>>>>>> Install grunt-env package
 
     /*
       Reads the projects .js files and generates documentation in the docs folder
@@ -369,14 +358,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-casperjs');
   grunt.loadNpmTasks('grunt-mocha-test');
   //grunt.loadNpmTasks('grunt-casperjs-plugin');
-<<<<<<< HEAD
   // grunt.loadNpmTasks('grunt-groc');
   grunt.loadNpmTasks('grunt-env');
   grunt.loadNpmTasks('grunt-shell');
-=======
-  grunt.loadNpmTasks('grunt-groc');
-  grunt.loadNpmTasks('grunt-env');
->>>>>>> Install grunt-env package
 
   /*
     Build the application
@@ -436,7 +420,6 @@ module.exports = function(grunt) {
   */
   grunt.registerTask('serve', ['env:dev','nodemon:dev']);
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
-<<<<<<< HEAD
   grunt.registerTask('dev', ['env:dev', 'build', 'tests', 'watch']);
   /*
    * Run end to end selenium tests
@@ -451,8 +434,4 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
-=======
-  grunt.registerTask('dev', ['build', 'tests', 'watch']);
-  grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
->>>>>>> Install grunt-env package
 };
