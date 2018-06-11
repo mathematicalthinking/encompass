@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
   models = require('../schemas'),
   auth = require('./auth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler');
+  utils    = require('./requestHandler'),
+  errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -34,7 +35,7 @@ const getCategories = (req, res, next) => {
   .exec((err, categories) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new err.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
     const data = {'categories': categories};
     utils.sendResponse(res, data);
@@ -57,7 +58,7 @@ const getCategory = (req, res, next) => {
   .exec((err, category) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new err.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
     const data = {'category': category};
     utils.sendResponse(res, data);
@@ -83,7 +84,7 @@ const postCategory = (req, res, next) => {
   category.save((err, doc) => {
     if (err) {
       logger.error(err);
-      utils.sendError(new err.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
     const data = {'category': doc};
     utils.sendResponse(res, data);
@@ -106,7 +107,7 @@ const putCategory = (req, res, next) => {
   models.Category.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      utils.sendError(new err.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
     // make the updates
     for(var field in req.body.category) {
@@ -117,7 +118,7 @@ const putCategory = (req, res, next) => {
     doc.save((err, category) => {
       if (err) {
         logger.error(err);
-        utils.sendError(new err.InternalError(err.message), res);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
       const data = {'category': category};
       utils.sendResponse(res, data);

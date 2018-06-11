@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
-    models   = require('../schemas');
+    models   = require('../schemas'),
+    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -29,7 +30,7 @@ function getResponse(req, res, next) {
     .exec(function(err, doc){
       if(err) {
         logger.error(err);
-        utils.sendError(new err.InternalError(err.message), res);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       var data = {'response': doc};
@@ -57,7 +58,7 @@ function getResponses(req, res, next) {
   models.Response.find(criteria).exec(function(err, docs) {
     if(err) {
       logger.error(err);
-      utils.sendError(new err.InternalError(err.message), res);
+      utils.sendError(new errors.InternalError(err.message), res);
     }
 
     var data = {'response': docs};
@@ -88,7 +89,7 @@ function postResponse(req, res, next) {
       response.save(function(err, doc) {
         if(err) {
           logger.error(err);
-          utils.sendError(new err.InternalError(err.message), res);
+          utils.sendError(new errors.InternalError(err.message), res);
         }
 
         var data = {'response': doc};
@@ -110,7 +111,7 @@ function putResponse(req, res, next) {
     function (err, doc) {
       if(err) {
         logger.error(err);
-        utils.sendError(new err.InternalError(err.message), res);
+        utils.sendError(new errors.InternalError(err.message), res);
       }
 
       //TODO permissions check
