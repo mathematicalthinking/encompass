@@ -10,8 +10,7 @@ var logger   = require('log4js').getLogger('sane'),
     express  = require('express'),
     _        = require('underscore'),
     models   = require('../schemas'),
-    errors = require('restify-errors');
-    expressPath =  require('path');
+    errors   = require('restify-errors');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
@@ -25,7 +24,7 @@ function apiRequest(req) {
 */
 function idRequest(req) {
   var idRegExp = /\/api\/([a-z]*)\/(\w+)/;
-  return idRegExp.exec(req.expressPath);
+  return idRegExp.exec(req.path);
 }
 
 function prep(options) {
@@ -44,7 +43,7 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-    console.log('in process path')
+    console.log('in process path');
     if(!apiRequest(req)) {
       return next();
     }
