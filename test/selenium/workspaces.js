@@ -1,11 +1,15 @@
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
 const _ = require('underscore');
 
-const host = 'http://localhost:8080';
-const user = 'casper';
+const host = `http://localhost:${port}`
+const user = 'steve';
 
 describe('Visiting Workspaces', function() {
   this.timeout('10s');
@@ -15,7 +19,7 @@ describe('Visiting Workspaces', function() {
       .forBrowser('chrome')
       .build();
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -33,7 +37,7 @@ describe('Visiting Workspaces', function() {
       console.log(err);
     }
     expect(url).to.equal(`${host}/#/workspaces`);
-    
+
   });
 
   it('should display a bunch of workspaces', async function() {
@@ -49,9 +53,9 @@ describe('Visiting Workspaces', function() {
       console.log(err);
     }
     expect(names.length).to.be.above(2);
-   
+
   });
-  
+
   describe('visiting Frog Farming / Grade 4', function() {
     it('should render workspace', async function() {
       let url;
@@ -66,7 +70,7 @@ describe('Visiting Workspaces', function() {
       }
       expect(url).to.equal(`${host}/#/workspaces/${workspaceId}/submissions/53df8c4c3491b46d73000201`);
     });
-    
+
     it('should display submission navigation arrows, and revision links', async function() {
       let isRightArrow;
       let isLeftArrow;
@@ -100,12 +104,12 @@ describe('Visiting Workspaces', function() {
       expect(firstItem).to.contain('Adelina S.');
     });
 
-    
-  
+
+
       // it('should be on first submission', function() {
       //   'span.submission_index'.should.have.text(/^\W+1\W+$/);
       // });
-  
+
       it('should show the short answer', async function() {
         let shortText;
         let isVisible;
@@ -121,7 +125,7 @@ describe('Visiting Workspaces', function() {
         expect(isVisible).to.eql(true);
         expect(shortText).to.contain('LOL');
       });
-  
+
       it('should show the long answer', async function() {
         let longText;
         let isVisible;
@@ -137,7 +141,7 @@ describe('Visiting Workspaces', function() {
         expect(isVisible).to.eql(true);
         expect(longText).to.contain('Well, first I narrowed 36 meters down to 12 meters I got these 2 pens:');
       });
-  
+
       it('should have selecting enabled by default', async function() {
         let checkbox;
         let isEnabled;
@@ -203,13 +207,13 @@ describe('Visiting Workspaces', function() {
       // The arrow clicks only seem to work once each way?
       let afterLeftClick;
       let afterRightClick;
-      
+
       it('should change the current student', async function() {
         try {
           let leftArrow = await driver.wait(until.elementLocated(By.id('leftArrow')), 3000);
           await leftArrow.click();
           afterLeftClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
-          
+
           let rightArrow = await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
           await rightArrow.click();
           afterRightClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
@@ -227,7 +231,7 @@ describe('Visiting Workspaces', function() {
         let submissionId = '53df8c4c3491b46d73000201';
         let selectionId = '5af1d80af7af8705db2ce83e';
         try{
-          let link = await driver.wait(until.elementLocated(By.css(`a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}`)), 3000);  
+          let link = await driver.wait(until.elementLocated(By.css(`a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}`)), 3000);
           if(link) {
             await link.click();
           }
@@ -236,7 +240,7 @@ describe('Visiting Workspaces', function() {
           console.log(err);
         }
       });
-    
+
       it('should display a bunch of submissions', async function() {
         let currentUrl;
         try {
@@ -248,7 +252,7 @@ describe('Visiting Workspaces', function() {
         // 'span.submission_count'.should.contain.text('500');
         // 'span.submission_index'.should.contain.text('256');
       });
-    
+
       it('should display a bunch of comments', async function() {
         let comments;
         let commentsText;
@@ -263,7 +267,7 @@ describe('Visiting Workspaces', function() {
         expect(comments.length).to.be.above(4);
         expect(commentsText[0]).to.contain('Interesting parallel');
       });
-    
+
       it('should display a bunch of folders', async function() {
         let folders;
         let folderNames;
@@ -291,7 +295,7 @@ describe('Visiting Workspaces', function() {
       // casper.waitForSelector('span.submission_count');
     });
 
-    // function validateFolderPopup(button) { 
+    // function validateFolderPopup(button) {
     //   it('should popup a seperate window', function() {
     //     casper.click(button);
 
@@ -349,4 +353,4 @@ describe('Visiting Workspaces', function() {
   });
 });
 
-  
+

@@ -1,12 +1,16 @@
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
 const _ = require('underscore');
 const helpers = require('./helpers');
 
-const host = 'http://localhost:8080';
+const host = `http://localhost:${port}`
 const regularUser = 'notadmin';
-const admin = 'casper';
+const admin = 'steve';
 
 describe('Users', function() {
   this.timeout('10s');
@@ -21,7 +25,7 @@ describe('Users', function() {
     //   console.log(err);
     // }
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -39,10 +43,10 @@ describe('Users', function() {
     await helpers.findAndClickElement(driver, 'a.users');
     await driver.sleep(3000);
    });
-  
+
    function validateAnon(){
      it('should show various fields', async function(){
-      expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true; 
+      expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true;
      });
    }
 
@@ -68,7 +72,7 @@ describe('Users', function() {
      validateAnon();
    });
   });
-  
+
   describe('Logged in as a regular user', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${regularUser}`, 'a.menu.users');
@@ -85,7 +89,7 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'button.editUser')).to.eql(false);
       });
     }
-    
+
     describe('Visiting the users page', function() {
       before(async function() {
         try {
@@ -117,11 +121,11 @@ describe('Users', function() {
         describe('user info table', function() {
           validateUsersPage();
         });
-        
+
       });
     });
   });
-  
+
   describe('Logged in as an admin user', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${admin}`, 'a.menu.users');
@@ -131,9 +135,9 @@ describe('Users', function() {
       it('should show/hide various editable fields', async function(){
         const inputs = ['input.userName', 'button.clearTour', 'input.isAdmin', 'input.isAuthorized'];
         expect(await helpers.isTextInDom(driver, admin)).to.be.true;
-        
+
         await helpers.findAndClickElement(driver, 'button.editUser');
-        
+
         // should there be an input to change username?
         for (let input of inputs) {
           expect(await helpers.isElementVisible(driver, input)).to.be.true;
@@ -160,16 +164,16 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
         await helpers.waitForSelector(driver, 'ul.listing');
-        
+
         expect(await helpers.findAndGetText(driver, 'ul.listing>li.is-authorized:last-of-type')).to.contain(username);
       });
     }
-  
+
     describe('Visiting the users page', function() {
       before(async function() {
         await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
       });
-    
+
       it('should have a create new user link', async function() {
         expect(await helpers.isElementVisible(driver, 'a[href$="/users/new"]')).to.be.true;
       });
@@ -191,7 +195,7 @@ describe('Users', function() {
           await helpers.navigateAndWait(driver, `${host}/#/users/${admin}`, 'article.user');
         });
         validateUsersPage();
-      }); 
+      });
 
       describe('clicking the new user link', function() {
         before(async function() {
