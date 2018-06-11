@@ -115,7 +115,7 @@ const putAnswer = (req, res, next) => {
     // return an error
     if (doc.isSubmitted) {
       logger.error("answer already submitted");
-      return utils.sendCustomError.NotAuthorizedError(403, res);
+      return utils.sendError.NotAuthorizedError('Not Authorized', res);
     }
     // make the updates
     for(let field in req.body.answer) {
