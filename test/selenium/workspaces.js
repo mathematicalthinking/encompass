@@ -12,6 +12,7 @@ const helpers = require('./helpers');
 const host = `http://localhost:${port}`
 const user = 'steve';
 const fakeLoginUrl = `${host}/devonly/fakelogin/${user}`;
+const workspaceId = '53e36522b48b12793f000d3b';
 
 describe('Visiting Workspaces', function() {
   this.timeout('10s');
@@ -56,7 +57,6 @@ describe('Visiting Workspaces', function() {
   });
 
   describe('Visiting ESI 2014 Wednesday Reflection', function() {
-    let workspaceId = '53e36522b48b12793f000d3b';
     it('should render workspace', async function() {
       let url;
       await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/work"]`);
@@ -181,7 +181,6 @@ describe('Visiting Workspaces', function() {
 
     describe('Visiting a Selection in ESI 2014', function() {
       before(async function() {
-        let workspaceId = '53e36522b48b12793f000d3b';
         let submissionId = '53e36522729e9ef59ba7f4de';
         let selectionId = '53e38ec2b48b12793f0010e2';
         await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}"]`);

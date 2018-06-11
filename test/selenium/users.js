@@ -14,18 +14,12 @@ const regularUser = 'absvalteaching';
 const admin = 'steve';
 
 describe('Users', function() {
-  console.log('node env user tests', process.env.NODE_ENV);
   this.timeout('10s');
   let driver = null;
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
-    // try {
-    //   await driver.get(`${host}/devonly/fakelogin/${regularUser}`);
-    // }catch(err) {
-    //   console.log(err);
-    // }
     await dbSetup.prepTestDb();
   });
 
@@ -44,7 +38,7 @@ describe('Users', function() {
     }
     await helpers.navigateAndWait(driver, `${host}`, 'a.users');
     await helpers.findAndClickElement(driver, 'a.users');
-    await driver.sleep(3000);
+    await helpers.waitForSelector(driver, 'a.user');
    });
 
    function validateAnon(){

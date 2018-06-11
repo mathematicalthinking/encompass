@@ -33,36 +33,29 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`);
-      await driver.wait(until.elementLocated(By.css('span.selectionLink')), 3000);
+      let url = `${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
+      await helpers.navigateAndWait(driver, url, 'span.selectionLink');
     });
 
     it('should have a respond link', async function() {
-      let isVisible = await helpers.isElementVisible(driver, 'a.respond');
-      expect(isVisible).to.eql(true);
+      expect(await helpers.isElementVisible(driver, 'a.respond')).to.be.true;
     });
   });
 
   describe('Visiting a submission response url', function() {
     before(async function() {
-      try {
-        await driver.findElement(By.css('a.respond')).sendKeys('webdriver', Key.RETURN);
-        await driver.wait(until.elementLocated(By.css('#moreDetails')),3000);
-        await driver.sleep(3000);
-      }catch(err) {
-        console.log(err);
-      }
+      await helpers.findAndClickElement(driver, 'a.respond');
+      await helpers.waitForSelector(driver, '#moreDetails');
     });
 
-
     it('should advertise being a new response', async function() {
-      let text = await helpers.findAndGetText(driver, 'section.response>h1');
-      expect(text).to.match(/New\W+Response/);
+      expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.match(/New\W+Response/);
+      //expect(text).to.match(/New\W+Response/);
     });
 
     it('should be addressed to the student', async function() {
-      let text = await helpers.findAndGetText(driver, '#responding-to');
-      expect(text).to.equal('Andrew S.');
+      expect(await helpers.findAndGetText(driver, '#responding-to')).to.equal('Andrew S.');
+      //expect(text).to.equal('Andrew S.');
     });
 
     // Unclear fhat 'You wrote' is referring to?
