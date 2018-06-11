@@ -1,3 +1,7 @@
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
@@ -5,8 +9,8 @@ const assert = chai.assert;
 const _ = require('underscore');
 const helpers = require('./helpers');
 
-const host = 'http://localhost:8080';
-const user = 'casper';
+const host = `http://localhost:${port}`
+const user = 'steve';
 
 describe('Comments', function() {
   this.timeout('10s');
@@ -21,7 +25,7 @@ describe('Comments', function() {
       console.log(err);
     }
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -37,7 +41,7 @@ describe('Comments', function() {
         console.log(err);
       }
     });
-  
+
     it('should let us comment', async function() {
       try {
         let textArea = await helpers.getWebElements(driver, '#commentTextarea');
@@ -51,7 +55,7 @@ describe('Comments', function() {
         console.log(err);
       }
     });
-  
+
     it('should clear out the comment field', async function() {
       let text;
       try{
@@ -79,7 +83,7 @@ describe('Comments', function() {
       }catch(err) {
         console.log(err);
       }
-     
+
       expect(text).to.contain(comment);
       //TODO: delete the comment that was added
     });

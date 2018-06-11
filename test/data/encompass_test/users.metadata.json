@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass.users"},{"v":2,"unique":true,"key":{"username":1},"name":"username_1","ns":"encompass.users","background":true}],"uuid":"9a6ce38602ff46b59fbd02debb808b3a"}

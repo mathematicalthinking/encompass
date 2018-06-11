@@ -1,3 +1,7 @@
+const config = require('../../app/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const chai = require('chai');
 const expect = chai.expect;
@@ -5,8 +9,8 @@ const assert = chai.assert;
 const _ = require('underscore');
 const helpers = require('./helpers');
 
-const host = 'http://localhost:8080';
-const user = 'casper';
+const host = `http://localhost:${port}`
+const user = 'steve';
 
 describe('Responses', function() {
   this.timeout('10s');
@@ -21,7 +25,7 @@ describe('Responses', function() {
       console.log(err);
     }
   });
-  
+
   after(() => {
     driver.quit();
   });
@@ -31,7 +35,7 @@ describe('Responses', function() {
       await driver.get(`${host}#/workspaces/53df8c4c3491b46d73000211/submissions/53df8c4c3491b46d73000201/selections/5af5a5bb67ca2205deac50c6`);
       await driver.wait(until.elementLocated(By.css('span.selectionLink')), 3000);
     });
-  
+
     it('should have a respond link', async function() {
       let isVisible = await helpers.isElementVisible(driver, 'a.respond');
       expect(isVisible).to.eql(true);
@@ -59,14 +63,14 @@ describe('Responses', function() {
       let text = await helpers.findAndGetText(driver, '#responding-to');
       expect(text).to.equal('Adelina S.');
     });
-   
+
     // Unclear fhat 'You wrote' is referring to?
     // xit('should have response text', function() {
     //   'You wrote'.should.be.textInDOM;
     //   'this ends up an identity statement'.should.be.textInDOM;
     //   'Good example of using Alg to solve the Extra'.should.be.textInDOM;
     // });
-    
+
     describe('should have buttons', function() {
       async function validateButtons() {
         const selectors = ['button.edit:enabled', 'button.save:disabled', 'button.send:enabled'];
@@ -128,7 +132,7 @@ describe('Responses', function() {
         }
         expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.match(/Saved\W+Response/);
       });
-      
+
       //TODO: There is a bug when clicking responses after saving a response
       // describe('Viewing the list of saved responses', function() {
       //   it('the one we just saved should show up', async function() {

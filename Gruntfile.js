@@ -28,6 +28,50 @@ module.exports = function(grunt) {
     },
 
     /*
+     * Set Node environment using grunt-env
+     *  https://www.npmjs.com/package/grunt-env
+     */
+    env : {
+      dev : {
+        NODE_ENV : 'development'
+      },
+      test: {
+        NODE_ENV : 'test'
+      },
+      prod: {
+        NODE_ENV : 'production'
+      }
+    },
+
+    /*
+     * Set up the Mocha selenium tests
+     * see: https://github.com/pghalliday/grunt-mocha-test
+     */
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt', // Optionally capture the reporter output to a file
+          quiet: false, // Optionally suppress output to standard out (defaults to false)
+          clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+          clearCacheFilter: (key) => true, // Optionally defines which files should keep in cache
+          noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+        },
+        src: ['test/selenium/**/*.js']
+      }
+    },
+
+    /*
+     * Shell task to copy test database at beginning of system tests.
+     */
+    shell: {
+      restoreTestDb: {
+        command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
+      }
+    },
+
+
+    /*
        A simple ordered concatenation strategy.
        This will start at app/app.js and begin
        adding dependencies in the correct order
@@ -183,15 +227,6 @@ module.exports = function(grunt) {
       }
     },
 
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'spec',
-        },
-        src: ['test/mocha/*.js']
-      }
-    },
-
     /*
       Reads the projects .js files and generates documentation in the docs folder
     */
@@ -285,6 +320,12 @@ module.exports = function(grunt) {
         options: {
           logConcurrentOutput: true
         }
+      },
+      systemTests: {
+        tasks: ['nodemon:sysTest', 'mochaSelenium'],
+        options: {
+          logConcurrentOutput: true
+        }
       }
     }
   });
@@ -299,13 +340,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-ember-templates');
   grunt.loadNpmTasks('grunt-nodemon');
-  grunt.loadNpmTasks('grunt-node-inspector');
+  // grunt.loadNpmTasks('grunt-node-inspector');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-jasmine-node');
   grunt.loadNpmTasks('grunt-mocha-casperjs');
   grunt.loadNpmTasks('grunt-mocha-test');
   //grunt.loadNpmTasks('grunt-casperjs-plugin');
-  grunt.loadNpmTasks('grunt-groc');
+  // grunt.loadNpmTasks('grunt-groc');
+  grunt.loadNpmTasks('grunt-env');
+  grunt.loadNpmTasks('grunt-shell');
 
   /*
     Build the application
@@ -365,5 +408,18 @@ module.exports = function(grunt) {
   */
   grunt.registerTask('serve', ['nodemon:dev']);
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
-  grunt.registerTask('dev', ['build', 'tests', 'watch']);
+  grunt.registerTask('dev', ['env:dev', 'build', 'tests', 'watch']);
+  /*
+   * Run end to end selenium tests
+   * need to do task 'env:test' to run application as test
+   * using test port, database, ...
+   */
+  grunt.registerTask('mochaSelenium', ['mochaTest']);
+  /*
+   * Run end to end system tests (Mocha Selenium tests)
+   * 'env:test' sets up Node Environment (NODE_ENV) to test.
+   *   - Runs application using test port, test database, etc.
+   */
+  grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
+  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
 };
