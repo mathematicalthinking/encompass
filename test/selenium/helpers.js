@@ -24,7 +24,7 @@ const getWebElements = async function (webDriver, selector) {
   return webElements;
 };
 
-const navigateAndWait = async function (webDriver, url, selector, timeout) {
+const navigateAndWait = async function (webDriver, url, selector, timeout=3000) {
   await webDriver.get(url);
   return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 };
