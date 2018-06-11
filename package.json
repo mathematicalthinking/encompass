@@ -76,6 +76,7 @@
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "chromedriver": "^2.38.3",
+    "grunt-env": "^0.4.4",
     "mocha": "^5.2.0",
     "nightmare": "^3.0.1"
   }

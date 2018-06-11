@@ -26,6 +26,7 @@ module.exports = function(grunt) {
         }
       }
     },
+    
 
     /*
      * Set Node environment using grunt-env
@@ -226,6 +227,17 @@ module.exports = function(grunt) {
         src: ['test/casper/*.js']
       }
     },
+<<<<<<< HEAD
+=======
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec',
+        },
+        src: ['test/mocha/*.js', 'test/selenium/*.js']
+      }
+    },
+>>>>>>> Install grunt-env package
 
     /*
       Reads the projects .js files and generates documentation in the docs folder
@@ -244,7 +256,7 @@ module.exports = function(grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!app/db_migration/*.js'],
       options: {
         jshintrc: '.jshintrc'
       }
@@ -327,7 +339,19 @@ module.exports = function(grunt) {
           logConcurrentOutput: true
         }
       }
-    }
+    },
+    env : {
+      options : {
+        //Shared Options Hash
+      },
+      dev : {
+        NODE_ENV : grunt.option('environment') || 'development',
+        DEST     : 'temp'
+      },
+      test: {
+        NODE_ENV: 'test'
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-browserify');
@@ -346,9 +370,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-casperjs');
   grunt.loadNpmTasks('grunt-mocha-test');
   //grunt.loadNpmTasks('grunt-casperjs-plugin');
+<<<<<<< HEAD
   // grunt.loadNpmTasks('grunt-groc');
   grunt.loadNpmTasks('grunt-env');
   grunt.loadNpmTasks('grunt-shell');
+=======
+  grunt.loadNpmTasks('grunt-groc');
+  grunt.loadNpmTasks('grunt-env');
+>>>>>>> Install grunt-env package
 
   /*
     Build the application
@@ -368,14 +397,14 @@ module.exports = function(grunt) {
   /*
     Execute all of the tests (jshint too)
   */
-  grunt.registerTask('tests', ['jshint', 'jasmine', 'mochaTest']); // jqunit
+  grunt.registerTask('tests', ['jshint', 'jasmine']); // jqunit
 
-  grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
+  grunt.registerTask('integration-tests', ['env:test', 'build', 'mochaTest']);
 
   /*
     Build and then test
   */
-  grunt.registerTask('test', ['build', 'tests']);
+  grunt.registerTask('test', ['env:test','build', 'tests']);
 
   /*
     Package the app up for distribution
@@ -406,8 +435,9 @@ module.exports = function(grunt) {
       grunt serve #terminal 1
       grunt dev   #terminal 2
   */
-  grunt.registerTask('serve', ['nodemon:dev']);
+  grunt.registerTask('serve', ['env:dev','nodemon:dev']);
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
+<<<<<<< HEAD
   grunt.registerTask('dev', ['env:dev', 'build', 'tests', 'watch']);
   /*
    * Run end to end selenium tests
@@ -422,4 +452,8 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
+=======
+  grunt.registerTask('dev', ['build', 'tests', 'watch']);
+  grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
+>>>>>>> Install grunt-env package
 };
