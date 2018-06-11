@@ -15,7 +15,6 @@ var mongoose = require('mongoose'),
     _      = require('underscore'),
     Q      = require('q'),
     helper = require('util'),
-    errors = require('restify-errors');
 
 
 module.exports.get = {};
@@ -715,7 +714,7 @@ function sendWorkspaces(req, res, next) {
 function postWorkspace(req, res, next) {
   logger.info('IN POSTWORKSPACE!!');
   // next(new Error('TESTING next(new ERROR'));
-  next(new errors.BadMethodError('This action is not yet supported!'));
+  next(new errors.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
  }
 
 /**

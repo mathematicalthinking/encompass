@@ -12,7 +12,6 @@ var mongoose = require('mongoose'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     utils    = require('./requestHandler'),
-    errors = require('restify-errors');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -62,7 +61,7 @@ function getComments(req, res, next) {
     .exec(function(err, comments) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'comment': []};
@@ -116,7 +115,7 @@ function getComment(req, res, next) {
     .exec(function(err, comment) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'comment': comment};
@@ -146,7 +145,7 @@ function postComment(req, res, next) {
       comment.save(function(err, doc) {
         if(err) {
           logger.error(err);
-          utils.sendError(new errors.InternalError(err.message), res);
+          return utils.sendError.InternalError(err, res);
         }
 
         var data = {'comment': doc};
@@ -179,7 +178,7 @@ function putComment(req, res, next) {
         function (err, doc) {
           if(err) {
             logger.error(err);
-            utils.sendError(new errors.InternalError(err.message), res);
+            return utils.sendError.InternalError(err, res);
           }
 
           for(var field in req.body.comment) {
@@ -191,7 +190,7 @@ function putComment(req, res, next) {
           doc.save(function (err, comment) {
             if(err) {
               logger.error(err);
-              utils.sendError(new errors.InternalError(err.message), res);
+              return utils.sendError.InternalError(message, res);
             }
 
             var data = {'comment': comment};

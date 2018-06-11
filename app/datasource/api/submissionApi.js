@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
     auth     = require('./auth'),
     models   = require('../schemas'),
     spaces   = require('./workspaceApi'),
-    errors = require('restify-errors');
 
     module.exports.get = {};
     module.exports.post = {};
@@ -106,7 +105,7 @@ function getSubmissions(req, res, next) {
     .exec(function(err, submissions) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'submission': submissions};
@@ -189,7 +188,7 @@ function getSubmission(req, res, next) {
     function(err, submission) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'submission': submission};
@@ -240,12 +239,12 @@ function postSubmission(req, res, next) {
         });
       }
       catch (error) {
-        utils.sendError(new errors.InternalError(error.message), res);
+        utils.sendError.InternalError(error, res);
         next();
       }
     }
   } else {
-    utils.sendError(new errors.NotAuthorizedError('You do not have permissions to do this'), res);
+    utils.sendError.NotAuthorizedError('You do not have permissions to do this'), res);
     next();
   }
   return next();
@@ -264,7 +263,7 @@ function putSubmission(req, res, next) {
   models.Submission.findById(req.params.id, function (err, doc) {
     if(err) {
       logger.error(err);
-      utils.sendError(new errors.InternalError(err.message), res);
+      return utils.sendError.InternalError(err, res);
     }
 
     for(var field in req.body.submission) {
@@ -276,7 +275,7 @@ function putSubmission(req, res, next) {
     doc.save(function (err, submission) {
       if(err) {
         logger.error(err);
-        utils.sendError(new errors.InternalError(err.message), res);
+        return utils.sendError.InternalError(err, res);
       }
 
       var data = {'submission': submission};
@@ -332,7 +331,7 @@ function importSubmissions(req, res, next) {
 
   var onReject = function(error) {
     logger.debug(error);
-    utils.sendError(new errors.RestError(error), res);
+    utils.sendError.RestError(error, res);
   };
 
   /*

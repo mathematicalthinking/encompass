@@ -10,7 +10,6 @@ var logger   = require('log4js').getLogger('sane'),
     express  = require('express'),
     _        = require('underscore'),
     models   = require('../schemas'),
-    errors   = require('restify-errors');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
@@ -140,7 +139,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError(new errors.InvalidContentError(util.format(error, schema), res));
+        utils.sendError.InvalidContentError(util.format(error, schema), res));
         return next(false);
       }
     }

@@ -25,7 +25,7 @@ const userApi = require('./userApi'),
   * @param {ServerResponse} res The response object
   * @param {Object} data The data to send
  */
-function sendResponse(req, res, data) {
+function sendResponse(res, data) {
   if (!data) {
     res.status(404).json({
       error: 'Not found'
@@ -47,37 +47,37 @@ function sendResponse(req, res, data) {
   */
 
 const sendError = {
-  InternalError: function (req, res, err) {
+  InternalError: function (err, res) {
       res.status(500).json({
         error: err || 'Internal Error'
       });
     },
-  BadMethodError: function (req, res, err) {
+  BadMethodError: function (err, res) {
     res.status(405).json({
       error: err || 'Bad Method'
     });
   },
-  NotAuthorizedError: function (req, res, err) {
+  NotAuthorizedError: function (err, res) {
     res.status(403).json({
       error: err || 'Not Authorized'
     });
   },
-  InvalidCredentialsError: function (req, res, err) {
+  InvalidCredentialsError: function (err, res) {
     res.status(401).json({
       error: err || 'Invalid Credentials'
     });
   },
-  InvalidArgumentError: function (req, res, err) {
+  InvalidArgumentError: function (err, res) {
     res.status(409).json({
       error: err || 'Invalid Argument'
     });
   },
-  InvalidContentError: function (req, res, err) {
+  InvalidContentError: function (err, res) {
     res.status(400).json({
       error: err || 'Invalid Content'
     });
   },
-  RestError: function (req, res, err) {
+  RestError: function (err, res) {
     res.status(400).json({
       error: err || 'Rest error'
     });
@@ -89,10 +89,10 @@ const sendError = {
 //   res.send(500, error);
 // }
 
-// function sendCustomError(code, error, res) {
-//   logger.error(error);
-//   res.send(code, error);
-// }
+function sendCustomError(code, error, res) {
+  logger.error(error);
+  res.send(code, error);
+}
 
 /**
   * @public
