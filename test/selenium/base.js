@@ -35,40 +35,37 @@ describe('Home Page', function () {
 
   it('should display login page after clicking login', async function () {
     let url;
-    let isUsername;
-    let isPassword;
-    let isSubmit;
+    await helpers.findAndClickElement(driver, 'a[href="login"]');
+    await helpers.waitForSelector(driver, 'input[name=username]');
+    
     try {
-      await driver.findElement(By.css('a[href="login"]')).sendKeys('webdriver', Key.RETURN);
-      await driver.sleep(1000);
       url = await driver.getCurrentUrl();
-      isUsername = await driver.findElement(By.css('input[name=username]')).isDisplayed();
-      isPassword = await driver.findElement(By.css('input[name=password]')).isDisplayed();
-      isSubmit = await driver.findElement(By.css('input[type=submit]')).isDisplayed();
-    } catch (err) {
+    }catch(err) {
       console.log(err);
     }
-
-    expect(url).to.equal(login);
-    expect(isUsername).to.eql(true);
-    expect(isPassword).to.be.true;
-    expect(isSubmit).to.be.true;
+    expect(url).to.eql(login);
+    expect(await helpers.isElementVisible(driver, 'input[name=username]')).to.be.true;  
+    expect(await helpers.isElementVisible(driver, 'input[name=password]')).to.be.true;   
+    expect(await helpers.isElementVisible(driver, 'input[type=submit]')).to.be.true;
   });
 
   it('should redirect to homepage after logging in', async function () {
     let url;
     let greeting;
+    let message;
+    
     try {
-      await driver.findElement(By.css('input[name=username]')).sendKeys(user);
-      await driver.findElement(By.css('input[type=submit]')).sendKeys('webdriver', Key.RETURN);
-      await driver.sleep(5000);
+      await helpers.findInputAndType(driver, 'input[name=username]', user);
+      await helpers.findAndClickElement(driver, 'input[type=submit]');
+    
+      greeting = await helpers.waitForSelector(driver, '#al_welcome');
       url = await driver.getCurrentUrl();
-      greeting = await driver.findElement(By.id('al_welcome')).getText();
-      await driver.sleep(2000);
+      message = await greeting.getText();
     } catch (err) {
-      expect(url).to.equal(`${host}/`);
-      expect(greeting).to.equal(`Welcome, ${user}`);
+      console.log(err);
     }
+    expect(url).to.equal(`${host}/`);
+    expect(message).to.equal(`Welcome, ${user}`);
   });
 
   describe('NavBar', async function () {
