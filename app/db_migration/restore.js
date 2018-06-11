@@ -22,29 +22,26 @@ const restoreDb = function (dbName, backupPath) {
   });
 };
 
-const dropTestdb = function () {
-  return new Promise((resolve, reject) => {
-    exec('npm run drop-testdb', (err, stdout, stderr) => {
-      if (err) {
-        reject(err);
-      }
-      console.log('db drop results: ', stdout);
-      //console.log('db drop errors: ', stderr);
-      resolve('Dropped encompass_test database successfully!');
-    });
-  });
-}
+// const dropTestdb = function () {
+//   return new Promise((resolve, reject) => {
+//     exec('npm run drop-testdb', (err, stdout, stderr) => {
+//       if (err) {
+//         reject(err);
+//       }
+//       console.log('db drop results: ', stdout);
+//       //console.log('db drop errors: ', stderr);
+//       resolve('Dropped encompass_test database successfully!');
+//     });
+//   });
+// }
 
 const prepTestDb = async function () {
   try {
-    // let dropped = await dropTestdb();
-    // console.log(dropped);
-
     let restored = await restoreDb(testDb, pathToBackup);
     console.log(restored);
   } catch (err) {
     console.log(err);
   }
 };
-//prepTestDb();
+
 module.exports.prepTestDb = prepTestDb;

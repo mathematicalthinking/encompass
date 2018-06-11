@@ -1,25 +1,6 @@
 const models = require('../datasource/schemas');
 const _ = require('underscore');
 
-// function getProblemsFromPowIds() {
-//   return models.Submission.find({ powId: { $exists: true } })
-//     .then((subs) => {
-//       let problems = subs.map((sub) => {
-//         return { name: `PoW #${sub.powId}` };
-//       });
-//       let uniques = _.uniq(problems);
-//       models.Problem.insertMany(uniques, (err, probs) => {
-//         if (err) {
-//           console.log(err);
-//         }
-//         console.log(`Inserted ${probs.length} problems.`);
-//       });
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }
-
 function getProblemsFromPuzzleIds() {
   return models.Submission.find({ 'publication.puzzle.puzzleId': { $exists: true } })
     .then((subs) => {
@@ -165,23 +146,6 @@ function getSectionsFromSubmissions() {
     })
     .catch(err => console.log(err));
 }
-
-// function addSectionstoUsers() {
-//   return models.Submission.find({ 'clazz.clazzId': { $exists: true } })
-//     .then((subs) => {
-//       let userSections = subs.map((sub) => {
-//         let res = {};
-//         let sectionId = sub.clazz.clazzId;
-//         if (sub.teacher.username) {
-//           if (!res[sectionId]) {
-//             res[sectionId] = [sub.teacher.username]
-//           } else {
-//             res[sectionId].push(sub.teacher.username);
-//           }
-//         }
-//       });
-//     })
-// }
 
 function migrate() {
   getProblemsFromPuzzleIds()
