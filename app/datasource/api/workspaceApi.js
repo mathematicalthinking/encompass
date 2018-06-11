@@ -14,7 +14,7 @@ var mongoose = require('mongoose'),
     data   = require('./data'),
     _      = require('underscore'),
     Q      = require('q'),
-    helper = require('util'),
+    helper = require('util');
 
 
 module.exports.get = {};

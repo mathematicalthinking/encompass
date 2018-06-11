@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
     _        = require('underscore'),
     path     = require('./path'),
     cache    = require('./cache'),
-    models   = require('../schemas'),
+    models   = require('../schemas');
 
 /*
   @returns {Object} user as cached from processToken, fetchUser

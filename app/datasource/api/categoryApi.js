@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
   models = require('../schemas'),
   auth = require('./auth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler'),
+  utils    = require('./requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};

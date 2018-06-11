@@ -9,7 +9,7 @@ var logger   = require('log4js').getLogger('sane'),
     util     = require('util'),
     express  = require('express'),
     _        = require('underscore'),
-    models   = require('../schemas'),
+    models   = require('../schemas');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
@@ -78,7 +78,7 @@ function validateId(options) {
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       //TODO this is sending a 500 error although its a 4xx
-      utils.sendError(new errors.InvalidArgumentError('bad object id'), res);
+      utils.sendError.InvalidArgumentError('bad object id', res);
       return next(false);
     }
 
@@ -139,7 +139,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError.InvalidContentError(util.format(error, schema), res));
+        utils.sendError.InvalidContentError(util.format(error, schema), res);
         return next(false);
       }
     }

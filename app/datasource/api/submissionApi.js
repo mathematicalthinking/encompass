@@ -13,7 +13,7 @@ var mongoose = require('mongoose'),
     util     = require('util'),
     auth     = require('./auth'),
     models   = require('../schemas'),
-    spaces   = require('./workspaceApi'),
+    spaces   = require('./workspaceApi');
 
     module.exports.get = {};
     module.exports.post = {};
@@ -244,7 +244,7 @@ function postSubmission(req, res, next) {
       }
     }
   } else {
-    utils.sendError.NotAuthorizedError('You do not have permissions to do this'), res);
+    utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     next();
   }
   return next();

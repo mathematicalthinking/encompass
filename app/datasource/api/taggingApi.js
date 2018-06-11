@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     utils    = require('./requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
-    models   = require('../schemas'),
+    models   = require('../schemas');
 
 module.exports.get = {};
 module.exports.post = {};

@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
-    utils    = require('./requestHandler'),
+    utils    = require('./requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
