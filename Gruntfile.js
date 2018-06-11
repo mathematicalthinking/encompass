@@ -62,6 +62,16 @@ module.exports = function(grunt) {
     },
 
     /*
+     * Shell task to copy test database at beginning of system tests.
+     */
+    shell: {
+      restoreTestDb: {
+        command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
+      }
+    },
+
+
+    /*
        A simple ordered concatenation strategy.
        This will start at app/app.js and begin
        adding dependencies in the correct order
@@ -338,6 +348,7 @@ module.exports = function(grunt) {
   //grunt.loadNpmTasks('grunt-casperjs-plugin');
   // grunt.loadNpmTasks('grunt-groc');
   grunt.loadNpmTasks('grunt-env');
+  grunt.loadNpmTasks('grunt-shell');
 
   /*
     Build the application
@@ -409,5 +420,6 @@ module.exports = function(grunt) {
    * 'env:test' sets up Node Environment (NODE_ENV) to test.
    *   - Runs application using test port, test database, etc.
    */
-  grunt.registerTask('systemTests', ['env:test', 'concurrent:dev']);
+  grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
+  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
 };
