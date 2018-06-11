@@ -103,10 +103,10 @@ describe('Responses', function() {
       it('should display details after clicking more details', async function() {
         await driver.findElement(By.css('a#moreDetails')).click();
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(true);
-        let commentLis = await driver.wait(until.elementsLocated(By.css('section.comments>ul>li')), 2000);
+        let commentList = await driver.wait(until.elementsLocated(By.css('section.comments>ul')), 2000);
         let selectionLis = await driver.wait(until.elementsLocated(By.css('section.selections>ul>li')), 2000);
-        expect(commentLis).to.have.lengthOf.at.least(1);
-        expect(selectionLis).to.have.lengthOf.at.least(1);
+        expect(commentList).to.have.lengthOf(1);
+        expect(selectionLis).to.have.lengthOf(4);
         //'a.other.response'.should.be.inDOM; TODO Test for other responses (needs a submission with multiple responses)
       })
     });

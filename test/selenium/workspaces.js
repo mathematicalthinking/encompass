@@ -211,7 +211,7 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(comments.length).to.eql(8);
+        expect(comments.length).to.eql(1);
         expect(commentsText[0]).to.contain('I spoke with Michael about the balance');
       });
 
@@ -235,7 +235,7 @@ describe('Visiting Workspaces', function() {
 
     // Consider moving into folders.js
     // Should there be popup functionality?
-  describe('Visiting a Folder from Feathers and Fur', function() {
+  describe('Visiting a Folder from ESI 2014', function() {
     before(function() {
       // casper.start(host + '/devonly/fakelogin/casper');
       // casper.thenOpen(host + '/#/workspaces/543e96757112056b290001fa/work');
@@ -273,18 +273,12 @@ describe('Visiting Workspaces', function() {
         let subFolderList;
         let subFolders;
 
-        try {
-          subFolderList = await driver.wait(until.elementsLocated(By.css('li>ul.subfolders')), 1000);
-        }catch(err) {
-          console.log(err);
-        }
-        expect(subFolderList).to.not.exist;
+        expect(await helpers.isElementVisible(driver,'li>ul.subfolders')).to.be.false;
 
         try {
           let links = await driver.wait(until.elementsLocated(By.css('span.toggle-icon.branch')), 3000);
           if (links) {
             await links[0].click();
-            await driver.sleep(3000);
             subFolderList = await driver.wait(until.elementLocated(By.css('ul.subfolders')))
             if (subFolderList) {
               subFolders = await subFolderList.findElements(By.css('.folderItem'));
