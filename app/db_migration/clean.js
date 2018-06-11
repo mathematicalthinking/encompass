@@ -17,10 +17,10 @@ const collections = ["Tagging",
 // Criteria for deciding which workspaces to keep
 // Current buildCriteria function uses greater than these values 
 const workspaceMinimum = {
-  submissions: 3, 
-  comments: 0, 
+  submissions: 3,
+  comments: 0,
   taggings: 0,
-  folders: 3, 
+  folders: 3,
   selections: 0
 }
 
