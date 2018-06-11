@@ -714,7 +714,7 @@ function sendWorkspaces(req, res, next) {
 function postWorkspace(req, res, next) {
   logger.info('IN POSTWORKSPACE!!');
   // next(new Error('TESTING next(new ERROR'));
-  next(new errors.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
+  next(utils.sendError.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
  }
 
 /**
