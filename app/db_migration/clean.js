@@ -35,7 +35,6 @@ function buildCriteria(options) {
   }
   return {$and: $andArray};
 }
-console.log(buildCriteria(workspaceMinimum));
 
 // finds matching workspaces based on criteria and then deletes
 // all other workspaces that don't match
@@ -108,7 +107,6 @@ async function removeAllOrphanedFromWs() {
   }
   return;
 }
-
 
 // Removes all taggings that contian a reference to a selection or folder
 // that no longer exist
@@ -184,8 +182,7 @@ async function removeOrphanedSubs() {
           await model.deleteOne({_id: sub._id});
           deleted++;
        }
-
-    }
+      }
   }catch(err) {
     console.log(err);
   }
