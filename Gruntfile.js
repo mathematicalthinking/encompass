@@ -298,7 +298,7 @@ module.exports = function(grunt) {
     */
     concurrent: {
       dev: {
-        tasks: ['nodemon:dev', 'watch'],
+        tasks: ['nodemon:dev', 'jshint', 'watch'],
         options: {
           logConcurrentOutput: true
         }
