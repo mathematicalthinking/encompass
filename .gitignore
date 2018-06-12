@@ -21,6 +21,9 @@ server.out
 #vs code
 .vscode
 
+#.exe
+.exe
+
 #env
 .env
 
