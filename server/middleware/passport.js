@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const bcryptSalt = 10;
 
 //USER MODEL
-const User = require('./datasource/schemas/user');
+const User = require('../datasource/schemas/user');
 
 
 module.exports = (passport) => {

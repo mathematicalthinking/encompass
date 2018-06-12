@@ -18,7 +18,7 @@ const express = require('express'),
       path = require('./middleware/path'),
       fixed = require('./datasource/fixed');
 
-const configure = require('./passport');
+const configure = require('./middleware/passport');
 const models = require('./datasource/schemas');
 const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
@@ -71,7 +71,7 @@ db.on('error', function (err) {
 });
 
 server.use(session({
-  secret: 'passport-app',
+  secret: 'encompass-app',
   resave: true,
   saveUninitialized: true,
 }));
