@@ -1,5 +1,5 @@
 {
-  "-W061": true, 
+  "-W061": true,
   "camelcase": true,
   "indent": 2,
   "forin": true,

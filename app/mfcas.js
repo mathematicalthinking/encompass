@@ -19,12 +19,19 @@ var config   = require('./config'),
 
 var ssoConf = config.nconf.get('sso');
 var webConf = config.nconf.get('web');
+var ssoService;
+
+if (process.env.NODE_ENV === 'test') {
+  ssoService = 'http://localhost:8082/back';
+} else {
+  ssoService = ssoConf.service;
+}
 
 //just send the user to cas
 function login(req, res, next) {
   /* jshint camelcase: false */
   logger.debug("SSO base url: " + ssoConf.baseUrl );
-  res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl='+ssoConf.service);
+  res.header('Location', ssoConf.baseUrl + '/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl='+ssoService);
   res.send(301);
 }
 

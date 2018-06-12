@@ -3,10 +3,10 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const _ = require('underscore');
 const helpers = require('./helpers');
+const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -18,6 +18,7 @@ describe('Folders', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+    await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
@@ -30,41 +31,19 @@ describe('Folders', function() {
   });
   describe('Visiting a ESI 2014 Wednesday Reflection', function() {
     before(async function() {
-      try {
-        await driver.get(`${host}//#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`);
-      await driver.wait(until.elementLocated(By.css('table#folder_contents')), 3000);
-      await driver.sleep(3000);
-      }catch(err) {
-        console.log(err);
-      }
+      await helpers.navigateAndWait(driver, `${host}//#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, 'table#folder_contents');
     });
 
     it('should display the folder name', async function() {
       let name;
-      try {
-        let header = await driver.findElements(By.css('div#menubar>h1'));
-        if (!_.isEmpty(header)) {
-          name = header[0].getText();
-        }
-      }catch(err) {
-        console.log(err);
-      }
-      expect(name).to.eql('Improve');
+      expect(await helpers.findAndGetText(driver, 'div#menubar>h1')).to.eql('Improve');
     });
 
     it('should announce that it has a bunch of submissions and selections', async function() {
-      let text;
-      try {
-        let statusBar = await driver.findElements(By.css('div#statusbar'));
-        if (!_.isEmpty(statusBar)) {
-          text = await statusBar[0].getText();
-        }
-      }catch(err) {
-        console.log(err);
-      }
+      let text = await helpers.findAndGetText(driver, 'div#statusbar');
       expect(text).to.contain('9 submission(s)');
       expect(text).to.contain('0 selection(s)');
-    });
+     });
 
     it('should display view controls', async function() {
       expect(await helpers.isElementVisible(driver, '#controls')).to.eql(true);

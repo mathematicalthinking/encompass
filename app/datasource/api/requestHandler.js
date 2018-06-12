@@ -63,6 +63,7 @@ const sendError = {
     });
   },
   InvalidCredentialsError: function (err, res) {
+    console.log('err: ', err);
     res.status(401).json({
       error: err || 'Invalid Credentials'
     });
@@ -117,7 +118,6 @@ function buildCriteria(req) {
       ]
     }
   ];
-  console.log('req.mf.auth.workspaces: ',req.mf.auth.workspaces);
   if(req.mf.auth.workspaces) {
     criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });
   }

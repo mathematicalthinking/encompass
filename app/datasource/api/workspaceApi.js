@@ -33,7 +33,7 @@ module.exports.put = {};
   * @todo This should really accept a node-style callback
   */
 function getWorkspace(id, callback) {
-  console.log('in getWorkspace');
+  console.log('in getWorkspace', id);
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
@@ -102,6 +102,7 @@ function getWorkspace(id, callback) {
   *       + Could be simpler. Needs refactoring
   */
 function getWorkspaceWithDependencies(id, callback) {
+  console.log('id in get ws with depends', id);
   models.Workspace.findById(id)
     .exec(
       function(err, workspace) {
@@ -147,7 +148,7 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-  
+
   var user = auth.requireUser(req);
   console.log('in sendWorkspace', user.username);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
@@ -715,7 +716,7 @@ function sendWorkspaces(req, res, next) {
 function postWorkspace(req, res, next) {
   logger.info('IN POSTWORKSPACE!!');
   // next(new Error('TESTING next(new ERROR'));
-  next(utils.sendError.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
+  return utils.sendError.BadMethodError('This action is not yet supported!'); // Not sure how to handle this
  }
 
 /**

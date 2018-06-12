@@ -3,11 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -19,6 +19,7 @@ describe('Comments', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+      await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
@@ -31,7 +32,7 @@ describe('Comments', function() {
   });
 
   describe('Visiting a Selection in ESI 2014 Wednesday Reflection', function() {
-    const comment = 'new comment from casper ' + new Date().getTime();
+    const comment = `new comment from ${user} ${new Date().getTime()}`;
     let saveButton;
     before(async function() {
       try {
@@ -49,7 +50,6 @@ describe('Comments', function() {
           await textArea[0].sendKeys(comment);
           await saveButton.click();
           await driver.wait(until.elementLocated(By.css('#commentTextarea:empty')), 3000);
-          await driver.sleep(5000);
         }
       }catch(err) {
         console.log(err);
@@ -57,18 +57,7 @@ describe('Comments', function() {
     });
 
     it('should clear out the comment field', async function() {
-      let text;
-      try{
-        let textArea = await helpers.getWebElements(driver, '#commentTextarea');
-        if (!_.isEmpty(textArea)) {
-          let el = textArea[0];
-          text = await el.getText();
-        }
-      }catch(err) {
-        console.log(err);
-      }
-      //"$('#commentTextarea').text().length".should.evaluate.to.equal(0);
-      expect(text.length).to.eql(0);
+      expect(await helpers.findAndGetText(driver, '#commentTextarea')).to.have.lengthOf(0);
     });
 
     it('should show the comment', async function() {

@@ -57,7 +57,7 @@ module.exports = function(grunt) {
           clearCacheFilter: (key) => true, // Optionally defines which files should keep in cache
           noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
         },
-        src: ['test/selenium/**/*.js']
+        src: ['test/selenium/**/*.js', 'test/mocha/*.js']
       }
     },
 
@@ -77,12 +77,10 @@ module.exports = function(grunt) {
        adding dependencies in the correct order
        writing their string contents into
        'build/application.js'
-
        Additionally it will wrap them in evals
        with @ sourceURL statements so errors, log
        statements and debugging will reference
        the source files by line number.
-
        You would set this option to false for
        production.
     */
@@ -117,7 +115,6 @@ module.exports = function(grunt) {
 
     /*
       Watch files for changes.
-
       Not spawning a new grunt task speeds this up quite a bit
     */
     watch: {
@@ -244,7 +241,7 @@ module.exports = function(grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!app/db_migration/*.js'],
       options: {
         jshintrc: '.jshintrc'
       }
@@ -253,15 +250,12 @@ module.exports = function(grunt) {
     /*
       Finds Handlebars templates and precompiles them into functions.
       The provides two benefits:
-
       1. Templates render much faster
       2. We only need to include the handlebars-runtime microlib
       and not the entire Handlebars parser.
-
       Files will be written out to dependencies/compiled/templates.js
       which is required within the project files so will end up
       as part of our application.
-
       The compiled result will be stored in
       Ember.TEMPLATES keyed on their file path (with the 'app/templates' stripped)
     */
@@ -304,6 +298,12 @@ module.exports = function(grunt) {
     */
     concurrent: {
       dev: {
+        tasks: ['nodemon:dev', 'jshint', 'watch'],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
+      test: {
         tasks: ['nodemon:dev', 'tests', 'watch'],
         options: {
           logConcurrentOutput: true
@@ -375,7 +375,7 @@ module.exports = function(grunt) {
   /*
     Build and then test
   */
-  grunt.registerTask('test', ['build', 'tests']);
+  grunt.registerTask('test', ['env:test', 'build', 'tests']);
 
   /*
     Package the app up for distribution
@@ -421,5 +421,6 @@ module.exports = function(grunt) {
    *   - Runs application using test port, test database, etc.
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
-  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
+  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
+  grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
 };

@@ -3,10 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -18,11 +19,11 @@ describe('Visiting Workspace Creation', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+      await dbSetup.prepTestDb();
 
       await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${user}`,'a[href="#/workspaces/new"');
       await helpers.findAndClickElement(driver, 'a[href="#/workspaces/new"');
       await helpers.waitForSelector(driver,'section.newWorkspace.sanity');
-      await driver.sleep(1000);
   });
 
   after(() => {
@@ -52,7 +53,6 @@ describe('Visiting Workspace Creation', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, 'input.powImport');
       await helpers.waitForSelector(driver, 'form#powImportForm');
-      driver.sleep(3000);
     });
     it('should change the displayed import form', async function() {
       expect(await helpers.isElementVisible(driver, 'form#powImportForm')).to.be.true;
@@ -102,4 +102,3 @@ describe('Visiting Workspace Creation', function() {
     });
   });
 });
-

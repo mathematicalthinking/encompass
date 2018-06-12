@@ -3,11 +3,11 @@ const nconf = config.nconf;
 const port = nconf.get('testPort');
 
 const {Builder, By, Key, until} = require('selenium-webdriver')
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
+const expect = require('chai').expect;
 const _ = require('underscore');
+
 const helpers = require('./helpers');
+const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';
@@ -19,6 +19,7 @@ describe('Responses', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
+    await dbSetup.prepTestDb();
     try {
       await driver.get(`${host}/devonly/fakelogin/${user}`);
     }catch(err) {
@@ -32,36 +33,29 @@ describe('Responses', function() {
 
   describe('Visiting a submission with selections', function() {
     before(async function() {
-      await driver.get(`${host}#/workspaces/53df8c4c3491b46d73000211/submissions/53df8c4c3491b46d73000201/selections/5af5a5bb67ca2205deac50c6`);
-      await driver.wait(until.elementLocated(By.css('span.selectionLink')), 3000);
+      let url = `${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
+      await helpers.navigateAndWait(driver, url, 'span.selectionLink');
     });
 
     it('should have a respond link', async function() {
-      let isVisible = await helpers.isElementVisible(driver, 'a.respond');
-      expect(isVisible).to.eql(true);
+      expect(await helpers.isElementVisible(driver, 'a.respond')).to.be.true;
     });
   });
 
   describe('Visiting a submission response url', function() {
     before(async function() {
-      try {
-        await driver.findElement(By.css('a.respond')).sendKeys('webdriver', Key.RETURN);
-        await driver.wait(until.elementLocated(By.css('#moreDetails')),3000);
-        await driver.sleep(3000);
-      }catch(err) {
-        console.log(err);
-      }
+      await helpers.findAndClickElement(driver, 'a.respond');
+      await helpers.waitForSelector(driver, '#moreDetails');
     });
 
-
     it('should advertise being a new response', async function() {
-      let text = await helpers.findAndGetText(driver, 'section.response>h1');
-      expect(text).to.match(/New\W+Response/);
+      expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.match(/New\W+Response/);
+      //expect(text).to.match(/New\W+Response/);
     });
 
     it('should be addressed to the student', async function() {
-      let text = await helpers.findAndGetText(driver, '#responding-to');
-      expect(text).to.equal('Adelina S.');
+      expect(await helpers.findAndGetText(driver, '#responding-to')).to.equal('Andrew S.');
+      //expect(text).to.equal('Andrew S.');
     });
 
     // Unclear fhat 'You wrote' is referring to?
@@ -102,10 +96,10 @@ describe('Responses', function() {
       it('should display details after clicking more details', async function() {
         await driver.findElement(By.css('a#moreDetails')).click();
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(true);
-        let commentLis = await driver.wait(until.elementsLocated(By.css('section.comments>ul>li')), 2000);
+        let commentList = await driver.wait(until.elementsLocated(By.css('section.comments>ul')), 2000);
         let selectionLis = await driver.wait(until.elementsLocated(By.css('section.selections>ul>li')), 2000);
-        expect(commentLis).to.have.lengthOf.at.least(1);
-        expect(selectionLis).to.have.lengthOf.at.least(1);
+        expect(commentList).to.have.lengthOf(1);
+        expect(selectionLis).to.have.lengthOf(4);
         //'a.other.response'.should.be.inDOM; TODO Test for other responses (needs a submission with multiple responses)
       })
     });

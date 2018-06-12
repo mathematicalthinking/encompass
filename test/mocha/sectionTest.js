@@ -2,17 +2,19 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const fixtures = require('./fixtures.js');
+const dbSetup = require('../data/restore');
 // If you are getting 401 errors with these tests yo u may need to change
 // the userCredentials variable. Go to the network tab of the dev tools in your
 // browser and find the value of Cookie. Paste it in here
-const userCredentials = 'loginSessionUser=steve; EncAuth=ff6d8301-dd2f-4a83-9e3e-1ff4a459a292';
+const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key';
 const baseUrl = "/api/sections/";
+const host = 'http://localhost:8088';
 chai.use(chaiHttp);
 
 /** GET **/
 describe('/GET sections', () => {
   it('should get all sections', done => {
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .get(baseUrl)
     .set('Cookie', userCredentials) // what to do about this?
     .end((err, res) => {
@@ -28,7 +30,7 @@ describe('/GET sections', () => {
 /** POST **/
 describe('/POST section', () => {
   it('should post a new section', done => {
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .post(baseUrl)
     .set('Cookie', userCredentials)
     .send(fixtures.section.validSection)
@@ -44,7 +46,7 @@ describe('/POST section', () => {
 describe('/PUT update section name', () => {
   it('should change the section name to phils class', done => {
     let url = baseUrl + fixtures.section.validSection._id;
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({section: {name: 'phils class'}})
@@ -61,7 +63,7 @@ describe('/PUT update section name', () => {
 describe('add teacher to section', () => {
   it('should add one teacher to the section', done => {
     let url = baseUrl + 'addTeacher/' + fixtures.section.validSection._id;
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({teacherId: '52964659e4bad7087700014c'})
@@ -78,7 +80,7 @@ describe('add teacher to section', () => {
 describe('remove teacher from section', () => {
   let url = baseUrl + 'removeTeacher/' + fixtures.section.validSection._id;
   it('should return an empty array', done => {
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({teacherId: '52964659e4bad7087700014c'})
@@ -94,7 +96,7 @@ describe('remove teacher from section', () => {
 describe('addStudent to section', () => {
   it('should add one student to the section', done => {
     let url = baseUrl + 'addStudent/' + fixtures.section.validSection._id;
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({studentName: 'bill'})
@@ -111,7 +113,7 @@ describe('addStudent to section', () => {
 describe('remove student from section', () => {
   let url = baseUrl + 'removeStudent/' + fixtures.section.validSection._id;
   it('should return an empty array', done => {
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({studentName: 'bill'})
@@ -127,7 +129,7 @@ describe('remove student from section', () => {
 describe('add problem to section', () => {
   it('should add one problem to the section', done => {
     let url = baseUrl + 'addProblem/' + fixtures.section.validSection._id;
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({problemId: '5b0d939baca0b80f78807cf5'})
@@ -144,7 +146,7 @@ describe('add problem to section', () => {
 describe('remove problem from section', () => {
   let url = baseUrl + 'removeProblem/' + fixtures.section.validSection._id;
   it('should return an empty array', done => {
-    chai.request('http://localhost:8080')
+    chai.request(host)
     .put(url)
     .set('Cookie', userCredentials)
     .send({problemId: '5b0d939baca0b80f78807cf5'})
