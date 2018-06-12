@@ -5,13 +5,13 @@
  * @since 1.0.0
  */
 
-const userApi = require('./userApi'),
-    path = require('./path'),
+const userApi = require('../datasource/api/userApi'),
+    path = require('../datasource/api/path'),
     logger = require('log4js').getLogger('server'),
     crypto = require('crypto'),
     _ = require('underscore'),
-    models = require('../schemas'),
-    config = require('../../config'),
+    models = require('../datasource/schemas'),
+    config = require('../config'),
     nconf = config.nconf,
     express = require('express'),
     router = express.Router(),
@@ -214,7 +214,7 @@ function generateApiSecret(time) {
   * @howto The real key generation is done by `generateApiSecret`
   *        This function merely provides a consistent way to define what we expect
   *        in the request header sending the key
-  * @see [generateApiSecret](./requestHandler.js)
+  * @see [generateApiSecret](../../middleware/requestHandler.js)
   * @param {Int} time A timestamp
   * @return {Object} An "API key" object.
   */
@@ -232,7 +232,7 @@ function generateApiKey(time) {
   * @public
   * @method isValidApiKey
   * @description This method verifies that an API key is valid.
-  * @see [generateApiSecret](./requestHandler.js)
+  * @see [generateApiSecret](../../middleware/requestHandler.js)
   * @todo Accept an "API key" object instead
   * @param {String} secret An encypted secret key
   * @param {Int} timestamp The timestamp from which the `secret` was generated

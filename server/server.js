@@ -9,7 +9,7 @@ const express = require('express'),
       session = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       passport = require('passport'),
-      // cas = require('./mfcas'),
+      cas = require('./mfcas'),
       fake = require('./fake_login'),
       uuid = require('uuid'),
       cookie = require('cookie'),
@@ -20,7 +20,7 @@ const express = require('express'),
 
 const configure = require('./passport');
 const models = require('./datasource/schemas');
-const utils = require('./datasource/api/requestHandler');
+const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
 
 const nconf = config.nconf;
@@ -101,10 +101,10 @@ server.use(auth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 // CAS AUTHENTICATION CALLS
-// server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-// server.get('/login', cas.sendToCas);
-// server.get('/logout', cas.logout);
-// server.get('/back', cas.returnFromCas);
+server.get('/devonly/fakelogin/:username', fake.fakeLogin);
+server.get('/login', cas.sendToCas);
+server.get('/logout', cas.logout);
+server.get('/back', cas.returnFromCas);
 
 
 // Use passport file for authentication instead of mfcas
@@ -114,14 +114,14 @@ server.use(path.validateContent());
 
 
 // AUTH CALLS USING PASSPORT MIDDLEWARE
-server.get('api/login', config.login);
-server.get('api/signup', config.signup);
-server.get('api/logout', config.logout);
-server.get('api/back', config.back);
+// server.get('api/login', config.login);
+// server.get('api/signup', config.signup);
+// server.get('api/logout', config.logout);
+// server.get('api/back', config.back);
 
 //Use the authAPI to handle authorization functions -
-server.get('api/auth/facebook', auth.facebookAuth);
-server.get('api/auth/facebook/callback', auth.facebookAuthCallback);
+// server.get('api/auth/facebook', auth.facebookAuth);
+// server.get('api/auth/facebook/callback', auth.facebookAuthCallback);
 
 
 //API CALLS

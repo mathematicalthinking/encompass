@@ -14,14 +14,16 @@ const mongoose = require('mongoose'),
   _ = require('underscore'),
   path = require('./path'),
   cache = require('./cache'),
-  utils = require('./requestHandler'),
+  utils = require('../../middleware/requestHandler'),
   models = require('../schemas');
 
-const {
-  ensureLoggedIn,
-  ensureLoggedOut
-} = require('connect-ensure-login');
+// const {
+//   ensureLoggedIn,
+//   ensureLoggedOut
+// } = require('connect-ensure-login');
 const User = require("../schemas/user");
+const FbStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
 // Bcrypt to encrypt passwords
 const bcrypt = require("bcrypt");

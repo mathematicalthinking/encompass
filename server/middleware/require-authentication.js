@@ -1,4 +1,4 @@
-var utils = require('../datasource/api/requestHandler');
+var utils = require('./requestHandler');
 
 function isAuthenticated(req, res, next) {
   if (!req.isAuthenticated()) {

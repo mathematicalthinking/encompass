@@ -7,7 +7,7 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
@@ -41,7 +41,7 @@ function getResponse(req, res, next) {
   * @public
   * @method getResponses
   * @description __URL__: /api/responses
-  * @see [buildCriteria](./requestHandler.html)
+  * @see [buildCriteria](../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of response objects: according to specified criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed

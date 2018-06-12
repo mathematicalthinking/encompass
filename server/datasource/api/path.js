@@ -5,7 +5,7 @@
 */
 
 var logger   = require('log4js').getLogger('sane'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     util     = require('util'),
     express  = require('express'),
     _        = require('underscore'),
