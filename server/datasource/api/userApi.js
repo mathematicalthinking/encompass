@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
-    utils    = require('./requestHandler');
+    utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -81,7 +81,7 @@ function sendUsers(req, res, next) {
   * @public
   * @method sendUser
   * @description __URL__: /api/users/:id
-  * @see [buildCriteria](../requestHandler.html)
+  * @see [buildCriteria](.../../middleware/requestHandler.html)
   * @returns {Object} A 'named' user object: according to specified request criteria
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong

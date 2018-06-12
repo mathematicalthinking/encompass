@@ -7,8 +7,8 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Log
-  * @description A single user history log of an event. 
-  *              Used as a subdocument of the user model 
+  * @description A single user history log of an event.
+  *              Used as a subdocument of the user model
 */
 var Log = new Schema({
   creator: { type: String, 'default': "system" },
@@ -33,7 +33,7 @@ Log.virtual('message').get(function () {
 /**
   * @public
   * @class User
-  * @description A user is a local copy of an mfapps user. 
+  * @description A user is a local copy of an mfapps user.
   * @todo We might need to add more attributes to it.
 */
 var UserSchema = new Schema({
@@ -95,7 +95,6 @@ UserSchema.virtual('lastImported')
       time: time,
     });
   });
-
 
 module.exports.User = mongoose.model('User', UserSchema);
 

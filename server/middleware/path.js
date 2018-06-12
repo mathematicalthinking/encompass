@@ -9,7 +9,7 @@ var logger   = require('log4js').getLogger('sane'),
     util     = require('util'),
     express  = require('express'),
     _        = require('underscore'),
-    models   = require('../schemas');
+    models   = require('../datasource/schemas');
 
 /*
   @returns {Boolean} - is this request an /api/ request?

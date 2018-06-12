@@ -13,7 +13,7 @@ describe("Cache", function() {
       models   = require('../../server/datasource/schemas'),
       cache    = require('../../server/datasource/api/cache'),
       Q        = require('q'),
-      utils    = require('../../server/datasource/api/requestHandler');
+      utils    = require('../../server/middleware/requestHandler');
 
   var caching;
   var userManager = models.User;

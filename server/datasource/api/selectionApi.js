@@ -7,7 +7,7 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     models   = require('../schemas');
@@ -21,7 +21,7 @@ module.exports.put = {};
   * @public
   * @method getSelections
   * @description __URL__: /api/selections
-  * @see [buildCriteria](./requestHandler.html)
+  * @see [buildCriteria](../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of selection objects: according to specified criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed

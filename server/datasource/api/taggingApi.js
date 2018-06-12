@@ -6,7 +6,7 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
     permissions  = require('../../../common/permissions'),
     models   = require('../schemas');
@@ -20,7 +20,7 @@ module.exports.put = {};
   * @public
   * @method getTaggings
   * @description __URL__: /api/taggings
-  * @see [buildCriteria](../requestHandler.html)
+  * @see [buildCriteria](.../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of tagging objects: according to specified request criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed

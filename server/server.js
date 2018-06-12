@@ -6,20 +6,21 @@ const express = require('express'),
       cookieParser = require('cookie-parser'),
       logger = require('morgan'),
       http = require('http'),
-      // passport = require('passport'),
       session = require('express-session'),
+      MongoStore = require('connect-mongo')(session),
+      passport = require('passport'),
       cas = require('./mfcas'),
-      // passport = require('./passport'),
       fake = require('./fake_login'),
       uuid = require('uuid'),
       cookie = require('cookie'),
       api = require('./datasource/api'),
       auth = require('./datasource/api/auth'),
-      path = require('./datasource/api/path'),
+      path = require('./middleware/path'),
       fixed = require('./datasource/fixed');
 
+const configure = require('./middleware/passport');
 const models = require('./datasource/schemas');
-const utils = require('./datasource/api/requestHandler');
+const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
 
 const nconf = config.nconf;
@@ -70,19 +71,19 @@ db.on('error', function (err) {
 });
 
 server.use(session({
-  secret: 'passport-app',
+  secret: 'encompass-app',
   resave: true,
   saveUninitialized: true,
 }));
 
-server.set('view engine', 'ejs');
+// server.set('view engine', 'ejs');
 
 
 //PASSPORT
-// configure(passport);
-// app.use(passport.initialize());
-// app.use(passport.session());
-// app.use(flash());
+configure(passport);
+server.use(passport.initialize());
+server.use(passport.session());
+
 
 //MIDDLEWARE
 server.use(logger('dev'));
@@ -91,7 +92,6 @@ server.use(express.urlencoded({
   extended: false
 }));
 server.use(cookieParser());
-//server.use(bodyParser());
 server.use(path.prep());
 server.use(path.processPath());
 server.use(auth.processToken());
@@ -100,16 +100,32 @@ server.use(auth.protect());
 server.use(auth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
+// CAS AUTHENTICATION CALLS
 server.get('/devonly/fakelogin/:username', fake.fakeLogin);
 server.get('/login', cas.sendToCas);
 server.get('/logout', cas.logout);
 server.get('/back', cas.returnFromCas);
+
 
 // Use passport file for authentication instead of mfcas
 // server.get('/login', passport.login);
 // server.get('/logout', passport.logout);
 // server.get('/back', passport.back);
 
+
+// AUTH CALLS USING PASSPORT MIDDLEWARE
+// server.get('api/login', api.get.login);
+// server.post('api/login', api.post.login);
+// server.get('api/signup', config.signup);
+// server.post('api/signup', api.post.login);
+// server.get('api/logout', config.logout);
+
+//Use the authAPI to handle authorization functions -
+// server.get('api/auth/facebook', auth.facebookAuth);
+// server.get('api/auth/facebook/callback', auth.facebookAuthCallback);
+
+
+//API CALLS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
 server.get('/api/workspaces', api.get.workspaces);
