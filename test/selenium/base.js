@@ -1,4 +1,4 @@
-const config = require('../../app/config');
+const config = require('../../server/config');
 const nconf = config.nconf;
 const port = nconf.get('testPort');
 const {Builder, By, Key, until} = require('selenium-webdriver');

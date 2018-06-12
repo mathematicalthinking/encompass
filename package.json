@@ -2,7 +2,7 @@
   "name": "encompass",
   "version": "2.0.0",
   "description": "enCOMPASS",
-  "main": "app/server.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "grunt",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test"

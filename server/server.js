@@ -20,7 +20,7 @@ const express = require('express'),
 
 const models = require('./datasource/schemas');
 const utils = require('./datasource/api/requestHandler');
-const dbMigration = require('../app/db_migration/base');
+const dbMigration = require('./db_migration/base');
 
 const nconf = config.nconf;
 const server = express();

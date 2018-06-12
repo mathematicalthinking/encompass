@@ -129,12 +129,12 @@ module.exports = function(grunt) {
         options: { spawn: false }
       },
       ember_code: {
-        files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!app/datasource/**', '!app/server.js', '!app/mfcas.js', '!app/config.js'],
+        files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!app/datasource/**', '!server/server.js', '!app/mfcas.js', '!app/config.js'],
         tasks: ['neuter:dev', 'jshint'], //jqunit
         options: { spawn: false }
       },
       server_code: {
-        files: ['app/server.js', 'app/mfcas.js', 'app/fake_login.js', 'app/config.js', 'app/datasource/**/*.js'],
+        files: ['server/server.js', 'app/mfcas.js', 'app/fake_login.js', 'app/config.js', 'app/datasource/**/*.js'],
         tasks: ['jshint'], //nodemon monitors it's own files,
         options: { spawn: false }
       },
@@ -271,16 +271,16 @@ module.exports = function(grunt) {
 
     nodemon: {
       dev: {
-        script: 'app/server.js',
+        script: 'server/server.js',
         options: {
-          watch: ['app/server.js', 'app/mfcas.js', 'config.json', 'app/config.js', 'app/datasource', 'build/common_bundle.js', 'Gruntfile.js']
+          watch: ['server/server.js', 'app/mfcas.js', 'config.json', 'app/config.js', 'app/datasource', 'build/common_bundle.js', 'Gruntfile.js']
         }
       },
       debug: {
-        script: 'app/server.js',
+        script: 'server/server.js',
         options: {
           nodeArgs: ['--debug'],
-          watch: ['app/server.js', 'app/mfcas.js', 'config.json', 'app/config.js', 'app/datasource', 'build/common_bundle.js', 'Gruntfile.js']
+          watch: ['server/server.js', 'app/mfcas.js', 'config.json', 'app/config.js', 'app/datasource', 'build/common_bundle.js', 'Gruntfile.js']
         }
       }
     },
