@@ -2,13 +2,14 @@ var mongoose = require('mongoose'),
   util = require('util'),
   _ = require('underscore'),
   Schema = mongoose.Schema,
+  bycrpt = require('bcrypt'),
   ObjectId = Schema.ObjectId;
 
 /**
   * @public
   * @class Log
-  * @description A single user history log of an event. 
-  *              Used as a subdocument of the user model 
+  * @description A single user history log of an event.
+  *              Used as a subdocument of the user model
 */
 var Log = new Schema({
   creator: { type: String, 'default': "system" },
@@ -33,7 +34,7 @@ Log.virtual('message').get(function () {
 /**
   * @public
   * @class User
-  * @description A user is a local copy of an mfapps user. 
+  * @description A user is a local copy of an mfapps user.
   * @todo We might need to add more attributes to it.
 */
 var UserSchema = new Schema({
@@ -95,6 +96,15 @@ UserSchema.virtual('lastImported')
       time: time,
     });
   });
+
+
+UserSchema.methods.generateHash = function (password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+UserSchema.methods.validPassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
 
 
 module.exports.User = mongoose.model('User', UserSchema);

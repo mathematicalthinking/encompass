@@ -6,10 +6,10 @@ const express = require('express'),
       cookieParser = require('cookie-parser'),
       logger = require('morgan'),
       http = require('http'),
-      // passport = require('passport'),
       session = require('express-session'),
-      cas = require('./mfcas'),
-      // passport = require('./passport'),
+      MongoStore = require('connect-mongo')(session),
+      passport = require('passport'),
+      // cas = require('./mfcas'),
       fake = require('./fake_login'),
       uuid = require('uuid'),
       cookie = require('cookie'),
@@ -18,6 +18,7 @@ const express = require('express'),
       path = require('./datasource/api/path'),
       fixed = require('./datasource/fixed');
 
+const configure = require('./passport');
 const models = require('./datasource/schemas');
 const utils = require('./datasource/api/requestHandler');
 const dbMigration = require('./db_migration/base');
@@ -75,14 +76,14 @@ server.use(session({
   saveUninitialized: true,
 }));
 
-server.set('view engine', 'ejs');
+// server.set('view engine', 'ejs');
 
 
 //PASSPORT
-// configure(passport);
-// app.use(passport.initialize());
-// app.use(passport.session());
-// app.use(flash());
+configure(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 //MIDDLEWARE
 server.use(logger('dev'));
@@ -91,7 +92,6 @@ server.use(express.urlencoded({
   extended: false
 }));
 server.use(cookieParser());
-//server.use(bodyParser());
 server.use(path.prep());
 server.use(path.processPath());
 server.use(auth.processToken());
@@ -100,16 +100,31 @@ server.use(auth.protect());
 server.use(auth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
-server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-server.get('/login', cas.sendToCas);
-server.get('/logout', cas.logout);
-server.get('/back', cas.returnFromCas);
+// CAS AUTHENTICATION CALLS
+// server.get('/devonly/fakelogin/:username', fake.fakeLogin);
+// server.get('/login', cas.sendToCas);
+// server.get('/logout', cas.logout);
+// server.get('/back', cas.returnFromCas);
+
 
 // Use passport file for authentication instead of mfcas
 // server.get('/login', passport.login);
 // server.get('/logout', passport.logout);
 // server.get('/back', passport.back);
 
+
+// AUTH CALLS USING PASSPORT MIDDLEWARE
+server.get('api/login', config.login);
+server.get('api/signup', config.signup);
+server.get('api/logout', config.logout);
+server.get('api/back', config.back);
+
+//Use the authAPI to handle authorization functions -
+server.get('api/auth/facebook', auth.facebookAuth);
+server.get('api/auth/facebook/callback', auth.facebookAuthCallback);
+
+
+//API CALLS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
 server.get('/api/workspaces', api.get.workspaces);

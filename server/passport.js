@@ -1,164 +1,165 @@
-/**
- * # Passport Login API
- * @description This is the API for logging into Encompass via Passport (express app)
- * @author Philip Wisner
- * @since 1.0.0
- */
+//PASSPORT REQS
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-var config = require('./config'),
-  logger = require('log4js').getLogger('passport'),
-  Q = require('q'),
-  uuid = require('uuid'),
-  cookie = require('cookie'),
-  util = require('util'),
-  models = require('./datasource/schemas'),
-  cache = require('./datasource/api/cache'),
-  request = require('request'),
-  SUCCESS = "Success";
+//PASSWORD CREATION
+const bcrypt = require('bcrypt');
+const bcryptSalt = 10;
 
-var ssoConf = config.nconf.get('sso');
-var webConf = config.nconf.get('web');
-
-//just send the user to cas
-function login(req, res, next) {
-  console.log('in passport login');
-  res.header('Location', ssoConf.baseUrl + '/login');
-  res.send(301);
-}
-
-function signup(req, res, next) {
-  logger.debug("SSO base url: " + ssoConf.baseUrl);
-  res.header('Location', ssoConf.baseUrl + '/signup');
-  res.send(301);
-}
-
-function logout(req, res, next) {
-  // drop the cookie
-  res.header('Set-Cookie', cookie.serialize('EncAuth', 'deleted', {
-    path: '/',
-    expires: new Date(0)
-  }));
-  // send the user to cas
-  res.header('Location', ssoConf.baseUrl + '/logout');
-  res.send(301);
-}
+//USER MODEL
+const User = require('./datasource/schemas/user');
 
 
-/*
-  handle the return from passport
-  we'll have a token parameter that we validate and get the username from
-  we issue a key for them, a uuid cookie: EncAuth
-  and store that key in the DB with their user record (which we create on the fly if necessary)
- */
-function back(req, res, next) {
-  var userManager = models.User;
-  var findUser = Q.nbind(userManager.findOne, userManager);
-  var updateUser = Q.nbind(userManager.update, userManager);
-  var start = new Date();
-  var token = req.query.token;
-  var username = req.query.tmfUserName;
+module.exports = (passport) => {
 
-  // tmp for testing
-  if (username === '206008') {
-    username = "arm353";
-  }
+  // =========================================================================
+  // passport session setup ==================================================
+  // =========================================================================
+  // required for persistent login sessions
+  // passport needs ability to serialize and unserialize users out of session
 
-  logger.warn('token:' + token + ', user: ' + username);
-  if (token) {
+  // used to serialize the user for the session
+  passport.serializeUser((user, next) => {
+    next(null, user.id);
+  });
 
-    // http://dev.nctm.org/SSO/TmfCheckToken.ashx
-    var reqObj = {
-      url: ssoConf.baseUrl + ssoConf.validateUrl + "?token=" + token,
-      json: {
-        "token": token
+  passport.deserializeUser((id, next) => {
+    User.findById(id, (err, user) => {
+      if (err) {
+        return next(err);
       }
-    };
+      next(null, user);
+    });
+  });
 
-    logger.warn("Validating token at: " + reqObj.url);
-    request.post(reqObj, function (err, resp, body) {
-      if (err || (body.indexOf(SUCCESS) === -1)) {
-        logger.warn(err);
-        res.send({
-          error: "Could not validate user, invalid SSO token.",
-          response: body
+
+  passport.use('local-login', new LocalStrategy((username, password, next) => {
+    User.findOne({
+      username
+    }, (err, user) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return next(null, false, {
+          message: "Incorrect username"
         });
-        return;
+      }
+      if (!bcrypt.compareSync(password, user.password)) {
+        return next(null, false, {
+          message: "Incorrect password"
+        });
       }
 
-      logger.info('validated token');
-      //Authenticated guest/unknown user
-      var guest = models.User({
-        username: username.toLowerCase(),
-        name: username,
-        key: uuid.v4(),
-      });
+      return next(null, user);
+    });
+  }));
 
-      // Return user if passed, otherwise return guest
-      var getUser = function (user) {
-        return (user) ? user : guest;
-      };
+  passport.use('local-signup', new LocalStrategy({
+      passReqToCallback: true
+    },
+    (req, username, password, next) => {
+      process.nextTick(() => {
+        User.findOne({
+          'username': username
+        }, (err, user) => {
+          if (err) {
+            return next(err);
+          }
 
-      // Give user a session cookie
-      var startSession = function (record) {
-        logger.info('Set new cookie');
-        res.header('Set-Cookie', cookie.serialize('EncAuth', guest.key, {
-          path: '/'
-        }));
-        res.header('Location', webConf.base);
-        res.send(301);
-      };
+          if (user) {
+            return next(null, false, {
+              message: "Username already exists"
+            });
+          } else {
+            const {
+              username,
+              email,
+              password
+            } = req.body;
+            const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+            const newUser = new User({
+              username,
+              email,
+              password: hashPass
+            });
 
-      // Get User > Update History > Import Submissions > Login User > Start Session
-      logger.info('Find user ' + guest.username);
-      findUser({
-          username: guest.username
-        })
-        .then(getUser)
-        .then(function (user) {
-          user.history.push({
-            event: 'Login',
-            time: start,
-            creator: guest.username
-          });
-
-          if (!user.lastImported) {
-            user.history.push({
-              event: 'PoW Import',
-              time: config.nconf.get('cache').fromDate
+            newUser.save((err) => {
+              if (err) {
+                next(err);
+              }
+              return next(null, newUser);
             });
           }
-          return user;
-        })
-        /* Disabling auto-import
-               .then(function(user) { // jshint camelcase: false
-                 cache({user: user.username, teacher: user.username, since_date: user.lastImported.getTime()})
-                   .then(function(caching) {
-                     var imported = user.history.create({
-                       event:'PoW Import',
-                       time: start,
-                       duration: (Date.now() - start.getTime()),
-                       isError: !caching.success,
-                     });
+        });
+      });
+    }));
 
-                     console.debug(caching);
-                     updateUser({username: user.username}, {$push: {history: imported}}, {upsert: true});
-                   });
-               })*/
-        .then(updateUser({
-          username: guest.username
-        }, {
-          key: guest.key
-        }, {
-          upsert: true
-        }))
-        .done(startSession, res.send);
+
+  //GOOGLE STRATEGY
+  passport.use(new GoogleStrategy({
+    clientID: "881861196583-d8gjkkped1kgukjsg9cb6eedqja3k8c0.apps.googleusercontent.com",
+    clientSecret: "JwlD-62nOiJLnODXHrWR6ftV",
+    callbackURL: "/auth/google/callback"
+  }, (accessToken, refreshToken, profile, done) => {
+    User.findOne({
+      googleID: profile.id
+    }, (err, user) => {
+      if (err) {
+        return done(err);
+      }
+      if (user) {
+        return done(null, user);
+      }
+
+      const newUser = new User({
+        googleID: profile.id,
+        username: profile.name.givenName + " " + profile.name.familyName,
+        email: profile.emails[0].value
+      });
+
+      newUser.save((err) => {
+        if (err) {
+          return done(err);
+        }
+        done(null, newUser);
+      });
     });
-  } else {
-    res.send("why are you here without a token?");
-  }
-}
 
-module.exports.login = login;
-module.exports.signup = signup;
-module.exports.logout = logout;
-module.exports.back = back;
+  }));
+
+
+  //FACEBOOK STRATEGY
+  passport.use(new FacebookStrategy({
+    clientID: "857307061101319",
+    clientSecret: "6a3eace08f83082fe80681f9078c0105",
+    callbackURL: "/auth/facebook/callback",
+    profileFields: ['id', 'displayName', 'email']
+  }, (accessToken, refreshToken, profile, done) => {
+    User.findOne({
+      facebookID: profile.id
+    }, (err, user) => {
+      if (err) {
+        return done(err);
+      }
+      if (user) {
+        return done(null, user);
+      }
+
+      const newUser = new User({
+        facebookID: profile.id,
+        username: profile.displayName,
+        email: profile.emails[0].value
+      });
+      newUser.save((err) => {
+        if (err) {
+          return done(err);
+        }
+        done(null, newUser);
+      });
+    });
+  }));
+
+};
