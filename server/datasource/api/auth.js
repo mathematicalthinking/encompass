@@ -14,6 +14,7 @@ const mongoose = require('mongoose'),
   _ = require('underscore'),
   path = require('./path'),
   cache = require('./cache'),
+  utils = require('./requestHandler'),
   models = require('../schemas');
 
 const {
@@ -113,7 +114,7 @@ function fetchUser(options) {
     }, function (err, user) {
       if (err) {
         logger.error(err);
-        return (next(new errors.InternalError(err.message)));
+        return utils.sendError.InternalError(err, res);
       } else {
         if (user) {
           var url = req.url;
@@ -126,7 +127,7 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = new errors.InvalidCredentialsError('No user with key:' + token);
+          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token);
           logger.error(error);
           return (next(error));
         }
@@ -238,14 +239,14 @@ function test(options) {
 function facebookAuthentication() {
   passport.authenticate("facebook", {
     scope: 'email'
-  })
+  });
 }
 
 function facebookAuthenticationCallback() {
   passport.authenticate("facebook", {
     successRedirect: "/profile",
     failureRedirect: "/login"
-  })
+  });
 }
 
 
@@ -257,5 +258,5 @@ module.exports.getUser = getUser;
 module.exports.requireUser = requireUser;
 module.exports.loadAccessibleWorkspaces = loadAccessibleWorkspaces;
 module.exports.accessibleWorkspacesQuery = accessibleWorkspacesQuery;
-module.exports.facebookAuthentication = facebookAuth;
-module.exports.facebookAuthenticationCallback = facebookAuthCallback;
+module.exports.facebookAuthentication = facebookAuthentication;
+module.exports.facebookAuthenticationCallback = facebookAuthenticationCallback;

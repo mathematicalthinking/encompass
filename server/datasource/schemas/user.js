@@ -2,7 +2,6 @@ var mongoose = require('mongoose'),
   util = require('util'),
   _ = require('underscore'),
   Schema = mongoose.Schema,
-  bycrpt = require('bcrypt'),
   ObjectId = Schema.ObjectId;
 
 /**
@@ -96,16 +95,6 @@ UserSchema.virtual('lastImported')
       time: time,
     });
   });
-
-
-UserSchema.methods.generateHash = function (password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
-
-UserSchema.methods.validPassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
-};
-
 
 module.exports.User = mongoose.model('User', UserSchema);
 

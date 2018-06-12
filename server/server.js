@@ -81,8 +81,8 @@ server.use(session({
 
 //PASSPORT
 configure(passport);
-app.use(passport.initialize());
-app.use(passport.session());
+server.use(passport.initialize());
+server.use(passport.session());
 
 
 //MIDDLEWARE
