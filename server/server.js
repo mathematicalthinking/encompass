@@ -15,7 +15,7 @@ const express = require('express'),
       cookie = require('cookie'),
       api = require('./datasource/api'),
       auth = require('./datasource/api/auth'),
-      path = require('./datasource/api/path'),
+      path = require('./middleware/path'),
       fixed = require('./datasource/fixed');
 
 const configure = require('./passport');

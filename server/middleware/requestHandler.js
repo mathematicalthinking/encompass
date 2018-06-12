@@ -6,7 +6,7 @@
  */
 
 const userApi = require('../datasource/api/userApi'),
-    path = require('../datasource/api/path'),
+    path = require('./path'),
     logger = require('log4js').getLogger('server'),
     crypto = require('crypto'),
     _ = require('underscore'),
