@@ -93,7 +93,6 @@ function sendUser(req, res, next) {
     .lean()
     .exec(function(err, doc) {
       if (err) {
-        console.log('in err block: ', err);
         return utils.sendError.InternalError(err, res);
       }
       console.log('after err if block', doc);

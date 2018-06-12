@@ -26,7 +26,6 @@ const userApi = require('./userApi'),
   * @param {Object} data The data to send
  */
 function sendResponse(res, data) {
-  //console.log('data in send response', data);
   if (!data) {
     res.status(404).json({
       error: 'Not found'
@@ -119,7 +118,6 @@ function buildCriteria(req) {
       ]
     }
   ];
-  console.log('req.mf.auth.workspaces: ',req.mf.auth.workspaces);
   if(req.mf.auth.workspaces) {
     criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });
   }
