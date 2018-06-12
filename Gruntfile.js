@@ -57,7 +57,7 @@ module.exports = function(grunt) {
           clearCacheFilter: (key) => true, // Optionally defines which files should keep in cache
           noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
         },
-        src: ['test/selenium/**/*.js']
+        src: ['test/selenium/**/*.js', 'test/mocha/*.js']
       }
     },
 
@@ -298,6 +298,12 @@ module.exports = function(grunt) {
     */
     concurrent: {
       dev: {
+        tasks: ['nodemon:dev', 'watch'],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
+      test: {
         tasks: ['nodemon:dev', 'tests', 'watch'],
         options: {
           logConcurrentOutput: true
@@ -415,6 +421,6 @@ module.exports = function(grunt) {
    *   - Runs application using test port, test database, etc.
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
-  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
+  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
   grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
 };
