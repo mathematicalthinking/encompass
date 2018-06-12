@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const fixtures = require('./fixtures.js');
-const dbSetup = require('../../app/db_migration/restore');
+const dbSetup = require('../data/restore');
 
 const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key'; // this is always changing
 const baseUrl = "/api/problems/";

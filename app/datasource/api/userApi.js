@@ -87,18 +87,21 @@ function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
+  console.log('id',req.params.id);
   var user = auth.getUser(req);
   models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
       if (err) {
+        console.log('in err block: ', err);
         return utils.sendError.InternalError(err, res);
       }
+      console.log('after err if block', doc);
       var data = {'user': doc};
       delete data.user.key; //hide key
       delete data.user.history; // hide history
       utils.sendResponse(res, data);
-      next();
+      //next();
     });
 }
 
@@ -115,8 +118,8 @@ function postUser(req, res, next) {
 
   var user = auth.requireUser(req);
   if (!user.isAdmin) {
-    utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-    return next(false);
+    return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+    //return next(false);
   }
 
   var newUser = new models.User(req.body.user);
@@ -163,7 +166,7 @@ function putUser(req, res, next) {
           logger.error(err);
           return utils.sendError.InternalError(err, res);
         }
-
+        console.log('after err, ', doc);
         var data = {'user': doc};
         utils.sendResponse(res, data);
       });

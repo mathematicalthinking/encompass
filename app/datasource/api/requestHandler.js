@@ -26,6 +26,7 @@ const userApi = require('./userApi'),
   * @param {Object} data The data to send
  */
 function sendResponse(res, data) {
+  //console.log('data in send response', data);
   if (!data) {
     res.status(404).json({
       error: 'Not found'
@@ -63,6 +64,7 @@ const sendError = {
     });
   },
   InvalidCredentialsError: function (err, res) {
+    console.log('err: ', err);
     res.status(401).json({
       error: err || 'Invalid Credentials'
     });

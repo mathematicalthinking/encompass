@@ -148,7 +148,7 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-  
+
   var user = auth.requireUser(req);
   console.log('in sendWorkspace', user.username);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
@@ -716,7 +716,7 @@ function sendWorkspaces(req, res, next) {
 function postWorkspace(req, res, next) {
   logger.info('IN POSTWORKSPACE!!');
   // next(new Error('TESTING next(new ERROR'));
-  next(utils.sendError.BadMethodError('This action is not yet supported!')); // Not sure how to handle this
+  return utils.sendError.BadMethodError('This action is not yet supported!'); // Not sure how to handle this
  }
 
 /**

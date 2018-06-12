@@ -209,7 +209,6 @@ function cache(options) {
     * @description This callback handles the response of an HTTP request
     */
   var processResponse = function (response) {
-    console.log('response body in processResponse: ', response[1]);
     var body = response[1];
     var json;
     var error;

@@ -5,8 +5,7 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 const helpers = require('./helpers');
-const dbSetup = require('../../app/db_migration/restore');
-
+const dbSetup = require('../data/restore');
 const host = `http://localhost:${port}`
 const login = `http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:${port}/back`;
 const user = 'steve';
@@ -26,16 +25,18 @@ describe('Home Page', function () {
   });
 
   it('should load without error', async function () {
-    await helpers.navigateAndWait(driver, host, 'a[href="login"]');
+    await helpers.navigateAndWait(driver, host, 'a[href="/login"]');
+    driver.sleep(5000);
   });
 
   it('login button should be visible', async function () {
-    expect(await helpers.isElementVisible(driver, 'a[href="login"]')).to.be.true;
+    expect(await helpers.isElementVisible(driver, 'a[href="/login"]')).to.be.true;
   });
 
   it('should display login page after clicking login', async function () {
     let url;
-    await helpers.findAndClickElement(driver, 'a[href="login"]');
+    await helpers.findAndClickElement(driver, 'a[href="/login"]');
+    driver.sleep(5000);
     await helpers.waitForSelector(driver, 'input[name=username]');
 
     try {

@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const fixtures = require('./fixtures.js');
-const dbSetup = require('../../app/db_migration/restore');
+const dbSetup = require('../data/restore');
 // If you are getting 401 errors with these tests yo u may need to change
 // the userCredentials variable. Go to the network tab of the dev tools in your
 // browser and find the value of Cookie. Paste it in here

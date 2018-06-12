@@ -90,7 +90,7 @@ function fetchUser(options) {
     models.User.findOneAndUpdate({key: token}, {lastSeen: new Date()}, {new:true}, function(err, user) {
       if(err) {
         logger.error(err);
-        return (next(utils.sendError.InternalError(err, res))); // not sure what this should be changed to
+        return utils.sendError.InternalError(err, res); // not sure what this should be changed to
       } else {
         if(user) {
           var url = req.url;
@@ -103,7 +103,7 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token); // not sure what this should be changed to
+          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token, res); // not sure what this should be changed to
           logger.error(error);
           return (next(error));
         }
@@ -146,13 +146,13 @@ function protect(options) {
     if(notAuthn) {
       res.setHeader('www-authenticate', 'CasLogin');
       res.send(401);
-      return next(false); //stop the chain
+      //return next(false); //stop the chain
     }
 
     if(notAuthz) {
       console.log('not authorized in protected');
       res.send(403);
-      return next(false); //stop the chain
+      //return next(false); //stop the chain
     }
 
     return next();

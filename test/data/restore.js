@@ -1,7 +1,7 @@
 const spawn = require('child_process').spawn;
 const exec = require('child_process').exec
 const path = require('path');
-const pathToBackup = path.resolve(__dirname, 'data/encompass_test');
+const pathToBackup =  path.resolve(__dirname, 'encompass_testv2');
 const testDb = 'encompass_test';
 
 const restoreDb = function (dbName, backupPath) {

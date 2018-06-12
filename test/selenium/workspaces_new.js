@@ -7,7 +7,7 @@ const expect = require('chai').expect;
 const _ = require('underscore');
 
 const helpers = require('./helpers');
-const dbSetup = require('../../app/db_migration/restore');
+const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
 const user = 'steve';

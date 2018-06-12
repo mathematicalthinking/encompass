@@ -22,7 +22,7 @@ var webConf = config.nconf.get('web');
 var ssoService;
 
 if (process.env.NODE_ENV === 'test') {
-  ssoService = 'http://localhost:8088/back';
+  ssoService = 'http://localhost:8082/back';
 } else {
   ssoService = ssoConf.service;
 }

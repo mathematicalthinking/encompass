@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
-const dbSetup = require('../../app/db_migration/restore');
+const dbSetup = require('../data/restore');
 
 const fixtures = require('./fixtures.js');
 const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key'; // this is always changing
@@ -14,7 +14,7 @@ chai.use(chaiHttp);
 
 /** GET **/
 describe('/GET answers', () => {
-  
+
   it('should get all answers', done => {
     chai.request(host)
     .get(baseUrl)

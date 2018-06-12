@@ -27,7 +27,6 @@ module.exports = function(grunt) {
       }
     },
 
-
     /*
      * Set Node environment using grunt-env
      *  https://www.npmjs.com/package/grunt-env
@@ -78,12 +77,10 @@ module.exports = function(grunt) {
        adding dependencies in the correct order
        writing their string contents into
        'build/application.js'
-
        Additionally it will wrap them in evals
        with @ sourceURL statements so errors, log
        statements and debugging will reference
        the source files by line number.
-
        You would set this option to false for
        production.
     */
@@ -118,7 +115,6 @@ module.exports = function(grunt) {
 
     /*
       Watch files for changes.
-
       Not spawning a new grunt task speeds this up quite a bit
     */
     watch: {
@@ -245,7 +241,7 @@ module.exports = function(grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!app/db_migration/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!app/db_migration/*.js'],
       options: {
         jshintrc: '.jshintrc'
       }
@@ -254,15 +250,12 @@ module.exports = function(grunt) {
     /*
       Finds Handlebars templates and precompiles them into functions.
       The provides two benefits:
-
       1. Templates render much faster
       2. We only need to include the handlebars-runtime microlib
       and not the entire Handlebars parser.
-
       Files will be written out to dependencies/compiled/templates.js
       which is required within the project files so will end up
       as part of our application.
-
       The compiled result will be stored in
       Ember.TEMPLATES keyed on their file path (with the 'app/templates' stripped)
     */
@@ -328,7 +321,7 @@ module.exports = function(grunt) {
           logConcurrentOutput: true
         }
       }
-    },
+    }
   });
 
   grunt.loadNpmTasks('grunt-browserify');
@@ -369,14 +362,14 @@ module.exports = function(grunt) {
   /*
     Execute all of the tests (jshint too)
   */
-  grunt.registerTask('tests', ['jshint', 'jasmine']); // jqunit
+  grunt.registerTask('tests', ['jshint', 'jasmine', 'mochaTest']); // jqunit
 
-  grunt.registerTask('integration-tests', ['env:test', 'build', 'mochaTest']);
+  grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
 
   /*
     Build and then test
   */
-  grunt.registerTask('test', ['env:test','build', 'tests']);
+  grunt.registerTask('test', ['env:test', 'build', 'tests']);
 
   /*
     Package the app up for distribution
@@ -407,7 +400,7 @@ module.exports = function(grunt) {
       grunt serve #terminal 1
       grunt dev   #terminal 2
   */
-  grunt.registerTask('serve', ['env:dev','nodemon:dev']);
+  grunt.registerTask('serve', ['nodemon:dev']);
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
   grunt.registerTask('dev', ['env:dev', 'build', 'tests', 'watch']);
   /*
@@ -423,4 +416,5 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:dev']);
+  grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
 };

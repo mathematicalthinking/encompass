@@ -6,7 +6,7 @@ const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
-const dbSetup = require('../../app/db_migration/restore');
+const dbSetup = require('../data/restore');
 const helpers = require('./helpers');
 
 const host = `http://localhost:${port}`
@@ -30,8 +30,10 @@ describe('Visiting Workspaces', function() {
 
   it('should land us at /workspaces', async function() {
     let url;
+    //await driver.get(fakeLoginUrl);
     await helpers.navigateAndWait(driver, fakeLoginUrl, 'a[href="#/workspaces"]', 3000);
-    await helpers.findAndClickElement(driver, 'a[href="#/workspaces"]');
+    //await driver.sleep(3000);
+    await helpers.findAndClickElement(driver, 'a.menu.workspaces');
     await helpers.waitForSelector(driver, '#workspace_listing');
 
     try {

@@ -28,7 +28,7 @@ function idRequest(req) {
 
 function prep(options) {
   function _prep(req, res, next) {
-    console.log('prep is called');
+    console.log('prep is called', req.params);
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
@@ -46,7 +46,7 @@ function processPath(options) {
     if(!apiRequest(req)) {
       return next();
     }
-
+    console.log('path', req.path);
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
 
@@ -67,7 +67,7 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
-    console.log('inside validate Id');
+    console.log('inside validate Id', req.params);
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -75,13 +75,13 @@ function validateId(options) {
 
     var id = req.params.id;
     //http://stackoverflow.com/questions/11985228/mongodb-node-check-if-objectid-is-valid
+    console.log('id in validateid', req);
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       //TODO this is sending a 500 error although its a 4xx
-      utils.sendError.InvalidArgumentError('bad object id', res);
-      return next(false);
+      return utils.sendError.InvalidArgumentError('bad object id', res);
     }
-
+    console.log('calling next');
     return next();
 
   }
@@ -139,8 +139,7 @@ function validateContent(options) {
 
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
-        utils.sendError.InvalidContentError(util.format(error, schema), res);
-        return next(false);
+        return utils.sendError.InvalidContentError(util.format(error, schema), res);
       }
     }
 
