@@ -1,6 +1,6 @@
 
 /**
-  * # User REST Tests 
+  * # User REST Tests
   * @description Tests all requests to the REST api
   * @todo Add more test coverage
   */
@@ -10,10 +10,10 @@ describe("Cache", function() {
       mongoose = require('mongoose'),
       mock     = require('./fixtures'),
       settings = require('./settings'),
-      models   = require('../../app/datasource/schemas'),
-      cache    = require('../../app/datasource/api/cache'),
+      models   = require('../../server/datasource/schemas'),
+      cache    = require('../../server/datasource/api/cache'),
       Q        = require('q'),
-      utils    = require('../../app/datasource/api/requestHandler');
+      utils    = require('../../server/datasource/api/requestHandler');
 
   var caching;
   var userManager = models.User;
@@ -24,14 +24,14 @@ describe("Cache", function() {
     caching = jasmine.createSpyObj('caching', ['success', 'failure']);
     var saveUser = Q.nbind(userManager.findByIdandUpdate, userManager);
 
-    saveUser(mock.users.user._id, {$set: user}, {upsert: true}); 
+    saveUser(mock.users.user._id, {$set: user}, {upsert: true});
 
     this.addMatchers({
       toHaveMissingArgumentsError : function() {
         if(this.actual && this.actual.hasOwnProperty('name')) {
           return (this.actual.name === 'Missing Arguments');
         }
-        
+
         return false;
       },
 
@@ -39,7 +39,7 @@ describe("Cache", function() {
         if(this.actual && this.actual.hasOwnProperty('name')) {
           return (this.actual.name === 'Response Error');
         }
-        
+
         return false;
       },
 
@@ -47,7 +47,7 @@ describe("Cache", function() {
         if(this.actual && this.actual.hasOwnProperty('code')) {
           return (this.actual.code === 'ENOENT');
         }
-        
+
         return false;
       }
     });
@@ -126,7 +126,7 @@ describe("Cache", function() {
         }).done();
     }
   });
-  
+
   it('will succeed and report on a valid file', function(done) {
     var promise = cache({user: mock.users.user.username, source: 'test/data/pow/defaultPd.json'});
 
@@ -135,7 +135,7 @@ describe("Cache", function() {
         .then( function() {
           expect(caching.failure).not.toHaveBeenCalled();
           expect(caching.success).toHaveBeenCalled();
-          
+
           var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0]
                                                              : {};
 
@@ -157,7 +157,7 @@ describe("Cache", function() {
         .then( function() {
           expect(caching.failure).not.toHaveBeenCalled();
           expect(caching.success).toHaveBeenCalled();
-          
+
           var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0]
                                                              : {};
 

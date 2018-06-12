@@ -31,18 +31,18 @@ var useLocal = function(err) {
   console.warn('could not read remote config: ', err);
   console.info('using local settings');
 
-  var local = require('../../app/config.js');
+  var local = require('../../server/config.js');
   var db = local.nconf.get('database');
   var config  = {
-    host: ['http://localhost:', 
-      local.nconf.get('port'), 
+    host: ['http://localhost:',
+      local.nconf.get('port'),
       '/api'
     ].join(''),
-    database: ['mongodb://', 
-      db.user,  
-      (db.pass) ? ':' + db.pass : '', 
-      '@', 
-      db.host, 
+    database: ['mongodb://',
+      db.user,
+      (db.pass) ? ':' + db.pass : '',
+      '@',
+      db.host,
       ':',
       db.port,
       '/',
@@ -58,7 +58,7 @@ var settings = read(remoteConfigFile, fileFormat)
   .then(function(config) { //Add global settings
     config.timeout = 1000;
     config.transaction = 5000;
-    
+
     return config;
   });
 
