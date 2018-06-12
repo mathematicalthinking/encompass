@@ -114,10 +114,11 @@ server.get('/back', cas.returnFromCas);
 
 
 // AUTH CALLS USING PASSPORT MIDDLEWARE
-// server.get('api/login', config.login);
+// server.get('api/login', api.get.login);
+// server.post('api/login', api.post.login);
 // server.get('api/signup', config.signup);
+// server.post('api/signup', api.post.login);
 // server.get('api/logout', config.logout);
-// server.get('api/back', config.back);
 
 //Use the authAPI to handle authorization functions -
 // server.get('api/auth/facebook', auth.facebookAuth);

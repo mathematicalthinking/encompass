@@ -89,12 +89,6 @@ const sendError = {
 //   logger.error(error);
 //   res.send(500, error);
 // }
-
-function sendCustomError(code, error, res) {
-  logger.error(error);
-  res.send(code, error);
-}
-
 /**
   * @public
   * @method buildCriteria
