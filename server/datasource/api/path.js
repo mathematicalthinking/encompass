@@ -41,11 +41,9 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
-    console.log('in process path');
     if(!apiRequest(req)) {
       return next();
     }
-    console.log('path', req.path);
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
 
@@ -66,7 +64,6 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
-    console.log('inside validate Id', req.params);
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -79,7 +76,6 @@ function validateId(options) {
       //TODO this is sending a 500 error although its a 4xx
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
-    console.log('calling next');
     return next();
 
   }
@@ -118,7 +114,6 @@ function schemaHasWorkspace(schema) {
 
 function validateContent(options) {
   function _validateContent(req, res, next) {
-    console.log('inside validateContent');
     var checkForModRequest = /POST|PUT/;
 
 

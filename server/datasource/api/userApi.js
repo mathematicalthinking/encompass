@@ -87,7 +87,6 @@ function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
-  console.log('id',req.params.id);
   var user = auth.getUser(req);
   models.User.findById(req.params.id)
     .lean()
@@ -95,7 +94,6 @@ function sendUser(req, res, next) {
       if (err) {
         return utils.sendError.InternalError(err, res);
       }
-      console.log('after err if block', doc);
       var data = {'user': doc};
       delete data.user.key; //hide key
       delete data.user.history; // hide history
@@ -165,7 +163,6 @@ function putUser(req, res, next) {
           logger.error(err);
           return utils.sendError.InternalError(err, res);
         }
-        console.log('after err, ', doc);
         var data = {'user': doc};
         utils.sendResponse(res, data);
       });

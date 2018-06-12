@@ -33,7 +33,6 @@ module.exports.put = {};
   * @todo This should really accept a node-style callback
   */
 function getWorkspace(id, callback) {
-  console.log('in getWorkspace', id);
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
@@ -102,7 +101,6 @@ function getWorkspace(id, callback) {
   *       + Could be simpler. Needs refactoring
   */
 function getWorkspaceWithDependencies(id, callback) {
-  console.log('id in get ws with depends', id);
   models.Workspace.findById(id)
     .exec(
       function(err, workspace) {
@@ -150,7 +148,6 @@ function getWorkspaceWithDependencies(id, callback) {
 function sendWorkspace(req, res, next) {
 
   var user = auth.requireUser(req);
-  console.log('in sendWorkspace', user.username);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(!permissions.userCanLoadWorkspace(user, ws)) {
       logger.info("permission denied");
@@ -430,8 +427,6 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
   // See prepareAndUpdateWorkspaces for what criteria we're looking at here
   for (var key in submissionSet.criteria) {
     if( submissionSet.criteria.hasOwnProperty(key) ) {
-      console.log('key: ', key);
-      console.log('key value: ', submissionSet.criteria[key]);
       var criterion = {};
       if (!_.isEmpty(submissionSet.criteria[key])) {
         criterion[prefix.concat(key)] = submissionSet.criteria[key];
@@ -444,7 +439,6 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
 //  criteria.$and.push({pdSet: submissionSet.description.pdSource}); //limit this to workspaces for the current user only
 
   // Looks for existing workspaces for this user for the submission set
-  console.log('CRITERIA', criteria);
   models.Workspace.find(criteria).exec(function(err, workspaces){
 
     if(err){
@@ -520,7 +514,6 @@ function prepareUserSubmissions(user, pdSet, folderSet, callback) {
     if(err) {logger.error(err); callback(err);}
 
     if(docs.length) {
-      console.log('docs[0]: ', docs[0]);
       logger.info('user: ' + user.username + ' already has ' + docs.length + ' pd submissions for ' + pdSet + ', not copying');
       logger.debug('... in workspaces ' + docs[0].get('workspaces'));
       callback();
@@ -820,7 +813,6 @@ function newWorkspaceRequest(req, res, next) {
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
   let criteria = utils.buildCriteria(req);
-  console.log('criteria getWses', criteria);
     models.Workspace.find(auth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
       var response = {
         workspaces: workspaces,

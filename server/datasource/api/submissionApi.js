@@ -98,7 +98,6 @@ function toPDSubmission(obj, index, arr) {
   * @throws {RestError} Something? went wrong
   */
 function getSubmissions(req, res, next) {
-  console.log('GETTING SUBMISSIONS getSubmissions');
   var criteria = utils.buildCriteria(req);
 
   logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );

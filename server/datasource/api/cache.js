@@ -334,7 +334,6 @@ function cache(options) {
       headers: key
     };
 
-    console.log(params.uri);
     readUrl(params)
       .then(processResponse)
       .then(processJSON)
