@@ -120,8 +120,6 @@ function putFolder(req, res, next) {
 
   var user = auth.requireUser(req);
   models.Workspace.findOne({owner: user._id, folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
-
-    console.log('USER: ', user, 'WS: ', ws);
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
     if(permissions.userCan(user, ws, "FOLDERS")) {
       models.Folder.findById(req.params.id,

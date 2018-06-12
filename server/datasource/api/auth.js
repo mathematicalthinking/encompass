@@ -44,7 +44,6 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-    console.log('inside processToken');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -74,7 +73,6 @@ function processToken(options) {
 */
 function fetchUser(options) {
   function _fetchUser(req, res, next) {
-    console.log('inside fetch user');
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -125,7 +123,6 @@ function protect(options) {
     if(!path.apiRequest(req)) {
       return next();
     }
-    console.log('isapi:', path.apiRequest(req));
     _.defaults(req, { mf: { auth: {} } });
 
     var user = getUser(req);
@@ -133,7 +130,6 @@ function protect(options) {
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
-    console.log('isOpenRequest: ', req.path, ' : ', openRequest);
     if(openRequest && req.method === 'GET') {
       return next();
     }
@@ -141,8 +137,6 @@ function protect(options) {
 
     var notAuthn = !user;
     var notAuthz = !userAuthz;
-    console.log('isNotAuthenticated', notAuthn );
-    console.log('is not Authorized: ', notAuthz);
     if(notAuthn) {
       res.setHeader('www-authenticate', 'CasLogin');
       res.send(401);
@@ -150,7 +144,6 @@ function protect(options) {
     }
 
     if(notAuthz) {
-      console.log('not authorized in protected');
       res.send(403);
       //return next(false); //stop the chain
     }
@@ -172,7 +165,6 @@ function accessibleWorkspacesQuery(user) {
 function loadAccessibleWorkspaces(options) {
 
   function _loadAccessibleWorkspaces(req, res, next) {
-    console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
     if(!user || !path.schemaHasWorkspace(schema)) {
