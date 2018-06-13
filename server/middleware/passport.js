@@ -119,7 +119,8 @@ module.exports = (passport) => {
       const newUser = new User({
         googleID: profile.id,
         username: profile.name.givenName + " " + profile.name.familyName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        isAuthorized: true
       });
 
       newUser.save((err) => {

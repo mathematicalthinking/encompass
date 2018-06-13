@@ -34,7 +34,5 @@ const logout = (req, res, next) => {
   res.redirect('/');
 };
 
-module.exports.facebookAuthentication = facebookAuthentication;
-module.exports.facebookAuthenticationCallback = facebookAuthenticationCallback;
 module.exports.localRedirect = localRedirect;
 module.exports.logout = logout;

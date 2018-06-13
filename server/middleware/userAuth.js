@@ -170,10 +170,12 @@ function protect(options) {
 
     if (notAuthenticated) {
       res.redirect('/');
+      return;
     }
 
     if (notAuthorized) {
       res.redirect('/');
+      return;
     }
     return next();
   }
