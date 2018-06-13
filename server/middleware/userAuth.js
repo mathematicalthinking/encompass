@@ -26,7 +26,6 @@ function getUser(req) {
 
 function requireUser(req) {
   var user = getUser(req);
-  console.log('user', user);
   if (!user) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
@@ -88,11 +87,9 @@ function fetchUser(options) {
     });
     var user = req.user;
     console.log('user in fetchUser', user);
-    if (user) {
-      var username = user.username;
-    } else {
-      logger.warn('no username found for user');
-       return (next());
+    if (!user) {
+      logger.warn('no user logged in');
+      return (next());
     }
     // var token = req.mf.auth.token;
     // if (!token) {
@@ -122,9 +119,10 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
-          logger.error(error);
-          return (next(error));
+          // var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
+          // logger.error(error);
+          // return (next(error));
+          return utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
         }
       }
     });
@@ -169,12 +167,11 @@ function protect(options) {
     var notAuthorized = !userAuthorized;
 
     if (notAuthenticated) {
-      res.redirect('/');
-      return;
+      return utils.sendResponse(res, {"error": 'not auth'});
     }
 
     if (notAuthorized) {
-      res.redirect('/');
+      res.redirect('/#/');
       return;
     }
     return next();

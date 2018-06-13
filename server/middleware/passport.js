@@ -106,13 +106,15 @@ module.exports = (passport) => {
     clientSecret: "JwlD-62nOiJLnODXHrWR6ftV",
     callbackURL: "/auth/google/callback"
   }, (accessToken, refreshToken, profile, done) => {
+    console.log('profileid', profile.id);
     User.findOne({
-      googleID: profile.id
+      googleId: profile.id
     }, (err, user) => {
       if (err) {
         return done(err);
       }
       if (user) {
+        console.log('found google user', user);
         return done(null, user);
       }
 

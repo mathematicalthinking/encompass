@@ -72,8 +72,8 @@ function sendUsers(req, res, next) {
         delete doc.history; //don't send user history out
       });
       var data = {'user': docs};
-      utils.sendResponse(res, data);
-      next();
+      return utils.sendResponse(res, data);
+      //next();
     });
 }
 
