@@ -212,7 +212,6 @@ function loadAccessibleWorkspaces(options) {
     console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
-    console.log('schema', path.schemaHasWorkspace(schema));
     if (!user || !path.schemaHasWorkspace(schema)) {
       return (next()); //no user, no workspaces - revisit when public means public
     }
