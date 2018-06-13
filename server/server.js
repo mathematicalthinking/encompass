@@ -104,18 +104,8 @@ server.use(path.validateContent());
 
 
 // LOCAL AUTHENTICATION CALLS
-server.post('/auth/login', passport.authenticate(
-    'local-login', {
-      failureRedirect: '/#/login'
-    }),
-  auth.localRedirect
-);
-server.post('/auth/signup', passport.authenticate(
-    'local-signup', {
-      failureRedirect: '/#/signup'
-    }),
-  auth.localRedirect
-);
+server.post('/auth/login', auth.localLogin);
+server.post('/auth/signup', auth.localSignup);
 server.get('/logout', auth.logout);
 
 

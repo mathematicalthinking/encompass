@@ -24,8 +24,20 @@ const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const bcrypt = require("bcrypt");
 const bcryptSalt = 10;
 
-const localRedirect = function (req, res) {
-  res.redirect('/');
+const localLogin = (req, res, next) => {
+  passport.authenticate('local-login', {
+      successRedirect: '/',
+      failureRedirect: '#/auth/login',
+      failureFlash: true
+  })(req, res, next);
+};
+
+const localSignup = (req, res, next) => {
+  passport.authenticate('local-signup', {
+      successRedirect: '/',
+      failureRedirect: '#/auth/signup',
+      failureFlash: true
+  })(req, res, next);
 };
 
 const logout = (req, res, next) => {
@@ -34,5 +46,6 @@ const logout = (req, res, next) => {
   res.redirect('/');
 };
 
-module.exports.localRedirect = localRedirect;
 module.exports.logout = logout;
+module.exports.localLogin = localLogin;
+module.exports.localSignup = localSignup;
