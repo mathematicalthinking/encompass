@@ -111,6 +111,7 @@ module.exports = (passport) => {
       googleId: profile.id
     }, (err, user) => {
       if (err) {
+        console.log('in err block', err);
         return done(err);
       }
       if (user) {
@@ -125,9 +126,10 @@ module.exports = (passport) => {
         email: profile.emails[0].value,
         isAuthorized: true
       });
-
+      console.log('new user', newUser);
       newUser.save((err) => {
         if (err) {
+          console.log('error saving', err);
           return done(err);
         }
         done(null, newUser);
