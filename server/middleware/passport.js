@@ -138,8 +138,8 @@ module.exports = (passport) => {
 
   //FACEBOOK STRATEGY
   passport.use(new FacebookStrategy({
-    clientID: "857307061101319",
-    clientSecret: "6a3eace08f83082fe80681f9078c0105",
+    clientID: "1124250227716523",
+    clientSecret: "10198b98ada4e88e88eb3042a55f81a6",
     callbackURL: "/auth/facebook/callback",
     profileFields: ['id', 'displayName', 'email']
   }, (accessToken, refreshToken, profile, done) => {
@@ -154,9 +154,10 @@ module.exports = (passport) => {
       }
 
       const newUser = new User({
-        facebookID: profile.id,
+        facebookId: profile.id,
         username: profile.displayName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        isAuthorized: true
       });
       newUser.save((err) => {
         if (err) {

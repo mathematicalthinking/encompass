@@ -125,8 +125,17 @@ server.get("/auth/google", passport.authenticate("google", {
     "https://www.googleapis.com/auth/plus.profile.emails.read"
   ]
 }));
-
 server.get("/auth/google/callback", passport.authenticate("google", {
+  failureRedirect: "/#/login",
+  successRedirect: "/"
+}));
+
+
+//  FACEBOOK AUTHENTICATION CALLS
+server.get("/auth/facebook", passport.authenticate("facebook", {
+  scope: 'email'
+}));
+server.get("/auth/facebook/callback", passport.authenticate("facebook", {
   failureRedirect: "/#/login",
   successRedirect: "/"
 }));
