@@ -38,12 +38,6 @@ function facebookAuthenticationCallback() {
   });
 }
 
-const localLogin = function(){
-  passport.authenticate('local-login', {
-    failureRedirect: '/#/login'
-  });
-};
-
 const localRedirect = function (req, res) {
   res.redirect('/');
 };
