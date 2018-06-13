@@ -117,9 +117,10 @@ module.exports = (passport) => {
       }
 
       const newUser = new User({
-        googleID: profile.id,
+        googleId: profile.id,
         username: profile.name.givenName + " " + profile.name.familyName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        isAuthorized: true
       });
 
       newUser.save((err) => {
@@ -141,7 +142,7 @@ module.exports = (passport) => {
     profileFields: ['id', 'displayName', 'email']
   }, (accessToken, refreshToken, profile, done) => {
     User.findOne({
-      facebookID: profile.id
+      facebookId: profile.id
     }, (err, user) => {
       if (err) {
         return done(err);
