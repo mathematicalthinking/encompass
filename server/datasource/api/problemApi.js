@@ -28,6 +28,7 @@ module.exports.put = {};
   */
 
 const getProblems = (req, res, next) => {
+  console.log("GETTING PROBLEMS");
   const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
   // add permissions here
@@ -38,6 +39,7 @@ const getProblems = (req, res, next) => {
       return utils.sendError.InternalError(err, res);
     }
     const data = {'problems': problems};
+    console.log("DATA: " , data)
     utils.sendResponse(res, data);
     next();
   });

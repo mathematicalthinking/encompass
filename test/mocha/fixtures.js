@@ -26,6 +26,7 @@ module.exports = {
     name: ''
   },
   problem: {
+    _id: '5b1e7a0ba5d2157ef4c91028',
     validProblem: {
       title: 'test math problem',
       puzzleId: '400000', // if this is coming from PoWs otherwise null
