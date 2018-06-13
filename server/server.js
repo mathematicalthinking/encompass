@@ -103,7 +103,7 @@ server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 
-// AUTHENTICATION CALLS
+// LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', passport.authenticate(
     'local-login', {
       failureRedirect: '/#/login'
@@ -118,6 +118,18 @@ server.post('/auth/signup', passport.authenticate(
 );
 server.get('/logout', auth.logout);
 
+
+//  GOOGLE AUTHENTICATION CALLS
+server.get("/auth/google", passport.authenticate("google", {
+  scope: ["https://www.googleapis.com/auth/plus.login",
+    "https://www.googleapis.com/auth/plus.profile.emails.read"
+  ]
+}));
+
+server.get("/auth/google/callback", passport.authenticate("google", {
+  failureRedirect: "/#/login",
+  successRedirect: "/"
+}));
 
 
 //Use the authAPI to handle authorization functions -

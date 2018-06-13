@@ -25,38 +25,16 @@ const bcrypt = require("bcrypt");
 const bcryptSalt = 10;
 
 
-function facebookAuthentication() {
-  passport.authenticate("facebook", {
-    scope: 'email'
-  });
-}
-
-function facebookAuthenticationCallback() {
-  passport.authenticate("facebook", {
-    successRedirect: "/profile",
-    failureRedirect: "/login"
-  });
-}
-
-const localLogin = function(){
-  passport.authenticate('local-login', {
-    failureRedirect: '/#/login'
-  });
-};
-
 const localRedirect = function (req, res) {
   res.redirect('/');
 };
 
 const logout = (req, res, next) => {
-    console.log('LOGGING OUT!');
-    req.logout();
-    res.redirect('/');
-  };
+  console.log('LOGGING OUT!');
+  req.logout();
+  res.redirect('/');
+};
 
 
-module.exports.facebookAuthentication = facebookAuthentication;
-module.exports.facebookAuthenticationCallback = facebookAuthenticationCallback;
-module.exports.localLogin = localLogin;
 module.exports.localRedirect = localRedirect;
 module.exports.logout = logout;
