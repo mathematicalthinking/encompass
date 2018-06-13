@@ -1,0 +1,6 @@
+
+{{#if currentUser.isAuthenticated}}
+  {{top-bar user=currentUser isHidden=isHidden}}
+{{else}}
+{{top-bar-unauth}}
+{{/if}}
