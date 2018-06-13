@@ -39,7 +39,6 @@ const getSections = (req, res, next) => {
     }
     const data = {'sections': sections};
     utils.sendResponse(res, data);
-    next();
   });
 };
 
@@ -62,7 +61,6 @@ const getSection = (req, res, next) => {
     }
     const data = {'section': section};
     utils.sendResponse(res, data);
-    next();
   });
 };
 

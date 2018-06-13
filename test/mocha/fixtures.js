@@ -29,19 +29,19 @@ module.exports = {
     _id: '5b1e7a0ba5d2157ef4c91028',
     validProblem: {
       title: 'test math problem',
-      puzzleId: '400000', // if this is coming from PoWs otherwise null
+      puzzleId: '400000',
       categories: []
     },
     invalidProblem: {
       title: '',
-      puzzleId: '', // if this is coming from PoWs otherwise null
+      puzzleId: '',
       categories: []
     }
   },
   section: {
+    _id: '5b1e7b2aa5d2157ef4c91108',
     validSection: {
-      _id: '5b15522cdfa1745d8ca72277',
-      name: 'MIKEs test class',
+      name: 'A test section',
       problems: [],
       students: [],
       teachers: [],
@@ -54,4 +54,10 @@ module.exports = {
       teachers: [],
     }
   },
+  teacher: {
+    _id: '5b1e7bf9a5d2157ef4c911a6'
+  },
+  student: {
+    name: 'David T.'
+  }
 };
