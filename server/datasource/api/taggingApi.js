@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     models   = require('../schemas');
 
@@ -75,7 +76,7 @@ function getTagging(req, res, next) {
   */
 function postTagging(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "SELECTIONS")) {
@@ -112,7 +113,7 @@ function postTagging(req, res, next) {
   */
 function putTagging(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "SELECTIONS")) {

@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('../../middleware/requestHandler'),
     util     = require('util'),
-    auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     models   = require('../schemas'),
     spaces   = require('./workspaceApi');
 
@@ -211,7 +211,7 @@ function postSubmission(req, res, next) {
   delete postData._id;
 
 
-  var user = auth.getUser(req); //user isn't required
+  var user = userAuth.getUser(req); //user isn't required
   if(user.isAuthorized || isAnonymousPost) {
     var access = utils.isValidApiKey(req.headers.secret, req.headers.time) || user.isAuthorized;
     /*/
@@ -298,7 +298,7 @@ function putSubmission(req, res, next) {
   */
 function importSubmissions(req, res, next) {
   console.log('IMPORTING SUBMISSIONS...');
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
   var params = JSON.parse( JSON.stringify(req.body.importRequest) );
 

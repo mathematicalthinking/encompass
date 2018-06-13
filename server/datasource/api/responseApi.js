@@ -9,6 +9,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
     models   = require('../schemas');
@@ -50,7 +51,7 @@ function getResponse(req, res, next) {
 function getResponses(req, res, next) {
   var criteria = utils.buildCriteria(req);
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
 
   criteria.$and.push({createdBy: user});
 
@@ -76,7 +77,7 @@ function getResponses(req, res, next) {
   */
 function postResponse(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.response.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "COMMENTS")) {
@@ -105,7 +106,7 @@ function postResponse(req, res, next) {
 
 function putResponse(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Response.findById(req.params.id,
     function (err, doc) {
       if(err) {

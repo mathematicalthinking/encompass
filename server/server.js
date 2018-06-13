@@ -9,7 +9,6 @@ const express = require('express'),
       session = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       passport = require('passport'),
-      cas = require('./mfcas'),
       fake = require('./fake_login'),
       uuid = require('uuid'),
       cookie = require('cookie'),
@@ -19,6 +18,7 @@ const express = require('express'),
       fixed = require('./datasource/fixed');
 
 const configure = require('./middleware/passport');
+const userAuth = require('./middleware/userAuth');
 const authmw = require('./middleware/require-authentication');
 const models = require('./datasource/schemas');
 const utils = require('./middleware/requestHandler');
@@ -96,38 +96,29 @@ server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
 //server.use(authmw.isAuthenticated());
-server.use(auth.processToken());
-server.use(auth.fetchUser());
-server.use(auth.protect());
-server.use(auth.loadAccessibleWorkspaces());
+server.use(userAuth.processToken());
+server.use(userAuth.fetchUser());
+server.use(userAuth.protect());
+server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
-// CAS AUTHENTICATION CALLS
-// server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-// server.get('/login', cas.sendToCas);
-// server.get('/logout', cas.logout);
-// server.get('/back', cas.returnFromCas);
 
-
-//Use passport file for authentication instead of mfcas
-//server.post('/auth/login', auth.localLogin, auth.localRedirect);
-
-server.post('/auth/login', passport.authenticate('local-login', { failureRedirect: '/#/login' }),
-auth.localRedirect);
-server.post('/auth/signup', passport.authenticate('local-signup', { failureRedirect: '/#/signup'}),
-auth.localRedirect);
-
+// AUTHENTICATION CALLS
+server.post('/auth/login', passport.authenticate(
+    'local-login', {
+      failureRedirect: '/#/login'
+    }),
+  auth.localRedirect
+);
+server.post('/auth/signup', passport.authenticate(
+    'local-signup', {
+      failureRedirect: '/#/signup'
+    }),
+  auth.localRedirect
+);
 server.get('/logout', auth.logout);
-// server.get('/logout', passport.logout);
-// server.get('/back', passport.back);
 
 
-// AUTH CALLS USING PASSPORT MIDDLEWARE
-// server.get('api/login', api.get.login);
-// server.post('api/login', api.post.login);
-// server.get('api/signup', config.signup);
-// server.post('api/signup', api.post.login);
-// server.get('api/logout', config.logout);
 
 //Use the authAPI to handle authorization functions -
 // server.get('api/auth/facebook', auth.facebookAuth);

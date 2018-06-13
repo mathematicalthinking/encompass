@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
-    auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
@@ -39,7 +39,7 @@ function makeGuest() {
            and do whatever they want with the rest of the users
 */
 function sendUsers(req, res, next) {
-  var user = auth.getUser(req);
+  var user = userAuth.getUser(req);
 
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
@@ -87,7 +87,7 @@ function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
-  var user = auth.getUser(req);
+  var user = userAuth.getUser(req)(req);
   models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
@@ -113,7 +113,7 @@ function sendUser(req, res, next) {
   */
 function postUser(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   if (!user.isAdmin) {
     return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     //return next(false);
@@ -153,7 +153,7 @@ function putUser(req, res, next) {
   delete req.body.user.createDate;
   delete req.body.user.key;
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   if (user.isAdmin) {
     models.User.findByIdAndUpdate(req.params.id,
       /* Admins can update all editable fields for any user */

@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     utils    = require('../../middleware/requestHandler');
 
@@ -28,7 +29,7 @@ module.exports.put = {};
   */
 function getComments(req, res, next) {
   var criteria = utils.buildCriteria(req);
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
 
   var textSearch = req.query.text;
   if(textSearch) {
@@ -134,7 +135,7 @@ function getComment(req, res, next) {
   */
 function postComment(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "COMMENTS")) {
@@ -169,7 +170,7 @@ function postComment(req, res, next) {
   */
 function putComment(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "COMMENTS")) {

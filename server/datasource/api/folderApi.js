@@ -9,6 +9,7 @@ var mongoose = require('mongoose'),
     logger   = require('log4js').getLogger('server'),
     utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
     models   = require('../schemas');
@@ -82,7 +83,7 @@ function getFolders(req, res, next) {
   */
 function postFolder(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "FOLDERS")) {
@@ -118,7 +119,7 @@ function postFolder(req, res, next) {
   */
 function putFolder(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Workspace.findOne({owner: user._id, folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
     if(permissions.userCan(user, ws, "FOLDERS")) {
