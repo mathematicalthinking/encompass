@@ -18,11 +18,8 @@ const User = require("../datasource/schemas/user");
   consider processing the req (token, fetchUser) if not cached
 */
 function getUser(req) {
-  //console.log('isauth', req.isAuthenticated());
   return req.user;
 }
-
-
 
 function requireUser(req) {
   var user = getUser(req);
@@ -79,8 +76,7 @@ function fetchUser(options) {
     if (!path.apiRequest(req)) {
       return next();
     }
-
-    _.defaults(req, {
+   _.defaults(req, {
       mf: {
         auth: {}
       }
