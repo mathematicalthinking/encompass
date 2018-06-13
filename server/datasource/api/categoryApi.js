@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
+  userAuth = require('../../middleware/userAuth'),
   permissions  = require('../../../common/permissions'),
   utils    = require('../../middleware/requestHandler');
 
@@ -29,7 +30,7 @@ module.exports.put = {};
 
 const getCategories = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Category.find(criteria)
   .exec((err, categories) => {
     if (err) {
@@ -75,7 +76,7 @@ const getCategory = (req, res, next) => {
   */
 
 const postCategory = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // who can create categories - add permission here
   const category = new models.Category(req.body.category);
   category.createdBy = user;
@@ -101,7 +102,7 @@ const postCategory = (req, res, next) => {
   */
 
 const putCategory = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // Who can edit the category?
   models.Category.findById(req.params.id, (err, doc) => {
     if(err) {

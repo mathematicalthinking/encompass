@@ -9,6 +9,7 @@ var mongoose = require('mongoose'),
     logger = require('log4js').getLogger('server'),
     models = require('../schemas'),
     auth   = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     utils  = require('../../middleware/requestHandler'),
     data   = require('./data'),
@@ -147,7 +148,7 @@ function getWorkspaceWithDependencies(id, callback) {
   */
 function sendWorkspace(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(!permissions.userCanLoadWorkspace(user, ws)) {
       logger.info("permission denied");
@@ -172,7 +173,7 @@ function sendWorkspace(req, res, next) {
            It's sending back way too much data right now
   */
 function putWorkspace(req, res, next) {
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').exec(function(err, ws){
     if(!permissions.userCanModifyWorkspace(user, ws)) {
       logger.info("permission denied");
@@ -681,7 +682,7 @@ function prepareAndUpdateWorkspaces(user, callback) {
   * @throws {RestError} Something? went wrong
   */
 function sendWorkspaces(req, res, next) {
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   logger.info('in sendWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
   prepareAndUpdateWorkspaces(user, function(err){
@@ -690,7 +691,7 @@ function sendWorkspaces(req, res, next) {
       logger.error('error preparing and updating ws');
     }
 
-    models.Workspace.find(auth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+    models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
       var response = {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
@@ -727,7 +728,7 @@ function postWorkspace(req, res, next) {
  */
 function newWorkspaceRequest(req, res, next) {
   console.log('CREATING NEW WORKSPACE');
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var pdSetName = req.body.newWorkspaceRequest.pdSetName;
   var folderSetName = req.body.newWorkspaceRequest.folderSetName;
   logger.debug('creating new workspace for pdset: ' + pdSetName);
@@ -809,11 +810,11 @@ function newWorkspaceRequest(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
  function getWorkspaces(req, res, next) {
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
   let criteria = utils.buildCriteria(req);
-    models.Workspace.find(auth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+    models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
       var response = {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
