@@ -35,6 +35,7 @@ const bcryptSalt = 10;
   consider processing the req (token, fetchUser) if not cached
 */
 function getUser(req) {
+  //console.log('isauth', req.isAuthenticated());
   return req.user;
 }
 
@@ -167,24 +168,22 @@ function protect(options) {
     if (openRequest && req.method === 'GET') {
       return next();
     }
-    var userAuthz = (user && (user.isAdmin || user.isAuthorized));
 
-    var notAuthn = !user;
-    var notAuthz = !userAuthz;
+    var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
+    console.log('is user authenticated in protect: ', userAuthenticated);
+    var userAuthorized = (userAuthenticated && (user.isAdmin || user.isAuthorized));
 
-    if (notAuthn) {
-      res.setHeader('www-authenticate', 'CasLogin');
-      res.send(401);
-      return next(false); //stop the chain
+    var notAuthenticated = !userAuthenticated;
+    var notAuthorized = !userAuthorized;
+
+    if (notAuthenticated) {
+      res.redirect('/');
     }
 
-    if (notAuthz) {
-      console.log('not authorized in protected');
-      res.send(403);
-      return next(false); //stop the chain
+    if (notAuthorized) {
+      res.redirect('/');
     }
-
-    return next();
+  return next();
   }
 
   return (_protect);

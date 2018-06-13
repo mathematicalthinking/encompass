@@ -37,8 +37,8 @@ function postError(req, res, next) {
     }
 
     var data = {'error': doc};
-    utils.sendResponse(res, data);
-    next();
+    return utils.sendResponse(res, data);
+    //next();
   });
 
 }
