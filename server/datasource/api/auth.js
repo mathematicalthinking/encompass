@@ -51,6 +51,5 @@ const logout = (req, res, next) => {
 
 module.exports.facebookAuthentication = facebookAuthentication;
 module.exports.facebookAuthenticationCallback = facebookAuthenticationCallback;
-module.exports.localLogin = localLogin;
 module.exports.localRedirect = localRedirect;
 module.exports.logout = logout;

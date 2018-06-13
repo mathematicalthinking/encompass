@@ -86,15 +86,22 @@ function fetchUser(options) {
         auth: {}
       }
     });
-
-    var token = req.mf.auth.token;
-    if (!token) {
-      logger.warn('no token found while fetching user, misconfig?');
-      return (next());
+    var user = req.user;
+    console.log('user in fetchUser', user);
+    if (user) {
+      var username = user.username;
+    } else {
+      logger.warn('no username found for user');
+       return (next());
     }
+    // var token = req.mf.auth.token;
+    // if (!token) {
+    //   logger.warn('no token found while fetching user, misconfig?');
+    //   return (next());
+    // }
 
     models.User.findOneAndUpdate({
-      key: token
+      username: req.user.username
     }, {
       lastSeen: new Date()
     }, {
@@ -115,7 +122,7 @@ function fetchUser(options) {
 
           return (next());
         } else {
-          var error = utils.sendError.InvalidCredentialsError('No user with key:' + token);
+          var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
           logger.error(error);
           return (next(error));
         }

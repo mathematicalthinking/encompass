@@ -96,7 +96,7 @@ server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
 //server.use(authmw.isAuthenticated());
-server.use(userAuth.processToken());
+//server.use(userAuth.processToken());
 server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
 server.use(userAuth.loadAccessibleWorkspaces());
