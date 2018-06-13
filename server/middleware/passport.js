@@ -12,13 +12,6 @@ const bcryptSalt = 10;
 const models = require('../datasource/schemas');
 const User = models.User;
 
-User.findOne({username: 'steve'}, (err, user) => {
-  if(err) {
-    console.log(err);
-  } else {
-    console.log('user',user);
-  }
-});
 module.exports = (passport) => {
 
   // =========================================================================

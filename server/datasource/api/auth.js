@@ -57,7 +57,7 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-    console.log('inside processToken');
+    // console.log('inside processToken');
     if (!path.apiRequest(req)) {
       return next();
     }
@@ -209,7 +209,7 @@ function accessibleWorkspacesQuery(user) {
 function loadAccessibleWorkspaces(options) {
 
   function _loadAccessibleWorkspaces(req, res, next) {
-    console.log(`running loadAccessibleWorkspaces`);
+    // console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
     if (!user || !path.schemaHasWorkspace(schema)) {
@@ -236,7 +236,6 @@ function test(options) {
   return (_test);
 }
 
-
 function facebookAuthentication() {
   passport.authenticate("facebook", {
     scope: 'email'
@@ -250,11 +249,21 @@ function facebookAuthenticationCallback() {
   });
 }
 
-function localLogin(){
+const localLogin = function(){
+  passport.authenticate('local-login', {
+    failureRedirect: '/#/login'
+  });
+};
 
-}
+const localRedirect = function (req, res) {
+  res.redirect('/');
+};
 
-
+const logout = (req, res, next) => {
+    console.log('LOGGING OUT!');
+    req.logout();
+    res.redirect('/');
+  };
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;
 module.exports.protect = protect;
@@ -265,3 +274,6 @@ module.exports.loadAccessibleWorkspaces = loadAccessibleWorkspaces;
 module.exports.accessibleWorkspacesQuery = accessibleWorkspacesQuery;
 module.exports.facebookAuthentication = facebookAuthentication;
 module.exports.facebookAuthenticationCallback = facebookAuthenticationCallback;
+module.exports.localLogin = localLogin;
+module.exports.localRedirect = localRedirect;
+module.exports.logout = logout;

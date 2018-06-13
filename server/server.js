@@ -110,20 +110,14 @@ server.use(path.validateContent());
 
 
 //Use passport file for authentication instead of mfcas
-server.post('/auth/login', passport.authenticate('local-login', { failureRedirect: '/#/login' }),
-(req, res) => {
-  res.redirect('/');
-});
-server.post('/auth/signup', passport.authenticate('local-signup', { failureRedirect: '/#/signup'}),
-(req, res) => {
-  res.redirect('/');
-});
+//server.post('/auth/login', auth.localLogin, auth.localRedirect);
 
-server.get('/logout',(req, res, next) => {
-  console.log('LOGGING OUT!');
-  req.logout();
-  res.redirect('/');
-});
+server.post('/auth/login', passport.authenticate('local-login', { failureRedirect: '/#/login' }),
+auth.localRedirect);
+server.post('/auth/signup', passport.authenticate('local-signup', { failureRedirect: '/#/signup'}),
+auth.localRedirect);
+
+server.get('/logout', auth.logout);
 // server.get('/logout', passport.logout);
 // server.get('/back', passport.back);
 
