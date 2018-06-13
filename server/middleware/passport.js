@@ -120,7 +120,8 @@ module.exports = (passport) => {
 
       const newUser = new User({
         googleId: profile.id,
-        username: profile.name.givenName + " " + profile.name.familyName,
+        name: profile.name.givenName + " " + profile.name.familyName,
+        username: profile.emails[0].value,
         email: profile.emails[0].value,
         isAuthorized: true
       });
