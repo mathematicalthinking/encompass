@@ -49,6 +49,8 @@ var UserSchema = new Schema({
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: Boolean,
   name: String,
+  email: String,
+  googleId: String,
   key: String,
   password: String,
   forcePwdChg: Boolean,
