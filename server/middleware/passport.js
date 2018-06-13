@@ -9,9 +9,16 @@ const bcrypt = require('bcrypt');
 const bcryptSalt = 10;
 
 //USER MODEL
-const User = require('../datasource/schemas/user');
+const models = require('../datasource/schemas');
+const User = models.User;
 
-
+User.findOne({username: 'steve'}, (err, user) => {
+  if(err) {
+    console.log(err);
+  } else {
+    console.log('user',user);
+  }
+});
 module.exports = (passport) => {
 
   // =========================================================================
@@ -36,10 +43,13 @@ module.exports = (passport) => {
 
 
   passport.use('local-login', new LocalStrategy((username, password, next) => {
+   console.log(`in local with username: ${username}, password ${password}`);
     User.findOne({
-      username
+      username: username
     }, (err, user) => {
+      console.log('user', user);
       if (err) {
+        console.log('err from db', err);
         return next(err);
       }
       if (!user) {
@@ -76,14 +86,13 @@ module.exports = (passport) => {
           } else {
             const {
               username,
-              email,
-              password
+              password,
             } = req.body;
             const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
             const newUser = new User({
               username,
-              email,
-              password: hashPass
+              password: hashPass,
+              isAuthorized: true
             });
 
             newUser.save((err) => {

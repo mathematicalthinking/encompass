@@ -35,11 +35,12 @@ const bcryptSalt = 10;
   consider processing the req (token, fetchUser) if not cached
 */
 function getUser(req) {
-  return req.mf.auth.user;
+  return req.user;
 }
 
 function requireUser(req) {
   var user = getUser(req);
+  console.log('user', user);
   if (!user) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
@@ -90,7 +91,6 @@ function processToken(options) {
 */
 function fetchUser(options) {
   function _fetchUser(req, res, next) {
-    console.log('inside fetch user');
     if (!path.apiRequest(req)) {
       return next();
     }
@@ -249,6 +249,10 @@ function facebookAuthenticationCallback() {
     successRedirect: "/profile",
     failureRedirect: "/login"
   });
+}
+
+function localLogin(){
+
 }
 
 

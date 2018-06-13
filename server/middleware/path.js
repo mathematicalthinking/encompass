@@ -41,6 +41,7 @@ function prep(options) {
 */
 function processPath(options) {
   function _processPath(req, res, next) {
+    console.log('path process: ', req.path);
     if(!apiRequest(req)) {
       return next();
     }

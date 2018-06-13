@@ -19,6 +19,7 @@ const express = require('express'),
       fixed = require('./datasource/fixed');
 
 const configure = require('./middleware/passport');
+const authmw = require('./middleware/require-authentication');
 const models = require('./datasource/schemas');
 const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
@@ -94,6 +95,7 @@ server.use(express.urlencoded({
 server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
+//server.use(authmw.isAuthenticated());
 server.use(auth.processToken());
 server.use(auth.fetchUser());
 server.use(auth.protect());
@@ -101,14 +103,27 @@ server.use(auth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 // CAS AUTHENTICATION CALLS
-server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-server.get('/login', cas.sendToCas);
-server.get('/logout', cas.logout);
-server.get('/back', cas.returnFromCas);
+// server.get('/devonly/fakelogin/:username', fake.fakeLogin);
+// server.get('/login', cas.sendToCas);
+// server.get('/logout', cas.logout);
+// server.get('/back', cas.returnFromCas);
 
 
-// Use passport file for authentication instead of mfcas
-// server.get('/login', passport.login);
+//Use passport file for authentication instead of mfcas
+server.post('/auth/login', passport.authenticate('local-login', { failureRedirect: '/#/login' }),
+(req, res) => {
+  res.redirect('/');
+});
+server.post('/auth/signup', passport.authenticate('local-signup', { failureRedirect: '/#/signup'}),
+(req, res) => {
+  res.redirect('/');
+});
+
+server.get('/logout',(req, res, next) => {
+  console.log('LOGGING OUT!');
+  req.logout();
+  res.redirect('/');
+});
 // server.get('/logout', passport.logout);
 // server.get('/back', passport.back);
 
@@ -127,32 +142,32 @@ server.get('/back', cas.returnFromCas);
 
 //API CALLS
 server.get('/api/users', api.get.users);
-server.get('/api/users/:id', path.validateId(), api.get.user);
-server.get('/api/workspaces', api.get.workspaces);
-server.get({ path: '/api/workspaces/:id', version: '0.0.1' }, path.validateId(), fixed.workspace);
-server.get('/api/workspaces/:id', path.validateId(), api.get.workspace);
+server.get('/api/users/:id', path.validateId, api.get.user);
+server.get('/api/workspaces', authmw.isAuthenticated, api.get.workspaces);
+server.get({ path: '/api/workspaces/:id', version: '0.0.1' }, path.validateId, fixed.workspace);
+server.get('/api/workspaces/:id', path.validateId, api.get.workspace);
 server.get('/api/folders', api.get.folders);
-server.get('/api/folders/:id', path.validateId(), api.get.folder);
+server.get('/api/folders/:id', path.validateId, api.get.folder);
 server.get('/api/folderSets', api.get.folderSets);
 server.get('/api/pdSets', api.get.pdSets); // For some reason Ember prefers pDSets to pdSets and PDSets
 server.get('/api/submissions', api.get.submissions);
-server.get('/api/submissions/:id', path.validateId(), api.get.submission);
+server.get('/api/submissions/:id', path.validateId, api.get.submission);
 server.get('/api/selections', api.get.selections);
-server.get('/api/selections/:id', path.validateId(), api.get.selection);
+server.get('/api/selections/:id', path.validateId, api.get.selection);
 server.get('/api/comments', api.get.comments);
-server.get('/api/comments/:id', path.validateId(), api.get.comment);
+server.get('/api/comments/:id', path.validateId, api.get.comment);
 server.get('/api/responses', api.get.responses);
-server.get('/api/responses/:id', path.validateId(), api.get.response);
+server.get('/api/responses/:id', path.validateId, api.get.response);
 server.get('/api/taggings', api.get.taggings);
-server.get('/api/taggings/:id', path.validateId(), api.get.tagging);
+server.get('/api/taggings/:id', path.validateId, api.get.tagging);
 server.get('/api/problems', api.get.problems);
-server.get('/api/problems/:id', path.validateId(), api.get.problem);
+server.get('/api/problems/:id', path.validateId, api.get.problem);
 server.get('/api/answers', api.get.answers);
-server.get('/api/answers/:id', path.validateId(), api.get.answer);
+server.get('/api/answers/:id', path.validateId, api.get.answer);
 server.get('/api/sections', api.get.sections);
-server.get('/api/sections/:id', path.validateId(), api.get.section);
+server.get('/api/sections/:id', path.validateId, api.get.section);
 server.get('/api/sections', api.get.categories);
-server.get('/api/sections/:id', path.validateId(), api.get.category);
+server.get('/api/sections/:id', path.validateId, api.get.category);
 
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
@@ -167,26 +182,26 @@ server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
 
-server.put('/api/folders/:id', path.validateId(), api.put.folder);
-server.put('/api/submissions/:id', path.validateId(), api.put.submission);
-server.put('/api/selections/:id', path.validateId(), api.put.selection);
-server.put('/api/comments/:id', path.validateId(), api.put.comment);
-server.put('/api/responses/:id', path.validateId(), api.put.response);
-server.put('/api/taggings/:id', path.validateId(), api.put.tagging);
-server.put('/api/users/:id', path.validateId(), api.put.user);
-server.put('/api/workspaces/:id', path.validateId(), api.put.workspace);
-server.put('/api/problems/:id', path.validateId(), api.put.problem);
-server.put('/api/problems/addCategory/:id', path.validateId(), api.put.problem.addCategory);
-server.put('/api/problems/removeCategory/:id', path.validateId(), api.put.problem.removeCategory);
-server.put('/api/answers/:id', path.validateId(), api.put.answer);
-server.put('/api/sections/:id', path.validateId(), api.put.section);
-server.put('/api/sections/addTeacher/:id', path.validateId(), api.put.section.addTeacher);
-server.put('/api/sections/removeTeacher/:id', path.validateId(), api.put.section.removeTeacher);
-server.put('/api/sections/addStudent/:id', path.validateId(), api.put.section.addStudent);
-server.put('/api/sections/removeStudent/:id', path.validateId(), api.put.section.removeStudent);
-server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.addProblem);
-server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
-server.put('/api/categories/:id', path.validateId(), api.put.category);
+server.put('/api/folders/:id', path.validateId, api.put.folder);
+server.put('/api/submissions/:id', path.validateId, api.put.submission);
+server.put('/api/selections/:id', path.validateId, api.put.selection);
+server.put('/api/comments/:id', path.validateId, api.put.comment);
+server.put('/api/responses/:id', path.validateId, api.put.response);
+server.put('/api/taggings/:id', path.validateId, api.put.tagging);
+server.put('/api/users/:id', path.validateId, api.put.user);
+server.put('/api/workspaces/:id', path.validateId, api.put.workspace);
+server.put('/api/problems/:id', path.validateId, api.put.problem);
+server.put('/api/problems/addCategory/:id', path.validateId, api.put.problem.addCategory);
+server.put('/api/problems/removeCategory/:id', path.validateId, api.put.problem.removeCategory);
+server.put('/api/answers/:id', path.validateId, api.put.answer);
+server.put('/api/sections/:id', path.validateId, api.put.section);
+server.put('/api/sections/addTeacher/:id', path.validateId, api.put.section.addTeacher);
+server.put('/api/sections/removeTeacher/:id', path.validateId, api.put.section.removeTeacher);
+server.put('/api/sections/addStudent/:id', path.validateId, api.put.section.addStudent);
+server.put('/api/sections/removeStudent/:id', path.validateId, api.put.section.removeStudent);
+server.put('/api/sections/addProblem/:id', path.validateId, api.put.section.addProblem);
+server.put('/api/sections/removeProblem/:id', path.validateId, api.put.section.removeProblem);
+server.put('/api/categories/:id', path.validateId, api.put.category);
 
 
 server.get('/api/stats', api.get.stats);
@@ -215,7 +230,7 @@ server.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
 });
 
 module.exports = mainServer;
