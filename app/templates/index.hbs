@@ -8,6 +8,10 @@
     <li>Browse annotated submissions for a given problem to help inform your teaching</li>
     <li>Visualize your class' performance for a problem</li>
   </ul>
+
+<h2>It looks like you are not logged in</h2>
+  <p>Please login <a href="#/auth/login">here</a></p>
+  <p>New to EnCoMPASS, sign up <a href="#/auth/signup">here</a></p>
 {{#if user.isAuthenticated}}
 	<p>	You'll probably want to get started by visiting your <span class="al_link">{{#link-to 'workspaces.index'}}workspaces{{/link-to}}</span>.</p>
 
@@ -16,14 +20,14 @@
     <li>Visualize student or class work over time</li>
     <li>Visualize your mentoring over time</li>
   </ul>
-
-  <p><span class="al_link">{{#link-to 'problem'}}Create a Problem{{/link-to}}</span>.</p>
-{{/if}}
-
   <p>
     We'd love to hear your
     <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">comments</a>.
   </p>
+  <p><span class="al_link">{{#link-to 'problem'}}Create a Problem{{/link-to}}</span>.</p>
+{{/if}}
+
+
 
 </div>
 
