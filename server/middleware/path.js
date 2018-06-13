@@ -50,7 +50,6 @@ function processPath(options) {
     var pathRegExp = /\/api\/([a-z]*)\/?/;
     var match = pathRegExp.exec(req.path);
     if(match) {
-      console.log('match', match);
       req.mf.path.model = match[1];
     }
 

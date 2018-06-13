@@ -20,7 +20,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
       }, function currentUserError(err){
         reject(err);
         window.alert('You are no longer logged in, redirecting you');
-        window.location.href = 'login';
+        window.location.href = 'auth';
       });
     });
     return currentUser;
@@ -29,7 +29,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
   afterModel: function(user, transition) {
     //not crazy that this is duplicated here and in AuthenticatedRoute...
     if(!user.get('isAuthenticated')) {
-      this.transitionTo('login');
+      this.transitionTo('auth');
     } else if(!user.get('isAuthz')) {
       this.transitionTo('unauthorized');
     }
@@ -71,7 +71,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
         parentView: 'application'
       });
     },
-  
+
     doneTour: function() {
       var user = this.get('model');
       user.set('seenTour', new Date());

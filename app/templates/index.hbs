@@ -8,7 +8,7 @@
     <li>Browse annotated submissions for a given problem to help inform your teaching</li>
     <li>Visualize your class' performance for a problem</li>
   </ul>
-
+{{#if user.isAuthenticated}}
 	<p>	You'll probably want to get started by visiting your <span class="al_link">{{#link-to 'workspaces.index'}}workspaces{{/link-to}}</span>.</p>
 
   <p>Eventually we'd like to provide:</p>
@@ -18,6 +18,7 @@
   </ul>
 
   <p><span class="al_link">{{#link-to 'problem'}}Create a Problem{{/link-to}}</span>.</p>
+{{/if}}
 
   <p>
     We'd love to hear your

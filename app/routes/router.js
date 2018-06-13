@@ -32,8 +32,8 @@
   route or entering that route at a later point.
 */
 Encompass.Router.map(function() {
-  this.route("login");
-  this.route("signup");
+  //this.route("login");
+  // this.route("signup");
   this.route("auth", function(){
     this.route("login");
     this.route("signup");

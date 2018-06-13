@@ -1,3 +1,7 @@
+<div class="al_wtf main">
+  <p>Please login if you are an EnCoMPASS member.</p>
+</div>
+
 <form class="form-signin" method="POST" action="/auth/login">
   <input class="form-control" type="text" required name="username" placeholder="username">
   <input class="form-control" type="password" required name="password" placeholder="password">
@@ -5,3 +9,5 @@
 </form>
 
 {{social-signin}}
+
+<p> Don't have an account? {{#link-to 'auth.signup'}}Signup!{{/link-to}}</p>

@@ -1,2 +1,3 @@
-Encompass.AuthLoginRoute = Ember.Route.extend(
-);
+Encompass.AuthLoginRoute = Ember.Route.extend({
+
+});
