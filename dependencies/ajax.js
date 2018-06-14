@@ -43,7 +43,7 @@ $(document).ajaxError(function(e, xhr, settings, errorText){
       status: xhr.status,
     }
     $.post('/api/errors', error).always(function(){
-      window.alert(err);
+      window.alert(error);
     });
   }
 });
