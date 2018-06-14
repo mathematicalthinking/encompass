@@ -95,31 +95,19 @@ server.use(express.urlencoded({
 server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
-//server.use(authmw.isAuthenticated());
-//server.use(userAuth.processToken());
 server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
 server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
-
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
 server.get('/logout', auth.logout);
 
-
 //  GOOGLE AUTHENTICATION CALLS
-server.get("/auth/google", passport.authenticate("google", {
-  scope: ["https://www.googleapis.com/auth/plus.login",
-    "https://www.googleapis.com/auth/plus.profile.emails.read"
-  ]
-}));
-server.get("/auth/google/callback", passport.authenticate("google", {
-  failureRedirect: "/#/login",
-  successRedirect: "/"
-}));
-
+server.get('/auth/google', auth.googleAuth);
+server.get('/auth/google/callback', auth.googleReturn);
 
 //  FACEBOOK AUTHENTICATION CALLS
 server.get("/auth/facebook", passport.authenticate("facebook", {
@@ -129,7 +117,6 @@ server.get("/auth/facebook/callback", passport.authenticate("facebook", {
   failureRedirect: "/#/login",
   successRedirect: "/"
 }));
-
 
 //Use the authAPI to handle authorization functions -
 // server.get('api/auth/facebook', auth.facebookAuth);
