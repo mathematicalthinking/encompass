@@ -75,6 +75,9 @@ server.use(session({
   secret: 'encompass-app',
   resave: true,
   saveUninitialized: true,
+  store: new MongoStore({mongooseConnection: mongoose.connection,
+    stringify: false
+  })
 }));
 
 // server.set('view engine', 'ejs');

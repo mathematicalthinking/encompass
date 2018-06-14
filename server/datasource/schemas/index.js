@@ -1,7 +1,7 @@
-/** 
+/**
   * # Schemas
   * @description We are using [Mongoose](http://mongoosejs.com/) as our ODM
-  *              to manage data consistently between Node and MongoDB. In 
+  *              to manage data consistently between Node and MongoDB. In
   *              this directory we define the various DAOs with Mongoose
   *              Schemas, and this file is a convenience that allows us to
   *              require the schemas elsewhere by just requiring this dir
@@ -21,7 +21,8 @@
   "problem",
   "answer",
   "section",
-  "category"
+  "category",
+  "session"
 ].forEach(function (path) {
   var module = require('./' + path);
 
