@@ -18,4 +18,4 @@ before_script:
   # - "sh -e grunt serve-test" # start server on test port 8082
   # - sleep 3 # give Web server some time to bind to sockets, etc
 script:
-  - grunt systemTests
+  - grunt runEndToEnd

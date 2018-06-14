@@ -303,6 +303,9 @@ module.exports = function(grunt) {
           logConcurrentOutput: true
         }
       },
+      endToEndTasks: {
+        tasks: ['nodemon:dev', 'endToEndTests']
+      },
       test: {
         tasks: ['nodemon:dev', 'tests', 'watch'],
         options: {
@@ -368,7 +371,8 @@ module.exports = function(grunt) {
   /*
     Execute all of the tests (jshint too)
   */
-  grunt.registerTask('tests', ['jshint', 'jasmine', 'mochaTest']); // jqunit
+  grunt.registerTask('endToEndTests', ['mochaTest']); // jqunit
+  grunt.registerTask('tests', ['jasmine', 'mochaTest']); // jqunit
 
   grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
 
@@ -421,6 +425,7 @@ module.exports = function(grunt) {
    *   - Runs application using test port, test database, etc.
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
+  grunt.registerTask('runEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
 };
