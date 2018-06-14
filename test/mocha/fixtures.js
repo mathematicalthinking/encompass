@@ -2,6 +2,8 @@
   * # Test Fixtures
   * @description This is the mock data to be used in REST API test
 **/
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   answer: {
@@ -51,7 +53,7 @@ module.exports = {
     }
   },
   section: {
-    _id: '5b1e7b2aa5d2157ef4c91108',
+    _id: ObjectId('5b1e7b2aa5d2157ef4c91108'),
     validSection: {
       name: 'A test section',
       problems: [],
@@ -71,5 +73,11 @@ module.exports = {
   },
   student: {
     name: 'David T.'
-  }
+  },
+  user: {
+  _id: ObjectId('529518daba1cd3d8c4013344'),
+  validUser: {
+    username: 'testUser',
+  },
+}
 };

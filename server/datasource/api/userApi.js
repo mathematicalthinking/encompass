@@ -130,8 +130,8 @@ function postUser(req, res, next) {
           return utils.sendError.InternalError(err, res);
         }
         var data = {'user': saved};
+        console.log('DATAL ', data);
         utils.sendResponse(res, data);
-        next();
       });
     } else {
       return utils.sendError.InvalidContentError(`User: ${newUser.username} already exists!`, res);
@@ -147,50 +147,150 @@ function postUser(req, res, next) {
   * @throws {InternalError} Data save failed
   * @throws {RestError} Something? went wrong
   */
-function putUser(req, res, next) {
+  function putUser(req, res, next) {
 
-  /* These fields are uneditable */
-  delete req.body.user.username;
-  delete req.body.user.createDate;
-  delete req.body.user.key;
+    /* These fields are uneditable */
+    delete req.body.user.username;
+    delete req.body.user.createDate;
+    delete req.body.user.key;
 
+<<<<<<< HEAD
   var user = userAuth.requireUser(req);
   if (user.isAdmin) {
     models.User.findByIdAndUpdate(req.params.id,
       /* Admins can update all editable fields for any user */
       req.body.user,
       function (err, doc) {
+=======
+    var user = auth.requireUser(req);
+    if (user.isAdmin) {
+      models.User.findByIdAndUpdate(
+        req.params.id,
+        req.body.user,
+        {new: true},
+      ).exec((err, doc) => {
+>>>>>>> Add user put tests
         if (err) {
           logger.error(err);
-          return utils.sendError.InternalError(err, res);
+          utils.sendError.InternalError(err, res);
         }
         var data = {'user': doc};
         utils.sendResponse(res, data);
       });
-  } else {
-    /* non-admins can only update themselves */
-    if (req.params.id !== user.id) {
-      return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+    } else {
+      /* non-admins can only update themselves */
+      if (req.params.id !== user.id) {
+        utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+        return;
+      }
+      models.User.findByIdAndUpdate(
+        req.params.id,
+        /* non-admins can only update their names, and seenTour fields */
+        {name: req.body.user.name, seenTour: req.body.user.seenTour}
+      ).exec((err, doc) => {
+        if (err) {
+          logger.error(err);
+          utils.sendError.InternalError(err, res);
+        }
+        var data = {'user': doc};
+        utils.sendResponse(res, data);
+      });
     }
-
-    models.User.findByIdAndUpdate(req.params.id,
-      /* non-admins can only update their names, and seenTour fields */
-      { name: req.body.user.name,
-        seenTour: req.body.user.seenTour
-      },
-      function (err, doc) {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-
-        var data = {'user': doc};
-        utils.sendResponse(res, data);
-      });
   }
-}
+  /**
+    * @public
+    * @method addSection
+    * @description __URL__: /api/users/addSection/:id
+    * @throws {NotAuthorizedError} User has inadequate permissions
+    * @throws {InternalError} Data save failed
+    * @throws {RestError} Something? went wrong
+  */
 
-module.exports.get.user = sendUser;
-module.exports.get.users = sendUsers;
-module.exports.post.user = postUser;
-module.exports.put.user = putUser;
+  const addSection = (req, res, next) => {
+    var user = auth.requireUser(req);
+    // who can add a section for a user. If they're a teacher they should
+    // be able to add a section to themselves. If they're a student
+    models.User.findByIdAndUpdate(
+      req.params.id,
+      {$push: {sections: req.body}},
+      {new: true} // specifying that we want the UPDATED version return
+    ).lean().exec((err, doc) => {
+      if(err) {
+        console.log("ERROR: ", err)
+        logger.error(err);
+        utils.sendError.InternalError(err, res);
+        return;
+      }
+      const data = {'user': doc};
+      console.log("DATA: ", data);
+      utils.sendResponse(res, data);
+    });
+  };
+
+  /**
+    * @public
+    * @method removeProblem
+    * @description __URL__: /api/sections/removeProblem:id
+    * @body {problemId: ObjectId}
+    * @throws {NotAuthorizedError} User has inadequate permissions
+    * @throws {InternalError} Data update failed
+    * @throws {RestError} Something? went wrong
+  */
+  const removeSection = (req, res, next) => {
+    const user = auth.requireUser(req);
+    models.User.findByIdAndUpdate(
+      req.params.id,
+      {"$pull": {"sections": {"sectionId": req.body.section.sectionId}}}
+    ).exec((err, doc) => {
+      if(err) {
+        logger.error(err);
+        utils.sendError.InternalError(err, res);
+        return;
+      }
+      const data = {'user': doc};
+      utils.sendResponse(res, data);
+    });
+  };
+
+  const addAssignment = (req, res, next) => {
+    const user= auth.requireUser(req);
+    models.User.findByIdAndUpdate(
+      req.params.id,
+      {"$push": {"assignments": req.body.assignment}}
+    ).exec((err, doc) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError.InternalError(err, res);
+        return;
+      }
+      const data = {'user': doc};
+      console.log("DATA: ",data);
+      utils.sendResponse(res, data);
+    });
+  };
+
+  const removeAssignment = (req, res, next) => {
+    const user = auth.requireUser(req);
+    models.User.findByIdAndUpdate(
+      req.params.id,
+      {"$pull": {"assignments": {"problemId": req.body.assignment.problemId}}}
+    ).exec((err, doc) => {
+      if (err) {
+        logger.error(err);
+        utils.sendError.InternalError(err, res);
+        return;
+      }
+      const data = {'user': doc};
+      console.log("DATA@: ", data);
+      utils.sendResponse(res, data);
+    });
+  };
+
+  module.exports.get.user = sendUser;
+  module.exports.get.users = sendUsers;
+  module.exports.post.user = postUser;
+  module.exports.put.user = putUser;
+  module.exports.put.user.addSection = addSection;
+  module.exports.put.user.removeSection = removeSection;
+  module.exports.put.user.addAssignment = addAssignment;
+  module.exports.put.user.removeAssignment = removeAssignment;

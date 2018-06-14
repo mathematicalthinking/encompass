@@ -78,6 +78,7 @@ function validateId(options) {
       //TODO this is sending a 500 error although its a 4xx
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
+    console.log("ID validated");
     return next();
 
   }
@@ -137,7 +138,7 @@ function validateContent(options) {
         return utils.sendError.InvalidContentError(util.format(error, schema), res);
       }
     }
-
+    console.log("content validated")
     return next();
   }
 

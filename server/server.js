@@ -165,6 +165,10 @@ server.put('/api/comments/:id', path.validateId(), path.validateContent(), api.p
 server.put('/api/responses/:id', path.validateId(), path.validateContent(), api.put.response);
 server.put('/api/taggings/:id', path.validateId(), path.validateContent(), api.put.tagging);
 server.put('/api/users/:id', path.validateId(), path.validateContent(), api.put.user);
+server.put('/api/users/addSection/:id', path.validateId(), path.validateContent(), api.put.user.addSection);
+server.put('/api/users/removeSection/:id', path.validateId(), path.validateContent(), api.put.user.removeSection);
+server.put('/api/users/addAssignment/:id', path.validateId(), path.validateContent(), api.put.user.addAssignment);
+server.put('/api/users/removeAssignment', path.validateId(), path.validateContent(), api.put.user.removeAssignment);
 server.put('/api/workspaces/:id', path.validateId(), path.validateContent(), api.put.workspace);
 server.put('/api/problems/:id', path.validateId(), path.validateContent(), api.put.problem);
 server.put('/api/problems/addCategory/:id', path.validateId(), path.validateContent(), api.put.problem.addCategory);
