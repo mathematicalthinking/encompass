@@ -102,8 +102,8 @@ module.exports = (passport) => {
 
   //GOOGLE STRATEGY
   passport.use(new GoogleStrategy({
-    clientID: "881861196583-d8gjkkped1kgukjsg9cb6eedqja3k8c0.apps.googleusercontent.com",
-    clientSecret: "JwlD-62nOiJLnODXHrWR6ftV",
+    clientID: "662267278166-nd0hruqqie1ns8h6eil5hvdiv4e019lo.apps.googleusercontent.com",
+    clientSecret: "1HNNnmglV5FgSkdhf9NH73la",
     callbackURL: "/auth/google/callback"
   }, (accessToken, refreshToken, profile, done) => {
     console.log('profileid', profile.id);
