@@ -1,5 +1,6 @@
 //PASSPORT REQS
 const passport = require('passport');
+const flash = require('connect-flash');
 const LocalStrategy = require('passport-local').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
@@ -46,11 +47,13 @@ module.exports = (passport) => {
         return next(err);
       }
       if (!user) {
+        console.log('incorrect username');
         return next(null, false, {
           message: "Incorrect username"
         });
       }
       if (!bcrypt.compareSync(password, user.password)) {
+        console.log('incorrect password');
         return next(null, false, {
           message: "Incorrect password"
         });
@@ -73,6 +76,7 @@ module.exports = (passport) => {
           }
 
           if (user) {
+            console.log('username already exists');
             return next(null, false, {
               message: "Username already exists"
             });

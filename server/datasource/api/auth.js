@@ -24,21 +24,20 @@ const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const bcrypt = require("bcrypt");
 const bcryptSalt = 10;
 
+
 const localLogin = (req, res, next) => {
   passport.authenticate('local-login', {
       successRedirect: '/',
-      failureRedirect: '#/auth/login',
-      failureFlash: true,
-      passReqToCallback: true
+      failureRedirect: '/#/auth/login',
+      // failureFlash: true,
+      // passReqToCallback: true
   })(req, res, next);
 };
 
 const localSignup = (req, res, next) => {
   passport.authenticate('local-signup', {
       successRedirect: '/',
-      failureRedirect: '#/auth/signup',
-      failureFlash: true,
-      passReqToCallback: true
+      failureRedirect: '/#/auth/signup',
   })(req, res, next);
 };
 

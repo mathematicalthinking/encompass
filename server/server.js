@@ -6,6 +6,7 @@ const express = require('express'),
       cookieParser = require('cookie-parser'),
       logger = require('morgan'),
       http = require('http'),
+      flash = require('connect-flash'),
       session = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       passport = require('passport'),
@@ -107,6 +108,8 @@ server.use(path.validateContent());
 server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
 server.get('/logout', auth.logout);
+
+
 
 //  GOOGLE AUTHENTICATION CALLS
 server.get('/auth/google', auth.googleAuth);
