@@ -90,5 +90,12 @@ module.exports = {
       name: 'test folder',
       workspace: '53e1156db48b12793f000442'
     }
+  },
+  selection: {
+    _id: '53e11942b48b12793f000a5f',
+    validSelection: {
+      text: 'test selection text',
+      submission: '53e1156db48b12793f000430', // this should be switched to answer
+    }
   }
 };

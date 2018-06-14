@@ -124,7 +124,7 @@ function validateContent(options) {
   function _validateContent(req, res, next) {
     var checkForModRequest = /POST|PUT/;
 
-
+    console.log('validating content');
     // Ignore api requests that don't attempt to modify a value
     if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
       return next();
@@ -133,11 +133,12 @@ function validateContent(options) {
     var model = getModel(req),
         schema = getSchema(req),
         data = req.body[model];
-
-    if(models[schema]) {
+    console.log(model, schema, data);
+    if(models[schema]) {     
       var required = models[schema].schema.requiredPaths();
+      console.log("REQUIRED: ", required)
       var hasRequiredData = _.every(required, function(x) { return data[x]; });
-
+      console.log(hasRequiredData)
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
         return utils.sendError.InvalidContentError(util.format(error, schema), res);
