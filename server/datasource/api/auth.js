@@ -55,6 +55,19 @@ const googleReturn = (req, res, next) => {
   })(req, res, next);
 };
 
+const facebookAuth = (req, res, next) => {
+  passport.authenticate("facebook", {
+    scope: 'email'
+  })(req, res, next);
+};
+
+const facebookReturn = (req, res, next) => {
+  passport.authenticate("facebook", {
+    failureRedirect: "/#/login",
+    successRedirect: "/"
+  })(req, res, next);
+};
+
 const logout = (req, res, next) => {
   console.log('LOGGING OUT!');
   req.logout();
@@ -66,3 +79,5 @@ module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
 module.exports.googleAuth = googleAuth;
 module.exports.googleReturn = googleReturn;
+module.exports.facebookAuth = facebookAuth;
+module.exports.facebookReturn = facebookReturn;

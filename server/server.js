@@ -110,13 +110,17 @@ server.get('/auth/google', auth.googleAuth);
 server.get('/auth/google/callback', auth.googleReturn);
 
 //  FACEBOOK AUTHENTICATION CALLS
-server.get("/auth/facebook", passport.authenticate("facebook", {
-  scope: 'email'
-}));
-server.get("/auth/facebook/callback", passport.authenticate("facebook", {
-  failureRedirect: "/#/login",
-  successRedirect: "/"
-}));
+
+server.get('/auth/facebook', auth.facebookAuth);
+server.get('/auth/facebook/callback', auth.facebookReturn);
+
+// server.get("/auth/facebook", passport.authenticate("facebook", {
+//   scope: 'email'
+// }));
+// server.get("/auth/facebook/callback", passport.authenticate("facebook", {
+//   failureRedirect: "/#/login",
+//   successRedirect: "/"
+// }));
 
 //Use the authAPI to handle authorization functions -
 // server.get('api/auth/facebook', auth.facebookAuth);
