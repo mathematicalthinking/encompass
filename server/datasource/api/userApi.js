@@ -210,11 +210,12 @@ function postUser(req, res, next) {
     var user = auth.requireUser(req);
     // who can add a section for a user. If they're a teacher they should
     // be able to add a section to themselves. If they're a student
+    console.log(req.body.section)
     models.User.findByIdAndUpdate(
       req.params.id,
-      {$push: {sections: req.body}},
-      {new: true} // specifying that we want the UPDATED version return
-    ).lean().exec((err, doc) => {
+      {$push: {sections: req.body.section}},
+      {new: true} // specifying that we want the UPDATED version returned
+    ).exec((err, doc) => {
       if(err) {
         console.log("ERROR: ", err)
         logger.error(err);
@@ -229,9 +230,9 @@ function postUser(req, res, next) {
 
   /**
     * @public
-    * @method removeProblem
-    * @description __URL__: /api/sections/removeProblem:id
-    * @body {problemId: ObjectId}
+    * @method removeSection
+    * @description __URL__: /api/users/removeSection/:id
+    * @body {sectionId: ObjectId}
     * @throws {NotAuthorizedError} User has inadequate permissions
     * @throws {InternalError} Data update failed
     * @throws {RestError} Something? went wrong
@@ -240,9 +241,11 @@ function postUser(req, res, next) {
     const user = auth.requireUser(req);
     models.User.findByIdAndUpdate(
       req.params.id,
-      {"$pull": {"sections": {"sectionId": req.body.section.sectionId}}}
+      {"$pull": {"sections": {"sectionId": req.body.sectionId}}},
+      {new: true}
     ).exec((err, doc) => {
       if(err) {
+        console.log("MONGO ERROR: ", err)
         logger.error(err);
         utils.sendError.InternalError(err, res);
         return;
@@ -256,7 +259,8 @@ function postUser(req, res, next) {
     const user= auth.requireUser(req);
     models.User.findByIdAndUpdate(
       req.params.id,
-      {"$push": {"assignments": req.body.assignment}}
+      {"$push": {"assignments": req.body.assignment}},
+      {new: true}
     ).exec((err, doc) => {
       if (err) {
         logger.error(err);
@@ -264,16 +268,17 @@ function postUser(req, res, next) {
         return;
       }
       const data = {'user': doc};
-      console.log("DATA: ",data);
       utils.sendResponse(res, data);
     });
   };
 
   const removeAssignment = (req, res, next) => {
     const user = auth.requireUser(req);
+    console.log("removing assignment: ", req.body)
     models.User.findByIdAndUpdate(
       req.params.id,
-      {"$pull": {"assignments": {"problemId": req.body.assignment.problemId}}}
+      {"$pull": {"assignments": req.body.assignment}},
+      {new: true}
     ).exec((err, doc) => {
       if (err) {
         logger.error(err);

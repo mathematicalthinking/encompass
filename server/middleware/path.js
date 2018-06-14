@@ -31,9 +31,10 @@ function prep(options) {
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
+    console.log("PREPPED");
     return next();
   }
-
+  
   return _prep;
 }
 
@@ -65,7 +66,11 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
+<<<<<<< HEAD:server/middleware/path.js
     console.log('in validateid');
+=======
+    console.log("VALIDATING ID");
+>>>>>>> All user tests passing:server/datasource/api/path.js
     var match = idRequest(req);
     if(!match) {
       return next();

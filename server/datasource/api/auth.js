@@ -123,6 +123,7 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
+    console.log("process token")
     if(!path.apiRequest(req)) {
       return next();
     }
@@ -152,6 +153,7 @@ function processToken(options) {
 */
 function fetchUser(options) {
   function _fetchUser(req, res, next) {
+    console.log("Fetch user");
     if(!path.apiRequest(req)) {
       return next();
     }

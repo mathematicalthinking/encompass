@@ -168,7 +168,7 @@ server.put('/api/users/:id', path.validateId(), path.validateContent(), api.put.
 server.put('/api/users/addSection/:id', path.validateId(), path.validateContent(), api.put.user.addSection);
 server.put('/api/users/removeSection/:id', path.validateId(), path.validateContent(), api.put.user.removeSection);
 server.put('/api/users/addAssignment/:id', path.validateId(), path.validateContent(), api.put.user.addAssignment);
-server.put('/api/users/removeAssignment', path.validateId(), path.validateContent(), api.put.user.removeAssignment);
+server.put('/api/users/removeAssignment/:id', path.validateId(), path.validateContent(), api.put.user.removeAssignment);
 server.put('/api/workspaces/:id', path.validateId(), path.validateContent(), api.put.workspace);
 server.put('/api/problems/:id', path.validateId(), path.validateContent(), api.put.problem);
 server.put('/api/problems/addCategory/:id', path.validateId(), path.validateContent(), api.put.problem.addCategory);

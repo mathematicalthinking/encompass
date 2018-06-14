@@ -52,8 +52,12 @@ module.exports = {
       categories: []
     }
   },
+  assignment: {
+    problemId: '5b1e7a0ba5d2157ef4c91028',
+    answerId: '5b1e7abfa5d2157ef4c910b8'
+  },
   section: {
-    _id: ObjectId('5b1e7b2aa5d2157ef4c91108'),
+    _id: '5b1e7b2aa5d2157ef4c91108',
     validSection: {
       name: 'A test section',
       problems: [],
@@ -75,7 +79,7 @@ module.exports = {
     name: 'David T.'
   },
   user: {
-  _id: ObjectId('529518daba1cd3d8c4013344'),
+  _id: '529518daba1cd3d8c4013344',
   validUser: {
     username: 'testUser',
   },
