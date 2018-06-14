@@ -1,4 +1,4 @@
-Encompass.ProblemRoute = Ember.Route.extend({
+Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
     renderTemplate: function () {
         this.render('problem');
     }

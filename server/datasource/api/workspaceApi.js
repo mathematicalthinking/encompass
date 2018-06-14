@@ -17,7 +17,6 @@ var mongoose = require('mongoose'),
     Q      = require('q'),
     helper = require('util');
 
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};

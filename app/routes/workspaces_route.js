@@ -4,8 +4,10 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.0
   */
-Encompass.WorkspacesRoute = Ember.Route.extend({
+
+Encompass.WorkspacesRoute = Encompass.AuthenticatedRoute.extend({
   renderTemplate: function(){
     console.log('rendering workspaces template');
-  }
+  },
+
 });
