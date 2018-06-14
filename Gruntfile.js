@@ -48,16 +48,27 @@ module.exports = function(grunt) {
      * see: https://github.com/pghalliday/grunt-mocha-test
      */
     mochaTest: {
-      test: {
+      e2e: {
         options: {
           reporter: 'spec',
-          //captureFile: 'results.txt', // Optionally capture the reporter output to a file
-          quiet: false, // Optionally suppress output to standard out (defaults to false)
-          clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
-          clearCacheFilter: (key) => true, // Optionally defines which files should keep in cache
-          noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
         },
-        src: ['test/selenium/**/*.js', 'test/mocha/*.js']
+        src: ['test/selenium/**/*.js']
+      },
+      api: {
+        options: {
+          reporter: 'spec',
+          //captureFile: 'results.txt',
+          quiet: false,
+          clearRequireCache: false,
+          clearCacheFilter: (key) => true,
+          noFail: false
+        },
+        src: ['test/mocha/*.js']
       }
     },
 
@@ -306,6 +317,9 @@ module.exports = function(grunt) {
       endToEndTasks: {
         tasks: ['nodemon:dev', 'endToEndTests']
       },
+      apiTasks: {
+        tasks: ['nodemon:dev', 'apiTests']
+      },
       test: {
         tasks: ['nodemon:dev', 'tests', 'watch'],
         options: {
@@ -371,7 +385,8 @@ module.exports = function(grunt) {
   /*
     Execute all of the tests (jshint too)
   */
-  grunt.registerTask('endToEndTests', ['mochaTest']); // jqunit
+  grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
+  grunt.registerTask('apiTests', ['mochaTest:api']);
   grunt.registerTask('tests', ['jasmine', 'mochaTest']); // jqunit
 
   grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
@@ -429,3 +444,6 @@ module.exports = function(grunt) {
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
 };
+  grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
+  grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+
