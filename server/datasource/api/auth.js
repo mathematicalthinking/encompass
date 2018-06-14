@@ -28,7 +28,8 @@ const localLogin = (req, res, next) => {
   passport.authenticate('local-login', {
       successRedirect: '/',
       failureRedirect: '#/auth/login',
-      failureFlash: true
+      failureFlash: true,
+      passReqToCallback: true
   })(req, res, next);
 };
 
@@ -36,7 +37,8 @@ const localSignup = (req, res, next) => {
   passport.authenticate('local-signup', {
       successRedirect: '/',
       failureRedirect: '#/auth/signup',
-      failureFlash: true
+      failureFlash: true,
+      passReqToCallback: true
   })(req, res, next);
 };
 
