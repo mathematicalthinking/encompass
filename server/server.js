@@ -20,7 +20,6 @@ const express = require('express'),
 
 const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
-const authmw = require('./middleware/require-authentication');
 const models = require('./datasource/schemas');
 const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
@@ -105,8 +104,6 @@ server.use(path.validateContent());
 server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
 server.get('/logout', auth.logout);
-
-
 
 //  GOOGLE AUTHENTICATION CALLS
 server.get('/auth/google', auth.googleAuth);
