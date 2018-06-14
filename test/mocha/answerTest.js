@@ -14,7 +14,7 @@ const host = `http://localhost:${port}`;
 chai.use(chaiHttp);
 
 describe('Answer CRUD operations', function() {
-  this.timeout('7s');
+  this.timeout('17s');
   before(async function(){
     await dbSetup.prepTestDb();
   });

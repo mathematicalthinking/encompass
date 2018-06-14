@@ -79,9 +79,16 @@ module.exports = {
     name: 'David T.'
   },
   user: {
-  _id: '529518daba1cd3d8c4013344',
-  validUser: {
-    username: 'testUser',
+    _id: '529518daba1cd3d8c4013344',
+    validUser: {
+      username: 'testUser',
+    },
   },
-}
+  folder: {
+    _id: '53e118f3b48b12793f000a41',
+    validFolder: {
+      name: 'test folder',
+      workspace: '53e1156db48b12793f000442'
+    }
+  }
 };

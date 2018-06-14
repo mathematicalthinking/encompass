@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 /** GET **/
 describe('Problem CRUD operations', function() {
-  this.timeout('7s');
+  this.timeout('17s');
   before(async function() {
     await dbSetup.prepTestDb();
   })

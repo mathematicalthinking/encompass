@@ -67,7 +67,7 @@ function getFolders(req, res, next) {
       return utils.sendError.InternalError(err, res);
     }
 
-    var data = {'folder': docs};
+    var data = {'folders': docs};
     utils.sendResponse(res, data);
     next();
   });
@@ -82,16 +82,23 @@ function getFolders(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function postFolder(req, res, next) {
+<<<<<<< HEAD
 
   var user = userAuth.requireUser(req);
+=======
+  console.log("Posting foler: ", req.body.folder);
+  var user = auth.requireUser(req);
+  console.log("USer authenticated");
+>>>>>>> Add folder tests
   var workspaceId = req.body.folder.workspace;
+  console.log("Extracted workspace id")
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "FOLDERS")) {
-
+      console.log("permission granted");
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
       folder.createDate = Date.now();
-
+      console.log("created new folder: ", folder)
       folder.save(function(err, doc) {
         if(err) {
           logger.error(err);
@@ -103,6 +110,7 @@ function postFolder(req, res, next) {
         next();
       });
     } else {
+      console.log("Permission denied");
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
     }
