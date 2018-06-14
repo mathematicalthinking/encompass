@@ -381,15 +381,14 @@ module.exports = function(grunt) {
   // TODO: rework qunit tests for ember 2 and add qunit back in
   //grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('jqunit', ['qunit_junit']);
-
-  /*
-    Execute all of the tests (jshint too)
-  */
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
-  grunt.registerTask('tests', ['jasmine', 'mochaTest']); // jqunit
+  grunt.registerTask('jasmineTests', ['jasmine']);
+  grunt.registerTask('jasmineNodeTests', ['jasmine_node']);
+  grunt.registerTask('casperTests', ['mocha_casperjs']);
+  // grunt.registerTask('tests', ['jasmine', 'mochaTest']); // jqunit
 
-  grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
+  // grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
 
   /*
     Build and then test
@@ -440,10 +439,8 @@ module.exports = function(grunt) {
    *   - Runs application using test port, test database, etc.
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
-  grunt.registerTask('runEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
-  grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
-};
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+};
 
