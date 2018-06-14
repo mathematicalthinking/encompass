@@ -65,6 +65,7 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
+    console.log('in validateid');
     var match = idRequest(req);
     if(!match) {
       return next();

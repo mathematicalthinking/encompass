@@ -87,7 +87,8 @@ function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
-  var user = userAuth.getUser(req)(req);
+  console.log('SENDING USER');
+  var user = userAuth.getUser(req);
   models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
@@ -97,7 +98,7 @@ function sendUser(req, res, next) {
       var data = {'user': doc};
       delete data.user.key; //hide key
       delete data.user.history; // hide history
-      utils.sendResponse(res, data);
+      return utils.sendResponse(res, data);
       //next();
     });
 }
