@@ -422,5 +422,5 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('systemTests', ['env:test', 'resetTestDb', 'concurrent:test']);
-  grunt.registerTask('serve-test', ['env:test', 'build', 'nodemon:dev']);
+  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
 };
