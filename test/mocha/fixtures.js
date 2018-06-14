@@ -97,5 +97,13 @@ module.exports = {
       text: 'test selection text',
       submission: '53e1156db48b12793f000430', // this should be switched to answer
     }
+  },
+  tagging: {
+    _id: '53e1194bb48b12793f000a62',
+    validTagging: {
+      workspace: '53e1156db48b12793f000442',
+      selection: '53e11b38b48b12793f000ab7',
+      folder: '53e11b0ab48b12793f000ab1'
+    }
   }
 };
