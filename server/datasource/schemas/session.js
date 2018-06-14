@@ -15,11 +15,20 @@ var SessionSchema = new Schema({
   isTrashed: { type: Boolean, 'default': false },
   //====
   _id: String,
-  // session: {
-  //   passport: {
-  //     user: String
-  //   }
-  // },
+  session: {
+    cookie: {
+        "originalMaxAge" : Number,
+        "expires" : Date,
+        "secure" : Boolean,
+        "httpOnly" : Boolean,
+        "domain" : String,
+        "path" : String,
+        "sameSite" : Boolean
+    },
+    passport: {
+      user: String
+    }
+  },
   expires: Date
 }, { versionKey: false });
 
