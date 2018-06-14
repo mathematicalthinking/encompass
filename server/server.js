@@ -23,9 +23,6 @@ const authmw = require('./middleware/require-authentication');
 const models = require('./datasource/schemas');
 const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
-const { ensureLoggedIn, ensureLoggedOut } = require('connect-ensure-login');
-
-
 
 const nconf = config.nconf;
 const server = express();

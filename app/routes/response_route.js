@@ -1,3 +1,3 @@
-Encompass.ResponseRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLeavingRoute, {
+Encompass.ResponseRoute = Ember.Route.extend(Encompass.ConfirmLeavingRoute, {
   controllerName: 'response'
 });

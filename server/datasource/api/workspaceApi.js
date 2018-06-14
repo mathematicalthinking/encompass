@@ -17,12 +17,6 @@ var mongoose = require('mongoose'),
     Q      = require('q'),
     helper = require('util');
 
-const {
-  ensureLoggedIn,
-  ensureLoggedOut
-} = require('connect-ensure-login');
-
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
