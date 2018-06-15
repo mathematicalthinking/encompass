@@ -7,8 +7,8 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
-    auth     = require('./auth'),
+    utils    = require('../../middleware/requestHandler'),
+    userAuth     = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
     models   = require('../schemas');
@@ -24,7 +24,7 @@ module.exports.put = {};
   */
 function postError(req, res, next) {
 
-  var user = auth.getUser(req);
+  var user = userAuth.getUser(req);
   var error = new models.Error(req.body);
   error.object = req.body; //store the full POST
   error.createdBy = user;
@@ -37,8 +37,8 @@ function postError(req, res, next) {
     }
 
     var data = {'error': doc};
-    utils.sendResponse(res, data);
-    next();
+    return utils.sendResponse(res, data);
+    //next();
   });
 
 }

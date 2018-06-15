@@ -10,8 +10,9 @@ var mongoose = require('mongoose'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
+  userAuth = require('../../middleware/userAuth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler');
+  utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -29,7 +30,7 @@ module.exports.put = {};
 
 const getAnswers = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Answer.find(criteria)
   .exec((err, answers) => {
     if (err) {
@@ -76,7 +77,7 @@ const getAnswer = (req, res, next) => {
   */
 
 const postAnswer = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // what permissions are needed to post and answer
   const answer = new models.Answer(req.body.answer);
   answer.createdBy = user;
@@ -103,7 +104,7 @@ const postAnswer = (req, res, next) => {
   */
 
 const putAnswer = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // what check do we want to perform if the user can edit
   // if they created the answer?
   models.Answer.findById(req.params.id, (err, doc) => {

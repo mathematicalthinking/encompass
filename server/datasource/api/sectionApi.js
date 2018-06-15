@@ -10,8 +10,9 @@ var mongoose = require('mongoose'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
+  userAuth = require('../../middleware/userAuth'),
   permissions = require('../../../common/permissions'),
-  utils = require('./requestHandler');
+  utils = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -29,7 +30,7 @@ module.exports.put = {};
 
 const getSections = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {
@@ -75,7 +76,7 @@ const getSection = (req, res, next) => {
 */
 
 const postSection = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // do we want to check if the user is allowed to create sections?
   const section = new models.Section(req.body.section);
   section.createdBy = user;
@@ -101,7 +102,7 @@ const postSection = (req, res, next) => {
 */
 
 const putSection = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // what check do we want to perform if the user can edit
   // if they created the section?
   models.Section.findById(req.params.id, (err, doc) => {
@@ -136,7 +137,7 @@ const putSection = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const addTeacher = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -166,7 +167,7 @@ const addTeacher = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const removeTeacher = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -196,7 +197,7 @@ const removeTeacher = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const addStudent = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -226,7 +227,7 @@ const addStudent = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const removeStudent = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -256,7 +257,7 @@ const removeStudent = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const addProblem = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -286,7 +287,7 @@ const addProblem = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 const removeProblem = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);

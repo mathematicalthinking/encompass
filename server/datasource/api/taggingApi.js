@@ -6,8 +6,9 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     models   = require('../schemas');
 
@@ -20,7 +21,7 @@ module.exports.put = {};
   * @public
   * @method getTaggings
   * @description __URL__: /api/taggings
-  * @see [buildCriteria](../requestHandler.html)
+  * @see [buildCriteria](.../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of tagging objects: according to specified request criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
@@ -75,7 +76,7 @@ function getTagging(req, res, next) {
   */
 function postTagging(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "SELECTIONS")) {
@@ -112,7 +113,7 @@ function postTagging(req, res, next) {
   */
 function putTagging(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "SELECTIONS")) {

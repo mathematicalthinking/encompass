@@ -7,8 +7,9 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     data     = require('./data'),
     models   = require('../schemas');
@@ -51,7 +52,7 @@ function getFolderSets(req, res, next) {
   * @public
   * @method getFolders
   * @description __URL__: /api/folders
-  * @see [buildCriteria](./requestHandler.html)
+  * @see [buildCriteria](../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of folder objects: according to specified criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
@@ -82,7 +83,7 @@ function getFolders(req, res, next) {
   */
 function postFolder(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "FOLDERS")) {
@@ -118,7 +119,7 @@ function postFolder(req, res, next) {
   */
 function putFolder(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Workspace.findOne({owner: user._id, folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
     if(permissions.userCan(user, ws, "FOLDERS")) {

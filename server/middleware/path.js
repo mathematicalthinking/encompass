@@ -9,7 +9,7 @@ var logger   = require('log4js').getLogger('sane'),
     util     = require('util'),
     express  = require('express'),
     _        = require('underscore'),
-    models   = require('../schemas');
+    models   = require('../datasource/schemas');
 
 /*
   @returns {Boolean} - is this request an /api/ request?
@@ -59,11 +59,13 @@ function processPath(options) {
   return (_processPath);
 }
 
+
 /*
   ENC-486 bad ObjectIDs crash the server
 */
 function validateId(options) {
   function _validateId(req, res, next) {
+    console.log('in validateid');
     var match = idRequest(req);
     if(!match) {
       return next();

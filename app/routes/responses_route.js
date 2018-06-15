@@ -1,4 +1,4 @@
-Encompass.ResponsesRoute = Ember.Route.extend({
+Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend({
 
   model: function(){
     var route = this;

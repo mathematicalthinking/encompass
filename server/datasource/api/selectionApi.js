@@ -7,8 +7,9 @@
 var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     permissions  = require('../../../common/permissions'),
     models   = require('../schemas');
 
@@ -21,7 +22,7 @@ module.exports.put = {};
   * @public
   * @method getSelections
   * @description __URL__: /api/selections
-  * @see [buildCriteria](./requestHandler.html)
+  * @see [buildCriteria](../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of selection objects: according to specified criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
@@ -30,7 +31,7 @@ module.exports.put = {};
 function getSelections(req, res, next) {
   var criteria = utils.buildCriteria(req);
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Selection.find(criteria)
     .exec(function(err, selections) {
       if(err) {
@@ -56,7 +57,7 @@ function getSelections(req, res, next) {
   */
 function getSelection(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Selection.findById(req.params.id)
     .exec(function(err, selection) {
       if(err) {
@@ -80,7 +81,7 @@ function getSelection(req, res, next) {
   */
 function postSelection(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var workspaceId = req.body.selection.workspace;
 
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
@@ -117,7 +118,7 @@ function postSelection(req, res, next) {
 function putSelection(req, res, next) {
 
   logger.warn("Putting Selection 1");
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   models.Selection.findById(req.params.id, function (err, doc) {
     logger.warn("Putting Selection 2");
     if(err) {

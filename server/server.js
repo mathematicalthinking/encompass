@@ -6,20 +6,22 @@ const express = require('express'),
       cookieParser = require('cookie-parser'),
       logger = require('morgan'),
       http = require('http'),
-      // passport = require('passport'),
+      flash = require('connect-flash'),
       session = require('express-session'),
-      cas = require('./mfcas'),
-      // passport = require('./passport'),
+      MongoStore = require('connect-mongo')(session),
+      passport = require('passport'),
       fake = require('./fake_login'),
       uuid = require('uuid'),
       cookie = require('cookie'),
       api = require('./datasource/api'),
       auth = require('./datasource/api/auth'),
-      path = require('./datasource/api/path'),
+      path = require('./middleware/path'),
       fixed = require('./datasource/fixed');
 
+const configure = require('./middleware/passport');
+const userAuth = require('./middleware/userAuth');
 const models = require('./datasource/schemas');
-const utils = require('./datasource/api/requestHandler');
+const utils = require('./middleware/requestHandler');
 const dbMigration = require('./db_migration/base');
 
 const nconf = config.nconf;
@@ -70,19 +72,22 @@ db.on('error', function (err) {
 });
 
 server.use(session({
-  secret: 'passport-app',
+  secret: 'encompass-app',
   resave: true,
   saveUninitialized: true,
+  store: new MongoStore({mongooseConnection: mongoose.connection,
+    stringify: false
+  })
 }));
 
-server.set('view engine', 'ejs');
+// server.set('view engine', 'ejs');
 
 
 //PASSPORT
-// configure(passport);
-// app.use(passport.initialize());
-// app.use(passport.session());
-// app.use(flash());
+configure(passport);
+server.use(passport.initialize());
+server.use(passport.session());
+
 
 //MIDDLEWARE
 server.use(logger('dev'));
@@ -91,25 +96,27 @@ server.use(express.urlencoded({
   extended: false
 }));
 server.use(cookieParser());
-//server.use(bodyParser());
 server.use(path.prep());
 server.use(path.processPath());
-server.use(auth.processToken());
-server.use(auth.fetchUser());
-server.use(auth.protect());
-server.use(auth.loadAccessibleWorkspaces());
+//server.use(userAuth.fetchUser());
+server.use(userAuth.protect());
+server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
-server.get('/devonly/fakelogin/:username', fake.fakeLogin);
-server.get('/login', cas.sendToCas);
-server.get('/logout', cas.logout);
-server.get('/back', cas.returnFromCas);
+// LOCAL AUTHENTICATION CALLS
+server.post('/auth/login', auth.localLogin);
+server.post('/auth/signup', auth.localSignup);
+server.get('/logout', auth.logout);
 
-// Use passport file for authentication instead of mfcas
-// server.get('/login', passport.login);
-// server.get('/logout', passport.logout);
-// server.get('/back', passport.back);
+//  GOOGLE AUTHENTICATION CALLS
+server.get('/auth/google', auth.googleAuth);
+server.get('/auth/google/callback', auth.googleReturn);
 
+//  FACEBOOK AUTHENTICATION CALLS
+server.get('/auth/facebook', auth.facebookAuth);
+server.get('/auth/facebook/callback', auth.facebookReturn);
+
+//API CALLS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
 server.get('/api/workspaces', api.get.workspaces);
@@ -199,7 +206,7 @@ server.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
 });
 
 module.exports = mainServer;

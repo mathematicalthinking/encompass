@@ -8,8 +8,8 @@ var mongoose = require('mongoose'),
     express  = require('express'),
     logger   = require('log4js').getLogger('server'),
     models   = require('../schemas'),
-    auth     = require('./auth'),
-    utils    = require('./requestHandler');
+    userAuth = require('../../middleware/userAuth'),
+    utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -39,7 +39,7 @@ function makeGuest() {
            and do whatever they want with the rest of the users
 */
 function sendUsers(req, res, next) {
-  var user = auth.getUser(req);
+  var user = userAuth.getUser(req);
 
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
@@ -72,8 +72,8 @@ function sendUsers(req, res, next) {
         delete doc.history; //don't send user history out
       });
       var data = {'user': docs};
-      utils.sendResponse(res, data);
-      next();
+      return utils.sendResponse(res, data);
+      //next();
     });
 }
 
@@ -81,13 +81,14 @@ function sendUsers(req, res, next) {
   * @public
   * @method sendUser
   * @description __URL__: /api/users/:id
-  * @see [buildCriteria](../requestHandler.html)
+  * @see [buildCriteria](.../../middleware/requestHandler.html)
   * @returns {Object} A 'named' user object: according to specified request criteria
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
-  var user = auth.getUser(req);
+  console.log('SENDING USER');
+  var user = userAuth.getUser(req);
   models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
@@ -97,7 +98,7 @@ function sendUser(req, res, next) {
       var data = {'user': doc};
       delete data.user.key; //hide key
       delete data.user.history; // hide history
-      utils.sendResponse(res, data);
+      return utils.sendResponse(res, data);
       //next();
     });
 }
@@ -113,7 +114,7 @@ function sendUser(req, res, next) {
   */
 function postUser(req, res, next) {
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   if (!user.isAdmin) {
     return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     //return next(false);
@@ -153,7 +154,7 @@ function putUser(req, res, next) {
   delete req.body.user.createDate;
   delete req.body.user.key;
 
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   if (user.isAdmin) {
     models.User.findByIdAndUpdate(req.params.id,
       /* Admins can update all editable fields for any user */

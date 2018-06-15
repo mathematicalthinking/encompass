@@ -9,9 +9,9 @@ var mongoose = require('mongoose'),
     _ = require('underscore'),
     Q = require('q'),
     logger   = require('log4js').getLogger('server'),
-    utils    = require('./requestHandler'),
+    utils    = require('../../middleware/requestHandler'),
     util     = require('util'),
-    auth     = require('./auth'),
+    userAuth = require('../../middleware/userAuth'),
     models   = require('../schemas'),
     spaces   = require('./workspaceApi');
 
@@ -24,7 +24,7 @@ var mongoose = require('mongoose'),
   * @callback toSubmission
   * @description This is a callback to be used with forEach on an array of PoW submissions
   *              It converts all the JSON objects into Mongoose submission models in place.
-  * @see [modelize] (./requestHandler.html)
+  * @see [modelize] (../../middleware/requestHandler.html)
   * @param  {Object}  obj   The current element in the array being iterated through
   * @param  {Number}  index The array index of obj
   * @param  {Array}   arr   The array being iterated though
@@ -57,7 +57,7 @@ function toSubmission(obj, index, arr) {
   * @public
   * @callback toPDSubmission
   * @description Same as `toSubmission` but converts to PDSubmissions
-  * @see [modelize] (./requestHandler.html)
+  * @see [modelize] (../../middleware/requestHandler.html)
   * @see [toSubmission] (./submissionApi.js)
   * @param  {Object}  obj   The current element in the array being iterated through
   * @param  {Number}  index The array index of obj
@@ -91,7 +91,7 @@ function toPDSubmission(obj, index, arr) {
   * @public
   * @method getSubmissions
   * @description __URL__: /api/submissions
-  * @see [buildCriteria](./requestHandler.html)
+  * @see [buildCriteria](../../middleware/requestHandler.html)
   * @returns {Object} A 'named' array of submission objects: according to specified criteria
   * @throws {NotAuthorizedError} User has inadequate permissions
   * @throws {InternalError} Data retrieval failed
@@ -211,7 +211,7 @@ function postSubmission(req, res, next) {
   delete postData._id;
 
 
-  var user = auth.getUser(req); //user isn't required
+  var user = userAuth.getUser(req); //user isn't required
   if(user.isAuthorized || isAnonymousPost) {
     var access = utils.isValidApiKey(req.headers.secret, req.headers.time) || user.isAuthorized;
     /*/
@@ -298,7 +298,7 @@ function putSubmission(req, res, next) {
   */
 function importSubmissions(req, res, next) {
   console.log('IMPORTING SUBMISSIONS...');
-  var user = auth.requireUser(req);
+  var user = userAuth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
   var params = JSON.parse( JSON.stringify(req.body.importRequest) );
 

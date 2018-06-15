@@ -9,8 +9,9 @@ var mongoose = require('mongoose'),
   logger = require('log4js').getLogger('server'),
   models = require('../schemas'),
   auth = require('./auth'),
+  userAuth = require('../../middleware/userAuth'),
   permissions  = require('../../../common/permissions'),
-  utils    = require('./requestHandler');
+  utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -28,7 +29,7 @@ module.exports.put = {};
 
 const getProblems = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // add permissions here
   models.Problem.find(criteria)
   .exec((err, problems) => {
@@ -53,7 +54,7 @@ const getProblems = (req, res, next) => {
   */
 
 const getProblem = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // add permissions here
   models.Problem.findById(req.params.id)
   .exec((err, problem) => {
@@ -77,7 +78,7 @@ const getProblem = (req, res, next) => {
   */
 
 const postProblem = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
   problem.createdBy = user;
@@ -105,7 +106,7 @@ const postProblem = (req, res, next) => {
   */
 
 const putProblem = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   // Add permission checks here
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
@@ -140,7 +141,7 @@ const putProblem = (req, res, next) => {
   */
 
 const addCategory = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -175,7 +176,7 @@ const addCategory = (req, res, next) => {
   */
 
 const removeCategory = (req, res, next) => {
-  const user = auth.requireUser(req);
+  const user = userAuth.requireUser(req);
   models.Problem.findById(req.params.id, (err, doc) => {
     if (err) {
       logger.error(err);

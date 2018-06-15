@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     Q        = require('q'),
     inflect  = require('i')(),
     models   = require('../schemas'),
-    utils    = require('./requestHandler');
+    utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 
@@ -19,7 +19,7 @@ function stats(req, res, next){
     promises.push(models[m].count().exec());
   });
   var all = Q.all(promises);
-  
+
   all.then(function(results){
     var response = { counts: {} };
     for(var i=0; i<results.length; i++) {

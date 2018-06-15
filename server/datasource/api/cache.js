@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
   models = require('../schemas/submission'),
   db = require('../../config').nconf.get('database'),
   config = require('../../config').nconf.get('cache'),
-  utils = require('./requestHandler'),
+  utils = require('../../middleware/requestHandler'),
   logger = require('log4js').getLogger('server');
 
 /*
