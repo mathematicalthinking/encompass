@@ -1,15 +1,17 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
-const {Builder, By, Key, until} = require('selenium-webdriver')
+const { Builder, By, Key, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
+const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const css = require('./selectors');
 
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 const host = `http://localhost:${port}`
-const user = 'steve';
+const loginUrl = `${host}/#/auth/login`;
+const user = 'rick';
+const password = 'sanchez';
 
 describe('Folders', function() {
   this.timeout('10s');
@@ -20,7 +22,7 @@ describe('Folders', function() {
       .build();
     await dbSetup.prepTestDb();
     try {
-      await driver.get(`${host}/devonly/fakelogin/${user}`);
+      await helpers.login(driver, host, user, password);
     }catch(err) {
       console.log(err);
     }
@@ -31,7 +33,7 @@ describe('Folders', function() {
   });
   describe('Visiting a ESI 2014 Wednesday Reflection', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}//#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, 'table#folder_contents');
+      await helpers.navigateAndWait(driver, `${host}/#/workspaces/53e36522b48b12793f000d3b/folders/53e36cdbb48b12793f000d43`, 'table#folder_contents');
     });
 
     it('should display the folder name', async function() {
