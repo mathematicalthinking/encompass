@@ -1,17 +1,17 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
+const config = require('../../server/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 const dbSetup = require('../data/restore');
 const helpers = require('./helpers');
+const css = require('./selectors');
 
 const host = `http://localhost:${port}`
-const user = 'steve';
-const fakeLoginUrl = `${host}/devonly/fakelogin/${user}`;
+const user = 'rick';
+const password = 'sanchez';
 const workspaceId = '53e36522b48b12793f000d3b';
 
 describe('Visiting Workspaces', function() {
@@ -22,6 +22,7 @@ describe('Visiting Workspaces', function() {
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
+    await helpers.login(driver, host, user, password);
   });
 
   after(() => {
@@ -29,19 +30,9 @@ describe('Visiting Workspaces', function() {
   });
 
   it('should land us at /workspaces', async function() {
-    let url;
-    //await driver.get(fakeLoginUrl);
-    await helpers.navigateAndWait(driver, fakeLoginUrl, 'a[href="#/workspaces"]', 3000);
-    //await driver.sleep(3000);
-    await helpers.findAndClickElement(driver, 'a.menu.workspaces');
+    await helpers.waitForAndClickElement(driver, css.topBar.workspaces)
     await helpers.waitForSelector(driver, '#workspace_listing');
-
-    try {
-      url = await driver.getCurrentUrl();
-    }catch(err) {
-      console.log(err);
-    }
-    expect(url).to.equal(`${host}/#/workspaces`);
+    expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/#/workspaces`);
   });
 
   it('should display 2 workspaces', async function() {
