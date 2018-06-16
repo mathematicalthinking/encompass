@@ -1,6 +1,16 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const _ = require('underscore');
 
+const getCurrentUrl = async function(webdriver) {
+  let url;
+  try {
+    url = await webdriver.getCurrentUrl();
+  }catch(err) {
+    console.log(err);
+  }
+  return url;
+}
+
 const isElementVisible = async function (webDriver, selector) {
   let isVisible = false;
   try {
@@ -101,3 +111,4 @@ module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
 module.exports.waitForAndClickElement = waitForAndClickElement;
+module.exports.getCurrentUrl = getCurrentUrl;

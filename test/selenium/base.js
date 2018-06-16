@@ -1,14 +1,16 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const { Builder, By, Key, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
-
+const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const css = require('./selectors');
+
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 const host = `http://localhost:${port}`
-const login = `http://localhost:3000/NCTM-TMF-Login-Page/?SsoReturnType=tmf&SsoReturnUrl=http://localhost:${port}/back`;
-const user = 'steve';
+const loginUrl = `${host}/#/auth/login`;
+const user = 'rick';
+const password = 'sanchez';
 
 describe('Home Page', function () {
   this.timeout('10s');
@@ -19,35 +21,29 @@ describe('Home Page', function () {
       .build();
     await dbSetup.prepTestDb();
   });
-
   after(() => {
     driver.quit();
   });
 
   it('should load without error', async function () {
-    await helpers.navigateAndWait(driver, host, 'a[href="/login"]');
-    driver.sleep(5000);
+    await helpers.navigateAndWait(driver, host, css.topBar.login);
+    await driver.sleep(3000);
   });
 
   it('login button should be visible', async function () {
-    expect(await helpers.isElementVisible(driver, 'a[href="/login"]')).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
   });
 
   it('should display login page after clicking login', async function () {
-    let url;
-    await helpers.findAndClickElement(driver, 'a[href="/login"]');
-    driver.sleep(5000);
-    await helpers.waitForSelector(driver, 'input[name=username]');
+    await helpers.findAndClickElement(driver, css.topBar.login);
+    await driver.sleep(5000);
+    await helpers.waitForSelector(driver, css.login.username);
+    let url = await helpers.getCurrentUrl(driver);
 
-    try {
-      url = await driver.getCurrentUrl();
-    }catch(err) {
-      console.log(err);
-    }
-    expect(url).to.eql(login);
-    expect(await helpers.isElementVisible(driver, 'input[name=username]')).to.be.true;
-    expect(await helpers.isElementVisible(driver, 'input[name=password]')).to.be.true;
-    expect(await helpers.isElementVisible(driver, 'input[type=submit]')).to.be.true;
+    expect(url).to.eql(loginUrl);
+    expect(await helpers.isElementVisible(driver, css.login.username)).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.login.password)).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.login.submit)).to.be.true;
   });
 
   it('should redirect to homepage after logging in', async function () {
@@ -56,11 +52,13 @@ describe('Home Page', function () {
     let message;
 
     try {
-      await helpers.findInputAndType(driver, 'input[name=username]', user);
-      await helpers.findAndClickElement(driver, 'input[type=submit]');
+      await helpers.findInputAndType(driver, css.login.username, user);
+      await helpers.findInputAndType(driver, css.login.password, password);
+      await helpers.findAndClickElement(driver, css.login.submit);
 
       greeting = await helpers.waitForSelector(driver, '#al_welcome');
-      url = await driver.getCurrentUrl();
+      await driver.sleep(3000);
+      url = await helpers.getCurrentUrl(driver);
       message = await greeting.getText();
     } catch (err) {
       console.log(err);
