@@ -7,6 +7,7 @@ module.exports = {
     users: 'a.menu.users',
     logout: 'a.menu.logout',
     problem: 'a.menu.problem',
+    workspacesNew: 'a[href="#/workspaces/new"'
 
   },
   login: {
