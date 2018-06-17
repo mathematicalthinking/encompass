@@ -57,7 +57,7 @@ module.exports = function(grunt) {
           clearCacheFilter: (key) => true, // Optionally defines which files should keep in cache
           noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
         },
-        src: ['test/selenium/**/*.js', 'test/mocha/*.js']
+        src: ['test/mocha/answerTest.js']
       }
     },
 
@@ -241,7 +241,7 @@ module.exports = function(grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js'],
       options: {
         jshintrc: '.jshintrc'
       }
