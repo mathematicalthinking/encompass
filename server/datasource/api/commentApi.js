@@ -60,12 +60,13 @@ function getComments(req, res, next) {
     .populate('workspace')
     .populate('createdBy')
     .exec(function(err, comments) {
+      console.log("COMMENTS: ", comments)
       if(err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
 
-      var data = {'comment': []};
+      var data = {'comments': []};
       var dataMap = {'createdBy': 'user'};
       var relatedData = {
         'selection': {},
@@ -86,7 +87,7 @@ function getComments(req, res, next) {
             delete comment.key;
           }
         });
-        data.comment.push(comment);
+        data.comments.push(comment);
       });
 
       _.keys(relatedData).forEach(function(key){
@@ -98,7 +99,6 @@ function getComments(req, res, next) {
       });
 
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -172,6 +172,7 @@ function putComment(req, res, next) {
 
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
+  console.log("WS ID: ", workspaceId);
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "COMMENTS")) {
 
@@ -187,7 +188,6 @@ function putComment(req, res, next) {
               doc[field] = req.body.comment[field];
             }
           }
-
           doc.save(function (err, comment) {
             if(err) {
               logger.error(err);

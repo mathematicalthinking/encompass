@@ -25,6 +25,18 @@ module.exports = {
   category: {
     name: ''
   },
+  comment: {
+    _id: '53e12507b48b12793f000b91',
+    validComment: {
+      label: 'wonder',
+      text: 'i wonder if thats the best strategy',
+      selection: '53a357cd32f286324000004d',
+      submission: '53a35784729e9ef59ba7eb54',
+      workspace: '53e1156db48b12793f000442',
+      useForResponse: true,
+      isTrashed: false,
+    }
+  },
   problem: {
     _id: '5b1e7a0ba5d2157ef4c91028',
     validProblem: {

@@ -68,7 +68,7 @@ CommentSchema.pre('save', function (next) {
   mongoose.models.Selection.findById(this.selection)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else { next(); }
     });
 });
@@ -78,7 +78,7 @@ CommentSchema.pre('save', function (next) {
   mongoose.models.Submission.findById(this.submission)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else { next(); }
     });
 });
@@ -88,7 +88,7 @@ CommentSchema.pre('save', function (next) {
   mongoose.models.Workspace.findById(this.workspace)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else { next(); }
     });
 });
@@ -100,15 +100,15 @@ CommentSchema.pre('save', function (next) {
     mongoose.models.Comment.findById(this.parent)
       .lean()
       .exec(function (err, found) {
-        if (err) { next(new Error(err.message)); } 
-        else { 
+        if (err) { next(new Error(err.message)); }
+        else {
           if(found.origin) {
             comment.origin = found.origin; //point to the parents origin
           } else {
             comment.origin = found;        //the parent better be an origin at this point
           }
-          
-          next(); 
+
+          next();
         }
       });
   } else {
@@ -121,7 +121,7 @@ CommentSchema.pre('save', function (next) {
   * After saving we must ensure (synchonously) that:
   */
 CommentSchema.post('save', function (comment) {
-  /* + If deleted, all references are also deleted */ 
+  /* + If deleted, all references are also deleted */
   if( comment.isTrashed )
   {
     var commentIdObj = mongoose.Types.ObjectId( comment._id );
