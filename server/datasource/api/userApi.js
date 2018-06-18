@@ -160,7 +160,7 @@ function postUser(req, res, next) {
       ).exec((err, doc) => {
         if (err) {
           logger.error(err);
-          utils.sendError.InternalError(err, res);
+          return utils.sendError.InternalError(err, res);
         }
         var data = {'user': doc};
         utils.sendResponse(res, data);
