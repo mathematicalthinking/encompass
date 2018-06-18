@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass.taggings"}],"uuid":"2b400476285f4410afefa12da8ca0f0e"}
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.taggings"}],"uuid":"484c1e282a734d9cbe7e0ac889acc46c"}

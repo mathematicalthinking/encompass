@@ -1,16 +1,16 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const config = require('../../server/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 
 const host = `http://localhost:${port}`
-const user = 'steve';
+const user = 'rick';
+const password = 'sanchez';
 
 describe('Comments', function() {
   this.timeout('10s');
@@ -21,7 +21,7 @@ describe('Comments', function() {
       .build();
       await dbSetup.prepTestDb();
     try {
-      await driver.get(`${host}/devonly/fakelogin/${user}`);
+      await helpers.login(driver, host, user, password);
     }catch(err) {
       console.log(err);
     }
@@ -37,7 +37,7 @@ describe('Comments', function() {
     before(async function() {
       try {
         await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38e83b48b12793f0010de`);
-        saveButton = await driver.wait(until.elementLocated(By.css('button.comment.save')), 3000);
+        saveButton = await driver.wait(until.elementLocated(By.css('button.comment.save')), 5000);
       }catch(err) {
         console.log(err);
       }
@@ -49,7 +49,7 @@ describe('Comments', function() {
         if (!_.isEmpty(textArea)) {
           await textArea[0].sendKeys(comment);
           await saveButton.click();
-          await driver.wait(until.elementLocated(By.css('#commentTextarea:empty')), 3000);
+          await driver.sleep(2000);
         }
       }catch(err) {
         console.log(err);

@@ -1,16 +1,17 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const css = require('./selectors');
 
+const config = require('../../server/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 const host = `http://localhost:${port}`
-const user = 'steve';
+const user = 'rick';
+const password = 'sanchez';
 
 describe('Visiting Workspace Creation', function() {
   this.timeout('10s');
@@ -20,11 +21,10 @@ describe('Visiting Workspace Creation', function() {
       .forBrowser('chrome')
       .build();
       await dbSetup.prepTestDb();
-
-      await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${user}`,'a[href="#/workspaces/new"');
-      await helpers.findAndClickElement(driver, 'a[href="#/workspaces/new"');
+      await helpers.login(driver, host, user, password);
+      await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
       await helpers.waitForSelector(driver,'section.newWorkspace.sanity');
-  });
+    });
 
   after(() => {
     driver.quit();

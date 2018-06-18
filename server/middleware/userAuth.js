@@ -45,7 +45,7 @@ function requireUser(req) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
   }
-  return user;
+  return req.mf.auth.user;
 }
 
 
@@ -57,7 +57,6 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-    // console.log('inside processToken');
     if (!path.apiRequest(req)) {
       return next();
     }
@@ -129,7 +128,6 @@ function fetchUser(options) {
           }
           logger.info(user.get('username') + ' ' + req.method + ' ' + url);
           req.mf.auth.user = user.toObject();
-
           return (next());
         } else {
           // var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);

@@ -1,6 +1,18 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const _ = require('underscore');
 
+const css = require('./selectors');
+
+const getCurrentUrl = async function(webdriver) {
+  let url;
+  try {
+    url = await webdriver.getCurrentUrl();
+  }catch(err) {
+    console.log(err);
+  }
+  return url;
+}
+
 const isElementVisible = async function (webDriver, selector) {
   let isVisible = false;
   try {
@@ -92,6 +104,17 @@ const findInputAndType = async function (webDriver, selector, text) {
   return;
 };
 
+const login = async function(webDriver, host,user, password) {
+  await navigateAndWait(webDriver, host, css.topBar.login);
+  await findAndClickElement(webDriver, css.topBar.login);
+
+  await waitForSelector(webDriver, css.login.username);
+  await findInputAndType(webDriver, css.login.username, user);
+  await findInputAndType(webDriver, css.login.password, password);
+  await findAndClickElement(webDriver, css.login.submit);
+  return await waitForSelector(webDriver, '#al_welcome');
+};
+
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
@@ -101,3 +124,5 @@ module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
 module.exports.waitForAndClickElement = waitForAndClickElement;
+module.exports.getCurrentUrl = getCurrentUrl;
+module.exports.login = login;

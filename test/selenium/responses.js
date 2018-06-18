@@ -10,7 +10,8 @@ const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 
 const host = `http://localhost:${port}`
-const user = 'steve';
+const user = 'rick';
+const password = 'sanchez';
 
 describe('Responses', function() {
   this.timeout('10s');
@@ -21,7 +22,7 @@ describe('Responses', function() {
       .build();
     await dbSetup.prepTestDb();
     try {
-      await driver.get(`${host}/devonly/fakelogin/${user}`);
+      await helpers.login(driver, host, user, password);
     }catch(err) {
       console.log(err);
     }

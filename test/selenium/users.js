@@ -1,17 +1,19 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const config = require('../../server/config');
+const css = require('./selectors');
 
+const nconf = config.nconf;
+const port = nconf.get('testPort');
 const host = `http://localhost:${port}`
-const regularUser = 'absvalteaching';
-const admin = 'steve';
+const regularUser = 'morty';
+const regPass = 'smith';
+const admin = 'rick';
+const adminPass = 'sanchez';
 
 describe('Users', function() {
   this.timeout('10s');
@@ -32,13 +34,11 @@ describe('Users', function() {
     try {
       let options = await driver.manage();
       await options.deleteAllCookies();
-      let cookies = await options.getCookies();
     }catch(err) {
       console.log(err);
     }
-    await helpers.navigateAndWait(driver, `${host}`, 'a.users');
-    await helpers.findAndClickElement(driver, 'a.users');
-    await helpers.waitForSelector(driver, 'a.user');
+    await helpers.navigateAndWait(driver, host, css.topBar.login);
+    await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
    });
 
    function validateAnon(){
@@ -72,7 +72,9 @@ describe('Users', function() {
 
   describe('Logged in as a regular user', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${regularUser}`, 'a.menu.users');
+      await helpers.login(driver, host, regularUser, regPass);
+      await helpers.waitForSelector(driver, css.topBar.users);
+      //await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${regularUser}`, 'a.menu.users');
     });
 
     async function validateUsersPage(user){
@@ -125,7 +127,10 @@ describe('Users', function() {
 
   describe('Logged in as an admin user', function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${admin}`, 'a.menu.users');
+      await helpers.findAndClickElement(driver, css.topBar.logout);
+      await helpers.waitForSelector(driver, css.topBar.login);
+      await helpers.login(driver, host, admin, adminPass);
+      await helpers.waitForSelector(driver, css.topBar.users);
     });
 
     function validateUsersPage(){
