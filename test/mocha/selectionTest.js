@@ -23,7 +23,6 @@ describe('Selection CRUD operations', function() {
     it('should get all selections', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('selections');
@@ -36,7 +35,6 @@ describe('Selection CRUD operations', function() {
     it('should get selection', done => {
       chai.request(host)
       .get(baseUrl + fixtures.selection._id)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('selection');
@@ -53,7 +51,6 @@ describe('Selection CRUD operations', function() {
     it('should post a new selection', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({selection: fixtures.selection.validSelection})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -70,7 +67,6 @@ describe('Selection CRUD operations', function() {
       let url = baseUrl + fixtures.selection._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({selection: {text: 'updated text', submission: fixtures.selection.validSelection.submission}})
       .end((err, res) => {
         expect(res).to.have.status(200);

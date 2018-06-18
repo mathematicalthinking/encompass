@@ -22,7 +22,6 @@ describe('Folder CRUD operations', function() {
       it('should get all folders', done => {
         chai.request(host)
         .get(baseUrl)
-        .set('Cookie', userCredentials)
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.have.all.keys('folders');
@@ -35,7 +34,6 @@ describe('Folder CRUD operations', function() {
       it('should get the reflections folder', done => {
         chai.request(host)
         .get(baseUrl + fixtures.folder._id)
-        .set('Cookie', userCredentials)
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.have.all.keys('folder');
@@ -45,14 +43,12 @@ describe('Folder CRUD operations', function() {
         });
       });
     });
-  
+
     /** POST **/
     describe('/POST folder', () => {
       it('should post a new folder', done => {
-        console.log(fixtures.folder.validFolder);
         chai.request(host)
         .post(baseUrl)
-        .set('Cookie', userCredentials)
         .send({folder: fixtures.folder.validFolder})
         .end((err, res) => {
           expect(res).to.have.status(200);
@@ -69,7 +65,6 @@ describe('Folder CRUD operations', function() {
         let url = baseUrl + fixtures.folder._id;
         chai.request(host)
         .put(url)
-        .set('Cookie', userCredentials)
         .send({folder: {name: 'phils class'}})
         .end((err, res) => {
           expect(res).to.have.status(200);

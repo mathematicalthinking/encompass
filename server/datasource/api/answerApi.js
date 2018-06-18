@@ -29,7 +29,6 @@ module.exports.put = {};
   */
 
 const getAnswers = (req, res, next) => {
-  console.log("getting answers");
   const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
   models.Answer.find(criteria)
@@ -55,7 +54,6 @@ const getAnswers = (req, res, next) => {
   */
 
 const getAnswer = (req, res, next) => {
-  console.log("request info: ",req.mf);
   models.Answer.findById(req.params.id)
   .exec((err, answer) => {
     if (err) {

@@ -23,7 +23,6 @@ describe('Section CRUD operations', function() {
     it('should get all sections', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('sections');
@@ -37,7 +36,6 @@ describe('Section CRUD operations', function() {
     it('should get Drexel University section', done => {
       chai.request(host)
       .get(baseUrl + fixtures.section._id)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('section');
@@ -53,7 +51,6 @@ describe('Section CRUD operations', function() {
     it('should post a new section', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({section: fixtures.section.validSection})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -70,7 +67,6 @@ describe('Section CRUD operations', function() {
       let url = baseUrl + fixtures.section._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({section: {name: 'phils class'}})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -87,7 +83,6 @@ describe('Section CRUD operations', function() {
       let url = baseUrl + 'addTeacher/' + fixtures.section._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({teacherId: '52964659e4bad7087700014c'})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -104,7 +99,6 @@ describe('Section CRUD operations', function() {
     it('should return an empty array', done => {
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({teacherId: fixtures.teacher._id})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -120,7 +114,6 @@ describe('Section CRUD operations', function() {
       let url = baseUrl + 'addStudent/' + fixtures.section._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({studentName: 'bill'})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -137,7 +130,6 @@ describe('Section CRUD operations', function() {
     it('should return an empty array', done => {
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({studentName: fixtures.student.name})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -153,7 +145,6 @@ describe('Section CRUD operations', function() {
       let url = baseUrl + 'addProblem/' + fixtures.section._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({problemId: fixtures.problem._id})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -170,7 +161,6 @@ describe('Section CRUD operations', function() {
     it('should return an empty array', done => {
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({problemId: fixtures.problem._id})
       .end((err, res) => {
         expect(res).to.have.status(200);

@@ -23,7 +23,6 @@ describe('Submission CRUD operations', function() {
     it('should get all submissions', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('submissions');
@@ -36,7 +35,6 @@ describe('Submission CRUD operations', function() {
     it('should get submission', done => {
       chai.request(host)
       .get(baseUrl + fixtures.submission._id)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('submission');
@@ -52,14 +50,13 @@ describe('Submission CRUD operations', function() {
     it('should post a new submission', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
-      .send({submission: fixtures.submission.validSubmission})
+      .send(fixtures.submission.validSubmission)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.submission).to.be.a('array')
         console.log("SUBMISSION: ", res.body.submission);
         expect(res.body.submission[0]).to.have.any.keys('longAnswer', 'shortAnswer', 'answer');
-        expect(res.body.submission[0].answer).to.eql(fixtures.submission.validSubmission.answer);
+        expect(res.body.submission[0].longAnswer).to.eql(fixtures.submission.validSubmission.longAnswer);
         done();
       });
     });

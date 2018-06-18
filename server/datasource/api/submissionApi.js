@@ -82,8 +82,9 @@ function toPDSubmission(obj, index, arr) {
         model.set(property, json[property]);
       }
     }
-
+    console.log("created new pdsubmission")
     arr[index] = model; // Modifying array in-place
+    console.log(arr[index]);
   }
 }
 
@@ -222,10 +223,12 @@ function postSubmission(req, res, next) {
     */
 
     if (access) {
+      console.log("POST DATA: ", postData)
       try {
         var submissions = [postData];
+        console.log(submissions)
         submissions.forEach(toPDSubmission);
-
+        console.log("SUBS: ", submissions);
         for(var item in submissions) {
           if(item) {
             var submission = submissions[item];
@@ -235,18 +238,15 @@ function postSubmission(req, res, next) {
         console.log("Submissions: ",submissions)
         models.PDSubmission.create(submissions, function(err, data) {
           if(err) { throw err; }
-          console.log("ALL GOOD ON THE POST");
           return utils.sendResponse(res, {submission: data});
         });
       }
       catch (error) {
-        console.log("ERROR on the post");
         utils.sendError.InternalError(error, res);
         next();
       }
     }
   } else {
-    console.log("NO ACCESS FOR THIS POST");
     utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     next();
   }

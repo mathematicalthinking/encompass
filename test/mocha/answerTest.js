@@ -23,8 +23,6 @@ describe('Answer CRUD operations', function() {
       chai.request(host)
       .get(baseUrl)
       .end((err, res) => {
-        console.log("response: ", res.body);
-        console.log("Err: ", err);
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('answers');
         expect(res.body.answers).to.be.a('array');
@@ -39,7 +37,6 @@ describe('Answer CRUD operations', function() {
     it('should post a new answer', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({answer: fixtures.answer.validAnswer})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -56,7 +53,6 @@ describe('Answer CRUD operations', function() {
       let url = baseUrl + fixtures.answer._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({answer: {explanation: 'actually Im not sticking with that answer'}})
       .end((err, res) => {
         expect(res).to.have.status(200);

@@ -37,7 +37,6 @@ describe('Comment CRUD operations', function() {
       const url = baseUrl + fixtures.comment._id;
       chai.request(host)
       .get(url)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.comment).to.have.any.keys('label', 'text', 'submission', 'workspace');
@@ -62,7 +61,6 @@ describe('Comment CRUD operations', function() {
     it('should post a new comment', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({comment: fixtures.comment.validComment})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -78,7 +76,6 @@ describe('Comment CRUD operations', function() {
       // copy the comment and update it
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({comment: {
         workspace: fixtures.comment.validComment.workspace,
         submission: fixtures.comment.validComment.submission,
@@ -96,7 +93,6 @@ describe('Comment CRUD operations', function() {
       // copy the comment and update it
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({comment: {
         workspace: fixtures.comment.validComment.workspace,
         // Missing submission field will cause the failure as expected

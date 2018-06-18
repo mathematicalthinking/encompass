@@ -23,7 +23,6 @@ describe('Tagging CRUD operations', function() {
     it('should get all taggings', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('taggings');
@@ -36,7 +35,6 @@ describe('Tagging CRUD operations', function() {
     it('should get tagging', done => {
       chai.request(host)
       .get(baseUrl + fixtures.tagging._id)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('tagging');
@@ -52,7 +50,6 @@ describe('Tagging CRUD operations', function() {
     it('should post a new tagging', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({tagging: fixtures.tagging.validTagging})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -69,7 +66,6 @@ describe('Tagging CRUD operations', function() {
       let url = baseUrl + fixtures.tagging._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({tagging: fixtures.tagging.validTagging})
       .end((err, res) => {
         expect(res).to.have.status(200);

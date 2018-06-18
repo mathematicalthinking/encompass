@@ -23,7 +23,6 @@ describe('Problem CRUD operations', function() {
     it('should get all problems', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials) // what to do about this?
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('problems');
@@ -39,7 +38,6 @@ describe('Problem CRUD operations', function() {
     it('should post a new problem', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({problem: fixtures.problem.validProblem})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -56,7 +54,6 @@ describe('Problem CRUD operations', function() {
       let url = baseUrl + fixtures.problem._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({problem: {title: 'test science problem'}})
       .end((err, res) => {
         expect(res).to.have.status(200);
