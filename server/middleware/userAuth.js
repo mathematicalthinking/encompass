@@ -18,6 +18,24 @@ const User = require("../datasource/schemas/user");
   consider processing the req (token, fetchUser) if not cached
 */
 function getUser(req) {
+  if (process.env.NODE_ENV === 'test'){
+    return (
+      { _id: '5b27ae0f55b8aa6068e6daec',
+        googleId: '117621805971211079414',
+        name: 'Michael McVeigh',
+        username: 'steve',
+        email: 'mmcveigh33@gmail.com',
+        isAuthorized: true,
+        history: [],
+        assignments: [],
+        sections: [],
+        isAdmin: true,
+        isTrashed: false,
+        lastLogin: null,
+        lastImported: null,
+        id: '5b27ae0f55b8aa6068e6daec' }
+    )
+  }
   return req.user;
 }
 
@@ -33,7 +51,7 @@ function requireUser(req) {
       { _id: '5b27ae0f55b8aa6068e6daec',
         googleId: '117621805971211079414',
         name: 'Michael McVeigh',
-        username: 'mmcveigh33@gmail.com',
+        username: 'steve',
         email: 'mmcveigh33@gmail.com',
         isAuthorized: true,
         history: [],

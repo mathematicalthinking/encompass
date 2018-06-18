@@ -40,7 +40,7 @@ function makeGuest() {
 */
 function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-
+  console.log("USER: ", user)
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -60,6 +60,7 @@ function sendUsers(req, res, next) {
     var regex = new RegExp(name, 'i');
     criteria.$or = [{username: regex}, {name: regex}];
   }
+  console.log("CRITERIA: ", criteria);
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
@@ -87,7 +88,6 @@ function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function sendUser(req, res, next) {
-  console.log('SENDING USER');
   var user = userAuth.getUser(req);
   models.User.findById(req.params.id)
     .lean()
@@ -130,7 +130,6 @@ function postUser(req, res, next) {
           return utils.sendError.InternalError(err, res);
         }
         var data = {'user': saved};
-        console.log('DATAL ', data);
         utils.sendResponse(res, data);
       });
     } else {
@@ -156,44 +155,36 @@ function postUser(req, res, next) {
 
     var user = userAuth.requireUser(req);
     if (user.isAdmin) {
-      models.User.findByIdAndUpdate(req.params.id,
-      /* Admins can update all editable fields for any user */
-      req.body.user,
-      function (err, doc) {
-        var user = auth.requireUser(req);
-        if (user.isAdmin) {
-          models.User.findByIdAndUpdate(
-            req.params.id,
-            req.body.user,
-            {new: true},
-          ).exec((err, doc) => {
-            if (err) {
-              logger.error(err);
-              utils.sendError.InternalError(err, res);
-            }
-            var data = {'user': doc};
-            utils.sendResponse(res, data);
-          });
-        } else {
-        /* non-admins can only update themselves */
-        if (req.params.id !== user.id) {
-          utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-          return;
+      models.User.findByIdAndUpdate(
+        req.params.id,
+        req.body.user,
+        {new: true},
+      ).exec((err, doc) => {
+        if (err) {
+          logger.error(err);
+          utils.sendError.InternalError(err, res);
         }
-        models.User.findByIdAndUpdate(
-          req.params.id,
-          /* non-admins can only update their names, and seenTour fields */
-          {name: req.body.user.name, seenTour: req.body.user.seenTour}
-        ).exec((err, doc) => {
-          if (err) {
-            logger.error(err);
-            utils.sendError.InternalError(err, res);
-          }
-          var data = {'user': doc};
-          utils.sendResponse(res, data);
-        });
+        var data = {'user': doc};
+        utils.sendResponse(res, data);
+      });
+    } else {
+      /* non-admins can only update themselves */
+      if (req.params.id !== user.id) {
+        utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+        return;
       }
-      })
+      models.User.findByIdAndUpdate(
+        req.params.id,
+        /* non-admins can only update their names, and seenTour fields */
+        {name: req.body.user.name, seenTour: req.body.user.seenTour}
+      ).exec((err, doc) => {
+        if (err) {
+          logger.error(err);
+          utils.sendError.InternalError(err, res);
+        }
+        var data = {'user': doc};
+        utils.sendResponse(res, data);
+      });
     }
   }
   /**
@@ -206,23 +197,20 @@ function postUser(req, res, next) {
   */
 
   const addSection = (req, res, next) => {
-    var user = auth.requireUser(req);
+    var user = userAuth.requireUser(req);
     // who can add a section for a user. If they're a teacher they should
     // be able to add a section to themselves. If they're a student
-    console.log(req.body.section)
     models.User.findByIdAndUpdate(
       req.params.id,
       {$push: {sections: req.body.section}},
       {new: true} // specifying that we want the UPDATED version returned
     ).exec((err, doc) => {
       if(err) {
-        console.log("ERROR: ", err)
         logger.error(err);
         utils.sendError.InternalError(err, res);
         return;
       }
       const data = {'user': doc};
-      console.log("DATA: ", data);
       utils.sendResponse(res, data);
     });
   };
@@ -237,14 +225,13 @@ function postUser(req, res, next) {
     * @throws {RestError} Something? went wrong
   */
   const removeSection = (req, res, next) => {
-    const user = auth.requireUser(req);
+    const user = userAuth.requireUser(req);
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$pull": {"sections": {"sectionId": req.body.sectionId}}},
       {new: true}
     ).exec((err, doc) => {
       if(err) {
-        console.log("MONGO ERROR: ", err)
         logger.error(err);
         utils.sendError.InternalError(err, res);
         return;
@@ -255,7 +242,7 @@ function postUser(req, res, next) {
   };
 
   const addAssignment = (req, res, next) => {
-    const user= auth.requireUser(req);
+    const user= userAuth.requireUser(req);
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$push": {"assignments": req.body.assignment}},
@@ -272,8 +259,7 @@ function postUser(req, res, next) {
   };
 
   const removeAssignment = (req, res, next) => {
-    const user = auth.requireUser(req);
-    console.log("removing assignment: ", req.body)
+    const user = userAuth.requireUser(req);
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$pull": {"assignments": req.body.assignment}},
@@ -285,7 +271,6 @@ function postUser(req, res, next) {
         return;
       }
       const data = {'user': doc};
-      console.log("DATA@: ", data);
       utils.sendResponse(res, data);
     });
   };

@@ -22,7 +22,6 @@ describe('User CRUD operations', function() {
     it('should get all users', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('user');
@@ -32,16 +31,16 @@ describe('User CRUD operations', function() {
       });
     });
   });
-  
+
   /** GET **/
   describe('/GET user by name', () => {
     it('should return all users with the name "steve"', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .query('name=steve')
       .end((err, res) => {
         expect(res).to.have.status(200);
+        console.log(res.body);
         expect(res.body).to.have.all.keys('user');
         expect(res.body.user).to.be.a('array');
         res.body.user.forEach(user => {
@@ -51,14 +50,13 @@ describe('User CRUD operations', function() {
       });
     });
   });
-  
+
   /** GET **/
   describe('/GET user by id', () => {
     it('should return the user "steve"', done => {
       const url = baseUrl + fixtures.user._id;
       chai.request(host)
       .get(url)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('user');
@@ -68,8 +66,8 @@ describe('User CRUD operations', function() {
       });
     });
   });
-  
-  
+
+
   /** POST NB this test fails now cause we're not resetting the db
   When db updating is implemented delete the expect statement
   and then uncomment the remaining expect statements
@@ -78,7 +76,6 @@ describe('User CRUD operations', function() {
     it('should post a new user', done => {
       chai.request(host)
       .post(baseUrl)
-      .set('Cookie', userCredentials)
       .send({user: fixtures.user.validUser})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -88,13 +85,12 @@ describe('User CRUD operations', function() {
       });
     });
   });
- 
+
   describe('/PUT update user name', () => {
     it('should change steves name from null to test name', done => {
       const url = baseUrl + fixtures.user._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({user: {'name': 'test name'}})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -111,7 +107,6 @@ describe('User CRUD operations', function() {
       const url = baseUrl + 'addSection/' + fixtures.user._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({section: {sectionId: fixtures.section._id, role: "teacher"}})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -128,7 +123,6 @@ describe('User CRUD operations', function() {
       const url = baseUrl + 'removeSection/' + fixtures.user._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({sectionId: fixtures.section._id})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -138,14 +132,13 @@ describe('User CRUD operations', function() {
       });
     });
   });
-  
+
   /** PUT addAssignment **/
   describe('/PUT add assignment', () => {
     it('should add an assignment to the user steve', done => {
       const url = baseUrl + 'addAssignment/' + fixtures.user._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({assignment: fixtures.assignment})
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -155,19 +148,16 @@ describe('User CRUD operations', function() {
       });
     });
   });
-  
+
   /** PUT removeAssignment **/
   describe('/PUT remove assignment', () => {
     it('should remove the assignment we just added', done => {
       const url = baseUrl + 'removeAssignment/' + fixtures.user._id;
       chai.request(host)
       .put(url)
-      .set('Cookie', userCredentials)
       .send({assignment: fixtures.assignment})
       .end((err, res) => {
-        console.log("ERROR: ", err);
         expect(res).to.have.status(200);
-        console.log("remove test:", res.body)
         expect(res.body.user).to.have.any.keys("assignments");
         expect(res.body.user.assignments).to.not.include(fixtures.assignment);
         done();
