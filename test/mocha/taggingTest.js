@@ -3,7 +3,6 @@ const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const dbSetup = require('../data/restore');
 const fixtures = require('./fixtures.js');
-const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key';
 const baseUrl = "/api/taggings/";
 
 const config = require('../../server/config');

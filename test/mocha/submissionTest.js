@@ -3,7 +3,6 @@ const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const dbSetup = require('../data/restore');
 const fixtures = require('./fixtures.js');
-const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key';
 const baseUrl = "/api/submissions/";
 
 const config = require('../../server/config');
@@ -54,7 +53,6 @@ describe('Submission CRUD operations', function() {
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.submission).to.be.a('array')
-        console.log("SUBMISSION: ", res.body.submission);
         expect(res.body.submission[0]).to.have.any.keys('longAnswer', 'shortAnswer', 'answer');
         expect(res.body.submission[0].longAnswer).to.eql(fixtures.submission.validSubmission.longAnswer);
         done();
