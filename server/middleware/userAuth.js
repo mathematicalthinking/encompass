@@ -45,7 +45,7 @@ function requireUser(req) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
   }
-  return user;
+  return req.mf.auth.user;
 }
 
 
@@ -128,7 +128,10 @@ function fetchUser(options) {
             url = url.substring(0, 50) + '... (' + len + ')';
           }
           logger.info(user.get('username') + ' ' + req.method + ' ' + url);
+          console.log('user after searching', user);
+          console.log('user to Object', user.toObject());
           req.mf.auth.user = user.toObject();
+
 
           return (next());
         } else {
