@@ -1,14 +1,14 @@
 
-const mongoose = require('mongoose'),
-  cookie = require('cookie'),
-  logger = require('log4js').getLogger('auth'),
-  express = require('express'),
-  _ = require('underscore'),
-  path = require('./path'),
-  cache = require('../datasource/api/cache'),
-  utils = require('./requestHandler'),
-  models = require('../datasource/schemas');
+//REQUIRE MODULES
+const cookie = require('cookie');
+const logger = require('log4js').getLogger('auth');
+const _ = require('underscore');
 
+//REQUIRE FILES
+const path = require('./path');
+const cache = require('../datasource/api/cache');
+const utils = require('./requestHandler');
+const models = require('../datasource/schemas');
 const User = require("../datasource/schemas/user");
 
 /*

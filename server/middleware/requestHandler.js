@@ -5,17 +5,18 @@
  * @since 1.0.0
  */
 
-const userApi = require('../datasource/api/userApi'),
-    path = require('./path'),
-    logger = require('log4js').getLogger('server'),
-    crypto = require('crypto'),
-    _ = require('underscore'),
-    models = require('../datasource/schemas'),
-    config = require('../config'),
-    nconf = config.nconf,
-    express = require('express'),
-    router = express.Router(),
-    powConf = nconf.get('cache');
+//REQUIRE MODULES
+const logger = require('log4js').getLogger('server');
+const crypto = require('crypto');
+const _ = require('underscore');
+
+//REQUIRE FILES
+const userApi = require('../datasource/api/userApi');
+const path = require('./path');
+const models = require('../datasource/schemas');
+const config = require('../config');
+const nconf = config.nconf;
+const powConf = nconf.get('cache');
   /**
 
 /**
