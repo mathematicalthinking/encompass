@@ -31,6 +31,7 @@ function prep(options) {
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
+    console.log("PREPPED");
     return next();
   }
 
@@ -66,6 +67,7 @@ function processPath(options) {
 function validateId(options) {
   function _validateId(req, res, next) {
     console.log('in validateid');
+    console.log("VALIDATING ID");
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -78,6 +80,7 @@ function validateId(options) {
       //TODO this is sending a 500 error although its a 4xx
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
+    console.log("ID validated");
     return next();
 
   }
@@ -118,7 +121,7 @@ function validateContent(options) {
   function _validateContent(req, res, next) {
     var checkForModRequest = /POST|PUT/;
 
-
+    console.log('validating content');
     // Ignore api requests that don't attempt to modify a value
     if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
       return next();
@@ -127,17 +130,15 @@ function validateContent(options) {
     var model = getModel(req),
         schema = getSchema(req),
         data = req.body[model];
-
+    console.log(model, schema, data);
     if(models[schema]) {
       var required = models[schema].schema.requiredPaths();
       var hasRequiredData = _.every(required, function(x) { return data[x]; });
-
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
         return utils.sendError.InvalidContentError(util.format(error, schema), res);
       }
     }
-
     return next();
   }
 

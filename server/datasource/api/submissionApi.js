@@ -82,7 +82,6 @@ function toPDSubmission(obj, index, arr) {
         model.set(property, json[property]);
       }
     }
-
     arr[index] = model; // Modifying array in-place
   }
 }
@@ -108,7 +107,7 @@ function getSubmissions(req, res, next) {
         return utils.sendError.InternalError(err, res);
       }
 
-      var data = {'submission': submissions};
+      var data = {'submissions': submissions};
       logger.debug('Get Submissions found: ' + submissions.length );
       utils.sendResponse(res, data);
       next();
@@ -225,17 +224,15 @@ function postSubmission(req, res, next) {
       try {
         var submissions = [postData];
         submissions.forEach(toPDSubmission);
-
         for(var item in submissions) {
           if(item) {
             var submission = submissions[item];
             submission.pdSet = 'system';
           }
         }
-
         models.PDSubmission.create(submissions, function(err, data) {
           if(err) { throw err; }
-          utils.sendResponse(res, {submission: data});
+          return utils.sendResponse(res, {submission: data});
         });
       }
       catch (error) {
@@ -247,7 +244,6 @@ function postSubmission(req, res, next) {
     utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     next();
   }
-  return next();
 }
 
 /**
@@ -297,7 +293,6 @@ function putSubmission(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function importSubmissions(req, res, next) {
-  console.log('IMPORTING SUBMISSIONS...');
   var user = userAuth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
   var params = JSON.parse( JSON.stringify(req.body.importRequest) );

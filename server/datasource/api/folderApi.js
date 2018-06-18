@@ -67,7 +67,7 @@ function getFolders(req, res, next) {
       return utils.sendError.InternalError(err, res);
     }
 
-    var data = {'folder': docs};
+    var data = {'folders': docs};
     utils.sendResponse(res, data);
     next();
   });
@@ -82,16 +82,13 @@ function getFolders(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function postFolder(req, res, next) {
-
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(permissions.userCan(user, ws, "FOLDERS")) {
-
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
       folder.createDate = Date.now();
-
       folder.save(function(err, doc) {
         if(err) {
           logger.error(err);

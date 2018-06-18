@@ -58,7 +58,7 @@ var UserSchema = new Schema({
   authSource: String,
   authUserId: String,
   sessionId: String,
-  sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String }],
+  sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   assignments: [{ problemId: { type: ObjectId, ref: 'Problem' }, answerId: { type: ObjectId, ref: 'Answer' } }],
   seenTour: Date,
   lastSeen: Date,
@@ -101,4 +101,3 @@ UserSchema.virtual('lastImported')
   });
 
 module.exports.User = mongoose.model('User', UserSchema);
-

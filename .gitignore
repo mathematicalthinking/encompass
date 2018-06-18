@@ -32,3 +32,5 @@ server.out
 # *.swp
 # *.swo
 # *.~
+
+ChromeDriver.exe

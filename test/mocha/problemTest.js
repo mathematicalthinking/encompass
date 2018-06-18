@@ -1,61 +1,66 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
-const fixtures = require('./fixtures.js');
 const dbSetup = require('../data/restore');
-
-const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key'; // this is always changing
+const fixtures = require('./fixtures.js');
+const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key';
 const baseUrl = "/api/problems/";
-const problemId = '5b0d939baca0b80f78807cf5';
-const host = 'http://localhost:8088';
+
+const config = require('../../server/config');
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+const host = `http://localhost:${port}`;
 
 chai.use(chaiHttp);
 
 /** GET **/
-describe('/GET problems', () => {
-  it('should get all problems', done => {
-    chai.request(host)
-    .get(baseUrl)
-    .set('Cookie', userCredentials) // what to do about this?
-    .end((err, res) => {
-      // expect(res).to.have.status(200);
-      expect(res.body).to.have.all.keys('problems');
-      expect(res.body.problems).to.be.a('array');
-      expect(res.body.problems.length).to.be.above(0);
-      done();
+describe('Problem CRUD operations', function() {
+  this.timeout('17s');
+  before(async function() {
+    await dbSetup.prepTestDb();
+  })
+  describe('/GET problems', () => {
+    it('should get all problems', done => {
+      chai.request(host)
+      .get(baseUrl)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.all.keys('problems');
+        expect(res.body.problems).to.be.a('array');
+        expect(res.body.problems[0].title).to.eql('Mr. W. Goes Across Australia');
+        done();
+      });
     });
   });
-});
 
-/** POST **/
-describe('/POST problem', () => {
-  it('should post a new problem', done => {
-    chai.request(host)
-    .post(baseUrl)
-    .set('Cookie', userCredentials)
-    .send({problem: fixtures.problem.validProblem})
-    .end((err, res) => {
-      expect(res).to.have.status(200);
-      expect(res.body.problem).to.have.any.keys('puzzleId', 'categories', 'title');
-      expect(res.body.problem.title).to.eql('test math problem');
-      done();
+  /** POST **/
+  describe('/POST problem', () => {
+    it('should post a new problem', done => {
+      chai.request(host)
+      .post(baseUrl)
+      .send({problem: fixtures.problem.validProblem})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.problem).to.have.any.keys('puzzleId', 'categories', 'title');
+        expect(res.body.problem.title).to.eql('test math problem');
+        done();
+      });
     });
   });
-});
 
-/** PUT name**/
-describe('/PUT update problem name', () => {
-  it('should change the title to test science problem', done => {
-    let url = baseUrl + problemId;
-    chai.request(host)
-    .put(url)
-    .set('Cookie', userCredentials)
-    .send({problem: {title: 'test science problem'}})
-    .end((err, res) => {
-      expect(res).to.have.status(200);
-      expect(res.body.problem).to.have.any.keys('puzzleId', 'title', 'categories');
-      expect(res.body.problem.title).to.eql('test science problem');
-      done();
+  /** PUT name**/
+  describe('/PUT update problem name', () => {
+    it('should change the title to test science problem', done => {
+      let url = baseUrl + fixtures.problem._id;
+      chai.request(host)
+      .put(url)
+      .send({problem: {title: 'test science problem'}})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.problem).to.have.any.keys('puzzleId', 'title', 'categories');
+        expect(res.body.problem.title).to.eql('test science problem');
+        done();
+      });
     });
   });
-});
+})

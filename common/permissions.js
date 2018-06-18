@@ -101,7 +101,7 @@ module.exports = {
     //console.log("Check is Admin.");
     var isAdmin  = this.isAdmin(user, workspace);
     //console.log("Done with checks");
-
+    console.log("IS ADMIN: ", isAdmin);
     //return (isOwner || isEditor || isAdmin);
     return ( isEditor || isAdmin);
   },

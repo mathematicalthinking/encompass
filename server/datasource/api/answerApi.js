@@ -54,7 +54,6 @@ const getAnswers = (req, res, next) => {
   */
 
 const getAnswer = (req, res, next) => {
-  console.log("request info: ",req.mf);
   models.Answer.findById(req.params.id)
   .exec((err, answer) => {
     if (err) {
@@ -116,7 +115,7 @@ const putAnswer = (req, res, next) => {
     // return an error
     if (doc.isSubmitted) {
       logger.error("answer already submitted");
-      return utils.sendError.NotAuthorizedError('Not Authorized', res);
+      return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
     }
     // make the updates
     for(let field in req.body.answer) {

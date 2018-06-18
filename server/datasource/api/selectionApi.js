@@ -38,9 +38,7 @@ function getSelections(req, res, next) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-
-      console.log(selections.length);
-      var data = {'selection': selections};
+      var data = {'selections': selections};
       utils.sendResponse(res, data);
       next();
     });
@@ -116,7 +114,6 @@ function postSelection(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function putSelection(req, res, next) {
-
   logger.warn("Putting Selection 1");
   var user = userAuth.requireUser(req);
   models.Selection.findById(req.params.id, function (err, doc) {

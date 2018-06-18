@@ -37,7 +37,7 @@ function getTaggings(req, res, next) {
         return utils.sendError.InternalError(err, res);
       }
 
-      var data = {'tagging': tags};
+      var data = {'taggings': tags};
       utils.sendResponse(res, data);
       next();
     });

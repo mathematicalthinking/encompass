@@ -39,6 +39,7 @@ const dropAndRestoreDb = function () {
   return new Promise((resolve, reject) => {
     exec(`mongorestore --db ${testDb} --drop ${pathToBackup}`, (err, stdout, stderr) => {
       if (err) {
+        console.log("ERROR FROM RESTORE: ", err)
         reject(err);
       }
       console.log('db drop results: ', stdout);
