@@ -34,15 +34,14 @@ function getUser(req) {
         lastLogin: null,
         lastImported: null,
         id: '5b27ae0f55b8aa6068e6daec' }
-    )
+    );
   }
   return req.user;
 }
 
 function requireUser(req) {
   var user = getUser(req);
-  console.log("ENV: " , process.env.NODE_ENV);
-  if (!user && !process.env.NODE_ENV === 'test') {
+  if (!user && process.env.NODE_ENV !== 'test') {
     logger.error('user required but not found');
     throw new Error('user required but not found');
   }
@@ -62,7 +61,7 @@ function requireUser(req) {
         lastLogin: null,
         lastImported: null,
         id: '5b27ae0f55b8aa6068e6daec' }
-    )
+    );
   }
   return user;
 }
@@ -200,7 +199,6 @@ function protect(options) {
     var notAuthorized = !userAuthorized;
 
     if (notAuthenticated) {
-      console.log("NOT AUTHEN TICATED")
       return utils.sendResponse(res, {"error": 'not auth'});
     }
 

@@ -133,15 +133,12 @@ function validateContent(options) {
     console.log(model, schema, data);
     if(models[schema]) {
       var required = models[schema].schema.requiredPaths();
-      console.log("REQUIRED: ", required)
       var hasRequiredData = _.every(required, function(x) { return data[x]; });
-      console.log(hasRequiredData)
       if(!hasRequiredData) {
         var error = 'Model %s is missing post/put data';
         return utils.sendError.InvalidContentError(util.format(error, schema), res);
       }
     }
-    console.log("content validated")
     return next();
   }
 

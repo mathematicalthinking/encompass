@@ -123,14 +123,12 @@ const putAnswer = (req, res, next) => {
         doc[field] = req.body.answer[field];
       }
     }
-    console.log("UPDATED DOC: ",doc)
     doc.save((err, answer) => {
       if (err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
       const data = {'answer': answer};
-      console.log("DOC SAVED: ", data)
       utils.sendResponse(res, data);
     });
   });

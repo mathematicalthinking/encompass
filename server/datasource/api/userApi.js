@@ -40,7 +40,6 @@ function makeGuest() {
 */
 function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-  console.log("USER: ", user)
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -60,7 +59,6 @@ function sendUsers(req, res, next) {
     var regex = new RegExp(name, 'i');
     criteria.$or = [{username: regex}, {name: regex}];
   }
-  console.log("CRITERIA: ", criteria);
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
@@ -158,7 +156,7 @@ function postUser(req, res, next) {
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,
-        {new: true},
+        {new: true}
       ).exec((err, doc) => {
         if (err) {
           logger.error(err);
