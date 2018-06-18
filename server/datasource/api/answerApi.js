@@ -29,6 +29,7 @@ module.exports.put = {};
   */
 
 const getAnswers = (req, res, next) => {
+  console.log("getting answers");
   const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
   models.Answer.find(criteria)

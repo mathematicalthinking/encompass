@@ -30,7 +30,6 @@ module.exports.put = {};
 function getComments(req, res, next) {
   var criteria = utils.buildCriteria(req);
   var user = userAuth.requireUser(req);
-
   var textSearch = req.query.text;
   if(textSearch) {
     var regExp = new RegExp(textSearch, 'i');
@@ -60,7 +59,6 @@ function getComments(req, res, next) {
     .populate('workspace')
     .populate('createdBy')
     .exec(function(err, comments) {
-      console.log("COMMENTS: ", comments)
       if(err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
@@ -97,7 +95,6 @@ function getComments(req, res, next) {
         }
         data[modelName] = _.values(relatedData[key]);
       });
-
       utils.sendResponse(res, data);
     });
 }

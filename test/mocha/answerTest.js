@@ -5,7 +5,7 @@ const dbSetup = require('../data/restore');
 const fixtures = require('./fixtures.js');
 const userCredentials = 'loginSessionUser=superuser; EncAuth=test-admin-key';
 const baseUrl = "/api/answers/";
-
+const helpers = '../../selenium/helpers';
 const config = require('../../server/config');
 const nconf = config.nconf;
 const port = nconf.get('testPort');
@@ -22,8 +22,9 @@ describe('Answer CRUD operations', function() {
     it('should get all answers', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
+        console.log("response: ", res.body);
+        console.log("Err: ", err);
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('answers');
         expect(res.body.answers).to.be.a('array');

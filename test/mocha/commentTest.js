@@ -23,21 +23,10 @@ describe('Comment CRUD operations', function() {
     it('should get all comments', done => {
       chai.request(host)
       .get(baseUrl)
-      .set('Cookie', userCredentials)
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.comments).to.be.a('array');
         expect(res.body.comments[0]).to.have.any.keys('label', 'ancestors', 'children', 'text');
-        done();
-      });
-    });
-
-    it('should fail without user credentials', done => {
-      chai.request(host)
-      .get(baseUrl)
-      .set('Cookie', null)
-      .end((err, res) => {
-        expect(res).to.have.status(401 || 500);
         done();
       });
     });
