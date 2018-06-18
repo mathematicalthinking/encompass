@@ -13,7 +13,7 @@ ENCOMPASS is a web application designed to facilitate the process of learning fr
 This application uses a combination of:
 
 * [MongoDB](http://www.mongodb.org/),
-* [Restify](http://restify.com/),
+* [Express](http://expressjs.com/),
 * [Ember.js](http://emberjs.com/),
 * [Node.js](http://nodejs.org/)
 
@@ -22,24 +22,20 @@ Instructions for getting started with this setup, are located [Github Repo](http
 ## Local Development Environment Setup
 
 1. Fork this repo ([instructions](https://github.com/mathematicalthinking/encompass/blob/master/docs/GitForkRepo.md))
-1. Install node version 8+
-2. Install MongoDB version 3.4.10
+2. Install node version 8+
+3. Install MongoDB version 3.4.10
   * Run `mongod` in terminal to start the mongo daemon
-3. `npm install -g`:
+4. `npm install -g`:
   * `grunt`
   * `grunt-cli`
   * `mocha-casperjs chai casper-chai`
-4. `npm install` for the rest of the dependencies
-5. Clone [loginService Repo](https://github.com/mathematicalthinking/loginService)
-  * `npm install`
-  * `npm start`
-  * Login service will be running on port 3000
+5. `npm install` for the rest of the dependencies
 6. Download existing encompass database
   * `mongorestore -d encompass filepath`
-6. Setting up cache values (with information to be kept private and not in repo)
+7. Setting up cache values (with information to be kept private and not in repo)
   * `cp config.json.example config.json`
   * edit values as given to you from cohort.
-7. From root directory run `grunt`
+8. From root directory run `grunt`
   * Visit app at <http://localhost:8080>
 
 ## Issues
