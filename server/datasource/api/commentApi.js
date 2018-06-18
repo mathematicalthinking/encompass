@@ -130,7 +130,6 @@ function getComment(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function postComment(req, res, next) {
-
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
@@ -138,7 +137,6 @@ function postComment(req, res, next) {
       var comment = new models.Comment(req.body.comment);
       comment.createdBy = user;
       comment.createDate = Date.now();
-
       comment.save(function(err, doc) {
         if(err) {
           logger.error(err);

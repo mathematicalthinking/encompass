@@ -57,7 +57,6 @@ function requireUser(req) {
 */
 function processToken(options) {
   function _processToken(req, res, next) {
-    // console.log('inside processToken');
     if (!path.apiRequest(req)) {
       return next();
     }
@@ -128,11 +127,7 @@ function fetchUser(options) {
             url = url.substring(0, 50) + '... (' + len + ')';
           }
           logger.info(user.get('username') + ' ' + req.method + ' ' + url);
-          console.log('user after searching', user);
-          console.log('user to Object', user.toObject());
           req.mf.auth.user = user.toObject();
-
-
           return (next());
         } else {
           // var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
