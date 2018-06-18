@@ -98,7 +98,7 @@ server.use(express.urlencoded({
 server.use(cookieParser());
 server.use(path.prep());
 server.use(path.processPath());
-//server.use(userAuth.fetchUser());
+server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
 server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
