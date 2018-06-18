@@ -51,7 +51,6 @@ var UserSchema = new Schema({
   name: String,
   email: String,
   googleId: String,
-  facebookId: String,
   key: String,
   password: String,
   forcePwdChg: Boolean,
