@@ -4,11 +4,10 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.0
   */
-var mongoose = require('mongoose'),
-    Q        = require('q'),
-    inflect  = require('i')(),
-    models   = require('../schemas'),
-    utils    = require('../../middleware/requestHandler');
+const Q        = require('q');
+const inflect  = require('i')();
+const models   = require('../schemas');
+const utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 
