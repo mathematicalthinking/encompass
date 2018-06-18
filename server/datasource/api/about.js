@@ -4,7 +4,7 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.0
   */
-var nconf = require('../../config').nconf;
+const nconf = require('../../config').nconf;
 
 module.exports.get = {};
 

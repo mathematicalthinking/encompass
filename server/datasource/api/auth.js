@@ -1,10 +1,11 @@
-//IMPORT MODULES
-const mongoose = require('mongoose');
-const passport = require('passport');
+/**
+ * # Auth API
+ * @description This is the API passport authentication
+ * @author Philip Wisner & Daniel Kelly
+ */
 
-//REQUIRE FILES
-const models = require('../schemas');
-const User = require("../schemas/user");
+//REQUIRE MODULES
+const passport = require('passport');
 
 
 const localLogin = (req, res, next) => {

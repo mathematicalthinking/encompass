@@ -5,19 +5,21 @@
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
+//REQUIRE MODULES
+const mongoose = require('mongoose');
+const _ = require('underscore');
+const logger = require('log4js').getLogger('server');
+const fs = require('fs');
+const request = require('request');
+const qs = require('querystring');
+const Q = require('q');
 
-var mongoose = require('mongoose'),
-  fs = require('fs'),
-  request = require('request'),
-  qs = require('querystring'),
-  Q = require('q'),
-  _ = require('underscore'),
-  api = require('./submissionApi'),
-  models = require('../schemas/submission'),
-  db = require('../../config').nconf.get('database'),
-  config = require('../../config').nconf.get('cache'),
-  utils = require('../../middleware/requestHandler'),
-  logger = require('log4js').getLogger('server');
+//REQUIRE FILES
+const api = require('./submissionApi');
+const models = require('../schemas/submission');
+const db = require('../../config').nconf.get('database');
+const config = require('../../config').nconf.get('cache');
+const utils = require('../../middleware/requestHandler');
 
 /*
  * @description Regex for url
