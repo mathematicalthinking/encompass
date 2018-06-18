@@ -62,7 +62,6 @@ function getTagging(req, res, next) {
 
       var data = {'tagging': tags};
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -93,7 +92,6 @@ function postTagging(req, res, next) {
 
         var data = {'tagging': doc};
         utils.sendResponse(res, data);
-        next();
       });
     } else {
       logger.info("permission denied");
@@ -138,7 +136,6 @@ function putTagging(req, res, next) {
 
             var data = {'tagging': tagging};
             utils.sendResponse(res, data);
-            next();
           });
         });
     } else {

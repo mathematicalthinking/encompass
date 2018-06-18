@@ -168,8 +168,7 @@ function postUser(req, res, next) {
     } else {
       /* non-admins can only update themselves */
       if (req.params.id !== user.id) {
-        utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-        return;
+        return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
       }
       models.User.findByIdAndUpdate(
         req.params.id,
@@ -178,7 +177,7 @@ function postUser(req, res, next) {
       ).exec((err, doc) => {
         if (err) {
           logger.error(err);
-          utils.sendError.InternalError(err, res);
+          return utils.sendError.InternalError(err, res);
         }
         var data = {'user': doc};
         utils.sendResponse(res, data);
@@ -205,8 +204,7 @@ function postUser(req, res, next) {
     ).exec((err, doc) => {
       if(err) {
         logger.error(err);
-        utils.sendError.InternalError(err, res);
-        return;
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'user': doc};
       utils.sendResponse(res, data);
@@ -231,8 +229,7 @@ function postUser(req, res, next) {
     ).exec((err, doc) => {
       if(err) {
         logger.error(err);
-        utils.sendError.InternalError(err, res);
-        return;
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'user': doc};
       utils.sendResponse(res, data);
@@ -248,8 +245,7 @@ function postUser(req, res, next) {
     ).exec((err, doc) => {
       if (err) {
         logger.error(err);
-        utils.sendError.InternalError(err, res);
-        return;
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'user': doc};
       utils.sendResponse(res, data);
@@ -265,8 +261,7 @@ function postUser(req, res, next) {
     ).exec((err, doc) => {
       if (err) {
         logger.error(err);
-        utils.sendError.InternalError(err, res);
-        return;
+        return utils.sendError.InternalError(err, res);
       }
       const data = {'user': doc};
       utils.sendResponse(res, data);

@@ -86,7 +86,6 @@ const postSection = (req, res, next) => {
     }
     const data = {'section': doc};
     utils.sendResponse(res, data);
-    next();
   });
 };
 

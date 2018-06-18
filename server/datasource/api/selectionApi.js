@@ -40,7 +40,6 @@ function getSelections(req, res, next) {
       }
       var data = {'selections': selections};
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -65,7 +64,6 @@ function getSelection(req, res, next) {
 
       var data = {'selection': selection};
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -96,7 +94,6 @@ function postSelection(req, res, next) {
 
         var data = {'selection': doc};
         utils.sendResponse(res, data);
-        next();
       });
     } else {
       logger.info("permission denied");
@@ -141,7 +138,6 @@ function putSelection(req, res, next) {
 
       var data = {'selection': selection};
       utils.sendResponse(res, data);
-      next();
     });
   });
 }
