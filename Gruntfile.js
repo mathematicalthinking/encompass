@@ -66,7 +66,7 @@ module.exports = function(grunt) {
      */
     shell: {
       restoreTestDb: {
-        command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_testv5'
+        command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
       }
     },
 
