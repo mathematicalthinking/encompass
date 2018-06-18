@@ -154,47 +154,46 @@ function postUser(req, res, next) {
     delete req.body.user.createDate;
     delete req.body.user.key;
 
-<<<<<<< HEAD
-  var user = userAuth.requireUser(req);
-  if (user.isAdmin) {
-    models.User.findByIdAndUpdate(req.params.id,
+    var user = userAuth.requireUser(req);
+    if (user.isAdmin) {
+      models.User.findByIdAndUpdate(req.params.id,
       /* Admins can update all editable fields for any user */
       req.body.user,
       function (err, doc) {
-=======
-    var user = auth.requireUser(req);
-    if (user.isAdmin) {
-      models.User.findByIdAndUpdate(
-        req.params.id,
-        req.body.user,
-        {new: true},
-      ).exec((err, doc) => {
->>>>>>> Add user put tests
-        if (err) {
-          logger.error(err);
-          utils.sendError.InternalError(err, res);
+        var user = auth.requireUser(req);
+        if (user.isAdmin) {
+          models.User.findByIdAndUpdate(
+            req.params.id,
+            req.body.user,
+            {new: true},
+          ).exec((err, doc) => {
+            if (err) {
+              logger.error(err);
+              utils.sendError.InternalError(err, res);
+            }
+            var data = {'user': doc};
+            utils.sendResponse(res, data);
+          });
+        } else {
+        /* non-admins can only update themselves */
+        if (req.params.id !== user.id) {
+          utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+          return;
         }
-        var data = {'user': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
-      /* non-admins can only update themselves */
-      if (req.params.id !== user.id) {
-        utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-        return;
+        models.User.findByIdAndUpdate(
+          req.params.id,
+          /* non-admins can only update their names, and seenTour fields */
+          {name: req.body.user.name, seenTour: req.body.user.seenTour}
+        ).exec((err, doc) => {
+          if (err) {
+            logger.error(err);
+            utils.sendError.InternalError(err, res);
+          }
+          var data = {'user': doc};
+          utils.sendResponse(res, data);
+        });
       }
-      models.User.findByIdAndUpdate(
-        req.params.id,
-        /* non-admins can only update their names, and seenTour fields */
-        {name: req.body.user.name, seenTour: req.body.user.seenTour}
-      ).exec((err, doc) => {
-        if (err) {
-          logger.error(err);
-          utils.sendError.InternalError(err, res);
-        }
-        var data = {'user': doc};
-        utils.sendResponse(res, data);
-      });
+      })
     }
   }
   /**

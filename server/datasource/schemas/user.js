@@ -57,12 +57,9 @@ var UserSchema = new Schema({
   forcePwdChg: Boolean,
   authSource: String,
   authUserId: String,
-<<<<<<< HEAD
   sessionId: String,
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String }],
-=======
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
->>>>>>> Add user put tests
   assignments: [{ problemId: { type: ObjectId, ref: 'Problem' }, answerId: { type: ObjectId, ref: 'Answer' } }],
   seenTour: Date,
   lastSeen: Date,

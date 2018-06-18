@@ -82,14 +82,10 @@ function getFolders(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function postFolder(req, res, next) {
-<<<<<<< HEAD
-
   var user = userAuth.requireUser(req);
-=======
   console.log("Posting foler: ", req.body.folder);
   var user = auth.requireUser(req);
   console.log("USer authenticated");
->>>>>>> Add folder tests
   var workspaceId = req.body.folder.workspace;
   console.log("Extracted workspace id")
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){

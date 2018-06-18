@@ -34,7 +34,7 @@ function prep(options) {
     console.log("PREPPED");
     return next();
   }
-  
+
   return _prep;
 }
 
@@ -66,11 +66,8 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
-<<<<<<< HEAD:server/middleware/path.js
     console.log('in validateid');
-=======
     console.log("VALIDATING ID");
->>>>>>> All user tests passing:server/datasource/api/path.js
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -134,7 +131,7 @@ function validateContent(options) {
         schema = getSchema(req),
         data = req.body[model];
     console.log(model, schema, data);
-    if(models[schema]) {     
+    if(models[schema]) {
       var required = models[schema].schema.requiredPaths();
       console.log("REQUIRED: ", required)
       var hasRequiredData = _.every(required, function(x) { return data[x]; });
