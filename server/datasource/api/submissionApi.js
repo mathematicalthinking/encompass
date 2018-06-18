@@ -110,7 +110,6 @@ function getSubmissions(req, res, next) {
       var data = {'submissions': submissions};
       logger.debug('Get Submissions found: ' + submissions.length );
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -169,7 +168,6 @@ function getPDSets(req, res, next) {
     },
     function(err, results){
       utils.sendResponse(res, {PdSet: results});
-      next();
     });
 }
 
@@ -236,13 +234,11 @@ function postSubmission(req, res, next) {
         });
       }
       catch (error) {
-        utils.sendError.InternalError(error, res);
-        next();
+        return utils.sendError.InternalError(error, res);
       }
     }
   } else {
-    utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-    next();
+    return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
   }
 }
 
@@ -276,7 +272,6 @@ function putSubmission(req, res, next) {
 
       var data = {'submission': submission};
       utils.sendResponse(res, data);
-      next();
     });
   });
 }
@@ -326,7 +321,7 @@ function importSubmissions(req, res, next) {
 
   var onReject = function(error) {
     logger.debug(error);
-    utils.sendError.RestError(error, res);
+    return utils.sendError.RestError(error, res);
   };
 
   /*

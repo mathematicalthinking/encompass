@@ -41,27 +41,9 @@ function getUser(req) {
 
 function requireUser(req) {
   var user = getUser(req);
-  if (!user && process.env.NODE_ENV !== 'test') {
+  if (!user) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
-  }
-  if (process.env.NODE_ENV === 'test') {
-    return (
-      { _id: '5b27ae0f55b8aa6068e6daec',
-        googleId: '117621805971211079414',
-        name: 'Michael McVeigh',
-        username: 'steve',
-        email: 'mmcveigh33@gmail.com',
-        isAuthorized: true,
-        history: [],
-        assignments: [],
-        sections: [],
-        isAdmin: true,
-        isTrashed: false,
-        lastLogin: null,
-        lastImported: null,
-        id: '5b27ae0f55b8aa6068e6daec' }
-    );
   }
   return user;
 }
@@ -186,8 +168,7 @@ function protect(options) {
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
     console.log('isOpenRequest: ', req.path, ' : ', openRequest);
-    console.log(process.env.NODE_ENV);
-    if (openRequest && req.method === 'GET' || process.env.NODE_ENV === 'test') {
+    if (openRequest && req.method === 'GET' || process.env.NODE_ENV === 'test') { // @TODO THIS SHOULD BE RECONFIGURED
       return next();
     }
 

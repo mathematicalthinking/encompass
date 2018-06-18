@@ -69,7 +69,6 @@ function getFolders(req, res, next) {
 
     var data = {'folders': docs};
     utils.sendResponse(res, data);
-    next();
   });
 }
 
@@ -97,7 +96,6 @@ function postFolder(req, res, next) {
 
         var data = {'folder': doc};
         utils.sendResponse(res, data);
-        next();
       });
     } else {
       logger.info("permission denied");
@@ -140,7 +138,6 @@ function putFolder(req, res, next) {
           doc.save(function (err, folder) {
             var data = {'folder': folder};
             utils.sendResponse(res, data);
-            next();
           });
         }
       );

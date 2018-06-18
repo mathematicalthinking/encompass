@@ -118,7 +118,6 @@ function getComment(req, res, next) {
 
       var data = {'comment': comment};
       utils.sendResponse(res, data);
-      next();
     });
 }
 
@@ -148,7 +147,6 @@ function postComment(req, res, next) {
 
         var data = {'comment': doc};
         utils.sendResponse(res, data);
-        next();
       });
     } else {
       logger.info("permission denied");
