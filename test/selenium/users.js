@@ -38,7 +38,6 @@ describe('Users', function() {
       console.log(err);
     }
     await helpers.navigateAndWait(driver, host, css.topBar.login);
-    await driver.sleep(4000);
     await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
    });
 
@@ -132,8 +131,6 @@ describe('Users', function() {
       await helpers.waitForSelector(driver, css.topBar.login);
       await helpers.login(driver, host, admin, adminPass);
       await helpers.waitForSelector(driver, css.topBar.users);
-      await driver.sleep(5000);
-      //await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${admin}`, 'a.menu.users');
     });
 
     function validateUsersPage(){

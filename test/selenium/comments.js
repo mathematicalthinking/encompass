@@ -21,9 +21,7 @@ describe('Comments', function() {
       .build();
       await dbSetup.prepTestDb();
     try {
-      // await driver.get(`${host}/devonly/fakelogin/${user}`);
       await helpers.login(driver, host, user, password);
-      await driver.sleep(5000);
     }catch(err) {
       console.log(err);
     }
@@ -50,10 +48,8 @@ describe('Comments', function() {
         let textArea = await helpers.getWebElements(driver, '#commentTextarea');
         if (!_.isEmpty(textArea)) {
           await textArea[0].sendKeys(comment);
-          await driver.sleep(5000);
           await saveButton.click();
-          await driver.sleep(5000);
-          await driver.wait(until.elementLocated(By.css('#commentTextarea:empty')), 3000);
+          await driver.sleep(2000);
         }
       }catch(err) {
         console.log(err);

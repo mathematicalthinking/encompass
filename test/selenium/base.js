@@ -27,7 +27,6 @@ describe('Home Page', function () {
 
   it('should load without error', async function () {
     await helpers.navigateAndWait(driver, host, css.topBar.login);
-    await driver.sleep(3000);
   });
 
   it('login button should be visible', async function () {
@@ -36,7 +35,6 @@ describe('Home Page', function () {
 
   it('should display login page after clicking login', async function () {
     await helpers.findAndClickElement(driver, css.topBar.login);
-    await driver.sleep(5000);
     await helpers.waitForSelector(driver, css.login.username);
     let url = await helpers.getCurrentUrl(driver);
 
@@ -57,7 +55,6 @@ describe('Home Page', function () {
       await helpers.findAndClickElement(driver, css.login.submit);
 
       greeting = await helpers.waitForSelector(driver, '#al_welcome');
-      await driver.sleep(3000);
       url = await helpers.getCurrentUrl(driver);
       message = await greeting.getText();
     } catch (err) {
