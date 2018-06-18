@@ -82,9 +82,7 @@ function toPDSubmission(obj, index, arr) {
         model.set(property, json[property]);
       }
     }
-    console.log("created new pdsubmission")
     arr[index] = model; // Modifying array in-place
-    console.log(arr[index]);
   }
 }
 
@@ -223,19 +221,15 @@ function postSubmission(req, res, next) {
     */
 
     if (access) {
-      console.log("POST DATA: ", postData)
       try {
         var submissions = [postData];
-        console.log(submissions)
         submissions.forEach(toPDSubmission);
-        console.log("SUBS: ", submissions);
         for(var item in submissions) {
           if(item) {
             var submission = submissions[item];
             submission.pdSet = 'system';
           }
         }
-        console.log("Submissions: ",submissions)
         models.PDSubmission.create(submissions, function(err, data) {
           if(err) { throw err; }
           return utils.sendResponse(res, {submission: data});
@@ -299,7 +293,6 @@ function putSubmission(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function importSubmissions(req, res, next) {
-  console.log('IMPORTING SUBMISSIONS...');
   var user = userAuth.requireUser(req);
   var importId = mongoose.Types.ObjectId();
   var params = JSON.parse( JSON.stringify(req.body.importRequest) );
