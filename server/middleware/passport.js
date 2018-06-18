@@ -1,10 +1,10 @@
-//PASSPORT REQS
+//REQUIRE MODULES
 const passport = require('passport');
 const flash = require('connect-flash');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-//PASSWORD CREATION
+//PASSWORD ENCRYPTION
 const bcrypt = require('bcrypt');
 
 //USER MODEL
