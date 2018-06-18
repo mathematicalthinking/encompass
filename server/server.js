@@ -112,10 +112,6 @@ server.get('/logout', auth.logout);
 server.get('/auth/google', auth.googleAuth);
 server.get('/auth/google/callback', auth.googleReturn);
 
-//  FACEBOOK AUTHENTICATION CALLS
-server.get('/auth/facebook', auth.facebookAuth);
-server.get('/auth/facebook/callback', auth.facebookReturn);
-
 //API CALLS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);

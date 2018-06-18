@@ -2,12 +2,10 @@
 const passport = require('passport');
 const flash = require('connect-flash');
 const LocalStrategy = require('passport-local').Strategy;
-const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 //PASSWORD CREATION
 const bcrypt = require('bcrypt');
-const bcryptSalt = 10;
 
 //USER MODEL
 const models = require('../datasource/schemas');
@@ -85,7 +83,7 @@ module.exports = (passport) => {
               username,
               password,
             } = req.body;
-            const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+            const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
             const newUser = new User({
               username,
               password: hashPass,
@@ -141,38 +139,4 @@ module.exports = (passport) => {
     });
 
   }));
-
-
-  //FACEBOOK STRATEGY
-  passport.use(new FacebookStrategy({
-    clientID: "1124250227716523",
-    clientSecret: "10198b98ada4e88e88eb3042a55f81a6",
-    callbackURL: "/auth/facebook/callback",
-    profileFields: ['id', 'displayName', 'email']
-  }, (accessToken, refreshToken, profile, done) => {
-    User.findOne({
-      facebookId: profile.id
-    }, (err, user) => {
-      if (err) {
-        return done(err);
-      }
-      if (user) {
-        return done(null, user);
-      }
-
-      const newUser = new User({
-        facebookId: profile.id,
-        username: profile.displayName,
-        email: profile.emails[0].value,
-        isAuthorized: true
-      });
-      newUser.save((err) => {
-        if (err) {
-          return done(err);
-        }
-        done(null, newUser);
-      });
-    });
-  }));
-
 };
