@@ -135,7 +135,7 @@ describe('Users', function() {
 
     function validateUsersPage(){
       it('should show/hide various editable fields', async function(){
-        const inputs = ['input.userName', 'button.clearTour', 'input.isAdmin', 'input.isAuthorized'];
+        const inputs = ['button.doneTour', 'input.isAdmin', 'input.isAuthorized'];
         expect(await helpers.isTextInDom(driver, admin)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.editUser');
