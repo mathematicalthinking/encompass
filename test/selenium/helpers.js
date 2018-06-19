@@ -1,7 +1,25 @@
+// REQUIRE MODULES
 const { Builder, By, Key, until } = require('selenium-webdriver')
-const _ = require('underscore');
 
+// REQUIRE FILES
+const config = require('../../server/config');
 const css = require('./selectors');
+
+const nconf = config.nconf;
+const port = nconf.get('testPort');
+const host = `http://localhost:${port}`
+
+const loginUrl = `${host}/#/auth/login`;
+
+const admin = {
+  username: 'rick',
+  password: 'sanchez'
+};
+
+const regUser = {
+  username: 'morty',
+  password: 'smith'
+};
 
 const getCurrentUrl = async function(webdriver) {
   let url;
@@ -104,13 +122,13 @@ const findInputAndType = async function (webDriver, selector, text) {
   return;
 };
 
-const login = async function(webDriver, host,user, password) {
+const login = async function(webDriver, host, user=admin) {
   await navigateAndWait(webDriver, host, css.topBar.login);
   await findAndClickElement(webDriver, css.topBar.login);
 
   await waitForSelector(webDriver, css.login.username);
-  await findInputAndType(webDriver, css.login.username, user);
-  await findInputAndType(webDriver, css.login.password, password);
+  await findInputAndType(webDriver, css.login.username, user.username);
+  await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
   return await waitForSelector(webDriver, '#al_welcome');
 };
@@ -126,3 +144,7 @@ module.exports.findInputAndType = findInputAndType;
 module.exports.waitForAndClickElement = waitForAndClickElement;
 module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
+module.exports.admin = admin;
+module.exports.regUser = regUser;
+module.exports.host = host;
+module.exports.loginUrl = loginUrl;

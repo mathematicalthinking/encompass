@@ -1,17 +1,14 @@
+// REQUIRE MODULES
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const dbSetup = require('../data/restore');
+// REQUIRE FILES
 const helpers = require('./helpers');
+const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
-const host = `http://localhost:${port}`
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 const workspaceId = '53e36522b48b12793f000d3b';
 
 describe('Visiting Workspaces', function() {
@@ -22,7 +19,7 @@ describe('Visiting Workspaces', function() {
       .forBrowser('chrome')
       .build();
     await dbSetup.prepTestDb();
-    await helpers.login(driver, host, user, password);
+    await helpers.login(driver, host);
   });
 
   after(() => {

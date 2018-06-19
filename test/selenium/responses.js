@@ -1,17 +1,13 @@
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-
+// REQUIRE MODULES
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
+// REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 
-const host = `http://localhost:${port}`
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 
 describe('Responses', function() {
   this.timeout('10s');
@@ -22,7 +18,7 @@ describe('Responses', function() {
       .build();
     await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host, user, password);
+      await helpers.login(driver, host);
     }catch(err) {
       console.log(err);
     }
@@ -109,7 +105,7 @@ describe('Responses', function() {
       it('should be able to edit the text', async function() {
         try {
           await driver.findElement(By.css('button.edit')).click();
-          await driver.findElement(By.css('textarea#responseTextarea')).sendKeys(`${user} edited`);
+          await driver.findElement(By.css('textarea#responseTextarea')).sendKeys(`${helpers.admin} edited`);
 
         expect(await helpers.isElementVisible(driver, 'button.save:enabled')).to.eql(true);
         }catch(err) {
@@ -138,7 +134,7 @@ describe('Responses', function() {
       //       await driver.sleep(5000);
       //       expect(await driver.getCurrentUrl()).to.match(/#\/responses.?$/);
       //       //expect(await helpers.isTextInDom(driver, 'a few seconds ago')).to.eql(true);
-      //       //expect(await helpers.isTextInDom(driver, `${user} editedHello`)).to.eql(true);
+      //       //expect(await helpers.isTextInDom(driver, `${helpers.admin} editedHello`)).to.eql(true);
       //     }catch(err) {
       //       console.log(err);
       //     }

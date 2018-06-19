@@ -1,17 +1,14 @@
+// REQUIRE MODULES
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
+// REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 
 describe('Visiting Workspace Creation', function() {
   this.timeout('10s');
@@ -21,7 +18,7 @@ describe('Visiting Workspace Creation', function() {
       .forBrowser('chrome')
       .build();
       await dbSetup.prepTestDb();
-      await helpers.login(driver, host, user, password);
+      await helpers.login(driver, host);
       await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
       await helpers.waitForSelector(driver,'section.newWorkspace.sanity');
     });
@@ -69,7 +66,7 @@ describe('Visiting Workspace Creation', function() {
         it(`teacher input should be set to logged in user`, async function() {
           try {
             let teacherInput = await helpers.getWebElements(driver, 'input#teacher');
-            expect(await teacherInput[0].getAttribute('value')).to.eql(user);
+            expect(await teacherInput[0].getAttribute('value')).to.eql(helpers.admin.username);
           }catch(err) {
             console.log(err);
           }
