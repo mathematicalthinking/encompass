@@ -44,7 +44,7 @@ describe('Folders', function() {
     it('should announce that it has a bunch of submissions and selections', async function() {
       let text = await helpers.findAndGetText(driver, 'div#statusbar');
       expect(text).to.contain('9 submission(s)');
-      expect(text).to.contain('0 selection(s)');
+      expect(text).to.contain('9 selection(s)');
      });
 
     it('should display view controls', async function() {
