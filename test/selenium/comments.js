@@ -49,7 +49,6 @@ describe('Comments', function() {
         if (!_.isEmpty(textArea)) {
           await textArea[0].sendKeys(comment);
           await saveButton.click();
-          await driver.sleep(2000);
         }
       }catch(err) {
         console.log(err);

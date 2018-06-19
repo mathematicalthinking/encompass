@@ -110,7 +110,6 @@ describe('Responses', function() {
         try {
           await driver.findElement(By.css('button.edit')).click();
           await driver.findElement(By.css('textarea#responseTextarea')).sendKeys(`${user} edited`);
-          await driver.sleep(1000);
 
         expect(await helpers.isElementVisible(driver, 'button.save:enabled')).to.eql(true);
         }catch(err) {
