@@ -1,30 +1,35 @@
-/* exported mongoose */
-const express = require('express'),
-      mongoose = require('mongoose'),
-      config = require('./config'),
-      expressPath = require('path'),
-      cookieParser = require('cookie-parser'),
-      logger = require('morgan'),
-      http = require('http'),
-      flash = require('connect-flash'),
-      session = require('express-session'),
-      MongoStore = require('connect-mongo')(session),
-      passport = require('passport'),
-      fake = require('./fake_login'),
-      uuid = require('uuid'),
-      cookie = require('cookie'),
-      api = require('./datasource/api'),
-      auth = require('./datasource/api/auth'),
-      path = require('./middleware/path'),
-      fixed = require('./datasource/fixed');
+//REQUIRE MODULES
+const express = require('express');
+const mongoose = require('mongoose');
+const config = require('./config');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const http = require('http');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const passport = require('passport');
+const flash = require('connect-flash');
 
+//REQUIRE API
+const api = require('./datasource/api');
+const auth = require('./datasource/api/auth');
+
+//REQUIRE MIDDLEWARE
 const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
-const models = require('./datasource/schemas');
+const path = require('./middleware/path');
 const utils = require('./middleware/requestHandler');
-const dbMigration = require('./db_migration/base');
 
+//REQUIRE MODELS
+const models = require('./datasource/schemas');
+
+//REQUIRE CONFIG SUPPORT
+const dbMigration = require('./db_migration/base');
+const fixed = require('./datasource/fixed');
 const nconf = config.nconf;
+
+
+//CREATE EXPRESS APP
 const server = express();
 
 let port = nconf.get('port');
@@ -80,8 +85,6 @@ server.use(session({
   })
 }));
 
-// server.set('view engine', 'ejs');
-
 
 //PASSPORT
 configure(passport);
@@ -112,11 +115,8 @@ server.get('/logout', auth.logout);
 server.get('/auth/google', auth.googleAuth);
 server.get('/auth/google/callback', auth.googleReturn);
 
-//  FACEBOOK AUTHENTICATION CALLS
-server.get('/auth/facebook', auth.facebookAuth);
-server.get('/auth/facebook/callback', auth.facebookReturn);
-
 //API CALLS
+//ALL GET REQUESTS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
 server.get('/api/workspaces', api.get.workspaces);
@@ -145,6 +145,7 @@ server.get('/api/sections/:id', path.validateId(), api.get.section);
 server.get('/api/sections', api.get.categories);
 server.get('/api/sections/:id', path.validateId(), api.get.category);
 
+//ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);
 server.post('/api/errors', api.post.error);
@@ -158,6 +159,7 @@ server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
 
+//ALL PUT REQUESTS
 server.put('/api/folders/:id', path.validateId(), api.put.folder);
 server.put('/api/submissions/:id', path.validateId(), api.put.submission);
 server.put('/api/selections/:id', path.validateId(), api.put.selection);

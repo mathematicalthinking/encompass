@@ -4,12 +4,14 @@
   Caches the path parts for future decisions
 */
 
-var logger   = require('log4js').getLogger('sane'),
-    utils    = require('./requestHandler'),
-    util     = require('util'),
-    express  = require('express'),
-    _        = require('underscore'),
-    models   = require('../datasource/schemas');
+//REQUIRE MODULES
+const logger = require('log4js').getLogger('sane');
+const util = require('util');
+const _ = require('underscore');
+
+//REQUIRE FILES
+const utils = require('./requestHandler');
+const models = require('../datasource/schemas');
 
 /*
   @returns {Boolean} - is this request an /api/ request?

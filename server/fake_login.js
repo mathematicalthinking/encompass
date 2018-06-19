@@ -4,11 +4,16 @@
   * @authors Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.3
   */
-var config   = require('./config'),
-    uuid     = require('uuid'),
-    cookie   = require('cookie'),
-    models   = require('./datasource/schemas'),
-    util     = require('util');
+
+//REQUIRE MODULES
+const uuid = require('uuid');
+const cookie = require('cookie');
+
+//REQUIRE FILES
+const config = require('./config');
+const models = require('./datasource/schemas');
+const util = require('util');
+
 
 function fakeLogin(req, res, next) {
   var username = req.params.username;

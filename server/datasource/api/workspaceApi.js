@@ -4,18 +4,21 @@
   * @authors Damola Mabogunje <damola@mathforum.org>, Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.0
   */
-var mongoose = require('mongoose'),
-    express  = require('express'),
-    logger = require('log4js').getLogger('server'),
-    models = require('../schemas'),
-    auth   = require('./auth'),
-    userAuth = require('../../middleware/userAuth'),
-    permissions  = require('../../../common/permissions'),
-    utils  = require('../../middleware/requestHandler'),
-    data   = require('./data'),
-    _      = require('underscore'),
-    Q      = require('q'),
-    helper = require('util');
+//REQUIRE MODULES
+const mongoose = require('mongoose');
+const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
+const Q = require('q');
+const helper = require('util');
+
+//REQUIRE FILES
+const models = require('../schemas');
+const auth   = require('./auth');
+const userAuth = require('../../middleware/userAuth');
+const permissions  = require('../../../common/permissions');
+const utils  = require('../../middleware/requestHandler');
+const data   = require('./data');
+
 
 module.exports.get = {};
 module.exports.post = {};

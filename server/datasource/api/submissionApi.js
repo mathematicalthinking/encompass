@@ -4,16 +4,18 @@
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
-var mongoose = require('mongoose'),
-    express  = require('express'),
-    _ = require('underscore'),
-    Q = require('q'),
-    logger   = require('log4js').getLogger('server'),
-    utils    = require('../../middleware/requestHandler'),
-    util     = require('util'),
-    userAuth = require('../../middleware/userAuth'),
-    models   = require('../schemas'),
-    spaces   = require('./workspaceApi');
+//REQUIRE MODULES
+const mongoose = require('mongoose');
+const _ = require('underscore');
+const Q = require('q');
+const logger   = require('log4js').getLogger('server');
+const util = require('util');
+
+//REQUIRE FILES
+const utils    = require('../../middleware/requestHandler');
+const userAuth = require('../../middleware/userAuth');
+const models   = require('../schemas');
+const spaces   = require('./workspaceApi');
 
     module.exports.get = {};
     module.exports.post = {};

@@ -3,13 +3,14 @@
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
-var mongoose = require('mongoose'),
-    cookie   = require('cookie'),
-    express  = require('express'),
-    logger   = require('log4js').getLogger('server'),
-    models   = require('../schemas'),
-    userAuth = require('../../middleware/userAuth'),
-    utils    = require('../../middleware/requestHandler');
+
+//REQUIRE MODULES
+const logger   = require('log4js').getLogger('server');
+
+//REQUIRE FILES
+const models   = require('../schemas');
+const userAuth = require('../../middleware/userAuth');
+const utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};

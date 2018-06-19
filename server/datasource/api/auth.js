@@ -1,28 +1,11 @@
-/*
-  Auth plugins for express
-  Protects against updates from anon users
-  Caches the user for subsequent auth decisions
-  Updates the user's lastSeen time
-*/
+/**
+ * # Auth API
+ * @description This is the API passport authentication
+ * @author Philip Wisner & Daniel Kelly
+ */
 
-const mongoose = require('mongoose'),
-  cookie = require('cookie'),
-  logger = require('log4js').getLogger('auth'),
-  express = require('express'),
-  passport = require('passport'),
-  _ = require('underscore'),
-  path = require('../../middleware/path'),
-  cache = require('./cache'),
-  utils = require('../../middleware/requestHandler'),
-  models = require('../schemas');
-
-const User = require("../schemas/user");
-const FbStrategy = require('passport-facebook').Strategy;
-const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
-
-// Bcrypt to encrypt passwords
-const bcrypt = require("bcrypt");
-const bcryptSalt = 10;
+//REQUIRE MODULES
+const passport = require('passport');
 
 
 const localLogin = (req, res, next) => {
@@ -56,19 +39,6 @@ const googleReturn = (req, res, next) => {
   })(req, res, next);
 };
 
-const facebookAuth = (req, res, next) => {
-  passport.authenticate("facebook", {
-    scope: 'email'
-  })(req, res, next);
-};
-
-const facebookReturn = (req, res, next) => {
-  passport.authenticate("facebook", {
-    failureRedirect: "/#/login",
-    successRedirect: "/"
-  })(req, res, next);
-};
-
 const logout = (req, res, next) => {
   console.log('LOGGING OUT!');
   req.logout();
@@ -80,5 +50,3 @@ module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
 module.exports.googleAuth = googleAuth;
 module.exports.googleReturn = googleReturn;
-module.exports.facebookAuth = facebookAuth;
-module.exports.facebookReturn = facebookReturn;

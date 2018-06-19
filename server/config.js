@@ -1,13 +1,12 @@
 /* config for application */
 
-var fs = require('fs'),
-  nconf = require('nconf'),
-  logs = require('log4js'),
-  build = process.env.BUILD;
+const fs = require('fs');
+const nconf = require('nconf');
+const logs = require('log4js');
+const build = process.env.BUILD;
 
-
-var today = new Date();
-var aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
+const today = new Date();
+const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
 
 nconf.argv().env().file({ file: 'config.json' });
 
