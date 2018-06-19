@@ -1,28 +1,25 @@
-const { Builder, By, Key, until } = require('selenium-webdriver');
+// REQUIRE MODULES
+const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
-const config = require('../../server/config');
+
+// REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
-const css = require('./selectors');
 
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`
-const loginUrl = `${host}/#/auth/login`;
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 
 describe('Folders', function() {
   this.timeout('10s');
   let driver = null;
+
   before(async function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
-    await dbSetup.prepTestDb();
+      await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host, user, password);
+      await helpers.login(driver, host);
     }catch(err) {
       console.log(err);
     }
@@ -44,7 +41,7 @@ describe('Folders', function() {
     it('should announce that it has a bunch of submissions and selections', async function() {
       let text = await helpers.findAndGetText(driver, 'div#statusbar');
       expect(text).to.contain('9 submission(s)');
-      expect(text).to.contain('0 selection(s)');
+      expect(text).to.contain('9 selection(s)');
      });
 
     it('should display view controls', async function() {

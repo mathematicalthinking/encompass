@@ -1,26 +1,37 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/problems/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/problems/";
 
 chai.use(chaiHttp);
 
 /** GET **/
 describe('Problem CRUD operations', function() {
-  this.timeout('17s');
-  before(async function() {
-    await dbSetup.prepTestDb();
-  })
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
+  });
+
+  after(() => {
+    agent.close();
+  });
+
   describe('/GET problems', () => {
     it('should get all problems', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -35,7 +46,7 @@ describe('Problem CRUD operations', function() {
   /** POST **/
   describe('/POST problem', () => {
     it('should post a new problem', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({problem: fixtures.problem.validProblem})
       .end((err, res) => {
@@ -51,7 +62,7 @@ describe('Problem CRUD operations', function() {
   describe('/PUT update problem name', () => {
     it('should change the title to test science problem', done => {
       let url = baseUrl + fixtures.problem._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({problem: {title: 'test science problem'}})
       .end((err, res) => {
@@ -62,4 +73,4 @@ describe('Problem CRUD operations', function() {
       });
     });
   });
-})
+});

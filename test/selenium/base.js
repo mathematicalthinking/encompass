@@ -1,16 +1,14 @@
+// REQUIRE MODULES
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
+
+// REQUIRE FILES
 const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`
-const loginUrl = `${host}/#/auth/login`;
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 
 describe('Home Page', function () {
   this.timeout('10s');
@@ -38,7 +36,7 @@ describe('Home Page', function () {
     await helpers.waitForSelector(driver, css.login.username);
     let url = await helpers.getCurrentUrl(driver);
 
-    expect(url).to.eql(loginUrl);
+    expect(url).to.eql(helpers.loginUrl);
     expect(await helpers.isElementVisible(driver, css.login.username)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.password)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.submit)).to.be.true;
@@ -50,8 +48,8 @@ describe('Home Page', function () {
     let message;
 
     try {
-      await helpers.findInputAndType(driver, css.login.username, user);
-      await helpers.findInputAndType(driver, css.login.password, password);
+      await helpers.findInputAndType(driver, css.login.username, helpers.admin.username);
+      await helpers.findInputAndType(driver, css.login.password, helpers.admin.password);
       await helpers.findAndClickElement(driver, css.login.submit);
 
       greeting = await helpers.waitForSelector(driver, '#al_welcome');
@@ -61,7 +59,7 @@ describe('Home Page', function () {
       console.log(err);
     }
     expect(url).to.equal(`${host}/`);
-    expect(message).to.equal(`Welcome, ${user}`);
+    expect(message).to.equal(`Welcome, ${helpers.admin.username}`);
   });
 
   describe('NavBar', async function () {

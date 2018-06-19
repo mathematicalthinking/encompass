@@ -1,25 +1,36 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/users/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/users/";
 
 chai.use(chaiHttp);
 
 describe('User CRUD operations', function() {
-  this.timeout('20s');
-  before(async function() {
-    await dbSetup.prepTestDb();
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
   });
+
+  after(() => {
+    agent.close();
+  });
+
   describe('/GET users', () => {
     it('should get all users', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -34,12 +45,11 @@ describe('User CRUD operations', function() {
   /** GET **/
   describe('/GET user by name', () => {
     it('should return all users with the name "steve"', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .query('name=steve')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        console.log(res.body);
         expect(res.body).to.have.all.keys('user');
         expect(res.body.user).to.be.a('array');
         res.body.user.forEach(user => {
@@ -54,7 +64,7 @@ describe('User CRUD operations', function() {
   describe('/GET user by id', () => {
     it('should return the user "steve"', done => {
       const url = baseUrl + fixtures.user._id;
-      chai.request(host)
+      agent
       .get(url)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -67,13 +77,10 @@ describe('User CRUD operations', function() {
   });
 
 
-  /** POST NB this test fails now cause we're not resetting the db
-  When db updating is implemented delete the expect statement
-  and then uncomment the remaining expect statements
-  **/
+  /** POST **/
   describe('/POST user', () => {
     it('should post a new user', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({user: fixtures.user.validUser})
       .end((err, res) => {
@@ -88,7 +95,7 @@ describe('User CRUD operations', function() {
   describe('/PUT update user name', () => {
     it('should change steves name from null to test name', done => {
       const url = baseUrl + fixtures.user._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({user: {'name': 'test name'}})
       .end((err, res) => {
@@ -104,7 +111,7 @@ describe('User CRUD operations', function() {
   describe('/PUT add section', () => {
     it('should add a section to the user steve', done => {
       const url = baseUrl + 'addSection/' + fixtures.user._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({section: {sectionId: fixtures.section._id, role: "teacher"}})
       .end((err, res) => {
@@ -120,7 +127,7 @@ describe('User CRUD operations', function() {
   describe('/PUT remove section', () => {
     it('should remove the section we just added', done => {
       const url = baseUrl + 'removeSection/' + fixtures.user._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({sectionId: fixtures.section._id})
       .end((err, res) => {
@@ -136,7 +143,7 @@ describe('User CRUD operations', function() {
   describe('/PUT add assignment', () => {
     it('should add an assignment to the user steve', done => {
       const url = baseUrl + 'addAssignment/' + fixtures.user._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({assignment: fixtures.assignment})
       .end((err, res) => {
@@ -152,7 +159,7 @@ describe('User CRUD operations', function() {
   describe('/PUT remove assignment', () => {
     it('should remove the assignment we just added', done => {
       const url = baseUrl + 'removeAssignment/' + fixtures.user._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({assignment: fixtures.assignment})
       .end((err, res) => {

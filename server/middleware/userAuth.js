@@ -18,24 +18,6 @@ const User = require("../datasource/schemas/user");
   consider processing the req (token, fetchUser) if not cached
 */
 function getUser(req) {
-  if (process.env.NODE_ENV === 'test'){
-    return (
-      { _id: '5b27ae0f55b8aa6068e6daec',
-        googleId: '117621805971211079414',
-        name: 'Michael McVeigh',
-        username: 'steve',
-        email: 'mmcveigh33@gmail.com',
-        isAuthorized: true,
-        history: [],
-        assignments: [],
-        sections: [],
-        isAdmin: true,
-        isTrashed: false,
-        lastLogin: null,
-        lastImported: null,
-        id: '5b27ae0f55b8aa6068e6daec' }
-    );
-  }
   return req.user;
 }
 
@@ -103,11 +85,6 @@ function fetchUser(options) {
       logger.warn('no user logged in');
       return (next());
     }
-    // var token = req.mf.auth.token;
-    // if (!token) {
-    //   logger.warn('no token found while fetching user, misconfig?');
-    //   return (next());
-    // }
 
     models.User.findOneAndUpdate({
       username: req.user.username
@@ -130,15 +107,10 @@ function fetchUser(options) {
           req.mf.auth.user = user.toObject();
           return (next());
         } else {
-          // var error = utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
-          // logger.error(error);
-          // return (next(error));
           return utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
         }
       }
     });
-
-
   }
 
   return (_fetchUser);
@@ -153,7 +125,6 @@ function protect(options) {
     if (!path.apiRequest(req)) {
       return next();
     }
-    console.log('isapi:', path.apiRequest(req));
     _.defaults(req, {
       mf: {
         auth: {}
@@ -165,8 +136,7 @@ function protect(options) {
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
-    console.log('isOpenRequest: ', req.path, ' : ', openRequest);
-    if (openRequest && req.method === 'GET' || process.env.NODE_ENV === 'test') { // @TODO THIS SHOULD BE RECONFIGURED
+    if (openRequest && req.method === 'GET') {
       return next();
     }
 
@@ -208,9 +178,7 @@ function accessibleWorkspacesQuery(user) {
 }
 
 function loadAccessibleWorkspaces(options) {
-
   function _loadAccessibleWorkspaces(req, res, next) {
-    // console.log(`running loadAccessibleWorkspaces`);
     var user = getUser(req);
     var schema = path.getSchema(req);
     if (!user || !path.schemaHasWorkspace(schema)) {
@@ -236,9 +204,6 @@ function test(options) {
 
   return (_test);
 }
-
-
-
 
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;

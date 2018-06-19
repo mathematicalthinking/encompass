@@ -1,24 +1,36 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
+
+// REQUIRE FILES
 const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
 const baseUrl = "/api/answers/";
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
 
 chai.use(chaiHttp);
 
 describe('Answer CRUD operations', function() {
-  this.timeout('17s');
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
   before(async function(){
-    await dbSetup.prepTestDb();
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
   });
+
+  after(() => {
+    agent.close();
+  });
+
   describe('/GET answers', () => {
     it('should get all answers', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -33,7 +45,7 @@ describe('Answer CRUD operations', function() {
   /** POST **/
   describe('/POST answer', () => {
     it('should post a new answer', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({answer: fixtures.answer.validAnswer})
       .end((err, res) => {
@@ -49,7 +61,7 @@ describe('Answer CRUD operations', function() {
   describe('/PUT update answer explanation', () => {
     it('should change the explanation', done => {
       let url = baseUrl + fixtures.answer._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({answer: {explanation: 'actually Im not sticking with that answer'}})
       .end((err, res) => {
@@ -60,5 +72,4 @@ describe('Answer CRUD operations', function() {
       });
     });
   });
-
-})
+});

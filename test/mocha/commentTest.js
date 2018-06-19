@@ -1,26 +1,35 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/comments/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/comments/";
 
 chai.use(chaiHttp);
 
 describe('Comment CRUD operations', function() {
-  this.timeout('17s');
-  before(async function() {
-    await dbSetup.prepTestDb();
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
+  });
+
+  after(() => {
+    agent.close();
   });
 
   describe('/GET comments', () => {
     it('should get all comments', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -34,7 +43,7 @@ describe('Comment CRUD operations', function() {
   describe('/GET comment by id', () => {
     it('should get one comment with matching id', done => {
       const url = baseUrl + fixtures.comment._id;
-      chai.request(host)
+      agent
       .get(url)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -45,7 +54,7 @@ describe('Comment CRUD operations', function() {
     });
     // it('should fail if id is invalid', done => {
     //   const url = baseUrl + '/badId';
-    //   chai.request(host)
+    //   agent
     //   .get(url)
     //   .set('Cookie', userCredentials)
     //   .end((err, res) => {
@@ -58,7 +67,7 @@ describe('Comment CRUD operations', function() {
   /** POST **/
   describe('/POST comment', () => {
     it('should post a new comment', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({comment: fixtures.comment.validComment})
       .end((err, res) => {
@@ -73,7 +82,7 @@ describe('Comment CRUD operations', function() {
     it('should change the text field to "this is a test"', done => {
       const url = baseUrl + fixtures.comment._id;
       // copy the comment and update it
-      chai.request(host)
+      agent
       .put(url)
       .send({comment: {
         workspace: fixtures.comment.validComment.workspace,
@@ -90,7 +99,7 @@ describe('Comment CRUD operations', function() {
     it('should fail to update because of missing required fields', done => {
       const url = baseUrl + fixtures.comment._id;
       // copy the comment and update it
-      chai.request(host)
+      agent
       .put(url)
       .send({comment: {
         workspace: fixtures.comment.validComment.workspace,

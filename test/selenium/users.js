@@ -1,19 +1,13 @@
+// REQUIRE MODULES
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
-const _ = require('underscore');
 
+// REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
-const config = require('../../server/config');
 const css = require('./selectors');
 
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`
-const regularUser = 'morty';
-const regPass = 'smith';
-const admin = 'rick';
-const adminPass = 'sanchez';
+const host = helpers.host;
 
 describe('Users', function() {
   this.timeout('10s');
@@ -72,13 +66,12 @@ describe('Users', function() {
 
   describe('Logged in as a regular user', function() {
     before(async function() {
-      await helpers.login(driver, host, regularUser, regPass);
+      await helpers.login(driver, host, helpers.regUser);
       await helpers.waitForSelector(driver, css.topBar.users);
-      //await helpers.navigateAndWait(driver, `${host}/devonly/fakelogin/${regularUser}`, 'a.menu.users');
     });
 
     async function validateUsersPage(user){
-      const shoulds = [regularUser, 'Name', 'Last Seen', 'Seen Tour', 'Username', 'Display Name'];
+      const shoulds = [helpers.regUser.username, 'Name', 'Last Seen', 'Seen Tour', 'Username', 'Display Name'];
       for (let str of shoulds) {
         it(`${str} should be in DOM`, async function() {
           expect(await helpers.isTextInDom(driver, str)).to.be.true;
@@ -105,7 +98,7 @@ describe('Users', function() {
 
       describe('clicking the user link', function() {
         before(async function() {
-          await helpers.findAndClickElement(driver, `a[href$="${regularUser}"]`);
+          await helpers.findAndClickElement(driver, `a[href$="${helpers.regUser.username}"]`);
           await helpers.waitForSelector(driver, 'article.user');
         });
         describe('user info table', function() {
@@ -115,7 +108,7 @@ describe('Users', function() {
 
       describe('Visiting a user page directly', function() {
         before(async function() {
-          await helpers.navigateAndWait(driver, `${host}/#/users/${regularUser}`, 'article.user');
+          await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.regUser.username}`, 'article.user');
         });
         describe('user info table', function() {
           validateUsersPage();
@@ -129,14 +122,14 @@ describe('Users', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.login);
-      await helpers.login(driver, host, admin, adminPass);
+      await helpers.login(driver, host);
       await helpers.waitForSelector(driver, css.topBar.users);
     });
 
     function validateUsersPage(){
       it('should show/hide various editable fields', async function(){
-        const inputs = ['input.userName', 'button.clearTour', 'input.isAdmin', 'input.isAuthorized'];
-        expect(await helpers.isTextInDom(driver, admin)).to.be.true;
+        const inputs = ['button.doneTour', 'input.isAdmin', 'input.isAuthorized'];
+        expect(await helpers.isTextInDom(driver, helpers.admin.username)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.editUser');
 
@@ -187,7 +180,7 @@ describe('Users', function() {
 
       describe('clicking the user link', function() {
         before(async function() {
-          await helpers.findAndClickElement(driver, `a[href$="${admin}"]`);
+          await helpers.findAndClickElement(driver, `a[href$="${helpers.admin.username}"]`);
           await helpers.waitForSelector(driver, 'article.user');
         });
         validateUsersPage();
@@ -195,7 +188,7 @@ describe('Users', function() {
 
       describe('Visiting a user page directly', async function() {
         before(async function() {
-          await helpers.navigateAndWait(driver, `${host}/#/users/${admin}`, 'article.user');
+          await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
         });
         validateUsersPage();
       });

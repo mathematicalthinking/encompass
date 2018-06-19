@@ -1,16 +1,13 @@
+// REQUIRE MODULES
 const {Builder, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
+// REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
 
-const host = `http://localhost:${port}`
-const user = 'rick';
-const password = 'sanchez';
+const host = helpers.host;
 
 describe('Comments', function() {
   this.timeout('10s');
@@ -21,7 +18,7 @@ describe('Comments', function() {
       .build();
       await dbSetup.prepTestDb();
     try {
-      await helpers.login(driver, host, user, password);
+      await helpers.login(driver, host);
     }catch(err) {
       console.log(err);
     }
@@ -32,7 +29,7 @@ describe('Comments', function() {
   });
 
   describe('Visiting a Selection in ESI 2014 Wednesday Reflection', function() {
-    const comment = `new comment from ${user} ${new Date().getTime()}`;
+    const comment = `new comment from ${helpers.admin} ${new Date().getTime()}`;
     let saveButton;
     before(async function() {
       try {
@@ -49,7 +46,6 @@ describe('Comments', function() {
         if (!_.isEmpty(textArea)) {
           await textArea[0].sendKeys(comment);
           await saveButton.click();
-          await driver.sleep(2000);
         }
       }catch(err) {
         console.log(err);
