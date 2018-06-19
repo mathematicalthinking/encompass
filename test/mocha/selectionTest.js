@@ -1,26 +1,37 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/selections/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/selections/";
 
 chai.use(chaiHttp);
 
 describe('Selection CRUD operations', function() {
-  this.timeout('17s');
-  before( async function () {
-    await dbSetup.prepTestDb();
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
   });
+
+  after(() => {
+    agent.close();
+  });
+
   /** GET **/
   describe('/GET selections', () => {
     it('should get all selections', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -30,9 +41,10 @@ describe('Selection CRUD operations', function() {
       });
     });
   });
+
   describe('/GET selection by ID', () => {
     it('should get selection', done => {
-      chai.request(host)
+      agent
       .get(baseUrl + fixtures.selection._id)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -48,7 +60,7 @@ describe('Selection CRUD operations', function() {
   /** POST **/
   describe('/POST selection', () => {
     it('should post a new selection', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({selection: fixtures.selection.validSelection})
       .end((err, res) => {
@@ -59,12 +71,12 @@ describe('Selection CRUD operations', function() {
       });
     });
   });
-  //
+
   /** PUT selection text**/
   describe('/PUT update selection text', () => {
     it('should change the selection text to "updated text"', done => {
       let url = baseUrl + fixtures.selection._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({selection: {text: 'updated text', submission: fixtures.selection.validSelection.submission}})
       .end((err, res) => {

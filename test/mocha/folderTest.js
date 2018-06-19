@@ -1,76 +1,88 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/folders/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/folders/";
 
 chai.use(chaiHttp);
 
 describe('Folder CRUD operations', function() {
-    this.timeout('17s');
-    before(async function(){
-      await dbSetup.prepTestDb();
-    });
-    describe('/GET Folders', () => {
-      it('should get all folders', done => {
-        chai.request(host)
-        .get(baseUrl)
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body).to.have.all.keys('folders');
-          expect(res.body.folders).to.be.a('array');
-          done();
-        });
-      });
-    });
-    describe('/GET folder by ID', () => {
-      it('should get the reflections folder', done => {
-        chai.request(host)
-        .get(baseUrl + fixtures.folder._id)
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body).to.have.all.keys('folder');
-          expect(res.body.folder).to.be.a('object');
-          expect(res.body.folder.name).to.eql('Reflections');
-          done();
-        });
-      });
-    });
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
 
-    /** POST **/
-    describe('/POST folder', () => {
-      it('should post a new folder', done => {
-        chai.request(host)
-        .post(baseUrl)
-        .send({folder: fixtures.folder.validFolder})
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.folder).to.have.any.keys('name', 'workspace');
-          expect(res.body.folder.name).to.eql(fixtures.folder.validFolder.name);
-          done();
-        });
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
+  });
+
+  after(() => {
+    agent.close();
+  });
+
+  describe('/GET Folders', () => {
+    it('should get all folders', done => {
+      agent
+      .get(baseUrl)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.all.keys('folders');
+        expect(res.body.folders).to.be.a('array');
+        done();
       });
     });
-    //
-    /** PUT name**/
-    describe('/PUT update folder name', () => {
-      it('should change the folder name to phils class', done => {
-        let url = baseUrl + fixtures.folder._id;
-        chai.request(host)
-        .put(url)
-        .send({folder: {name: 'phils class'}})
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.folder).to.have.any.keys('name', );
-          expect(res.body.folder.name).to.eql('phils class');
-          done();
-        });
+  });
+
+  describe('/GET folder by ID', () => {
+    it('should get the reflections folder', done => {
+      agent
+      .get(baseUrl + fixtures.folder._id)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.all.keys('folder');
+        expect(res.body.folder).to.be.a('object');
+        expect(res.body.folder.name).to.eql('Reflections');
+        done();
       });
     });
+  });
+
+  /** POST **/
+  describe('/POST folder', () => {
+    it('should post a new folder', done => {
+      agent
+      .post(baseUrl)
+      .send({folder: fixtures.folder.validFolder})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.folder).to.have.any.keys('name', 'workspace');
+        expect(res.body.folder.name).to.eql(fixtures.folder.validFolder.name);
+        done();
+      });
+    });
+  });
+
+  /** PUT name**/
+  describe('/PUT update folder name', () => {
+    it('should change the folder name to phils class', done => {
+      let url = baseUrl + fixtures.folder._id;
+      agent
+      .put(url)
+      .send({folder: {name: 'phils class'}})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.folder).to.have.any.keys('name', );
+        expect(res.body.folder.name).to.eql('phils class');
+        done();
+      });
+    });
+  });
 });

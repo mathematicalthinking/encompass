@@ -1,26 +1,37 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/submissions/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/submissions/";
 
 chai.use(chaiHttp);
 
 describe('Submission CRUD operations', function() {
-  this.timeout('17s');
-  before( async function () {
-    await dbSetup.prepTestDb();
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
   });
+
+  after(() => {
+    agent.close();
+  });
+
   /** GET **/
   describe('/GET submissions', () => {
     it('should get all submissions', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -30,9 +41,10 @@ describe('Submission CRUD operations', function() {
       });
     });
   });
+
   describe('/GET submission by ID', () => {
     it('should get submission', done => {
-      chai.request(host)
+      agent
       .get(baseUrl + fixtures.submission._id)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -47,7 +59,7 @@ describe('Submission CRUD operations', function() {
   /** POST **/
   describe('/POST submission', () => {
     it('should post a new submission', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send(fixtures.submission.validSubmission)
       .end((err, res) => {
@@ -64,7 +76,7 @@ describe('Submission CRUD operations', function() {
 //   describe('/PUT update submission text', () => {
 //     it('should change the submission text to "updated text"', done => {
 //       let url = baseUrl + fixtures.submission._id;
-//       chai.request(host)
+//       agent
 //       .put(url)
 //       .set('Cookie', userCredentials)
 //       .send({submission: {text: 'updated text', submission: fixtures.submission.validSubmission.submission}})

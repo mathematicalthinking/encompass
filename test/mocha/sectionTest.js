@@ -1,26 +1,36 @@
+// REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
-const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
-const baseUrl = "/api/sections/";
 
-const config = require('../../server/config');
-const nconf = config.nconf;
-const port = nconf.get('testPort');
-const host = `http://localhost:${port}`;
+// REQUIRE FILES
+const fixtures = require('./fixtures.js');
+const helpers = require('./helpers');
+
+const expect = chai.expect;
+const host = helpers.host;
+const baseUrl = "/api/sections/";
 
 chai.use(chaiHttp);
 
 describe('Section CRUD operations', function() {
-  this.timeout('17s');
-  before( async function () {
-    await dbSetup.prepTestDb();
+  this.timeout('10s');
+  const agent = chai.request.agent(host);
+
+  before(async function(){
+    try {
+      await helpers.setup(agent);
+    }catch(err) {
+      console.log(err);
+    }
+  });
+
+  after(() => {
+    agent.close();
   });
   /** GET **/
   describe('/GET sections', () => {
     it('should get all sections', done => {
-      chai.request(host)
+      agent
       .get(baseUrl)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -33,7 +43,7 @@ describe('Section CRUD operations', function() {
   });
   describe('/GET section by ID', () => {
     it('should get Drexel University section', done => {
-      chai.request(host)
+      agent
       .get(baseUrl + fixtures.section._id)
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -48,7 +58,7 @@ describe('Section CRUD operations', function() {
   /** POST **/
   describe('/POST section', () => {
     it('should post a new section', done => {
-      chai.request(host)
+      agent
       .post(baseUrl)
       .send({section: fixtures.section.validSection})
       .end((err, res) => {
@@ -59,12 +69,12 @@ describe('Section CRUD operations', function() {
       });
     });
   });
-  //
+
   /** PUT name**/
   describe('/PUT update section name', () => {
     it('should change the section name to phils class', done => {
       let url = baseUrl + fixtures.section._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({section: {name: 'phils class'}})
       .end((err, res) => {
@@ -80,7 +90,7 @@ describe('Section CRUD operations', function() {
   describe('add teacher to section', () => {
     it('should add one teacher to the section', done => {
       let url = baseUrl + 'addTeacher/' + fixtures.section._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({teacherId: '52964659e4bad7087700014c'})
       .end((err, res) => {
@@ -96,7 +106,7 @@ describe('Section CRUD operations', function() {
   describe('remove teacher from section', () => {
     let url = baseUrl + 'removeTeacher/' + fixtures.section._id;
     it('should return an empty array', done => {
-      chai.request(host)
+      agent
       .put(url)
       .send({teacherId: fixtures.teacher._id})
       .end((err, res) => {
@@ -111,7 +121,7 @@ describe('Section CRUD operations', function() {
   describe('addStudent to section', () => {
     it('should add one student to the section', done => {
       let url = baseUrl + 'addStudent/' + fixtures.section._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({studentName: 'bill'})
       .end((err, res) => {
@@ -127,7 +137,7 @@ describe('Section CRUD operations', function() {
   describe('remove student from section', () => {
     let url = baseUrl + 'removeStudent/' + fixtures.section._id;
     it('should return an empty array', done => {
-      chai.request(host)
+      agent
       .put(url)
       .send({studentName: fixtures.student.name})
       .end((err, res) => {
@@ -142,7 +152,7 @@ describe('Section CRUD operations', function() {
   describe('add problem to section', () => {
     it('should add one problem to the section', done => {
       let url = baseUrl + 'addProblem/' + fixtures.section._id;
-      chai.request(host)
+      agent
       .put(url)
       .send({problemId: fixtures.problem._id})
       .end((err, res) => {
@@ -158,7 +168,7 @@ describe('Section CRUD operations', function() {
   describe('remove problem from section', () => {
     let url = baseUrl + 'removeProblem/' + fixtures.section._id;
     it('should return an empty array', done => {
-      chai.request(host)
+      agent
       .put(url)
       .send({problemId: fixtures.problem._id})
       .end((err, res) => {
