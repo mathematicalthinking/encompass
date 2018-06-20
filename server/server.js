@@ -9,6 +9,8 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const flash = require('connect-flash');
+require('dotenv').config();
+
 
 //REQUIRE API
 const api = require('./datasource/api');
