@@ -78,6 +78,9 @@ module.exports = function(grunt) {
     shell: {
       restoreTestDb: {
         command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
+      },
+      sleep3: {
+        command: "echo 'sleep start';sleep 3;echo 'sleep done'"
       }
     },
 
@@ -320,6 +323,9 @@ module.exports = function(grunt) {
       apiTasks: {
         tasks: ['nodemon:dev', 'apiTests']
       },
+      waitApiTasks: {
+        tasks: ['nodemon:dev', 'waitApiTests']
+      },
       test: {
         tasks: ['nodemon:dev', 'tests', 'watch'],
         options: {
@@ -382,6 +388,7 @@ module.exports = function(grunt) {
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
+  grunt.registerTask('waitApiTests', ['shell:sleep3', 'mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
   grunt.registerTask('jasmineNodeTests', ['jasmine_node']);
   grunt.registerTask('casperTests', ['mocha_casperjs']);
@@ -438,8 +445,10 @@ module.exports = function(grunt) {
    *   - Runs application using test port, test database, etc.
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
+  grunt.registerTask('sleep3', ['shell:sleep3']);
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
 };
 
