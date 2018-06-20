@@ -329,26 +329,28 @@ module.exports = function(grunt) {
       }
     }
   });
+  // grunt.loadNpmTasks('grunt-babel');
+  // grunt.loadNpmTasks('grunt-browserify');
+  // grunt.loadNpmTasks('grunt-contrib-uglify');
+  // grunt.loadNpmTasks('grunt-contrib-jshint');
+  // grunt.loadNpmTasks('grunt-contrib-jasmine');
+  // grunt.loadNpmTasks('grunt-contrib-qunit');
+  // grunt.loadNpmTasks('grunt-qunit-junit');
+  // grunt.loadNpmTasks('grunt-neuter');
+  // grunt.loadNpmTasks('grunt-contrib-watch');
+  // grunt.loadNpmTasks('grunt-ember-templates');
+  // grunt.loadNpmTasks('grunt-nodemon');
+  // // grunt.loadNpmTasks('grunt-node-inspector');
+  // grunt.loadNpmTasks('grunt-concurrent');
+  // grunt.loadNpmTasks('grunt-jasmine-node');
+  // grunt.loadNpmTasks('grunt-mocha-casperjs');
+  // grunt.loadNpmTasks('grunt-mocha-test');
+  // //grunt.loadNpmTasks('grunt-casperjs-plugin');
+  // // grunt.loadNpmTasks('grunt-groc');
+  // grunt.loadNpmTasks('grunt-env');
+  // grunt.loadNpmTasks('grunt-shell');
+  require('load-grunt-tasks')(grunt);
 
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-qunit-junit');
-  grunt.loadNpmTasks('grunt-neuter');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-ember-templates');
-  grunt.loadNpmTasks('grunt-nodemon');
-  // grunt.loadNpmTasks('grunt-node-inspector');
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-jasmine-node');
-  grunt.loadNpmTasks('grunt-mocha-casperjs');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  //grunt.loadNpmTasks('grunt-casperjs-plugin');
-  // grunt.loadNpmTasks('grunt-groc');
-  grunt.loadNpmTasks('grunt-env');
-  grunt.loadNpmTasks('grunt-shell');
 
   /*
     Build the application
