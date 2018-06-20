@@ -5,6 +5,6 @@ Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
   },
 
   renderTemplate: function () {
-    this.render();
+    this.render('problems/problem');
   }
 });
