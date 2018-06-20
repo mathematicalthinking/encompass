@@ -19,6 +19,7 @@ before_script:
   - sleep 6 # give Web server some time to bind to sockets, etc
 script:
   - grunt apiTests
+  - grunt endToEndTests
 sudo: required
 addons:
   chrome: stable
