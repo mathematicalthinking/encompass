@@ -16,9 +16,9 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - grunt serve-test & # start server on test port 8082
-  - sleep 3 # give Web server some time to bind to sockets, etc
+  - sleep 6 # give Web server some time to bind to sockets, etc
 script:
-  - grunt apiTest
+  - grunt apiTests
 sudo: required
 addons:
   chrome: stable
