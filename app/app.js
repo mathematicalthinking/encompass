@@ -63,7 +63,7 @@ require('dependencies/compiled/templates');
 
 var QUNIT   = window.TESTING;
 var TEST_MODE = (QUNIT);
-var rootElement = '#todoapp';
+var rootElement = '#encompass';
 var PRINT_DEBUG_TO_CONSOLE = true;
 
 if (TEST_MODE) {
@@ -152,6 +152,7 @@ require('app/controllers/*');
  * which results in view hierarchy updates. Responds to
  * actions.
 */
+require('./router.js');
 require('app/routes/*');
 
 require('app/components/*');

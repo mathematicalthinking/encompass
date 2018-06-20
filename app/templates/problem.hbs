@@ -1,44 +1,4 @@
-<header>
-  <h2>Create New Problem</h2>
-  <div class="clear"></div>
-</header>
-
-<section class="newWorkspace">
-  <section class="third submissions">
-    <form id='problem' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="title">Problem Name</label>
-            {{input id="title" type="text" value=title placeholder="enter problem name"}}
-          </li>
-          <li>
-            <label for="text">Problem Question</label>
-            {{input id="text" type="text" value=text placeholder="enter problem question"}}
-          </li>
-          <li>
-            <label for="categories">Problem Category</label>
-            {{input id="categories" type="text" value=categories placeholder="enter a category"}}
-          </li>
-          <li>
-            <label for="additionalInfo">Additional Info</label>
-            {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
-          </li>
-          <li>
-            <label for="isPublic">Public</label>
-            {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
-            <label>Yes</label>
-            {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
-            <label>No</label>
-          </li>
-        </ol>
-      </fieldset>
-    </form>
-  </section>
-  <div style="clear: left"></div>
-  <section class="submit">
-    <button class="action_button" {{action 'createProblem'}}>
-      Create Problem
-    </button>
-  </section>
-</section>
+<p>Problem Name: {{model.title}}</p>
+<p>Problem Question: {{model.text}}</p>
+<p>Public? {{model.isPublic}}</p>
+<p>Creation Date: {{model.createDate}}</p>
