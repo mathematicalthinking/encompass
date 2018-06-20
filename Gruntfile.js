@@ -379,8 +379,7 @@ module.exports = function(grunt) {
     Wrapper for qunit that also stores the results in jUnit format
   */
   // TODO: rework qunit tests for ember 2 and add qunit back in
-  //grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
-  grunt.registerTask('jqunit', ['qunit_junit']);
+  grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
