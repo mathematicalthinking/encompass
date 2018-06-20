@@ -1,6 +1,5 @@
-Encompass.ProblemsNewController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
+Encompass.ProblemNewComponent = Ember.Component.extend({
   actions: {
-    // This action just sets whatever the value of the selected radio button is to the value for is Public
     radioSelect: function (value) {
       this.set('isPublic', value);
     },
@@ -25,3 +24,4 @@ Encompass.ProblemsNewController = Ember.Controller.extend(Encompass.CurrentUserM
     }
   }
 });
+
