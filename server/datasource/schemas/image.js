@@ -5,30 +5,29 @@ var mongoose = require('mongoose'),
 
 /**
   * @public
-  * @class Problem
-  * @description Problems are submitted by teachers
+  * @class Image
+  * @description Images are text documents based on selections and comments
   */
-var ProblemSchema = new Schema({
+var ImageSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   //====
-  title: { type: String },
-  puzzleId: { type: Number },
-  text: { type: String },
-  imageUrl: { type: String },
-  sourceUrl: { type: String },
-  additionalInfo: { type: String },
-  isPublic: { type: Boolean, default: false },
-  categories: [{ type: ObjectId, ref: 'Category' }]
+  originalName: { type: String },
+  encoding: { type: String },
+  mimetype: { type: String },
+  destination:  { type: String },
+  filename: { type: String },
+  path: { type: String },
+  relativePath: { type: String }
 }, { versionKey: false });
 
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
   */
-// ProblemSchema.pre('save', function (next) {
+// ImageSchema.pre('save', function (next) {
 //   var toObjectId = function (elem, ind, arr) {
 //     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
 //       arr[ind] = mongoose.Types.ObjectId(elem);
@@ -53,16 +52,16 @@ var ProblemSchema = new Schema({
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
-// ProblemSchema.post('save', function (Problem) {
-//   var update = { $addToSet: { 'Problems': Problem } };
-//   if (Problem.isTrashed) {
-//     var ProblemIdObj = mongoose.Types.ObjectId(Problem._id);
+// ImageSchema.post('save', function (Image) {
+//   var update = { $addToSet: { 'Images': Image } };
+//   if (Image.isTrashed) {
+//     var ImageIdObj = mongoose.Types.ObjectId(Image._id);
 //     /* + If deleted, all references are also deleted */
-//     update = { $pull: { 'Problems': ProblemIdObj } };
+//     update = { $pull: { 'Images': ImageIdObj } };
 //   }
 
-//   if (Problem.workspace) {
-//     mongoose.models.Workspace.update({ '_id': Problem.workspace },
+//   if (Image.workspace) {
+//     mongoose.models.Workspace.update({ '_id': Image.workspace },
 //       update,
 //       function (err, affected, result) {
 //         if (err) {
@@ -71,8 +70,8 @@ var ProblemSchema = new Schema({
 //       });
 //   }
 
-//   if (Problem.submission) {
-//     mongoose.models.Submission.update({ '_id': Problem.submission },
+//   if (Image.submission) {
+//     mongoose.models.Submission.update({ '_id': Image.submission },
 //       update,
 //       function (err, affected, result) {
 //         if (err) {
@@ -83,4 +82,4 @@ var ProblemSchema = new Schema({
 
 // });
 
-module.exports.Problem = mongoose.model('Problem', ProblemSchema);
+module.exports.Image = mongoose.model('Image', ImageSchema);
