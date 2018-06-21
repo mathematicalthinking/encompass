@@ -63,7 +63,7 @@ describe('Home Page', function () {
   });
 
   describe('NavBar', async function () {
-    const elements = ['workspaces', 'responses', 'users', 'logout', 'problem', 'workspaces/new', 'users/new'];
+    const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'workspaces/new', 'users/new'];
     function verifyNavElement(navElement) {
       let isVisible;
       it(`${navElement} link should exist`, async function () {
