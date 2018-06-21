@@ -19,7 +19,7 @@ server.out
 babel/
 
 # public uploads
-public/image_uploads
+server/public/image_uploads
 
 # mac files
 .DS_Store
