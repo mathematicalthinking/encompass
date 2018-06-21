@@ -1,5 +1,6 @@
 # node files
 node_modules/
+package_lock.json # using npm-shrinkwrap.json
 
 # for security
 config.json
