@@ -50,6 +50,7 @@
     "Ember": true,
     "Encompass": true,
     "Permissions": true,
-    "SelectionHighlighting": true
+    "SelectionHighlighting": true,
+    "__dirname": true
   }
 }
