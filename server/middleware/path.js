@@ -33,7 +33,6 @@ function prep(options) {
     _.defaults(req, { mf: {} });
     _.defaults(req.mf, { path: {} });
     _.defaults(req.mf, { auth: {} });
-    console.log("PREPPED");
     return next();
   }
 
@@ -68,8 +67,6 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
-    console.log('in validateid');
-    console.log("VALIDATING ID");
     var match = idRequest(req);
     if(!match) {
       return next();
@@ -82,7 +79,6 @@ function validateId(options) {
       //TODO this is sending a 500 error although its a 4xx
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
-    console.log("ID validated");
     return next();
 
   }
