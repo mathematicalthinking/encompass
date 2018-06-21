@@ -1,7 +1,7 @@
 {
   "name": "encompass",
   "version": "2.0.0",
-  "description": "enCOMPASS",
+  "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
     "test": "grunt",
@@ -24,7 +24,6 @@
   "homepage": "https://github.com/mathematicalthinking/encompass#readme",
   "dependencies": {
     "@log4js-node/mailgun": "^1.0.0",
-    "axios": "^0.18.0",
     "bcrypt": "^1.0.3",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^2.0.1",
@@ -33,7 +32,34 @@
     "debug": "^3.1.0",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "http": "0.0.0",
+    "http-errors": "^1.6.3",
+    "i": "^0.3.6",
+    "jasmine-node": "^1.14.5",
+    "log4js": "^2.5.3",
+    "mongoose": "^4.11.7",
+    "morgan": "^1.9.0",
+    "nconf": "^0.10.0",
+    "nodemon": "^1.17.5",
+    "passport": "^0.4.0",
+    "passport-google-oauth": "^1.0.0",
+    "passport-local": "^1.0.0",
+    "q": "^1.5.1",
+    "request": "^2.85.0",
+    "underscore": "^1.9.0",
+    "uuid": "^3.2.1"
+  },
+  "engines": {
+    "node": "8.6.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "chromedriver": "^2.38.3",
     "grunt": "^1.0.2",
+    "grunt-babel": "^7.0.0",
     "grunt-browserify": "^5.3.0",
     "grunt-concurrent": "^2.3.1",
     "grunt-contrib-jasmine": "^1.2.0",
@@ -50,33 +76,8 @@
     "grunt-nodemon": "^0.4.2",
     "grunt-qunit-junit": "^0.3.1",
     "grunt-shell": "2.1.0",
-    "http": "0.0.0",
-    "http-errors": "^1.6.3",
-    "i": "^0.3.6",
-    "jasmine-node": "^1.14.5",
-    "log4js": "^2.5.3",
-    "mongoose": "^4.11.7",
-    "morgan": "^1.9.0",
-    "nconf": "^0.10.0",
-    "nodemon": "^1.17.5",
-    "passport": "^0.4.0",
-    "passport-google-oauth": "^1.0.0",
-    "passport-local": "^1.0.0",
-    "q": "^1.5.1",
-    "request": "^2.85.0",
-    "selenium-webdriver": "^4.0.0-alpha.1",
-    "underscore": "^1.9.0",
-    "uuid": "^3.2.1"
-  },
-  "engines": {
-    "node": "8.6.0"
-  },
-  "devDependencies": {
-    "chai": "^4.1.2",
-    "chai-http": "^4.0.0",
-    "chromedriver": "^2.38.3",
-    "dotenv": "^6.0.0",
-    "grunt-env": "^0.4.4",
-    "mocha": "^5.2.0"
+    "load-grunt-tasks": "^4.0.0",
+    "mocha": "^5.2.0",
+    "selenium-webdriver": "^4.0.0-alpha.1"
   }
 }

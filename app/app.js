@@ -9,6 +9,7 @@
  * Each file contains its own commenting, so feel free to crack
  * them open if you want more information about what is going on.
 */
+
 require('dependencies/underscore-min');
 require('dependencies/ie_hacks.js');
 require('dependencies/image-tagging');
@@ -135,7 +136,7 @@ Encompass.RawTransform = DS.Transform.extend({
  * doesn't communicate with a server, plain
  * Ember.Objects will do.
 */
-require('app/models/*');
+require('./models/*');
 
 /*
  * Controller layer.
@@ -144,7 +145,7 @@ require('app/models/*');
  * whose value is computed from the content of the
  * controllers wrapped objects.
 */
-require('app/controllers/*');
+require('./controllers/*');
 
 /*
  * States (i.e. Routes)
@@ -153,9 +154,9 @@ require('app/controllers/*');
  * actions.
 */
 require('./router.js');
-require('app/routes/*');
+require('./routes/*');
 
-require('app/components/*');
+require('./components/*');
 
-require('app/helpers/*');
+require('./helpers/*');
 
