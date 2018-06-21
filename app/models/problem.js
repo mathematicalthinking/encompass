@@ -3,7 +3,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   title: DS.attr('string'),
   puzzleId: DS.attr('number'),
   text: DS.attr('string'),
-  image: DS.attr('string'),
+  imageUrl: DS.attr('string'),
   sourceUrl: DS.attr('string'),
   additionalInfo: DS.attr('string'),
   isPublic: DS.attr('boolean', {
