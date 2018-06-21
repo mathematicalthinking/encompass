@@ -15,6 +15,9 @@ _SpecRunner.html
 error.out
 server.out
 
+#babel files
+babel/
+
 # mac files
 .DS_Store
 

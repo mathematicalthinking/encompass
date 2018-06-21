@@ -29,17 +29,17 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     selection: /^http:\/\/.*\/#\/workspaces\/[0-9a-f]*\/submissions\/[0-9a-f]*\/selections/,
     folder: /^ember/ // We assume all other droppable ember objects are folders
   },
-  dragEnter: Ember.aliasMethod('onDrag'), 
+  dragEnter: Ember.aliasMethod('onDrag'),
   dragOver: Ember.aliasMethod('onDrag'),
   dragLeave: Ember.aliasMethod('onDrop'),
   dragEnd: Ember.aliasMethod('onDrop'),
 
   onDrag: function(event) {
-    var view = this;
+    const view = this;
     document.getElementById(this.elementId).style.backgroundColor = 'rgb(255, 255, 255)';
     event = event || window.event;
     event.preventDefault();
-    
+
     return false;
   },
 
@@ -54,13 +54,13 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     dataTransfer.setData('text/plain', 'folder');
     event.stopPropagation();
   },
-  
+
   onDrop: function(event) {
-    var view = this;
+    const view = this;
     document.getElementById(this.elementId).style.backgroundColor = 'transparent';
     event = event || window.event;
     event.preventDefault();
-    
+
     return false;
   },
 
@@ -68,7 +68,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     var packet = event.originalEvent;
     var dropType = packet.dataTransfer.getData('text/plain');
     var dropObject = event.dataTransfer.getData('application/json');
-   
+
     if ( this.supportedTypes.hasOwnProperty(dropType) ) {
       Ember.run.next(this, function() {
         this.putInFolder(this.model, dropType, dropObject);
@@ -138,7 +138,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       parentOfDropped = folders.filterBy('id', droppedFolder.get('parent').get('id')).get('firstObject');
     }
 
-    
+
     if (parentOfDropped) {
       parentOfDropped.get('children').then(function(children) {
         children.removeObject(droppedFolder);
@@ -146,14 +146,14 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     }
 
     droppedFolder.set('parent', parent);
-    
+
     parent.get('children').then(function(children) {
       children.pushObject(droppedFolder);
     });
 
     droppedFolder.save();
   },
-  
+
   actions: {
     toggle: function() {
       console.log("expand folder " + this.model.get('name') );
@@ -170,7 +170,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       }
 
       return true; //bubbling the event so that if the user clicks into another input it takes
-      //we'll handle the event further up to dismiss it so it doesn't cause an 
+      //we'll handle the event further up to dismiss it so it doesn't cause an
       //error
     },
 

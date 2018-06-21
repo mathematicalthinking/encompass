@@ -39,7 +39,7 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'app',
         src: ['**/*.js'],
-        dest: 'build/babel',
+        dest: 'babel',
         ext: '.js'
         }]
       }
@@ -108,11 +108,11 @@ module.exports = function(grunt) {
         options: {
           includeSourceURL: true
         },
-        src: 'build/babel/app.js',
+        src: 'babel/app.js',
         dest: 'build/application.js'
       },
       prod: {
-        src: 'build/babel/app.js',
+        src: 'babel/app.js',
         dest: 'build/application-prod.js'
       }
     },

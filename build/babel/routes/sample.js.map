@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../app/routes/sample.js"],"names":["apple","john","cat"],"mappings":";;AAAA,IAAMA,QAAQ,OAAd;AACA,IAAIC,OAAO,MAAX;;AAEA,IAAMC,MAAM,SAANA,GAAM,GAAM;AAChB,SAAOF,KAAP;AACD,CAFD","file":"sample.js","sourcesContent":["const apple = 'hello';\nlet john = 'john';\n\nconst cat = () => {\n  return apple;\n};"]}

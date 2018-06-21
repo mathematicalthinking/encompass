@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../app/components/log-in.js"],"names":["Encompass","LoginComponent","Ember","Component","extend","isHidden"],"mappings":";;AAAAA,UAAUC,cAAV,GAA2BC,MAAMC,SAAN,CAAgBC,MAAhB,CAAuB;AAChDC,YAAU;AADsC,CAAvB,CAA3B","file":"log-in.js","sourcesContent":["Encompass.LoginComponent = Ember.Component.extend({\n  isHidden: false,\n});\n"]}
