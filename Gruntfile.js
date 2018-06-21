@@ -10,6 +10,7 @@
 /*global module:false */
 module.exports = function(grunt) {
 
+// INITIALIZE ALL GRUNT CONFIGURATION
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     revision: process.env.SVN_REVISION || '??',
@@ -28,6 +29,7 @@ module.exports = function(grunt) {
     },
     /*
      * Runs babel to transpile ES6 code to ES5
+     * It takes all .js files in app/ and places the transpiled code into babel/
      */
     babel: {
       options: {
@@ -102,6 +104,8 @@ module.exports = function(grunt) {
        the source files by line number.
        You would set this option to false for
        production.
+       This takes creates a single .js file from all
+       the babel files
     */
     neuter: {
       dev: {

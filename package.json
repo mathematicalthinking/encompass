@@ -1,7 +1,7 @@
 {
   "name": "encompass",
   "version": "2.0.0",
-  "description": "enCOMPASS",
+  "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
     "test": "grunt",
@@ -24,7 +24,6 @@
   "homepage": "https://github.com/mathematicalthinking/encompass#readme",
   "dependencies": {
     "@log4js-node/mailgun": "^1.0.0",
-    "axios": "^0.18.0",
     "bcrypt": "^1.0.3",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^2.0.1",
