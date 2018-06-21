@@ -351,6 +351,21 @@ module.exports = function(grunt) {
   // grunt.loadNpmTasks('grunt-shell');
   require('load-grunt-tasks')(grunt);
 
+// grunt.initConfig({
+//   babel: {
+//     options: {
+//       sourceMap: true,
+//       presets: ['env']
+//     },
+//     dist: {
+//       files: {
+//         'dist/app.js': 'src/app.js'
+//       }
+//     }
+//   }
+// });
+
+// grunt.registerTask('default', ['babel']);
 
   /*
     Build the application
