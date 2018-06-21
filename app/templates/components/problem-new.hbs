@@ -25,6 +25,10 @@
             {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
           </li>
           <li>
+            <label for="imageUrl">Upload Images</label>
+            {{image-upload filesToBeUploaded = filesToBeUploaded}}
+          </li>
+          <li>
             <label for="isPublic">Public</label>
             {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
             <label>Yes</label>
@@ -41,4 +45,12 @@
       Create Problem
     </button>
   </section>
+  {{#if createdProblem}}
+  <p>Successfully created problem
+     {{#link-to 'problem' createdProblem  classNames='problem'}}{{title}}
+    {{/link-to}}</p>
+  {{else}}
+  <p>{{createProblemError}}</p>
+  {{/if}}
+
 </section>
