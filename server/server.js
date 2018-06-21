@@ -9,6 +9,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const flash = require('connect-flash');
+const multer = require('multer');
 require('dotenv').config();
 
 
@@ -21,6 +22,7 @@ const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
 const path = require('./middleware/path');
 const utils = require('./middleware/requestHandler');
+const multerMw = require('./middleware/multer');
 
 //REQUIRE MODELS
 const models = require('./datasource/schemas');
@@ -107,6 +109,19 @@ server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
 server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
+
+//MULTER CONFIG
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: multerMw.buildDestination,
+    filename: multerMw.filename
+  }),
+    fileFilter: multerMw.fileFilter
+});
+
+// // IMAGE UPLOAD
+// server.post('/upload', upload.array('photo', 10), api.post.images);
+
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
