@@ -43,7 +43,7 @@ const fs = require('fs');
       }
       const rootPath = process.cwd();
       const username = req.user.username || 'anonymous';
-      let dest = path.resolve(rootPath, `server/image_uploads/${username}`);
+      let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
       fs.mkdir(dest, (err) => {
         if (err) {
           console.log(err);
@@ -73,7 +73,7 @@ const fs = require('fs');
         }
      };
 
-    module.exports.config = config;
+    //module.exports.config = config;
     module.exports.buildDestination = buildDestination;
     module.exports.fileFilter = fileFilter;
     module.exports.filename = filename;

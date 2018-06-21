@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const flash = require('connect-flash');
 const multer = require('multer');
+const expressPath = require('path');
 require('dotenv').config();
 
 
@@ -103,6 +104,7 @@ server.use(express.urlencoded({
   extended: false
 }));
 server.use(cookieParser());
+server.use(express.static(expressPath.join(__dirname, 'public')));
 server.use(path.prep());
 server.use(path.processPath());
 server.use(userAuth.fetchUser());
@@ -120,7 +122,7 @@ const upload = multer({
 });
 
 // // IMAGE UPLOAD
-// server.post('/upload', upload.array('photo', 10), api.post.images);
+ server.post('/image', upload.array('photo', 10), api.post.images);
 
 
 // LOCAL AUTHENTICATION CALLS
