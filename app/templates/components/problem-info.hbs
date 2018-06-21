@@ -1,4 +1,8 @@
 <p>Problem Name: {{problem.title}}</p>
 <p>problem Question: {{problem.text}}</p>
+{{#if problem.imageUrl}}
+  <p>Problem Image: </p>
+  <img src="{{{problem.imageUrl}}}" alt={{{problem.title}}} />
+{{/if}}
 <p>Public? {{problem.isPublic}}</p>
 <p>Creation Date: {{problem.createDate}}</p>
