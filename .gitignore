@@ -18,6 +18,9 @@ server.out
 #babel files
 babel/
 
+# public uploads
+public/image_uploads
+
 # mac files
 .DS_Store
 
