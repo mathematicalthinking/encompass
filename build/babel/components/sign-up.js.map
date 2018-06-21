@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../app/components/sign-up.js"],"names":["Encompass","SignupComponent","Ember","Component","extend","isHidden"],"mappings":";;AAAAA,UAAUC,eAAV,GAA4BC,MAAMC,SAAN,CAAgBC,MAAhB,CAAuB;AACjDC,YAAU;AADuC,CAAvB,CAA5B","file":"sign-up.js","sourcesContent":["Encompass.SignupComponent = Ember.Component.extend({\n  isHidden: false,\n});\n"]}

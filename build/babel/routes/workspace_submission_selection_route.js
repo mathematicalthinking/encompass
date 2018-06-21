@@ -1,0 +1,44 @@
+'use strict';
+
+Encompass.WorkspaceSubmissionSelectionRoute = Ember.Route.extend({
+
+  afterModel: function afterModel(model, transition) {
+    this.controllerFor('workspace').set('currentSelection', model);
+  },
+
+  deactivate: function deactivate() {
+    this.controllerFor('workspace').set('currentSelection', null);
+  },
+
+  doTour: function () {
+    console.log('doing tour');
+    var user = this.modelFor('application');
+
+    Ember.run.schedule('afterRender', function () {
+      if (!user.get('seenTour')) {
+        //customize for this part of the tour
+        guiders.hideAll();
+        console.log('ignoring tour');
+        //guiders.show('comments');
+      }
+    });
+  }.observes('shouldDoTour'),
+
+  shouldDoTour: function () {
+    var user = this.modelFor('application');
+    var userSeenTour = user.get('seenTour');
+    var redoTour = this.get('Encompass.redoTour');
+    return userSeenTour || redoTour;
+  }.property('Encompass.redoTour'),
+
+  renderTemplate: function renderTemplate() {
+    this.render();
+    $('#commentTextarea').focus();
+    var user = this.modelFor('application');
+    //    if (!user.get('seenTour')) {
+    //      this.doTour();
+    //    }
+  }
+
+});
+//# sourceMappingURL=workspace_submission_selection_route.js.map

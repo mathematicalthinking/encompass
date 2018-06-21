@@ -26,6 +26,25 @@ module.exports = function(grunt) {
         }
       }
     },
+    /*
+     * Runs babel to transpile ES6 code to ES5
+     */
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['env']
+      },
+      dist: {
+        files: [{
+        expand: true,
+        cwd: 'app',
+        src: ['**/*.js'],
+        dest: 'build/babel',
+        ext: '.js'
+        }]
+      }
+    },
+
 
     /*
      * Set Node environment using grunt-env
@@ -89,11 +108,11 @@ module.exports = function(grunt) {
         options: {
           includeSourceURL: true
         },
-        src: 'app/app.js',
+        src: 'build/babel/app.js',
         dest: 'build/application.js'
       },
       prod: {
-        src: 'app/app.js',
+        src: 'build/babel/app.js',
         dest: 'build/application-prod.js'
       }
     },
@@ -329,43 +348,18 @@ module.exports = function(grunt) {
       }
     }
   });
-  // grunt.loadNpmTasks('grunt-babel');
-  // grunt.loadNpmTasks('grunt-browserify');
-  // grunt.loadNpmTasks('grunt-contrib-uglify');
-  // grunt.loadNpmTasks('grunt-contrib-jshint');
-  // grunt.loadNpmTasks('grunt-contrib-jasmine');
-  // grunt.loadNpmTasks('grunt-contrib-qunit');
-  // grunt.loadNpmTasks('grunt-qunit-junit');
-  // grunt.loadNpmTasks('grunt-neuter');
-  // grunt.loadNpmTasks('grunt-contrib-watch');
-  // grunt.loadNpmTasks('grunt-ember-templates');
-  // grunt.loadNpmTasks('grunt-nodemon');
-  // // grunt.loadNpmTasks('grunt-node-inspector');
-  // grunt.loadNpmTasks('grunt-concurrent');
-  // grunt.loadNpmTasks('grunt-jasmine-node');
-  // grunt.loadNpmTasks('grunt-mocha-casperjs');
-  // grunt.loadNpmTasks('grunt-mocha-test');
-  // //grunt.loadNpmTasks('grunt-casperjs-plugin');
-  // // grunt.loadNpmTasks('grunt-groc');
-  // grunt.loadNpmTasks('grunt-env');
-  // grunt.loadNpmTasks('grunt-shell');
+
+
+
+  /*
+  LOAD ALL GRUNT TASKS FROM NPM FILES
+    This loads grunt: babel, browserify, uglify, jshint, jasmine,
+    qunit, junit, neuter, contrib-watch, ember-templates, nodemon
+    node-inspector, concurrent, jasmine-node, mocha-casperjs,
+    mocha-test, casperjs, groc, env, shell
+ */
   require('load-grunt-tasks')(grunt);
 
-// grunt.initConfig({
-//   babel: {
-//     options: {
-//       sourceMap: true,
-//       presets: ['env']
-//     },
-//     dist: {
-//       files: {
-//         'dist/app.js': 'src/app.js'
-//       }
-//     }
-//   }
-// });
-
-// grunt.registerTask('default', ['babel']);
 
   /*
     Build the application
@@ -373,7 +367,9 @@ module.exports = function(grunt) {
       - convert the common code into a single bundle
       - combine these files + application files in order
   */
-  grunt.registerTask('build', ['emberTemplates', 'browserify', 'neuter']);
+  grunt.registerTask('build', ['emberTemplates', 'babel', 'browserify', 'neuter']);
+  // grunt.registerTask('babel', ['babel']);
+
 
   /*
     Wrapper for qunit that also stores the results in jUnit format
