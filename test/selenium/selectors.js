@@ -6,7 +6,7 @@ module.exports = {
     responses: 'a.menu.responses',
     users: 'a.menu.users',
     logout: 'a.menu.logout',
-    problem: 'a.menu.problem',
+    problems: 'a.menu.problems',
     workspacesNew: 'a[href="#/workspaces/new"'
 
   },
