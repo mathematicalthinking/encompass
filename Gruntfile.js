@@ -2,8 +2,8 @@
  * @description We are using [Grunt](http://gruntjs.com/) the Javascript Task Runner
  *              for building and compiling the app. Below is the configuration.
  * @see [Grunt](http://gruntjs.com/)
- * @authors Amir Tahvildaran <amir@mathforum.org>
- * @since 1.0.0
+ * @authors Philip Wisner, Dan Kelly & Dave Taylor
+ * @since 2.0.0
 */
 
 /*jshint camelcase: false */
@@ -67,7 +67,8 @@ module.exports = function(grunt) {
     },
 
     /*
-     * Set up the Mocha selenium tests
+     * Set up the Mocha tests
+     * It then runs the e2e (selenium tests) or the api (mocha/chai)
      * see: https://github.com/pghalliday/grunt-mocha-test
      */
     mochaTest: {
@@ -138,9 +139,8 @@ module.exports = function(grunt) {
     },
 
     /*
-      Browserify is similar to neuter
-      We should probably choose one but javascript
-      modules are just insane at the moment (RequireJS, AMD, ...)
+      Browserify is just taking a single .js file
+      and preparing it for the browser
     */
     browserify: {
       options: {
@@ -195,8 +195,8 @@ module.exports = function(grunt) {
     },
 
     /*
-       Runs all files found in the test/ directory through PhantomJS.
-       Prints the report in your terminal.
+       These tests need to be rewritten, they are tests for the:
+       properties_spec.js & workspace_spec.js
     */
     jasmine: {
       common: {
@@ -213,7 +213,8 @@ module.exports = function(grunt) {
       }
     },
     /*
-      Also run qunit because thats already integrated with ember integration tests
+      Qunit tests are built into ember, they are currently out of date,
+      Maybe only use for large components & pages
     */
     qunit: {
       all: ['test/qunit/q*html'],
@@ -349,17 +350,22 @@ module.exports = function(grunt) {
   /*
     Build the application
       - convert all the handlebars templates into compile functions
+      - convert all ES6 code in app to ES5
       - convert the common code into a single bundle
       - combine these files + application files in order
   */
   grunt.registerTask('build', ['emberTemplates', 'babel', 'browserify', 'neuter']);
-  // grunt.registerTask('babel', ['babel']);
 
 
   /*
-    Wrapper for qunit that also stores the results in jUnit format
+    Tasks for running tests:
+      - tests - runs all mochaTests - this should be changed to run all tests
+      - jqunit - runs the qunit tests and the results output
+      - endToEndTests - runs the e2e MochaTest (Selenium Tests)
+      - apiTests - runs the api MochaTest (backend mocha/chai tets)
+      - jasmineTests - NEED TO BE REPLACED
   */
-  // TODO: rework qunit tests for ember 2 and add qunit back in
+  grunt.registerTask('tests', ['endToEndTests', 'apiTests']);
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
@@ -367,9 +373,8 @@ module.exports = function(grunt) {
 
 
   /*
-    Build and then test
+    Starts test enviornment, builds the app and then runs Mocha Tests
   */
-  grunt.registerTask('test', ['env:test', 'build', 'tests']);
 
   /*
     Package the app up for distribution
@@ -416,9 +421,12 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('sleep3', ['shell:sleep3']);
+  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
+
+// RUN TESTS
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
+  grunt.registerTask('test', ['env:test', 'build', 'tests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
-  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
 };
 
