@@ -6,6 +6,16 @@
  * @since 2.0.0
 */
 
+/*
+ * MAIN GRUNT COMMANDS:
+ * grunt - this builds the app and runs in 8080
+ * grunt serve-test - this builds and runs the test server env in 8082
+ * grunt tests - this runs all tests (run this in another tab after grunt serve-test)
+ * grunt testEndToEnd - this runs the e2e (selenium) tests
+ * grunt testApi - runs only the api (backend) tests
+ */
+
+
 /*jshint camelcase: false */
 /*global module:false */
 module.exports = function(grunt) {
@@ -48,8 +58,6 @@ module.exports = function(grunt) {
         }]
       }
     },
-
-
     /*
      * Set Node environment using grunt-env
      *  https://www.npmjs.com/package/grunt-env
@@ -65,7 +73,6 @@ module.exports = function(grunt) {
         NODE_ENV : 'production'
       }
     },
-
     /*
      * Set up the Mocha tests
      * It then runs the e2e (selenium tests) or the api (mocha/chai)
@@ -107,22 +114,14 @@ module.exports = function(grunt) {
         command: "echo 'sleep start';sleep 3;echo 'sleep done'"
       }
     },
-
-
     /*
-       A simple ordered concatenation strategy.
-       This will start at app/app.js and begin
-       adding dependencies in the correct order
-       writing their string contents into
-       'build/application.js'
-       Additionally it will wrap them in evals
-       with @ sourceURL statements so errors, log
-       statements and debugging will reference
-       the source files by line number.
-       You would set this option to false for
-       production.
-       This takes creates a single .js file from all
-       the babel files
+      This reads the babel/app.js folder and builds all the
+      required files into a single application.js file.
+
+      Additionally it will wrap them in evals with @ sourceURL statements so errors,
+      log statements and debugging will reference the source files by line number.
+
+      You would set this option to false for production.
     */
     neuter: {
       dev: {
@@ -137,7 +136,6 @@ module.exports = function(grunt) {
         dest: 'build/application-prod.js'
       }
     },
-
     /*
       Browserify is just taking a single .js file
       and preparing it for the browser
@@ -159,7 +157,7 @@ module.exports = function(grunt) {
     watch: {
       common_code: {
         files: ['common/**/*.js'],
-        tasks: ['browserify', 'tests', 'jshint'], //common code is used on the front and backend
+        tasks: ['browserify', 'MochaTests', 'jshint'], //common code is used on the front and backend
         options: {spawn: false }
       },
       common_files: {
@@ -309,7 +307,7 @@ module.exports = function(grunt) {
         tasks: ['nodemon:dev', 'waitApiTests']
       },
       test: {
-        tasks: ['nodemon:dev', 'tests', 'watch'],
+        tasks: ['nodemon:dev', 'MochaTests', 'watch'],
         options: {
           logConcurrentOutput: true
         }
@@ -321,7 +319,7 @@ module.exports = function(grunt) {
         }
       },
       debug: {
-        tasks: ['nodemon:debug', 'node-inspector', 'tests', 'watch'],
+        tasks: ['nodemon:debug', 'node-inspector', 'MochaTests', 'watch'],
         options: {
           logConcurrentOutput: true
         }
@@ -336,7 +334,6 @@ module.exports = function(grunt) {
   });
 
 
-
   /*
   LOAD ALL GRUNT TASKS FROM NPM FILES
     This loads grunt: babel, browserify, uglify, jshint, jasmine,
@@ -347,6 +344,9 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
 
+
+// ALL GRUNT TASKS & COMMANDS
+
   /*
     Build the application
       - convert all the handlebars templates into compile functions
@@ -356,48 +356,29 @@ module.exports = function(grunt) {
   */
   grunt.registerTask('build', ['emberTemplates', 'babel', 'browserify', 'neuter']);
 
+  /*
+    Task for default `grunt` command
+    This builds the app, runs the server and monitors for changes
+  */
+  grunt.registerTask('default', ['build', 'concurrent:dev']);
+
+  // Same as above except server is started in debug
+  grunt.registerTask('debug', ['build', 'concurrent:debug']);
 
   /*
-    Tasks for running tests:
-      - tests - runs all mochaTests - this should be changed to run all tests
-      - jqunit - runs the qunit tests and the results output
-      - endToEndTests - runs the e2e MochaTest (Selenium Tests)
-      - apiTests - runs the api MochaTest (backend mocha/chai tets)
-      - jasmineTests - NEED TO BE REPLACED
+  Tasks for running tests:
+    - tests - runs all mochaTests - this should be changed to run all tests
+    - jqunit - runs the qunit tests and the results output
+    - endToEndTests - runs the e2e MochaTest (Selenium Tests)
+    - apiTests - runs the api MochaTest (backend mocha/chai tets)
+    - jasmineTests - NEED TO BE REPLACED
   */
-  grunt.registerTask('tests', ['endToEndTests', 'apiTests']);
+  grunt.registerTask('MochaTests', ['endToEndTests', 'apiTests']);
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
 
-
-  /*
-    Starts test enviornment, builds the app and then runs Mocha Tests
-  */
-
-  /*
-    Package the app up for distribution
-      - build/test
-      - minify and version stamp the application
-      - build the docs
-  */
-  grunt.registerTask('dist', ['test', 'uglify']);
-
-  /*
-    Default task. Build and then concurrently
-      - start the server
-      - run the tests
-      - watch for changes
-    This is useful if you want to run all your grunt stuff from
-    one terminal
-  */
-  grunt.registerTask('default', ['build', 'concurrent:dev']);
-
-  /*
-    Same as above except server is started in debug
-  */
-  grunt.registerTask('debug', ['build', 'concurrent:debug']);
 
   /*
     Alternative to 'default' where you want to run your server
@@ -407,26 +388,21 @@ module.exports = function(grunt) {
   */
   grunt.registerTask('serve', ['nodemon:dev']);
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
-  grunt.registerTask('dev', ['env:dev', 'build', 'tests', 'watch']);
-  /*
-   * Run end to end selenium tests
-   * need to do task 'env:test' to run application as test
-   * using test port, database, ...
-   */
+  grunt.registerTask('dev', ['env:dev', 'build', 'MochaTests', 'watch']);
 
-  /*
-   * Run end to end system tests (Mocha Selenium tests)
-   * 'env:test' sets up Node Environment (NODE_ENV) to test.
-   *   - Runs application using test port, test database, etc.
-   */
+// Task for reseting the TestDB
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
-  grunt.registerTask('sleep3', ['shell:sleep3']);
-  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
 
-// RUN TESTS
+// Tasks for creating test server, running all tests, or running indiviudal tests
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
-  grunt.registerTask('test', ['env:test', 'build', 'tests']);
+  grunt.registerTask('tests', ['env:test', 'build', 'MochaTests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+
+
+// CURRENTLY NOT USED TASKS
+  grunt.registerTask('sleep3', ['shell:sleep3']);
+  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
+  grunt.registerTask('dist', ['test', 'uglify']);
 };
 
