@@ -41,3 +41,5 @@ server/public/image_uploads
 # *.~
 
 ChromeDriver.exe
+
+/ChromeDriver
