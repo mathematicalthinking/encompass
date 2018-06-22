@@ -47,3 +47,5 @@ We are using Github for issues
 
 The wiki is also a good place to look for notes on the project
   <http://github.com/mathematicalthinking/encompass/wiki>
+
+
