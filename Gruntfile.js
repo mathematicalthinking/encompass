@@ -10,7 +10,9 @@
 /*global module:false */
 module.exports = function(grunt) {
 
-// INITIALIZE ALL GRUNT CONFIGURATION
+/*
+ * All initial configurations for grunt tasks needs to be done inside grunt.initConfig()
+ */
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     revision: process.env.SVN_REVISION || '??',
@@ -189,12 +191,7 @@ module.exports = function(grunt) {
         files: ['test/qunit/**/*.*', 'test/data/fixtures.js'],
         tasks: ['jshint'], //jqunit
         options: { spawn: false }
-      },
-      //ember_casper: {
-      //  files: ['test/casper/**/*.js'],
-      //  tasks: ['mocha_casperjs', 'jshint'],
-      //  options: { spawn: false }
-      //}
+      }
     },
 
     /*
@@ -215,23 +212,6 @@ module.exports = function(grunt) {
         }
       }
     },
-
-    /*
-      Also run jasmine-node for mongoose unit tests
-    */
-    jasmine_node: {
-      projectRoot: '.',
-      specNameMatcher: 'jade',
-      requirejs: false,
-      forceExit: true,
-      jUnit: {
-        report: false,
-        savePath: 'build/reports/jasmine',
-        useDotNotation: true,
-        consolidate: true
-      }
-    },
-
     /*
       Also run qunit because thats already integrated with ember integration tests
     */
@@ -250,28 +230,6 @@ module.exports = function(grunt) {
         dest: 'build/.test'
       }
     },
-
-    mocha_casperjs: {
-      options: {
-        // Task-specific options go here.
-      },
-      files: {
-        //src: ['test/casper/users.js']
-        src: ['test/casper/*.js']
-      }
-    },
-
-    /*
-      Reads the projects .js files and generates documentation in the docs folder
-    */
-    groc: {
-      javascript: ['app/**/*.js', 'test/**/*.js', 'common/**/*.js', 'dependencies/selection-highlighting.js', '*.md', 'docs/*.md'],
-      options: {
-        out: 'build/docs/',
-        except: ['test/qunit/support/*.*']
-      }
-    },
-
     /*
       Reads the projects .jshintrc file and applies coding
       standards. Doesn't lint the dependencies or test
@@ -383,7 +341,7 @@ module.exports = function(grunt) {
     This loads grunt: babel, browserify, uglify, jshint, jasmine,
     qunit, junit, neuter, contrib-watch, ember-templates, nodemon
     node-inspector, concurrent, jasmine-node, mocha-casperjs,
-    mocha-test, casperjs, groc, env, shell
+    mocha-test, casperjs, env, shell
  */
   require('load-grunt-tasks')(grunt);
 
@@ -405,13 +363,8 @@ module.exports = function(grunt) {
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
-  grunt.registerTask('waitApiTests', ['shell:sleep3', 'mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
-  grunt.registerTask('jasmineNodeTests', ['jasmine_node']);
-  grunt.registerTask('casperTests', ['mocha_casperjs']);
-  // grunt.registerTask('tests', ['jasmine', 'mochaTest']); // jqunit
 
-  // grunt.registerTask('integration-tests', ['mocha_casperjs', 'jasmine_node']);
 
   /*
     Build and then test
@@ -424,7 +377,7 @@ module.exports = function(grunt) {
       - minify and version stamp the application
       - build the docs
   */
-  grunt.registerTask('dist', ['test', 'uglify', 'groc']);
+  grunt.registerTask('dist', ['test', 'uglify']);
 
   /*
     Default task. Build and then concurrently
@@ -455,7 +408,7 @@ module.exports = function(grunt) {
    * need to do task 'env:test' to run application as test
    * using test port, database, ...
    */
-  grunt.registerTask('mochaSelenium', ['mochaTest']);
+
   /*
    * Run end to end system tests (Mocha Selenium tests)
    * 'env:test' sets up Node Environment (NODE_ENV) to test.
