@@ -107,7 +107,7 @@ Encompass.ApplicationSerializer = DS.RESTSerializer.extend({
   isNewSerializerAPI: true
 });
 
-require('app/mixins/*');
+require('./mixins/*');
 
 Encompass.StoreService = DS.Store.extend(Encompass.CacheableModels, {
   adapter: Encompass.ApplicationAdapter
