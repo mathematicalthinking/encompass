@@ -58,8 +58,11 @@ var ImageTagging = function(args) {
     _maxWidth = args.maxWidth ? parseInt(args.maxWidth, 10) : 400,
     _backgroundColor = args.backgroundColor || 'rgba(0, 0, 0, 0.0)',
     _border = args.border || '3px solid #3476CE',
+    _selectionBorder = args.selectionBorder || '1px dashed #D3D3D3',
     _currentlyResizingOrPlacing = false,
     _currentlyEditing = -1,
+    _currentlyMakingSelection = false,
+    _currentlyConfirmingSelection = false,
     _allowNotes = true,
     _disabled = false,
     _onSave = function() { /* empty until a function is provided */ },
@@ -179,7 +182,192 @@ NoteInput = function() {
 };
 
   function _createTagOnEvent(event) {
+    console.log('in _createTOE');
+    if (_currentlyMakingSelection) {
+      console.log('done making selection');
+      _currentlyEditing = false;
+    }
+    _currentlyConfirmingSelection = false;
     tagging.eventCreateTag(event);
+  }
+
+  function _handleMouseUp(event) {
+    console.log('handling mouse up');
+    if (_currentlyConfirmingSelection) {
+      return;
+    }
+    if (_currentlyMakingSelection) {
+      _currentlyMakingSelection = false;
+      _currentlyConfirmingSelection = true;
+      window.removeEventListener('mouseup', _handleMouseUp, false);
+      event.target.removeEventListener('mousemove', _handleMouseMove, false);
+      tagging.confirmSelectionArea(event);
+    }
+  }
+
+  function _removeElsFromDom(els) {
+    if (!Array.isArray(els)) {
+      return;
+    }
+    els.forEach((el) => {
+      var elm = document.getElementById(el);
+
+      if (elm !== null) {
+        elm.remove();
+      }
+    });
+    _currentlyConfirmingSelection = false;
+  }
+  function _cancelSelection() {
+    console.log('canceling selections');
+    _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+  }
+  function _styleAsInt(el, attr) {
+    if (!el) {
+      return;
+    }
+    var str = el.style[attr];
+    var pxIx = str.indexOf('px');
+    var numOnly = str.slice(0, pxIx);
+    return Number(numOnly);
+}
+  function _confirmSelectionInputs(box) {
+    var confirm = document.createElement('button');
+    var cancel = document.createElement('button');
+    var boxLeft = _styleAsInt(box, 'left');
+    var boxTop = _styleAsInt(box, 'top');
+    var boxHeight = _styleAsInt(box, 'height');
+    var boxWidth = _styleAsInt(box, 'width');
+    var buttonsWidth = boxWidth * 0.1;
+    var buttons = [confirm, cancel];
+
+    confirm.style.left = boxLeft + boxWidth - buttonsWidth + 'px';
+    confirm.style.top = boxTop + boxHeight + 'px';
+
+    cancel.style.left = boxLeft + 'px';
+    cancel.style.top = boxTop + boxHeight + 'px';
+
+
+    buttons.forEach((button) => {
+      button.style.position = 'absolute';
+      button.style.width = boxWidth * 0.25 + 'px';
+      button.style.height = boxWidth * 0.1 + 'px';
+      button.type = 'button';
+    });
+    confirm.setAttribute('id', 'confirm-sel');
+    confirm.innerText = 'Save';
+    cancel.setAttribute('id', 'cancel-sel');
+    cancel.innerText = 'Cancel';
+
+    return [confirm, cancel];
+  }
+  this.confirmSelectionArea = function(event) {
+    var selectionBox;
+    console.log('event', event);
+    event = event || window.event;
+
+    selectionBox = document.getElementById('sel-box');
+
+    if (selectionBox === null) {
+      _currentlyConfirmingSelection = false;
+      return;
+    }
+
+    var buttons = _confirmSelectionInputs(selectionBox, event);
+
+    var confirm = buttons[0];
+    var cancel = buttons[1];
+
+    confirm.addEventListener('click', function() {
+      var id = tagging.getId();
+      var imageCoords = _imageTrueCoords(document.getElementById('node-3'));
+      var relativeCoords = [_styleAsInt(selectionBox, 'left') - imageCoords.left, _styleAsInt(selectionBox, 'top') - imageCoords.top];
+      tagging.createTag(id, 'node-3', relativeCoords);
+      _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+    });
+    cancel.addEventListener('click', _cancelSelection);
+
+    taggingContainer.appendChild(confirm);
+    taggingContainer.appendChild(cancel);
+  }
+
+
+
+  function _initiateSelection(event) {
+    event.preventDefault();
+    if (_currentlyMakingSelection || _currentlyConfirmingSelection) {
+      return;
+    }
+
+    if (_currentlyConfirmingSelection) {
+      var box = document.getElementById('sel-box');
+      box.remove();
+    }
+    console.log('initatiating selection');
+    _currentlyMakingSelection = true;
+    event.currentTarget.addEventListener('mousemove', _handleMouseMove, false);
+    window.addEventListener('mouseup', _handleMouseUp, false);
+    tagging.createSelectionBox(event);
+
+    event.stopPropagation();
+  }
+
+  this.buildSelectionBox = function(origin, height, width) {
+
+  }
+
+
+
+  this.createSelectionBox = function(event) {
+    var box;
+    var eventCoords;
+    var height;
+    var width;
+    var imageCoords;
+    var isInitial;
+
+    event = event || window.event;
+
+    if (targetImages.indexOf(event.target) < 0) {
+      return;
+    }
+    // coordinates relative to clickedImage
+    eventCoords = tagging.getCoordinates(event);
+    box = document.getElementById('sel-box');
+
+
+    if (box === null) { // no selection in progress
+      isInitial = true;
+      tagging.selectionOrigin = eventCoords;
+      box = document.createElement('div');
+      box.setAttribute('id', 'sel-box');
+
+      box.style.position = 'absolute';
+      box.style.overflow = 'hidden';
+      box.style.background = 'rgba(0, 0, 0, 0)';
+      box.style.border = '1px dashed rgb(220,220,220)';
+    }
+    width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
+    height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
+    imageCoords = _imageTrueCoords(event.target);
+
+    box.style.left = tagging.selectionOrigin[0] + imageCoords.left + 'px';
+    box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
+    box.style.height = height + 'px';
+    box.style.width = width + 'px';
+    if (isInitial) {
+      taggingContainer.appendChild(box);
+    }
+
+    //tagging.buildSelectionBox(tagging.selectionOrigin, height, width);
+
+  }
+
+  function _handleMouseMove(event) {
+    event.preventDefault();
+    if (_currentlyMakingSelection) {
+      tagging.createSelectionBox(event);
+    }
   }
 
   // set up the event handlers immediately
@@ -191,6 +379,7 @@ NoteInput = function() {
       images = taggingContainer.getElementsByTagName('img');
       for (i = 0; i < images.length; i++) {
         addEventListener(images[i]);
+        images[i].setAttribute('draggable', false);
       }
     }
 
@@ -199,7 +388,11 @@ NoteInput = function() {
         return;
       }
       targetImages[targetImages.length] = img;
-      img.addEventListener('mousedown', _createTagOnEvent, false);
+      img.addEventListener('mousedown', _initiateSelection, false);
+      //img.addEventListener('mouseup', _handleMouseUp, false;
+      //img.addEventListener('mousemove', _handleMouseMove, false);
+      //img.addEventListener('mouseup', _createTagOnEvent, false );
+
     }
   }());
 
@@ -278,8 +471,9 @@ NoteInput = function() {
       containerCoords = _findPosition(taggingContainer),
       scrollCoords = _findScrollPosition(taggingContainer),
       imageLeft = imageCoords[0] - containerCoords[0] - scrollCoords[0],
-      imageTop = imageCoords[1] - containerCoords[1] - scrollCoords[0],
+      imageTop = imageCoords[1] - containerCoords[1] + scrollCoords[1],
       coords = {left: imageLeft, top: imageTop};
+      console.log('imageTop:', imageTop);
     return coords;
   }
 
@@ -1087,6 +1281,10 @@ NoteInput = function() {
     tagging.createTag(id, event.target.id, coords);
     event.stopPropagation();
   };
+
+  this.eventCreateNewTag = function(event) {
+
+  }
 
   /**
    * Public function createTag()
