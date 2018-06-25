@@ -1,4 +1,4 @@
-Encompass.LogInComponent = Ember.Component.extend({
+Encompass.SocialSigninComponent = Ember.Component.extend({
   content: null,
 
   // didInitAttrs: function (attrs) {

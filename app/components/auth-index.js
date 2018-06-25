@@ -1,16 +1,19 @@
-Encompass.LogInComponent = Ember.Component.extend({
+Encompass.AuthIndexComponent = Ember.Component.extend({
   content: null,
 
-  // didInitAttrs: function (attrs) {
-  //   this._super.apply(null, arguments);
-  //   var content = this.get('content');
-
-  //   if (!content) {
-  //     this.set('content', []);
-  //   }
-  // },
+  init() {
+    this.set('content', true);
+  }
 
   // actions: {
+  //   changeComponent: function () {
+  //     if (login) {
+  //       return !login;
+  //     } else if (this.changeComponent = 'signup') {
+  //       return this.currentComponent = 'login';
+  //     }
+  //   },
+
   //   selectChange: function () {
   //     var changeAction = this.get('action');
   //     var selectedEl = this.$('select')[0];
@@ -23,3 +26,4 @@ Encompass.LogInComponent = Ember.Component.extend({
   //   }
   // }
 });
+
