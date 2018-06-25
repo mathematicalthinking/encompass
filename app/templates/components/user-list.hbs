@@ -1,0 +1,50 @@
+<header>
+	<h2>Users</h2>
+	<div class="clear"></div>
+   
+        <ul class="actions">
+        <li>{{#link-to 'users.new'}}new user{{/link-to}}</li>
+        </ul>
+</header>
+<article>
+  <p>
+    Select a user from the bottom (left).
+  </p>
+  <p class="help">
+    {{#if currentUser.isAdmin}}A list of all users in the system is to the left.{{/if}}  
+    Users are automatically created when they visit but may not be authorized.  
+    Authorized users are bold.  
+    Admin users are red.  
+    If you aren't authorized <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">drop us a note</a>
+  </p>
+</article>
+<section>
+<nav class="users actions listing al_vertical_stretch">
+{{#if currentUser.isAdmin}}
+<ul class="actions">
+  <li>{{#link-to 'users.new'}}new user{{/link-to}}</li>
+</ul>
+{{/if}}
+
+<section>
+    <ul class="listing">
+      {{#each users as |user|}}
+      <li>{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
+    </section>
+{{!-- <section> 
+<ul class="listing">
+  {{#each users as |user|}}
+  <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+{{/each}}
+</section> --}}
+</nav>
+
+<div class="listOutlet users">
+{{outlet}}
+</div>
+
+<div class="clear"/>
+
+</section>  
