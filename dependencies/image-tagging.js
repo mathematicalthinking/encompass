@@ -242,26 +242,34 @@ NoteInput = function() {
     var boxTop = _styleAsInt(box, 'top');
     var boxHeight = _styleAsInt(box, 'height');
     var boxWidth = _styleAsInt(box, 'width');
-    var buttonsWidth = boxWidth * 0.1;
+    var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
+    var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
     var buttons = [confirm, cancel];
 
-    confirm.style.left = boxLeft + boxWidth - buttonsWidth + 'px';
-    confirm.style.top = boxTop + boxHeight + 'px';
+    confirm.style.left = boxLeft + boxWidth - buttonsWidth / 2 + 'px';
+    confirm.style.top = boxTop + boxHeight + 2 *  _styleAsInt(box, 'borderWidth') + 'px';
 
-    cancel.style.left = boxLeft + 'px';
-    cancel.style.top = boxTop + boxHeight + 'px';
+    cancel.style.left = boxLeft - buttonsWidth / 2 + 'px';
+    cancel.style.top = boxTop + boxHeight  + 2 * _styleAsInt(box, 'borderWidth') + 'px';
 
 
     buttons.forEach((button) => {
       button.style.position = 'absolute';
-      button.style.width = boxWidth * 0.25 + 'px';
-      button.style.height = boxWidth * 0.1 + 'px';
+      button.style.width = buttonsWidth + 'px';
+      button.style.height = buttonsHeight + 'px';
       button.type = 'button';
+      button.style.textAlign = 'center';
+      button.style.fontSize =  0.5 + 'em';
+      button.style.fontWeight = 'bold';
+      button.style.padding = 0;
+      button.style.margin = 'auto';
     });
     confirm.setAttribute('id', 'confirm-sel');
     confirm.innerText = 'Save';
+    //confirm.style.marginLeft = 25 + 'px';
     cancel.setAttribute('id', 'cancel-sel');
-    cancel.innerText = 'Cancel';
+    cancel.innerText = 'Trash';
+    //cancel.style.marginRight = 25 + 'px';
 
     return [confirm, cancel];
   }
