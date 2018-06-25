@@ -20,14 +20,14 @@ nconf.defaults({
   web: {
     base: '/'
   },
-  sso: {
-    // http://dev.nctm.org/SSO/TmfCheckToken.ashx
-    baseUrl: 'http://localhost:3000',
-    validateUrl: "/SSO/TmfCheckToken.ashx",
-    //baseUrl: 'http://dev.nctm.org',
-    //validateUrl: "/SSO/TmfCheckToken.ashx"
-    service: 'http://localhost:8080/back',
-  },
+  // sso: {
+  //   // http://dev.nctm.org/SSO/TmfCheckToken.ashx
+  //   baseUrl: 'http://localhost:3000',
+  //   validateUrl: "/SSO/TmfCheckToken.ashx",
+  //   //baseUrl: 'http://dev.nctm.org',
+  //   //validateUrl: "/SSO/TmfCheckToken.ashx"
+  //   service: 'http://localhost:8080/back',
+  // },
   devDBName: 'encompass',
   testDBName: 'encompass_test',
   prodDBName: 'encompass',
@@ -44,13 +44,13 @@ nconf.defaults({
       "comments"
     ]
   },
-  cache: {
-    key: process.env.CACHE_KEY,
-    file: 'test/data/defaultPd.json',
-    searchUrl: process.env.POW_SEARCH_URL,
-    getUrl: process.env.POW_GET_URL,
-    fromDate: aYearAgo.getTime()
-  },
+  // cache: {
+  //   key: process.env.CACHE_KEY,
+  //   file: 'test/data/defaultPd.json',
+  //   searchUrl: process.env.POW_SEARCH_URL,
+  //   getUrl: process.env.POW_GET_URL,
+  //   fromDate: aYearAgo.getTime()
+  // },
   logs: {
     server: 'ERROR',
     auth: 'INFO',
