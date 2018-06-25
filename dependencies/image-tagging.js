@@ -59,7 +59,7 @@ var ImageTagging = function(args) {
     _backgroundColor = args.backgroundColor || 'rgba(0, 0, 0, 0.0)',
     _border = args.border || '3px solid #3476CE',
     _taggingContainerBorder = args.taggingContainerBorder || '2px solid #008b00',
-    _selectionBorder = args.selectionBorder || '1px dashed #D3D3D3',
+    _selectionBorder = args.selectionBorder || '2px dashed #696969',
     _currentlyResizingOrPlacing = false,
     _currentlyEditing = -1,
     _currentlyMakingSelection = false,
@@ -267,7 +267,6 @@ NoteInput = function() {
   }
   this.confirmSelectionArea = function(event) {
     var selectionBox;
-    console.log('event', event);
     event = event || window.event;
 
     selectionBox = document.getElementById('sel-box');
@@ -305,18 +304,12 @@ NoteInput = function() {
     taggingContainer.appendChild(cancel);
   }
 
-
-
   function _initiateSelection(event) {
     event.preventDefault();
     if (_currentlyMakingSelection || _currentlyConfirmingSelection) {
       return;
     }
     console.log('origin click', tagging.getCoordinates(event));
-    // if (_currentlyConfirmingSelection) {
-    //   var box = document.getElementById('sel-box');
-    //   box.remove();
-    // }
     _currentlyMakingSelection = true;
     console.log('adding mousemove listener for el: ', event.currentTarget);
     window.addEventListener('mouseup', _handleMouseUp, false);
@@ -343,9 +336,7 @@ NoteInput = function() {
     }
     // coordinates relative to clickedImage
     eventCoords = tagging.getCoordinates(event);
-    //console.log('eventCoords in cSB', eventCoords);
     box = document.getElementById('sel-box');
-
 
     if (box === null) { // no selection in progress
       isInitial = true;
@@ -356,7 +347,7 @@ NoteInput = function() {
       box.style.position = 'absolute';
       box.style.overflow = 'hidden';
       box.style.background = 'rgba(0, 0, 0, 0)';
-      box.style.border = '1px dashed rgb(220,220,220)';
+      box.style.border = _selectionBorder;
     }
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
@@ -370,9 +361,6 @@ NoteInput = function() {
     if (isInitial) {
       taggingContainer.appendChild(box);
     }
-
-    //tagging.buildSelectionBox(tagging.selectionOrigin, height, width);
-
   }
 
   function _handleMouseMove(event) {
