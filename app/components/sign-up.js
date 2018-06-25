@@ -23,3 +23,5 @@ Encompass.SignUpComponent = Ember.Component.extend({
     }
   }
 });
+
+
