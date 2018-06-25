@@ -10,7 +10,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     var comp = this;
     var containerId = 'submission_container';
     var container = document.getElementById(containerId);
-    
+
     if (!container) {
       return;
     }
@@ -28,17 +28,18 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       selection.selectionType = 'selection';
       comp.sendAction('addSelection', selection);
     });
-    
+
     // set up the ImageTagging object
     comp.imageTagging = new window.ImageTagging({
-      targetContainer: containerId
+      targetContainer: containerId,
+      isCompSelectionMode: this.makingSelection
     });
     comp.imageTagging.onSave(function(id) {
       var tag = comp.imageTagging.getTag(id);
       tag.selectionType = 'image-tag';
       comp.sendAction('addSelection', tag);
     });
-    
+
     var selections = [];
     var imgTags = [];
 
@@ -48,7 +49,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
         if (selection.get('isTrashed')) {
           return; // don't include trashed selections
         }
-      
+
         var coordinates = selection.get('coordinates'),
             arrCoords = [];
 
@@ -96,7 +97,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       container = document.getElementById(containerId),
       highlighting = comp.selectionHighlighting,
       tagging = comp.imageTagging;
-    
+
     if (!container) {
       return;
     }
@@ -118,10 +119,10 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       tagging.enable();
     }
   }.observes('this.showingSelections', 'this.makingSelection'),
-  
+
   modelChanged: function() {
     this.rerender(); //we want SelectionHighlighting.init() to be called again so that
       //each of the DOM elements has an id ENC-450
   }.observes('this.model.id')
-  
+
 });
