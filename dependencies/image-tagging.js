@@ -58,11 +58,13 @@ var ImageTagging = function(args) {
     _maxWidth = args.maxWidth ? parseInt(args.maxWidth, 10) : 400,
     _backgroundColor = args.backgroundColor || 'rgba(0, 0, 0, 0.0)',
     _border = args.border || '3px solid #3476CE',
+    _taggingContainerBorder = args.taggingContainerBorder || '2px solid #008b00',
     _selectionBorder = args.selectionBorder || '1px dashed #D3D3D3',
     _currentlyResizingOrPlacing = false,
     _currentlyEditing = -1,
     _currentlyMakingSelection = false,
     _currentlyConfirmingSelection = false,
+    _currentlySavingTag = false,
     _allowNotes = true,
     _disabled = false,
     _onSave = function() { /* empty until a function is provided */ },
@@ -193,14 +195,16 @@ NoteInput = function() {
 
   function _handleMouseUp(event) {
     console.log('handling mouse up');
-    if (_currentlyConfirmingSelection) {
+    if (!_currentlyMakingSelection) {
       return;
     }
     if (_currentlyMakingSelection) {
       _currentlyMakingSelection = false;
       _currentlyConfirmingSelection = true;
       window.removeEventListener('mouseup', _handleMouseUp, false);
-      event.target.removeEventListener('mousemove', _handleMouseMove, false);
+      //console.log('removing mousemove listener for el: ', event.target);
+      document.getElementById('node-3').removeEventListener('mousemove', _handleMouseMove, false);
+      tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
     }
   }
@@ -273,6 +277,16 @@ NoteInput = function() {
       return;
     }
 
+    var selectionWidth = _styleAsInt(selectionBox, 'width');
+    var selectionHeight = _styleAsInt(selectionBox, 'height');
+
+    if (selectionHeight === 0 || selectionWidth === 0) {
+      _currentlyConfirmingSelection = false;
+      console.log('making Selection?', _currentlyMakingSelection);
+      _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+      return;
+    }
+    console.log(`selection box coordinates: left: ${selectionBox.style.left}, top: ${selectionBox.style.top} `);
     var buttons = _confirmSelectionInputs(selectionBox, event);
 
     var confirm = buttons[0];
@@ -282,7 +296,7 @@ NoteInput = function() {
       var id = tagging.getId();
       var imageCoords = _imageTrueCoords(document.getElementById('node-3'));
       var relativeCoords = [_styleAsInt(selectionBox, 'left') - imageCoords.left, _styleAsInt(selectionBox, 'top') - imageCoords.top];
-      tagging.createTag(id, 'node-3', relativeCoords);
+      tagging.createTag(id, 'node-3', relativeCoords, selectionBox);
       _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
     });
     cancel.addEventListener('click', _cancelSelection);
@@ -298,22 +312,18 @@ NoteInput = function() {
     if (_currentlyMakingSelection || _currentlyConfirmingSelection) {
       return;
     }
-
-    if (_currentlyConfirmingSelection) {
-      var box = document.getElementById('sel-box');
-      box.remove();
-    }
-    console.log('initatiating selection');
+    console.log('origin click', tagging.getCoordinates(event));
+    // if (_currentlyConfirmingSelection) {
+    //   var box = document.getElementById('sel-box');
+    //   box.remove();
+    // }
     _currentlyMakingSelection = true;
-    event.currentTarget.addEventListener('mousemove', _handleMouseMove, false);
+    console.log('adding mousemove listener for el: ', event.currentTarget);
     window.addEventListener('mouseup', _handleMouseUp, false);
+    document.getElementById('node-3').addEventListener('mousemove', _handleMouseMove, false);
     tagging.createSelectionBox(event);
 
     event.stopPropagation();
-  }
-
-  this.buildSelectionBox = function(origin, height, width) {
-
   }
 
 
@@ -333,6 +343,7 @@ NoteInput = function() {
     }
     // coordinates relative to clickedImage
     eventCoords = tagging.getCoordinates(event);
+    //console.log('eventCoords in cSB', eventCoords);
     box = document.getElementById('sel-box');
 
 
@@ -349,7 +360,8 @@ NoteInput = function() {
     }
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
-    imageCoords = _imageTrueCoords(event.target);
+
+    imageCoords = _imageTrueCoords(document.getElementById('node-3'));
 
     box.style.left = tagging.selectionOrigin[0] + imageCoords.left + 'px';
     box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
@@ -380,6 +392,7 @@ NoteInput = function() {
       for (i = 0; i < images.length; i++) {
         addEventListener(images[i]);
         images[i].setAttribute('draggable', false);
+        images[i].style.border = _taggingContainerBorder;
       }
     }
 
@@ -448,15 +461,20 @@ NoteInput = function() {
     if (!event) {
       event = window.event;
     }
+    var sc = _findScrollPosition(image);
+    var sctag = _findScrollPosition(taggingContainer);
+    console.log('sc', sc);
+    console.log('tc', sc);
     if (event.pageX || event.pageY) {
       posX = event.pageX;
       posY = event.pageY;
     } else if (event.clientX || event.clientY) {
+      console.log('in else if clientX/clientY block');
       posX = event.clientX + document.documentElement.scrollLeft;
       posY = event.clientY + document.documentElement.scrollTop;
     }
     posX = posX - imgX;
-    posY = posY - imgY;
+    posY = posY - imgY + sc[1];
 
     return [posX, posY];
   }
@@ -469,11 +487,10 @@ NoteInput = function() {
   function _imageTrueCoords(image) {
     var imageCoords = _findPosition(image),
       containerCoords = _findPosition(taggingContainer),
-      scrollCoords = _findScrollPosition(taggingContainer),
-      imageLeft = imageCoords[0] - containerCoords[0] - scrollCoords[0],
-      imageTop = imageCoords[1] - containerCoords[1] + scrollCoords[1],
+      scrollCoords = _findScrollPosition(image),
+      imageLeft = imageCoords[0] - containerCoords[0],
+      imageTop = imageCoords[1] - containerCoords[1],
       coords = {left: imageLeft, top: imageTop};
-      console.log('imageTop:', imageTop);
     return coords;
   }
 
@@ -1086,6 +1103,8 @@ NoteInput = function() {
     imageCoords = _imageTrueCoords(_getImageFor(tag));
     tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
     tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
+    console.log(`imageCoords left: ${imageCoords.left}, top: ${imageCoords.top}`)
+    console.log(`coords for shown tag: left: ${tagLeft}, top: ${tagTop}`);
 
     styles = {
       position: 'absolute',
@@ -1291,7 +1310,7 @@ NoteInput = function() {
    * Creates a new tag element and places it in the DOM
    * and adds its information to the list
    */
-  this.createTag = function(id, imageId, coords) {
+  this.createTag = function(id, imageId, coords, selection) {
     var image, tagWidth, tagHeight, tagLeft, tagTop, newTag;
 
     if (_disabled) {
@@ -1309,10 +1328,10 @@ NoteInput = function() {
     }
 
     // Center the tag around the mouse
-    tagWidth = _minWidth;
-    tagHeight = _minHeight;
-    tagLeft = parseInt(coords[0], 10) - (tagWidth / 2);
-    tagTop = parseInt(coords[1], 10) - (tagHeight / 2);
+    tagWidth = _styleAsInt(selection, 'width');
+    tagHeight = _styleAsInt(selection, 'height');
+    tagLeft = parseInt(coords[0], 10);
+    tagTop = parseInt(coords[1], 10);
 
     newTag = {
         id: id,
