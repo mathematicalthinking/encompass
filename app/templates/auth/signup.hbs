@@ -1,15 +1,1 @@
-
-<div class="al_wtf main">
-  <p>Please sign up for Encompass with a username and password.</p>
-</div>
-
-<form class="form-signup" method="POST" action="/auth/signup">
-  <input class="form-control" type="text" required name="username" placeholder="username">
-  <input class="form-control" type="password" required name="password" placeholder="password">
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up!</button>
-</form>
-
-
-{{social-signin}}
-
-<p> Already have an account? {{#link-to 'auth.login'}}Login!{{/link-to}}</p>
+{{sign-up}}
