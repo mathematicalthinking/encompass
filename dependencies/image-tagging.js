@@ -361,9 +361,18 @@ NoteInput = function() {
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
 
     imageCoords = _imageTrueCoords(document.getElementById('node-3'));
+    if (eventCoords[0] < tagging.selectionOrigin[0]) {
+      box.style.left = tagging.selectionOrigin[0] + imageCoords.left - width + 'px';
+    } else {
+      box.style.left = tagging.selectionOrigin[0] + imageCoords.left + 'px';
+    }
 
-    box.style.left = tagging.selectionOrigin[0] + imageCoords.left + 'px';
-    box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
+    if (eventCoords[1] < tagging.selectionOrigin[1]) {
+      box.style.top = tagging.selectionOrigin[1] + imageCoords.top - height + 'px';
+    } else {
+      box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
+    }
+
     box.style.height = height + 'px';
     box.style.width = width + 'px';
     if (isInitial) {
