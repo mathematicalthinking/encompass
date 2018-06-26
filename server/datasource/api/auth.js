@@ -9,11 +9,13 @@ const passport = require('passport');
 
 
 const localLogin = (req, res, next) => {
+  console.log('inside local login');
   passport.authenticate('local-login', {
-      successRedirect: '/',
-      failureRedirect: '/#/auth/login',
+      // successRedirect: '/',
+      // failureRedirect: '/#/auth/login',
       // failureFlash: true,
-      // passReqToCallback: true
+      // passReqToCallback: true,
+      failwithError: true,
   })(req, res, next);
 };
 
