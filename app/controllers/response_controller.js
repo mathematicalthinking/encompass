@@ -193,6 +193,7 @@ Encompass.ResponseController = Ember.Controller.extend({
       this.toggleProperty(p);
     },
     save: function () {
+      console.log('save button called');
       var controller = this;
       this._persistThen(function (saved) {
         controller.transitionToRoute('response', saved);
