@@ -331,6 +331,8 @@ NoteInput = function() {
     var container = document.getElementById(scrollDiv);
     var containerHeight = _styleAsInt(container, 'height');
     var containerPosition = _findPosition(container);
+    var root = document.documentElement;
+    var rootPosition = _findPosition(root);
 
     var containerX = containerPosition[0];
     var containerY = containerPosition[1];
@@ -338,18 +340,44 @@ NoteInput = function() {
     var overflowBottom = scrollRange - Math.floor(container.scrollTop);
     var overflowTop = Math.floor(container.scrollTop);
 
+    var scrollRangeX = root.scrollWidth - container.clientWidth;
+    var overflowLeft = Math.floor(root.scrollLeft);
+    var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
+
+    console.log('overflowLeft: ', overflowLeft);
+    console.log('overflowRight', overflowRight);
+
     var selBoxPosition = _findPosition(selection);
     console.log('selBoxPosition top:' ,selBoxPosition[1]);
     var selBoxBottom = selBoxPosition[1] + _styleAsInt(selection, 'height');
+    var selBoxRight = selBoxPosition[0] + _styleAsInt(selection, 'width');
 
     var imgPosition = _findPosition(img);
     var imgX = imgPosition[0];
     var imgY = imgPosition[1];
     var imageCoords = _imageTrueCoords(img);
     var imgScrollPosition = _findScrollPosition(img);
+    //console.log('imgScrollPosition', imgScrollPosition);
 
     var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
     var diffTop = (imgY - containerY);
+    var diffLeft = imgX;
+    var diffRight = root.scrollWidth - imgX - img.width;
+
+    var imgOverflowLeft;
+    if (overflowLeft <= diffLeft) {
+      imgOverflowLeft = 0;
+    } else {
+      imgOverflowLeft = overflowLeft - diffLeft;
+    }
+
+    var imgOverflowRight;
+    if (overflowRight <= diffRight) {
+      imgOverflowRight = 0;
+
+    } else {
+      imgOverflowRight = overflowRight - diffRight;
+    }
 
     var imgOverflowTop;
     if (overflowTop <= diffTop) {
@@ -367,21 +395,37 @@ NoteInput = function() {
 
     var topOfVisibleImage = imgY + imgOverflowTop;
     var bottomOfVisibleImage = imgY + img.clientHeight - imgOverflowBottom;
+    var leftEdgeVisibleImage = imgX + imgOverflowLeft;
+    var rightEdgeVisibleImage = imgX + img.width - imgOverflowRight;
 
     console.log(`visible image: top: ${topOfVisibleImage}, bottom: ${bottomOfVisibleImage}`);
     var selectionHeight = _styleAsInt(selection, 'height');
 
     console.log('imgof top:', imgOverflowTop, 'imgof bot:', imgOverflowBottom);
 
-    if (imgOverflowTop > 0 && selBoxPosition[1] <= topOfVisibleImage + 10) {
+    console.log('image overflow left: ', imgOverflowLeft);
+    console.log('image overflow right: ', imgOverflowRight);
+
+    if (imgOverflowTop > 0 && selBoxPosition[1] <= topOfVisibleImage + 25) {
       console.log('scrolling up');
       container.scrollTop = container.scrollTop - 25;
     }
-    console.log('selBoxBottom', selBoxBottom);
     if (imgOverflowBottom !== 0 && selBoxBottom >= bottomOfVisibleImage - 25) {
       console.log('scrolling down');
       container.scrollTop = container.scrollTop + 10;
     }
+
+    if (imgOverflowLeft !== 0 && selBoxPosition[0] <= leftEdgeVisibleImage + 25) {
+      console.log('scrolling left!');
+      root.scrollLeft = root.scrollLeft - 10;
+    }
+
+    if (imgOverflowRight !== 0 && selBoxRight >= rightEdgeVisibleImage - 25) {
+      console.log('scrolling right!');
+      root.scrollLeft = root.scrollLeft + 10;
+    }
+
+
 
 
 
