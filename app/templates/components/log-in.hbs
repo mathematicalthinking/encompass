@@ -2,10 +2,10 @@
   <p>Please login if you are an EnCoMPASS member.</p>
 </div>
 
-<form class="form-signin" method="POST" action="/auth/login">
-  <input class="form-control" type="text" required name="username" placeholder="username">
-  <input class="form-control" type="password" required name="password" placeholder="password">
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+<form class="form-signin">
+  {{input class="form-control" id="username" type="text" value=title placeholder="username"}}
+  {{input class="form-control" id="password" type="password" value=title placeholder="password"}}
+  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
 </form>
 
 {{social-signin}}

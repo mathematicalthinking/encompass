@@ -1,25 +1,21 @@
 Encompass.LogInComponent = Ember.Component.extend({
-  content: null,
-
-  didInitAttrs: function (attrs) {
-    this._super.apply(null, arguments);
-    var content = this.get('content');
-
-    if (!content) {
-      this.set('content', []);
-    }
-  },
 
   actions: {
     login: function () {
-      var changeAction = this.get('action');
-      var selectedEl = this.$('select')[0];
-      var selectedIndex = selectedEl.selectedIndex;
-      var content = this.get('content');
-      var selectedValue = content[selectedIndex];
-
-      this.set('selectedValue', selectedValue);
-      changeAction(selectedValue);
+      console.log('login action called');
+      var that = this;
+      var username = that.get('username');
+      console.log('username', username);
+      var password = that.get('password');
+      console.log('password', password);
+      var createUserData = {
+        username: username,
+        password: password,
+      };
+      Ember.$.post({
+          url: '/auth/login',
+          data: createUserData
+      });
     }
   }
 });
