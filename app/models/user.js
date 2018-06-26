@@ -1,6 +1,11 @@
 Encompass.User = DS.Model.extend(Encompass.Auditable, {
   name: DS.attr('string'),
+  email: DS.attr('string'),
+  organization: DS.attr('string'),
+  location: DS.attr('string'),
   username: DS.attr('string'),
+  password: DS.attr('string'),
+  requestReason: DS.attr('string'),
   isGuest: DS.attr('boolean'),
   isAdmin: DS.attr('boolean'),
   isAuthorized: DS.attr('boolean'),

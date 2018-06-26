@@ -1,14 +1,29 @@
 <div class="al_wtf main">
-  <p>Please sign up for Encompass with a username and password.</p>
+  <h1>Please sign up for Encompass</h1>
 </div>
 
 <form class="form-signup" method="POST" action="/auth/signup">
-  <input class="form-control" type="text" required name="username" placeholder="username">
-  <input class="form-control" type="password" required name="password" placeholder="password">
+  <label for="name">Full Name:</label>
+    <input class="form-control" type="text" required name="name" id="name"> <br/>
+  <label for="email">Email:</label>
+    <input class="form-control" type="text" required name="email" id="email"> <br/>
+  <label for="organization">Institution, Organization, School or District Name:</label>
+    <input class="form-control" type="text" required name="organization" id="oragnization"> <br/>
+  <label for="location">City and State:</label>
+    <input class="form-control" type="text" required name="location" id="location"> <br/>
+  <label for="username">Username:</label>
+    <input class="form-control" type="text" required name="username" id="username"> <br/>
+  <label for="password">Password:</label>
+    <input class="form-control" type="password" required name="password" id="password" id="password"> <br/>
+  <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
+    <input class="form-control" type="text" required name="access" id="requestReason"> <br/>
+  <input type="checkbox" id="terms" name="terms" value="true" required>
+    <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label> <br/>
   <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up!</button>
 </form>
+<br/>
 
 
 {{social-signin}}
-
+<br/>
 <p> Already have an account? {{#link-to 'auth.login'}}Login!{{/link-to}}</p>
