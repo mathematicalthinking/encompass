@@ -1,4 +1,4 @@
 Encompass.ResponsesComponent = Ember.Component.extend({
-    tagName: 'responses',
-    className: ['responses']
-  });
+  tagName: 'responses',
+  className: ['responses']
+})
