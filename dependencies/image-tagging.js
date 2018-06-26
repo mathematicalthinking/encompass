@@ -327,6 +327,95 @@ NoteInput = function() {
     event.stopPropagation();
   }
 
+  function _scrollIfNeeded(event, scrollDiv, img, selection) {
+    var container = document.getElementById(scrollDiv);
+    var containerHeight = _styleAsInt(container, 'height');
+    var containerPosition = _findPosition(container);
+
+    var containerX = containerPosition[0];
+    var containerY = containerPosition[1];
+    var scrollRange = container.scrollHeight - container.clientHeight;
+    var overflowBottom = scrollRange - Math.floor(container.scrollTop);
+    var overflowTop = Math.floor(container.scrollTop);
+
+    var selBoxPosition = _findPosition(selection);
+    console.log('selBoxPosition top:' ,selBoxPosition[1]);
+    var selBoxBottom = selBoxPosition[1] + _styleAsInt(selection, 'height');
+
+    var imgPosition = _findPosition(img);
+    var imgX = imgPosition[0];
+    var imgY = imgPosition[1];
+    var imageCoords = _imageTrueCoords(img);
+    var imgScrollPosition = _findScrollPosition(img);
+
+    var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
+    var diffTop = (imgY - containerY);
+
+    var imgOverflowTop;
+    if (overflowTop <= diffTop) {
+      imgOverflowTop = 0;
+    } else {
+      imgOverflowTop = overflowTop - diffTop;
+    }
+
+    var imgOverflowBottom;
+    if (overflowBottom <= diffBottom) {
+      imgOverflowBottom = 0;
+    } else {
+      imgOverflowBottom = overflowBottom - diffBottom;
+    }
+
+    var topOfVisibleImage = imgY + imgOverflowTop;
+    var bottomOfVisibleImage = imgY + img.clientHeight - imgOverflowBottom;
+
+    console.log(`visible image: top: ${topOfVisibleImage}, bottom: ${bottomOfVisibleImage}`);
+    var selectionHeight = _styleAsInt(selection, 'height');
+
+    console.log('imgof top:', imgOverflowTop, 'imgof bot:', imgOverflowBottom);
+
+    if (imgOverflowTop > 0 && selBoxPosition[1] <= topOfVisibleImage + 10) {
+      console.log('scrolling up');
+      container.scrollTop = container.scrollTop - 25;
+    }
+    console.log('selBoxBottom', selBoxBottom);
+    if (imgOverflowBottom !== 0 && selBoxBottom >= bottomOfVisibleImage - 25) {
+      console.log('scrolling down');
+      container.scrollTop = container.scrollTop + 10;
+    }
+
+
+
+
+//     var offSetY =  imgY - containerY;
+//     var imgScrollY = imgScrollPosition[1];
+//     var maxVisibleImgY = containerHeight - offSetY;
+//     var minVisibleImgY;
+//     minVisibleImgY = imgScrollY - offSetY;
+//     if (containerHeight - img.height - imgScrollY - offSetY > 0) {
+//       minVisibleImgY = 0;
+//     } else {
+//       minVisibleImgY = 10;
+//     }
+
+//     var selectionTop = _styleAsInt(selection, 'top');
+
+
+//     var boxBottom = selectionHeight + selectionTop - imageCoords.top;
+//     var boxTop = selectionTop;
+//     //if moving down
+//     if (boxBottom >= maxVisibleImgY - 10) {
+//       console.log('reached bottom of visible image');
+//       container.scrollTop = container.scrollTop + 10;
+//     }
+// console.log('boxTop', boxTop);
+// console.log('minVisibleImgY', minVisibleImgY);
+//     //if moving up
+//     if (boxTop <= minVisibleImgY - 5) {
+//       console.log('reached top of visible image');
+//       container.scrollTop = container.scrollTop - 20;
+//     }
+  }
+
 
 
   this.createSelectionBox = function(event) {
@@ -338,6 +427,7 @@ NoteInput = function() {
     var isInitial;
 
     event = event || window.event;
+    box = document.getElementById('sel-box');
 
     if (targetImages.indexOf(event.target) < 0) {
       return;
@@ -356,7 +446,15 @@ NoteInput = function() {
       box.style.overflow = 'hidden';
       box.style.background = 'rgba(0, 0, 0, 0)';
       box.style.border = _selectionBorder;
+    } else {
+      _scrollIfNeeded(event, 'al_submission', event.target, box);
     }
+
+
+
+
+    console.log('eventCoords:', eventCoords);
+    console.log('tagging.selectionOrigin: ', tagging.selectionOrigin);
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
 
@@ -375,14 +473,18 @@ NoteInput = function() {
 
     box.style.height = height + 'px';
     box.style.width = width + 'px';
+
+
     if (isInitial) {
       taggingContainer.appendChild(box);
     }
   }
 
   function _handleMouseMove(event) {
+    //console.log('handling mouse move event');
     event.preventDefault();
     if (_currentlyMakingSelection) {
+      //console.log('calling createSelBox from handlemouse move');
       tagging.createSelectionBox(event);
     }
   }
