@@ -4,15 +4,19 @@
 
 <form class="form-signin">
   <label for="username">Username:</label>
-  {{input class="form-control" name="username" id="username" type="text" value=username placeholder="username" action="resetErrors"  on="key-down"}} <br/>
+  {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
   {{#if incorrectUsername}}
    <p>Sorry, you entered an incorrect username. Please try again.</p>
   {{/if}}
 
   <label for="password">Password:</label>
-  {{input class="form-control" name="password" id="password" type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
+  {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
   {{#if incorrectPassword}}
    <p>Sorry, you entered an incorrect password. Please try again.</p>
+  {{/if}}
+
+  {{#if missingCredentials}}
+    <p>Missing Credentials</p>
   {{/if}}
 
   <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>

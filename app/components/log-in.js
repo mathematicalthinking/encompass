@@ -1,6 +1,7 @@
 Encompass.LogInComponent = Ember.Component.extend({
   incorrectPassword: false,
   incorrectUsername: false,
+  missingCredentials: false,
 
   actions: {
     login: function () {
@@ -10,6 +11,12 @@ Encompass.LogInComponent = Ember.Component.extend({
       console.log('username', username);
       var password = that.get('password');
       console.log('password', password);
+
+      if (!username && !password) {
+        that.set('missingCredentials', true);
+        return;
+      }
+
       var createUserData = {
         username: username,
         password: password,
@@ -44,6 +51,9 @@ Encompass.LogInComponent = Ember.Component.extend({
       }
       if (this.get('incorrectPassword')) {
         this.set('incorrectPassword', false);
+      }
+      if (this.get('missingCredentials')) {
+        this.set('missingCredentials', false);
       }
     }
   }

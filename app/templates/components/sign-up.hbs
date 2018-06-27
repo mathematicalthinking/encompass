@@ -4,39 +4,33 @@
 
 <form class="form-signup">
   <label for="name">Full Name:</label>
-    <input class="form-control" type="text" required name="name" id="name"> <br/>
+    {{input class="form-control" type="text" name="name" id="name"}} <br/>
   <label for="email">Email:</label>
-    <input class="form-control" type="text" required name="email" id="email"> <br/>
+    {{input class="form-control" type="text" name="email" id="email"}} <br/>
   <label for="organization">Institution, Organization, School or District Name:</label>
-    <input class="form-control" type="text" required name="organization" id="oragnization"> <br/>
+    {{input class="form-control" type="text" name="organization" id="oragnization"}} <br/>
   <label for="location">City and State:</label>
-    <input class="form-control" type="text" required name="location" id="location"> <br/>
+    {{input class="form-control" type="text" name="location" id="location"}} <br/>
   <label for="username">Username:</label>
-    <input class="form-control" type="text" required name="username" id="username"> <br/>
+    {{input class="form-control" type="text" name="username" id="username"}}br/>
   <label for="password">Password:</label>
-    <input class="form-control" type="password" required name="password" id="password" id="password"> <br/>
+    {{input class="form-control" type="password" name="password" id="password" id="password"}} <br/>
   <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
-    <input class="form-control" type="text" required name="access" id="requestReason"> <br/>
-  <input type="checkbox" id="terms" name="terms" value="true" required>
+    {{input class="form-control" type="text" name="access" id="requestReason"}} <br/>
+  {{input type="checkbox" id="terms" name="terms" value="true"}}
     <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label> <br/>
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up!</button>
+  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'signup'}}>Sign up!</button>
 </form>
 <br/>
+
+{{#if incorrectPassword}}
+<p>Sorry, you entered an incorrect password. Please try again.</p>
+{{/if}}
+{{#if incorrectUsername}}
+<p>Sorry, you entered an incorrect username. Please try again.</p>
+{{/if}}
 
 
 {{social-signin}}
 <br/>
 <p> Already have an account? {{#link-to 'auth.login'}}Login!{{/link-to}}</p>
-{{!--
-
-<form class="form-signin">
-  {{input class="form-control" name="username" id="username" type="text" value=username placeholder="username" action="resetErrors"
-  on="key-down"}} {{input class="form-control" name="password" id="password" type="password" value=password action="resetErrors"
-  on="key-down" placeholder="password"}}
-  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
-</form>
-{{#if incorrectPassword}}
-<p>Sorry, you entered an incorrect password. Please try again.</p>
-{{/if}} {{#if incorrectUsername}}
-<p>Sorry, you entered an incorrect username. Please try again.</p>
-{{/if}} --}}
