@@ -33,10 +33,30 @@ function(err, user, info) {
 };
 
 const localSignup = (req, res, next) => {
+ console.log('in localsignup :', req.body);
   passport.authenticate('local-signup', {
-      successRedirect: '/',
-      failureRedirect: '/#/auth/signup',
-  })(req, res, next);
+      // successRedirect: '/',
+      // failureRedirect: '/#/auth/signup',
+  },
+  function (err, user, info) {
+    console.log('info', info);
+    if (err) {
+      console.log('err: ', err);
+      return next(err);
+    }
+
+    if (!user) {
+      console.log('user: ', user);
+      return utils.sendResponse(res, info);
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return utils.sendResponse(res, user);
+    });
+  }
+)(req, res, next);
 };
 
 const googleAuth = (req, res, next) => {
