@@ -9,7 +9,6 @@
   */
 Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't require authentication since it's getting the user
   model: function() {
-    console.log('in app route model');
     var store = this.get('store');
     var currentUser = new Ember.RSVP.Promise(function(resolve, reject) {
       store.query('user', {alias: 'current'}).then( function (result) {
@@ -17,7 +16,6 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
         if(result.get('length') > 1) {
           console.error('something is wrong: current user request is returning multiple items');
         }
-        console.log('resolving user', user);
         resolve(user);
       }, function currentUserError(err){
         reject(err);
