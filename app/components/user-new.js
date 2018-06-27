@@ -1,4 +1,4 @@
-Encompass.ResponsesComponent = Ember.Component.extend({
-    tagName: 'responses',
-    className: ['responses']
+Encompass.UserNewComponent = Ember.Component.extend({
+    tagName: 'users',
+    className: ['users']
   });
