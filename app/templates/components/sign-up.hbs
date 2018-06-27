@@ -2,7 +2,7 @@
   <h1>Please sign up for Encompass</h1>
 </div>
 
-<form class="form-signup" method="POST" action="/auth/signup">
+<form class="form-signup">
   <label for="name">Full Name:</label>
     <input class="form-control" type="text" required name="name" id="name"> <br/>
   <label for="email">Email:</label>
@@ -27,3 +27,16 @@
 {{social-signin}}
 <br/>
 <p> Already have an account? {{#link-to 'auth.login'}}Login!{{/link-to}}</p>
+
+
+<form class="form-signin">
+  {{input class="form-control" name="username" id="username" type="text" value=username placeholder="username" action="resetErrors"
+  on="key-down"}} {{input class="form-control" name="password" id="password" type="password" value=password action="resetErrors"
+  on="key-down" placeholder="password"}}
+  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
+</form>
+{{#if incorrectPassword}}
+<p>Sorry, you entered an incorrect password. Please try again.</p>
+{{/if}} {{#if incorrectUsername}}
+<p>Sorry, you entered an incorrect username. Please try again.</p>
+{{/if}}
