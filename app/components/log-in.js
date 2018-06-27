@@ -1,4 +1,6 @@
 Encompass.LogInComponent = Ember.Component.extend({
+  incorrectPassword: false,
+  incorrectUsername: false,
 
   actions: {
     login: function () {
@@ -13,9 +15,26 @@ Encompass.LogInComponent = Ember.Component.extend({
         password: password,
       };
       Ember.$.post({
-          url: '/auth/login',
-          data: createUserData
-      });
+        url: '/auth/login',
+        data: createUserData
+      }).
+      then((res) => {
+        console.log('res', res);
+        if (res.message === 'Incorrect password') {
+          console.log('wrong pass');
+          that.set('incorrectPassword', true);
+        }else if(res.message === 'Incorrect username') {
+          that.set('incorrectUsername', true);
+        } else  {
+          console.log('in res block: ', res.username);
+          that.sendAction('toHome');
+        }
+      })
+      .catch(console.log);
+    },
+
+    toHome: function() {
+      this.sendAction('toHome');
     }
   }
 });

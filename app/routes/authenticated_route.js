@@ -10,7 +10,9 @@ Encompass.AuthenticatedRoute = Ember.Route.extend({
     this.authenticate();
   },
   authenticate: function() { //not crazy that this is duplicated here and in ApplicationRoute
+    console.log('authenticating!!!!');
     var user = this.modelFor('application');
+    console.log('user in auth', user);
     if(!user.get('isAuthenticated')) {
       this.transitionTo('/');
     } else if(!user.get('isAuthz')) {

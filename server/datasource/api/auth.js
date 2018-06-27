@@ -6,17 +6,30 @@
 
 //REQUIRE MODULES
 const passport = require('passport');
+const utils = require('../../middleware/requestHandler');
 
 
 const localLogin = (req, res, next) => {
   console.log('inside local login');
   passport.authenticate('local-login', {
-      // successRedirect: '/',
       // failureRedirect: '/#/auth/login',
       // failureFlash: true,
       // passReqToCallback: true,
-      failwithError: true,
-  })(req, res, next);
+      //failwithError: true,
+  },
+function(err, user, info) {
+  console.log('info', info);
+  if (err) {
+    return next(err);
+  }
+
+  if (!user) {return utils.sendResponse(res, info);}
+  req.logIn(user, function(err) {
+    if (err) { return next(err); }
+    return utils.sendResponse(res, user);
+  });
+}
+)(req, res, next);
 };
 
 const localSignup = (req, res, next) => {

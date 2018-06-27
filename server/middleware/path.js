@@ -118,8 +118,6 @@ function schemaHasWorkspace(schema) {
 function validateContent(options) {
   function _validateContent(req, res, next) {
     var checkForModRequest = /POST|PUT/;
-
-    console.log('validating content');
     // Ignore api requests that don't attempt to modify a value
     if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
       return next();
