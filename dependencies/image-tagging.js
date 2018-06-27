@@ -310,7 +310,7 @@ NoteInput = function() {
 
   function _initiateSelection(event) {
     event.preventDefault();
-    if (_currentlyMakingSelection || _currentlyConfirmingSelection) {
+    if (_currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
       return;
     }
     console.log('origin click', tagging.getCoordinates(event));
@@ -339,7 +339,7 @@ NoteInput = function() {
     var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
     var overflowTop = Math.floor(container.scrollTop);
 
-    var scrollRangeX = root.scrollWidth - container.clientWidth;
+    var scrollRangeX = root.scrollWidth - root.clientWidth;
     var overflowLeft = Math.floor(root.scrollLeft);
     var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
 
