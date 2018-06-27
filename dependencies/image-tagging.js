@@ -203,7 +203,7 @@ NoteInput = function() {
       _currentlyConfirmingSelection = true;
       window.removeEventListener('mouseup', _handleMouseUp, false);
       //console.log('removing mousemove listener for el: ', event.target);
-      document.getElementById('node-3').removeEventListener('mousemove', _handleMouseMove, false);
+      window.removeEventListener('mousemove', _handleMouseMove, true);
       tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
     }
@@ -321,13 +321,13 @@ NoteInput = function() {
     _currentlyMakingSelection = true;
     console.log('adding mousemove listener for el: ', event.currentTarget);
     window.addEventListener('mouseup', _handleMouseUp, false);
-    document.getElementById('node-3').addEventListener('mousemove', _handleMouseMove, false);
+    window.addEventListener('mousemove', _handleMouseMove, true);
     tagging.createSelectionBox(event);
 
     event.stopPropagation();
   }
 
-  function _scrollIfNeeded(event, scrollDiv, img, selection) {
+  function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
     var containerHeight = _styleAsInt(container, 'height');
     var [containerX, containerY] = _findPosition(container);
@@ -336,6 +336,10 @@ NoteInput = function() {
     var [selectionLeft, selectionTop] = _findPosition(selection);
     var selectionBottom = selectionTop + _styleAsInt(selection, 'height');
     var selectionRight = selectionLeft + _styleAsInt(selection, 'width');
+
+    var {down, up, right, left} = dragDirection;
+
+    console.log('dragDir: ', dragDirection);
 
     var scrollRangeY = container.scrollHeight - container.clientHeight;
     var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
@@ -349,7 +353,7 @@ NoteInput = function() {
     var imgScrollPosition = _findScrollPosition(img);
 
     var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
-    var diffTop = imgY - containerY;
+    var diffTop = imgY + _styleAsInt(img, 'borderWidth') - containerY;
     var diffLeft = imgX;
     var diffRight = root.scrollWidth - imgX - img.width;
 
@@ -387,18 +391,23 @@ NoteInput = function() {
     var leftEdgeVisibleImage = imgX + imgOverflowLeft;
     var rightEdgeVisibleImage = imgX + img.width - imgOverflowRight;
 
-    if (imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 50) {
+    console.log('rightEdge:', rightEdgeVisibleImage);
+    console.log('selRight: ', selectionRight);
+
+    if ( up && imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 10) {
       container.scrollTop = container.scrollTop - 10;
     }
-    if (imgOverflowBottom !== 0 && selectionBottom >= bottomOfVisibleImage - 50) {
+
+    if (down && imgOverflowBottom > 0 && selectionBottom >= bottomOfVisibleImage - 10) {
+      console.log('should be scrolling down');
       container.scrollTop = container.scrollTop + 10;
     }
 
-    if (imgOverflowLeft !== 0 && selectionLeft <= leftEdgeVisibleImage + 50) {
+    if (left && imgOverflowLeft > 0 && selectionLeft <= leftEdgeVisibleImage + 10) {
       root.scrollLeft = root.scrollLeft - 10;
     }
 
-    if (imgOverflowRight !== 0 && selectionRight >= rightEdgeVisibleImage - 50) {
+    if (right && imgOverflowRight > 0 && selectionRight >= rightEdgeVisibleImage - 10) {
       root.scrollLeft = root.scrollLeft + 10;
     }
   }
@@ -410,6 +419,16 @@ NoteInput = function() {
     var width;
     var imageCoords;
     var isInitial;
+    var dragDirection = {
+      down: null,
+      up: null,
+      right: null,
+      left: null
+    };
+    var isDraggingDown;
+    var isDraggingRight;
+    var isDraggingLeft;
+    var isDraggingUp;
 
     event = event || window.event;
     box = document.getElementById('sel-box');
@@ -420,6 +439,10 @@ NoteInput = function() {
     // coordinates relative to clickedImage
     eventCoords = tagging.getCoordinates(event);
     box = document.getElementById('sel-box');
+
+
+
+
 
     if (box === null) { // no selection in progress
       isInitial = true;
@@ -432,14 +455,12 @@ NoteInput = function() {
       box.style.background = 'rgba(0, 0, 0, 0)';
       box.style.border = _selectionBorder;
     } else {
-      _scrollIfNeeded(event, 'al_submission', event.target, box);
+      dragDirection.down = eventCoords[1] > tagging.selectionOrigin[1];
+      dragDirection.up = eventCoords[1] < tagging.selectionOrigin[1];
+      dragDirection.right = eventCoords[0] > tagging.selectionOrigin[0];
+      dragDirection.left = eventCoords[0] < tagging.selectionOrigin[0];
+      _scrollIfNeeded(event, 'al_submission', event.target, box, dragDirection);
     }
-
-
-
-
-    console.log('eventCoords:', eventCoords);
-    console.log('tagging.selectionOrigin: ', tagging.selectionOrigin);
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
 
@@ -466,7 +487,7 @@ NoteInput = function() {
   }
 
   function _handleMouseMove(event) {
-    //console.log('handling mouse move event');
+    console.log('handling mouse move event');
     event.preventDefault();
     if (_currentlyMakingSelection) {
       //console.log('calling createSelBox from handlemouse move');
