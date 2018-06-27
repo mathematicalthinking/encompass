@@ -1,4 +1,14 @@
-<article class="user">
+<h1>USER DETAIL INFO</h1>
+
+      <div class="clear"/>
+
+<ul class="actions">
+      <li>{{#link-to 'users'}}Go back to users{{/link-to}}</li>
+</ul>
+
+      <div class="clear"/>
+
+ <article class="user">
 <h2>{{model.username}}</h2>
 <table class="values rows" style="background-color: #efefef">
   <tr> <th>Label</th> <th>Value</th> </tr>
@@ -9,7 +19,7 @@
            {{model.name}}
          {{/if}}
          </td> </tr>
-  <tr> 
+  <tr>
       <td>Last Seen</td>
       <td>{{lastSeenDate}}</td>
   </tr>
@@ -58,4 +68,3 @@
   {{/if}}
 {{/if}}
 </article>
-{{outlet}}

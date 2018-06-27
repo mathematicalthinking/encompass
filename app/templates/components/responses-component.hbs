@@ -1,8 +1,9 @@
+
 <div class="al_wtf">
   <section class="origin meta al_vertical_stretch">
     {{#if existingResponses.length}}
       <p>
-      There 
+      There
         {{pluralize existingResponses.length 'is' 'are'}}
         {{#unless model.persisted}}already{{/unless}}
       <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other
@@ -22,12 +23,12 @@
     {{/if}}
 
     <p>
-    This response was generated from 
+    This response was generated from
       {{model.workspace.owner.displayName}}'s workspace {{#link-to 'workspace.work' model.workspace classNames="workspace"}}{{model.workspace.name}}{{/link-to}}.
 
     {{#if model.submission}}
-      In particular, it came from 
-        {{model.submission.student}}'s 
+      In particular, it came from
+        {{model.submission.student}}'s
         {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
         submission
         {{/link-to}}
@@ -50,7 +51,7 @@
           {{/each}}
           </ul>
         </section>
-        
+
         <section class="comments">
           <h2>Comments</h2>
           <ul>
@@ -72,14 +73,14 @@
       {{/if}}
     {{/if}}
   </section>
-  
+
   <section class="response">
     <h1>
     {{#if editing}}
       Editing
     {{/if}}
     {{#if model.persisted}}
-      Saved 
+      Saved
     {{else}}
       New
     {{/if}}
@@ -93,12 +94,12 @@
       <p class="notice">
       Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
       {{#if whyEmpty}}
-      Normally you'd see an auto-generated response here 
+      Normally you'd see an auto-generated response here
       based on the selections and comments you have created but there are none for this submission.
       {{#if model.submission}}
-        You can go back to the 
+        You can go back to the
           {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}}
-        and create some selections and comments.  
+        and create some selections and comments.
       {{/if}}
       {{/if}}
       </p>
@@ -130,10 +131,8 @@
       {{/if}}
     {{/unless}}
   </section>
-
 </div>
 
-{{outlet}}
 
 <header>
   <h2>Select a response</h2>
