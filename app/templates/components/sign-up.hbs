@@ -4,33 +4,37 @@
 
 <form class="form-signup">
   <label for="name">Full Name:</label>
-    {{input class="form-control" type="text" name="name" id="name"}} <br/>
+    {{input class="form-control" type="text" name="name" id="name" value=name action="resetErrors" on="key-down"}} <br/>
   <label for="email">Email:</label>
-    {{input class="form-control" type="text" name="email" id="email"}} <br/>
+    {{input class="form-control" type="text" name="email" id="email" value=email action="resetErrors" on="key-down"}} <br/>
   <label for="organization">Institution, Organization, School or District Name:</label>
-    {{input class="form-control" type="text" name="organization" id="oragnization"}} <br/>
+    {{input class="form-control" type="text" name="organization" id="oragnization" value=organization action="resetErrors" on="key-down"}} <br/>
   <label for="location">City and State:</label>
-    {{input class="form-control" type="text" name="location" id="location"}} <br/>
+    {{input class="form-control" type="text" name="location" id="location" value=location action="resetErrors" on="key-down"}} <br/>
   <label for="username">Username:</label>
-    {{input class="form-control" type="text" name="username" id="username"}}br/>
+    {{input class="form-control" type="text" name="username" id="username" value=username action="resetErrors" on="key-down"}}<br/>
   <label for="password">Password:</label>
-    {{input class="form-control" type="password" name="password" id="password" id="password"}} <br/>
+    {{input class="form-control" type="password" name="password" id="password" value=password action="resetErrors" on="key-down"}} <br/>
   <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
-    {{input class="form-control" type="text" name="access" id="requestReason"}} <br/>
-  {{input type="checkbox" id="terms" name="terms" value="true"}}
+    {{input class="form-control" type="text" name="requestReason" id="requestReason" value=requestReason action="resetErrors" on="click"}} <br/>
+  {{input type="checkbox" id="terms" name="terms" checked=agreedToTerms change=(action "toggleCheck")}}
     <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label> <br/>
   <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'signup'}}>Sign up!</button>
 </form>
 <br/>
 
-{{#if incorrectPassword}}
-<p>Sorry, you entered an incorrect password. Please try again.</p>
+{{#if usernameExists}}
+<p>Sorry, that username already exisits. Please try again.</p>
 {{/if}}
-{{#if incorrectUsername}}
-<p>Sorry, you entered an incorrect username. Please try again.</p>
+{{#if missingCredentials}}
+<p>You must complete all of the fields in order to signup.</p>
+{{/if}}
+{{#if noTermsAndConditions}}
+<p>You must accept our Terms and Conditions.</p>
 {{/if}}
 
 
 {{social-signin}}
 <br/>
 <p> Already have an account? {{#link-to 'auth.login'}}Login!{{/link-to}}</p>
+
