@@ -35,6 +35,16 @@ Encompass.LogInComponent = Ember.Component.extend({
 
     toHome: function() {
       this.sendAction('toHome');
+    },
+
+    resetErrors(e) {
+      console.log('e', e);
+      if (this.get('incorrectUsername')) {
+        this.set('incorrectUsername', false);
+      }
+      if (this.get('incorrectPassword')) {
+        this.set('incorrectPassword', false);
+      }
     }
   }
 });

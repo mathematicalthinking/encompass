@@ -3,9 +3,9 @@
 </div>
 
 <form class="form-signin">
-  {{input class="form-control" id="username" type="text" value=username placeholder="username"}}
+  {{input class="form-control" id="username" type="text" value=username placeholder="username" action="resetErrors"  on="key-down" value ="event.target"}}
 
-  {{input class="form-control" id="password" type="password" value=password placeholder="password"}}
+  {{input class="form-control" id="password" type="password" value=password action="resetErrors" on="key-down" placeholder="password"}}
   <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
 </form>
 {{#if incorrectPassword}}
