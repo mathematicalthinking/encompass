@@ -440,6 +440,14 @@ NoteInput = function() {
       eventCoords = _getCoordinates(event, targetImage);
     }
 
+    if (eventCoords[0] < 0 || eventCoords[1] < 0) {
+      return;
+    }
+
+    if (eventCoords[0] > targetImage.clientWidth || eventCoords[1] > targetImage.clientHeight) {
+      return;
+    }
+
     box = document.getElementById('sel-box');
 
     if (box === null) { // no selection in progress
@@ -477,6 +485,8 @@ NoteInput = function() {
     } else {
       box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
     }
+
+
 
     box.style.height = height + 'px';
     box.style.width = width + 'px';
