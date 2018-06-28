@@ -1,1 +1,14 @@
-<p>Section Name: {{section.name}}</p>
+<h3>Section Name: {{section.name}}</h3>
+<h3>Problems:</h3>
+  <ul class="listing">
+    {{#each section.problems as |problem|}}
+    <li>{{problem}}</li>
+    {{/each}}
+  </ul>
+<h3>Students:</h3>
+<ul>
+  <li></li>
+</ul>
+<h3>Section Id: {{section.sectionId}}</h3>
+
+
