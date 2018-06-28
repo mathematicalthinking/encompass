@@ -11,7 +11,7 @@
     </ul>
     <ul class="listing">
       {{#each sections as |section|}}
-      <li>{{#link-to 'section' problem classNames='section'}}{{section.name}}{{/link-to}}</li>
+      <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
       {{/each}}
     </ul>
 
