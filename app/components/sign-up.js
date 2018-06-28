@@ -48,10 +48,6 @@ Encompass.SignUpComponent = Ember.Component.extend({
         .catch(console.log);
     },
 
-    toHome: function () {
-      this.sendAction('toHome');
-    },
-
     toggleCheck() {
       if (this.agreedToTerms === true) {
         this.set('agreedToTerms', false);
