@@ -11,6 +11,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     var containerId = 'submission_container';
     var scrollableContainer = 'al_submission';
     var container = document.getElementById(containerId);
+    //var tagsListContainer = 'tags-list';
 
     if (!container) {
       return;
@@ -34,7 +35,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     comp.imageTagging = new window.ImageTagging({
       targetContainer: containerId,
       isCompSelectionMode: this.makingSelection,
-      scrollableContainer: scrollableContainer
+      scrollableContainer: scrollableContainer,
+      //tagsListContainer: tagsListContainer
     });
     comp.imageTagging.onSave(function(id) {
       var tag = comp.imageTagging.getTag(id);

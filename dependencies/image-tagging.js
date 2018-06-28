@@ -236,22 +236,46 @@ NoteInput = function() {
     var numOnly = str.slice(0, pxIx);
     return Number(numOnly);
 }
-  function _confirmSelectionInputs(box) {
+  function _confirmSelectionInputs(box, targetImage, visibleImage, scrollableContainer) {
     var confirm = document.createElement('button');
     var cancel = document.createElement('button');
     var boxLeft = _styleAsInt(box, 'left');
     var boxTop = _styleAsInt(box, 'top');
     var boxHeight = _styleAsInt(box, 'height');
     var boxWidth = _styleAsInt(box, 'width');
-    var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
-    var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
+    var boxBottom = boxTop + boxHeight;
+    var boxRight = boxLeft + boxWidth;
+    var boxBorderWidth = _styleAsInt(box, 'borderWidth');
+    // var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
+    // var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
+    var buttonsWidth = 30;
+    var buttonsHeight = 12;
     var buttons = [confirm, cancel];
 
-    confirm.style.left = boxLeft + boxWidth - buttonsWidth / 2 + 'px';
-    confirm.style.top = boxTop + boxHeight + 2 *  _styleAsInt(box, 'borderWidth') + 'px';
 
-    cancel.style.left = boxLeft - buttonsWidth / 2 + 'px';
-    cancel.style.top = boxTop + boxHeight  + 2 * _styleAsInt(box, 'borderWidth') + 'px'
+
+    confirm.style.left = boxLeft + boxWidth + 2 * boxBorderWidth - buttonsWidth + 'px';
+    confirm.style.top = boxTop + boxHeight + 2 *  boxBorderWidth + 'px';
+
+    cancel.style.left = boxLeft + 'px';
+    cancel.style.top = boxTop + boxHeight  + 2 * boxBorderWidth + 'px';
+
+    // ensure buttons are not on top of each other if tagging is small
+    if (boxWidth < 2 * buttonsWidth) {
+      var diff = 2 * buttonsWidth - boxWidth;
+      confirm.style.left =  _styleAsInt(confirm, 'left') + diff / 2 - 2 * boxBorderWidth + 'px';
+      cancel.style.left = _styleAsInt(cancel, 'left') - diff / 2 + 'px';
+    }
+    var [imgX, imgY] = _findPosition(targetImage);
+    var imgBottom = imgY + targetImage.height;
+    var overflow = imgBottom - visibleImage.bottomEdge;
+
+    if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
+
+      var diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
+      console.log('diff: ', diff);
+      document.getElementById(scrollableContainer).scrollTop -= diff;
+    }
 
     buttons.forEach((button) => {
       button.style.position = 'absolute';
@@ -262,7 +286,8 @@ NoteInput = function() {
       button.style.fontSize =  0.5 + 'em';
       button.style.fontWeight = 'bold';
       button.style.padding = 0;
-      button.style.margin = 'auto';
+
+      //button.style.margin = 'auto';
     });
     confirm.setAttribute('id', _confirmButtonId);
     confirm.innerText = 'Save';
@@ -287,9 +312,8 @@ NoteInput = function() {
     var selectionWidth = _styleAsInt(selectionBox, 'width');
     var selectionHeight = _styleAsInt(selectionBox, 'height');
 
-    if (selectionHeight === 0 || selectionWidth === 0) {
+    if (selectionHeight <= 1 || selectionWidth <= 1) {
       _currentlyConfirmingSelection = false;
-      console.log('making Selection?', _currentlyMakingSelection);
       _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
       return;
     }
@@ -298,9 +322,14 @@ NoteInput = function() {
       targetImage = event.target;
     } else if (event.target.id === _selectionBoxId) {
       targetImage = event.target.previousElementSibling.firstElementChild;
+    } else {
+      targetImage = selectionBox.previousElementSibling.firstElementChild;
     }
 
-    var buttons = _confirmSelectionInputs(selectionBox, event);
+    var visibleImage = _getVisibleImageBoundaries(event, _scrollableContainer, targetImage);
+    console.log('visImage in confirm inputs', visibleImage);
+
+    var buttons = _confirmSelectionInputs(selectionBox, targetImage, visibleImage, _scrollableContainer);
 
     var confirm = buttons[0];
     var cancel = buttons[1];
@@ -332,6 +361,65 @@ NoteInput = function() {
     event.stopPropagation();
   }
 
+  function _getVisibleImageBoundaries(event, scrollDiv, img) {
+    var container = document.getElementById(scrollDiv);
+    var containerHeight = _styleAsInt(container, 'height');
+    var [containerX, containerY] = _findPosition(container);
+    var root = document.documentElement;
+
+    var scrollRangeY = container.scrollHeight - container.clientHeight;
+    var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
+    var overflowTop = Math.floor(container.scrollTop);
+
+    var scrollRangeX = root.scrollWidth - root.clientWidth;
+    var overflowLeft = Math.floor(root.scrollLeft);
+    var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
+
+    var [imgX, imgY] = _findPosition(img);
+    var imgScrollPosition = _findScrollPosition(img);
+
+    var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
+    var diffTop = imgY + _styleAsInt(img, 'borderWidth') - containerY;
+    var diffLeft = imgX;
+    var diffRight = root.scrollWidth - imgX - img.width;
+
+    var imgOverflowLeft;
+    var imgOverflowRight;
+    var imgOverflowTop;
+    var imgOverflowBottom;
+
+    if (overflowLeft <= diffLeft) {
+      imgOverflowLeft = 0;
+    } else {
+      imgOverflowLeft = overflowLeft - diffLeft;
+    }
+
+    if (overflowRight <= diffRight) {
+      imgOverflowRight = 0;
+    } else {
+      imgOverflowRight = overflowRight - diffRight;
+    }
+
+    if (overflowTop <= diffTop) {
+      imgOverflowTop = 0;
+    } else {
+      imgOverflowTop = overflowTop - diffTop;
+    }
+
+    if (overflowBottom <= diffBottom) {
+      imgOverflowBottom = 0;
+    } else {
+      imgOverflowBottom = overflowBottom - diffBottom;
+    }
+    return {
+      topEdge: imgY + imgOverflowTop,
+      bottomEdge: imgY + img.clientHeight - imgOverflowBottom,
+      leftEdge : imgX + imgOverflowLeft,
+      rightEdge:  imgX + img.width - imgOverflowRight
+    };
+
+  }
+
   function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
     var containerHeight = _styleAsInt(container, 'height');
@@ -341,7 +429,6 @@ NoteInput = function() {
     var [selectionLeft, selectionTop] = _findPosition(selection);
     var selectionBottom = selectionTop + _styleAsInt(selection, 'height');
     var selectionRight = selectionLeft + _styleAsInt(selection, 'width');
-
 
     var {down, up, right, left} = dragDirection;
     var scrollRangeY = container.scrollHeight - container.clientHeight;
@@ -394,12 +481,18 @@ NoteInput = function() {
     var leftEdgeVisibleImage = imgX + imgOverflowLeft;
     var rightEdgeVisibleImage = imgX + img.width - imgOverflowRight;
 
-    console.log('imgOFtop', imgOverflowTop);
-    console.log('imgOFbot', imgOverflowBottom);
-    console.log('imgOFleft', imgOverflowLeft);
-    console.log('imgOFright', imgOverflowRight);
+    // if (up && imgOverflowTop > 0) {
+    //   if (dragOrientation.x === -1) {
+    //     if (selectionTop <= topOfVisibleImage + 25) {
+    //       container.scrollTop = container.scrollTop - 10;
+    //     }
+    //   } else if (dragOrientation.x === 1) {
+    //     if (selectionBottom <= topOfVisibleImage + 25) {
+    //       container.scrollTop = container.scrollTop - 10;
+    //     }
+    //   }
+    // }
 
-    console.log('scrolling up?', up);
     if ( up && imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 25) {
       container.scrollTop = container.scrollTop - 10;
     }
@@ -427,6 +520,7 @@ NoteInput = function() {
     var imageCoords;
     var isInitial;
 
+
     var isDraggingDown;
     var isDraggingRight;
     var isDraggingLeft;
@@ -437,6 +531,11 @@ NoteInput = function() {
       up: null,
       right: null,
       left: null
+    };
+
+    var dragOrientation = {
+      x: 1,
+      y: 1
     };
 
     event = event || window.event;
@@ -482,6 +581,15 @@ NoteInput = function() {
       dragDirection.up = eventCoords[1] < tagging.prevCoords[1];
       dragDirection.right = eventCoords[0] > tagging.prevCoords[0];
       dragDirection.left = eventCoords[0] < tagging.prevCoords[0];
+
+
+        if (tagging.selectionOrigin[1] > eventCoords[1]) {
+          dragOrientation.y = -1;
+        }
+
+      if (tagging.selectionOrigin[0] > eventCoords[0]) {
+        dragOrientation.x = -1;
+      }
       _scrollIfNeeded(event, _scrollableContainer, targetImage, box, dragDirection);
     }
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
@@ -500,8 +608,6 @@ NoteInput = function() {
     } else {
       box.style.top = tagging.selectionOrigin[1] + imageCoords.top + 'px';
     }
-
-
 
     box.style.height = height + 'px';
     box.style.width = width + 'px';
