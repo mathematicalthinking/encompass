@@ -24,7 +24,6 @@ Encompass.LogInComponent = Ember.Component.extend({
         data: createUserData
       }).
       then((res) => {
-        console.log('res', res);
         if (res.message === 'Incorrect password') {
           that.set('incorrectPassword', true);
         }else if(res.message === 'Incorrect username') {
@@ -41,7 +40,6 @@ Encompass.LogInComponent = Ember.Component.extend({
     },
 
     resetErrors(e) {
-      console.log('e', e);
       if (this.get('incorrectUsername')) {
         this.set('incorrectUsername', false);
       }
