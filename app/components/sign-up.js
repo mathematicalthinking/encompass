@@ -8,19 +8,12 @@ Encompass.SignUpComponent = Ember.Component.extend({
     signup: function () {
       var that = this;
       var name = that.get('name');
-      console.log(name);
       var email = that.get('email');
-      console.log(email);
       var organization = that.get('organization');
-      console.log(organization);
       var location = that.get('location');
-      console.log(location);
       var username = that.get('username');
-      console.log(username);
       var password = that.get('password');
-      console.log(password);
       var requestReason = that.get('requestReason');
-      console.log(requestReason);
 
       if (!name || !email || !organization || !location || !username || !password || !requestReason) {
         that.set('missingCredentials', true);
@@ -46,11 +39,9 @@ Encompass.SignUpComponent = Ember.Component.extend({
         data: createUserData
       }).
       then((res) => {
-          console.log('res', res);
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
           } else {
-            console.log('in res block: ', res.username);
             that.sendAction('toHome');
           }
         })
@@ -62,8 +53,6 @@ Encompass.SignUpComponent = Ember.Component.extend({
     },
 
     toggleCheck() {
-      console.log(this.agreedToTerms);
-      // this.set('agreedToTerms', true);
       if (this.agreedToTerms === true) {
         this.set('agreedToTerms', false);
       } else if (this.agreedToTerms === false) {
