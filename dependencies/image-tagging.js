@@ -49,7 +49,11 @@ var ImageTagging = function(args) {
     _tagIdPrefix = args.idPrefix || 'img-tag-',
     _tagListIdPrefix = args.listIdPrefix || 'tag-list-',
     _tagNoteIdSuffix = '-note',
+    _selectionBoxId = args.selectionBoxId || 'sel-box',
+    _cancelButtonId = args.cancelButtonId || 'cancel-sel',
+    _confirmButtonId = args.confirmButtonId || 'confirm-sel',
     _tagListContainer = args.tagsListContainer || '',
+    _scrollableContainer = args.scrollableContainer || 'al_submission',
     _offY = 0, _offX = 0, _prevX = 0, _prevY = 0,
     _resizeHandleWidth = args.resizeHandleWidth ? parseInt(args.resizeHandleWidth, 10) : 10,
     _minHeight = args.minHeight ? parseInt(args.minHeight, 10) : 40,
@@ -72,6 +76,7 @@ var ImageTagging = function(args) {
     taggingContainer,
     containerX,
     containerY,
+    prevCoords,
 
 NoteInput = function() {
   var input = this,
@@ -200,7 +205,6 @@ NoteInput = function() {
       _currentlyMakingSelection = false;
       _currentlyConfirmingSelection = true;
       window.removeEventListener('mouseup', _handleMouseUp, false);
-      //console.log('removing mousemove listener for el: ', event.target);
       window.removeEventListener('mousemove', _handleMouseMove, false);
       tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
@@ -221,7 +225,7 @@ NoteInput = function() {
     _currentlyConfirmingSelection = false;
   }
   function _cancelSelection() {
-    _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+    _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
   }
   function _styleAsInt(el, attr) {
     if (!el) {
@@ -247,8 +251,7 @@ NoteInput = function() {
     confirm.style.top = boxTop + boxHeight + 2 *  _styleAsInt(box, 'borderWidth') + 'px';
 
     cancel.style.left = boxLeft - buttonsWidth / 2 + 'px';
-    cancel.style.top = boxTop + boxHeight  + 2 * _styleAsInt(box, 'borderWidth') + 'px';
-
+    cancel.style.top = boxTop + boxHeight  + 2 * _styleAsInt(box, 'borderWidth') + 'px'
 
     buttons.forEach((button) => {
       button.style.position = 'absolute';
@@ -261,20 +264,20 @@ NoteInput = function() {
       button.style.padding = 0;
       button.style.margin = 'auto';
     });
-    confirm.setAttribute('id', 'confirm-sel');
+    confirm.setAttribute('id', _confirmButtonId);
     confirm.innerText = 'Save';
-    //confirm.style.marginLeft = 25 + 'px';
-    cancel.setAttribute('id', 'cancel-sel');
+
+    cancel.setAttribute('id', _cancelButtonId);
     cancel.innerText = 'Trash';
-    //cancel.style.marginRight = 25 + 'px';
 
     return [confirm, cancel];
   }
   this.confirmSelectionArea = function(event) {
     var selectionBox;
+    var targetImage;
     event = event || window.event;
 
-    selectionBox = document.getElementById('sel-box');
+    selectionBox = document.getElementById(_selectionBoxId);
 
     if (selectionBox === null) {
       _currentlyConfirmingSelection = false;
@@ -287,9 +290,16 @@ NoteInput = function() {
     if (selectionHeight === 0 || selectionWidth === 0) {
       _currentlyConfirmingSelection = false;
       console.log('making Selection?', _currentlyMakingSelection);
-      _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
       return;
     }
+
+    if (targetImages.indexOf(event.target) >= 0) {
+      targetImage = event.target;
+    } else if (event.target.id === _selectionBoxId) {
+      targetImage = event.target.previousElementSibling.firstElementChild;
+    }
+
     var buttons = _confirmSelectionInputs(selectionBox, event);
 
     var confirm = buttons[0];
@@ -297,10 +307,10 @@ NoteInput = function() {
 
     confirm.addEventListener('click', function() {
       var id = tagging.getId();
-      var imageCoords = _imageTrueCoords(document.getElementById('node-3'));
+      var imageCoords = _imageTrueCoords(targetImage);
       var relativeCoords = [_styleAsInt(selectionBox, 'left') - imageCoords.left, _styleAsInt(selectionBox, 'top') - imageCoords.top];
-      tagging.createTag(id, 'node-3', relativeCoords, selectionBox);
-      _removeElsFromDom(['sel-box', 'confirm-sel', 'cancel-sel']);
+      tagging.createTag(id, targetImage.id, relativeCoords, selectionBox);
+      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
     });
     cancel.addEventListener('click', _cancelSelection);
 
@@ -332,7 +342,6 @@ NoteInput = function() {
     var selectionBottom = selectionTop + _styleAsInt(selection, 'height');
     var selectionRight = selectionLeft + _styleAsInt(selection, 'width');
 
-    console.log(selectionLeft, selectionRight, selectionBottom, selectionTop);
 
     var {down, up, right, left} = dragDirection;
     var scrollRangeY = container.scrollHeight - container.clientHeight;
@@ -389,57 +398,61 @@ NoteInput = function() {
     console.log('imgOFbot', imgOverflowBottom);
     console.log('imgOFleft', imgOverflowLeft);
     console.log('imgOFright', imgOverflowRight);
-    if ( up && imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 10) {
+
+    console.log('scrolling up?', up);
+    if ( up && imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 25) {
       container.scrollTop = container.scrollTop - 10;
     }
 
-    if (down && imgOverflowBottom > 0 && selectionBottom >= bottomOfVisibleImage - 10) {
+    if (down && imgOverflowBottom > 0 && selectionBottom >= bottomOfVisibleImage - 25) {
       container.scrollTop = container.scrollTop + 10;
     }
 
-    if (left && imgOverflowLeft > 0 && selectionLeft <= leftEdgeVisibleImage + 10) {
+    if (left && imgOverflowLeft > 0 && selectionLeft <= leftEdgeVisibleImage + 25) {
       root.scrollLeft = root.scrollLeft - 10;
     }
 
-    if (right && imgOverflowRight > 0 && selectionRight >= rightEdgeVisibleImage - 10) {
+    if (right && imgOverflowRight > 0 && selectionRight >= rightEdgeVisibleImage - 25) {
       root.scrollLeft = root.scrollLeft + 10;
     }
   }
 
   this.createSelectionBox = function(event) {
     var box;
+    var prevCords;
     var eventCoords;
     var targetImage;
     var height;
     var width;
     var imageCoords;
     var isInitial;
+
+    var isDraggingDown;
+    var isDraggingRight;
+    var isDraggingLeft;
+    var isDraggingUp;
+
     var dragDirection = {
       down: null,
       up: null,
       right: null,
       left: null
     };
-    var isDraggingDown;
-    var isDraggingRight;
-    var isDraggingLeft;
-    var isDraggingUp;
 
     event = event || window.event;
-    box = document.getElementById('sel-box');
 
-    if (targetImages.indexOf(event.target) < 0 && event.target.id !=='sel-box') {
+    if (targetImages.indexOf(event.target) < 0 && event.target.id !==_selectionBoxId) {
       return;
     }
     // coordinates relative to clickedImage
     if (targetImages.indexOf(event.target) >= 0) {
       targetImage = event.target;
       eventCoords = tagging.getCoordinates(event);
-    } else if (event.target.id === 'sel-box') {
+    } else if (event.target.id === _selectionBoxId) {
       targetImage = event.target.previousElementSibling.firstElementChild;
       eventCoords = _getCoordinates(event, targetImage);
     }
-
+    // only allow selections inside image borders
     if (eventCoords[0] < 0 || eventCoords[1] < 0) {
       return;
     }
@@ -448,32 +461,34 @@ NoteInput = function() {
       return;
     }
 
-    box = document.getElementById('sel-box');
+    box = document.getElementById(_selectionBoxId);
 
     if (box === null) { // no selection in progress
       isInitial = true;
+      tagging.prevCoords = eventCoords;
       tagging.selectionOrigin = eventCoords;
       box = document.createElement('div');
-      box.setAttribute('id', 'sel-box');
+      box.setAttribute('id', _selectionBoxId);
 
       box.style.position = 'absolute';
       box.style.overflow = 'hidden';
       box.style.background = 'rgba(0, 0, 0, 0)';
       box.style.border = _selectionBorder;
     } else {
-      dragDirection.down = eventCoords[1] > tagging.selectionOrigin[1];
-      dragDirection.up = eventCoords[1] < tagging.selectionOrigin[1];
-      dragDirection.right = eventCoords[0] > tagging.selectionOrigin[0];
-      dragDirection.left = eventCoords[0] < tagging.selectionOrigin[0];
-      _scrollIfNeeded(event, 'al_submission', document.getElementById('node-3'), box, dragDirection);
+      console.log('event coords', eventCoords);
+      console.log('tagging.selectionorigin: ', tagging.selectionOrigin);
+      dragDirection.down = eventCoords[1] > tagging.prevCoords[1];
+      //dragDirection.up = eventCoords[1] < tagging.selectionOrigin[1];
+      dragDirection.up = eventCoords[1] < tagging.prevCoords[1];
+      dragDirection.right = eventCoords[0] > tagging.prevCoords[0];
+      dragDirection.left = eventCoords[0] < tagging.prevCoords[0];
+      _scrollIfNeeded(event, _scrollableContainer, targetImage, box, dragDirection);
     }
     width = Math.abs(eventCoords[0] - tagging.selectionOrigin[0]);
     height = Math.abs(eventCoords[1] - tagging.selectionOrigin[1]);
 
-    imageCoords = _imageTrueCoords(document.getElementById('node-3'));
+    imageCoords = _imageTrueCoords(targetImage);
 
-    console.log(`origin x: ${tagging.selectionOrigin[0]}`);
-    console.log(`origin y: ${tagging.selectionOrigin[1]} `);
     if (eventCoords[0] < tagging.selectionOrigin[0]) {
       box.style.left = tagging.selectionOrigin[0] + imageCoords.left - width + 'px';
     } else {
@@ -491,11 +506,11 @@ NoteInput = function() {
     box.style.height = height + 'px';
     box.style.width = width + 'px';
 
-
+    // only append box if this is the initial click that triggered selection
     if (isInitial) {
-      console.log('appending box');
       taggingContainer.appendChild(box);
     }
+    tagging.prevCoords = eventCoords;
   }
 
   function _handleMouseMove(event) {
@@ -1494,7 +1509,7 @@ NoteInput = function() {
   this.getCoordinates = function(event) {
     var clickPosition;
 
-    if (event.target.nodeName.toLowerCase() !== 'img' && event.target.id !== 'sel-box') {
+    if (event.target.nodeName.toLowerCase() !== 'img' && event.target.id !== _selectionBoxId) {
       return null;
     }
     clickPosition = _getCoordinates(event, event.target);

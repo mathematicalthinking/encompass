@@ -9,6 +9,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
   didInsertElement: function() {
     var comp = this;
     var containerId = 'submission_container';
+    var scrollableContainer = 'al_submission';
     var container = document.getElementById(containerId);
 
     if (!container) {
@@ -32,7 +33,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     // set up the ImageTagging object
     comp.imageTagging = new window.ImageTagging({
       targetContainer: containerId,
-      isCompSelectionMode: this.makingSelection
+      isCompSelectionMode: this.makingSelection,
+      scrollableContainer: scrollableContainer
     });
     comp.imageTagging.onSave(function(id) {
       var tag = comp.imageTagging.getTag(id);
