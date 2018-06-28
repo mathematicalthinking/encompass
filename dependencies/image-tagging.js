@@ -197,7 +197,7 @@ NoteInput = function() {
   }
 
   function _handleMouseUp(event) {
-    console.log('handling mouse up for: ', event.target.id);
+    console.log('handling mouse up for: ', event);
     if (!_currentlyMakingSelection) {
       return;
     }
@@ -317,14 +317,14 @@ NoteInput = function() {
       _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
       return;
     }
-
-    if (targetImages.indexOf(event.target) >= 0) {
-      targetImage = event.target;
-    } else if (event.target.id === _selectionBoxId) {
-      targetImage = event.target.previousElementSibling.firstElementChild;
-    } else {
-      targetImage = selectionBox.previousElementSibling.firstElementChild;
-    }
+    targetImage = tagging.currentTargetImage;
+    // if (targetImages.indexOf(event.target) >= 0) {
+    //   targetImage = event.target;
+    // } else if (event.target.id === _selectionBoxId) {
+    //   targetImage = event.target.previousElementSibling.firstElementChild;
+    // } else {
+    //   targetImage = selectionBox.previousElementSibling.firstElementChild;
+    // }
 
     var visibleImage = _getVisibleImageBoundaries(event, _scrollableContainer, targetImage);
     console.log('visImage in confirm inputs', visibleImage);
@@ -349,6 +349,7 @@ NoteInput = function() {
 
   function _initiateSelection(event) {
     event.preventDefault();
+    console.log('initial click event for: ', event);
     if (_currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
       return;
     }
@@ -356,6 +357,8 @@ NoteInput = function() {
     _currentlyMakingSelection = true;
     window.addEventListener('mouseup', _handleMouseUp, false);
     window.addEventListener('mousemove', _handleMouseMove, false);
+
+    tagging.currentTargetImage = event.target;
     tagging.createSelectionBox(event);
 
     event.stopPropagation();
@@ -538,18 +541,20 @@ NoteInput = function() {
     };
 
     event = event || window.event;
+    targetImage = tagging.currentTargetImage;
 
-    if (targetImages.indexOf(event.target) < 0 && event.target.id !==_selectionBoxId) {
+    if (targetImages.indexOf(targetImage) < 0 && event.target.id !==_selectionBoxId) {
       return;
     }
-    // coordinates relative to clickedImage
-    if (targetImages.indexOf(event.target) >= 0) {
-      targetImage = event.target;
-      eventCoords = tagging.getCoordinates(event);
-    } else if (event.target.id === _selectionBoxId) {
-      targetImage = event.target.previousElementSibling.firstElementChild;
-      eventCoords = _getCoordinates(event, targetImage);
-    }
+    eventCoords = _getCoordinates(event, targetImage);
+    // // coordinates relative to clickedImage
+    // if (targetImages.indexOf(event.target) >= 0) {
+    //   //targetImage = event.target;
+    //   eventCoords = tagging.getCoordinates(event);
+    // } else if (event.target.id === _selectionBoxId) {
+    //   //targetImage = event.target.previousElementSibling.firstElementChild;
+    //   eventCoords = _getCoordinates(event, targetImage);
+    // }
     // only allow selections inside image borders
     if (eventCoords[0] < 0 || eventCoords[1] < 0) {
       return;
@@ -615,6 +620,7 @@ NoteInput = function() {
   }
 
   function _handleMouseMove(event) {
+    console.log('event mouse move', event);
     event.preventDefault();
     if (_currentlyMakingSelection) {
       tagging.createSelectionBox(event);
