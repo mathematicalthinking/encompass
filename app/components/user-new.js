@@ -23,7 +23,9 @@ Encompass.UserNewComponent = Ember.Component.extend({
           isAuthorized: newUserAuthorized
         });
 
-        user.save();
+        user.save().then((res) => {
+          this.sendAction('toUserList');
+        });
       },
 
       checkUsername: function (keysPressed) {
