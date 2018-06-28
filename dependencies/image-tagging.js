@@ -417,9 +417,8 @@ NoteInput = function() {
       leftEdge : imgX + imgOverflowLeft,
       rightEdge:  imgX + img.width - imgOverflowRight
     };
-
   }
-
+  // TODO: Refactor into smaller, reusable functions
   function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
     var containerHeight = _styleAsInt(container, 'height');
@@ -574,16 +573,12 @@ NoteInput = function() {
       box.style.background = 'rgba(0, 0, 0, 0)';
       box.style.border = _selectionBorder;
     } else {
-      console.log('event coords', eventCoords);
-      console.log('tagging.selectionorigin: ', tagging.selectionOrigin);
       dragDirection.down = eventCoords[1] > tagging.prevCoords[1];
-      //dragDirection.up = eventCoords[1] < tagging.selectionOrigin[1];
       dragDirection.up = eventCoords[1] < tagging.prevCoords[1];
       dragDirection.right = eventCoords[0] > tagging.prevCoords[0];
       dragDirection.left = eventCoords[0] < tagging.prevCoords[0];
 
-
-        if (tagging.selectionOrigin[1] > eventCoords[1]) {
+      if (tagging.selectionOrigin[1] > eventCoords[1]) {
           dragOrientation.y = -1;
         }
 
@@ -622,7 +617,6 @@ NoteInput = function() {
   function _handleMouseMove(event) {
     event.preventDefault();
     if (_currentlyMakingSelection) {
-      //console.log('calling createSelBox from handlemouse move');
       tagging.createSelectionBox(event);
     }
     event.stopPropagation();
@@ -648,10 +642,6 @@ NoteInput = function() {
       }
       targetImages[targetImages.length] = img;
       img.addEventListener('mousedown', _initiateSelection, false);
-      //img.addEventListener('mouseup', _handleMouseUp, false;
-      //img.addEventListener('mousemove', _handleMouseMove, false);
-      //img.addEventListener('mouseup', _createTagOnEvent, false );
-
     }
   }());
 
@@ -712,7 +702,6 @@ NoteInput = function() {
       posX = event.pageX;
       posY = event.pageY;
     } else if (event.clientX || event.clientY) {
-      console.log('in else if clientX/clientY block');
       posX = event.clientX + document.documentElement.scrollLeft;
       posY = event.clientY + document.documentElement.scrollTop;
     }
