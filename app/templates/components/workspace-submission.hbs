@@ -18,7 +18,7 @@
       {{/if}}
       <td>
         <a class='puzzle' target="_blank" href="{{currentSubmission.puzzleUrl}}">
-          {{currentSubmission.puzzle.title}} 
+          {{currentSubmission.puzzle.title}}
           <img src="/img/glyphish/icons/icons-gray/212-action2-16.png"/>
         </a>
       </td>
@@ -56,8 +56,13 @@
     <div class="submission long">
       {{{currentSubmission.longAnswer}}}
     </div>
-  {{/if}}
 
+  {{/if}}
+    {{!-- <div id="tags-list">
+      <p class="al_small">Below is a list of image tags. Hover over a tag
+        to view the selection, or click to edit the tag.
+      </p>
+    </div> --}}
   {{#if currentSubmission.attachment.savedFileName}}
   <div id="submission_images">
     <a target="_blank" href="{{unbound currentSubmission.imageUrl}}">
@@ -70,7 +75,7 @@
 
   <div id="submission_selections">
     {{!-- lets leave the help text out
-      <p class="al_small">Below are the selections that have been made.  
+      <p class="al_small">Below are the selections that have been made.
         {{#if canSelect}}
           You can file them by dragging them to a folder on the left.
         {{/if}}
@@ -79,7 +84,7 @@
 
 
     {{#unless currentSubmission.selections.length}}
-      <p class="al_small">No selections have been made yet.  
+      <p class="al_small">No selections have been made yet.
         {{#if canSelect}}
           Click "make selection" above and highlight some text in the submission.
         {{/if}}
@@ -93,7 +98,7 @@
           {{#if canSelect}}
             {{draggable-selection selection=selection deleteSelection=(action "deleteSelection") }}
           {{else}}
-            
+
           <span class="selection_text selectionLink {{id}}">{{selection.text}}</span>
           {{/if}}
         {{/unless}}
