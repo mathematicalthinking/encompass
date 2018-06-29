@@ -1,134 +1,95 @@
-{{!-- <div class="al_wtf">
+<div class="al_wtf">
   <section class="origin meta al_vertical_stretch">
     {{#if existingResponses.length}}
-      <p>
-      There
-        {{pluralize existingResponses.length 'is' 'are'}}
-        {{#unless model.persisted}}already{{/unless}}
-      <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other
-        {{pluralize existingResponses.length 'response' 'responses'}}
+    <p>
+      There {{pluralize existingResponses.length 'is' 'are'}} {{#unless model.persisted}}already{{/unless}}
+      <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other {{pluralize existingResponses.length 'response' 'responses'}}
       </a> for this {{model.source}}.
-      </p>
-      {{#if showExisting}}
-        <ul>
-        {{#each existingResponses as |response|}}
-          <li>
-            {{#link-to 'response' response}}{{response.shortText}}{{/link-to}} from {{response.created}}
-          </li>
-        {{/each}}
-        </ul>
-        <br/>
-      {{/if}}
-    {{/if}}
+    </p>
+    {{#if showExisting}}
+    <ul>
+      {{#each existingResponses as |response|}}
+      <li>
+        {{#link-to 'response' response}}{{response.shortText}}{{/link-to}} from {{response.created}}
+      </li>
+      {{/each}}
+    </ul>
+    <br/> {{/if}} {{/if}}
 
     <p>
-    This response was generated from
-      {{model.workspace.owner.displayName}}'s workspace {{#link-to 'workspace.work' model.workspace classNames="workspace"}}{{model.workspace.name}}{{/link-to}}.
-
-    {{#if model.submission}}
-      In particular, it came from
-        {{model.submission.student}}'s
-        {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
-        submission
-        {{/link-to}}
-    {{/if}}
-    {{#unless showDetails}}
-    (<a id="moreDetails" {{action toggleProperty 'showDetails'}}>more details</a>)
-    {{/unless}}
+      This response was generated from {{model.workspace.owner.displayName}}'s workspace {{#link-to 'workspace.work' model.workspace
+      classNames="workspace"}}{{model.workspace.name}}{{/link-to}}. {{#if model.submission}} In particular, it came from
+      {{model.submission.student}}'s {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
+      submission {{/link-to}} {{/if}} {{#unless showDetails}} (
+      <a id="moreDetails" {{action toggleProperty 'showDetails'}}>more details</a>) {{/unless}}
     </p>
 
-    {{#if showDetails}}
-      {{#if model.selections.length}}
-        <p>These selections and comments were available at the time this response was created.</p>
-        <section class="selections">
-          <h2>Selections</h2>
-          <ul>
-          {{#each model.selections as |selection|}}
-            <li>
-              {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
-            </li>
-          {{/each}}
-          </ul>
-        </section>
+    {{#if showDetails}} {{#if model.selections.length}}
+    <p>These selections and comments were available at the time this response was created.</p>
+    <section class="selections">
+      <h2>Selections</h2>
+      <ul>
+        {{#each model.selections as |selection|}}
+        <li>
+          {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
+        </li>
+        {{/each}}
+      </ul>
+    </section>
 
-        <section class="comments">
-          <h2>Comments</h2>
-          <ul>
-          {{#each model.comments as |comment|}}
-            <li>
-              {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}{{comment.text}}{{/link-to}}
-            </li>
-          {{/each}}
-          </ul>
-        </section>
+    <section class="comments">
+      <h2>Comments</h2>
+      <ul>
+        {{#each model.comments as |comment|}}
+        <li>
+          {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}{{comment.text}}{{/link-to}}
+        </li>
+        {{/each}}
+      </ul>
+    </section>
 
-        {{#if model.persisted}}
-          This was the original response generated
-          <pre class="message">{{response}}
-          </pre>
-        {{/if}}
-      {{else}}
-        There weren't any selections/comments for this submission.
-      {{/if}}
-    {{/if}}
+    {{#if model.persisted}} This was the original response generated
+    <pre class="message">{{response}}
+          </pre> {{/if}} {{else}} There weren't any selections/comments for this submission. {{/if}} {{/if}}
   </section>
 
   <section class="response">
     <h1>
-    {{#if editing}}
-      Editing
-    {{/if}}
-    {{#if model.persisted}}
-      Saved
-    {{else}}
-      New
-    {{/if}}
-    Response
+      {{#if editing}} Editing {{/if}} {{#if model.persisted}} Saved {{else}} New {{/if}} Response
     </h1>
     <p>
-      To: <span id="responding-to">{{model.student}}</span>
+      To:
+      <span id="responding-to">{{model.student}}</span>
     </p>
 
     {{#if explainEmptiness}}
-      <p class="notice">
-      Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
-      {{#if whyEmpty}}
-      Normally you'd see an auto-generated response here
-      based on the selections and comments you have created but there are none for this submission.
-      {{#if model.submission}}
-        You can go back to the
-          {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}}
-        and create some selections and comments.
-      {{/if}}
-      {{/if}}
-      </p>
-    {{/if}}
-
-    {{#if editing}}
-    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text autofocus="autofocus"}}
-    {{else}}
-      {{#if model.text}}
-      <pre class="message">{{model.text}}</pre>
-      {{/if}}
-    {{/if}}
+    <p class="notice">
+      Click 'edit' below to start your reply from scratch.
+      <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
+      {{#if whyEmpty}} Normally you'd see an auto-generated response here based on the selections and comments you have created
+      but there are none for this submission. {{#if model.submission}} You can go back to the {{#link-to 'workspace.submission'
+      model.workspace model.submission}}submission{{/link-to}} and create some selections and comments. {{/if}} {{/if}}
+    </p>
+    {{/if}} {{#if editing}} {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text
+    autofocus="autofocus"}} {{else}} {{#if model.text}}
+    <pre class="message">{{model.text}}</pre> {{/if}} {{/if}}
 
     <button class="edit" {{action toggleProperty 'editing'}} disabled={{editing}}>Edit</button>
     <button class="save" {{action 'save'}} disabled={{notDirty}}>Save</button>
     <br/>
     <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button>
     {{#unless canRespond}}
-      <a {{action toggleProperty 'showHelp'}}>?</a>
-      {{#if showHelp}}
-      <p class="notice">
+    <a {{action toggleProperty 'showHelp'}}>?</a>
+    {{#if showHelp}}
+    <p class="notice">
       You can't send this to the PoW because:
       <ul>
         {{#if model.isStatic}}
-          <li>it is static. (probably imported from a PD set)</li>
+        <li>it is static. (probably imported from a PD set)</li>
         {{/if}}
       </ul>
-      </p>
-      {{/if}}
-    {{/unless}}
+    </p>
+    {{/if}} {{/unless}}
   </section>
 
-</div> --}}
+</div>

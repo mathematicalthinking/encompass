@@ -2,7 +2,7 @@
   * # Workspace Submission Controller
   * @description The controller for interacting with a submission in the context of a workspace
   *              This is used to set the dependency on the workspace controller and add and delete
-  *              selections 
+  *              selections
   * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
 */
@@ -117,7 +117,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
           submission: submission,
           coordinates: selection.coords,
           workspace: workspace
-        }); 
+        });
         break;
 
       case "image-tag":
@@ -130,10 +130,10 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
               selection.size.width + ' ' +
               selection.size.height,
           workspace: workspace
-        }); 
+        });
         break;
 
-      default: 
+      default:
         console.error('Invalid Selection Type');
         return;
       }
@@ -148,7 +148,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
             s.addObject(record);
           });
           controller.set('currentSelection', record);
-          
+
           controller.transitionToRoute('workspace.submission.selection', workspace, submission, newSelection.id);
 
           guiders.hideAll();

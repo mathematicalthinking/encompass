@@ -5,7 +5,7 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
   renderTemplate: function(controller, model) {
     controller.set('model', model);
     controller.set('editing', false);
-    this.render('response');
+    this.render('responses/response');
 
   },
 

@@ -6,22 +6,57 @@
 
 //REQUIRE MODULES
 const passport = require('passport');
+const utils = require('../../middleware/requestHandler');
 
 
 const localLogin = (req, res, next) => {
+  console.log('inside local login');
   passport.authenticate('local-login', {
-      successRedirect: '/',
-      failureRedirect: '/#/auth/login',
+      // failureRedirect: '/#/auth/login',
       // failureFlash: true,
-      // passReqToCallback: true
-  })(req, res, next);
+      // passReqToCallback: true,
+      //failwithError: true,
+  },
+function(err, user, info) {
+  console.log('info', info);
+  if (err) {
+    return next(err);
+  }
+
+  if (!user) {return utils.sendResponse(res, info);}
+  req.logIn(user, function(err) {
+    if (err) { return next(err); }
+    return utils.sendResponse(res, user);
+  });
+}
+)(req, res, next);
 };
 
 const localSignup = (req, res, next) => {
+ console.log('in localsignup :', req.body);
   passport.authenticate('local-signup', {
-      successRedirect: '/',
-      failureRedirect: '/#/auth/signup',
-  })(req, res, next);
+      // successRedirect: '/',
+      // failureRedirect: '/#/auth/signup',
+  },
+  function (err, user, info) {
+    console.log('info', info);
+    if (err) {
+      console.log('err: ', err);
+      return next(err);
+    }
+
+    if (!user) {
+      console.log('user: ', user);
+      return utils.sendResponse(res, info);
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return utils.sendResponse(res, user);
+    });
+  }
+)(req, res, next);
 };
 
 const googleAuth = (req, res, next) => {

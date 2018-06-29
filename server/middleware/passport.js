@@ -35,7 +35,6 @@ module.exports = (passport) => {
 
 
   passport.use('local-login', new LocalStrategy((username, password, next) => {
-   console.log(`in local with username: ${username}, password ${password}`);
     User.findOne({
       username: username
     }, (err, user) => {
@@ -80,14 +79,24 @@ module.exports = (passport) => {
             });
           } else {
             const {
+              name,
+              email,
+              organization,
+              location,
               username,
               password,
+              requestReason,
             } = req.body;
             const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
             const newUser = new User({
+              name,
+              email,
+              organization,
+              location,
               username,
               password: hashPass,
-              isAuthorized: true
+              isAuthorized: true,
+              requestReason,
             });
 
             newUser.save((err) => {
