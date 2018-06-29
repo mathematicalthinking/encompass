@@ -76,12 +76,12 @@ module.exports = {
     _id: '5b1e7bf9a5d2157ef4c911a6'
   },
   student: {
-    name: 'David T.'
+    _id: '5b368dfbca1375a94fabde3a'
   },
   user: {
     _id: '529518daba1cd3d8c4013344',
     validUser: {
-      username: 'testUser',
+      username: 'testUser2',
     },
   },
   folder: {

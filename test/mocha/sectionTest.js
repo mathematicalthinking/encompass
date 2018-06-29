@@ -1,3 +1,10 @@
+/*
+ * These tests are all pending now because the test db needs to be updated
+ */
+
+
+
+
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -119,15 +126,15 @@ describe('Section CRUD operations', function() {
   });
 
   describe('addStudent to section', () => {
-    xit('should add one student to the section', done => {
+    it('should add one student to the section', done => {
       let url = baseUrl + 'addStudent/' + fixtures.section._id;
       agent
       .put(url)
-      .send({studentName: 'bill'})
+      .send({studentId: fixtures.student._id})
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
-        expect(res.body.section.students).to.contain('bill');
+        expect(res.body.section.students).to.contain(fixtures.student._id);
         done();
       });
     });
@@ -136,7 +143,7 @@ describe('Section CRUD operations', function() {
   /** Remove teachers **/
   describe('remove student from section', () => {
     let url = baseUrl + 'removeStudent/' + fixtures.section._id;
-    xit('should return an empty array', done => {
+    it('should return an empty array', done => {
       agent
       .put(url)
       .send({studentName: fixtures.student.name})
