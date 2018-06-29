@@ -2,21 +2,17 @@
 
       <div class="clear"/>
 
-<ul class="actions">
-      <li>{{#link-to 'users'}}Go back to users{{/link-to}}</li>
-</ul>
-
       <div class="clear"/>
 
  <article class="user">
-<h2>{{model.username}}</h2>
+<h2>{{user.username}}</h2>
 <table class="values rows" style="background-color: #efefef">
   <tr> <th>Label</th> <th>Value</th> </tr>
   <tr> <td>Name</td><td>
          {{#if isEditing}}
-           {{input value=name classNames='model.userName'}}
+           {{input value=name classNames='user.userName'}}
          {{else}}
-           {{model.name}}
+           {{user.name}}
          {{/if}}
          </td> </tr>
   <tr>
@@ -33,30 +29,30 @@
          {{/if}}
          <span class='tourDate'>{{tourDate}}</span>
          </td> </tr>
-  <tr> <td>Username</td><td>{{model.username}}</td> </tr>
+  <tr> <td>Username</td><td>{{user.username}}</td> </tr>
   <tr> <td>Display Name</td><td>
-         <span class='displayName'>{{model.displayName}}</span>
+         <span class='displayName'>{{user.displayName}}</span>
          </td> </tr>
   <tr> <td>Admin</td><td>
          {{#if isEditing}}
            {{#if currentUser.isAdmin}}
-             {{input type="checkbox" checked=model.isAdmin classNames='isAdmin'}}
+             {{input type="checkbox" checked=user.isAdmin classNames='isAdmin'}}
            {{else}}
-             {{model.isAdmin}}
+             {{user.isAdmin}}
            {{/if}}
          {{else}}
-           {{model.isAdmin}}
+           {{user.isAdmin}}
          {{/if}}
          </td> </tr>
   <tr> <td>Authorized</td><td>
         {{#if isEditing}}
           {{#if currentUser.isAdmin}}
-            {{input type="checkbox" checked=model.isAuthorized classNames='isAuthorized'}}
+            {{input type="checkbox" checked=user.isAuthorized classNames='isAuthorized'}}
           {{else}}
-            {{model.isAuthorized}}
+            {{user.isAuthorized}}
           {{/if}}
         {{else}}
-          {{model.isAuthorized}}
+          {{user.isAuthorized}}
         {{/if}}
         </td> </tr>
 </table>

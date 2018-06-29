@@ -171,7 +171,6 @@ describe('Users', function() {
       });
 
       it('should have a create new user link', async function() {
-        await driver.sleep(7000);
         //expect(await helpers.isElementVisible(driver, 'a[href="#/users/new"]')).to.be.true;
         await helpers.findAndClickElement(driver, `a[href="users/new"]`);
       });
@@ -191,6 +190,7 @@ describe('Users', function() {
       describe('Visiting a user page directly', async function() {
         before(async function() {
           await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
+
         });
         validateUsersPage();
       });

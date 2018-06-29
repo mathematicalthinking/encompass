@@ -15,7 +15,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         return moment(date).fromNow();
       }
       return 'no';
-    }.property('model.seenTour'),
+    }.property('user.seenTour'),
 
     actions: {
       editUser: function () {
@@ -24,15 +24,15 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       saveUser: function () {
         this.set('isEditing', false);
-        this.get('model').save();
+        this.get('user').save();
       },
 
       clearTour: function () {
-        this.set('model.seenTour', null);
+        this.set('user.seenTour', null);
       },
 
       doneTour: function () {
-        this.set('model.seenTour', new Date());
+        this.set('user.seenTour', new Date());
       }
     }
 });
