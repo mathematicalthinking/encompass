@@ -34,7 +34,7 @@ var AnswerSchema = new Schema({
 //     }
 //   };
 
-//   /** + Every ID reference in our object is properly typed. 
+//   /** + Every ID reference in our object is properly typed.
 //     *   This needs to be done BEFORE any other operation so
 //     *   that native lookups and updates don't fail.
 //     */
