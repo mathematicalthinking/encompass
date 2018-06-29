@@ -189,7 +189,6 @@ describe('Users', function() {
 
       describe('Visiting a user page directly', async function() {
         before(async function() {
-          await driver.sleep(5000);
           await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
 
         });
