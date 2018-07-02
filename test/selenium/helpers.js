@@ -21,6 +21,20 @@ const regUser = {
   password: 'smith'
 };
 
+const newUser = {
+  name: 'John Doe',
+  email: 'johndoe111@gmail.com',
+  organization: 'Mathematical Thinking',
+  location: 'Philadelphia, PA',
+  username: 'johndoe111',
+  password: 'noone11',
+  requestReason: 'professional development'
+};
+
+const signupErrors = {
+  incomplete : 'You must complete all of the fields in order to signup.',
+  terms: 'You must accept our Terms and Conditions'
+};
 const getCurrentUrl = async function(webdriver) {
   let url;
   try {
@@ -133,6 +147,27 @@ const login = async function(webDriver, host, user=admin) {
   return await waitForSelector(webDriver, '#al_welcome');
 };
 
+const signup = async function(webDriver, host, missingFields=[], user=newUser,  acceptedTerms=true) {
+  const inputs = css.signup.inputs;
+  for (let input of Object.keys(inputs)) {
+    if (input !== 'terms' && !missingFields.includes(input)) {
+      try {
+        await findInputAndType(webDriver, inputs[input], newUser[input]);
+      }catch(err){
+        console.log(err);
+      }
+    }
+  }
+  try {
+    if (acceptedTerms) {
+      await findAndClickElement(webDriver, inputs.terms);
+    }
+    await findAndClickElement(webDriver, css.signup.submit);
+  }catch(err) {
+    console.log(err);
+  }
+};
+
 const verifyElements = async function(webDriver, elements) {
   try {
 
@@ -156,3 +191,6 @@ module.exports.admin = admin;
 module.exports.regUser = regUser;
 module.exports.host = host;
 module.exports.loginUrl = loginUrl;
+module.exports.newUser = newUser;
+module.exports.signup = signup;
+module.exports.signupErrors = signupErrors;

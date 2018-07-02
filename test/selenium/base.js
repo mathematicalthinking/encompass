@@ -92,29 +92,5 @@ describe('Home Page', function () {
     });
   });
 
-  describe ('Registering', async function() {
-    before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.signup);
-      await helpers.waitForSelector(driver, css.signup.form);
-    });
-    async function verifySignupForm() {
-      const inputs = css.signup.inputs;
-      for (let input of Object.keys(inputs)) {
-        it(`should display ${input} field`, async function() {
-          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
-        });
-      }
-      it('should display submit button', async function(){
-        expect(await helpers.isElementVisible(driver, css.signup.submit)).to.be.true;
-      });
-    }
-    it ('should display login form', async function() {
-      expect(await helpers.isElementVisible(driver, css.signup.form)).to.be.true;
-    });
-    try {
-      await verifySignupForm();
-    }catch(err) {
-      console.log(err);
-    }
-  });
+
 });
