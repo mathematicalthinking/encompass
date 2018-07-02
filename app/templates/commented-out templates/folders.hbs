@@ -1,0 +1,23 @@
+{{!-- {{#view Encompass.WorkspaceFolderDropTarget dragContextBinding="Encompass.WorkspaceSubmissionController.currentDragItem" class="al_vertical_stretch"}}
+  <ul id="al_folders">
+    {{each filteredContent itemController="folder" itemViewClass="Encompass.FolderView"}}
+  </ul>
+{{/view}}
+{{#if canManageFolders}}
+<div id="al_folders_modify">
+  <table>
+    <tr>
+      <td>
+        <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
+      </td>
+      <td style="border-left:1px solid #d3d3d3;">
+        {{#if editFolderMode}}
+          <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
+        {{else}}
+          <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
+        {{/if}}
+      </td>
+    </tr>
+  </table>
+</div>
+{{/if}} --}}

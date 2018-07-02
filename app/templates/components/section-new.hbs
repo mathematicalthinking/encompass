@@ -1,0 +1,41 @@
+<header>
+  <h2>Create New Section</h2>
+  <div class="clear"></div>
+</header>
+
+<section class="newSection">
+  <section class="third sections">
+    <form id='section' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="title">Class/Group Name</label>
+            {{input id="title" type="text" value=title placeholder="enter problem name"}}
+          </li>
+          <li>
+            <label for="text">Teacher/Leader</label>
+            {{input id="text" type="text" value=text placeholder="enter problem question"}}
+          </li>
+          <li>
+            <label for="categories">Organization  </label>
+            {{input id="categories" type="text" value=categories placeholder="enter a category"}}
+          </li>
+        </ol>
+      </fieldset>
+    </form>
+  </section><style>input {margin: 15px;}</style>
+  <div style="clear: left"></div>
+  <section class="submit">
+    <button class="action_button" {{action 'createProblem'}}>
+      Create Section
+    </button>
+  </section>
+  {{#if createdProblem}}
+  <p>Successfully created problem
+     {{#link-to 'section' createdProblem  classNames='section'}}{{title}}
+    {{/link-to}}</p>
+  {{else}}
+  <p>{{createProblemError}}</p>
+  {{/if}}
+
+</section>

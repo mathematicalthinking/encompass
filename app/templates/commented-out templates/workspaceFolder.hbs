@@ -1,0 +1,27 @@
+{{!-- {{name}}
+<h2>
+  <span class="al_sprite al_folder al_open"></span>
+  <div class="title"> {{name}} </div>
+</h2>
+<table class="values cols" style="background-color: #efefef; width:100%;" {{action "setFolder"}}>
+  <thead>
+    <tr>
+      <th>Submission ({{submissions.length}})</th>
+      <th>Selection ({{selections.length}})</th>
+    </tr>
+  </thead>
+  <tbody>
+{{#each selectionGroup }}
+  <tr>
+    <td {{action "click"}}>{{#link-to 'workspace.submission' workspace submission classNames="highlight"}} {{submission.label}} {{/link-to}}</td>
+    <td><hr></td>
+  </tr>
+  {{#each selection in contents }}
+    <tr>
+      <td></td>
+      <td {{action "click"}}>{{#link-to 'workspace.submission.selection' workspace submission selection classNames="highlight"}} {{selection.text}} {{/link-to}}</td>
+    </tr>
+  {{/each}}
+{{/each}}
+  </tbody>
+</table> --}}
