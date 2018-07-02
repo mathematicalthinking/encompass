@@ -133,6 +133,14 @@ const login = async function(webDriver, host, user=admin) {
   return await waitForSelector(webDriver, '#al_welcome');
 };
 
+const verifyElements = async function(webDriver, elements) {
+  try {
+
+  }catch(err) {
+    console.log(err);
+  }
+};
+
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;

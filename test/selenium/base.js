@@ -62,6 +62,8 @@ describe('Home Page', function () {
     expect(message).to.equal(`Welcome, ${helpers.admin.username}`);
   });
 
+
+
   describe('NavBar', async function () {
     const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'workspaces/new', 'users/new'];
     function verifyNavElement(navElement) {
@@ -77,6 +79,17 @@ describe('Home Page', function () {
     }
     elements.forEach((el) => {
       verifyNavElement(el);
+    });
+  });
+
+  describe ('Logging Out', function() {
+    it('should redirect to homepage after logging out', async function() {
+      await helpers.findAndClickElement(driver, css.topBar.logout);
+      await helpers.waitForSelector(driver, css.topBar.home);
+      await driver.sleep(5000);
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+      expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
+      expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });
   });
 });
