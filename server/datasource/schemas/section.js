@@ -18,7 +18,7 @@ var SectionSchema = new Schema({
   schoolId: { type: String },
   sectionId: { type: Number },
   teachers: [{ type: ObjectId, ref: 'User' }],
-  students: [{ type: String }],
+  students: [{ type: ObjectId, ref: 'User' }],
   problems: [{ type: ObjectId, ref: 'Problem' }],
 }, { versionKey: false });
 
@@ -33,7 +33,7 @@ SectionSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */

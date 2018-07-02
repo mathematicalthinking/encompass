@@ -201,8 +201,8 @@ const addStudent = (req, res, next) => {
       return utils.sendError.InternalError(err, res);
     }
     // only add the student if they're not already in the section
-    if (doc.students.indexOf(req.body.studentName) === -1){
-      doc.students = doc.students.concat([req.body.studentName]);
+    if (doc.students.indexOf(req.body.studentId) === -1){
+      doc.students = doc.students.concat([req.body.studentId]);
     }
     doc.save((err, section) => {
       if (err) {

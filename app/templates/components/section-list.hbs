@@ -1,0 +1,19 @@
+<header>
+  <h2>Sections</h2>
+  <div class="clear"></div>
+</header>
+
+<section>
+  <nav class="users actions listing al_vertical_stretch">
+    <h2>Your sections</h2>
+    <ul class="actions">
+      <li>{{#link-to 'sections.new'}}New section{{/link-to}}</li>
+    </ul>
+    <ul class="listing">
+      {{#each sections as |section|}}
+      <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
+
+  </nav>
+</section>

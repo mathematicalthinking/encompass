@@ -14,6 +14,12 @@ Encompass.Router.map(function() {
     });
     this.route("new");
   });
+  // SECTIONS ROUTE
+  this.route("sections", function(){
+    this.route("section", {resetNamespace: true, path: '/:section_id'}, function() {
+    });
+    this.route("new");
+  });
   // WORKSPACES PARENT ROUTE
   this.route("workspaces", function(){
     this.route("index", {path: "/"});

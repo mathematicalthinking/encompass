@@ -48,6 +48,7 @@ var UserSchema = new Schema({
   isAdmin: Boolean,
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: Boolean,
+  isStudent: Boolean,
   name: String,
   email: String,
   googleId: String,
