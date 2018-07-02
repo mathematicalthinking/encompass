@@ -44,7 +44,8 @@ describe ('Signup form', async function() {
     await verifySignupForm();
   });
 
-  describe('Submitting incomplete form',function() {
+  describe('Submitting form',function() {
+
     it ('should display missing fields error when omitting username', async function() {
       await helpers.signup(driver, host, ['username']);
       await helpers.waitForSelector(driver, 'p');
@@ -62,19 +63,27 @@ describe ('Signup form', async function() {
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.false;
     });
 
+    it('should display terms error if submitted without checking agree to terms',
+      async function() {
+        // uncheck terms box from previous test
+        await helpers.findAndClickElement(driver, css.signup.inputs.terms);
+        await helpers.findAndClickElement(driver, css.signup.submit);
+        await helpers.waitForSelector(driver, 'p');
+        expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
+    });
+
+    it ('should remove terms error after checking the box', async function() {
+      await helpers.findAndClickElement(driver, css.signup.inputs.terms);
+      await driver.sleep(3000);
+      expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.false;
+    });
+
     it ('should redirect to homepage after successful signup', async function() {
       await helpers.findAndClickElement(driver, css.signup.submit);
       await helpers.waitForSelector(driver, css.greeting);
 
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
       expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`Welcome, ${helpers.newUser.name}`);
-    });
-
-    xit('should display terms error if submitted without checking agree to terms',
-    async function() {
-      await helpers.signup(driver, host, [], helpers.newUser, false);
-      await helpers.waitForSelector(driver, 'p');
-      expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
     });
   });
 });
