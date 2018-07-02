@@ -15,5 +15,19 @@ module.exports = {
     username: 'input[name=username]',
     password: 'input[name=password]',
     submit: 'button[type=submit]'
+  },
+  signup: {
+    form: 'form.form-signup',
+    inputs: {
+      name: 'input[name=name]',
+      email: 'input[name=email]',
+      organization: 'input[name=organization]',
+      location: 'input[name=location]',
+      username: 'input[name=username]',
+      password: 'input[name=password]',
+      requestReason: 'input[name=requestReason]',
+      terms: 'input[name=terms]'
+    },
+    submit: 'button[type=submit]'
   }
 };

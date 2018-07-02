@@ -86,10 +86,35 @@ describe('Home Page', function () {
     it('should redirect to homepage after logging out', async function() {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.home);
-      await driver.sleep(5000);
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
       expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });
+  });
+
+  describe ('Registering', async function() {
+    before(async function() {
+      await helpers.findAndClickElement(driver, css.topBar.signup);
+      await helpers.waitForSelector(driver, css.signup.form);
+    });
+    async function verifySignupForm() {
+      const inputs = css.signup.inputs;
+      for (let input of Object.keys(inputs)) {
+        it(`should display ${input} field`, async function() {
+          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+        });
+      }
+      it('should display submit button', async function(){
+        expect(await helpers.isElementVisible(driver, css.signup.submit)).to.be.true;
+      });
+    }
+    it ('should display login form', async function() {
+      expect(await helpers.isElementVisible(driver, css.signup.form)).to.be.true;
+    });
+    try {
+      await verifySignupForm();
+    }catch(err) {
+      console.log(err);
+    }
   });
 });
