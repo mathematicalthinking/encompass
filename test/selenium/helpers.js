@@ -35,6 +35,12 @@ const signupErrors = {
   incomplete : 'You must complete all of the fields in order to signup.',
   terms: 'You must accept our Terms and Conditions'
 };
+
+const signinErrors = {
+  incomplete: 'Missing Credentials',
+  username: 'Sorry, you entered an incorrect username. Please try again.',
+  password: 'Sorry, you entered an incorrect password. Please try again.'
+}
 const getCurrentUrl = async function(webdriver) {
   let url;
   try {
@@ -186,6 +192,17 @@ const verifyElements = async function(webDriver, elements) {
   }
 };
 
+const clearElement = async function(webDriver, element) {
+  let ele;
+  try {
+   let elements = await getWebElements(webDriver, element);
+   el = elements[0];
+   await el.clear();
+  }catch(err) {
+    console.log(err);
+  }
+};
+
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
@@ -204,3 +221,5 @@ module.exports.loginUrl = loginUrl;
 module.exports.newUser = newUser;
 module.exports.signup = signup;
 module.exports.signupErrors = signupErrors;
+module.exports.signinErrors = signinErrors;
+module.exports.clearElement = clearElement;
