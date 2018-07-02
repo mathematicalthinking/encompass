@@ -168,11 +168,21 @@ const signup = async function(webDriver, host, missingFields=[], user=newUser,  
   }
 };
 
+// use for checking if several elements are visible in dom
+// elements should be an array of css selectors
 const verifyElements = async function(webDriver, elements) {
-  try {
+  let isVisible;
+  if (!Array.isArray(elements)) {
+    return;
+  }
 
-  }catch(err) {
-    console.log(err);
+    for (let el of elements) {
+      try {
+        isVisible = await isElementVisible(webDriver, el);
+      }catch(err) {
+        console.log(err);
+      }
+      expect(isVisible).to.be.true;
   }
 };
 

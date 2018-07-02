@@ -40,6 +40,8 @@ describe('Home Page', function () {
     expect(await helpers.isElementVisible(driver, css.login.username)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.password)).to.be.true;
     expect(await helpers.isElementVisible(driver, css.login.submit)).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.login.google)).to.be.true;
+    expect(await helpers.isElementVisible(driver, css.login.signup)).to.be.true;
   });
 
   it('should redirect to homepage after logging in', async function () {

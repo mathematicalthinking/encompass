@@ -14,7 +14,9 @@ module.exports = {
   login: {
     username: 'input[name=username]',
     password: 'input[name=password]',
-    submit: 'button[type=submit]'
+    submit: 'button[type=submit]',
+    google: 'a[href="/auth/google"]',
+    signup: 'a.signup-link'
   },
   signup: {
     form: 'form.form-signup',
