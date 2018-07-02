@@ -35,11 +35,11 @@ describe('Users', function() {
     await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
    });
 
-   function validateAnon(){
-     xit('should show various fields', async function(){
-      expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true;
-     });
-   }
+  //  function validateAnon(){
+  //    xit('should show various fields', async function(){
+  //     expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true;
+  //    });
+  //  }
 
    describe('Visiting the users page', function() {
      it('there is only one user in the list', async function() {
@@ -52,7 +52,7 @@ describe('Users', function() {
          await helpers.findAndClickElement(driver, 'a.user');
          await helpers.waitForSelector(driver, 'article.user');
        });
-       validateAnon();
+      //  validateAnon();
      });
    });
 
@@ -60,7 +60,7 @@ describe('Users', function() {
      before(async function() {
       await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
      });
-     validateAnon();
+    //  validateAnon();
    });
   });
 
