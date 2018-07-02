@@ -55,11 +55,19 @@ describe ('Signup form', async function() {
       let usernameInput;
       try {
         usernameInput = await driver.findElement(By.css(css.signup.inputs.username));
-        await usernameInput.sendKeys('j');
+        await usernameInput.sendKeys(helpers.newUser.username);
       }catch(err) {
         console.log(err);
       }
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.false;
+    });
+
+    it ('should redirect to homepage after successful signup', async function() {
+      await helpers.findAndClickElement(driver, css.signup.submit);
+      await helpers.waitForSelector(driver, css.greeting);
+
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+      expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`Welcome, ${helpers.newUser.name}`);
     });
 
     xit('should display terms error if submitted without checking agree to terms',

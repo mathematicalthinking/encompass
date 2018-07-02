@@ -29,5 +29,6 @@ module.exports = {
       terms: 'input[name=terms]'
     },
     submit: 'button[type=submit]'
-  }
+  },
+  greeting: '#al_welcome'
 };
