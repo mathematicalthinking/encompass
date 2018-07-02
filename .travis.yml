@@ -18,9 +18,9 @@ before_script:
   - grunt serve-test & # start server on test port 8082, & to run in background.
   - sleep 6 # give Web server some time to bind to sockets, etc
 script:
-  - grunt tests
-  # - grunt apiTests
-  # - grunt endToEndTests
+  # - grunt tests
+  - grunt apiTests
+  - grunt endToEndTests
 sudo: required
 addons:
   chrome: stable
