@@ -15,11 +15,13 @@ describe('Problems', function() {
   let driver = null;
   const problemId = '5b1e7a0ba5d2157ef4c91028';
   const problemLink = `a[href='#/problems/${problemId}`;
+
+  // creation date of test problem is getting reset every time testDB is reset
   const problemDetails = {
     name: 'Mr. W. Goes Across Australia',
     question: '',
     isPublic: 'false',
-    creationDate: 'Mon Jul 02 2018 11:12:25 GMT-0400 (Eastern Daylight Time)'
+    //creationDate: 'Mon Jul 02 2018 11:12:25 GMT-0400 (Eastern Daylight Time)'
   };
 
   before(async function () {
@@ -37,8 +39,6 @@ describe('Problems', function() {
     driver.quit();
   });
   describe('Visiting problems page', function() {
-    //const problemId = '5b1e7a0ba5d2157ef4c91028';
-    //const problemLink = `a[href='#/problems/${problemId}`;
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.problems);
     });
@@ -49,8 +49,7 @@ describe('Problems', function() {
     });
   });
 
-  describe('Visiting Mr. W. Goes Across Australia', function() {
-
+  describe(`Visiting ${problemDetails.name}`, function() {
     before(async function() {
       await helpers.findAndClickElement(driver, problemLink);
     });
@@ -58,7 +57,59 @@ describe('Problems', function() {
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
       expect(await helpers.isTextInDom(driver, problemDetails.isPublic)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
+      //expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
+    });
+  });
+
+  describe('Problem creation', function() {
+    const verifyForm = async function() {
+      const inputs = css.newProblem.inputs;
+      for (let input of Object.keys(inputs)) {
+        it(`${input} field should be visible`, async function() {
+          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+        });
+      }
+    }
+    before(async function() {
+      await helpers.findAndClickElement(driver, css.topBar.problemsNew);
+      await helpers.waitForSelector(driver, css.newProblem.form);
+      await driver.sleep(1000);
+    });
+
+    describe('Verify form inputs', async function() {
+      await verifyForm();
+    });
+
+    describe('Submitting a problem without an image', function() {
+      const inputs = css.newProblem.inputs;
+      const problem = helpers.newProblem;
+
+      const submitProblem = async function(details, isPublic, image) {
+        for (let detail of Object.keys(details)) {
+          try {
+            await helpers.findInputAndType(driver, inputs[detail], details[detail]);
+          }catch(err) {
+            console.log(err);
+          }
+        }
+        if (isPublic) {
+          await helpers.findAndClickElement(driver, inputs.isPublicYes);
+        } else {
+          await helpers.findAndClickElement(driver, inputs.isPublicNo);
+        }
+        await helpers.findAndClickElement(driver, css.newProblem.submit);
+      };
+
+      it ('should display success message after submitting', async function() {
+        await submitProblem(problem.details, true);
+        await driver.sleep(1000);
+        expect(await helpers.isTextInDom(driver, `Successfully created problem`)).to.be.true;
+      });
+
+      it('should display link to newly created problem', async function() {
+        expect(await helpers.isElementVisible(driver, 'a.problem')).to.be.true;
+        expect(await helpers.findAndGetText(driver, 'a.problem')).to.eql(problem.details.name);
+      });
     });
   });
 });
