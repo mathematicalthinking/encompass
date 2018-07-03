@@ -36,5 +36,19 @@ module.exports = {
     },
     submit: 'button[type=submit]'
   },
+  newProblem: {
+    form: 'form#problem',
+    inputs: {
+      name: 'input#title' ,
+      question: 'input#text' ,
+      category: 'input#categories',
+      additionalInfo: 'input#additionalInfo',
+      isPublicYes: 'input.isTrue',
+      isPublicNo: 'input.isFalse',
+      file: 'input.image-upload'
+    },
+    imageUpload: 'form.image-upload',
+    submit: 'button.action_button'
+  },
   greeting: '#al_welcome'
 };
