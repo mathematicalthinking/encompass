@@ -4,7 +4,7 @@
  * @see [Grunt](http://gruntjs.com/)
  * @authors Philip Wisner, Dan Kelly & Dave Taylor
  * @since 2.0.0
-*/
+ */
 
 /*
  * MAIN GRUNT COMMANDS:
@@ -18,11 +18,11 @@
 
 /*jshint camelcase: false */
 /*global module:false */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
-/*
- * All initial configurations for grunt tasks needs to be done inside grunt.initConfig()
- */
+  /*
+   * All initial configurations for grunt tasks needs to be done inside grunt.initConfig()
+   */
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     revision: process.env.SVN_REVISION || '??',
@@ -31,8 +31,8 @@ module.exports = function(grunt) {
       application: {
         options: {
           banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                  '<%= grunt.template.today("yyyy-mm-dd") %> - ' +
-                  'r<%= revision %> - build:<%= build %> */'
+            '<%= grunt.template.today("yyyy-mm-dd") %> - ' +
+            'r<%= revision %> - build:<%= build %> */'
         },
         files: {
           'dist/application-<%= pkg.version %>-min.js': 'build/application-prod.js'
@@ -40,37 +40,18 @@ module.exports = function(grunt) {
       }
     },
     /*
-     * Runs babel to transpile ES6 code to ES5
-     * It takes all .js files in app/ and places the transpiled code into babel/
-     */
-    babel: {
-      options: {
-        sourceMap: true,
-        presets: ['env']
-      },
-      dist: {
-        files: [{
-        expand: true,
-        cwd: 'app',
-        src: ['**/*.js'],
-        dest: 'babel',
-        ext: '.js'
-        }]
-      }
-    },
-    /*
      * Set Node environment using grunt-env
      *  https://www.npmjs.com/package/grunt-env
      */
-    env : {
-      dev : {
-        NODE_ENV : 'development'
+    env: {
+      dev: {
+        NODE_ENV: 'development'
       },
       test: {
-        NODE_ENV : 'test'
+        NODE_ENV: 'test'
       },
       prod: {
-        NODE_ENV : 'production'
+        NODE_ENV: 'production'
       }
     },
     /*
@@ -114,6 +95,42 @@ module.exports = function(grunt) {
         command: "echo 'sleep start';sleep 3;echo 'sleep done'"
       }
     },
+
+    /*
+     * Takes main.scss inside /scss files and converts it to main.css inside /build
+     * You need to install ruby and `gem install sass` if you want to run grunt sass
+     */
+    sass: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'scss',
+          src: 'main.scss',
+          dest: 'build',
+          ext: '.css'
+        }]
+      }
+    },
+
+    /*
+     * Runs babel to transpile ES6 code to ES5
+     * It takes all .js files in app/ and places the transpiled code into babel/
+     */
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['env']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'app',
+          src: ['**/*.js'],
+          dest: 'babel',
+          ext: '.js'
+        }]
+      }
+    },
     /*
       This reads the babel/app.js folder and builds all the
       required files into a single application.js file.
@@ -142,7 +159,9 @@ module.exports = function(grunt) {
     */
     browserify: {
       options: {
-        browserifyOptions: {debug: true}
+        browserifyOptions: {
+          debug: true
+        }
       },
       main: {
         src: 'common/browser.js',
@@ -158,37 +177,58 @@ module.exports = function(grunt) {
       common_code: {
         files: ['common/**/*.js'],
         tasks: ['browserify', 'MochaTests', 'jshint'], //common code is used on the front and backend
-        options: {spawn: false }
+        options: {
+          spawn: false
+        }
       },
       common_files: {
         files: ['.jshintrc', 'Gruntfile.js'],
         tasks: ['jshint'], //anything could have changed in the Gruntfile
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
       },
       ember_code: {
         files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!server/datasource/**', '!server/server.js', '!server/config.js'],
         tasks: ['neuter:dev', 'jshint'], //jqunit
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
       },
       server_code: {
         files: ['server/server.js', 'server/fake_login.js', 'server/config.js', 'server/datasource/**/*.js'],
         tasks: ['jshint'], //nodemon monitors it's own files,
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
       },
       handlebars_templates: {
         files: ['app/**/*.hbs'],
         tasks: ['emberTemplates', 'neuter:dev'], //jqunit
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
       },
       common_tests: {
         files: ['test/jasmine/common/**'],
         tasks: ['jasmine:common', 'jshint'],
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
       },
       ember_qunit: {
         files: ['test/qunit/**/*.*', 'test/data/fixtures.js'],
         tasks: ['jshint'], //jqunit
-        options: { spawn: false }
+        options: {
+          spawn: false
+        }
+      },
+      sass_code: {
+        files: ['scss/*.scss'],
+        tasks: ['sass'],
+        options: {
+          spawn: false
+        }
       }
     },
 
@@ -255,7 +295,7 @@ module.exports = function(grunt) {
     */
     emberTemplates: {
       options: {
-        templateName: function(sourceFile) {
+        templateName: function (sourceFile) {
           return sourceFile.replace(/app\/templates\//, '');
         },
         templateCompilerPath: 'dependencies/ember-template-compiler2_14_1.js'
@@ -289,7 +329,7 @@ module.exports = function(grunt) {
 
     /**
      * Run nodemon and watch concurrently (in one tab)
-    */
+     */
     concurrent: {
       dev: {
         tasks: ['nodemon:dev', 'jshint', 'watch'],
@@ -345,7 +385,7 @@ module.exports = function(grunt) {
 
 
 
-// ALL GRUNT TASKS & COMMANDS
+  // ALL GRUNT TASKS & COMMANDS
 
   /*
     Build the application
@@ -354,7 +394,9 @@ module.exports = function(grunt) {
       - convert the common code into a single bundle
       - combine these files + application files in order
   */
-  grunt.registerTask('build', ['emberTemplates', 'babel', 'browserify', 'neuter']);
+  grunt.registerTask('build', ['emberTemplates', 'sass', 'babel', 'browserify', 'neuter']);
+
+  grunt.registerTask('build-test', ['emberTemplates', 'babel', 'browserify', 'neuter']);
 
   /*
     Task for default `grunt` command
@@ -390,19 +432,18 @@ module.exports = function(grunt) {
   grunt.registerTask('serve-debug', ['concurrent:debug-only']);
   grunt.registerTask('dev', ['env:dev', 'build', 'MochaTests', 'watch']);
 
-// Task for reseting the TestDB
+  // Task for reseting the TestDB
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
 
-// Tasks for creating test server, running all tests, or running indiviudal tests
-  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
-  grunt.registerTask('tests', ['env:test', 'build', 'MochaTests']);
+  // Tasks for creating test server, running all tests, or running indiviudal tests
+  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build-test', 'nodemon:dev']);
+  grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
 
 
-// CURRENTLY NOT USED TASKS
+  // CURRENTLY NOT USED TASKS
   grunt.registerTask('sleep3', ['shell:sleep3']);
   grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
   grunt.registerTask('dist', ['test', 'uglify']);
 };
-
