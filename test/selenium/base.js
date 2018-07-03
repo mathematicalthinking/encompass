@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder, By, Key, Keys, until } = require('selenium-webdriver');
+const { Builder, By, Key, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -30,8 +30,6 @@ describe('Home Page', function () {
   it('login button should be visible', async function () {
     expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
   });
-
-
 
   it('should display login page after clicking login', async function () {
     await helpers.findAndClickElement(driver, css.topBar.login);
@@ -85,11 +83,10 @@ describe('Home Page', function () {
     });
 
     it('should remove incorrect username error', async function() {
-      //await helpers.clearElement(driver, css.login.username);
       await helpers.findInputAndType(driver, css.login.username, 's');
-      //await driver.sleep(1000);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.false;
     })
+
     it('should redirect to homepage after logging in', async function () {
       let url;
       let greeting;
@@ -114,7 +111,7 @@ describe('Home Page', function () {
   });
 
   describe('NavBar', async function () {
-    const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'workspaces/new', 'users/new'];
+    const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'workspaces/new', 'users/new', 'problems', 'problems/new', 'sections', 'sections/new'];
     function verifyNavElement(navElement) {
       let isVisible;
       it(`${navElement} link should exist`, async function () {
@@ -140,6 +137,37 @@ describe('Home Page', function () {
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });
   });
+
+  describe('Logging in with google', async function() {
+    let emailInput = 'input[type="email"]';
+    let emailAddress = 'encompassmath@gmail.com';
+    let password = process.env.TEST_GMAIL_PASSWORD;
+    before(async function() {
+      await helpers.findAndClickElement(driver, css.topBar.login);
+      await helpers.waitForAndClickElement(driver, css.login.google);
+      await helpers.waitForSelector(driver, emailInput);
+    });
+
+    it('EnCoMPASS should be in DOM', async function() {
+      expect(await helpers.isTextInDom(driver, 'EnCoMPASS')).to.be.true;
+    });
+    describe('Clicking next', function() {
+      before(async function() {
+        await helpers.findInputAndType(driver, emailInput, emailAddress);
+        await helpers.findAndClickElement(driver, 'content>span');
+
+        let isRecovery = await helpers.isTextInDom(driver, 'recovery');
+
+        if(isRecovery) {
+
+        }
+      });
+
+      xit('should display privacy notice', async function() {
+        await driver.sleep(20000);
+      });
+    });
+   });
 
 
 });
