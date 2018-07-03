@@ -41,6 +41,18 @@ const signinErrors = {
   username: 'Sorry, you entered an incorrect username. Please try again.',
   password: 'Sorry, you entered an incorrect password. Please try again.'
 }
+
+const newProblem = {
+  details: {
+    name: 'Test Problem',
+    question: 'What is it?',
+    category: '',
+    additionalInfo: 'Be careful!',
+  },
+  isPublic: 'true',
+  imageUrl: ''
+};
+
 const getCurrentUrl = async function(webdriver) {
   let url;
   try {
@@ -223,3 +235,4 @@ module.exports.signup = signup;
 module.exports.signupErrors = signupErrors;
 module.exports.signinErrors = signinErrors;
 module.exports.clearElement = clearElement;
+module.exports.newProblem = newProblem;
