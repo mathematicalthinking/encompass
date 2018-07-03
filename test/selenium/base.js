@@ -137,7 +137,7 @@ describe('Home Page', function () {
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });
   });
-
+  //TODO: Figure out best way to test signing in with google
   describe('Logging in with google', async function() {
     let emailInput = 'input[type="email"]';
     let emailAddress = 'encompassmath@gmail.com';
@@ -151,7 +151,7 @@ describe('Home Page', function () {
     it('EnCoMPASS should be in DOM', async function() {
       expect(await helpers.isTextInDom(driver, 'EnCoMPASS')).to.be.true;
     });
-    describe('Clicking next', function() {
+    xdescribe('Clicking next', function() {
       before(async function() {
         await helpers.findInputAndType(driver, emailInput, emailAddress);
         await helpers.findAndClickElement(driver, 'content>span');
@@ -163,8 +163,8 @@ describe('Home Page', function () {
         }
       });
 
-      xit('should display privacy notice', async function() {
-        await driver.sleep(20000);
+      it('should display privacy notice', async function() {
+        //await driver.sleep(20000);
       });
     });
    });

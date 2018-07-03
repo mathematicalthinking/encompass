@@ -53,14 +53,14 @@ describe('Problems', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, problemLink);
     });
-
+    //TODO: update these tests to be more robust once this page is updated
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
       expect(await helpers.isTextInDom(driver, problemDetails.isPublic)).to.be.true;
       //expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
     });
   });
-
+  // TODO: figure out best way to test uploading an image in e2e manner
   describe('Problem creation', function() {
     const verifyForm = async function() {
       const inputs = css.newProblem.inputs;
@@ -109,6 +109,12 @@ describe('Problems', function() {
       it('should display link to newly created problem', async function() {
         expect(await helpers.isElementVisible(driver, 'a.problem')).to.be.true;
         expect(await helpers.findAndGetText(driver, 'a.problem')).to.eql(problem.details.name);
+      });
+
+      it('should display newly created problem details after clicking link', async function() {
+        await helpers.findAndClickElement(driver, 'a.problem');
+        expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
+        expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
       });
     });
   });
