@@ -1,8 +1,8 @@
 /**
- * # Request Handler API
- * @description Shared helper utilities for this  module
- * @author Damola Mabogunje <damola@mathforum.org>, Amir Tahvildaran <amir@mathforum.org>
- * @since 1.0.0
+ * # Request Handler Middlware
+ * @description Shared helper utilities for this module
+ * @author Philip Wisner, Michael McVeigh
+ * @since 2.0.0
  */
 
 //REQUIRE MODULES
@@ -17,7 +17,7 @@ const models = require('../datasource/schemas');
 const config = require('../config');
 const nconf = config.nconf;
 const powConf = nconf.get('cache');
-  /**
+
 
 /**
   * @public
@@ -64,7 +64,6 @@ const sendError = {
     });
   },
   InvalidCredentialsError: function (err, res) {
-    console.log('err: ', err);
     res.status(401).json({
       error: err || 'Invalid Credentials'
     });
