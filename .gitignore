@@ -36,6 +36,8 @@ server/public/image_uploads/**
 
 #sass
 .sass-cache
+build/main.css
+build/main.css.map
 
 # why?
 # test/runner.html
