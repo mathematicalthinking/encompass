@@ -3,6 +3,7 @@ Encompass.MySelectComponent = Ember.Component.extend({
   selectedValue: null,
   optionLabelPath: '',
 
+  // didInitAttrs is deprecated according to Ember docs
   didInitAttrs: function(attrs) {
     this._super.apply(null, arguments);
     var content = this.get('content');
@@ -16,10 +17,11 @@ Encompass.MySelectComponent = Ember.Component.extend({
     selectChange: function() {
       var changeAction = this.get('action');
       var selectedEl = this.$('select')[0];
-      var selectedIndex = selectedEl.selectedIndex;
-      var content = this.get('content');
+      var selectedIndex = selectedEl.selectedIndex - 1;
+      // the content that is being passed in is an ember object with a content property
+      // that is an array of objects -- not sure if this is the best fix
+      var content = this.get('content').get('content');
       var selectedValue = content[selectedIndex];
-
       this.set('selectedValue', selectedValue);
       changeAction(selectedValue);
     }
