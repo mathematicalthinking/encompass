@@ -1,4 +1,9 @@
-/* config for application */
+/**
+ * # Config for the application
+ * @description This file contains all the defaults and
+ *   configured values to be referenced elsewhere in the app
+ * @since 2.0.0
+ */
 
 const fs = require('fs');
 const nconf = require('nconf');
