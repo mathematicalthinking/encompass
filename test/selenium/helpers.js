@@ -21,6 +21,38 @@ const regUser = {
   password: 'smith'
 };
 
+const newUser = {
+  name: 'John Doe',
+  email: 'johndoe111@gmail.com',
+  organization: 'Mathematical Thinking',
+  location: 'Philadelphia, PA',
+  username: 'johndoe111',
+  password: 'noone11',
+  requestReason: 'professional development'
+};
+
+const signupErrors = {
+  incomplete : 'You must complete all of the fields in order to signup.',
+  terms: 'You must accept our Terms and Conditions'
+};
+
+const signinErrors = {
+  incomplete: 'Missing Credentials',
+  username: 'Sorry, you entered an incorrect username. Please try again.',
+  password: 'Sorry, you entered an incorrect password. Please try again.'
+}
+
+const newProblem = {
+  details: {
+    name: 'Test Problem',
+    question: 'What is it?',
+    category: '',
+    additionalInfo: 'Be careful!',
+  },
+  isPublic: 'true',
+  imageUrl: ''
+};
+
 const getCurrentUrl = async function(webdriver) {
   let url;
   try {
@@ -133,6 +165,56 @@ const login = async function(webDriver, host, user=admin) {
   return await waitForSelector(webDriver, '#al_welcome');
 };
 
+const signup = async function(webDriver, host, missingFields=[], user=newUser,  acceptedTerms=true) {
+  const inputs = css.signup.inputs;
+  for (let input of Object.keys(inputs)) {
+    if (input !== 'terms' && !missingFields.includes(input)) {
+      try {
+        await findInputAndType(webDriver, inputs[input], newUser[input]);
+      }catch(err){
+        console.log(err);
+      }
+    }
+  }
+  try {
+    if (acceptedTerms) {
+      await findAndClickElement(webDriver, inputs.terms);
+    }
+    await findAndClickElement(webDriver, css.signup.submit);
+  }catch(err) {
+    console.log(err);
+  }
+};
+
+// use for checking if several elements are visible in dom
+// elements should be an array of css selectors
+const verifyElements = async function(webDriver, elements) {
+  let isVisible;
+  if (!Array.isArray(elements)) {
+    return;
+  }
+
+    for (let el of elements) {
+      try {
+        isVisible = await isElementVisible(webDriver, el);
+      }catch(err) {
+        console.log(err);
+      }
+      expect(isVisible).to.be.true;
+  }
+};
+
+const clearElement = async function(webDriver, element) {
+  let ele;
+  try {
+   let elements = await getWebElements(webDriver, element);
+   el = elements[0];
+   await el.clear();
+  }catch(err) {
+    console.log(err);
+  }
+};
+
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
@@ -148,3 +230,9 @@ module.exports.admin = admin;
 module.exports.regUser = regUser;
 module.exports.host = host;
 module.exports.loginUrl = loginUrl;
+module.exports.newUser = newUser;
+module.exports.signup = signup;
+module.exports.signupErrors = signupErrors;
+module.exports.signinErrors = signinErrors;
+module.exports.clearElement = clearElement;
+module.exports.newProblem = newProblem;

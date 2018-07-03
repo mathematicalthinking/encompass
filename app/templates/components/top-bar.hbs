@@ -9,24 +9,24 @@
 			<li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li>
       <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
         <ul>
-          <li>{{#link-to 'problems.new'}}new{{/link-to}}</li>
+          <li>{{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}</li>
         </ul>
       </li>
-      <li>{{#link-to 'sections' classNames='menu problems'}}sections{{/link-to}}
+      <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
         <ul>
-          <li>{{#link-to 'sections.new'}}new{{/link-to}}</li>
+          <li>{{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}</li>
         </ul>
       </li>
       <li>{{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
         <ul>
-			    <li>{{#link-to 'workspaces.new'}}new{{/link-to}}</li>
+			    <li>{{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}</li>
         </ul>
       </li>
       <li>{{#link-to 'responses' classNames='menu responses'}}responses & reflections{{/link-to}}</li>
       <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}
         <ul>
 			    {{#if user.isAdmin}}
-          <li>{{#link-to 'users.new'}}new{{/link-to}}</li>
+          <li>{{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}</li>
           {{/if}}
         </ul>
       </li>
