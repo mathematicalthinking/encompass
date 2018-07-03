@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Selection
-  * @description A Selection is an excerpt from a student Submission
+  * @description A Selection is an excerpt from a student Submission, this allows for a text selection or an image tagging
   */
 var SelectionSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
@@ -27,7 +27,7 @@ var SelectionSchema = new Schema({
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
-  */ 
+  */
 SelectionSchema.pre('save', function (next) {
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem) ) {
@@ -35,7 +35,7 @@ SelectionSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */
@@ -57,9 +57,9 @@ SelectionSchema.pre('save', true, function (next, done) {
   mongoose.models.Submission.findById(this.submission)
     .lean()
     .exec(function (err, found) {
-      if (err) { 
-        next(new Error(err.message)); 
-      } 
+      if (err) {
+        next(new Error(err.message));
+      }
       else { next(); }
       done();
     });
@@ -70,9 +70,9 @@ SelectionSchema.pre('save', true, function (next, done) {
   mongoose.models.Workspace.findById(this.workspace)
     .lean()
     .exec(function (err, found) {
-      if (err) { 
-        next(new Error(err.message)); 
-      } 
+      if (err) {
+        next(new Error(err.message));
+      }
       else { next(); }
       done();
     });
@@ -83,23 +83,23 @@ SelectionSchema.pre('save', true, function (next, done) {
   * After saving we must ensure (synchonously) that:
   */
 SelectionSchema.post('save', function (selection) {
-  /* + If deleted, all references are also deleted */ 
+  /* + If deleted, all references are also deleted */
   if( selection.isTrashed )
   {
     var selectionIdObj = mongoose.Types.ObjectId( selection._id );
     mongoose.models.Workspace.update({'_id': selection.workspace},
       {$pull: {'selections': selectionIdObj}},
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
 
     mongoose.models.Submission.update({'_id': selection.submission},
       {$pull: {'selections': selectionIdObj}},
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
 
@@ -118,20 +118,20 @@ SelectionSchema.post('save', function (selection) {
       });
     });
   }
-  else { /* + If added, references are added everywhere necessary */ 
+  else { /* + If added, references are added everywhere necessary */
     mongoose.models.Workspace.update({'_id': selection.workspace},
       {$addToSet: {'selections': selection}},
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
 
     mongoose.models.Submission.update({'_id': selection.submission},
       {$addToSet: {'selections': selection}},
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
   }

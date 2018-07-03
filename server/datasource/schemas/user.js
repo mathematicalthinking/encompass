@@ -33,8 +33,8 @@ Log.virtual('message').get(function () {
 /**
   * @public
   * @class User
-  * @description A user is a local copy of an mfapps user.
-  * @todo We might need to add more attributes to it.
+  * @description A user is created by signup using passport and authorized by admin
+  * @todo We need to decide how to handle different user types/roles
 */
 var UserSchema = new Schema({
   //== Shared properties (Because Monggose doesn't support schema inheritance)
