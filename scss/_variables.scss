@@ -9,14 +9,30 @@ $error-color: #EB5757;
 $accent-color: #3997EE;
 
 // FONT WEIGHT
-$main-font-weight: 500;
-$bold-font-weight: 700;
-$bolder-font-weight: 900;
+$light-font-weight: 300;
+$main-font-weight: 400;
+$bold-font-weight: 500;
+$bolder-font-weight: 700;
 
 // BUTTONS
 $primary-button: #3997EE;
 $inactive-button: grey;
 
+@mixin auth-button {
+  display: block;
+  font-size: 1em;
+  font-weight: $bolder-font-weight;
+  border-radius: 3px;
+  margin: 0 auto;
+  background-color: $accent-color;
+  border: none;
+  width: 220px;
+  padding: 8px 0;
+  color: white;
+};
+
+
+//BOX SHADOW
 $box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
 // LINKS
