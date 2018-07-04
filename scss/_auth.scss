@@ -18,8 +18,8 @@
 
 // LOGIN PAGE SYLING
 .login-page {
-  height: 78vh;
-  padding-top: 15vh;
+  height: 82vh;
+  padding-top: 12vh;
 }
 
 .login-box {
@@ -46,6 +46,7 @@
     font-size: 1em;
     padding: 10px 0;
     margin: 0 auto;
+    color: lighten($primary-font-color, 25);
     // background-color: $input-color;
     // border: .5px solid $background-color;
     // border-radius: 3px;
@@ -77,8 +78,8 @@
 
 // SIGNUP PAGE SYLING
 .signup-page {
-  height: 88vh;
-  padding-top: 5vh;
+  height: 90vh;
+  padding-top: 3vh;
 }
 
 .signup-box {
@@ -109,20 +110,26 @@
     margin: 0 auto;
     background-color: white;
     border: none;
+    color: lighten($primary-font-color, 25);
     border-bottom: 1px solid $primary-font-color;
     margin-bottom: 15px;
   }
   #checkbox {
     margin: 0 auto;
-    margin-bottom: 10px;
+    margin-bottom: 40px;
+    margin-top: 25px;
     padding: 0;
     width: 350px;
     font-size: .9em;
     input  {
+      width: 50px;
+      margin-bottom: 0;
       float: left;
     }
     label {
       float: right;
+      position: relative;
+      left: -55px;
     }
     a {
       @include main-link;
@@ -130,7 +137,7 @@
   }
   .auth-button {
     @include auth-button;
-    margin-top: 50px;
+    margin-top: 60px;
   }
   .or {
     margin-top: 10px;
@@ -139,7 +146,7 @@
   }
   .login-link {
     margin-top: 40px;
-    padding-bottom: 40px;
+    padding-bottom: 30px;
     font-weight: $light-font-weight;
     text-align: center;
     a {
