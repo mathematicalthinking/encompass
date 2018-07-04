@@ -47,17 +47,13 @@
     padding: 10px 0;
     margin: 0 auto;
     color: lighten($primary-font-color, 25);
-    // background-color: $input-color;
-    // border: .5px solid $background-color;
-    // border-radius: 3px;
-    // text-indent: 15px;
     background-color: white;
     border: none;
     border-bottom: 1px solid $primary-font-color;
   }
   .auth-button {
     @include auth-button;
-    margin-top: 50px;
+    margin-top: 40px;
   }
   .or {
     margin-top: 20px;
@@ -158,8 +154,16 @@
 
 // AUTH PAGE STYLING
 .auth-page {
-  height: 78vh;
-  padding-top: 15vh;
+  height: 92vh;
+  padding-top: 3vh;
+}
+
+.auth-toggle {
+  margin: 0 auto;
+  width: 500px;
+  button {
+    @include auth-button-toggle;
+  }
 }
 
 // SOCIAL SIGNIN

@@ -30,6 +30,25 @@
   }
 }
 
+// BUTTON USED FOR AUTH FORMS
+@mixin auth-button-toggle {
+  display: block;
+  font-size: 1em;
+  font-weight: $bold-font-weight;
+  border-radius: 3px;
+  margin: 0 auto;
+  background-color: $accent-color;
+  border: none;
+  width: 500px;
+  padding: 12px 0;
+  color: white;
+  &:hover {
+    background-color: darken($accent-color, 10%);
+    cursor: pointer;
+    font-weight: $bolder-font-weight;
+  }
+}
+
 // ERROR MESSAGE
 @mixin error-message {
   color: $error-color;
