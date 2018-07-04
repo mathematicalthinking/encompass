@@ -3,18 +3,20 @@
   <img src="images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signin">
-    <label for="username">Username:</label>
-    {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
+    <div class="username-input">
+      <label for="username">Username:</label>
+      {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
+    </div>
 
     {{#if incorrectUsername}}
-    <p class="error-message">Sorry, you entered an incorrect username. Please try again.</p>
+    <p class="error-message">Incorrect username.</p>
     {{/if}}
 
     <label for="password">Password:</label>
     {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
 
     {{#if incorrectPassword}}
-    <p class="error-message">Sorry, you entered an incorrect password. Please try again.</p>
+    <p class="error-message">Incorrect password.</p>
     {{/if}}
 
     {{#if missingCredentials class="error-message"}}
@@ -28,6 +30,6 @@
     {{social-signin}}
   </div>
 
-  <p> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>
+  <p class="signup-link"> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>
 
 </div>

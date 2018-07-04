@@ -11,6 +11,7 @@
 
 .error-message {
   @include error-message;
+  margin: 10px 0 20px 0;
 }
 
 // LOGIN PAGE SYLING
@@ -36,8 +37,14 @@
     width: 225px;
     margin-bottom: 50px;
   }
+  .username-input {
+    margin-bottom: 20px;
+  }
   button {
     @include auth-button;
+    margin-top: 50px;
+  }
+  .signup-link {
     margin-top: 50px;
   }
 }
