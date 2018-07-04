@@ -29,7 +29,6 @@
   margin: 0 auto;
   width: 425px;
   padding-top: 40px;
-  text-align: center;
   background-color: white;
   box-shadow: $box-shadow;
   .encompass-logo {
@@ -38,15 +37,18 @@
     width: 200px;
     margin-bottom: 50px;
   }
-  .username-input {
+  .auth-form-input {
+    margin: 0 auto;
     margin-bottom: 20px;
+    padding: 0;
+    width: 275px;
   }
   input {
     display: block;
     width: 275px;
     font-size: 1em;
     // height: 30px;
-    padding: 10px;
+    padding: 10px 0;
     margin: 0 auto;
     background-color: white;
     border: none;
@@ -59,11 +61,13 @@
   .or {
     margin-top: 20px;
     font-weight: $light-font-weight;
+    text-align: center;
   }
   .signup-link {
     margin-top: 40px;
     padding-bottom: 40px;
     font-weight: $light-font-weight;
+    text-align: center;
     a {
       @include main-link;
     }

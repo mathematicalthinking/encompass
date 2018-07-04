@@ -3,17 +3,19 @@
   <img src="images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signin">
-    <div class="username-input">
-      <label for="username">Username:</label>
-      {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
+    <div class="auth-form-input">
+      <label for="username">username</label>
+      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}} <br/>
     </div>
 
     {{#if incorrectUsername}}
     <p class="error-message">Incorrect username.</p>
     {{/if}}
 
-    <label for="password">Password:</label>
-    {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
+    <div class="auth-form-input">
+      <label for="password">password</label>
+      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}} <br/>
+    </div>
 
     {{#if incorrectPassword}}
     <p class="error-message">Incorrect password.</p>
