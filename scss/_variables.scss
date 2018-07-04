@@ -1,6 +1,6 @@
 // FONT VARIABLES
 $primary-font: 'Roboto', sans-serif;
-$secondary-font: arial;
+$secondary-font: "Helvetica Neue", Helvetica, sans-serif;
 
 // COLOR VARIABLES
 $primary-font-color: #5e5e5e;
@@ -16,6 +16,8 @@ $bolder-font-weight: 900;
 // BUTTONS
 $primary-button: #3997EE;
 $inactive-button: grey;
+
+$box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
 // LINKS
 $primary-link: #3997EE;
