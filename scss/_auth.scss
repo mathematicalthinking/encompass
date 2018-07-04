@@ -41,6 +41,17 @@
   .username-input {
     margin-bottom: 20px;
   }
+  input {
+    display: block;
+    width: 275px;
+    font-size: 1em;
+    // height: 30px;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+  }
   .auth-button {
     @include auth-button;
     margin-top: 50px;
@@ -51,7 +62,7 @@
   }
   .signup-link {
     margin-top: 40px;
-    padding-bottom: 30px;
+    padding-bottom: 40px;
     font-weight: $light-font-weight;
     a {
       @include main-link;
