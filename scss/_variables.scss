@@ -18,25 +18,6 @@ $bolder-font-weight: 700;
 $primary-button: #3997EE;
 $inactive-button: grey;
 
-@mixin auth-button {
-  display: block;
-  font-size: 1em;
-  font-weight: $bolder-font-weight;
-  border-radius: 3px;
-  margin: 0 auto;
-  background-color: $accent-color;
-  border: none;
-  width: 220px;
-  padding: 8px 0;
-  color: white;
-};
-
-@mixin error-message {
-  color: $error-color;
-  font-weight: $light-font-weight;
-}
-
-
 //BOX SHADOW
 $box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
