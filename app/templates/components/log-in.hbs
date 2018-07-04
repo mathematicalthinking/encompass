@@ -4,28 +4,28 @@
 
   <form class="form-signin">
     <div class="auth-form-input">
-      <label for="username">username</label>
-      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}} <br/>
-    </div>
+      <label for="username">Username:</label>
+      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}}
 
-    {{#if incorrectUsername}}
-    <p class="error-message">Incorrect username.</p>
-    {{/if}}
+      {{#if incorrectUsername}}
+        <p class="error-message">Incorrect username.</p>
+      {{/if}}
+    </div>
 
     <div class="auth-form-input">
-      <label for="password">password</label>
-      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}} <br/>
+      <label for="password">Password:</label>
+      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}}
+
+      {{#if incorrectPassword}}
+        <p class="error-message">Incorrect password.</p>
+      {{/if}}
+
+      {{#if missingCredentials class="error-message"}}
+        <p class="error-message">Missing Credentials</p>
+      {{/if}}
     </div>
 
-    {{#if incorrectPassword}}
-    <p class="error-message">Incorrect password.</p>
-    {{/if}}
-
-    {{#if missingCredentials class="error-message"}}
-      <p class="error-message">Missing Credentials</p>
-    {{/if}}
-
-    <button class="auth-button" type="submit" {{action 'login'}}>log in</button>
+    <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
   </form>
 
   <p class="or">Or</p>
