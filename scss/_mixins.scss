@@ -1,0 +1,38 @@
+
+@import "variables";
+
+// MAIN STYLING FOR LINKS
+@mixin main-link {
+  color: $accent-color;
+  text-decoration: none;
+  font-weight: $bold-font-weight;
+  &:hover {
+    font-weight: $bolder-font-weight;
+  }
+}
+
+// BUTTON USED FOR AUTH FORMS
+@mixin auth-button {
+  display: block;
+  font-size: 1em;
+  font-weight: $bold-font-weight;
+  border-radius: 3px;
+  margin: 0 auto;
+  background-color: $accent-color;
+  border: none;
+  width: 275px;
+  padding: 8px 0;
+  color: white;
+  &:hover {
+    background-color: darken($accent-color, 10%);
+    cursor: pointer;
+    font-weight: $bolder-font-weight;
+  }
+}
+
+// ERROR MESSAGE
+@mixin error-message {
+  color: $error-color;
+  font-weight: $light-font-weight;
+}
+
