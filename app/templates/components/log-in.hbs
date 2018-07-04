@@ -1,30 +1,33 @@
-<div class="al_wtf main">
-  <p>Please login if you are an EnCoMPASS member.</p>
+<div class="login-box">
+  <div class="al_wtf main">
+    <p>Please login if you are an EnCoMPASS member.</p>
+  </div>
+
+  <form class="form-signin">
+    <label for="username">Username:</label>
+    {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
+    {{#if incorrectUsername}}
+    <p>Sorry, you entered an incorrect username. Please try again.</p>
+    {{/if}}
+
+    <label for="password">Password:</label>
+    {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
+
+    {{#if incorrectPassword}}
+    <p>Sorry, you entered an incorrect password. Please try again.</p>
+    {{/if}}
+
+    {{#if missingCredentials}}
+      <p>Missing Credentials</p>
+    {{/if}}
+
+    <button class="auth-button" type="submit" {{action 'login'}}>log in</button>
+  </form>
+
+  <div class="social-signin-div">
+    {{social-signin}}
+  </div>
+
+  <p> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>
+
 </div>
-
-<form class="form-signin">
-  <label for="username">Username:</label>
-  {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
-  {{#if incorrectUsername}}
-   <p>Sorry, you entered an incorrect username. Please try again.</p>
-  {{/if}}
-
-  <label for="password">Password:</label>
-  {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
-  {{#if incorrectPassword}}
-   <p>Sorry, you entered an incorrect password. Please try again.</p>
-  {{/if}}
-
-  {{#if missingCredentials}}
-    <p>Missing Credentials</p>
-  {{/if}}
-
-  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
-</form>
-
-
-
-
-{{social-signin}}
-
-<p> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>

@@ -1,8 +1,50 @@
 @import "variables";
 @import "responsive-font-size";
 
-.auth {
-  color: blue;
-  @include responsive-font-size (1em, 1.5em, 640px, 1200px, 0.5em);
+
+// AUTH PAGE STYLING
+.auth-page {
+  background-color: $background-color;
+  width: 100%;
+  height: 100vh;
 }
 
+
+// LOGIN PAGE SYLING
+.login-page {
+  background-color: $background-color;
+  width: 100%;
+  height: 100vh;
+  padding-top: 15vh;
+  font-family: $primary-font;
+}
+
+.login-box {
+  margin: 0 auto;
+  width: 500px;
+  height: 55vh;
+  padding-top: 20px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  button {
+    @include auth-button;
+  }
+}
+
+
+// SIGNUP PAGE SYLING
+.signup-page {
+  background-color: $background-color;
+  width: 100%;
+  height: 100vh;
+}
+
+
+// SOCIAL SIGNIN
+.social-signin {
+  margin: 0 auto;
+  width: 200px;
+  img {
+    width: 220px;
+  }
+}
