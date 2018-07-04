@@ -85,7 +85,7 @@
 .signup-box {
   margin: 0 auto;
   width: 500px;
-  padding-top: 30px;
+  padding-top: 20px;
   background-color: white;
   box-shadow: $box-shadow;
   .encompass-logo {
@@ -137,12 +137,13 @@
   }
   .auth-button {
     @include auth-button;
-    margin-top: 60px;
+    margin-top: 40px;
   }
-  .or {
-    margin-top: 10px;
-    font-weight: $light-font-weight;
-    text-align: center;
+  .terms-error {
+    margin: 0 auto;
+    padding-top: 10px;
+    width: 350px;
+    font-size: .9em;
   }
   .login-link {
     margin-top: 40px;

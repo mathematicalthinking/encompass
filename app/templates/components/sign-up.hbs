@@ -22,6 +22,10 @@
     <div class="auth-form-input">
       <label for="username">Username:</label>
        {{input class="form-control" type="text" name="username" id="username" value=username action="resetErrors" on="key-down"}}
+
+      {{#if usernameExists}}
+        <p class="error-message">Sorry, that username already exisits. Please try again.</p>
+      {{/if}}
     </div>
     <div class="auth-form-input">
       <label for="password">Password:</label>
@@ -31,24 +35,24 @@
       <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
         {{input class="form-control" type="text" name="requestReason" id="requestReason" value=requestReason action="resetErrors"
       on="click"}}
+      {{#if missingCredentials}}
+        <p class="error-message">You must complete all of the fields in order to signup.</p>
+      {{/if}}
     </div>
     <div id="checkbox">
       {{input type="checkbox" id="terms" name="terms" checked=agreedToTerms change=(action "toggleCheck")}}
       <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label>
     </div>
 
+    <div class="terms-error">
+      {{#if noTermsAndConditions}}
+        <p class="error-message">You must accept our Terms and Conditions.</p>
+      {{/if}}
+    </div>
+
+
     <button class="auth-button" type="submit" {{action 'signup'}}>Sign Up</button>
   </form>
-
-  {{#if usernameExists}}
-  <p>Sorry, that username already exisits. Please try again.</p>
-  {{/if}}
-  {{#if missingCredentials}}
-  <p>You must complete all of the fields in order to signup.</p>
-  {{/if}}
-  {{#if noTermsAndConditions}}
-  <p>You must accept our Terms and Conditions.</p>
-  {{/if}}
 
   <div class="social-signin-div">
     {{social-signin}}
