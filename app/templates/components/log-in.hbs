@@ -1,24 +1,24 @@
 <div class="login-box">
-  <div class="al_wtf main">
-    <p>Please login if you are an EnCoMPASS member.</p>
-  </div>
+
+  <img src="images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
 
   <form class="form-signin">
     <label for="username">Username:</label>
     {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
+
     {{#if incorrectUsername}}
-    <p>Sorry, you entered an incorrect username. Please try again.</p>
+    <p class="error-message">Sorry, you entered an incorrect username. Please try again.</p>
     {{/if}}
 
     <label for="password">Password:</label>
     {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
 
     {{#if incorrectPassword}}
-    <p>Sorry, you entered an incorrect password. Please try again.</p>
+    <p class="error-message">Sorry, you entered an incorrect password. Please try again.</p>
     {{/if}}
 
-    {{#if missingCredentials}}
-      <p>Missing Credentials</p>
+    {{#if missingCredentials class="error-message"}}
+      <p class="error-message">Missing Credentials</p>
     {{/if}}
 
     <button class="auth-button" type="submit" {{action 'login'}}>log in</button>

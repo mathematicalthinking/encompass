@@ -9,6 +9,9 @@
   height: 100vh;
 }
 
+.error-message {
+  @include error-message;
+}
 
 // LOGIN PAGE SYLING
 .login-page {
@@ -21,13 +24,21 @@
 
 .login-box {
   margin: 0 auto;
-  width: 500px;
+  width: 450px;
   height: 55vh;
-  padding-top: 20px;
+  padding-top: 60px;
+  text-align: center;
   background-color: white;
   box-shadow: $box-shadow;
+  .encompass-logo {
+    display: block;
+    margin: 0 auto;
+    width: 225px;
+    margin-bottom: 50px;
+  }
   button {
     @include auth-button;
+    margin-top: 50px;
   }
 }
 
@@ -44,6 +55,7 @@
 .social-signin {
   margin: 0 auto;
   width: 200px;
+  margin-top: 20px;
   img {
     width: 220px;
   }
