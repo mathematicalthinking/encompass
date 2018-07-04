@@ -26,10 +26,12 @@
     <button class="auth-button" type="submit" {{action 'login'}}>log in</button>
   </form>
 
+  <p class="or">Or</p>
+
   <div class="social-signin-div">
     {{social-signin}}
   </div>
 
-  <p class="signup-link"> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>
+  <p class="signup-link"> New to EnCoMPASS? {{#link-to 'auth.signup' classNames='signup-link'}}Sign up now{{/link-to}}</p>
 
 </div>
