@@ -1,12 +1,12 @@
 <form enctype="multipart/form-data">
    <input multiple="true" onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
-   {{!-- <input type="submit" value="Upload Images" {{action "uploadImages"}}/> --}}
+   <input type="submit" value="Upload Images" {{action "uploadImages"}}/>
 </form>
 
-{{!-- {{#if uploadResults}}
-<ul>
-  {{#each uploadResults as |file|}}
-    <li>Uploaded <a href={{file.relativePath}}>{{file.filename}}</a> successfully!</li>
-  {{/each}}
-</ul>
-{{/if}} --}}
+  {{#if uploadResults}}
+  <ul>
+    {{#each uploadResults as |file|}}
+      <li>Uploaded <a href={{file.relativePath}} target="_blank">{{file.filename}}</a> successfully!</li>
+    {{/each}}
+  </ul>
+  {{/if}}
