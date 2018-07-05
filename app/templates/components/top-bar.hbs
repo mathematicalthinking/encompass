@@ -3,7 +3,11 @@
 {{/link-to}}
 
 <div id='devTool'></div>
-  <small id="al_welcome">Welcome, {{user.displayName}}</small>
+  {{#if user.isAuthenticated}}
+    <small id="al_welcome">Welcome, {{user.displayName}}</small>
+  {{else}}
+    <small id="al_welcome">Welcome, Guest</small>
+  {{/if}}
 <div class="clear_r"></div>
 
 {{#if user.isAuthenticated}}

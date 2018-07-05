@@ -28,6 +28,24 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
+      if (email) {
+        var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+        var emailTest = emailPattern.test(email);
+
+        if (this.emailTest === false) {
+          console.log(emailPattern.test(email));
+          console.log('false email');
+          return;
+        }
+
+        if (this.emailTest === true) {
+          console.log(emailPattern.test(email));
+          console.log('true email');
+          return;
+        }
+      }
+
+
       var createUserData = {
         name: name,
         email: email,
@@ -50,6 +68,8 @@ Encompass.SignUpComponent = Ember.Component.extend({
         })
         .catch(console.log);
     },
+
+
 
     toggleCheck() {
       if (this.agreedToTerms === true) {
