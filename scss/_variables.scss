@@ -1,0 +1,60 @@
+// FONT VARIABLES
+$primary-font: 'Roboto', sans-serif;
+$secondary-font: arial;
+
+// COLOR VARIABLES
+$primary-font-color: #5e5e5e;
+$background-color: #dfdfdf;
+$error-color: #EB5757;
+$accent-color: #3997EE;
+
+// FONT WEIGHT
+$main-font-weight: 500;
+$bold-font-weight: 700;
+$bolder-font-weight: 900;
+
+// BUTTONS
+$primary-button: #3997EE;
+$inactive-button: grey;
+
+// LINKS
+$primary-link: #3997EE;
+
+// SIZES
+$max-width: 1180px;
+$default-padding: 10px;
+$body-size: 1rem;
+$main-heading-size: 2rem;
+$secondary-heading-size: 1.5rem;
+// HOVER VARIABLES
+$hover-color: yellow;
+$hover-underline: yellow;
+// BORDER VARIABLES
+// BREAKPOINTS
+$screen-xs-min: 0px;
+$screen-sm-min: 765px;
+$screen-xs-max: ($screen-sm-min - 1);
+$screen-md-min: 992px;
+$screen-sm-max: ($screen-md-min - 1);
+$screen-lg-min: 1200px;
+$screen-md-max: ($screen-lg-min - 1);
+$screen-lg-max: 4000px;
+// Usage
+// @media (max-width: $screen-xs-max) {
+//   ...
+// }
+// @media (min-width: $screen-sm-min) {
+//   ...
+// }
+// @media (max-width: $screen-sm-max) {
+//   ...
+// }
+// @media (min-width: $screen-md-min) {
+//   ...
+// }
+// @media (max-width: $screen-md-max) {
+//   ...
+// }
+// @media (min-width: $screen-lg-min) {
+//   ...
+// }

@@ -1,0 +1,19 @@
+/* The variables partial contains all the gloabl variables
+ * Like font, size, colors, padding, etc
+ */
+@import "variables";
+
+/* To use the responsive-font-size mixin you must:
+ * @include responsive-font-size (1em, 1.5em, 640px, 1200px, 0.5em);
+ * The order of the variables is min-font, max-font, min-width, max-width, increment
+ * Basically you say the smallest and largest you want the font to be at the min and max
+   breakpoints, and then the increment size between those breakpoints
+ */
+@import "responsive-font-size";
+
+// NORMALIZE CSS
+// @import "normalize";
+
+// COMPONENT PARTIALS
+@import "auth";
+
