@@ -14,7 +14,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend({
         formData.append('photo', f);
       }
       Ember.$.post({
-              url: '/upload',
+              url: '/image',
               processData: false,
               contentType: false,
               data: formData
