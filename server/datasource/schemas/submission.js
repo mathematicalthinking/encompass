@@ -18,6 +18,12 @@ var baseSubmission = {
 //====
   shortAnswer: String,
   longAnswer: String,
+  // NEW VALUES
+  student: {type: ObjectId, ref: 'User'},
+  // Need to update tests to use answer, breaking pdSet?
+  // answer: {type: ObjectId, ref: 'Answer'},
+  problem: {type: ObjectId, ref:'Problem'},
+  section: {type: ObjectId, ref: 'Section'},
   powId: Number,
   creator: {creatorId: Number, username: String, safeName: String},
   clazz: {clazzId: Number, name: String},

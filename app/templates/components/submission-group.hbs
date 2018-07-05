@@ -12,7 +12,7 @@
       {{/each}}
     </ul>
 <div class="selectBox">
-  <div class="selected"> 
+  <div class="selected">
     <div class="studentItem">
       {{currentStudent}}
       <span class="selector" {{action 'toggleStudentList'}}></span>
@@ -20,7 +20,7 @@
     {{#if showStudents}}
     <ul id="studentList">
     <!-- ENC-391, ENC-392, ENC-409 -->
-    <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above --> 
+    <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
       {{#each this.submissionThreadHeads as |threadHead|}}
         <li class="studentItem" {{action 'toggleStudentList'}}>
           {{#link-to 'workspace.submission' threadHead}}
@@ -39,12 +39,12 @@
       {{#each this.currentRevisions as |rev|}}
       <li>
         <abbr title="{{unbound rev.label}}">
-        {{#link-to 'workspace.submission' rev.revision}} 
+        {{#link-to 'workspace.submission' rev.revision}}
         {{rev.index}}
-        {{#if rev.revision.selections }}*{{/if}} 
+        {{#if rev.revision.selections }}*{{/if}}
         {{/link-to}}
         </abbr>
-      </li> 
+      </li>
       {{/each}}
     </ul>
     {{else}}
@@ -82,7 +82,7 @@
       <span class="submission_index">
         {{usersSubmissionIndex}}
       </span>
-      / 
+      /
       <span class="submission_count">
         {{arrangedContent.length}}
       </span>

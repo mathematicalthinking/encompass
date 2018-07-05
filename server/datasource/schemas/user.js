@@ -62,6 +62,8 @@ var UserSchema = new Schema({
   authUserId: String,
   sessionId: String,
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
+  answers: [{ type: ObjectId, ref: 'Answer' }],
+  // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
   assignments: [{ problemId: { type: ObjectId, ref: 'Problem' }, answerId: { type: ObjectId, ref: 'Answer' } }],
   seenTour: Date,
   lastSeen: Date,
