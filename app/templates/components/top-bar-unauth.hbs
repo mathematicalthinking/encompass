@@ -1,7 +1,8 @@
- {{#link-to 'index'}}
-<h1 class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
+{{#link-to 'index'}}
+  <h1 class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 <div id='devTool'></div>
+  {{!-- <small id="al_welcome"></small> --}}
 <div class="clear_r"></div>
 <nav id="al_nav">
   <ul>
@@ -10,6 +11,7 @@
     <li>{{#link-to 'auth.signup' classNames='menu signup'}}signup{{/link-to}}</li>
   </ul>
 </nav>
+
 <div id="status">
   <span class="control">
     {{#if isSmallHeader}}

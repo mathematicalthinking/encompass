@@ -38,9 +38,9 @@ const signupErrors = {
 
 const signinErrors = {
   incomplete: 'Missing Credentials',
-  username: 'Sorry, you entered an incorrect username. Please try again.',
-  password: 'Sorry, you entered an incorrect password. Please try again.'
-}
+  username: 'Incorrect username',
+  password: 'Incorrect password.'
+};
 
 const newProblem = {
   details: {

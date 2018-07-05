@@ -1,30 +1,39 @@
-<div class="al_wtf main">
-  <p>Please login if you are an EnCoMPASS member.</p>
+<div class="login-box">
+
+  <img src="images/logo-encompass.png" class="encompass-logo" alt="encompass logo">
+
+  <form class="form-signin">
+    <div class="auth-form-input">
+      <label for="username">Username:</label>
+      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}}
+
+      {{#if incorrectUsername}}
+        <p class="error-message">Incorrect username.</p>
+      {{/if}}
+    </div>
+
+    <div class="auth-form-input">
+      <label for="password">Password:</label>
+      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}}
+
+      {{#if incorrectPassword}}
+        <p class="error-message">Incorrect password.</p>
+      {{/if}}
+
+      {{#if missingCredentials class="error-message"}}
+        <p class="error-message">Missing Credentials</p>
+      {{/if}}
+    </div>
+
+    <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
+  </form>
+
+  <p class="or">Or</p>
+
+  <div class="social-signin-div">
+    {{social-signin}}
+  </div>
+
+  <p class="signup-link"> New to EnCoMPASS? {{#link-to 'auth.signup' classNames='signup-link'}}Sign up now{{/link-to}}</p>
+
 </div>
-
-<form class="form-signin">
-  <label for="username">Username:</label>
-  {{input class="form-control" name="username" id="username" required=true type="text" value=username placeholder="username" action="resetErrors" on="key-down"}} <br/>
-  {{#if incorrectUsername}}
-   <p>Sorry, you entered an incorrect username. Please try again.</p>
-  {{/if}}
-
-  <label for="password">Password:</label>
-  {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down" placeholder="password"}} <br/>
-  {{#if incorrectPassword}}
-   <p>Sorry, you entered an incorrect password. Please try again.</p>
-  {{/if}}
-
-  {{#if missingCredentials}}
-    <p>Missing Credentials</p>
-  {{/if}}
-
-  <button class="btn btn-lg btn-primary btn-block" type="submit" {{action 'login'}}>Sign in</button>
-</form>
-
-
-
-
-{{social-signin}}
-
-<p> Don't have an account? {{#link-to 'auth.signup' classNames='signup-link'}}Signup!{{/link-to}}</p>
