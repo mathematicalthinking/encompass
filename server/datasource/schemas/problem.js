@@ -6,7 +6,8 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Problem
-  * @description Problems are submitted by teachers
+  * @description Problems are submitted by teachers, we allow image uploads
+  * @todo Allow images to be used as supplment or entire problem?
   */
 var ProblemSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)

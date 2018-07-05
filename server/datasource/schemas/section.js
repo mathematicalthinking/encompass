@@ -6,7 +6,8 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Section
-  * @description Sections belong to a school and can contain many students, teachers, and problems
+  * @description Sections belong to a teacher/school/admin and can contain many students, teachers, and problems
+  * @todo Need to decide on what info should be saved, as well as who is the owner of the section
   */
 var SectionSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)

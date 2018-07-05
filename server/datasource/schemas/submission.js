@@ -39,7 +39,7 @@ var pdSubmission = _.extend({}, baseSubmission, {
 /**
   * @public
   * @class EncompassSubmission
-  * @description An Encompass submission is a local copy of a PoW submission.
+  * @description An Encompass submission is a local copy of a PoW submission. This will now become a grouping of problem, section and answer for each student
 */
 var encompassSubmission = _.extend({}, baseSubmission, {
   pdSrcId: {type:ObjectId, ref:'PDSubmission'},
@@ -53,13 +53,13 @@ var encompassSubmission = _.extend({}, baseSubmission, {
 
 var PDSubmissionSchema = new Schema(pdSubmission, {versionKey: false});
 var EncompassSubmissionSchema = new Schema(encompassSubmission, {
-  versionKey: false, 
+  versionKey: false,
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-/** ENC-467 
-  * We still expect a primary teacher even when 
+/** ENC-467
+  * We still expect a primary teacher even when
   * a submission may have multiple
   */
 function insertTeacher(doc, ret, options) {
@@ -81,7 +81,7 @@ EncompassSubmissionSchema.set("toJSON", {transform: insertTeacher, minimize: fal
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
-  */ 
+  */
 EncompassSubmissionSchema.pre('save', function (next) {
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem) ) {
@@ -89,7 +89,7 @@ EncompassSubmissionSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */
@@ -112,14 +112,14 @@ EncompassSubmissionSchema.pre('save', function (next) {
 EncompassSubmissionSchema.post('save', function (submission) {
   /* + All related workspaces are updated with the submission */
   mongoose.models.Workspace.update({_id: {$in: submission.workspaces}},
-    {$addToSet: { 'submissions': submission, 
+    {$addToSet: { 'submissions': submission,
                   'selections': {$each: submission.selections},
                   'comments': {$each: submission.comments}
                 }
     },
     {'multi': true},
     function (err, affected, results) {
-      if (err) { throw new Error(err.message); } 
+      if (err) { throw new Error(err.message); }
     });
 
   /* + All related selections are updated with the submission */
@@ -127,7 +127,7 @@ EncompassSubmissionSchema.post('save', function (submission) {
     {$set: { 'submission': submission }},
     {'multi': true},
     function (err, affected, results) {
-      if (err) { throw new Error(err.message); } 
+      if (err) { throw new Error(err.message); }
     });
 });
 

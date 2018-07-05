@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Image
-  * @description Images are text documents based on selections and comments
+  * @description Images are uploaded and saved in public/image_uploads using multer
   */
 var ImageSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)

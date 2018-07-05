@@ -1,10 +1,12 @@
-/*
+/**
   * # The Cache
   * @description Cache is responsible for saving submission data from an external source to the database
   *              This source may be a url or a file.
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
+  * @todo Do we need this, we are no longer getting submissions from an external source
   */
+
 //REQUIRE MODULES
 const mongoose = require('mongoose');
 const _ = require('underscore');

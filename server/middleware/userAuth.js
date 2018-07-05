@@ -1,3 +1,11 @@
+/**
+ * # UserAuth Middleware
+ * @description This middleware contains a bunch of functions related to users
+ *   It mainly gets the user, protects api paths & loads workspaces
+ * @author Daniel Kelly & Philip Wisner
+ * @since 2.0.0
+ * @todo Remove all the old authentication code
+ */
 
 //REQUIRE MODULES
 const cookie = require('cookie');
@@ -11,12 +19,8 @@ const utils = require('./requestHandler');
 const models = require('../datasource/schemas');
 const User = require("../datasource/schemas/user");
 
-/*
-  @returns {Object} user as cached from processToken, fetchUser
-  consider protecting against nulls (misconfigured restify plugins)
-  consider doing this lazily instead of with plugins
-  consider processing the req (token, fetchUser) if not cached
-*/
+
+
 function getUser(req) {
   return req.user;
 }

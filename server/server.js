@@ -8,7 +8,6 @@ const http = require('http');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
-const flash = require('connect-flash');
 const multer = require('multer');
 const expressPath = require('path');
 require('dotenv').config();

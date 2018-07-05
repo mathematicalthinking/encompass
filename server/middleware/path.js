@@ -1,8 +1,12 @@
-/*
-  Path plugins for restify
-  Protects against bad ObjectIDs (ENC-486)
-  Caches the path parts for future decisions
-*/
+/**
+ * # Path Middlware
+ * @description Middle to provide path consistency
+ *   It prevents any call to the server that doesn't start with /api
+ *   It also runs a regex to make sure that whatever follows the api is correct
+ *   It protects against bad ObjectIDs and caches path parts for future decisions
+ * @author Daniel Kelly & Philip Wisner
+ * @since 2.0.0
+ */
 
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('sane');
@@ -126,7 +130,6 @@ function validateContent(options) {
     var model = getModel(req),
         schema = getSchema(req),
         data = req.body[model];
-    console.log(model, schema, data);
     if(models[schema]) {
       var required = models[schema].schema.requiredPaths();
       var hasRequiredData = _.every(required, function(x) { return data[x]; });

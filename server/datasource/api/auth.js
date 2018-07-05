@@ -1,6 +1,6 @@
 /**
  * # Auth API
- * @description This is the API passport authentication
+ * @description This is the API for passport authentication
  * @author Philip Wisner & Daniel Kelly
  */
 

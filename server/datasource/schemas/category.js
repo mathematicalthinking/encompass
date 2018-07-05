@@ -6,7 +6,8 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Category
-  * @description Categorys are text documents based on selections and comments
+  * @description Categories are used to categorize problems
+  * @todo Create or use external categories for problem?
   */
 var CategorySchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
@@ -28,7 +29,7 @@ var CategorySchema = new Schema({
 //     }
 //   };
 
-//   /** + Every ID reference in our object is properly typed. 
+//   /** + Every ID reference in our object is properly typed.
 //     *   This needs to be done BEFORE any other operation so
 //     *   that native lookups and updates don't fail.
 //     */

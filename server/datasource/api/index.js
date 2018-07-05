@@ -1,12 +1,12 @@
 /**
   * # API
   * @description This is the RESTful API for Encompass.
-  *              We are using Node's [Restify](http://mcavage.me/node-restify/) for this.
+  *              We are using Express for this.
   *              In this directory we define various methods for handling requests.
   *              This file is a convenience that allows us to require the API elsewhere by
   *              just requiring this dir.
   *              Routing to these methods is done in [server.js](../../server.html)
-  * @todo Refactor
+  * @todo ARE WE USING THIS FILE?
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
@@ -27,6 +27,7 @@ exports.put = {};
  "answerApi",
  "sectionApi",
  "categoryApi",
+ "auth",
  "about",
  "stats",
  "cache",
