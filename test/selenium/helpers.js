@@ -162,7 +162,7 @@ const login = async function(webDriver, host, user=admin) {
   await findInputAndType(webDriver, css.login.username, user.username);
   await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
-  return await waitForSelector(webDriver, '#al_welcome');
+  return await waitForSelector(webDriver, css.topBar.logout);
 };
 
 const signup = async function(webDriver, host, missingFields=[], user=newUser,  acceptedTerms=true) {

@@ -99,14 +99,14 @@ describe('Home Page', function () {
         await helpers.findInputAndType(driver, css.login.password, helpers.admin.password);
         await helpers.findAndClickElement(driver, css.login.submit);
 
-        greeting = await helpers.waitForSelector(driver, '#al_welcome');
+        await helpers.waitForSelector(driver, 'a.menu.logout');
+        greeting = await helpers.findAndGetText(driver, '#al_welcome');
         url = await helpers.getCurrentUrl(driver);
-        message = await greeting.getText();
       } catch (err) {
         console.log(err);
       }
       expect(url).to.equal(`${host}/`);
-      expect(message).to.equal(`Welcome, ${helpers.admin.username}`);
+      expect(greeting).to.equal(`Welcome, ${helpers.admin.username}`);
     });
   });
 

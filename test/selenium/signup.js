@@ -80,7 +80,7 @@ describe ('Signup form', async function() {
 
     it ('should redirect to homepage after successful signup', async function() {
       await helpers.findAndClickElement(driver, css.signup.submit);
-      await helpers.waitForSelector(driver, css.greeting);
+      await helpers.waitForSelector(driver, css.topBar.logout);
 
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
       expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`Welcome, ${helpers.newUser.name}`);
