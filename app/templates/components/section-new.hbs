@@ -10,32 +10,69 @@
         <ol>
           <li>
             <label for="title">Class/Group Name</label>
-            {{input id="title" type="text" value=title placeholder="enter problem name"}}
-          </li>
-          <li>
+            {{input id="title" type="text" value=newSectionName placeholder="enter class/group name"}}
+
             <label for="text">Teacher/Leader</label>
-            {{input id="text" type="text" value=text placeholder="enter problem question"}}
-          </li>
-          <li>
+            {{input id="text" type="text" value=user placeholder="{user.displayName}"}}
+
             <label for="categories">Organization  </label>
-            {{input id="categories" type="text" value=categories placeholder="enter a category"}}
+            {{input id="categories" type="text" value=schoolName placeholder="enter organization"}}
+
+            <label for="sectionID">Section ID  </label>
+            {{input id="sectionID" type="number" value=sectionId placeholder="enter sectionID"}}
           </li>
         </ol>
       </fieldset>
     </form>
   </section><style>input {margin: 15px;}</style>
-  <div style="clear: left"></div>
+  <div class="clear"></div>
+
+{{!-- submit button to add a new section --}}
   <section class="submit">
-    <button class="action_button" {{action 'createProblem'}}>
+    <button class="action_button" {{action 'createSection'}}>
       Create Section
     </button>
   </section>
-  {{#if createdProblem}}
-  <p>Successfully created problem
-     {{#link-to 'section' createdProblem  classNames='section'}}{{title}}
+
+
+ {{!-- verify if section successfully created --}}
+{{!-- {{#if createdSection}}
+  <p>Successfully created section
+     {{#link-to 'section' createdSection  classNames='section'}}{{name}}
     {{/link-to}}</p>
-  {{else}}
-  <p>{{createProblemError}}</p>
-  {{/if}}
+ {{else}}
+  <p>{{createSectionError}}</p>
+  {{/if}} --}}
+
+
+{{!-- add students to section --}}
+  <div style="clear: left"></div>
+        <h2>Members List</h2>
+    <section class="fourth sections">
+    <form id='section' class='properForm'>
+      <fieldset>
+        <ol>
+            <label for="title">New Student Username</label>
+          <li>
+            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
+          </li>
+          <li>
+            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
+          </li>
+          <li>
+            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
+          </li>
+        </ol>
+      </fieldset>
+    </form>
+  </section>
+
+
+{{!-- submit button to add a new section --}}
+  <section class="submit">
+    <button class="action_button" {{action 'createStudents'}}>
+      Add Students
+    </button>
+  </section>
 
 </section>
