@@ -2,7 +2,10 @@ Encompass.SignUpComponent = Ember.Component.extend({
   usernameExists: false,
   missingCredentials: false,
   noTermsAndConditions: false,
+  incorrectEmail: false,
   agreedToTerms: null,
+
+  regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
   actions: {
     signup: function () {
@@ -68,8 +71,27 @@ Encompass.SignUpComponent = Ember.Component.extend({
       if (this.get('missingCredentials')) {
         this.set('missingCredentials', false);
       }
-    }
+    },
+
+    emailValidate() {
+      var email = this.get('email');
+      if (email) {
+        var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+        var emailTest = emailPattern.test(email);
+        console.log(emailTest);
+
+        if (emailTest === false) {
+          console.log('false email');
+          this.set('incorrectEmail', true);
+          return;
+        }
+
+        if (emailTest === true) {
+          console.log('true email');
+          this.set('incorrectEmail', false);
+          return;
+        }
+      }
+    },
   }
 });
-
-
