@@ -1,25 +1,43 @@
-<p>Please select a problem</p>
-{{my-select selectedProblem = selectedProblem content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
-{{#unless selectedProblem}}
-<p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
-
-{{#if isCreatingNewProblem}}
-  {{problem-new selectedProblem = selectedProblem}}
-{{/if}}
-{{/unless}}
-
-{{#if selectedProblem }}
-  <p>Please select a section</p>
-  {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
-  {{#unless selectedSection}}
-    <p>Or create a new section <button {{action "toggleNewSection"}}>+</button> </p>
-    {{#if isCreatingNewSection}}
-      {{section-new selectedSection = selectedSection}}
+<section class="importWork">
+  <section class="third import">
+      {{#unless isMatchingStudents}}
+      <p>Please select a problem</p>
+      <br>
+      {{my-select selectedProblem = selectedProblem content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
+      <br>
+      {{#unless selectedProblem}}
+          <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
+      <br>
+      {{#if isCreatingNewProblem}}
+          {{problem-new selectedProblem = selectedProblem}}
+      {{/if}}
+      {{/unless}}
+      <br>
+      {{#if selectedProblem }}
+        <p>Please select a section</p>
+            <br>
+            {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+        {{#unless selectedSection}}
+          <p>Or create a new section <button {{action "toggleNewSection"}}>+</button> </p>
+            {{#if isCreatingNewSection}}
+              {{section-new selectedSection = selectedSection}}
+            {{/if}}
+        {{/unless}}
+      {{/if}}
+    {{#if selectedSection}}
+      <p>Please choose files to upload</p>
+        {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
     {{/if}}
-  {{/unless}}
-{{/if}}
+      <br>
+    {{#if readyToMatchStudents}}
+      <button {{action "loadStudentMatching"}}>Continue</button>
+    {{/if}}
+    {{/unless}}
+  </section>
 
-{{#if selectedSection}}
-  <p>Please choose files to upload</p>
-  {{image-upload filesToBeUploaded = selectedFiles}}
-{{/if}}
+
+  {{#if isMatchingStudents}}
+
+    {{student-matching selectedSection=selectedSection answers=answers updateAnswer=updateAnswer uploadAnswers=(action "uploadAnswers")}}
+  {{/if}}
+</section>
