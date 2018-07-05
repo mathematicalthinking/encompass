@@ -1,0 +1,23 @@
+<section>
+  <nav class="users actions listing al_vertical_stretch">
+    <h2>{{selectedSection.name}}</h2>
+    <ul class="listing">
+      {{#each selectedSection.students as |student|}}
+        <li>{{student.username}}</li>
+      {{/each}}
+    </ul>
+  </nav>
+</section>
+
+<section>
+  <nav class="users actions listing al_vertical_stretch">
+    <h2>Student Submissions</h2>
+    {{#each answers as |answer|}}
+    {{student-matching-answer answer=answer selectedSection=selectedSection }}
+    {{/each}}
+  </nav>
+</section>
+
+
+<button {{action "uploadAnswers"}}>Continue</button>
+
