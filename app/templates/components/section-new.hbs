@@ -12,8 +12,12 @@
             <label for="title">Class/Group Name</label>
             {{input id="title" type="text" value=newSectionName placeholder="enter class/group name"}}
 
-            <label for="text">Teacher/Leader</label>
-            {{input id="text" type="text" value=user placeholder="{user.displayName}"}}
+           <label for="text">Teacher/Leader</label>
+          {{#if user.isAdmin}}
+            {{input id="teacher" type="text" value=teacher placeholder="username"}}
+            {{else}}
+             {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}}
+            {{/if}}
 
             <label for="categories">Organization  </label>
             {{input id="categories" type="text" value=schoolName placeholder="enter organization"}}
@@ -36,13 +40,13 @@
 
 
  {{!-- verify if section successfully created --}}
-{{!-- {{#if createdSection}}
+{{#if createdSection}}
   <p>Successfully created section
      {{#link-to 'section' createdSection  classNames='section'}}{{name}}
     {{/link-to}}</p>
  {{else}}
   <p>{{createSectionError}}</p>
-  {{/if}} --}}
+  {{/if}}
 
 
 {{!-- add students to section --}}

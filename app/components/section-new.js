@@ -4,12 +4,22 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   sectionId: '',
   createdSection: null,
   createSectionError: null,
+  teacher: null,
+
+  didInsertElement () {
+    var user = this.get('user');
+    if(!user.isAdmin) {
+      this.set('teacher', user.get('id'));
+    }
+  },
 
 actions: {
   createSection: function () {
     var newSectionName = this.get('newSectionName');
     var sectionId = this.get('sectionId');
     var schoolName = this.get('schoolName');
+    var teacher = this.get('teacher');
+    console.log('teacher username', teacher);
     this.set('newSectionName', '');
     console.debug('creating new section ' + newSectionName);
 
@@ -20,7 +30,8 @@ actions: {
     var sectionData = this.store.createRecord('section', {
       name: newSectionName,
       sectionId: sectionId,
-      schoolId: schoolName
+      schoolId: schoolName,
+      teachers: teacher
     });
 
 
