@@ -81,8 +81,9 @@ const postAnswer = (req, res, next) => {
   const user = userAuth.requireUser(req);
   // what permissions are needed to post and answer
   const answer = new models.Answer(req.body.answer);
+  console.log('answer', answer);
   answer.createdBy = user;
-  answer.createdDate = Date.now();
+  answer.createDate = Date.now();
   answer.save((err, doc) => {
     if (err) {
       logger.error(err);
