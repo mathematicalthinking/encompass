@@ -74,8 +74,8 @@
 
 // SIGNUP PAGE SYLING
 .signup-page {
-  height: 90vh;
-  padding-top: 3vh;
+  height: 88vh;
+  padding-top: 2vh;
 }
 
 .signup-box {
@@ -133,7 +133,7 @@
   }
   .auth-button {
     @include auth-button;
-    margin-top: 40px;
+    margin-top: 20px;
   }
   .terms-error {
     margin: 0 auto;
