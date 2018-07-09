@@ -1,9 +1,11 @@
 {{!--outlet header--}}
-{{#if currentUser.isAuthenticated}}
-  {{top-bar user=currentUser isHidden=isHidden}}
-{{else}}
-  {{top-bar-unauth}}
-{{/if}}
+
+{{!-- {{#if currentUser.isAuthenticated}} --}}
+  {{!-- {{top-bar user=currentUser isHidden=isHidden}} --}}
+{{!-- {{else}} --}}
+{{!-- {{/if}}  {{top-bar-unauth}} --}}
+
+{{top-bar user=currentUser isHidden=isHidden}}
 
 <section id="al_body">
 <!-- a dynamic section of the view hierarchy that will be filled in
