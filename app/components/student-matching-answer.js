@@ -15,7 +15,8 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
       this.set('assignedStudent', student);
       var studentId = student.get('id');
       var ans = this.get('submission');
-      ans.studentId = student.id;
+      ans.studentId = student;
+      //ans.studentId = student.id;
       this.set('submission', ans);
       var imageId = ans.explanation.id;
     }
