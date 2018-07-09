@@ -8,6 +8,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
   uploadedFiles: null,
   isMatchingStudents: null,
   answers: null,
+  uploadResults: null,
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     var problem = this.get('selectedProblem');
@@ -56,7 +57,21 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
     uploadAnswers: function() {
       console.log('uploading Answers');
       var answers = this.get('answers');
+      var that = this;
+      console.log('answers', answers);
+      var uploads = Promise.all(answers.map((answer) => {
+        answer.explanation = answer.explanation.relativePath;
 
+        let ans = that.store.createRecord('answer', answer);
+        ans.set('sectionId', that.get('selectedSection'));
+        ans.set('problemId', that.get('selectedProblem'));
+        return ans.save();
+      }));
+
+      return Promise.resolve(uploads).then((res) => {
+        console.log('res', res);
+        that.set('uploadResults',res);
+      });
     }
 
     // updateAnswer: function(user) {
