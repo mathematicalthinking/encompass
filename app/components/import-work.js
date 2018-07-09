@@ -71,6 +71,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       return Promise.resolve(uploads).then((res) => {
         console.log('res', res);
         that.set('uploadResults',res);
+
+        //TODO: create submissions from answers
       });
     }
 

@@ -21,6 +21,8 @@ var AnswerSchema = new Schema({
   explanation: { type: String },
   sectionId: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
+  uploadedFile: { type: String},
+  priorAnswerId: { type: String},
   isSubmitted: { type: Boolean }
 }, { versionKey: false });
 
