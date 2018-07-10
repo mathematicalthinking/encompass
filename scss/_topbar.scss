@@ -4,42 +4,68 @@
 
 
 
-@media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+@media screen and (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
   #al_header {
-    background-color: blue;
-    display: none;
+    // background-color: blue;
+    #menu-toggle {
+      display: none;
+    }
   }
 }
 
 @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) {
   #al_header {
-    background-color: green;
-    display: none;
+    // background-color: green;
   }
 }
 
 @media screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) {
   #al_header {
-    background-color: yellow;
+    // background-color: yellow;
   }
 }
 
 
-// @media (max-width: $screen-xs-max) {
-//   ...
-// }
-// @media (min-width: $screen-sm-min) {
-//   ...
-// }
+#topbar-unauth {
+  font-weight: $bolder-font-weight;
+  float: right;
+  li {
+    line-height: 50px;
+    height: 40px;
+    display: inline-block;
+    padding: 0 20px;
+    vertical-align: middle;
+    a {
+      color: white;
+      margin-right: 10px;
+      background: $primary-button;
+      padding: 10px 30px;
+      border-radius: 3px;
+      &:hover {
+        background-color: darken($primary-button, 10);
+      }
+    }
+  }
+}
 
+.al_logo {
+  width: 230px;
+  height: 80px;
+  display: block;
+  position: relative;
+  top: -8px;
+  float: left;
+  text-indent: -99999px;
+  background: url(images/logo-encompass.gif) 0 0 no-repeat;
+}
 
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
   // background-color: white;
   position: relative;
-  margin-bottom: 1px;
-  height: 100px;
+  // margin-bottom: 1px;
+  height: 90px;
   box-shadow: $box-shadow;
   .small {
     height: 20px;
@@ -62,15 +88,6 @@
   display: none
 }
 
-
-.al_logo {
-  width: 230px;
-  height: 100px;
-  display: block;
-  float: left;
-  text-indent: -99999px;
-  background: url(images/logo-encompass.gif) 0 0 no-repeat;
-}
 
 #al_header.small>.al_logo {
   display: none
