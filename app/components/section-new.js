@@ -24,22 +24,30 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var schoolName = this.get('schoolName');
     var user = this.get('user');
     var teacher = this.get('teacher');
-    console.log('teacher username', teacher);
+    console.log('teacher usernamesssese', teacher);
     if (user.get('isAdmin')) {
-      var teachersUsername = this.store.createRecord('section', {
-        name: newSectionName,
-        sectionId: sectionId,
-        schoolId: schoolName,
-        teachers: [teacher]
-      });
+      //check if user exists
 
-      teachersUsername.save()
-        .then((res) => {
-          this.sendAction('toSectionList');
-      });
+      var teacherUsername = this.get('store').findAll('user').then( function(users){
+        var filteredUsers = users.filterBy('username', teacher);
+        console.log('filteredUsers', filteredUsers)
+      };
+
+
+      // var teachersUsername = this.store.createRecord('section', {
+      //   name: newSectionName,
+      //   sectionId: sectionId,
+      //   schoolId: schoolName,
+      //   teachers: [teacher]
+      // });
+
+      // teachersUsername.save()
+      //   .then((res) => {
+      //     this.sendAction('toSectionList');
+      // });
     }
 
-    console.log('teacher username', teacher);
+    // console.log('teacher username', teacher);
     this.set('newSectionName', '');
     console.debug('creating new section ' + newSectionName);
 
