@@ -1,4 +1,5 @@
 Encompass.SignUpComponent = Ember.Component.extend({
+  classNames: ['signup-page'],
   usernameExists: false,
   missingCredentials: false,
   noTermsAndConditions: false,
