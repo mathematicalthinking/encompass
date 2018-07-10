@@ -14,10 +14,13 @@
 
            <label for="text">Teacher/Leader</label>
           {{#if user.isAdmin}}
-            {{input id="teacher" type="text" value=teacher placeholder="username"}}
+            {{input id="teacher" type="text" value=teacher placeholder="username" action="checkError" on="key-down"}}
             {{else}}
              {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}}
             {{/if}}
+          {{#if invalidTeacherUsername}}
+          <p>Sorry, there is no teacher with that username.</p>
+          {{/if}}
 
             <label for="categories">Organization  </label>
             {{input id="categories" type="text" value=schoolName placeholder="enter organization"}}

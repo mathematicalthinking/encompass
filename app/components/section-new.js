@@ -5,16 +5,18 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   createdSection: null,
   createSectionError: null,
   teacher: null,
+  teachers: [],
+  invalidTeacherUsername: null,
 
   didInsertElement: function () {
     var user = this.get('user');
+    var teachers = this.get('teachers');
     console.log('user in didinsert', user);
     if (!user.get('isAdmin')) {
-      console.log('in if');
+      let userId = user.get('userId');
       this.set('teacher', user);
-      console.log(this.get('teacher'));
+      teachers.push(userId);
     }
-    console.log('teacher', this.get('teacher'));
   },
 
   actions: {
@@ -24,49 +26,43 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var schoolName = this.get('schoolName');
     var user = this.get('user');
     var teacher = this.get('teacher');
-    console.log('teacher usernamesssese', teacher);
+    var teachers = this.get('teachers');
     if (user.get('isAdmin')) {
       //check if user exists
-
-      var teacherUsername = this.get('store').findAll('user').then( function(users){
-        var filteredUsers = users.filterBy('username', teacher);
-        console.log('filteredUsers', filteredUsers)
-      };
-
-
-      // var teachersUsername = this.store.createRecord('section', {
-      //   name: newSectionName,
-      //   sectionId: sectionId,
-      //   schoolId: schoolName,
-      //   teachers: [teacher]
-      // });
-
-      // teachersUsername.save()
-      //   .then((res) => {
-      //     this.sendAction('toSectionList');
-      // });
+      let users = this.users.filterBy('username', teacher);
+      if (!Ember.isEmpty(users)) {
+        let user = users.get('firstObject');
+        teachers.push(user);
+      } else {
+        this.set('invalidTeacherUsername', true);
+        return;
+      }
     }
-
-    // console.log('teacher username', teacher);
     this.set('newSectionName', '');
     console.debug('creating new section ' + newSectionName);
 
     if (!newSectionName) {
       return;
     }
-
     var sectionData = this.store.createRecord('section', {
       name: newSectionName,
       sectionId: sectionId,
       schoolId: schoolName,
-      teachers: [teacher]
     });
 
+    for (let teacher of teachers) {
+      sectionData.get('teachers').addObject(teacher);
+    }
 //save entry
     sectionData.save()
       .then((res) => {
         this.sendAction('toSectionList');
       });
+    },
+  checkError() {
+    if (this.invalidTeacherUsername) {
+      this.set('invalidTeacherUsername', false);
     }
+  }
 }
 });
