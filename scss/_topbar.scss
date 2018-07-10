@@ -3,10 +3,40 @@
 @import "responsive-font-size";
 
 
+
+@media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+  #al_header {
+    background-color: blue;
+    display: none;
+  }
+}
+
+@media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+  #al_header {
+    background-color: green;
+    display: none;
+  }
+}
+
+@media screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) {
+  #al_header {
+    background-color: yellow;
+  }
+}
+
+
+// @media (max-width: $screen-xs-max) {
+//   ...
+// }
+// @media (min-width: $screen-sm-min) {
+//   ...
+// }
+
+
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
-  background-color: white;
+  // background-color: white;
   position: relative;
   margin-bottom: 1px;
   height: 100px;
