@@ -6,7 +6,6 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
   #al_header {
-    // background-color: blue;
     #menu-toggle {
       display: none;
     }
@@ -25,6 +24,17 @@
   }
 }
 
+
+#menu-toggle {
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    #topbar-unauth {
+      position: fixed;
+    }
+  }
+}
 
 #topbar-unauth {
   font-weight: $bolder-font-weight;
@@ -62,8 +72,13 @@
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
-  // background-color: white;
-  position: relative;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 5;
+  margin-bottom: 90px;
   // margin-bottom: 1px;
   height: 90px;
   box-shadow: $box-shadow;
