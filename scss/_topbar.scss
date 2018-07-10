@@ -4,40 +4,103 @@
 
 
 // GENERAL STYLING
-.auth-page, .login-page, .signup-page {
-  background-color: $background-color;
-  width: 100%;
+#al_header {
   font-family: $primary-font;
+  background-color: white;
+  position: relative;
+  margin-bottom: 1px;
+  height: 100px;
+  box-shadow: $box-shadow;
+  .small {
+    height: 20px;
+    overflow: hidden;
+  }
+  .control {
+    display: none;
+  }
+  h1 {
+    float: left;
+  }
 }
 
-#devTool {
+#al_header.small>#al_nav li {
+  line-height: 20px;
+  height: 20px
+}
+
+#al_header.small>#al_welcome {
+  display: none
+}
+
+
+.al_logo {
+  width: 230px;
+  height: 100px;
+  display: block;
   float: left;
-  padding-left: 20px;
+  text-indent: -99999px;
+  background: url(images/logo-encompass.gif) 0 0 no-repeat;
 }
 
-#welcome { margin:30px; }
+#al_header.small>.al_logo {
+  display: none
+}
 
-#al_header { position:relative; border-bottom:2px solid #616161; margin-bottom:1px; height:100px;}
-#al_header.small { height: 20px; overflow: hidden }
-#al_header.small>#al_nav li { line-height: 20px; height: 20px }
-#al_header.small>#al_welcome { display:none }
-#al_welcome { float:right; margin:10px 20px; display:block; }
-#al_header h1 { float:left; }
-.al_logo { width:230px; height:100px; display:block; float:left; text-indent:-99999px; background:url(images/logo-encompass.gif) 0 0 no-repeat; }
-#al_header.small>.al_logo {display: none}
-#al_nav { float:right; }
-#al_nav li { line-height:50px; height:50px; border-right:1px solid #e3e3e3; display:inline-block; padding:0 20px; vertical-align:middle; }
-#al_nav ul { font-size:14px; }
+
+#al_header.small>#status {
+  padding-top: 1px
+}
+
+#al_header:hover .control {
+  display: inline
+}
+
+
+#welcome {
+  margin: 30px;
+}
+
+
+#al_nav {
+  float: right;
+  li {
+    line-height: 50px;
+    height: 50px;
+    border-right: 1px solid #e3e3e3;
+    display: inline-block;
+    padding: 0 20px;
+    vertical-align: middle;
+  }
+  ul {
+    font-size: 14px;
+  }
+  a {
+    &:hover {
+      color: #8e8e8e;
+    }
+    &::last-child {
+      border-right: none;
+    }
+    .active {
+      border-bottom: 2px solid #ffd204;
+    }
+  }
+}
+
+
 #al_nav li>ul { padding:0px; margin: 0px; }
 #al_nav li>ul>li { line-height:0.5em; border: none; display: block; text-align: right;}
-#al_nav a:hover { color:#8e8e8e; }
-#al_nav a:last-child { border-right:none; }
-#al_nav a.active { border-bottom:2px solid #ffd204; }
 
 #al_header .control { display:none }
 #al_header:hover .control { display:inline }
-#status { padding-left: 500px; padding-top: 46px; }
 #al_header.small>#status { padding-top: 1px }
+
+
+#al_welcome {
+  float: right;
+  margin: 10px 20px;
+  display: block;
+}
 
 nav.listing,nav.actions {
   float: left;
@@ -56,11 +119,8 @@ nav.listing,nav.actions>ul {
   padding-top: 46px;
 }
 
-#al_header.small>#status {
-  padding-top: 1px
+#devTool {
+  float: left;
+  padding-left: 20px;
 }
 
-#al_header .control { display:none }
-#al_header:hover .control { display:inline }
-#status { padding-left: 500px; padding-top: 46px; }
-#al_header.small>#status { padding-top: 1px }
