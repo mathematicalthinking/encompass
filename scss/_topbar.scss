@@ -24,18 +24,7 @@
   }
 }
 
-
-#menu-toggle {
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    #topbar-unauth {
-      position: fixed;
-    }
-  }
-}
-
+// TOP BAR STYLING FOR WHEN LOGGED OUT
 #topbar-unauth {
   font-weight: $bolder-font-weight;
   float: right;
@@ -58,6 +47,7 @@
   }
 }
 
+// STYLING FOR THE ENCOMPASS LOGO
 .al_logo {
   width: 230px;
   height: 80px;
@@ -68,6 +58,19 @@
   text-indent: -99999px;
   background: url(images/logo-encompass.gif) 0 0 no-repeat;
 }
+
+
+#menu-toggle {
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    #topbar-unauth {
+      position: fixed;
+    }
+  }
+}
+
 
 // GENERAL STYLING
 #al_header {
@@ -123,15 +126,43 @@
 }
 
 
-#al_nav {
+#topbar-unauth {
+  font-weight: $bolder-font-weight;
   float: right;
   li {
     line-height: 50px;
-    height: 50px;
-    border-right: 1px solid #e3e3e3;
+    height: 40px;
     display: inline-block;
     padding: 0 20px;
     vertical-align: middle;
+    a {
+      color: white;
+      margin-right: 10px;
+      background: $primary-button;
+      padding: 10px 30px;
+      border-radius: 3px;
+      &:hover {
+        background-color: darken($primary-button, 10);
+      }
+    }
+  }
+}
+
+
+
+#al_nav {
+  #main-nav {
+    float: right;
+
+  }
+  li {
+    line-height: 50px;
+    height: 40px;
+    display: inline-block;
+    border-right: 1px solid #e3e3e3;
+    padding: 0 20px;
+    vertical-align: middle;
+    text-align: center;
   }
   ul {
     font-size: 14px;
