@@ -41,6 +41,14 @@ const postImport = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const subData = JSON.parse(req.body.subs);
+  const doCreateWorkspace = JSON.parse(req.body.doCreateWorkspace);
+  const isPrivate = JSON.parse(req.body.isPrivate);
+  let workspaceMode;
+  if (doCreateWorkspace) {
+    workspaceMode = isPrivate ? 'private' : 'public';
+  }
+  console.log('dcw', doCreateWorkspace);
+  console.log('workspaceMode', workspaceMode);
  let submissions;
 
   // subData is array of objects containing submission data
@@ -74,7 +82,14 @@ const postImport = async function(req, res, next) {
 const submissionIds = submissions.map((sub) => {
   return sub._id;
 });
-// create workspace from newly created submissions
+
+// if user does not want to automatically create workspace
+if (!doCreateWorkspace) {
+  const data = {'submissionIds': submissionIds};
+  return utils.sendResponse(res, data);
+}
+
+// else create workspace from newly created submissions
 
 // submissionSet is used to determine if a workspace already exists for
 // a given set of submissions
