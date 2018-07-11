@@ -111,7 +111,6 @@ module.exports = {
   submission: {
     _id: '53e1156db48b12793f000407',
     validSubmission: {
-      answer: 'test answer',
       shortAnswer: 'test short answer',
       longAnswer: 'test long answer'
     }
