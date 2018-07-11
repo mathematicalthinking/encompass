@@ -11,6 +11,10 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
   uploadedAnswers: null,
   uploadedSubmissions: null,
   createdWorkspace: null,
+  isReviewingSubmissions: null,
+  doCreateWorkspace: true,
+  isPrivate: true,
+  uploadError: null,
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     var problem = this.get('selectedProblem');
@@ -20,6 +24,15 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
     var isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files);
     return isReady;
   }),
+
+  onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
+    var isMatchingStudents = this.get('isMatchingStudents');
+    var isReviewingSubmissions = this.get('isReviewingSubmissions');
+    var uploadedSubmissions = this.get('uploadedSubmissions');
+
+    return !isMatchingStudents && !isReviewingSubmissions && !uploadedSubmissions;
+  }),
+
 
   didInsertElement: function() {
     console.log('inserted element');
@@ -54,6 +67,12 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       });
 
       this.set('answers', answers);
+    },
+
+    reviewSubmissions: function() {
+      console.log('reviewing submissions');
+      this.set('isMatchingStudents', false);
+      this.set('isReviewingSubmissions', true);
     },
 
     uploadAnswers: function() {
@@ -110,7 +129,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
           return sub;
         });
         let postData = {
-          "subs": JSON.stringify(subs)
+          "subs": JSON.stringify(subs),
+          "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
+          "isPrivate": JSON.stringify(this.get('isPrivate'))
         };
         console.log('subs', subs);
          Ember.$.post({
@@ -118,12 +139,20 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
           data: postData
         })
         .then((res) => {
-          that.set('createdWorkspace', res);
+          that.set('isReviewingSubmissions', false);
+          // if workspace created
+          if (res.workspaceId) {
+            that.set('createdWorkspace', res);
           // should we redirect to workspaces list or workspace page?
           console.log('sending Action');
           that.sendAction('toWorkspaces');
+          } else {
+            that.set('uploadedSubmissions', res.submissionIds);
+          }
+
         })
         .catch((err) => {
+          that.set('uploadError', err);
           console.log(err);
         });
       });
