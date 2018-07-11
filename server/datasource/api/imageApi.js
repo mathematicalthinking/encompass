@@ -91,6 +91,7 @@ const postImages = async function(req, res, next) {
   const files = req.files.map((f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
+    let isPdf = mimeType === 'application/pdf';
     let str = data.toString('base64');
     let alt = '';
     let format = `data:${mimeType};base64,`;
@@ -102,6 +103,7 @@ const postImages = async function(req, res, next) {
     img.createdBy = user;
     img.createdDate = Date.now();
     img.data = imgData;
+    img.isPdf = isPdf;
     // const ix = img.path.indexOf('image_uploads');
     // img.relativePath = img.path.slice(ix);
     return img;
