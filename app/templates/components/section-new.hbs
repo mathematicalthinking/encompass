@@ -25,8 +25,6 @@
             <label for="categories">Organization  </label>
             {{input id="categories" type="text" value=schoolName placeholder="enter organization"}}
 
-            <label for="sectionID">Section ID  </label>
-            {{input id="sectionID" type="number" value=sectionId placeholder="enter sectionID"}}
           </li>
         </ol>
       </fieldset>
@@ -36,24 +34,28 @@
 
 {{!-- submit button to add a new section --}}
   <section class="submit">
-    <button class="action_button" {{action 'createSection'}}>
+    <button class="action_button" {{action 'createSection'}} style="margin-right: 30px">
       Create Section
     </button>
   </section>
 
-
  {{!-- verify if section successfully created --}}
 {{#if createdSection}}
   <p>Successfully created section
-     {{#link-to 'section' createdSection  classNames='section'}}{{name}}
+     {{#link-to 'section' createdSection  classNames='section'}}{{sectionId}}
     {{/link-to}}</p>
  {{else}}
   <p>{{createSectionError}}</p>
   {{/if}}
 
 
+<section>
+  {{!-- creat space between buttons --}}
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</section>
+
 {{!-- add students to section --}}
-  <div style="clear: left"></div>
+  {{!-- <div style="clear: left"></div>
         <h2>Members List</h2>
     <section class="fourth sections">
     <form id='section' class='properForm'>
@@ -72,12 +74,12 @@
         </ol>
       </fieldset>
     </form>
-  </section>
+  </section> --}}
 
 
 {{!-- submit button to add a new section --}}
   <section class="submit">
-    <button class="action_button" {{action 'createStudents'}}>
+    <button class="action_button" {{action 'createStudents'}} style="margin-right: 30px">
       Add Students
     </button>
   </section>
