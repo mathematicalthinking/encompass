@@ -1,3 +1,5 @@
+<p>Before we can create submissions, we need to know who authored each uploaded piece of work. You can select any student that currently exists in your selected section from the dropdown menu.</p>
+<br>
 <section>
   <nav class="users actions listing al_vertical_stretch">
     <h2>{{selectedSection.name}}</h2>
@@ -12,12 +14,18 @@
 <section>
   <nav class="users actions listing al_vertical_stretch">
     <h2>Student Submissions</h2>
-    {{#each answers as |answer|}}
-    {{student-matching-answer answer=answer selectedSection=selectedSection }}
-    {{/each}}
+    <div id="student-matching">
+      {{#each answers as |answer|}}
+        {{student-matching-answer answer=answer selectedSection=selectedSection }}
+      {{/each}}
+    </div>
+
   </nav>
 </section>
 
 
 <button {{action "formatAnswers"}}>Continue</button>
+{{#if matchingStudentsError}}
+  <p>Please assign a student to all images.</p>
+{{/if}}
 

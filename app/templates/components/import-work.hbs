@@ -9,7 +9,7 @@
           <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
       <br>
       {{#if isCreatingNewProblem}}
-          {{problem-new selectedProblem = selectedProblem}}
+          {{problem-new store=store createdProblem= selectedProblem}}
       {{/if}}
       {{/unless}}
       <br>
@@ -20,7 +20,7 @@
         {{#unless selectedSection}}
           <p>Or create a new section <button {{action "toggleNewSection"}}>+</button> </p>
             {{#if isCreatingNewSection}}
-              {{section-new selectedSection = selectedSection}}
+              {{section-new store=store selectedSection = selectedSection}}
             {{/if}}
         {{/unless}}
       {{/if}}
@@ -34,6 +34,12 @@
     {{/if}}
     {{/unless}}
   </section>
+  <section class="third import">
+    <p>Selected Problem: {{selectedProblem.title}} </p>
+    <br>
+    <p>Selected Section: {{selectedSection.name}}</p>
+    <br>
+    </section>
 
 
   {{#if isMatchingStudents}}
