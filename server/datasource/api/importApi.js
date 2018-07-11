@@ -52,7 +52,13 @@ const postImport = async function(req, res, next) {
 
     try {
       let image = await models.Image.findById(imageId);
-      sub.longAnswer = `<img src="${image.data}" alt="${imageAlt}">`;
+      if (image.mimetype === 'application/pdf') {
+        sub.longAnswer = image.data;
+        sub.isPdf = true;
+      } else {
+        sub.longAnswer = `<img src="${image.data}" alt="${imageAlt}">`;
+        sub.isPdf = false;
+      }
     }catch(err) {
       console.log(err);
     }
