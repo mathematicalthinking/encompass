@@ -5,6 +5,8 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   text: DS.attr('string'),
   imageUrl: DS.attr('string'),
   sourceUrl: DS.attr('string'),
+  imageData: DS.attr('string'),
+  imageId: DS.attr('string'),
   additionalInfo: DS.attr('string'),
   isPublic: DS.attr('boolean', {
       defaultValue: false
