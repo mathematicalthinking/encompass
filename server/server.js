@@ -112,12 +112,17 @@ server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 //MULTER CONFIG
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: multerMw.buildDestination,
+//     filename: multerMw.filename
+//   }),
+//     fileFilter: multerMw.fileFilter
+// });
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: multerMw.buildDestination,
-    filename: multerMw.filename
-  }),
-    fileFilter: multerMw.fileFilter
+  storage: multer.memoryStorage(),
+  fileFilter: multerMw.fileFilter
 });
 
 // // IMAGE UPLOAD
@@ -214,6 +219,7 @@ server.post({
   path: '/api/newWorkspaceRequests',
 }, api.post.newWorkspaceRequest);
 
+server.post('/api/import', api.post.import);
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
 
 // //server.use(function (req, res, next) {
