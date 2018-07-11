@@ -1,7 +1,8 @@
 Encompass.StudentMatchingComponent = Ember.Component.extend({
   matchingStudentsError: null,
   actions: {
-    formatAnswers: function() {
+    reviewAnswers: function() {
+      console.log('reviewingAnswers');
       let studentDropdowns = this.$('#student-matching select');
       for (let select of studentDropdowns) {
         if (Ember.isEmpty(select.value)) {
@@ -9,8 +10,10 @@ Encompass.StudentMatchingComponent = Ember.Component.extend({
           return;
         }
       }
-      this.get('uploadAnswers')();
+      console.log('getting reviewSubmissions');
+      this.get('reviewSubmissions')();
     }
-  }
+  },
+
 
 });
