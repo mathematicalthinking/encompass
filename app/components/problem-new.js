@@ -46,7 +46,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           that.set('uploadResults', res.images);
           // currently allowing multiple images to be uploaded but only saving
           // the first image url as the image in the problem doc
-          createProblemData.set('imageUrl', res.images[0].relativePath);
+          createProblemData.set('imageId', res.images[0]._id);
           createProblemData.save()
             .then((prob) => {
               that.set('createdProblem', prob);
