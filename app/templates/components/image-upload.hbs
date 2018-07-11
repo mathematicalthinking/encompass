@@ -1,6 +1,8 @@
 <form enctype="multipart/form-data">
    <input multiple="true" onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
+   {{#unless hideSubmit}}
    <input type="submit" value="Upload Images" {{action "uploadImages"}}/>
+   {{/unless}}
 </form>
 
   {{#if uploadResults}}
