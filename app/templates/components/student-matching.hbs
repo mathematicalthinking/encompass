@@ -22,9 +22,9 @@
 
   </nav>
 </section>
-
-
-<button {{action "formatAnswers"}}>Continue</button>
+<p>Please click continue to review your submissions.</p>
+<button {{action "reviewAnswers"}}>Continue</button>
+{{!-- <button {{action "formatAnswers"}}>Continue</button> --}}
 {{#if matchingStudentsError}}
   <p>Please assign a student to all images.</p>
 {{/if}}
