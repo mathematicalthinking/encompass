@@ -10,6 +10,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
   answers: null,
   uploadedAnswers: null,
   uploadedSubmissions: null,
+  createdWorkspace: null,
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     var problem = this.get('selectedProblem');
@@ -118,6 +119,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
         })
         .then((res) => {
           that.set('createdWorkspace', res);
+          // should we redirect to workspaces list or workspace page?
+          console.log('sending Action');
+          that.sendAction('toWorkspaces');
         })
         .catch((err) => {
           console.log(err);
