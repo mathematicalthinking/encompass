@@ -1,6 +1,6 @@
 <ul class="listing">
   <li>
-          <img src={{answer.explanation.relativePath}} style="width:128px;height:128px;">
+          <img src={{answer.explanation.data}} style="width:128px;height:128px;">
 
   </li>
   {{my-select assignedAnswer=answer content=selectedSection.students optionLabelPath="username" prompt="Please assign the correct student" action=(action "updateAnswer") }}
