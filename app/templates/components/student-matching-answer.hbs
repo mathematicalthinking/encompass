@@ -1,8 +1,13 @@
 <ul class="listing">
   <li>
-          <img src={{answer.explanation.data}} style="width:128px;height:128px;">
-
+    {{#if isPdf}}
+      <object data="{{answer.explanation.data}}" type="application/pdf">
+        <embed src="{{answer.explanation.data}}" type="application/pdf" height="100%" width="100%">
+      </object>
+    {{else}}
+      <img src={{answer.explanation.data}} style="width:128px;height:128px">
+    {{/if}}
   </li>
   {{my-select assignedAnswer=answer content=selectedSection.students optionLabelPath="username" prompt="Please assign the correct student" action=(action "updateAnswer") }}
   <p>selected student: {{assignedStudent.username}}</p>
-      </ul>
+</ul>
