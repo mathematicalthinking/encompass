@@ -11,6 +11,14 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   isPublic: DS.attr('boolean', {
       defaultValue: false
   }),
+  isPdf: function() {
+    var imageData = this.get('imageData');
+    if (imageData) {
+      var ix = imageData.indexOf('base64');
+      var str = imageData.slice(0, ix);
+      return str.includes('pdf');
+    }
+  }.property('imageData'),
 // categories: DS.hasMany('category', {
 //     async: true
   // }),

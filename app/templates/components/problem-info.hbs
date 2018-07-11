@@ -29,13 +29,15 @@
   <p>Problem Name: {{problem.title}}</p>
 <p>problem Question: {{problem.text}}</p>
 {{#if problem.imageData}}
-<p>Problem Image: </p>
-<img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
-
-<object data="{{problem.imageData}}" type="application/pdf">
-  <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-</object>
+  <p>Problem Image: </p>
+  {{#if problem.isPdf}}
+    <object data="{{problem.imageData}}" type="application/pdf">
+      <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+    </object>
+  {{else}}
+    <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
   {{/if}}
+{{/if}}
   <p>Public? {{problem.isPublic}}</p>
   <p>Creation Date: {{problem.createDate}}</p>
   {{#if canEdit}}
