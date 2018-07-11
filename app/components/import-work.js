@@ -8,7 +8,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
   uploadedFiles: null,
   isMatchingStudents: null,
   answers: null,
-  uploadResults: null,
+  uploadedAnswers: null,
+  uploadedSubmissions: null,
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     var problem = this.get('selectedProblem');
@@ -45,8 +46,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       images.forEach((image) => {
         let ans = {};
         ans.explanation = image;
-        ans.problemId = this.get('selectedProblem').id;
-        ans.sectionId = this.get('selectedSection').id;
+        ans.problem = this.get('selectedProblem');
+        ans.section = this.get('selectedSection');
         ans.isSubmitted = true;
         answers.push(ans);
       });
@@ -58,27 +59,72 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       console.log('uploading Answers');
       var answers = this.get('answers');
       var that = this;
-      console.log('answers', answers);
-      var uploads = Promise.all(answers.map((answer) => {
-        answer.explanation = answer.explanation.relativePath;
-
+      let subs;
+      return Promise.all(answers.map((answer) => {
+        answer.explanation = answer.explanation._id;
         let ans = that.store.createRecord('answer', answer);
-        ans.set('sectionId', that.get('selectedSection'));
-        ans.set('problemId', that.get('selectedProblem'));
+        ans.set('section', that.get('selectedSection'));
+        ans.set('problem', that.get('selectedProblem'));
         return ans.save();
-      }));
+      }))
+        .then((res) => {
+        that.set('uploadedAnswers',res);
+        subs = res.map((ans) => {
+          //const teachers = {};
+          const clazz = {};
+          const publication = {
+            publicationId: null,
+            puzzle: {}
+          };
+          const creator = {};
+          const teacher = {};
 
-      return Promise.resolve(uploads).then((res) => {
-        console.log('res', res);
-        that.set('uploadResults',res);
 
-        //TODO: create submissions from answers
+          const student = ans.get('student');
+          const section = ans.get('section');
+          const problem = ans.get('problem');
+
+          publication.puzzle.title = problem.get('title');
+          publication.puzzle.problemId = problem.get('problemId');
+
+          creator.studentId = student.get('userId');
+          creator.username = student.get('username');
+
+          clazz.sectionId = section.get('sectionId');
+          clazz.name = section.get('name');
+
+          const teachers = section.get('teachers');
+          const primaryTeacher = teachers.get('firstObject');
+
+
+          teacher.id = primaryTeacher.get('userId');
+          let sub = {
+            longAnswer: ans.get('explanation'),
+            answer: ans.get('answerId'),
+            clazz: clazz,
+            creator: creator,
+            teacher: teacher,
+            publication: publication
+          };
+          return sub;
+        });
+        let postData = {
+          "subs": JSON.stringify(subs)
+        };
+        console.log('subs', subs);
+         Ember.$.post({
+          url: 'api/import',
+          data: postData
+        })
+        .then((res) => {
+          that.set('createdWorkspace', res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       });
     }
 
-    // updateAnswer: function(user) {
-    //   console.log('user in updateAnswer: ', user);
-    // }
 
   }
 });
