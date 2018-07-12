@@ -53,6 +53,16 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
         this.set('isCreatingNewProblem', false);
       }
     },
+
+    editImportDetail: function(detailName) {
+      console.log('detailName', detailName);
+      if (!detailName || typeof detailName !== 'string') {
+        return;
+      }
+      //var prop = this.get(detailName);
+      this.set(detailName, null);
+    },
+
     loadStudentMatching: function() {
       this.set('isMatchingStudents', true);
       var images = this.get('uploadedFiles');

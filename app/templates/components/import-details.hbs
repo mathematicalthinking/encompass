@@ -1,19 +1,34 @@
-<section class="import-details half">
+<div>
   <h2>Import Details</h2>
-  <div class="half">
+  <div>
     <table class="values rows">
       <tr>
         <th>Problem</th>
-        <td><span class="problem title ">{{selectedProblem.title}}</span></td>
+        <td>
+          <span class="problem title ">{{selectedProblem.title}}</span>
+          {{#if selectedProblem}}
+            <i {{action "editProblem" 'selectedProblem'}} class="fas fa-pencil-alt"></i>
+          {{/if}}
+        </td>
       </tr>
       <tr>
         <th>Section</th>
-        <td><span class="section name">{{selectedSection.name}}</span></td>
+        <td>
+          <span class="section name">{{selectedSection.name}}</span>
+          {{#if selectedSection}}
+            <i {{action "editProblem" 'selectedSection'}}class="fas fa-pencil-alt"></i>
+          {{/if}}
+        </td>
       </tr>
       <tr>
         <th>Number of Files</th>
-        <td><span class="files number">{{uploadedFiles.length}}</span></td>
+        <td>
+          <span class="files number">{{uploadedFiles.length}}</span>
+          {{#if uploadedFiles.length}}
+            <i {{action "editProblem" 'uploadedFiles'}} class="fas fa-pencil-alt"></i>
+          {{/if}}
+        </td>
       </tr>
     </table>
   </div><!--/half-->
-</section>
+</div>

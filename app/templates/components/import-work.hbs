@@ -1,70 +1,102 @@
 <div class="import-work-page">
   <header>
-  <h2>Import Work</h2>
-  <div class="clear"></div>
-</header>
+    <h2>Import Work</h2>
+    <div class="clear"></div>
+  </header>
 <br>
+{{!-- Show help message only if on problem/ section selection phase --}}
 {{#if onStepOne}}
-<div>
-  <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and section that this set of student work belongs to. If you have not already created the problem or section on Encompass, you can create it here.</p>
-  <br>
-</div>
+  <div>
+    <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and section that this set of student work belongs to. If you have not already created the problem or section on Encompass, you can create it here.</p>
+    <br>
+  </div>
 {{/if}}
 
-<section class="importWork">
-  <section class="third import">
-      {{#if onStepOne}}
-        <p>Please select a problem</p>
-        <br>
-        {{my-select selectedProblem = selectedProblem content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
-        <br>
-        {{#unless selectedProblem}}
-            <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
-        <br>
-        {{#if isCreatingNewProblem}}
-            {{problem-new store=store createdProblem= selectedProblem}}
-        {{/if}}
-        {{/unless}}
-        <br>
-        {{#if selectedProblem }}
-          <p>Please select a section</p>
-              <br>
-              {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
-          {{#unless selectedSection}}
-            <p>Or create a new section <button {{action "toggleNewSection"}}>+</button> </p>
-              {{#if isCreatingNewSection}}
-                {{section-new store=store selectedSection = selectedSection}}
-              {{/if}}
-          {{/unless}}
-        {{/if}}
-      {{#if selectedSection}}
-        <p>Please choose files to upload</p>
-          {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
-      {{/if}}
-        <br>
-      {{#if readyToMatchStudents}}
-        <p>Please click continue to proceed to student matching.</p>
-        <button {{action "loadStudentMatching"}}>Continue</button>
-      {{/if}}
-    {{/if}}
-  </section>
+<div class="import-page">
+  <div class="import-details">
+    {{import-details selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles editImportDetail=(action "editImportDetail")}}
+  </div>
 
-  {{import-details selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles}}
+  {{#if onStepOne}}
+    <div class="import-prep">
+      {{#unless selectedProblem}}
+        <div class="import-prep-problem">
+          <div class="import-select">
+            <p>Please select a problem</p>
+            <br>
+            {{my-select selectedProblem = selectedProblem content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
+            <br>
+          </div>
+
+          <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
+          <br>
+          {{#if isCreatingNewProblem}}
+            <div class="form-problem">
+              {{problem-new store=store createdProblem= selectedProblem}}
+            </div>
+          {{/if}}
+        </div>
+      {{/unless}}
+      <br>
+
+    {{#if selectedProblem}}
+      {{#unless selectedSection}}
+        <div class="import-prep-section">
+          <div class="import-select">
+            <p>Please select a section</p>
+            <br>
+            {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+          </div>
+          <p>Or create a new section <button {{action "toggleNewSection"}}>+</button></p>
+          {{#if isCreatingNewSection}}
+            <div class="form-section">
+              {{section-new store=store selectedSection = selectedSection}}
+            </div>
+            {{/if}}
+        </div>
+      {{/unless}}
+    {{/if}}
+
+    {{#if selectedSection}}
+      {{#unless readyToMatchStudents}}
+        <div class="import-prep-files">
+          <p>Please choose files to upload</p>
+          <div class="form-file">
+            {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
+          </div>
+        </div>
+      {{/unless}}
+    {{/if}}
+
+    <br>
+
+      {{#if readyToMatchStudents}}
+        <div class="continue-to-matching">
+          <p>Please click continue to proceed to student matching.</p>
+          <button {{action "loadStudentMatching"}}>Continue</button>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
 
   {{#if isMatchingStudents}}
-    {{student-matching selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
+    <div class="import-matching">
+      {{student-matching selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
+    </div>
   {{/if}}
 
-  {{#if isReviewingSubmissions}}
-    {{import-review-answers answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
-  {{/if}}
+    {{#if isReviewingSubmissions}}
+      <div class="import-review">
+        {{import-review-answers answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
+      </div>
+    {{/if}}
 
-  {{#if uploadedSubmissions}}
-    <p>uploaded {{uploadedSubmissions.length}} submissions successfully</p>
-  {{/if}}
+    {{#if uploadedSubmissions}}
+      <p>uploaded {{uploadedSubmissions.length}} submissions successfully</p>
+    {{/if}}
 
-  {{#if uploadError}}
-    <p class="error-message">{{uploadError}}</p>
-  {{/if}}
-</section>
+    {{#if uploadError}}
+      <p class="error-message">{{uploadError}}</p>
+    {{/if}}
+  </div>
 </div>
