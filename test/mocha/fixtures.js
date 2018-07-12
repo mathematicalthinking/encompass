@@ -83,7 +83,7 @@ module.exports = {
   user: {
     _id: '529518daba1cd3d8c4013344',
     validUser: {
-      username: 'testUser2',
+      username: 'testUser3',
     },
   },
   folder: {

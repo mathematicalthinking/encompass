@@ -86,7 +86,7 @@ describe('User CRUD operations', function() {
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.user).to.have.any.keys('username');
-        expect(res.body.user.username).to.eql('testUser2');
+        expect(res.body.user.username).to.eql('testUser3');
         done();
       });
     });
