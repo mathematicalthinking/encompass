@@ -15,6 +15,10 @@
   font-family: $primary-font;
 }
 
+.import-nav {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
 .error-message {
   @include error-message;
   margin: 20px 0 20px 0;
@@ -22,21 +26,86 @@
 
 .import-prep {
   width: 500px;
-  margin-top: 40px;
+  margin-top: 20px;
+  margin-left: 10px;
   background-color: white;
   box-shadow: $box-shadow;
+  padding: 5px;
 
   .import-select{
     margin-bottom: 10px;
 
     select {
       margin-bottom: 5px;
+      margin-left: 10px;
     }
+  }
+
+  .proceed {
+    button {
+      padding: 5px;
+    }
+  }
+  p {
+    padding: 5px;
   }
 }
 
 .import-details {
   width: 400px;
+  margin-left: 10px;
+  margin-bottom: 25px;
   background-color: white;
   box-shadow: $box-shadow;
+  padding: 5px;
 }
+
+.matching-wrapper {
+  display: flex;
+  width: 800px;
+}
+.student-list-container {
+  flex: 0 0 auto;
+  width: 300px;
+  margin-top: 20px;
+  margin-left: 10px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+
+  .student-list {
+    overflow: auto;
+
+    li {
+      font-size: 1em;
+      padding: 10px 0;
+      margin: 0 auto;
+      color: lighten($primary-font-color, 25);
+    }
+  }
+}
+
+.submissions-container {
+  flex: 1;
+  width: 500px;
+  margin-top: 20px;
+  margin-left: 10px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+
+  .submissions-list {
+    overflow: auto;
+    .student-matching {
+      .proceed {
+        button {
+          padding: 5px;
+        }
+      }
+      p {
+        padding: 5px;
+      }
+    }
+  }
+}
+

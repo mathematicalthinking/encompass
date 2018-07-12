@@ -1,31 +1,37 @@
-<p>Before we can create submissions, we need to know who authored each uploaded piece of work. You can select any student that currently exists in your selected section from the dropdown menu.</p>
-<br>
-<section>
-  <nav class="users actions listing al_vertical_stretch">
-    <h2>{{selectedSection.name}}</h2>
-    <ul class="listing">
-      {{#each selectedSection.students as |student|}}
-        <li>{{student.username}}</li>
-      {{/each}}
-    </ul>
-  </nav>
-</section>
-
-<section>
-  <nav class="users actions listing al_vertical_stretch">
-    <h2>Student Submissions</h2>
-    <div id="student-matching">
-      {{#each answers as |answer|}}
-        {{student-matching-answer answer=answer selectedSection=selectedSection }}
-      {{/each}}
+<div class="student-matching">
+  <p>Before we can create submissions, we need to know who authored each uploaded piece of work. You can select any student that currently exists in your selected section from the dropdown menu.</p>
+  <br>
+<div class="matching-wrapper">
+  <div class="student-list-container">
+    <div class="student-list">
+      <h2>{{selectedSection.name}}</h2>
+      <ul class="student-list">
+        {{#each selectedSection.students as |student|}}
+          <li>{{student.username}}</li>
+        {{/each}}
+      </ul>
     </div>
+  </div>
 
-  </nav>
-</section>
-<p>Please click continue to review your submissions.</p>
-<button {{action "reviewAnswers"}}>Continue</button>
+  <div class="submissions-container">
+    <div class="submissions-list">
+      <h2>Student Submissions</h2>
+      <div class="student-matching">
+        {{#each answers as |answer|}}
+          {{student-matching-answer answer=answer selectedSection=selectedSection }}
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="proceed">
+  <p>Please click continue to review your submissions.</p>
+  <button {{action "reviewAnswers"}}>Continue</button>
+</div>
 {{!-- <button {{action "formatAnswers"}}>Continue</button> --}}
 {{#if matchingStudentsError}}
   <p class="error-message">Please assign a student to all images.</p>
 {{/if}}
+</div>
+
 

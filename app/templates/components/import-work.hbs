@@ -13,10 +13,12 @@
 {{/if}}
 <nav class="import-nav">
   {{#unless isSelectingImportDetails}}
+    {{#unless uploadedSubmissions}}
     <div {{action "backToPrevStep" prevStep}} class="back">
       <i class="fas fa-arrow-left"></i>
-      <label for="back">Back to {{prevStep}}</label>
+        <label for="back">Back to {{prevStep}}</label>
     </div>
+    {{/unless}}
   {{/unless}}
 </nav>
 
@@ -79,7 +81,7 @@
     <br>
 
       {{#if readyToMatchStudents}}
-        <div class="continue-to-matching">
+        <div class="proceed">
           <p>Please click continue to proceed to student matching.</p>
           <button {{action "loadStudentMatching"}}>Continue</button>
         </div>
@@ -100,7 +102,9 @@
     {{/if}}
 
     {{#if uploadedSubmissions}}
-      <p>uploaded {{uploadedSubmissions.length}} submissions successfully</p>
+      <div class="upload-results">
+        <p class="success-message">uploaded {{uploadedSubmissions.length}} submissions successfully</p>
+      </div>
     {{/if}}
 
     {{#if uploadError}}
