@@ -43,7 +43,11 @@ describe('Problems', function() {
       await helpers.findAndClickElement(driver, css.topBar.problems);
     });
     it('should display a user\'s problems', async function() {
+<<<<<<< HEAD
       let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
+=======
+      let problems = await helpers.getWebElements(driver, 'ul.listing > li');
+>>>>>>> Modify expected # of problems
       expect(problems).to.have.lengthOf(2);
       expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
     });
