@@ -8,9 +8,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   teachers: [],
   invalidTeacherUsername: null,
 
-  isAddStudents: 0,
-  isAddStudent: Ember.computed.equal('isAddStudents', 0),
-  isNotAddStudent: Ember.computed.equal('isAddStudents', 1)
+  isAddStudents: false,
+
 
   //Non admin User creating section
   didInsertElement: function () {

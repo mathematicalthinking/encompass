@@ -2,6 +2,8 @@
   <h2>Create New Section</h2>
   <div class="clear"></div>
 </header>
+
+
  <fieldset>
   <section class="newSection">
     <section class="third sections">
@@ -49,49 +51,30 @@
       {{!-- option to add students when creating section --}}
       <section>
         <label for="isAddStudents">Add Students?</label>
-        {{input type="radio" name="isAddStudents" class="isAddStudent" click="radioSelect"}}
+        {{input type="checkbox" checked=isAddStudents
+        name="isAddStudents" class="isAddStudent" }}
         <label>Yes</label>
-        {{input type="radio" name="isAddStudents" class="isNotAddStudent" value="false" click=(action "radioSelect" false checked="checked")}}
-        <label>No</label>
+
       </section>
 
 
-        {{#if isAddStudent}}
-          {{!-- add students to section --}}
-            <form id='section' class='properForm'>
+        {{#if isAddStudents}}
+           <form id='section' class='properForm'>
               <div style="clear: left"></div>
               <h2>Members List</h2>
                 <ol>
                   {{!-- <label for="title"> Students</label> --}}
                   <li>
                     {{input id="text" type="text" value=newStudent placeholder="enter student user name"}}
-                    {{!-- <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
+                   <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
                       Add Student
-                    </button> --}}
+                    </button>
                   </li>
                 </ol>
             </form>
         {{/if}}
 
-        {{!-- submit button to add a new section --}}
-        <section>
-            {{!-- add students to section --}}
-            <div style="clear: left"></div>
-            <h2>Members List</h2>
-            <section class="fourth sections">
-                  <form id='section' class='properForm'>
-                <ol>
-                    {{!-- <label for="title"> Students</label> --}}
-                  <li>
-                    {{input id="text" type="text" value=newStudent placeholder="enter student user name"}}
-                      <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
-                        Add Student
-                      </button>
-                  </li>
-                </ol>
-              </form>
-            </section>
-        </section>
+
   </section>
 </fieldset>
 
