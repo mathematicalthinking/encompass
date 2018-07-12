@@ -2,86 +2,107 @@
   <h2>Create New Section</h2>
   <div class="clear"></div>
 </header>
-
-<section class="newSection">
-  <section class="third sections">
-    <form id='section' class='properForm'>
-      <fieldset>
+ <fieldset>
+  <section class="newSection">
+    <section class="third sections">
+      <form id='section' class='properForm'>
         <ol>
           <li>
             <label for="title">Class/Group Names</label>
             {{input id="title" type="text" value=newSectionName placeholder="enter class/group name"}}
-
-           <label for="text">Teacher/Leader</label>
-          {{#if user.isAdmin}}
-            {{input id="teacher" type="text" value=teacher placeholder="username" action="checkError" on="key-down"}}
-            {{else}}
-             {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}}
-            {{/if}}
-          {{#if invalidTeacherUsername}}
-          <p>Sorry, there is no teacher with that username.</p>
-          {{/if}}
-
-            <label for="categories">Organization  </label>
+              <label for="text">Teacher/Leader</label>
+                {{#if user.isAdmin}}
+                {{input id="teacher" type="text" value=teacher placeholder="username" action="checkError" on="key-down"}}
+                {{else}}
+                {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}}
+                {{/if}}
+                {{#if invalidTeacherUsername}}
+                <p>Sorry, there is no teacher with that username.</p>
+                {{/if}}
+              <label for="categories">Organization  </label>
             {{input id="categories" type="text" value=schoolName placeholder="enter organization"}}
-
           </li>
         </ol>
-      </fieldset>
-    </form>
-  </section><style>input {margin: 15px;}</style>
+      </form>
+    </section><style>input {margin: 15px;}</style>
   <div class="clear"></div>
 
-{{!-- submit button to add a new section --}}
+
+
+
+      {{!-- verify if section successfully created --}}
+      {{#if createdSection}}
+        <p>Successfully created section
+          {{#link-to 'section' createdSection  classNames='section'}}{{sectionId}}
+          {{/link-to}}</p>
+      {{else}}
+        <p>{{createSectionError}}</p>
+        {{/if}}
+
+
+      <section>
+        {{!-- creat space between buttons --}}
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+      </section>
+
+      {{!-- option to add students when creating section --}}
+      <section>
+        <label for="isAddStudents">Add Students?</label>
+        {{input type="radio" name="isAddStudents" class="isAddStudent" click="radioSelect"}}
+        <label>Yes</label>
+        {{input type="radio" name="isAddStudents" class="isNotAddStudent" value="false" click=(action "radioSelect" false checked="checked")}}
+        <label>No</label>
+      </section>
+
+
+        {{#if isAddStudent}}
+          {{!-- add students to section --}}
+            <form id='section' class='properForm'>
+              <div style="clear: left"></div>
+              <h2>Members List</h2>
+                <ol>
+                  {{!-- <label for="title"> Students</label> --}}
+                  <li>
+                    {{input id="text" type="text" value=newStudent placeholder="enter student user name"}}
+                    {{!-- <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
+                      Add Student
+                    </button> --}}
+                  </li>
+                </ol>
+            </form>
+        {{/if}}
+
+        {{!-- submit button to add a new section --}}
+        <section>
+            {{!-- add students to section --}}
+            <div style="clear: left"></div>
+            <h2>Members List</h2>
+            <section class="fourth sections">
+                  <form id='section' class='properForm'>
+                <ol>
+                    {{!-- <label for="title"> Students</label> --}}
+                  <li>
+                    {{input id="text" type="text" value=newStudent placeholder="enter student user name"}}
+                      <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
+                        Add Student
+                      </button>
+                  </li>
+                </ol>
+              </form>
+            </section>
+        </section>
+  </section>
+</fieldset>
+
+ {{!-- submit button to add a new section --}}
+  <section>
+    {{!-- creat space between buttons --}}
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+  </section>
   <section class="submit">
     <button class="action_button" {{action 'createSection'}} style="margin-right: 30px">
       Create Section
     </button>
   </section>
-
- {{!-- verify if section successfully created --}}
-{{#if createdSection}}
-  <p>Successfully created section
-     {{#link-to 'section' createdSection  classNames='section'}}{{sectionId}}
-    {{/link-to}}</p>
- {{else}}
-  <p>{{createSectionError}}</p>
-  {{/if}}
-
-
-<section>
-  {{!-- creat space between buttons --}}
-  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-</section>
-
-{{!-- add students to section --}}
-  {{!-- <div style="clear: left"></div>
-        <h2>Members List</h2>
-    <section class="fourth sections">
-    <form id='section' class='properForm'>
-      <fieldset>
-        <ol>
-            <label for="title">New Student Username</label>
-          <li>
-            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
-          </li>
-          <li>
-            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
-          </li>
-          <li>
-            {{input id="text" type="text" value=newStudent placeholder="enter user name"}}
-          </li>
-        </ol>
-      </fieldset>
-    </form>
-  </section> --}}
-
-
-{{!-- submit button to add a new section --}}
-  <section class="submit">
-    <button class="action_button" {{action 'createStudents'}} style="margin-right: 30px">
-      Add Students
-    </button>
-  </section>
-
-</section>

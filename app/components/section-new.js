@@ -8,6 +8,10 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   teachers: [],
   invalidTeacherUsername: null,
 
+  isAddStudents: 0,
+  isAddStudent: Ember.computed.equal('isAddStudents', 0),
+  isNotAddStudent: Ember.computed.equal('isAddStudents', 1)
+
   //Non admin User creating section
   didInsertElement: function () {
     var user = this.get('user');
@@ -20,8 +24,22 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
 
   actions: {
+    radioSelect: function (value) {
+      console.log('value', value);
+      this.set('isAddStudents', value);
+    },
+
+    addNewStudents: function() {
+      var addNewStudent = this.get('isAddStudent');
+
+      Ember.run(function() {
+        if(addNewStudent) { addStudent.send('addStudent'); }
+      });
+    },
+
   createSection: function () {
     var that = this;
+    var isAddStudents = that.get('isAddStudents');
     var newSectionName = this.get('newSectionName');
     var sectionId = this.get('sectionId');
     var schoolName = this.get('schoolName');
@@ -48,7 +66,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var sectionData = this.store.createRecord('section', {
       name: newSectionName,
       sectionId: sectionId,
-      schoolId: schoolName
+      schoolId: schoolName,
+      isAddStudents: isAddStudents
     });
 
     for (let teacher of teachers) {
@@ -68,5 +87,12 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.set('invalidTeacherUsername', false);
     }
   }
+
+  addStudent: function() {
+
+  }
+
+
 }
 });
+
