@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.responses"}],"uuid":"e9ebeef98a2b407e962c66076545f910"}
+=======
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.responses"}],"uuid":"daf83f97b0dd48418d5b310b808e3621"}
+>>>>>>> Modify test database
