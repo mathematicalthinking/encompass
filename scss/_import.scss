@@ -1,0 +1,21 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+// GENERAL STYLING
+.import-page {
+  background-color: $background-color;
+  width: 100%;
+  font-family: $primary-font;
+}
+
+.import-work-page {
+  background-color: $background-color;
+  width: 100%;
+  font-family: $primary-font;
+}
+
+.error-message {
+  @include error-message;
+  margin: 20px 0 20px 0;
+}
