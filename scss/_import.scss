@@ -19,3 +19,24 @@
   @include error-message;
   margin: 20px 0 20px 0;
 }
+
+.import-prep {
+  width: 500px;
+  margin-top: 40px;
+  background-color: white;
+  box-shadow: $box-shadow;
+
+  .import-select{
+    margin-bottom: 10px;
+
+    select {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.import-details {
+  width: 400px;
+  background-color: white;
+  box-shadow: $box-shadow;
+}
