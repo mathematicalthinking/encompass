@@ -3,7 +3,7 @@ Encompass.StudentMatchingComponent = Ember.Component.extend({
   actions: {
     reviewAnswers: function() {
       console.log('reviewingAnswers');
-      let studentDropdowns = this.$('#student-matching select');
+      let studentDropdowns = this.$('.student-matching select');
       for (let select of studentDropdowns) {
         if (Ember.isEmpty(select.value)) {
           this.set('matchingStudentsError', true);
