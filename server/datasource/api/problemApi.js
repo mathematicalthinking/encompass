@@ -114,7 +114,7 @@ const postProblem = async function(req, res, next) {
     return utils.sendError.InternalError(err, res);
   }
   problem.createdBy = user;
-  problem.createdDate = Date.now();
+  problem.createDate = Date.now();
   problem.save((err, doc) => {
     if (err) {
       logger.error(err);

@@ -101,7 +101,7 @@ const postImages = async function(req, res, next) {
 
     let img = new models.Image(f);
     img.createdBy = user;
-    img.createdDate = Date.now();
+    img.createDate = Date.now();
     img.data = imgData;
     img.isPdf = isPdf;
     // const ix = img.path.indexOf('image_uploads');
@@ -123,7 +123,7 @@ const postImages = async function(req, res, next) {
 
   // const images = new models.Image(req.body.image);
   // image.createdBy = user;
-  // image.createdDate = Date.now();
+  // image.createDate = Date.now();
   // image.save((err, doc) => {
   //   if (err) {
   //     logger.error(err);
