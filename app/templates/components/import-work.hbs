@@ -5,19 +5,27 @@
   </header>
 <br>
 {{!-- Show help message only if on problem/ section selection phase --}}
-{{#if onStepOne}}
+{{#if isSelectingImportDetails}}
   <div>
     <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and section that this set of student work belongs to. If you have not already created the problem or section on Encompass, you can create it here.</p>
     <br>
   </div>
 {{/if}}
+<nav class="import-nav">
+  {{#unless isSelectingImportDetails}}
+    <div {{action "backToPrevStep" prevStep}} class="back">
+      <i class="fas fa-arrow-left"></i>
+      <label for="back">Back to {{prevStep}}</label>
+    </div>
+  {{/unless}}
+</nav>
 
 <div class="import-page">
   <div class="import-details">
-    {{import-details selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles editImportDetail=(action "editImportDetail")}}
+    {{import-details selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles isSelectingImportDetails=isSelectingImportDetails editImportDetail=(action "editImportDetail")}}
   </div>
 
-  {{#if onStepOne}}
+  {{#if isSelectingImportDetails}}
     <div class="import-prep">
       {{#unless selectedProblem}}
         <div class="import-prep-problem">

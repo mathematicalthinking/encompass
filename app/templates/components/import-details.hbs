@@ -7,7 +7,9 @@
         <td>
           <span class="problem title ">{{selectedProblem.title}}</span>
           {{#if selectedProblem}}
-            <i {{action "editProblem" 'selectedProblem'}} class="fas fa-pencil-alt"></i>
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'selectedProblem'}} class="fas fa-pencil-alt"></i>
+            {{/if}}
           {{/if}}
         </td>
       </tr>
@@ -16,7 +18,9 @@
         <td>
           <span class="section name">{{selectedSection.name}}</span>
           {{#if selectedSection}}
-            <i {{action "editProblem" 'selectedSection'}}class="fas fa-pencil-alt"></i>
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'selectedSection'}}class="fas fa-pencil-alt"></i>
+            {{/if}}
           {{/if}}
         </td>
       </tr>
@@ -25,7 +29,9 @@
         <td>
           <span class="files number">{{uploadedFiles.length}}</span>
           {{#if uploadedFiles.length}}
-            <i {{action "editProblem" 'uploadedFiles'}} class="fas fa-pencil-alt"></i>
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'uploadedFiles'}} class="fas fa-pencil-alt"></i>
+            {{/if}}
           {{/if}}
         </td>
       </tr>

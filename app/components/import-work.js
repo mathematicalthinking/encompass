@@ -15,6 +15,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
   doCreateWorkspace: true,
   isPrivate: true,
   uploadError: null,
+  isSelectingImportDetails: true,
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     var problem = this.get('selectedProblem');
@@ -31,6 +32,19 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
     var uploadedSubmissions = this.get('uploadedSubmissions');
 
     return !isMatchingStudents && !isReviewingSubmissions && !uploadedSubmissions;
+  }),
+
+  prevStep: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', function() {
+    let isMatchingStudents = this.get('isMatchingStudents');
+    let isReviewingSubmissions = this.get('isReviewingSubmissions');
+
+    if (isMatchingStudents) {
+      return 'Import Detail Selection';
+    }
+    if (isReviewingSubmissions) {
+      return 'Student Matching';
+    }
+    return null;
   }),
 
 
@@ -63,7 +77,25 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       this.set(detailName, null);
     },
 
+    backToPrevStep: function(prevStep) {
+      if (!prevStep || typeof prevStep !== 'string') {
+        return;
+      }
+
+      if (prevStep === 'Import Detail Selection') {
+        this.set('isMatchingStudents', false);
+        this.set('isSelectingImportDetails', true);
+        return;
+      }
+      if (prevStep === 'Student Matching') {
+        this.set('isReviewingSubmissions', false);
+        this.set('isMatchingStudents', true);
+        return;
+      }
+    },
+
     loadStudentMatching: function() {
+      this.set('isSelectingImportDetails', false);
       this.set('isMatchingStudents', true);
       var images = this.get('uploadedFiles');
       var answers = [];
