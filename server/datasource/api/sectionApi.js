@@ -29,9 +29,19 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
 */
 
+function accessibleSections(user) {
+  return {
+    $or: [
+      { createdBy: user },
+      { teachers: { $in : [user] } },
+    ],
+    isTrashed: false
+  };
+}
+
 const getSections = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+  const criteria = accessibleSections(user);
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {
