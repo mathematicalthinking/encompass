@@ -1,5 +1,5 @@
-<div class="student-matching">
-  <p>Before we can create submissions, we need to know who authored each uploaded piece of work. You can select any student that currently exists in your selected section from the dropdown menu.</p>
+<div class="student-matching-page">
+  <p class="info">Before we can create submissions, we need to know who authored each uploaded piece of work. You can select any student that currently exists in your selected section from the dropdown menu.</p>
   <br>
 <div class="matching-wrapper">
   <div class="student-list-container">
@@ -18,20 +18,26 @@
       <h2>Student Submissions</h2>
       <div class="student-matching">
         {{#each answers as |answer|}}
-          {{student-matching-answer answer=answer selectedSection=selectedSection }}
+          {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
         {{/each}}
       </div>
     </div>
   </div>
 </div>
 <div class="proceed">
-  <p>Please click continue to review your submissions.</p>
-  <button {{action "reviewAnswers"}}>Continue</button>
+  {{#if isReadyToReviewAnswers}}
+    <p class="instructions">Please click continue to review your submissions.</p>
+    <button {{action "reviewAnswers"}}>Continue</button>
+  {{else}}
+    <p class="instructions">Please ensure all submissions have been assigned a student before proceeding.</p>
+  {{/if}}
 </div>
-{{!-- <button {{action "formatAnswers"}}>Continue</button> --}}
-{{#if matchingStudentsError}}
-  <p class="error-message">Please assign a student to all images.</p>
-{{/if}}
+<div class="error">
+  {{#if matchingStudentsError}}
+    <p class="error-message">Please assign a student to all images.</p>
+  {{/if}}
+</div>
+
 </div>
 
 
