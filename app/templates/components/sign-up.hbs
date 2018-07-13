@@ -36,13 +36,13 @@
     <div class="auth-form-input">
       <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
         {{input class="form-control" type="text" name="requestReason" id="requestReason" value=requestReason action="resetErrors"
-      on="click"}}
+      on="key-down"}}
       {{#if missingCredentials}}
         <p class="error-message">You must complete all of the fields in order to signup.</p>
       {{/if}}
     </div>
     <div id="checkbox">
-      {{input type="checkbox" id="terms" name="terms" checked=agreedToTerms change=(action "toggleCheck")}}
+      {{input type="checkbox" id="terms" name="terms" checked=agreedToTerms change=(action "resetErrors")}}
       <label for="terms">Do you accept our <a href="">Terms and Conditions</a></label>
     </div>
 
