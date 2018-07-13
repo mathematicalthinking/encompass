@@ -104,7 +104,7 @@ describe('Home Page', function () {
         await helpers.findAndClickElement(driver, css.login.submit);
 
         await helpers.waitForSelector(driver, 'a.menu.logout');
-        greeting = await helpers.findAndGetText(driver, '#current-username');
+        logout = await helpers.findAndGetText(driver, '#logout-btn');
         url = await helpers.getCurrentUrl(driver);
       } catch (err) {
         console.log(err);
