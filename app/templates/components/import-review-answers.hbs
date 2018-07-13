@@ -1,36 +1,49 @@
-<p>Please review your submissions to ensure everything is accurate.</p>
-<p>You can either defer creating a workspace until a later date, or we can automatically create a workspace for you from your uploaded submissions</p>
+<div class="import-review-answers-page">
+  <p class="info">Please review your submissions to ensure everything is accurate. You can either defer creating a workspace until a later date, or we can automatically create a workspace for you from your uploaded submissions</p>
 
-<section class=" third review-submissions">
+  <div class="workspace-options">
+  <h3>Workspace Creation Options</h3>
+  <label for="createWorkspace">Automatically create workspace</label>
+  {{input type="checkbox" name="createWorkspace" checked=doCreateWorkspace}}
+
+  <label for="workspaceMode">Make workspace private</label>
+  {{input type="checkbox" name="workspaceMode" checked=isPrivate}}
+
+  <div class="proceed">
+    {{#if doCreateWorkspace}}
+      {{#if isPrivate}}
+        <p>Click submit to create your private workspace.</p>
+    {{else}}
+        <p>Click submit to create your public workspace.</p>
+      {{/if}}
+    {{else}}
+      <p>Click submit to upload your submissions.</p>
+    {{/if}}
+
+    <button {{action "formatAnswers"}}>Submit</button>
+  </div>
+</div>
+
+  <div class="review-answers">
   {{#each answers as |answer|}}
-    <ul>
-      <li>
-        <p>Author: {{answer.student.name}}</p>
-        <p>Image: {{#if answer.explanation.isPdf}}
+    <div class="answer-info">
+      <p>Author: {{answer.student.name}}</p>
+    </div>
+
+        <p>Submission: {{#if answer.explanation.isPdf}}
       <object data="{{answer.explanation.data}}" type="application/pdf">
         <embed src="{{answer.explanation.data}}" type="application/pdf" height="100%" width="100%">
       </object>
     {{else}}
       <img src={{answer.explanation.data}} style="width:128px;height:128px">
     {{/if}}</p>
-      </li>
-    </ul>
-  {{/each}}
-</section>
 
-<section class="third workspace-options">
-  <label for="createWorkspace">Automatically create workspace</label>
-  {{input type="checkbox" name="createWorkspace" checked=doCreateWorkspace}}
-  <label for="workspaceMode">Make workspace private</label>
-  {{input type="checkbox" name="workspaceMode" checked=isPrivate}}
-  {{#if doCreateWorkspace}}
-    {{#if isPrivate}}
-      <p>Create private workspace.</p>
-    {{else}}
-      <p>Create public workspace.</p>
-    {{/if}}
-  {{else}}
-  <p>Upload submissions.</p>
-  {{/if}}
-  <button {{action "formatAnswers"}}>Submit</button>
-</section>
+
+  {{/each}}
+</div>
+
+
+</div>
+
+
+
