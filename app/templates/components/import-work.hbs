@@ -68,13 +68,15 @@
     {{/if}}
 
     {{#if selectedSection}}
-      {{#unless readyToMatchStudents}}
-        <div class="import-prep-files">
-          <p>Please choose files to upload</p>
-          <div class="form-file">
-            {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
+      {{#unless uploadedFiles}}
+        {{#unless readyToMatchStudents}}
+          <div class="import-prep-files">
+            <p>Please choose files to upload</p>
+            <div class="form-file">
+              {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
+            </div>
           </div>
-        </div>
+        {{/unless}}
       {{/unless}}
     {{/if}}
 
