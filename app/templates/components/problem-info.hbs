@@ -1,12 +1,12 @@
 <p>Problem Name: {{problem.title}}</p>
 <p>problem Question: {{problem.text}}</p>
 {{#if problem.imageUrl}}
-<p>Problem Image: </p>
-<img src="{{{problem.imageUrl}}}" alt={{{problem.title}}} />
+  <p>Problem Image: </p>
+  <img src="{{{problem.imageUrl}}}" alt={{{problem.title}}} />
 
-<object data="{{problem.imageUrl}}" type="application/pdf">
-  <embed src="{{problem.imageUrl}}" type="application/pdf" height="100%" width="100%">
-</object>
+  <object data="{{problem.imageUrl}}" type="application/pdf">
+    <embed src="{{problem.imageUrl}}" type="application/pdf" height="100%" width="100%">
+  </object>
 
 {{/if}}
 
