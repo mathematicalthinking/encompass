@@ -2,7 +2,7 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   name: DS.attr('string'),
   userId: Ember.computed.alias('id'),
   email: DS.attr('string'),
-  organization: DS.attr('string'),
+  organization: DS.belongsTo('organization'),
   location: DS.attr('string'),
   username: DS.attr('string'),
   password: DS.attr('string'),

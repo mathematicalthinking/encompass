@@ -55,7 +55,7 @@ var UserSchema = new Schema({
   key: String,
   password: String,
   forcePwdChg: Boolean,
-  organization: String,
+  organization: {type: ObjectId, ref: 'Organization'},
   location: String,
   requestReason: String,
   authSource: String,
