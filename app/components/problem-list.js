@@ -1,41 +1,32 @@
 Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  myProblemsOnly: [],
-  showMyProblems: null,
-
 
   init: function () {
     this._super(...arguments);
     this.set('showMyProblems', true);
-    console.log('init ran');
     this.publicProblems();
-    // this.filteredProblems();
+    this.filteredProblems();
   },
 
+  // This sorts all the problems in the database and returns only the ones that are public
   publicProblems: function () {
     var problems = this.problems;
-    problems = problems.filterBy('isPublic', true);
-    console.log('problems', problems);
-    return problems;
+    var publicProblems = problems.filterBy('isPublic', true);
+    console.log('public problems', publicProblems);
+    return publicProblems;
   },
 
-  // filter problem list by username
+  // This displays only the problems beloging to the current user
   filteredProblems: function () {
-    // var filtered = this.problems.filterBy('createdBy');
-    var filtered = this.problems;
-    // console.log('problems', this.problems);
-    // console.log('filtered comments ran');
-    console.log('filtered =', filtered);
-    console.log(this.get('currentUser'));
+    var problems = this.problems;
+    console.log('All problems =', problems);
+    var currentUser = this.get('currentUser');
+    console.log('currentUser =', currentUser);
+    var userId = currentUser.id;
+    console.log('currentUserId =', userId);
 
-    if (this.showMyProblems) {
-      filtered = filtered.filterBy('createdBy', this.get('currentUser'));
-    }
-    console.log(filtered);
-    return filtered;
+    var yourProblems = problems.filterBy('createdBy', currentUser);
+    console.log('your problems =', yourProblems);
+    return yourProblems;
   }
 
-//We want to sort the Public problems by isPublic true
-
 });
-
-
