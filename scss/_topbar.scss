@@ -35,6 +35,20 @@
   background: url(images/logo-encompass.gif) 0 0 no-repeat;
 }
 
+
+// STYLING FOR THE ENCOMPASS LOGO
+.al_logo {
+  width: 230px;
+  height: 80px;
+  display: block;
+  float: left;
+  position: relative;
+  top: -8px;
+  text-indent: -99999px;
+  background: url(images/logo-encompass.gif) 0 0 no-repeat;
+}
+
+
 // TOP BAR STYLING FOR WHEN LOGGED OUT
 #topbar-unauth {
   font-weight: $bolder-font-weight;
