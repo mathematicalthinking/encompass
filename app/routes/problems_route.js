@@ -4,9 +4,5 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
       problems: this.get('store').findAll('problem'),
       currentUser: this.modelFor('application')
     });
-    // var store = this.get('store');
-    // var problems = store.findAll('problem');
-    // // Filter only problems by current logged in user
-    // return problems;
   }
 });
