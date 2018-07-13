@@ -4,7 +4,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
-  agreedToTerms: null,
+  agreedToTerms: false,
 
   regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
@@ -29,6 +29,8 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
+      //signup
+
       var createUserData = {
         name: name,
         email: email,
@@ -52,25 +54,15 @@ Encompass.SignUpComponent = Ember.Component.extend({
         .catch(console.log);
     },
 
-    toggleCheck() {
-      if (this.agreedToTerms === true) {
-        this.set('agreedToTerms', false);
-      } else if (this.agreedToTerms === false) {
-        this.set('agreedToTerms', true);
-      } else {
-        this.set('agreedToTerms', true);
-      }
-      if (this.get('noTermsAndConditions')) {
-        this.set('noTermsAndConditions', false);
-      }
-    },
-
     resetErrors(e) {
       if (this.get('usernameExists')) {
         this.set('usernameExists', false);
       }
       if (this.get('missingCredentials')) {
         this.set('missingCredentials', false);
+      }
+      if (this.get('noTermsAndConditions')) {
+        this.set('noTermsAndConditions', false);
       }
     },
 
