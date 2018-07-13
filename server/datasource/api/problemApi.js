@@ -28,14 +28,13 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
+// This only returns problems that are public or belong to you
+// Needd to update to handle problems you participate in
 function accessibleProblems(user) {
   return {
-    $or: [{
-        createdBy: user
-      },
-      {
-        isPublic: true
-      }
+    $or: [
+      { createdBy: user},
+      { isPublic: true },
     ],
     isTrashed: false
   };
