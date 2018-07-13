@@ -1,32 +1,41 @@
 Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  yourProblemList: null,
+  // currentUser: null,
 
   // init: function () {
   //   this._super(...arguments);
-  //   //this.set('showMyProblems', true);
-  //   //this.get('publicProblems');
-  //   this.filteredProblems();
+  //   let user = this.get('currentUser');
+  //   this.set('currentUser', user);
   // },
-
-  // This sorts all the problems in the database and returns only the ones that are public
-  publicProblems: Ember.computed(function () {
-    var problems = this.problems;
-    var publicProblems = problems.filterBy('isPublic', true);
-    console.log('public problems', publicProblems);
-    return publicProblems;
-  }),
 
   // This displays only the problems beloging to the current user
   yourProblems: Ember.computed(function () {
     var problems = this.problems;
-    console.log('All problems =', problems);
     var currentUser = this.get('currentUser');
-    console.log('currentUser =', currentUser);
-    var userId = currentUser.get('userId');
-    console.log('currentUserId =', userId);
-
-    var yourProblems = problems.filterBy('userId', 'userId');
-    console.log('your problems =', yourProblems);
+    var yourProblems = problems.filterBy('createdBy.content', currentUser);
+    console.log(currentUser);
+    this.set('yourProblemList', yourProblems);
     return yourProblems;
+  }),
+
+  // This sorts all the problems in the database and returns only the ones that are public
+  publicProblems: Ember.computed(function () {
+    var problems = this.problems;
+    var currentUser = this.get('currentUser');
+    var publicProblems = problems.filterBy('isPublic', true);
+    var yourPublic = publicProblems.filterBy('createdBy.content', currentUser);
+
+    // we want to take the 2 lists and return the difference
+   var validList2 = _.difference(yourPublic, publicProblems);
+   var validList = yourPublic.filter(elem => !publicProblems.includes(elem));
+
+
+    // if a public problem has you as
+    // filter out public problems that are not yours, so its just globally public problems
+    console.log('valid list', validList);
+    return validList;
   })
 
+
 });
+
