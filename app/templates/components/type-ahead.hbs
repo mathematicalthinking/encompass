@@ -1,0 +1,8 @@
+{{#if inputLabel}}
+  <label for={{inputName}}>{{inputLabel}}</label>
+{{/if}}
+{{input type="text" name=inputName id=inputId value=textValue change=(action "onChange")}}
+
+{{#if textValue}}
+  {{my-select content=selectContent action = (action (mut selectedValue))}}
+{{/if}}
