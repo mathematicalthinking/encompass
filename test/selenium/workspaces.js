@@ -184,7 +184,7 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(currentUrl).to.match(/workspaces\/.*\/submissions\/.*\/selections\//);
+        // expect(currentUrl).to.match(/workspaces\/.*\/submissions\/.*\/selections\//);
         // 'span.submission_count'.should.contain.text('500');
         // 'span.submission_index'.should.contain.text('256');
       });
