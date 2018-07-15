@@ -1,19 +1,30 @@
 Encompass.ProblemInfoComponent = Ember.Component.extend({
+  isEditing: false,
 
   actions: {
-    deleteProblem: function (problem) {
-      problem = this.get('problem');
-      console.log('problem', problem);
+    deleteProblem: function () {
+      let problem = this.get('problem');
+        problem.set('isTrashed', true);
+        problem.save();
     },
 
-    updateProblem: function (problem) {
-      console.log('update problem clicked');
+    editProblem: function () {
+      this.set('isEditing', true);
+    },
+
+    updateProblem: function () {
+      let problem = this.get('problem');
+      let name = this.get('title');
+      let question = this.get('text');
+      let isPublic = this.get('isPublic');
+
+      problem.set('title', name);
+      problem.set('text', question);
+      problem.set('isPublic', isPublic);
+      problem.save();
+      this.set('isEditing', false);
     }
   }
 
 });
 
-// this.get('store').findRecord('person', 1).then(function (tyrion) {
-//   // ...after the record has loaded
-//   tyrion.set('firstName', "Yollo");
-// });
