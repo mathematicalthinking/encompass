@@ -23,21 +23,17 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var problems = this.problems;
     var currentUser = this.get('currentUser');
     var publicProblems = problems.filterBy('isPublic', true);
-    var yourPublic = publicProblems.filterBy('createdBy.content', currentUser);
+    var yourPublic = publicProblems.filterBy('createdBy.content', !currentUser);
 
     //can we do the opposite filterby not currentUser
 
     // we want to take the 2 lists and return the difference
-   var validList2 = _.difference(yourPublic, publicProblems);
-   var validList = yourPublic.filter(elem => !publicProblems.includes(elem));
+  //  var validList2 = _.difference(yourPublic, publicProblems);
+  //  var validList = yourPublic.filter(elem => !publicProblems.includes(elem));
 
-
-    // if a public problem has you as
     // filter out public problems that are not yours, so its just globally public problems
-    console.log('valid list', validList);
-    return validList;
+    console.log('valid list', yourPublic);
+    return yourPublic;
   })
 
-
 });
-
