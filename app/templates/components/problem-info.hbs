@@ -1,17 +1,45 @@
-<p>Problem Name: {{problem.title}}</p>
-<p>problem Question: {{problem.text}}</p>
-{{#if problem.imageUrl}}
-  <p>Problem Image: </p>
-  <img src="{{{problem.imageUrl}}}" alt={{{problem.title}}} />
 
-  <object data="{{problem.imageUrl}}" type="application/pdf">
-    <embed src="{{problem.imageUrl}}" type="application/pdf" height="100%" width="100%">
-  </object>
+{{#if isEditing}}
+    <form id='problem' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="title">Problem Name</label>
+            {{input id="title" type="text" value=title placeholder=problem.title}}
+          </li>
+          <li>
+            <label for="text">Problem Question</label>
+            {{input id="text" type="text" value=text placeholder=problem.text}}
+          </li>
+          <li>
+            <label for="isPublic">Public</label>
+            {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
+            <label>Yes</label>
+            {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
+            <label>No</label>
+          </li>
+        </ol>
+      </fieldset>
+    </form>
+  <button {{action 'updateProblem'}}>Save Problem</button>
 
+
+{{else}}
+  <p>Problem Name: {{problem.title}}</p>
+  <p>problem Question: {{problem.text}}</p>
+  {{#if problem.imageUrl}}
+    <p>Problem Image: </p>
+    <img src="{{{problem.imageUrl}}}" alt={{{problem.title}}} />
+
+    <object data="{{problem.imageUrl}}" type="application/pdf">
+      <embed src="{{problem.imageUrl}}" type="application/pdf" height="100%" width="100%">
+    </object>
+  {{/if}}
+  <p>Public? {{problem.isPublic}}</p>
+  <p>Creation Date: {{problem.createDate}}</p>
+
+  <button {{action 'deleteProblem'}}>Delete Problem</button>
+  <button {{action 'editProblem'}}>Edit Problem</button>
 {{/if}}
 
 
-<p>Public? {{problem.isPublic}}</p>
-<p>Creation Date: {{problem.createDate}}</p>
-
-<button {{action 'deleteProblem'}}>Delete Problem</button>
