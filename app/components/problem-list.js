@@ -37,3 +37,4 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   })
 
 });
+
