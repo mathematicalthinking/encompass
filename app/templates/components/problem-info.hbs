@@ -5,18 +5,19 @@
         <ol>
           <li>
             <label for="title">Problem Name</label>
-            {{input name="title" id="title" type="text" value=title placeholder=problem.title}}
+            {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
           </li>
           <li>
             <label for="text">Problem Question</label>
-            {{input name="text" id="text" type="text" value=text placeholder=problem.text}}
+            {{input name="text" id="text" type="text" value=problemQuestion placeholder=problem.text}}
           </li>
           <li>
             <label for="isPublic">Public</label>
-            {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
+            {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
             <label>Yes</label>
-            {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
+            {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
             <label>No</label>
+            <p>Currently Public: {{problem.isPublic}}</p>
           </li>
         </ol>
       </fieldset>
@@ -37,9 +38,12 @@
   {{/if}}
   <p>Public? {{problem.isPublic}}</p>
   <p>Creation Date: {{problem.createDate}}</p>
+  <p>Current User {{currentUser.username}}</p>
 
-  <button {{action 'deleteProblem'}}>Delete Problem</button>
-  <button {{action 'editProblem'}}>Edit Problem</button>
+  {{#if canEdit}}
+    <button {{action 'deleteProblem'}}>Delete Problem</button>
+    <button {{action 'editProblem'}}>Edit Problem</button>
+  {{/if}}
 {{/if}}
 
 
