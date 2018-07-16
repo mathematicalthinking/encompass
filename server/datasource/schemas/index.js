@@ -22,7 +22,8 @@
   "answer",
   "section",
   "category",
-  "image"
+  "image",
+  "organization"
 ].forEach(function (path) {
   var module = require('./' + path);
 
