@@ -1,8 +1,22 @@
-{{#if inputLabel}}
-  <label for={{inputName}}>{{inputLabel}}</label>
-{{/if}}
-{{input type="text" name=inputName id=inputId value=textValue change=(action "onChange")}}
+<div class="type-ahead">
+  {{#if inputLabel}}
+    <label for={{inputName}} id={{inputId}}>{{inputLabel}}</label>
+  {{/if}}
+  {{input classNames="type-ahead-input" placeholder=placeholder name=inputName id=inputId
+  focus-out=(action "onFocusChange" "false")
+  focus-in=(action "onFocusChange" "true")
+  type="text" value=textValue
+  change=(action "testChange")
+  key-up=(action "onChange")}}
+      {{#if showContent}}
+          <div class="contentList">
+          {{#each contentList key="@index" as |item|}}
+          <div onClick={{action "onSelect" item}} class="contentOption">
+            <span>{{get item optionLabelPath}}</span>
+            {{input class="optionInput" type="hidden" value="{{item.id}}"  click="onSelect"}}
+          </div>
+        {{/each}}
 
-{{#if textValue}}
-  {{my-select content=selectContent action = (action (mut selectedValue))}}
-{{/if}}
+      </div>
+      {{/if}}
+    </div>

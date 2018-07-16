@@ -4,7 +4,12 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
+<<<<<<< HEAD
   agreedToTerms: false,
+=======
+  agreedToTerms: null,
+  org: null,
+>>>>>>> Type-ahead component/template
 
   regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
@@ -14,6 +19,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
       var name = that.get('name');
       var email = that.get('email');
       var organization = that.get('organization');
+      console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
       var password = that.get('password');
