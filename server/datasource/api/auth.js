@@ -49,12 +49,14 @@ const localSignup = (req, res, next) => {
       console.log('user: ', user);
       return utils.sendResponse(res, info);
     }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return utils.sendResponse(res, user);
-    });
+    return utils.sendResponse(res, user);
+    // console.log('user', user);
+    // req.logIn(user, function (err) {
+    //   if (err) {
+    //     return next(err);
+    //   }
+    //   return utils.sendResponse(res, user);
+    // });
   }
 )(req, res, next);
 };

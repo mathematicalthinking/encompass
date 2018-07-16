@@ -29,19 +29,6 @@
     </section><style>input {margin: 15px;}</style>
   <div class="clear"></div>
 
-
-
-
-      {{!-- verify if section successfully created --}}
-      {{#if createdSection}}
-        <p>Successfully created section
-          {{#link-to 'section' createdSection  classNames='section'}}{{sectionId}}
-          {{/link-to}}</p>
-      {{else}}
-        <p>{{createSectionError}}</p>
-        {{/if}}
-
-
       <section>
         {{!-- creat space between buttons --}}
         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -54,9 +41,7 @@
         {{input type="checkbox" checked=isAddStudents
         name="isAddStudents" class="isAddStudent" }}
         <label>Yes</label>
-
       </section>
-
 
         {{#if isAddStudents}}
            <form id='section' class='properForm'>
@@ -65,7 +50,8 @@
                 <ol>
                   {{!-- <label for="title"> Students</label> --}}
                   <li>
-                    {{input id="text" type="text" value=newStudent placeholder="enter student user name"}}
+                    {{input id="students" type="text" value=students placeholder="enter student user name"}}
+                     {{input id="studentpassword" type="text" value=studentpassword placeholder="enter student password"}}
                    <button class="action_button" {{action 'addStudent'}} style="margin-right: 30px">
                       Add Student
                     </button>
@@ -89,3 +75,12 @@
       Create Section
     </button>
   </section>
+
+      {{!-- verify if section successfully created --}}
+      {{#if createdSection}}
+        <p>Successfully created section
+          {{#link-to 'section' createdSection  classNames='section'}}{{sectionId}}
+          {{/link-to}}</p>
+      {{else}}
+        <p>{{createSectionError}}</p>
+        {{/if}}

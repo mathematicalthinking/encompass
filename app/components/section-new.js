@@ -7,11 +7,12 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   teacher: null,
   teachers: [],
   invalidTeacherUsername: null,
-
   isAddStudents: false,
+  studentsToAdd: [],
 
 
   //Non admin User creating section
+  //set user as teacher
   didInsertElement: function () {
     var user = this.get('user');
     var teachers = this.get('teachers');
@@ -31,10 +32,10 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     addNewStudents: function() {
       var addNewStudent = this.get('isAddStudent');
 
-      Ember.run(function() {
-        if(addNewStudent) { addStudent.send('addStudent'); }
-      });
-    },
+    //   Ember.run(function() {
+    //     if(addNewStudent) { addStudent.send('addStudent'); }
+    //   });
+     },
 
   createSection: function () {
     var that = this;
@@ -43,6 +44,11 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var sectionId = this.get('sectionId');
     var schoolName = this.get('schoolName');
     var user = this.get('user');
+    var username = that.get('students');
+    var students = this.get('students');
+    console.log('students', students);
+    var password = that.get('studentpassword');
+    console.log('password', password);
     var teacher = this.get('teacher');
     var teachers = this.get('teachers');
     if (user.get('isAdmin')) {
@@ -56,30 +62,64 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         return;
       }
     }
+
     this.set('newSectionName', '');
     console.debug('creating new section ' + newSectionName);
-
     if (!newSectionName) {
       return;
     }
-    var sectionData = this.store.createRecord('section', {
-      name: newSectionName,
-      sectionId: sectionId,
-      schoolId: schoolName,
-      isAddStudents: isAddStudents
-    });
 
-    for (let teacher of teachers) {
-      sectionData.get('teachers').addObject(teacher);
+    this.set('students', '');
+    console.debug('adding students ' + students);
+
+    if (!students) {
+      return;
     }
 
-    sectionData.save()
-    .then((prob) => {
-      that.set('createdSection', prob);
-    })
-    .catch((err) => {
-      that.set('createdSectionError', err);
-    });
+    var createUserData = {
+      username: username,
+      password: password,
+      isStudent: true
+    };
+    Ember.$.post({
+      url: '/auth/signup',
+      data: createUserData
+    }).
+    then((res) => {
+        if (res.message === 'Username already exists') {
+          that.set('usernameExists', true);
+        } else {
+          var userId = res._id;
+          var students = this.get('studentsToAdd');
+          var user= this.store.findRecord('user', userId)
+            .then((user) => {
+              students.push(user);
+              var sectionData = this.store.createRecord('section', {
+                name: newSectionName,
+                schoolId: schoolName
+              });
+
+              for (let teacher of teachers) {
+                sectionData.get('teachers').addObject(teacher);
+              }
+
+              for (let student of students) {
+                sectionData.get('students').addObject(student);
+              }
+
+              sectionData.save()
+              .then((prob) => {
+                that.set('createdSection', prob);
+              })
+              .catch((err) => {
+                that.set('createdSectionError', err);
+              });
+            });
+        }
+      })
+      .catch(console.log);
+
+
   },
   checkError() {
     if (this.invalidTeacherUsername) {
@@ -87,11 +127,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     }
   }
 
-  addStudent: function() {
-
-  }
-
-
 }
 });
+
 
