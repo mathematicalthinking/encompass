@@ -89,7 +89,7 @@ describe('Signup form', async function () {
       await helpers.waitForSelector(driver, css.topBar.logout);
 
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
-      // expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`Welcome, ${helpers.newUser.name}`);
+      expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`${helpers.newUser.name}`);
     });
   });
 });
