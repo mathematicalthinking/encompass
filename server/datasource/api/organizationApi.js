@@ -29,16 +29,18 @@ module.exports.put = {};
 */
 
 const getOrganizations = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
-  const user = userAuth.requireUser(req);
-  models.Organization.find(criteria)
+  //const criteria = utils.buildCriteria(req);
+  //const user = userAuth.requireUser(req);
+  console.log('in getOrgs');
+  models.Organization.find({})
   .exec((err, organizations) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     const data = {'organizations': organizations};
-    utils.sendResponse(res, data);
+    console.log('dataorgs: ', data);
+    return utils.sendResponse(res, data);
   });
 };
 
