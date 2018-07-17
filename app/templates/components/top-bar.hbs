@@ -1,14 +1,10 @@
+
 {{#link-to 'index'}}
   <h1 class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
-<div id='devTool'></div>
-  {{#if user.isAuthenticated}}
-    <small id="al_welcome">Welcome, {{user.displayName}}</small>
-  {{else}}
-    <small id="al_welcome"></small>
-  {{/if}}
-<div class="clear_r"></div>
+  <small id="al_welcome"></small>
+  <div class="clear_r"></div>
 
   {{#if user.isAuthenticated}}
   <div id="menu-toggle">
@@ -38,11 +34,8 @@
             {{/if}}
           </ul>
         </li>
-        {{!--
-        <li>{{#link-to 'folders'}}folders{{/link-to}}</li>--}}
-        {{#if user.isAuthenticated}}
-          <li>{{#link-to 'logout' classNames='menu logout'}}logout{{/link-to}}</li>
-        {{/if}}
+        <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+        <li id="current-username">{{user.displayName}}</li>
       </ul>
     </nav>
   </div>
