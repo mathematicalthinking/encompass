@@ -9,14 +9,14 @@
       <li>{{#link-to 'problems.new'}}New Problem{{/link-to}}</li>
     </ul>
     <h2>{{currentUser.username}}'s problems</h2>
-    <ul class="listing">
+    <ul class="your-problems">
       {{#each yourProblems as |problem|}}
       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
     </ul>
 
     <h2>Public Problems</h2>
-    <ul class="listing">
+    <ul class="public">
       {{#each publicProblems as |problem|}}
       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
