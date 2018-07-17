@@ -3,6 +3,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemName: null,
   problemQuestion: null,
   problemPublic: true,
+  savedProblem: null,
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
@@ -51,9 +52,35 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     addToMyProblems: function() {
       let problem = this.get('problem');
-      console.log('problem', problem.title);
+      let title = problem.get('title');
+      let text = problem.get('text');
+      let additionalInfo = problem.get('additionalInfo');
+      let isPublic = problem.get('isPublic');
+      let imageUrl = problem.get('imageUrl');
+      let createdBy = this.get('currentUser');
+
+      console.log('problem title', title);
+      console.log('problem text', text);
+      console.log('problem additionalInfo', additionalInfo);
+      console.log('problem public', isPublic);
+      console.log('problem image', imageUrl);
+      console.log('problem creator', createdBy);
+
+      let newProblem = this.store.createRecord('problem', {
+        title: title,
+        text: text,
+        additionalInfo: additionalInfo,
+        imageUrl: imageUrl,
+        isPublic: isPublic,
+        createdBy: createdBy,
+        createDate: new Date()
+      });
+
+      newProblem.save().then((prob) => {
+        this.set('savedProblem', prob);
+      });
+
     }
 
   }
 });
-
