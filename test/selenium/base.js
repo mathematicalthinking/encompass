@@ -1,5 +1,10 @@
 // REQUIRE MODULES
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const {
+  Builder,
+  By,
+  Key,
+  until
+} = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -44,45 +49,45 @@ describe('Home Page', function () {
     expect(await helpers.isElementVisible(driver, css.login.signup)).to.be.true;
   });
 
-  describe('submitting login form', async function() {
-    it('should display missing credentials if empty form submitted', async function() {
+  describe('submitting login form', async function () {
+    it('should display missing credentials if empty form submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.true;
     });
 
-    it('should remove missing credentials error ', async function() {
+    it('should remove missing credentials error ', async function () {
       await helpers.findInputAndType(driver, css.login.username, helpers.admin.username);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.false;
     });
 
-    it('should display missing credentials if password omitted', async function() {
+    it('should display missing credentials if password omitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.true;
     });
 
-    it('should remove missing credentials error', async function() {
+    it('should remove missing credentials error', async function () {
       await helpers.findInputAndType(driver, css.login.password, 'badpassword');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.false;
     });
 
-    it('should display incorrect password if wrong password submitted', async function() {
+    it('should display incorrect password if wrong password submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       await driver.sleep(1000);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.true;
     });
 
-    it ('should remove incorrect password error', async function() {
+    it('should remove incorrect password error', async function () {
       await helpers.findInputAndType(driver, css.login.username, 'q');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.false;
     });
 
-    it('should display incorrect username if wrong username submitted', async function() {
+    it('should display incorrect username if wrong username submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       await driver.sleep(1000);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.true;
     });
 
-    it('should remove incorrect username error', async function() {
+    it('should remove incorrect username error', async function () {
       await helpers.findInputAndType(driver, css.login.username, 's');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.false;
     })
@@ -90,7 +95,6 @@ describe('Home Page', function () {
     it('should redirect to homepage after logging in', async function () {
       let url;
       let greeting;
-      let message;
 
       try {
         await helpers.clearElement(driver, css.login.username);
@@ -100,18 +104,19 @@ describe('Home Page', function () {
         await helpers.findAndClickElement(driver, css.login.submit);
 
         await helpers.waitForSelector(driver, 'a.menu.logout');
-        greeting = await helpers.findAndGetText(driver, '#al_welcome');
+        greeting = await helpers.findAndGetText(driver, '#current-username');
         url = await helpers.getCurrentUrl(driver);
       } catch (err) {
         console.log(err);
       }
       expect(url).to.equal(`${host}/`);
-      expect(greeting).to.equal(`Welcome, ${helpers.admin.username}`);
+      expect(greeting).to.equal(`${helpers.admin.username}`);
     });
   });
 
   describe('NavBar', async function () {
     const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'workspaces/new', 'users/new', 'problems', 'problems/new', 'sections', 'sections/new'];
+
     function verifyNavElement(navElement) {
       let isVisible;
       it(`${navElement} link should exist`, async function () {
@@ -128,8 +133,8 @@ describe('Home Page', function () {
     });
   });
 
-  describe ('Logging Out', function() {
-    it('should redirect to homepage after logging out', async function() {
+  describe('Logging Out', function () {
+    it('should redirect to homepage after logging out', async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.home);
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
@@ -138,36 +143,36 @@ describe('Home Page', function () {
     });
   });
   //TODO: Figure out best way to test signing in with google
-  xdescribe('Logging in with google', async function() {
+  xdescribe('Logging in with google', async function () {
     let emailInput = 'input[type="email"]';
     let emailAddress = 'encompassmath@gmail.com';
     //let password = process.env.TEST_GMAIL_PASSWORD;
-    before(async function() {
+    before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.login);
       await helpers.waitForAndClickElement(driver, css.login.google);
       await helpers.waitForSelector(driver, emailInput);
     });
 
-    it('EnCoMPASS should be in DOM', async function() {
+    it('EnCoMPASS should be in DOM', async function () {
       expect(await helpers.isTextInDom(driver, 'EnCoMPASS')).to.be.true;
     });
-    xdescribe('Clicking next', function() {
-      before(async function() {
+    xdescribe('Clicking next', function () {
+      before(async function () {
         await helpers.findInputAndType(driver, emailInput, emailAddress);
         await helpers.findAndClickElement(driver, 'content>span');
 
         let isRecovery = await helpers.isTextInDom(driver, 'recovery');
 
-        if(isRecovery) {
+        if (isRecovery) {
 
         }
       });
 
-      it('should display privacy notice', async function() {
+      it('should display privacy notice', async function () {
         //await driver.sleep(20000);
       });
     });
-   });
+  });
 
 
 });
