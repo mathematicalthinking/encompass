@@ -13,7 +13,7 @@ const host = helpers.host;
 describe('Problems', function() {
   this.timeout('10s');
   let driver = null;
-  const problemId = '5b1e7a0ba5d2157ef4c91028';
+  const problemId = '5b4e25c638a46a41edf1709a';
   const problemLink = `a[href='#/problems/${problemId}`;
 
   // creation date of test problem is getting reset every time testDB is reset
@@ -43,8 +43,9 @@ describe('Problems', function() {
       await helpers.findAndClickElement(driver, css.topBar.problems);
     });
     it('should display a user\'s problems', async function() {
-      let problems = await helpers.getWebElements(driver, 'ul.listing > li');
-      expect(problems).to.have.lengthOf(1);
+      await driver.sleep(5000);
+      let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
+      expect(problems).to.have.lengthOf(2);
       expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
     });
   });
