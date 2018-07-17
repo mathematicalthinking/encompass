@@ -24,6 +24,7 @@ require('dependencies/jquery.cookie');
 
 require('dependencies/guiders');
 require('dependencies/jq.keys');
+require('dependencies/autocomplete');
 
 /*
  * Since we're precompiling our templates, we only need the
