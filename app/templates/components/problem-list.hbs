@@ -8,7 +8,7 @@
     <ul class="actions">
       <li>{{#link-to 'problems.new'}}New Problem{{/link-to}}</li>
     </ul>
-    <h2>{{user.username}}'s problems</h2>
+    <h2>{{currentUser.username}}'s problems</h2>
     <ul class="listing">
       {{#each yourProblems as |problem|}}
       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>

@@ -59,13 +59,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let imageUrl = problem.get('imageUrl');
       let createdBy = this.get('currentUser');
 
-      console.log('problem title', title);
-      console.log('problem text', text);
-      console.log('problem additionalInfo', additionalInfo);
-      console.log('problem public', isPublic);
-      console.log('problem image', imageUrl);
-      console.log('problem creator', createdBy);
-
       let newProblem = this.store.createRecord('problem', {
         title: title,
         text: text,

@@ -1,4 +1,4 @@
-Encompass.ProblemNewComponent = Ember.Component.extend({
+Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   filesToBeUploaded: null,
   createdProblem: null,
   createProblemError: null,
