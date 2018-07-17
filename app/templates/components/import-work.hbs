@@ -23,9 +23,7 @@
 </nav>
 
 <div class="import-page">
-  <div class="import-details">
-    {{import-details selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles isSelectingImportDetails=isSelectingImportDetails editImportDetail=(action "editImportDetail")}}
-  </div>
+  {{import-details class="import-details" selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles isSelectingImportDetails=isSelectingImportDetails editImportDetail=(action "editImportDetail")}}
 
   {{#if isSelectingImportDetails}}
     <div class="import-prep">
@@ -41,9 +39,7 @@
           <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
           <br>
           {{#if isCreatingNewProblem}}
-            <div class="form-problem">
-              {{problem-new store=store createdProblem= selectedProblem}}
-            </div>
+            {{problem-new class="form-problem" store=store createdProblem= selectedProblem}}
           {{/if}}
         </div>
       {{/unless}}
@@ -59,10 +55,8 @@
           </div>
           <p>Or create a new section <button {{action "toggleNewSection"}}>+</button></p>
           {{#if isCreatingNewSection}}
-            <div class="form-section">
-              {{section-new store=store selectedSection = selectedSection}}
-            </div>
-            {{/if}}
+            {{section-new class="form-section" store=store selectedSection = selectedSection}}
+          {{/if}}
         </div>
       {{/unless}}
     {{/if}}
@@ -72,14 +66,11 @@
         {{#unless readyToMatchStudents}}
           <div class="import-prep-files">
             <p>Please choose files to upload</p>
-            <div class="form-file">
-              {{image-upload filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
-            </div>
+            {{image-upload class="form-file" filesToBeUploaded = selectedFiles uploadResults = uploadedFiles}}
           </div>
         {{/unless}}
       {{/unless}}
     {{/if}}
-
     <br>
 
       {{#if readyToMatchStudents}}
@@ -92,15 +83,11 @@
   {{/if}}
 
   {{#if isMatchingStudents}}
-    <div class="import-matching">
-      {{student-matching selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
-    </div>
+    {{student-matching class="import-matching" selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
   {{/if}}
 
     {{#if isReviewingSubmissions}}
-      <div class="import-review">
-        {{import-review-answers answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
-      </div>
+      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
     {{/if}}
 
     {{#if uploadedSubmissions}}
