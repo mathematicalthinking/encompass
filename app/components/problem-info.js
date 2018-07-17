@@ -1,37 +1,19 @@
-Encompass.ProblemInfoComponent = Ember.Component.extend({
+Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   isEditing: false,
   problemName: null,
   problemQuestion: null,
   problemPublic: true,
-  prob: null,
-  curr: null,
 
-
-  init: function () {
-    this._super(...arguments);
-    // this.get('problem');
-    // console.log('problem', this.get('problem'));
-    let curr = this.get('currentUser');
-    this.set('curr', curr);
-    let problem = this.get('problem');
-    //let currentUser = this.get('currentUser');
-    this.set('prob', problem);
-    // console.log('currentUser', this.get('currentUser'));
-  },
+  // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
   // Check if the current problem is yours, so that you can edit it
-  canEdit: Ember.computed(function() {
+  canEdit: Ember.computed('problem.id', function() {
     let problem = this.get('problem');
     let creator = problem.get('createdBy.content.id');
-    console.log('problem createdBy', creator);
-    let currentUser = this.get('curr');
-    console.log('currentUser id', currentUser.id);
+    let currentUser = this.get('currentUser');
 
-    if (creator === currentUser.id) {
-      return true;
-    } else {
-      return false;
-    }
+    let canEdit = creator === currentUser.id ? true : false;
+    return canEdit;
   }),
 
   actions: {
@@ -65,8 +47,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend({
       problem.set('isPublic', isPublic);
       problem.save();
       this.set('isEditing', false);
-    }
-  }
+    },
 
+    addToMyProblems: function() {
+      let problem = this.get('problem');
+      console.log('problem', problem.title);
+    }
+
+  }
 });
 
