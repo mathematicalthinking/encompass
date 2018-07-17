@@ -8,6 +8,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
   agreedToTerms: false,
 =======
   agreedToTerms: null,
+  emailExistsError: null,
   org: null,
 >>>>>>> Type-ahead component/template
 
@@ -102,6 +103,8 @@ Encompass.SignUpComponent = Ember.Component.extend({
         .then((res) => {
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
+          } else if (res.message === 'There already exists a user with that email address.') {
+            that.set('emailExistsError', res.message);
           } else {
             that.sendAction('toHome');
           }
