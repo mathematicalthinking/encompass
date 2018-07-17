@@ -1,4 +1,4 @@
 Encompass.Organization = DS.Model.extend(Encompass.Auditable, {
-  organizationId: DS.attr('string'),
+  organizationId: Ember.computed.alias('id'),
   name: DS.attr('string'),
 });
