@@ -50,5 +50,5 @@ module.exports = {
     imageUpload: 'form.image-upload',
     submit: 'button.action_button'
   },
-  greeting: '#al_welcome'
+  greeting: '#current-username'
 };
