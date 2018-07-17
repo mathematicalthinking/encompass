@@ -1,6 +1,6 @@
 Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
-    var problem = this.modelFor('problems').filterBy('id', params.id).get('firstObject');
+    var problem = this.get('store').findRecord('problem', params.id);
     return problem;
   },
 
