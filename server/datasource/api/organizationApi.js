@@ -76,10 +76,10 @@ const getOrganization = (req, res, next) => {
 */
 
 const postOrganization = (req, res, next) => {
-  const user = userAuth.requireUser(req);
+  //const user = userAuth.requireUser(req);
   // do we want to check if the user is allowed to create organizations?
   const organization = new models.Organization(req.body.organization);
-  organization.createdBy = user;
+  //organization.createdBy = user;
   organization.createdDate = Date.now();
   organization.save((err, doc) => {
     if (err) {

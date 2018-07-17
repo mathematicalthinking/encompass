@@ -140,7 +140,8 @@ function protect(options) {
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
-    if (openRequest && req.method === 'GET') {
+    var newOrgRequest = req.path === 'api.organizations' && req.method === 'POST';
+    if ((openRequest && req.method) || newOrgRequest) {
       return next();
     }
 
