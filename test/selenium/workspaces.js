@@ -177,7 +177,7 @@ describe('Visiting Workspaces', function() {
         await helpers.waitForSelector(driver, 'div#al_feedback_display');
       });
 
-      it('should display a bunch of submissions', async function() {
+      xit('should display a bunch of submissions', async function() {
         let currentUrl;
         try {
           currentUrl = await driver.getCurrentUrl();
