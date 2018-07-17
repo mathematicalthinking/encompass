@@ -1,9 +1,6 @@
 @import "variables";
 @import "mixins";
 @import "responsive-font-size";
-
-
-
 @media screen and (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
   #al_header {
     #menu-toggle {
@@ -14,14 +11,28 @@
 
 @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) {
   #al_header {
-    // background-color: green;
+    #menu-toggle {
+      display: none;
+    }
   }
 }
 
 @media screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) {
-  #al_header {
-    // background-color: yellow;
-  }
+  // #al_header {
+  //   // background-color: yellow;
+  // }
+}
+
+// STYLING FOR THE ENCOMPASS LOGO
+.al_logo {
+  width: 230px;
+  height: 80px;
+  display: block;
+  float: left;
+  position: relative;
+  top: -8px;
+  text-indent: -99999px;
+  background: url(images/logo-encompass.gif) 0 0 no-repeat;
 }
 
 // TOP BAR STYLING FOR WHEN LOGGED OUT
@@ -47,31 +58,6 @@
   }
 }
 
-// STYLING FOR THE ENCOMPASS LOGO
-.al_logo {
-  width: 230px;
-  height: 80px;
-  display: block;
-  position: relative;
-  top: -8px;
-  float: left;
-  text-indent: -99999px;
-  background: url(images/logo-encompass.gif) 0 0 no-repeat;
-}
-
-
-#menu-toggle {
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    #topbar-unauth {
-      position: fixed;
-    }
-  }
-}
-
-
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
@@ -82,7 +68,7 @@
   width: 100vw;
   z-index: 5;
   margin-bottom: 90px;
-  // margin-bottom: 1px;
+  font-size: 1em; // margin-bottom: 1px;
   height: 90px;
   box-shadow: $box-shadow;
   .small {
@@ -106,11 +92,9 @@
   display: none
 }
 
-
 #al_header.small>.al_logo {
   display: none
 }
-
 
 #al_header.small>#status {
   padding-top: 1px
@@ -120,40 +104,14 @@
   display: inline
 }
 
-
 #welcome {
   margin: 30px;
 }
 
-
-#topbar-unauth {
-  font-weight: $bolder-font-weight;
-  float: right;
-  li {
-    line-height: 50px;
-    height: 40px;
-    display: inline-block;
-    padding: 0 20px;
-    vertical-align: middle;
-    a {
-      color: white;
-      margin-right: 10px;
-      background: $primary-button;
-      padding: 10px 30px;
-      border-radius: 3px;
-      &:hover {
-        background-color: darken($primary-button, 10);
-      }
-    }
-  }
-}
-
-
-
 #al_nav {
+  height: 100px;
   #main-nav {
     float: right;
-
   }
   li {
     line-height: 50px;
@@ -180,29 +138,46 @@
   }
 }
 
+#al_nav li>ul {
+  padding: 0px;
+  margin: 0px;
+}
 
-#al_nav li>ul { padding:0px; margin: 0px; }
-#al_nav li>ul>li { line-height:0.5em; border: none; display: block; text-align: right;}
+#al_nav li>ul>li {
+  line-height: 0.5em;
+  border: none;
+  display: block;
+  text-align: right;
+}
 
-#al_header .control { display:none }
-#al_header:hover .control { display:inline }
-#al_header.small>#status { padding-top: 1px }
+#al_header .control {
+  display: none
+}
 
+#al_header:hover .control {
+  display: inline
+}
+
+#al_header.small>#status {
+  padding-top: 1px
+}
 
 #al_welcome {
   float: right;
-  margin: 10px 20px;
+  margin: 8px 20px;
   display: block;
 }
 
-nav.listing,nav.actions {
+nav.listing,
+nav.actions {
   float: left;
   width: 25%;
   padding: 5px;
   background-color: #dfdfdf;
 }
 
-nav.listing,nav.actions>ul {
+nav.listing,
+nav.actions>ul {
   padding: 5px;
   border-bottom: 1px solid #cfcfcf;
 }
@@ -217,3 +192,23 @@ nav.listing,nav.actions>ul {
   padding-left: 20px;
 }
 
+// LOGOUT BUTTON
+.logout {
+  font-weight: $bolder-font-weight;
+  padding: 10px 20px;
+  color: white;
+  background: $primary-button;
+  border-radius: 3px;
+  &:hover {
+    background-color: darken($primary-button, 10);
+  }
+}
+
+#logout-btn {
+  a {
+    color: white;
+    &:hover {
+      color: white;
+    }
+  }
+}
