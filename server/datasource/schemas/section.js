@@ -16,7 +16,7 @@ var SectionSchema = new Schema({
   isTrashed: { type: Boolean, 'default': false },
   //====
   name: { type: String },
-  schoolId: { type: String },
+  organization: { type: ObjectId, ref: 'Organization' },
   sectionId: { type: Number },
   teachers: [{ type: ObjectId, ref: 'User' }],
   students: [{ type: ObjectId, ref: 'User' }],
