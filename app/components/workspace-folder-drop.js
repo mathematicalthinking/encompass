@@ -6,7 +6,7 @@
  */
 require('app/components/Droppable');
 
-Encompass.WorkspaceFolderDropComponent= Ember.Component.extend(Encompass.DragNDrop.Droppable, {
+Encompass.WorkspaceFolderDropComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.CurrentUserMixin, {
   classNames: ['dropTarget'],
   classNameBindings: ['dragAction'],
 
@@ -20,7 +20,7 @@ Encompass.WorkspaceFolderDropComponent= Ember.Component.extend(Encompass.DragNDr
       return null;
     }
   }).property('dragContext'),
-  
+
   drop: function(event) {
     var dataTransfer = event.originalEvent.dataTransfer;
     var dropType = dataTransfer.getData('Text');
@@ -44,14 +44,14 @@ Encompass.WorkspaceFolderDropComponent= Ember.Component.extend(Encompass.DragNDr
 
     folderToAdd = JSON.parse(folderToAdd);
     folderModel = this.folders.filterBy('id', folderToAdd.id).get('firstObject');
-    
+
     if (!folderModel) {
       console.info('Could not retrieve the folder\'s model...');
       return;
     }
 
     parentFolder = folderModel.get('parent');
-    
+
     // this folder is already at the top level. leave it alone
     if (!parentFolder) {
       return;
