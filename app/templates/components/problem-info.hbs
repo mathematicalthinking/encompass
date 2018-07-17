@@ -42,8 +42,11 @@
     <button {{action 'deleteProblem'}}>Delete Problem</button>
     <button {{action 'editProblem'}}>Edit Problem</button>
   {{else}}
-    <button {{action 'addToMyProblems'}}>Add to My Problems</button>
+      <button {{action 'addToMyProblems'}}>Add to My Problems</button>
   {{/if}}
+
+  {{#if savedProblem}}
+    <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
+  {{/if}}
+
 {{/if}}
-
-
