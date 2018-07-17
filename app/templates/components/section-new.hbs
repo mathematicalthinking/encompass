@@ -83,6 +83,9 @@
                     {{#if usernameAlreadyExists}}
                       <p class="error-message">Sorry, that username already exists.</p>
                     {{/if}}
+                    {{#if isMissingUsername}}
+                      <p class="error-message">Username required.</p>
+                    {{/if}}
                     {{#if isMissingPassword}}
                       <p class="error-message">Please provide a password.</p>
                     {{/if}}

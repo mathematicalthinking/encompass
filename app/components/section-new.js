@@ -9,12 +9,13 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   teachers: [],
   invalidTeacherUsername: null,
   isAddStudents: false,
-  createdStudents: [],
+  createdStudents: null,
   selectedOrganization: null,
   isAddingStudents: false,
   usingDefaultPassword: true,
   usernameAlreadyExists: null,
   isMissingPassword: null,
+  isMissingUsername: null,
   missingFieldsError: null,
 
 
@@ -32,11 +33,16 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   willDestroyElement: function() {
     console.log('destroyingEl');
-    this.set('createdStudents', []);
+    this.set('createdStudents', null);
   },
 
+  //Array containing students in a section/class
   studentsNotEmpty: Ember.computed('createdStudents.[]', function() {
+
     var createdStudents = this.get('createdStudents');
+    if (createdStudents === null) {
+      return false;
+    }
     console.log('createdStudents', createdStudents);
     console.log('len', createdStudents.length);
     return createdStudents.get('length') > 0;
@@ -61,6 +67,10 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.set('isMissingPassword', true);
         return;
       }
+      if(!username) {
+        this.set('isMissingUsername', true);
+        return;
+      }
       var createUserData = {
         username: username,
         password: password,
@@ -77,8 +87,11 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           return;
         }else {
           var userId = res._id;
+          if (that.get('createdStudents') === null) {
+            that.set('createdStudents', []);
+          }
           var students = that.get('createdStudents');
-          var user = that.store.findRecord('user', userId)
+          return that.store.findRecord('user', userId)
             .then((user) => {
               console.log('user found', user.get('username'));
               students.pushObject(user);
@@ -95,7 +108,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       .catch((err) => {
           console.log(err);
     });
-},
+  },
 
   createSection: function () {
     var that = this;
@@ -141,7 +154,16 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     .catch((err) => {
       that.set('createdSectionError', err);
     });
+        console.log('createdstudents', []);
+        this.set('createdStudents', []);
+        console.log('clear after create section 11', []);
   },
+
+  // clearStudentsData: function() {
+  //   this.set('createdStudents2', []);
+  //   console.log('clear after create section 2', []);
+  // },
+
   checkError: function() {
     if (this.invalidTeacherUsername) {
       this.set('invalidTeacherUsername', false);
