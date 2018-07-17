@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.answers"}],"uuid":"ece859fb67af43fc9dcc1766b8c57e7b"}
+=======
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.answers"}],"uuid":"315eab05c84844adb5f768c2b192d619"}
+>>>>>>> Fix test database
