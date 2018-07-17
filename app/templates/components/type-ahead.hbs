@@ -1,22 +1,7 @@
-<div class="type-ahead">
+<div class="autocomplete">
   {{#if inputLabel}}
-    <label for={{inputName}} id={{inputId}}>{{inputLabel}}</label>
+    <label for={{inputName}}>{{inputLabel}}</label>
   {{/if}}
-  {{input classNames="type-ahead-input" placeholder=placeholder name=inputName id=inputId
-  focus-out=(action "onFocusChange" "false")
-  focus-in=(action "onFocusChange" "true")
-  type="text" value=textValue
-  change=(action "testChange")
-  key-up=(action "onChange")}}
-      {{#if showContent}}
-          <div class="contentList">
-          {{#each contentList key="@index" as |item|}}
-          <div onClick={{action "onSelect" item}} class="contentOption">
-            <span>{{get item optionLabelPath}}</span>
-            {{input class="optionInput" type="hidden" value="{{item.id}}"  click="onSelect"}}
-          </div>
-        {{/each}}
-
-      </div>
-      {{/if}}
-    </div>
+  {{input class="form-control" placeholder=placeholder name=inputName id=inputId
+  type="text" value=textValue}}
+</div>

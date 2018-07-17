@@ -2,64 +2,41 @@ Encompass.TypeAheadComponent = Ember.Component.extend({
   content: null,
   textValue: null,
   selectedValue: null,
-  isInputFocused: false,
-
-  contentList: Ember.computed('selectContent', 'textValue', function() {
-    console.log('computing contentList');
-    let content = this.get('content');
-    let textValue = this.get('textValue');
-    if (!content) {
-      return;
-    }
-    if (!textValue) {
-      return content;
-    }
-    return content.filter((el) => {
-      let firstChar = textValue[0];
-      console.log('el', el);
-      let val = el.get('name');
-      //console.log('content', content);
-      return val[0] === firstChar;
-    });
-  }),
-
-  showContent: Ember.computed('textValue', 'selectedValue', 'isInputFocused', function() {
-    let text = this.get('textValue');
-    let value = this.get('selectedValue');
-    let isInputFocused = this.get('isInputFocused');
-
-
-    return text && isInputFocused && !value;
-
-
-  }),
+  contentByLabelPath: null,
 
   didInsertElement: function() {
-    this.get('contentList');
+    this.get('getValue');
+    let content = this.get('content');
+    let path = this.get('optionLabelPath');
+    let byPath = content.mapBy(path);
+    this.set('contentByLabelPath', byPath);
+    window.autocomplete(document.getElementById("organization"), byPath);
   },
 
+  getValue: function() {
+    let text = this.get('textValue');
+    if (!text) {
+      this.set('selectedValue', '');
+      return '';
+    }
+    let content = this.get('content');
+    let path = this.get('optionLabelPath');
 
-  actions: {
-    onChange: function(e) {
-      console.log('e: ', e);
-      let value = this.get('selectedValue');
-      if (value) {
-        this.set('selectedValue', null);
+    let matched = content.filter((el) => {
+      let val = el.get(path);
+      let lowerVal;
+      if (val && typeof val === 'string') {
+        lowerVal = val.toLowerCase();
       }
-  },
+      return lowerVal === text.toLowerCase();
+    });
 
-  onSelect: function(item) {
-    let path = this.optionLabelPath;
-    console.log('in onSelect', item);
-    this.set('textValue', item.get(path));
-    this.set('selectedValue', item);
-  },
-  onFocusChange: function(isFocused) {
-    console.log('isFoc', isFocused);
-    this.set('isInputFocused', isFocused);
-},
-  testChange: function(e) {
-    console.log('e testChange', e);
-  }
-  }
+    if (!Ember.isEmpty(matched)) {
+      let val = matched.get('firstObject');
+      this.set('selectedValue', val);
+      return val;
+    }
+    this.set('selectedValue', text);
+    return text;
+  }.observes('textValue'),
 });

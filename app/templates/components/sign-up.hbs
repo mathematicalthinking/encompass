@@ -15,9 +15,8 @@
         {{/if}}
     </div>
     <div class="auth-form-input">
-      {{!-- <label for="organization">Institution, Organization, School or District Name:</label>
-        {{input class="form-control" type="text" name="organization" id="oragnization" value=organization action="resetErrors" on="key-down"}} --}}
-        {{type-ahead content=organizations placeholder="Organization" inputName="organization" inputLabel="Institution, Organization, School or District" inputId="organization" selectedValue=org optionLabelPath="name"}}
+      <label for="organization">Institution, Organization, School or District Name:</label>
+      {{type-ahead content=organizations  inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
     </div>
     <div class="auth-form-input">
       <label for="location">City and State:</label>
