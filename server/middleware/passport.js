@@ -89,32 +89,45 @@ module.exports = (passport) => {
               message: "Username already exists"
             });
           } else {
-            const {
-              name,
-              email,
-              organization,
-              location,
-              username,
-              password,
-              requestReason,
-            } = req.body;
-            const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-            const newUser = new User({
-              name,
-              email,
-              organization,
-              location,
-              username,
-              password: hashPass,
-              isAuthorized: true,
-              requestReason,
-            });
-
-            newUser.save((err) => {
+            User.findOne({
+              'email': req.body.email
+            }, (err, user) => {
               if (err) {
-                next(err);
+                return next(err);
               }
-              return next(null, newUser);
+              if (user) {
+                return next(null, false, {
+                  message: "There already exists a user with that email address."
+                });
+              } else {
+                const {
+                  name,
+                  email,
+                  organization,
+                  location,
+                  username,
+                  password,
+                  requestReason,
+                } = req.body;
+                const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+                const newUser = new User({
+                  name,
+                  email,
+                  organization,
+                  location,
+                  username,
+                  password: hashPass,
+                  isAuthorized: true,
+                  requestReason,
+                });
+
+                newUser.save((err) => {
+                  if (err) {
+                    next(err);
+                  }
+                  return next(null, newUser);
+                });
+              }
             });
           }
         });

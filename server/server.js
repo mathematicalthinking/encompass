@@ -165,8 +165,11 @@ server.get('/api/answers', api.get.answers);
 server.get('/api/answers/:id', path.validateId(), api.get.answer);
 server.get('/api/sections', api.get.sections);
 server.get('/api/sections/:id', path.validateId(), api.get.section);
-server.get('/api/sections', api.get.categories);
-server.get('/api/sections/:id', path.validateId(), api.get.category);
+server.get('/api/categories', api.get.categories);
+server.get('/api/category/:id', path.validateId(), api.get.category);
+
+server.get('/api/organizations', api.get.organizations);
+server.get('/api/organization/:id', path.validateId(), api.get.organization);
 
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
@@ -181,6 +184,7 @@ server.post('/api/taggings', api.post.tagging);
 server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
+server.post('/api/organizations', api.post.organization);
 
 //ALL PUT REQUESTS
 server.put('/api/folders/:id', path.validateId(), api.put.folder);
@@ -207,6 +211,7 @@ server.put('/api/sections/removeStudent/:id', path.validateId(), api.put.section
 server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.addProblem);
 server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
 server.put('/api/categories/:id', path.validateId(), api.put.category);
+server.put('/api/organizations/:id', path.validateId(), api.put.organization);
 
 
 server.get('/api/stats', api.get.stats);

@@ -4,16 +4,64 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
-  agreedToTerms: false,
+  agreedToTerms: null,
+  emailExistsError: null,
+  org: null,
+
 
   regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+
+  createUser: function(data) {
+    return new Promise((resolve, reject) => {
+      if (!data) {
+        return reject('Invalid data');
+      }
+      Ember.$.post({
+        url: '/auth/signup',
+        data: data
+      })
+      .then((res) => {
+        return resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+    });
+  },
+
+  handleOrg: function(org) {
+    var that = this;
+    return new Promise((resolve, reject) => {
+      if (!org) {
+        return reject('Invalid Data');
+      }
+      if (typeof org === 'string') {
+        let rec = that.store.createRecord('organization', {
+          name: org
+        });
+
+        rec.save()
+        .then((res) => {
+          console.log('res', res);
+          return resolve(res.get('organizationId'));
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+      } else {
+        return resolve(org.get('organizationId'));
+      }
+
+    });
+  },
 
   actions: {
     signup: function () {
       var that = this;
       var name = that.get('name');
       var email = that.get('email');
-      var organization = that.get('organization');
+      var organization = that.get('org');
+      console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
       var password = that.get('password');
@@ -29,29 +77,37 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
-      //signup
-
+      // determine if need to create new organization
       var createUserData = {
         name: name,
         email: email,
-        organization: organization,
+        //organization: organization.id,
         location: location,
         username: username,
         password: password,
         requestReason: requestReason
       };
-      Ember.$.post({
-        url: '/auth/signup',
-        data: createUserData
-      }).
-      then((res) => {
+
+      return that.handleOrg(organization)
+      .then((org) => {
+        createUserData.organization = org;
+        return that.createUser(createUserData)
+        .then((res) => {
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
+          } else if (res.message === 'There already exists a user with that email address.') {
+            that.set('emailExistsError', res.message);
           } else {
             that.sendAction('toHome');
           }
         })
-        .catch(console.log);
+        .catch((err) => {
+          console.log(err);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     },
 
     resetErrors(e) {

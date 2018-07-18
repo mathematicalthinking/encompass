@@ -13,10 +13,13 @@
         {{#if incorrectEmail}}
           <p class="error-message">Invalid email address.</p>
         {{/if}}
+        {{#if emailExistsError}}
+         <p class="error-message">{{emailExistsError}}</p>
+       {{/if}}
     </div>
     <div class="auth-form-input">
       <label for="organization">Institution, Organization, School or District Name:</label>
-        {{input class="form-control" type="text" name="organization" id="oragnization" value=organization action="resetErrors" on="key-down"}}
+      {{type-ahead content=organizations  inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
     </div>
     <div class="auth-form-input">
       <label for="location">City and State:</label>
