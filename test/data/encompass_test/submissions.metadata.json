@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 {"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.submissions"}],"uuid":"534f9b8a8bd542f9b64847d2a0016ebf"}
-=======
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"encompass_test.submissions"}],"uuid":"0933142ecbb94bc3ba3d46698b9ef24e"}
->>>>>>> Fix test database

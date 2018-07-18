@@ -4,13 +4,10 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
-<<<<<<< HEAD
-  agreedToTerms: false,
-=======
   agreedToTerms: null,
   emailExistsError: null,
   org: null,
->>>>>>> Type-ahead component/template
+
 
   regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
@@ -80,12 +77,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
-<<<<<<< HEAD
-      //signup
-
-=======
       // determine if need to create new organization
->>>>>>> Refactor signup function to use handleOrg and createUser
       var createUserData = {
         name: name,
         email: email,
