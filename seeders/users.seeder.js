@@ -2,6 +2,7 @@ var Seeder = require('mongoose-data-seed').Seeder;
 var User = require('../server/datasource/schemas').User;
 
 var data = [{
+  _id: "52a88ae2729e9ef59ba7eb4b",
   username: 'phil',
   email: 'test',
 }];
