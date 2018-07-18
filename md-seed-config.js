@@ -1,5 +1,8 @@
 var mongooseLib = require('mongoose');
 
+var Users = require('./seeders/users.seeder');
+// var Sections = require('./seeders/sections.seeder');
+
 mongooseLib.Promise = global.Promise || Promise;
 
 module.exports = {
@@ -16,6 +19,7 @@ module.exports = {
     order is important
   */
   seedersList: {
-
+    Users,
+    // Sections,
   }
 };

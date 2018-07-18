@@ -1,16 +1,17 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var User = require('../server/datasource/schemas').User;
 
 var data = [{
-
+  username: 'phil',
+  email: 'test',
 }];
 
 var UsersSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return User.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return User.create(data);
   }
 });
 
