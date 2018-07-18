@@ -1,0 +1,28 @@
+<header>
+	<h2>Users</h2>
+	<div class="clear"></div>
+</header>
+
+<section>
+<nav class="users actions listing al_vertical_stretch">
+  {{#if currentUser.isAdmin}}
+    <ul class="actions">
+      <li>{{#link-to 'users.new'}}new user{{/link-to}}</li>
+    </ul>
+  {{/if}}
+    <ul class="listing">
+      {{#each model as |user|}}
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+        </li>
+      {{/each}}
+    </ul>
+</nav>
+
+<div class="listOutlet users">
+{{outlet}}
+</div>
+
+<div class="clear"/>
+
+</section>

@@ -10,7 +10,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     createProblem: function () {
       var that = this;
-
       var createdBy = that.get('currentUser');
       var title = that.get('title');
       var text = that.get('text');

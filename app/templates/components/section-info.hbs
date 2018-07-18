@@ -2,13 +2,30 @@
 <h3>Problems:</h3>
   <ul class="listing">
     {{#each section.problems as |problem|}}
-    <li>{{problem}}</li>
+    <li>{{problem.title}}</li>
     {{/each}}
   </ul>
+<h3>Teachers: </h3>
+  {{#each section.teachers as |teacher|}}
+  <li>{{teacher.username}}</li>
+  {{/each}}
 <h3>Students:</h3>
+{{#each section.students as |student|}}
+  <li>{{student.username}}</li>
+{{/each}}
 <ul>
   <li></li>
 </ul>
-<h3>Section Id: {{section.sectionId}}</h3>
 
 
+<section>
+  {{!-- creat space between buttons --}}
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</section>
+{{!-- submit button to add a new section --}}
+  <section class="submit">
+    <button class="action_button" {{action 'createStudents'}} style="margin-right: 30px">
+      Edit Section / Add Students
+    </button>
+</section>

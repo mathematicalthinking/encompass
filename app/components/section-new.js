@@ -1,70 +1,186 @@
 Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  tagName: 'sections',
+  className: ['sections'],
+  sectionId: '',
   createdSection: null,
   createSectionError: null,
+  teacher: null,
+  leader: null,
+  teachers: [],
+  invalidTeacherUsername: null,
+  isAddStudents: false,
+  createdStudents: null,
+  selectedOrganization: null,
+  isAddingStudents: false,
+  usingDefaultPassword: true,
+  usernameAlreadyExists: null,
+  isMissingPassword: null,
+  isMissingUsername: null,
+  missingFieldsError: null,
+
+
+  //Non admin User creating section
+  //set user as teacher
+  didInsertElement: function () {
+    var user = this.get('user');
+    var teachers = this.get('teachers');
+    console.log('user in didinsert', user);
+    if (!user.get('isAdmin')) {
+      this.set('leader', user);
+      teachers.pushObject(user);
+    }
+  },
+
+  willDestroyElement: function() {
+    console.log('destroyingEl');
+    this.set('createdStudents', null);
+  },
+
+  //Array containing students in a section/class
+  studentsNotEmpty: Ember.computed('createdStudents.[]', function() {
+
+    var createdStudents = this.get('createdStudents');
+    if (createdStudents === null) {
+      return false;
+    }
+    console.log('createdStudents', createdStudents);
+    console.log('len', createdStudents.length);
+    return createdStudents.get('length') > 0;
+  }),
 
   actions: {
-    // radioSelect: function (value) {
-    //   this.set('isPublic', value);
-    // },
+    addNewStudents: function() {
+      this.set('isAddingStudents', true);
+     },
+    createStudent: function() {
+      var that = this;
+      var username = this.get('studentUsername');
+      var usingDefaultPassword = this.get('usingDefaultPassword');
+      var password;
 
-    // createProblem: function () {
-    //   var that = this;
+      if (usingDefaultPassword) {
+        password = this.get('defaultPassword');
+      } else {
+        password = this.get('studentPassword');
+      }
+      if (!password) {
+        this.set('isMissingPassword', true);
+        return;
+      }
+      if(!username) {
+        this.set('isMissingUsername', true);
+        return;
+      }
+      var createUserData = {
+        username: username,
+        password: password,
+        isStudent: true
+      };
 
-    //   var createdBy = that.get('currentUser');
-    //   var title = that.get('title');
-    //   var text = that.get('text');
-    //   //var categories = [];
-    //   var additionalInfo = that.get('additionalInfo');
-    //   var isPublic = that.get('isPublic');
-    //   var imageUrl = null;
+      return Ember.$.post({
+        url: '/auth/signup',
+        data: createUserData
+      })
+      .then((res) => {
+        if (res.message === 'Username already exists') {
+          that.set('usernameAlreadyExists', true);
+          return;
+        }else {
+          var userId = res._id;
+          if (that.get('createdStudents') === null) {
+            that.set('createdStudents', []);
+          }
+          var students = that.get('createdStudents');
+          return that.store.findRecord('user', userId)
+            .then((user) => {
+              console.log('user found', user.get('username'));
+              students.pushObject(user);
+              that.set('studentUsername', '');
+              if (!usingDefaultPassword) {
+                that.set('studentPassword', '');
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          }
+      })
+      .catch((err) => {
+          console.log(err);
+    });
+  },
 
-    //   var createProblemData = that.store.createRecord('problem', {
-    //     createdBy: createdBy,
-    //     createDate: new Date(),
-    //     title: title,
-    //     text: text,
-    //     // categories: categories,
-    //     additionalInfo: additionalInfo,
-    //     isPublic: isPublic,
-    //     imageUrl: imageUrl
-    //   });
+  createSection: function () {
+    var that = this;
+    var newSectionName = this.get('newSectionName');
+    if (!newSectionName) {
+      this.set('missingFieldsError', true);
+      return;
+    }
+    var organization = this.get('selectedOrganization');
+    var user = this.get('user');
+    var students = this.get('createdStudents');
+    var leader = this.get('leader');
+    var teachers = this.get('teachers');
+    if (user.get('isAdmin')) {
+      //check if user exists
+      let users = this.users.filterBy('username', leader);
+      if (!Ember.isEmpty(users)) {
+        let user = users.get('firstObject');
+        teachers.pushObject(user);
+      } else {
+        this.set('invalidTeacherUsername', true);
+        return;
+      }
+    }
 
-    //   if (that.filesToBeUploaded) {
-    //     console.log('filesToBeUploaded', that.filesToBeUploaded);
-    //     var uploadData = that.get('filesToBeUploaded');
-    //     var formData = new FormData();
-    //     for (let f of uploadData) {
-    //       formData.append('photo', f);
-    //     }
-    //     Ember.$.post({
-    //       url: '/image',
-    //       processData: false,
-    //       contentType: false,
-    //       data: formData
-    //     }).then(function (res) {
-    //       that.set('uploadResults', res.images);
-    //       // currently allowing multiple images to be uploaded but only saving
-    //       // the first image url as the image in the problem doc
-    //       createProblemData.set('imageUrl', res.images[0].relativePath);
-    //       createProblemData.save()
-    //         .then((prob) => {
-    //           that.set('createdProblem', prob);
-    //         })
-    //         .catch((err) => {
-    //           that.set('createProblemError', err);
-    //         });
-    //     }).catch(function (err) {
-    //       that.set('uploadError', err);
-    //     });
-    //   } else {
-    //     createProblemData.save()
-    //       .then((prob) => {
-    //         that.set('createdProblem', prob);
-    //       })
-    //       .catch((err) => {
-    //         that.set('createProblemError', err);
-    //       });
-    //   }
-    // }
+    var sectionData = this.store.createRecord('section', {
+      name: newSectionName,
+      organization: organization
+    });
+
+    for (let teacher of teachers) {
+      sectionData.get('teachers').addObject(teacher);
+    }
+
+    for (let student of students) {
+      sectionData.get('students').addObject(student);
+    }
+
+    sectionData.save()
+    .then((prob) => {
+      that.set('createdSection', prob);
+    })
+    .catch((err) => {
+      that.set('createdSectionError', err);
+    });
+        console.log('createdstudents', []);
+        this.set('createdStudents', []);
+        console.log('clear after create section 11', []);
+  },
+
+  // clearStudentsData: function() {
+  //   this.set('createdStudents2', []);
+  //   console.log('clear after create section 2', []);
+  // },
+
+  checkError: function() {
+    if (this.invalidTeacherUsername) {
+      this.set('invalidTeacherUsername', false);
+    }
+
+    if(this.usernameAlreadyExists) {
+      this.set('usernameAlreadyExists', false);
+    }
+
+    if (this.isMissingPassword) {
+      this.set('isMissingPassword', false);
+    }
+    if (this.missingFieldsError) {
+      this.set('missingFieldsError', false);
+    }
   }
+}
 });
+
+
