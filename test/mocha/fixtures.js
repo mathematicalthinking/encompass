@@ -40,15 +40,17 @@ module.exports = {
     }
   },
   problem: {
-    _id: '5b1e7a0ba5d2157ef4c91028',
+    _id: '5b4e25c638a46a41edf1709a',
     validProblem: {
       title: 'test math problem',
       puzzleId: '400000',
+      text: 'This is a problem',
       categories: []
     },
     invalidProblem: {
       title: '',
       puzzleId: '',
+      text: '',
       categories: []
     }
   },

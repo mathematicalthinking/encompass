@@ -39,8 +39,8 @@ module.exports = {
   newProblem: {
     form: 'form#problem',
     inputs: {
-      name: 'input#title' ,
-      question: 'input#text' ,
+      name: 'input#title',
+      question: 'input#text',
       category: 'input#categories',
       additionalInfo: 'input#additionalInfo',
       isPublicYes: 'input.isTrue',
@@ -50,5 +50,5 @@ module.exports = {
     imageUpload: 'form.image-upload',
     submit: 'button.action_button'
   },
-  greeting: '#al_welcome'
+  greeting: '#current-username'
 };

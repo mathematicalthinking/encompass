@@ -13,14 +13,14 @@ const host = helpers.host;
 describe('Problems', function() {
   this.timeout('10s');
   let driver = null;
-  const problemId = '5b1e7a0ba5d2157ef4c91028';
+  const problemId = '5b4e25c638a46a41edf1709a';
   const problemLink = `a[href='#/problems/${problemId}`;
 
   // creation date of test problem is getting reset every time testDB is reset
   const problemDetails = {
-    name: 'Mr. W. Goes Across Australia',
-    question: '',
-    isPublic: 'false',
+    name: "Rick's Public",
+    question: 'What is it?',
+    isPublic: 'true',
     //creationDate: 'Mon Jul 02 2018 11:12:25 GMT-0400 (Eastern Daylight Time)'
   };
 
@@ -43,8 +43,8 @@ describe('Problems', function() {
       await helpers.findAndClickElement(driver, css.topBar.problems);
     });
     it('should display a user\'s problems', async function() {
-      let problems = await helpers.getWebElements(driver, 'ul.listing > li');
-      expect(problems).to.have.lengthOf(1);
+      let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
+      expect(problems).to.have.lengthOf(2);
       expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
     });
   });
@@ -107,15 +107,17 @@ describe('Problems', function() {
       });
 
       it('should display link to newly created problem', async function() {
-        expect(await helpers.isElementVisible(driver, 'a.problem')).to.be.true;
-        expect(await helpers.findAndGetText(driver, 'a.problem')).to.eql(problem.details.name);
+        await helpers.waitForSelector(driver, 'a.problem-new');
+        expect(await helpers.findAndGetText(driver, 'a.problem-new')).to.eql(problem.details.name);
       });
 
       it('should display newly created problem details after clicking link', async function() {
-        await helpers.findAndClickElement(driver, 'a.problem');
+        await helpers.findAndClickElement(driver, 'a.problem-new');
         expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
         expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
       });
     });
   });
 });
+
+

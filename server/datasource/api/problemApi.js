@@ -28,9 +28,21 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
+// This only returns problems that are public or belong to you
+// Needd to update to handle problems you participate in
+function accessibleProblems(user) {
+  return {
+    $or: [
+      { createdBy: user},
+      { isPublic: true },
+    ],
+    isTrashed: false
+  };
+}
+
 const getProblems = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+  const criteria = accessibleProblems(user);
   // add permissions here
   models.Problem.find(criteria)
   .exec((err, problems) => {
@@ -43,6 +55,10 @@ const getProblems = (req, res, next) => {
     next();
   });
 };
+
+
+
+
 
 /**
   * @public

@@ -5,16 +5,27 @@
 
 <section>
   <nav class="users actions listing al_vertical_stretch">
-    <h2>Your problems</h2>
     <ul class="actions">
       <li>{{#link-to 'problems.new'}}New Problem{{/link-to}}</li>
     </ul>
-    <ul class="listing">
-      {{#each problems as |problem|}}
+    <h2>{{currentUser.username}}'s problems</h2>
+    <ul class="your-problems">
+      {{#each yourProblems as |problem|}}
       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
     </ul>
-    <h2>Public Problems</h2>
 
+    <h2>Public Problems</h2>
+    <ul class="public">
+      {{#each publicProblems as |problem|}}
+      <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
   </nav>
 </section>
+
+<div class="listOutlet users">
+  {{outlet}}
+</div>
+
+

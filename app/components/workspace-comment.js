@@ -1,8 +1,8 @@
-Encompass.WorkspaceCommentComponent = Ember.Component.extend({
+Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   tagName: 'li',
   currentWorkspace: null,
   classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse' ],
-  
+
   //TODO: bind these to real properties:
   permittedToComment: true,
   canDelete: true,

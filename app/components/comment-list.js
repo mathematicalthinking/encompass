@@ -44,7 +44,7 @@ Encompass.CommentListComponent = Ember.Component.extend({
     var filtered = this.comments.filterBy('isTrashed', false);
 
     if( this.myCommentsOnly ){
-      filtered = filtered.filterBy( 'createdBy', this.get('currentUser') );
+      filtered = filtered.filterBy( 'createdBy.content', this.get('currentUser') );
     }
 
     if( this.filterComments ){

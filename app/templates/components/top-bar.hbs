@@ -1,55 +1,54 @@
+
 {{#link-to 'index'}}
   <h1 class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
-<div id='devTool'></div>
-  <small id="al_welcome">Welcome, {{user.displayName}}</small>
-<div class="clear_r"></div>
+  <small id="al_welcome"></small>
+  <div class="clear_r"></div>
 
-{{#if user.isAuthenticated}}
-  <nav id="al_nav">
-    <ul>
-      <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li>
-      <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
-        <ul>
-          <li>{{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}</li>
-        </ul>
-      </li>
-      <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
-        <ul>
-          <li>{{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}</li>
-        </ul>
-      </li>
-      <li>{{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
-        <ul>
-          <li>{{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}</li>
-        </ul>
-      </li>
-      <li>{{#link-to 'responses' classNames='menu responses'}}responses & reflections{{/link-to}}</li>
-      <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}
-        <ul>
-          {{#if user.isAdmin}}
-          <li>{{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}</li>
-          {{/if}}
-        </ul>
-      </li>
-      {{!--
-      <li>{{#link-to 'folders'}}folders{{/link-to}}</li>--}}
-      {{#if user.isAuthenticated}}
-        <li>{{#link-to 'logout' classNames='menu logout'}}logout{{/link-to}}</li>
-      {{/if}}
-    </ul>
-  </nav>
+  {{#if user.isAuthenticated}}
+  <div id="menu-toggle">
+    <nav id="al_nav">
+      <ul id="main-nav">
+        <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li>
+        <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
+          <ul>
+            <li>{{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}</li>
+          </ul>
+        </li>
+        <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
+          <ul>
+            <li>{{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}</li>
+          </ul>
+        </li>
+        <li>{{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
+          <ul>
+            <li>{{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}</li>
+          </ul>
+        </li>
+        <li>{{#link-to 'responses' classNames='menu responses'}}responses & reflections{{/link-to}}</li>
+        <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}
+          <ul>
+            {{#if user.isAdmin}}
+            <li>{{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}</li>
+            {{/if}}
+          </ul>
+        </li>
+        <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+        <li id="current-username">{{user.displayName}}</li>
+      </ul>
+    </nav>
+  </div>
 
-{{else}}
-  <nav id="al_nav">
-    <ul>
-      <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li>
-      <li>{{#link-to 'auth.login' classNames='menu login'}}login{{/link-to}}</li>
-      <li>{{#link-to 'auth.signup' classNames='menu signup'}}signup{{/link-to}}</li>
-    </ul>
-  </nav>
-{{/if}}
+  {{else}}
+    <nav id="topbar-unauth">
+      <ul>
+        {{!-- <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li> --}}
+        <li>{{#link-to 'auth.login' classNames='menu login'}}log in{{/link-to}}</li>
+        <li>{{#link-to 'auth.signup' classNames='menu signup'}}sign up{{/link-to}}</li>
+      </ul>
+    </nav>
+  {{/if}}
 
 <div id="status">
   <span class="control">

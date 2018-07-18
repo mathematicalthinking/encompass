@@ -1,4 +1,4 @@
-Encompass.SectionNewComponent = Ember.Component.extend({
+Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   createdSection: null,
   createSectionError: null,
 

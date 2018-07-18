@@ -27,8 +27,6 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
   },
 
   afterModel: function(user, transition) {
-    console.log('user afterModel', user);
-    console.log('is auth', user.get('isAuthenticated'));
     //not crazy that this is duplicated here and in AuthenticatedRoute...
     if(!user.get('isAuthenticated')) {
       this.transitionTo('/');

@@ -1,8 +1,6 @@
 Encompass.SectionsRoute = Encompass.AuthenticatedRoute.extend({
-  model: function (params) {
-    var store = this.get('store');
-    var sections = store.findAll('section');
-    // Filter only problems by current logged in user
+  model: function () {
+    let sections = this.get('store').findAll('section');
     return sections;
   }
 });

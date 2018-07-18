@@ -1,4 +1,5 @@
 Encompass.LogInComponent = Ember.Component.extend({
+  classNames: ['login-page'],
   incorrectPassword: false,
   incorrectUsername: false,
   missingCredentials: false,

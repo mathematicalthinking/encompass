@@ -1,0 +1,54 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#al_body {
+  position: relative;
+  margin-top: 1px;
+  top: 90px;
+  font: $primary-font;
+}
+
+#al_body .active {
+  background: #e7e7e7;
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+#al_body>header {
+  padding: 15px 10px;
+  background: #e3e3e3;
+}
+
+#al_body>header h2 {
+  font-size: 20px;
+  float: left;
+  display: inline;
+  font-weight: bold;
+}
+
+#al_body>header aside {
+  float: right;
+  display: inline;
+}
+
+#al_body>header aside a {
+  padding: 7px;
+  margin-left: 5px;
+  background-color: #ffcc00;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#al_body header aside a span.al_feedback {
+  width: 24px;
+  height: 12px;
+  background: url(images/sprite-feedback-icon.png) 0 0 no-repeat;
+  display: inline-block;
+}
+
+#al_body>div header {
+  line-height: 50px;
+  border-bottom: 1px solid #8e8e8e;
+  padding: 0 6px;
+}

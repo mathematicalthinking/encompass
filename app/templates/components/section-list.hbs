@@ -10,10 +10,17 @@
       <li>{{#link-to 'sections.new'}}New section{{/link-to}}</li>
     </ul>
     <ul class="listing">
-      {{#each sections as |section|}}
+      {{#each yourSections as |section|}}
       <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
       {{/each}}
     </ul>
 
+    <h2>Sections you belong to</h2>
+    <ul class="listing">
+      {{#each collabSections as |section|}}
+      <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
   </nav>
 </section>
+

@@ -37,7 +37,7 @@ describe('Problem CRUD operations', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('problems');
         expect(res.body.problems).to.be.a('array');
-        expect(res.body.problems[0].title).to.eql('Mr. W. Goes Across Australia');
+        expect(res.body.problems[0].title).to.eql("Rick's Public");
         done();
       });
     });
@@ -51,7 +51,7 @@ describe('Problem CRUD operations', function() {
       .send({problem: fixtures.problem.validProblem})
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.problem).to.have.any.keys('puzzleId', 'categories', 'title');
+        expect(res.body.problem).to.have.any.keys('title', 'puzzleId', 'categories');
         expect(res.body.problem.title).to.eql('test math problem');
         done();
       });

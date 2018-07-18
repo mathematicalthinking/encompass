@@ -146,6 +146,8 @@ require('./models/*');
  * controllers wrapped objects.
 */
 require('./controllers/*');
+require('./services/*');
+
 
 /*
  * States (i.e. Routes)
