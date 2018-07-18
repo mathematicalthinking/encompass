@@ -4,7 +4,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
-  agreedToTerms: null,
+  agreedToTerms: false,
   emailExistsError: null,
   org: null,
 
