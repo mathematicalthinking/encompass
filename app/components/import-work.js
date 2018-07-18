@@ -75,6 +75,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       }
       //var prop = this.get(detailName);
       this.set(detailName, null);
+      if (detailName === 'uploadedFiles') {
+        this.set('selectedFiles', null);
+      }
     },
 
     backToPrevStep: function(prevStep) {
