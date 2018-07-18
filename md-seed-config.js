@@ -8,7 +8,7 @@ module.exports = {
   mongoose: mongooseLib,
 
   // Export the mongodb url
-  mongoURL: process.env.MONGO_URL || 'mongodb://localhost:27017/dbname',
+  mongoURL: process.env.MONGO_URL || 'mongodb://localhost:27017/encompass_seed',
 
   /*
     Seeders List

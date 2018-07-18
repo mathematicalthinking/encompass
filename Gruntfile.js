@@ -50,6 +50,9 @@ module.exports = function (grunt) {
       test: {
         NODE_ENV: 'test'
       },
+      seed: {
+        NODE_ENV: 'seed'
+      },
       prod: {
         NODE_ENV: 'production'
       }
@@ -437,6 +440,7 @@ module.exports = function (grunt) {
 
   // Tasks for creating test server, running all tests, or running indiviudal tests
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build-test', 'nodemon:dev']);
+  grunt.registerTask('serve-seed', ['env:seed', 'resetTestDb', 'build-test', 'nodemon:dev']);
   grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
