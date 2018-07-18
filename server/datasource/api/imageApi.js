@@ -35,6 +35,7 @@ module.exports.put = {};
 const getImages = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+
   models.Image.find(criteria)
   .exec((err, images) => {
     if (err) {
@@ -88,12 +89,23 @@ const postImages = async function(req, res, next) {
   }
 
   const files = req.files.map((f) => {
+    let data = f.buffer;
+    let mimeType = f.mimetype;
+    let isPdf = mimeType === 'application/pdf';
+    let str = data.toString('base64');
+    let alt = '';
+    let format = `data:${mimeType};base64,`;
+
+    let imgSrc = `<img alt="${alt}" src="data:${mimeType};base64,${str}`;
+    let imgData = `${format}${str}`;
+
     let img = new models.Image(f);
     img.createdBy = user;
-    img.createdDate = Date.now();
-
-    const ix = img.path.indexOf('image_uploads');
-    img.relativePath = img.path.slice(ix);
+    img.createDate = Date.now();
+    img.data = imgData;
+    img.isPdf = isPdf;
+    // const ix = img.path.indexOf('image_uploads');
+    // img.relativePath = img.path.slice(ix);
     return img;
   });
 
@@ -111,7 +123,7 @@ const postImages = async function(req, res, next) {
 
   // const images = new models.Image(req.body.image);
   // image.createdBy = user;
-  // image.createdDate = Date.now();
+  // image.createDate = Date.now();
   // image.save((err, doc) => {
   //   if (err) {
   //     logger.error(err);

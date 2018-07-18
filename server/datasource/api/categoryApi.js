@@ -82,7 +82,7 @@ const postCategory = (req, res, next) => {
   // who can create categories - add permission here
   const category = new models.Category(req.body.category);
   category.createdBy = user;
-  category.createdDate = Date.now();
+  category.createDate = Date.now();
   category.save((err, doc) => {
     if (err) {
       logger.error(err);

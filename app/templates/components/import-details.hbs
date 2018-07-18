@@ -1,0 +1,40 @@
+<div>
+  <h2>Import Details</h2>
+  <div>
+    <table class="values rows">
+      <tr>
+        <th>Problem</th>
+        <td>
+          <span class="problem title ">{{selectedProblem.title}}</span>
+          {{#if selectedProblem}}
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'selectedProblem'}} class="fas fa-pencil-alt"></i>
+            {{/if}}
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <th>Section</th>
+        <td>
+          <span class="section name">{{selectedSection.name}}</span>
+          {{#if selectedSection}}
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'selectedSection'}}class="fas fa-pencil-alt"></i>
+            {{/if}}
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <th>Number of Files</th>
+        <td>
+          <span class="files number">{{uploadedFiles.length}}</span>
+          {{#if uploadedFiles.length}}
+            {{#if isSelectingImportDetails}}
+              <i {{action "editProblem" 'uploadedFiles'}} class="fas fa-pencil-alt"></i>
+            {{/if}}
+          {{/if}}
+        </td>
+      </tr>
+    </table>
+  </div><!--/half-->
+</div>

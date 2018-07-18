@@ -83,7 +83,7 @@ module.exports = {
   user: {
     _id: '529518daba1cd3d8c4013344',
     validUser: {
-      username: 'testUser2',
+      username: 'testUser3',
     },
   },
   folder: {
@@ -111,7 +111,6 @@ module.exports = {
   submission: {
     _id: '53e1156db48b12793f000407',
     validSubmission: {
-      answer: 'test answer',
       shortAnswer: 'test short answer',
       longAnswer: 'test long answer'
     }

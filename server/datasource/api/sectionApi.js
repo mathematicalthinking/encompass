@@ -89,7 +89,7 @@ const postSection = (req, res, next) => {
   // do we want to check if the user is allowed to create sections?
   const section = new models.Section(req.body.section);
   section.createdBy = user;
-  section.createdDate = Date.now();
+  section.createDate = Date.now();
   section.save((err, doc) => {
     if (err) {
       logger.error(err);

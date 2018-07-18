@@ -31,7 +31,8 @@ exports.put = {};
  "about",
  "stats",
  "cache",
- "imageApi"
+ "imageApi",
+ "importApi"
 ].forEach(function (path) {
     var module = require('./' + path);
 

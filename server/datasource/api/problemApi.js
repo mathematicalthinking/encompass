@@ -93,13 +93,28 @@ const getProblem = (req, res, next) => {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-
-const postProblem = (req, res, next) => {
+/* jshint ignore:start */
+const postProblem = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
+  const imageId = problem.imageId;
+  console.log('imageId', imageId);
+  // use imageId to get image data and set on record
+  try {
+    if (imageId) {
+      console.log('imageId', imageId);
+      const image = await models.Image.findById(imageId);
+      console.log('image', image);
+      //problem.imageSrc = `<img src="${image.data}" alt="${imageAlt}">`
+      problem.imageData = image.data;
+    }
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
   problem.createdBy = user;
-  problem.createdDate = Date.now();
+  problem.createDate = Date.now();
   problem.save((err, doc) => {
     if (err) {
       logger.error(err);
@@ -110,6 +125,7 @@ const postProblem = (req, res, next) => {
     next();
   });
 };
+
 
 /**
   * @public
@@ -221,3 +237,4 @@ module.exports.post.problem = postProblem;
 module.exports.put.problem = putProblem;
 module.exports.put.problem.addCategory = addCategory;
 module.exports.put.problem.removeCategory = removeCategory;
+/* jshint ignore:end */

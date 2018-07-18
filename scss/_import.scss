@@ -1,0 +1,151 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+// GENERAL STYLING
+.import-page {
+  background-color: $background-color;
+  width: 100%;
+  font-family: $primary-font;
+}
+
+.import-work-page {
+  background-color: $background-color;
+  width: 100%;
+  font-family: $primary-font;
+}
+
+.import-nav {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.error-message {
+  @include error-message;
+  margin: 20px 0 20px 0;
+}
+
+.import-prep {
+  width: 500px;
+  margin-top: 20px;
+  margin-left: 10px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+
+  .import-select{
+    margin-bottom: 10px;
+
+    select {
+      margin-bottom: 5px;
+      margin-left: 10px;
+    }
+  }
+
+  .proceed {
+    button {
+      padding: 5px;
+    }
+  }
+  p {
+    padding: 5px;
+  }
+}
+
+.import-details {
+  width: 400px;
+  margin-left: 10px;
+  margin-bottom: 25px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+}
+
+.student-matching-page {
+  .proceed {
+    button {
+      padding: 5px;
+    }
+  }
+  p {
+    padding: 5px;
+  }
+}
+
+.matching-wrapper {
+  display: flex;
+  width: 800px;
+}
+
+.student-list-container {
+  flex: 0 0 auto;
+  width: 300px;
+  margin-top: 20px;
+  margin-left: 10px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+
+  .student-list {
+    li {
+      font-size: 1em;
+      padding: 10px 0;
+      margin: 0 auto;
+    }
+  }
+}
+
+.submissions-container {
+  flex: 1;
+  width: 500px;
+  margin-top: 20px;
+  margin-left: 10px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  padding: 5px;
+
+  .submissions-list {
+    overflow: auto;
+    .student-matching {
+      .proceed {
+        button {
+          padding: 5px;
+        }
+      }
+      p {
+        padding: 5px;
+      }
+      li {
+        padding: 5px;
+        margin-bottom: 10px;
+      }
+      img {
+        margin: 5px;
+        border: 1px solid black;
+        width: 250px;
+        height: 250px;
+      }
+    }
+  }
+}
+
+.import-review-answers-page {
+  p {
+    padding: 5px;
+  }
+
+  .review-answers {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+
+  .workspace-options {
+    width: 500px;
+    margin-left: 10px;
+    margin-bottom: 25px;
+    background-color: white;
+    box-shadow: $box-shadow;
+    padding: 5px;
+  }
+}
+

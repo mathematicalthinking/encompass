@@ -65,6 +65,10 @@ Encompass.Router.map(function() {
     });
     this.route("new");
   });
+  // IMPORT ROUTE
+  this.route("import", function() {
+
+  });
   this.route("logout");
   this.route("unauthorized");
 });

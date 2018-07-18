@@ -373,7 +373,7 @@ function newFolderStructure(user, ws, folderSetName) {
   *         + `submissionSet.description.puzzle.title`
   *         + `submissionSet.description.publication.pubId`
 */
-function nameWorkspace(submissionSet, user) {
+function nameWorkspace(submissionSet, user, isPows) {
   var puzzle = submissionSet.description.puzzle;
   var group = submissionSet.description.group;
   var publication = submissionSet.description.publication;
@@ -384,6 +384,10 @@ function nameWorkspace(submissionSet, user) {
 
   var name = (group) ? helper.format(labelFmt, puzzle.title, group.name, mask(pdSet))
                      : helper.format(labelFmt, puzzle.title, mask(pdSet));
+
+  if (isPows === false && name.includes('PoWs')) {
+    name = name.slice(0, -5);
+  }
   return name;
 }
 
@@ -837,3 +841,5 @@ module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
 module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
+module.exports.packageSubmissions = packageSubmissions;
+module.exports.nameWorkspace = nameWorkspace;

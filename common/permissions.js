@@ -95,15 +95,15 @@ module.exports = {
       throw "bogus permission request: " + permission;
     }
     //console.log("Check is owner.");
-    //var isOwner  = this.isOwner(user, workspace);
+    var isOwner  = this.isOwner(user, workspace);
     //console.log("Check is Editor.");
     var isEditor = this.isEditor(user, workspace);
     //console.log("Check is Admin.");
     var isAdmin  = this.isAdmin(user, workspace);
     //console.log("Done with checks");
     console.log("IS ADMIN: ", isAdmin);
-    //return (isOwner || isEditor || isAdmin);
-    return ( isEditor || isAdmin);
+    return (isOwner || isEditor || isAdmin);
+    //return ( isEditor || isAdmin);
   },
   /*
     This will probably be deprecated ASAP

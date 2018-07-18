@@ -12,10 +12,15 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   uploadedFile: DS.attr(),
   //teacher, class, puzzle TODO
   //teacher: DS.belongsTo(App.User, {embedded:'always'}),
+  teacher: DS.attr(),
+  section: DS.belongsTo('section'),
+  problem: DS.belongsTo('problem'),
+  answer: DS.belongsTo('answer'),
   selections: DS.hasMany('selection', { async: true }),
   comments: DS.hasMany('comment', { async: true }),
   workspaces: DS.hasMany('workspace', { async: true }),
   responses: DS.hasMany('response', { async: true }),
+  isPdf: DS.attr('boolean'),
 
   folders: function () {
     var folders = [];
@@ -48,7 +53,9 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   }.property(),
 
   student: function () {
-    var student = this.get('creator.safeName');
+    var safeName = this.get('creator.safeName');
+    var username = this.get('creator.username');
+    var student = safeName ? safeName : username;
     return student;
   }.property('creator.safeName'),
 

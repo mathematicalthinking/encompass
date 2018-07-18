@@ -1,5 +1,5 @@
 Encompass.Section = DS.Model.extend(Encompass.Auditable, {
-  sectionId: DS.attr('string'),
+  sectionId: Ember.computed.alias('id'),
   name: DS.attr('string'),
   schoolId: DS.attr('string'),
   teachers: DS.hasMany('users'),
