@@ -90,7 +90,7 @@ describe('Responses', function() {
         expect(await helpers.isTextInDom(driver, 'This response was generated from')).to.eql(true);
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(false);
     });
-      it('should display details after clicking more details', async function() {
+      xit('should display details after clicking more details', async function() {
         await driver.findElement(By.css('a#moreDetails')).click();
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(true);
         let commentList = await driver.wait(until.elementsLocated(By.css('section.comments>ul')), 2000);
