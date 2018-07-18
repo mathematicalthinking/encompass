@@ -1,5 +1,5 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Section = require('../server/datasource/schemas').Section;
 
 var data = [{
 
@@ -7,10 +7,10 @@ var data = [{
 
 var SectionsSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Section.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Section.create(data);
   }
 });
 

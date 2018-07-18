@@ -1,5 +1,5 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Comment = require('../server/datasource/schemas').Comment;
 
 var data = [{
 
@@ -7,10 +7,10 @@ var data = [{
 
 var CommentsSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Comment.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Comment.create(data);
   }
 });
 

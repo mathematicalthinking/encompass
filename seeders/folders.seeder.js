@@ -1,5 +1,5 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Folder = require('../server/datasource/schemas').Folder;
 
 var data = [{
 
@@ -7,10 +7,10 @@ var data = [{
 
 var FoldersSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Folder.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Folder.create(data);
   }
 });
 

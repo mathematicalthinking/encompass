@@ -1,5 +1,6 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Workspace = require('../server/datasource/schemas').Workspace;
+
 
 var data = [{
 
@@ -7,10 +8,10 @@ var data = [{
 
 var WorkspacesSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Workspace.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Workspace.create(data);
   }
 });
 

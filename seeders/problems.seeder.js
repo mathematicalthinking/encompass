@@ -1,5 +1,5 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Problem = require('../server/datasource/schemas').Problem;
 
 var data = [{
 
@@ -7,10 +7,10 @@ var data = [{
 
 var ProblemsSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Problem.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Problem.create(data);
   }
 });
 

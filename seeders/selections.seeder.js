@@ -1,5 +1,5 @@
 var Seeder = require('mongoose-data-seed').Seeder;
-var Model = require('../server/models');
+var Selection = require('../server/datasource/schemas').Selection;
 
 var data = [{
 
@@ -7,10 +7,10 @@ var data = [{
 
 var SelectionsSeeder = Seeder.extend({
   shouldRun: function () {
-    return Model.count().exec().then(count => count === 0);
+    return Selection.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Model.create(data);
+    return Selection.create(data);
   }
 });
 
