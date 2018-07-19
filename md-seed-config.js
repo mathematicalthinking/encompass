@@ -8,15 +8,15 @@
 
 var mongooseLib = require('mongoose');
 
-// var Users = require('./seeders/users.seeder');
+var Users = require('./seeders/users.seeder');
 var Sections = require('./seeders/sections.seeder');
 var Answers = require('./seeders/answers.seeder');
-var Comments = require('./seeders/comments.seeder');
+// var Comments = require('./seeders/comments.seeder');
 // var Folders = require('./seeders/folders.seeder');
 // var Pdsubmissions = require('./seeders/pdsubmissions.seeder');
 // var Problems = require('./seeders/problems.seeder');
 var Responses = require('./seeders/responses.seeder');
-// var Selections = require('./seeders/selections.seeder');
+var Selections = require('./seeders/selections.seeder');
 // var Submissions = require('./seeders/submissions.seeder');
 // var Taggings = require('./seeders/taggings.seeder');
 // var Workspaces = require('./seeders/workspaces.seeder');
@@ -37,17 +37,17 @@ module.exports = {
     order is important
   */
   seedersList: {
-    // Users,
     Sections,
+    Users,
     Answers,
-    // Comments,
-    // Folders,
-    // Pdsubmissions,
     // Problems,
     Responses,
-    // Selections,
+    // Folders,
+    // Pdsubmissions,
+    // Workspaces,
+    Selections,
     // Submissions,
     // Taggings,
-    // Workspaces
+    // Comments,
   }
 };
