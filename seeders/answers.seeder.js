@@ -1,3 +1,10 @@
+/*
+ * We are using mongoose-data-seed to seed our test database
+ * The data below has been fitlered using the function found in server/db_migration/filter-mongo.js
+ * To use mongoose-data-seed you must provide the schema to be used for the test data
+ * Then when you run md-seed run it will populate the database with the provide data referencing the schema
+ */
+
 var Seeder = require('mongoose-data-seed').Seeder;
 var Answer = require('../server/datasource/schemas').Answer;
 

@@ -1,9 +1,9 @@
 /*
- * This is main file for seeding our seedDB
+ * This is main file for seeding encompass_seed
  * Commands:
     * md-seed run - this populates db from seed files
-    * md-seed run --dropdb - this resets the db
-    * md-seed g users - this is how you create a seed file
+    * md-seed run --dropdb - this resets and populates db
+    * md-seed g users - this is how you create an individual seed file
  */
 
 var mongooseLib = require('mongoose');
