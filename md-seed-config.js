@@ -44,10 +44,10 @@ module.exports = {
     Responses,
     Selections,
     Workspaces,
-    // Folders,
-    // Pdsubmissions,
+    Folders,
     Submissions,
-    // Taggings,
+    // Pdsubmissions,
+    Taggings,
     // Comments,
   }
 };

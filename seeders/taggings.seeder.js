@@ -2,7 +2,6 @@ var Seeder = require('mongoose-data-seed').Seeder;
 var Tagging = require('../server/datasource/schemas').Tagging;
 
 var data = [
-[
     {
     _id: "53e1194bb48b12793f000a62",
     createDate: "2014-08-05T17:50:03.980Z",
@@ -597,7 +596,6 @@ var data = [
     selection: "53e38ec9b48b12793f0010e4",
     workspace: "53e36522b48b12793f000d3b"
   }
-]
 ];
 
 var TaggingsSeeder = Seeder.extend({
