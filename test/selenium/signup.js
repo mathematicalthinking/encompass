@@ -73,14 +73,13 @@ describe('Signup form', async function () {
         // uncheck terms box from previous test
         await helpers.findAndClickElement(driver, css.signup.inputs.terms);
         await helpers.findAndClickElement(driver, css.signup.submit);
-        await helpers.waitForSelector(driver, 'p');
-        await driver.sleep(1000);
+        await helpers.waitForSelector(driver, css.errorMessage);
         expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
       });
 
     it ('should remove terms error after checking the box', async function() {
       await helpers.findAndClickElement(driver, css.signup.inputs.terms);
-      await driver.sleep(1000);
+      await helpers.waitForRemoval(driver, css.errorMessage);
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.false;
     });
 

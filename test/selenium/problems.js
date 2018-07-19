@@ -43,6 +43,7 @@ describe('Problems', function() {
       await helpers.findAndClickElement(driver, css.topBar.problems);
     });
     it('should display a user\'s problems', async function() {
+      await helpers.waitForSelector(driver, 'ul.your-problems');
       let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
       expect(problems).to.have.lengthOf(2);
       expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
@@ -73,7 +74,6 @@ describe('Problems', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.problemsNew);
       await helpers.waitForSelector(driver, css.newProblem.form);
-      await driver.sleep(1000);
     });
 
     describe('Verify form inputs', async function() {
@@ -102,7 +102,7 @@ describe('Problems', function() {
 
       it ('should display success message after submitting', async function() {
         await submitProblem(problem.details, true);
-        await driver.sleep(1000);
+        await helpers.waitForSelector(driver, css.successMessage);
         expect(await helpers.isTextInDom(driver, `Successfully created problem`)).to.be.true;
       });
 
