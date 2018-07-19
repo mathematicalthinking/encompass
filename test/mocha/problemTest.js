@@ -37,7 +37,7 @@ describe('Problem CRUD operations', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('problems');
         expect(res.body.problems).to.be.a('array');
-        expect(res.body.problems[0].title).to.eql("Rick's Public");
+        expect(res.body.problems[0].title).to.eql("Rick's Private");
         done();
       });
     });

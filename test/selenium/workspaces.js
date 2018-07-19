@@ -200,7 +200,7 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(comments.length).to.eql(2);
+        expect(comments.length).to.eql(1);
         expect(commentsText[0]).to.contain('I spoke with Michael about the balance');
       });
 

@@ -95,7 +95,7 @@ module.exports = function (grunt) {
         command: 'mongorestore --drop --db=encompass_test ./test/data/encompass_test'
       },
       restoreSeedDb: {
-        command: ' md-seed run --dropdb'
+        command: 'md-seed run --dropdb'
       },
       sleep3: {
         command: "echo 'sleep start';sleep 3;echo 'sleep done'"
