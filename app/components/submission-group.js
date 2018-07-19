@@ -38,7 +38,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
       });
 
     return threads;
-  }.property('this.submissions.[]'),
+  }.property('submissions.[]'),
 
   studentWork: function(student) {
     var submissions = this.get('submissions')
@@ -57,14 +57,16 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     });
 
     return pointers;
-  }.property('this.submissionThreads.[]'),
+  }.property('submissionThreads.[]'),
 
   currentThread: function() {
+    console.log('calculating currentThread');
     return this.get('submissionThreads')
       .get( this.get('currentStudent') );
-  }.property('this.submission'),
+  }.property('submission'),
 
   prevThread: function() {
+    console.log('calculating prevThread');
     var thread = this.get('currentThread.lastObject');
 
     if(thread === this.get('firstThread')) {
@@ -72,12 +74,16 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     }
 
     var prevIndex = this.get('submissionThreadHeads').indexOf(thread) - 1;
+    console.log('prevIndex', prevIndex);
+
     var prev = this.get('submissionThreadHeads').objectAt(prevIndex);
+    console.log('prev', prev);
 
     return prev;
   }.property('currentThread', 'firstThread'),
 
   nextThread: function() {
+    console.log('calculating nextThread');
     var thread = this.get('currentThread.lastObject');
 
     if(thread === this.get('lastThread')) {
@@ -88,7 +94,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     var next = this.get('submissionThreadHeads').objectAt(nextIndex);
 
     return next;
-  }.property('this.submission', 'currentThread', 'lastThread'),
+  }.property('submission', 'currentThread', 'lastThread'),
 
   currentRevisions: function() {
     var dateTime  = 'l h:mm';
@@ -96,7 +102,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     var revisions = [];
 
     if(thread) {
-      revisions = thread.map(function(submission, index, thread) { 
+      revisions = thread.map(function(submission, index, thread) {
         return {
           index: index+1, // Because arrays are zero-indexed
           label: moment(submission.get('createDate')).format(dateTime),
@@ -108,6 +114,10 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
 
     return revisions;
   }.property('currentThread'),
+
+  currentSubmissionIndex: function() {
+    return this.submissions.sortBy('student').indexOf(this.submission) + 1;
+  }.property('submissionThreads.[]', 'submission'),
 
   actions: {
     toggleStudentList: function() {
