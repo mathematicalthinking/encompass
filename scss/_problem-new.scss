@@ -1,0 +1,9 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+form#problem {
+  .required-error {
+    border: 1px solid red;
+  }
+}
