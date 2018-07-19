@@ -59,43 +59,6 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     return pointers;
   }.property('submissionThreads.[]'),
 
-  currentThread: function() {
-    console.log('calculating currentThread');
-    return this.get('submissionThreads')
-      .get( this.get('currentStudent') );
-  }.property('submission'),
-
-  prevThread: function() {
-    console.log('calculating prevThread');
-    var thread = this.get('currentThread.lastObject');
-
-    if(thread === this.get('firstThread')) {
-      return this.get('lastThread');
-    }
-
-    var prevIndex = this.get('submissionThreadHeads').indexOf(thread) - 1;
-    console.log('prevIndex', prevIndex);
-
-    var prev = this.get('submissionThreadHeads').objectAt(prevIndex);
-    console.log('prev', prev);
-
-    return prev;
-  }.property('currentThread', 'firstThread'),
-
-  nextThread: function() {
-    console.log('calculating nextThread');
-    var thread = this.get('currentThread.lastObject');
-
-    if(thread === this.get('lastThread')) {
-      return this.get('firstThread');
-    }
-
-    var nextIndex = this.get('submissionThreadHeads').indexOf(thread) + 1;
-    var next = this.get('submissionThreadHeads').objectAt(nextIndex);
-
-    return next;
-  }.property('submission', 'currentThread', 'lastThread'),
-
   currentRevisions: function() {
     var dateTime  = 'l h:mm';
     var thread    = this.get('currentThread');
@@ -111,12 +74,70 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
         };
       });
     }
-
     return revisions;
   }.property('currentThread'),
 
+  currentThread: function() {
+    console.log('calculating currentThread');
+    return this.get('submissionThreads')
+      .get( this.get('currentStudent') );
+  }.property('submission'),
+
+  prevThread: function() {
+    const currentThread = this.get('currentThread');
+    const ix = currentThread.indexOf(this.submission);
+    if (currentThread.length > 1) {
+      if (!Ember.isEqual(this.submission, currentThread[currentThread.length - 1])) {
+        return currentThread[ix + 1];
+      }
+    }
+
+    var thread = this.get('currentThread.lastObject');
+    if(thread === this.get('firstThread')) {
+      return this.get('lastThread');
+    }
+     var prevIndex = this.get('submissionThreadHeads').indexOf(thread) - 1;
+     var prev = this.get('submissionThreadHeads').objectAt(prevIndex);
+    return prev;
+  }.property('currentThread', 'firstThread'),
+
+  nextThread: function() {
+    const currentThread = this.get('currentThread');
+    const ix = currentThread.indexOf(this.submission);
+    if (currentThread.length > 1) {
+      if (!Ember.isEqual(this.submission, currentThread[0])) {
+        return currentThread[ix - 1];
+      }
+    }
+    var thread = this.get('currentThread.lastObject');
+
+    if(thread === this.get('lastThread')) {
+      return this.get('firstThread');
+    }
+
+    var nextIndex = this.get('submissionThreadHeads').indexOf(thread) + 1;
+    var next = this.get('submissionThreadHeads').objectAt(nextIndex);
+
+    return next;
+  }.property('submission', 'currentThread', 'lastThread'),
+
+  currentRevisionIndex: function() {
+    const revisions = this.get('currentRevisions');
+    const currentSubmissionId = this.get('submission').id;
+    if (revisions.length === 1) {
+      return 1;
+    }
+
+    return revisions.filter((rev) => {
+      return Ember.isEqual(rev.revision.id, currentSubmissionId);
+      }).objectAt(0).index;
+  }.property('submission'),
+
+  sortCriteria: ['student', 'createDate:desc'],
+  sortedSubmissions: Ember.computed.sort('submissions', 'sortCriteria'),
+
   currentSubmissionIndex: function() {
-    return this.submissions.sortBy('student').indexOf(this.submission) + 1;
+    return this.get('sortedSubmissions').indexOf(this.submission) + 1;
   }.property('submissionThreads.[]', 'submission'),
 
   actions: {
