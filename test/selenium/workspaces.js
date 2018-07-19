@@ -147,7 +147,7 @@ describe('Visiting Workspaces', function() {
       });
     });
 
-    xdescribe('clicking the prev/next arrows', function() {
+    describe('clicking the prev/next arrows', function() {
       // The arrow clicks only seem to work once each way?
       let afterLeftClick;
       let afterRightClick;
@@ -164,8 +164,8 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(afterLeftClick).to.eql('Tyler K.');
-        expect(afterRightClick).to.eql('Carty L.');
+        expect(afterLeftClick).to.eql('Peg C.');
+        expect(afterRightClick).to.eql('Andrew S.');
       });
     });
 
