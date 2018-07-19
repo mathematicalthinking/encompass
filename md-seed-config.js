@@ -48,6 +48,6 @@ module.exports = {
     Submissions,
     // Pdsubmissions,
     Taggings,
-    // Comments,
+    Comments,
   }
 };
