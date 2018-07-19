@@ -68,19 +68,18 @@ describe('Signup form', async function () {
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.false;
     });
 
-    xit('should display terms error if submitted without checking agree to terms',
+    it('should display terms error if submitted without checking agree to terms',
       async function() {
         // uncheck terms box from previous test
         await helpers.findAndClickElement(driver, css.signup.inputs.terms);
         await helpers.findAndClickElement(driver, css.signup.submit);
-        await helpers.waitForSelector(driver, 'p');
-        await driver.sleep(5000);
+        await helpers.waitForSelector(driver, css.errorMessage);
         expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
       });
 
-    xit ('should remove terms error after checking the box', async function() {
+    it ('should remove terms error after checking the box', async function() {
       await helpers.findAndClickElement(driver, css.signup.inputs.terms);
-      await driver.sleep(3000);
+      await helpers.waitForRemoval(driver, css.errorMessage);
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.false;
     });
 

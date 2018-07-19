@@ -4,7 +4,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
-  agreedToTerms: null,
+  agreedToTerms: false,
   emailExistsError: null,
   org: null,
 
@@ -77,15 +77,14 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
-      // determine if need to create new organization
       var createUserData = {
         name: name,
         email: email,
-        //organization: organization.id,
         location: location,
         username: username,
         password: password,
-        requestReason: requestReason
+        requestReason: requestReason,
+        isStudent: false
       };
 
       return that.handleOrg(organization)
@@ -98,6 +97,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
           } else if (res.message === 'There already exists a user with that email address.') {
             that.set('emailExistsError', res.message);
           } else {
+            // TODO: Change how we're redirecting
             that.sendAction('toHome');
           }
         })

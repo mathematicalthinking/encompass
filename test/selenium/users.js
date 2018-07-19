@@ -153,15 +153,13 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
       });
 
-      xit('should let you create a new authorized user', async function() {
+      it('should let you create a new authorized user', async function() {
         let username = `muzzy`
         let displayName = 'muzzy'
         await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
         await helpers.waitForSelector(driver, 'ul.listing');
-        await driver.sleep(5000);
-
         expect(await helpers.findAndGetText(driver, 'ul.listing>li.is-authorized:last-of-type')).to.contain(username);
       });
     }

@@ -147,7 +147,7 @@ describe('Visiting Workspaces', function() {
       });
     });
 
-    xdescribe('clicking the prev/next arrows', function() {
+    describe('clicking the prev/next arrows', function() {
       // The arrow clicks only seem to work once each way?
       let afterLeftClick;
       let afterRightClick;
@@ -164,20 +164,20 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(afterLeftClick).to.eql('Tyler K.');
-        expect(afterRightClick).to.eql('Carty L.');
+        expect(afterLeftClick).to.eql('Peg C.');
+        expect(afterRightClick).to.eql('Andrew S.');
       });
     });
 
     describe('Visiting a Selection in ESI 2014', function() {
       before(async function() {
         let submissionId = '53e36522729e9ef59ba7f4de';
-        let selectionId = '53e38ec2b48b12793f0010e2';
+        let selectionId = '53e38e83b48b12793f0010de';
         await helpers.waitForAndClickElement(driver, `a[href="#/workspaces/${workspaceId}/submissions/${submissionId}/selections/${selectionId}"]`);
         await helpers.waitForSelector(driver, 'div#al_feedback_display');
       });
 
-      xit('should display a bunch of submissions', async function() {
+      it('should display a bunch of submissions', async function() {
         let currentUrl;
         try {
           currentUrl = await driver.getCurrentUrl();

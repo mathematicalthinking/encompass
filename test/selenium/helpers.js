@@ -142,6 +142,16 @@ const waitForSelector = async function (webDriver, selector, timeout = 3000) {
   }
 };
 
+const waitForRemoval = async function (webDriver, selector, timeout=3000) {
+  try {
+    return await webDriver.wait(async function() {
+      return await isElementVisible(webDriver, selector) === false;
+    }, timeout=3000);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const findInputAndType = async function (webDriver, selector, text) {
   try {
     let input = await getWebElements(webDriver, selector);
@@ -236,3 +246,4 @@ module.exports.signupErrors = signupErrors;
 module.exports.signinErrors = signinErrors;
 module.exports.clearElement = clearElement;
 module.exports.newProblem = newProblem;
+module.exports.waitForRemoval = waitForRemoval;

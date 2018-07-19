@@ -14,8 +14,10 @@
 <nav class="import-nav">
   {{#unless isSelectingImportDetails}}
     {{#unless uploadedSubmissions}}
-    <div {{action "backToPrevStep" prevStep}} class="back">
-      <i class="fas fa-arrow-left"></i>
+    <div class="import-nav-back">
+      <button class="import-nav-button" {{action "backToPrevStep" prevStep}}>
+        <i class="fas fa-arrow-left"></i>
+      </button>
         <label for="back">Back to {{prevStep}}</label>
     </div>
     {{/unless}}

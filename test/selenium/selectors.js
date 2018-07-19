@@ -50,5 +50,7 @@ module.exports = {
     imageUpload: 'form.image-upload',
     submit: 'button.action_button'
   },
-  greeting: '#current-username'
+  greeting: '#current-username',
+  errorMessage: '.error-message',
+  successMessage: '.success-message'
 };

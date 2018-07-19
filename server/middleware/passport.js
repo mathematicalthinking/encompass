@@ -88,7 +88,7 @@ module.exports = (passport) => {
             return next(null, false, {
               message: "Username already exists"
             });
-          } else {
+          } else if(!req.body.isStudent) {
             User.findOne({
               'email': req.body.email
             }, (err, user) => {
@@ -99,37 +99,39 @@ module.exports = (passport) => {
                 return next(null, false, {
                   message: "There already exists a user with that email address."
                 });
-              } else {
-                const {
-                  name,
-                  email,
-                  organization,
-                  location,
-                  username,
-                  password,
-                  requestReason,
-                } = req.body;
-                const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-                const newUser = new User({
-                  name,
-                  email,
-                  organization,
-                  location,
-                  username,
-                  password: hashPass,
-                  isAuthorized: true,
-                  requestReason,
-                });
-
-                newUser.save((err) => {
-                  if (err) {
-                    next(err);
-                  }
-                  return next(null, newUser);
-                });
               }
             });
           }
+
+          const {
+            name,
+            email,
+            organization,
+            location,
+            username,
+            password,
+            requestReason,
+            isStudent
+          } = req.body;
+          const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+          const newUser = new User({
+            name,
+            email,
+            organization,
+            location,
+            username,
+            password: hashPass,
+            isAuthorized: true,
+            requestReason,
+            isStudent
+          });
+
+          newUser.save((err) => {
+            if (err) {
+              next(err);
+            }
+            return next(null, newUser);
+          });
         });
       });
     }));

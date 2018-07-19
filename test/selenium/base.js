@@ -72,7 +72,7 @@ describe('Home Page', function () {
 
     it('should display incorrect password if wrong password submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
-      await driver.sleep(1000);
+      await helpers.waitForSelector(driver, css.errorMessage);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.password)).to.be.true;
     });
 
@@ -83,7 +83,7 @@ describe('Home Page', function () {
 
     it('should display incorrect username if wrong username submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
-      await driver.sleep(1000);
+      await helpers.waitForSelector(driver, css.errorMessage);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.true;
     });
 
@@ -136,7 +136,7 @@ describe('Home Page', function () {
   describe('Logging Out', function () {
     it('should redirect to homepage after logging out', async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
-      await helpers.waitForSelector(driver, css.topBar.home);
+      await helpers.waitForSelector(driver, css.topBar.login);
       expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
       expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
@@ -169,7 +169,6 @@ describe('Home Page', function () {
       });
 
       it('should display privacy notice', async function () {
-        //await driver.sleep(20000);
       });
     });
   });

@@ -131,7 +131,6 @@ describe('Responses', function() {
       //       // await driver.wait(until.urlMatches(/#\/responses.?$/));
       //       //await driver.wait(until.elementLocated(By.css('table')),3000);
       //       // await driver.takeScreenshot();
-      //       await driver.sleep(5000);
       //       expect(await driver.getCurrentUrl()).to.match(/#\/responses.?$/);
       //       //expect(await helpers.isTextInDom(driver, 'a few seconds ago')).to.eql(true);
       //       //expect(await helpers.isTextInDom(driver, `${helpers.admin} editedHello`)).to.eql(true);
