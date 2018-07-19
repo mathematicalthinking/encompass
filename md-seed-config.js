@@ -11,14 +11,14 @@ var mongooseLib = require('mongoose');
 var Users = require('./seeders/users.seeder');
 var Sections = require('./seeders/sections.seeder');
 var Answers = require('./seeders/answers.seeder');
-// var Comments = require('./seeders/comments.seeder');
-// var Folders = require('./seeders/folders.seeder');
-// var Pdsubmissions = require('./seeders/pdsubmissions.seeder');
+var Comments = require('./seeders/comments.seeder');
+var Folders = require('./seeders/folders.seeder');
+var Pdsubmissions = require('./seeders/pdsubmissions.seeder');
 var Problems = require('./seeders/problems.seeder');
 var Responses = require('./seeders/responses.seeder');
 var Selections = require('./seeders/selections.seeder');
-// var Submissions = require('./seeders/submissions.seeder');
-// var Taggings = require('./seeders/taggings.seeder');
+var Submissions = require('./seeders/submissions.seeder');
+var Taggings = require('./seeders/taggings.seeder');
 var Workspaces = require('./seeders/workspaces.seeder');
 
 mongooseLib.Promise = global.Promise || Promise;
@@ -43,10 +43,10 @@ module.exports = {
     Problems,
     Responses,
     Selections,
+    Workspaces,
     // Folders,
     // Pdsubmissions,
-    Workspaces,
-    // Submissions,
+    Submissions,
     // Taggings,
     // Comments,
   }
