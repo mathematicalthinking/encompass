@@ -2,9 +2,6 @@
  * These tests are all pending now because the test db needs to be updated
  */
 
-
-
-
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
