@@ -10,7 +10,7 @@
         <ol>
           <li>
             <label for="title">Problem Name</label>
-            {{input id="title" type="text" value=title placeholder="enter problem name"}}
+            {{input id="title" required="true" type="text" value=title placeholder="enter problem name"}}
           </li>
           <li>
             <label for="text">Problem Question</label>
@@ -30,18 +30,21 @@
           </li>
           <li>
             <label for="isPublic">Public</label>
-            {{input type="radio" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
+            {{input type="radio" required="true" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
             <label>Yes</label>
             {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
             <label>No</label>
           </li>
         </ol>
       </fieldset>
+      {{#if isMissingRequiredFields}}
+        <p class="error-message">Please provide all required fields.</p>
+      {{/if}}
     </form>
   </section>
   <div style="clear: left"></div>
   <section class="submit">
-    <button class="action_button" {{action 'createProblem'}}>
+    <button class="action_button" {{action 'createProblem'}} disabled={{isMissingRequiredFields}}>
       Create Problem
     </button>
   </section>
