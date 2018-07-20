@@ -126,7 +126,7 @@
       {{!-- verify if section successfully created --}}
       {{#if createdSection}}
         <p>Successfully created section
-          {{#link-to 'section' createdSection  classNames='section'}}{{createdSection.name}}
+          {{#link-to 'section' createdSection  classNames='section-new'}}{{createdSection.name}}
           {{/link-to}}</p>
       {{else}}
         <p>{{createSectionError}}</p>

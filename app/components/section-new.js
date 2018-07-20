@@ -120,13 +120,16 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var organization = this.get('selectedOrganization');
     var user = this.get('user');
     var students = this.get('createdStudents');
+    var teacher = this.get('teacher');
     var leader = this.get('leader');
     var teachers = this.get('teachers');
     if (user.get('isAdmin')) {
       //check if user exists
-      let users = this.users.filterBy('username', leader);
+      let users = this.users.filterBy('username', teacher);
+      console.log('users');
       if (!Ember.isEmpty(users)) {
         let user = users.get('firstObject');
+        console.log('teacher', user)
         teachers.pushObject(user);
       } else {
         this.set('invalidTeacherUsername', true);
