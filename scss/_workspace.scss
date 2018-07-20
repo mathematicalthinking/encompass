@@ -1,0 +1,16 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.create-new-workspace {
+  margin: 20px;
+  a {
+    margin-left: 5px;
+      &:hover {
+        color: $accent-color;
+      }
+  }
+  &:hover {
+    color: $accent-color;
+  }
+}

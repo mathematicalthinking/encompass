@@ -20,7 +20,7 @@
       <th align="left">Folders</th>
       <th align="left">Comments</th>
       <th align="left">Responses</th>
-      <th align="left">Owner</th>s
+      <th align="left">Owner</th>
       <th align="left">Editors</th>
     </tr>
    </thead>
@@ -49,7 +49,10 @@
         <td>{{#link-to 'workspace.info' workspace}}{{workspace.editorsLength}}{{/link-to}}</td>
       </tr>
     {{/each}}
+      <p class="create-new-workspace">
+        <i class="fas fa-plus"></i>
+         {{#link-to 'workspaces.new' id="new-workspace-link"}}Create a New Workspace{{/link-to}}
+      </p>
    </tbody>
-     {{#link-to 'workspaces.new' id="new-workspace-link"}}new{{/link-to}}
   </table>
 
