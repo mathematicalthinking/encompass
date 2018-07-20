@@ -1,26 +1,48 @@
 @import "variables";
 @import "mixins";
 @import "responsive-font-size";
-@media screen and (min-width: $screen-xs-min) and (max-width: $screen-sm-max) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 770px) {
   #al_header {
     #menu-toggle {
       display: none;
+      // background-color: red;
+      font-size: .5em;
     }
   }
 }
 
-@media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+@media screen and (min-width: 771px) and (max-width: 1345px) {
   #al_header {
     #menu-toggle {
-      display: none;
+      // background-color: blue;
+      font-size: .8em;
+      li {
+        padding: 0 10px;
+      }
+      #home-btn {
+        display: none;
+      }
     }
+  }
+  #encompass-logo {
+    width: 75px;
+    height: 80px;
+    display: block;
+    float: left;
+    position: relative;
+    top: -8px;
+    text-indent: -99999px;
+    background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
 }
 
-@media screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) {
-  // #al_header {
-  //   // background-color: yellow;
-  // }
+@media screen and (min-width: 1346px) and (max-width: 10000px) {
+  #al_header {
+    #menu-toggle {
+      // background-color: yellow;
+      font-size: 1em;
+    }
+  }
 }
 
 // STYLING FOR THE ENCOMPASS LOGO
@@ -112,6 +134,7 @@
   height: 100px;
   #main-nav {
     float: right;
+    margin-top: 5px;
   }
   li {
     line-height: 50px;
@@ -120,16 +143,22 @@
     padding: 0 20px;
     vertical-align: middle;
     text-align: center;
+    .active {
+      background-color: #ffd204;
+      padding: 10px 10px;
+      border-radius: 3px; // color: white;
+    }
+    .caret-down {
+      padding: 0 10px 0 0;
+    }
   }
   ul {
     font-size: 1em;
   }
   a {
     &:hover {
-      color: #8e8e8e;
-    }
-    &::last-child {
-      border-right: none;
+      color:$primary-font-color;
+      font-weight: $bolder-font-weight;
     }
     .active {
       border-bottom: 2px solid #ffd204;
@@ -215,14 +244,22 @@ nav.actions>ul {
 .dropdown {
   position: right;
   overflow: hidden;
+  .active {
+    background-color: #ffd204;
+    padding: 10px 10px;
+    border-radius: 3px;
+    color: white;
+    &:hover {
+      color: white;
+    }
+  }
 }
 
 
 .dropdown-content {
   display: none;
   position: absolute;
-  margin-left: -20px;
-  background-color: #f9f9f9;
+  background-color: white;
   min-width: 100px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
@@ -230,7 +267,7 @@ nav.actions>ul {
 
 .dropdown-content a {
   float: none;
-  color: black;
+  color: $primary-font-color;
   padding: 5px;
   text-decoration: none;
   display: block;
@@ -238,7 +275,7 @@ nav.actions>ul {
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd;
+  background-color: #ffd204;
 }
 
 .dropdown:hover .dropdown-content {
