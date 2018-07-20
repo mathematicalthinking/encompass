@@ -1,136 +1,118 @@
 Encompass.FormValidatorService = Ember.Service.extend({
-  componentForm: null,
+  formId: null,
   inputs: [],
+  requiredInputs: null,
+  invalidInputs: null,
+  isPristine: null, // if user has not interacted with form yet
+  isDirty: Ember.computed.not('isPristine'), // if user has interacted
+  isSubmitted: null, // true if user has tried to submit form
+
+  setupListeners: function(formId) {
+    var that = this;
+    const $reqs = this.getRequiredInputs(formId);
+    $reqs.each(function() {
+       $(this).change(function() {
+         that.reqInputOnChange($(this));
+       });
+     });
+  },
+
+  reqInputOnChange: function($el) {
+    const id = this.get('formId');
+    const $invalidInputs = this.getInvalidInputs(id);
+    this.set('invalidInputs', $invalidInputs);
+    if (this.get('isPristine')) {
+      this.set('isPristine', false);
+    }
+    this.get('isValid');
+    if (this.get('isSubmitted')) {
+      this.handleRequiredInputErrors($el);
+    }
+  },
+
+  handleRequiredInputErrors: function($el) {
+    let isElInvalid = Ember.isEmpty($el.val());
+    if (isElInvalid) {
+      $el.toggleClass('required-error', true);
+    } else {
+      $el.toggleClass('required-error', false);
+    }
+    this.get('checkForm')();
+  },
 
   init() {
     this._super(...arguments);
     console.log('initializing form validator');
-    console.log('this', this);
   },
 
-  setupListeners: function(formId, fn) {
-    const $form = $(formId);
-    const reqs = this.getRequiredInputs($form);
-    reqs.on('keyup', function(e) {
-      fn();
-    });
+  initialize: function(formId, isMissing) {
+    this.set('formId', formId);
+    this.set('isPristine', true);
+    this.set('isSubmitted', false);
+    this.set('checkForm', isMissing);
+    this.setupListeners(formId);
   },
 
-  verifyFormState: function(formId) {
-    let $form = $(formId);
-
-    let invalidInputs = this.getInvalidInputs($form);
-    console.log('invalids', invalidInputs);
-    let isClean = invalidInputs.length === 0;
-    console.log('is form clean?', isClean);
-    if (isClean) {
-      if ($form.hasClass('required-error')) {
-        $form.removeClass('required-error');
-      }
-    } else {
-      if (!$form.hasClass('required-error')) {
-        $form.addClass('required-error');
-        //$form.append('<p class="error-message">Error</p>');
-      }
+  isValid: function() {
+    console.log('computing isValid');
+    if(this.get('isPristine')) {
+      return false;
     }
-    //return this.isMissingRequiredFields(formId);
-  },
+    const id = this.get('formId');
+    const $invalids = this.getInvalidInputs(id);
+
+    return this.get('isDirty') && Ember.isEmpty($invalids);
+  }.property('invalidInputs.[]', 'isPristine'),
+
+  isInvalid: Ember.computed('isDirty', 'isValid', function() {
+    return this.get('isDirty') && !this.get('isValid');
+  }),
 
   isMissingRequiredFields: function(id) {
-    const $form = $(id);
-    console.log('in is missing val', $form.hasClass('required-error'));
-    return this.getInvalidInputs($form).length > 0;
+    return this.getInvalidInputs(id).length > 0;
   },
-  getRequiredInputs: function(form) {
-    if (!form) {
+  getRequiredInputs: function(formId) {
+    const $form = $(formId);
+    if (!$form) {
       return;
     }
-    return form.find("input[required]");
+    let reqs = $form.find("input[required]");
+
+    this.set('requiredInputs', reqs);
+    return reqs;
   },
 
-  getInvalidInputs: function(form) {
-    return this.getRequiredInputs(form)
+  getInvalidInputs: function(formId) {
+    let $invalids = this.getRequiredInputs(formId)
       .filter(function(ix, inp) {
         let val = $(this).val();
-        console.log('val', val);
-        return val === null || val === undefined || val === '';
+        return Ember.isEmpty(val);
       });
+      this.set('invalidInputs', $invalids);
+      return $invalids;
   },
-
+  // run on form submit
   validate: function(formId) {
-    this.set('formId', formId);
-    const that = this;
     return new Promise((resolve, reject) => {
       let ret = {};
-      let isFormValid;
-
       if (!formId) {
-        return reject('Invalid Arguments');
+        return reject(new Error('Invalid form id!'));
       }
 
-    const $form = $(formId);
-    console.log('validating form: ', $form);
+      if (!this.get('isSubmitted')) {
+        this.set('isSubmitted', true);
+      }
 
-    const $inputs = $form.find('input');
-    const $requiredInputs = $form.find("input[required]");
-    const $invalidInputs = $requiredInputs.filter(function(index, inp) {
-      console.log('index', index);
-      console.log('inp',inp);
-      console.log('$(this): ', $(this));
-      let val = $(this).val();
-      console.log('val', val);
-      return Ember.isEmpty(val);
-    });
+      ret.isValid = this.get('isValid');
 
-    isFormValid = Ember.isEmpty($invalidInputs);
-    ret.isValid = isFormValid;
-
-    if (isFormValid) {
-      return resolve(ret);
-    }
-
-    //handle errors
-    return that.handleRequiredFieldErrors($invalidInputs, formId)
-      .then(() => {
-        ret.didSetRequiredFieldErrors = true;
+      if (ret.isValid) {
         return resolve(ret);
-      })
-      .catch((err) => {
-        console.log(err);
-        ret.didSetRequiredFieldErrors = false;
-        return reject(ret);
-      });
-    });
-  },
-
-  handleRequiredFieldErrors: function(arr, id) {
-    const that = this;
-    const $form = $(id);
-    return new Promise((resolve, reject) => {
-      if (!arr) {
-        return reject('Invalid arguments');
       }
-      let $inputs = arr;
+      // else form is Invalid; handle errors
+      ret.invalidInputs = this.getInvalidInputs(formId);
+      this.handleRequiredInputErrors(ret.invalidInputs);
 
-      // add error class to each input
-      console.log('adding classes');
-      $form.addClass('required-error');
-      $inputs.addClass('required-error');
-      $inputs.on('keyup', function(e) {
-        console.log('e', e);
-        if ($(this).hasClass('required-error')) {
-          $(this).removeClass('required-error');
-          $(this).off('keyup');
-        }
-        that.verifyFormState(that.get('formId'));
-      });
-      return resolve(true);
+      return resolve(ret);
     });
-
   },
-
-
-
-
-
 });
