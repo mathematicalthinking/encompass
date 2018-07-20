@@ -14,7 +14,7 @@
           </li>
           <li>
             <label for="text">Problem Question</label>
-            {{input id="text" type="text" value=text placeholder="enter problem question"}}
+            {{input id="text" required="true" type="text" value=text placeholder="enter problem question"}}
           </li>
           <li>
             <label for="categories">Problem Category</label>
@@ -29,11 +29,11 @@
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
           <li>
-            <label for="isPublic">Public</label>
-            {{input type="radio" required="true" name="isPublic" class="isTrue" value="true" click=(action "radioSelect" true)}}
-            <label>Yes</label>
-            {{input type="radio" name="isPublic" class="isFalse" value="false" click=(action "radioSelect" false)}}
-            <label>No</label>
+            <label for="isPublic">Privacy Settings</label>
+            {{input type="radio" value=isPublic required="true" name="isPublic" class="private" click=(action "radioSelect" false)}}
+            <label>Private</label>
+            {{input type="radio" value=isPublic required="true" name="isPublic" class="public" click=(action "radioSelect" true)}}
+            <label>Public</label>
           </li>
         </ol>
       </fieldset>
@@ -44,7 +44,7 @@
   </section>
   <div style="clear: left"></div>
   <section class="submit">
-    <button class="action_button" {{action 'createProblem'}} disabled={{isMissingRequiredFields}}>
+    <button class="action_button" {{action 'validate'}}>
       Create Problem
     </button>
   </section>
