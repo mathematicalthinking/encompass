@@ -2,7 +2,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   filesToBeUploaded: null,
   createdProblem: null,
   createProblemError: null,
-  invalidRequiredFields: [],
   isMissingRequiredFields: null,
   isPublic: null,
   validator: Ember.inject.service('form-validator'),
@@ -17,9 +16,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   checkMissing: function() {
     const id = this.get('formId');
-    let testVals = this.get('validator').isMissingRequiredFields(id);
-    console.log('ismissing: ', testVals);
-    this.set('isMissingRequiredFields', testVals);
+    let isMissing = this.get('validator').isMissingRequiredFields(id);
+    this.set('isMissingRequiredFields', isMissing);
   },
   createProblem: function() {
     var that = this;
