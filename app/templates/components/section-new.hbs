@@ -15,7 +15,7 @@
  <fieldset>
   <section class="newSection">
     <section class="third sections">
-      <form id='section' class='properForm'>
+      <form id='new-section' class='properForm'>
         <ol>
           <li>
             <label for="title">Class/Group Names</label>
@@ -32,8 +32,10 @@
                 {{#if invalidTeacherUsername}}
                 <p>Sorry, there is no teacher with that username.</p>
                 {{/if}}
+                <section class="org options">
               <label for="organization">Organization  </label>
-              {{my-select content = organizations optionLabelPath="name" prompt="Please select an organization" action=(action (mut selectedOrganization))}}
+              {{my-select content=organizations optionLabelPath="name" prompt="Please select an organization" action=(action (mut selectedOrganization))}}
+              </section>
             {{!-- {{input id="organization" type="text" value=organization placeholder="enter organization"}} --}}
           </li>
         </ol>

@@ -67,6 +67,14 @@ describe('Sections', function () {
         it (`${input} field should be visible`, async function() {
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         })
+        describe('should display organization options', function() {
+          it('should display organization dropdown menu', async function() {
+            expect(await helpers.isElementVisible(driver, 'section.third.sections select')).to.be.true;
+          });
+          it('folders dropdown menu should have at least an option', async function() {
+            expect(await helpers.getWebElements(driver, 'section.third.sections select>option')).to.have.lengthOf.at.least(1);
+          });
+        });
       }
     }
     before(async function() {

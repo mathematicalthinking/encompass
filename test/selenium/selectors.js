@@ -52,13 +52,13 @@ module.exports = {
   },
   greeting: '#current-username',
   errorMessage: '.error-message',
-  successMessage: '.success-message'
+  successMessage: '.success-message',
 
   newSection: {
     form: 'form#section',
     inputs: {
       name: 'input#newSectionName',
-      teachers: 'input#teacher'
+      teachers: 'input#teacher',
     },
     create: 'button.action_button'
   }
