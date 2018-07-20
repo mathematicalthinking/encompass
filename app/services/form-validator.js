@@ -11,7 +11,7 @@ Encompass.FormValidatorService = Ember.Service.extend({
     var that = this;
     const $reqs = this.getRequiredInputs(formId);
     $reqs.each(function() {
-       $(this).change(function() {
+      $(this).change(function() {
          that.reqInputOnChange($(this));
        });
      });
@@ -31,12 +31,27 @@ Encompass.FormValidatorService = Ember.Service.extend({
   },
 
   handleRequiredInputErrors: function($el) {
-    let isElInvalid = Ember.isEmpty($el.val());
-    if (isElInvalid) {
-      $el.toggleClass('required-error', true);
+    let isElInvalid;
+
+    if ($el.is(':radio')) {
+      let name = $el.attr('name');
+      let $radioSet = $(`input[name=${name}]`);
+      let isSetInvalid = $(`input[name=${name}]:checked`).length === 0;
+
+      if (isSetInvalid) {
+        $radioSet.toggleClass('required-error', true);
+      } else {
+        $radioSet.toggleClass('required-error', false);
+      }
     } else {
-      $el.toggleClass('required-error', false);
+      isElInvalid = Ember.isEmpty($el.val());
+      if (isElInvalid) {
+        $el.toggleClass('required-error', true);
+      } else {
+        $el.toggleClass('required-error', false);
+      }
     }
+
     this.get('checkForm')();
   },
 
@@ -93,6 +108,7 @@ Encompass.FormValidatorService = Ember.Service.extend({
   },
   // run on form submit
   validate: function(formId) {
+    var that = this;
     return new Promise((resolve, reject) => {
       let ret = {};
       if (!formId) {
@@ -110,7 +126,9 @@ Encompass.FormValidatorService = Ember.Service.extend({
       }
       // else form is Invalid; handle errors
       ret.invalidInputs = this.getInvalidInputs(formId);
-      this.handleRequiredInputErrors(ret.invalidInputs);
+      ret.invalidInputs.each(function() {
+        that.handleRequiredInputErrors($(this));
+      });
 
       return resolve(ret);
     });
