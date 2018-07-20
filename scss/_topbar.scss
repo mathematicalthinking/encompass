@@ -1,7 +1,7 @@
 @import "variables";
 @import "mixins";
 @import "responsive-font-size";
-@media screen and (min-width: $screen-xs-min) and (max-width: 770px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 785px) {
   #al_header {
     #menu-toggle {
       display: none;
@@ -11,16 +11,19 @@
   }
 }
 
-@media screen and (min-width: 771px) and (max-width: 1345px) {
+@media screen and (min-width: 786px) and (max-width: 1345px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
-      font-size: .8em;
+      font-size: .85em;
       li {
-        padding: 0 10px;
+        padding: 0 15px;
       }
       #home-btn {
         display: none;
+      }
+      .logout {
+        padding: 10px 12px;
       }
     }
   }
@@ -42,6 +45,11 @@
       // background-color: yellow;
       font-size: 1em;
     }
+    #al_nav {
+      li {
+        padding: 0 25px;
+      }
+    }
   }
 }
 
@@ -61,6 +69,7 @@
 #topbar-unauth {
   font-weight: $bolder-font-weight;
   float: right;
+  margin-top: 6px;
   li {
     line-height: 50px;
     height: 40px;
@@ -140,17 +149,21 @@
     line-height: 50px;
     height: 40px;
     display: inline-block;
-    padding: 0 20px;
     vertical-align: middle;
     text-align: center;
-    .active {
-      background-color: #ffd204;
-      padding: 10px 10px;
-      border-radius: 3px; // color: white;
-    }
-    .caret-down {
-      padding: 0 10px 0 0;
-    }
+      .active {
+        background-color: #ffd204;
+        padding: 10px 10px;
+        border-radius: 3px;
+        color: $primary-font-color;
+        &:hover {
+          color: $primary-font-color;
+          font-weight: $bolder-font-weight;
+        }
+        .caret-down {
+          padding: 0 10px 0 0;
+        }
+      }
   }
   ul {
     font-size: 1em;
@@ -244,31 +257,24 @@ nav.actions>ul {
 .dropdown {
   position: right;
   overflow: hidden;
-  .active {
-    background-color: #ffd204;
-    padding: 10px 10px;
-    border-radius: 3px;
-    color: white;
-    &:hover {
-      color: white;
-    }
-  }
 }
 
 
 .dropdown-content {
   display: none;
   position: absolute;
+  margin-top: -5px;
+  margin-right: 5px;
   background-color: white;
-  min-width: 100px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  width: 100px;
+  box-shadow: $box-shadow;
   z-index: 1;
 }
 
 .dropdown-content a {
   float: none;
   color: $primary-font-color;
-  padding: 5px;
+  padding: 0px;
   text-decoration: none;
   display: block;
   text-align: center;
