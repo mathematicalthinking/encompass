@@ -86,6 +86,13 @@ Encompass.FormValidatorService = Ember.Service.extend({
   isMissingRequiredFields: function(id) {
     return this.getInvalidInputs(id).length > 0;
   },
+
+  getInputs: function(formId) {
+    const $form = $(formId);
+    let $inputs = $form.find("input");
+    return $inputs;
+  },
+
   getRequiredInputs: function(formId) {
     const $form = $(formId);
     if (!$form) {
@@ -133,4 +140,19 @@ Encompass.FormValidatorService = Ember.Service.extend({
       return resolve(ret);
     });
   },
+
+  clearForm: function() {
+    this.set('isPristine', true);
+    let $inputs = this.getInputs(this.get('formId'));
+    console.log('inputs', $inputs);
+    $inputs.each(function() {
+      if($(this).is(':radio') || $(this).is(':checkbox')) {
+        $(this).prop('checked', false);
+      } else if ($(this).is(':text')) {
+        $(this).val('');
+      } else {
+        $(this).val(null);
+      }
+    });
+  }
 });

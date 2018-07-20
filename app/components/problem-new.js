@@ -74,6 +74,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       createProblemData.save()
           .then((prob) => {
             that.set('createdProblem', prob);
+            //TODO: decide how to handle clearing form and whether to redirect to the created problem
+            //that.get('validator').clearForm();
+
           })
           .catch((err) => {
             that.set('createProblemError', err);
