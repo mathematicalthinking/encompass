@@ -35,6 +35,7 @@ nconf.defaults({
   // },
   devDBName: 'encompass',
   testDBName: 'encompass_test',
+  seedDBName: 'encompass_seed',
   prodDBName: 'encompass',
   database: {
     host: 'localhost',

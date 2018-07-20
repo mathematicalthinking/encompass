@@ -50,6 +50,11 @@ switch(process.env.NODE_ENV) {
     port = nconf.get('testPort');
     dbConf.name = nconf.get('testDBName');
     break;
+  case 'seed':
+    console.log("NODE_ENV == seed");
+    port = nconf.get('testPort');
+    dbConf.name = nconf.get('seedDBName');
+    break;
   case 'production':
     console.log("NODE_ENV == production");
     port = nconf.get('prodPort');

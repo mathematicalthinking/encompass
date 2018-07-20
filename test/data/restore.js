@@ -37,7 +37,7 @@ const restoreDb = function (dbName, backupPath) {
 
 const dropAndRestoreDb = function () {
   return new Promise((resolve, reject) => {
-    exec(`mongorestore --db ${testDb} --drop ${pathToBackup}`, (err, stdout, stderr) => {
+    exec(`md-seed run --dropdb`, (err, stdout, stderr) => {
       if (err) {
         console.log("ERROR FROM RESTORE: ", err)
         reject(err);
@@ -48,7 +48,6 @@ const dropAndRestoreDb = function () {
     });
   });
 };
-
 
 const prepTestDb = async function () {
   try {

@@ -29,7 +29,7 @@ describe('Comments', function() {
   });
 
   describe('Visiting a Selection in ESI 2014 Wednesday Reflection', function() {
-    const comment = `new comment from ${helpers.admin} ${new Date().getTime()}`;
+    const comment = `new comment from ${helpers.admin.username} ${new Date().getTime()}`;
     let saveButton;
     before(async function() {
       try {
