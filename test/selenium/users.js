@@ -196,7 +196,7 @@ describe('Users', function() {
 
       describe('clicking the new user link', function() {
         before(async function() {
-          await helpers.findAndClickElement(driver, 'a[href$="/users/new"]');
+          await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'form#newUser');
         });
         validateNewUserPage();

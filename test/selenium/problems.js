@@ -72,7 +72,7 @@ describe('Problems', function() {
       }
     }
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.problemsNew);
+      await helpers.findAndClickElement(driver, "#problem-new-link");
       await helpers.waitForSelector(driver, css.newProblem.form);
     });
 
