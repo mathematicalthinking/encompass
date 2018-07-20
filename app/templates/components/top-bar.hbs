@@ -10,31 +10,49 @@
   <div id="menu-toggle">
     <nav id="al_nav">
       <ul id="main-nav">
-        {{!-- <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li> --}}
+        <li>{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
         <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-        <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
-          <ul>
-            <li>{{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}</li>
-          </ul>
+        <li>
+          <div class="dropdown">
+            {{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
+            <i class="fa fa-caret-down"></i>
+            <div class="dropdown-content">
+              {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
+            </div>
+          </div>
         </li>
-        <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
-          <ul>
-            <li>{{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}</li>
-          </ul>
+        <li>
+          <div class="dropdown">
+            {{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
+            <i class="fa fa-caret-down"></i>
+            <div class="dropdown-content">
+              {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
+            </div>
+          </div>
         </li>
-        <li>{{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
-          <ul>
-            <li>{{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}</li>
-          </ul>
+        <li>
+          <div class="dropdown">
+            {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
+            <i class="fa fa-caret-down"></i>
+            <div class="dropdown-content">
+              {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+            </div>
+          </div>
         </li>
         <li>{{#link-to 'responses' classNames='menu responses'}}responses & reflections{{/link-to}}</li>
-        <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}
-          <ul>
-            {{#if user.isAdmin}}
-            <li>{{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}</li>
-            {{/if}}
-          </ul>
+        {{#if user.isAdmin}}
+        <li>
+          <div class="dropdown">
+            {{#link-to 'users' classNames='menu users'}}users{{/link-to}}
+            <i class="fa fa-caret-down"></i>
+            <div class="dropdown-content">
+              {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
+            </div>
+          </div>
         </li>
+        {{else}}
+          <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
+        {{/if}}
         <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
         <li id="current-username">{{user.displayName}}</li>
       </ul>

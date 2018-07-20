@@ -1,0 +1,76 @@
+
+{{#link-to 'index'}}
+  <h1 class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
+{{/link-to}}
+
+  {{!-- <small id="al_welcome"></small>
+  <div class="clear_r"></div> --}}
+
+  {{#if user.isAuthenticated}}
+  {{!-- <div id="menu-toggle"> --}}
+    <div class="navbar">
+      {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
+      <div class="dropdown">
+        <button class="dropbtn">
+          {{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+    </div>
+
+          {{!-- <ul>
+            <li></li>
+          </ul>
+        </li>
+        <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
+          <ul>
+            <li>{{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}</li>
+          </ul>
+        </li>
+        <li>{{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
+          <ul>
+            <li>{{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}</li>
+          </ul>
+        </li>
+        <li>{{#link-to 'responses' classNames='menu responses'}}responses & reflections{{/link-to}}</li>
+        <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}
+          <ul>
+            {{#if user.isAdmin}}
+            <li>{{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}</li>
+            {{/if}}
+          </ul>
+        </li>
+        <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+        <li id="current-username">{{user.displayName}}</li>
+      </ul> --}}
+  {{!-- </div> --}}
+
+  {{else}}
+    <nav id="topbar-unauth">
+      <ul>
+        {{!-- <li>{{#link-to 'index' classNames='menu home'}}home{{/link-to}}</li> --}}
+        <li>{{#link-to 'auth.login' classNames='menu login'}}log in{{/link-to}}</li>
+        <li>{{#link-to 'auth.signup' classNames='menu signup'}}sign up{{/link-to}}</li>
+      </ul>
+    </nav>
+  {{/if}}
+
+<div id="status">
+  <span class="control">
+    {{#if isSmallHeader}}
+    <a {{action 'largeHeader'}}>
+      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/06-arrow-south.png" alt="expand" />
+    </a>
+    {{else}}
+    <a {{action 'smallHeader'}}>
+      <img style="opacity: .1" src="http://mathforum.org/img/glyphish/xtras/xtras-gray/03-arrow-north.png" alt="collapse" />
+    </a>
+    {{/if}}
+  </span>
+  <span id="loading" style="display:none">loading</span>
+</div>
