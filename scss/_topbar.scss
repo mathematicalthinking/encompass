@@ -35,6 +35,9 @@
       .logout {
         margin: 0;
       }
+      #menu-btn {
+        display: none;
+      }
     }
     #sidemenu {
       display: none;
@@ -64,6 +67,9 @@
       }
     }
     #sidemenu {
+      display: none;
+    }
+    #menu-btn {
       display: none;
     }
   }
