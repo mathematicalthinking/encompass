@@ -3,11 +3,33 @@
   <h1 id="encompass-logo" class="{{unless isSmallHeader 'al_logo'}}">Drexel | EnCoMPASS</h1>
 {{/link-to}}
 
-  <small id="al_welcome"></small>
   <div class="clear_r"></div>
 
   {{#if user.isAuthenticated}}
-  <div id="menu-toggle">
+
+  {{#if user.isStudent}}
+    <div id="menu-toggle">
+        <nav id="al_nav">
+          <ul id="main-nav">
+            <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
+            <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
+            <li>
+              {{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
+            </li>
+            <li>
+              {{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
+            </li>
+            <li>
+                {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
+            </li>
+            <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
+            <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+            <li id="current-username">{{user.displayName}}</li>
+          </ul>
+        </nav>
+      </div>
+    {{else}}
+    <div id="menu-toggle">
     <nav id="al_nav">
       <ul id="main-nav">
         <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
@@ -55,6 +77,8 @@
     </nav>
   </div>
 
+  {{/if}}
+
   {{else}}
     <nav id="topbar-unauth">
       <ul>
@@ -65,7 +89,7 @@
     </nav>
   {{/if}}
 
-{{!-- <div id="status">
+<div id="status">
   <span class="control">
     {{#if isSmallHeader}}
     <a {{action 'largeHeader'}}>
@@ -78,4 +102,4 @@
     {{/if}}
   </span>
   <span id="loading" style="display:none">loading</span>
-</div> --}}
+</div>

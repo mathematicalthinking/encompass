@@ -2,14 +2,38 @@
 @import "mixins";
 @import "responsive-font-size";
 
+
 #al_body {
-  position: absolute;
-  margin-top: 1px;
-  top: 90px;
-  left: 0;
-  width: 100%;
-  font: $primary-font;
+  @if $topbar-small==true {
+    position: absolute;
+    margin-top: 1px;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    font: $primary-font;
+  } @else {
+    position: absolute;
+    margin-top: 1px;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    font: $primary-font;
+  }
 }
+
+
+
+// $time: morning;
+// a {
+//   @if $time == morning {
+//     color: red;
+//   } @else if $time == afternoon {
+//     color: blue;
+//   } @else {
+//     color: grey;
+//   }
+// }
+
 
 #al_body .active {
   background: #e7e7e7;

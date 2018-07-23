@@ -4,6 +4,8 @@ Encompass.TopBarComponent = Ember.Component.extend({
   elementId: 'al_header',
   isSmallHeader: false,
   isHidden: false,
+  isStudent: false,
+
 
   actions: {
     largeHeader: function() {
