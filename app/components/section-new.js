@@ -129,7 +129,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       console.log('users');
       if (!Ember.isEmpty(users)) {
         let user = users.get('firstObject');
-        console.log('teacher', user)
+        console.log('teacher', user);
         teachers.pushObject(user);
       } else {
         this.set('invalidTeacherUsername', true);
