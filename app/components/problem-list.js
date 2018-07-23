@@ -1,4 +1,5 @@
 Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  classNames: ['problem-list', 'left-list'],
   yourProblemList: null,
 
   // This displays only the problems beloging to the current user

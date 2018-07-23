@@ -3,9 +3,11 @@
 @import "responsive-font-size";
 
 #al_body {
-  position: relative;
+  position: absolute;
   margin-top: 1px;
   top: 90px;
+  left: 0;
+  width: 100%;
   font: $primary-font;
 }
 
