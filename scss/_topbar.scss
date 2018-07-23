@@ -15,6 +15,9 @@
         margin: 0 30px 0 10px;
       }
     }
+      #sidemenu {
+        display: none;
+      }
   }
 }
 
@@ -327,7 +330,7 @@ nav.actions>ul {
   }
 }
 
-#sidemenu {
+.sidemenu-style {
   display: block;
   position: absolute;
   right: 0;
@@ -339,5 +342,18 @@ nav.actions>ul {
   box-shadow: $box-shadow;
   li {
     margin: 40px 20px 40px 30px;
+  }
+  #logout-btn-side {
+    a {
+      color: white;
+      font-weight: $bold-font-weight;
+    }
+    background-color: $accent-color;
+    padding: 10px 0;
+    border-radius: 3px;
+    text-align: center;
+    &:hover {
+      background-color: darken($accent-color, 10);
+    }
   }
 }

@@ -5,7 +5,7 @@ Encompass.TopBarComponent = Ember.Component.extend({
   isSmallHeader: false,
   isHidden: false,
   isStudent: false,
-
+  openMenu: false,
 
   actions: {
     largeHeader: function() {
@@ -13,6 +13,9 @@ Encompass.TopBarComponent = Ember.Component.extend({
     },
     smallHeader: function() {
       this.set('isSmallHeader', true);
+    },
+    toggleMenu: function() {
+      console.log('toggle called', this.openMenu);
     }
   }
 });
