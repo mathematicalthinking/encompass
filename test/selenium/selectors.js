@@ -58,7 +58,7 @@ module.exports = {
     form: 'form#section',
     inputs: {
       name: 'input#newSectionName',
-      teachers: 'input#teacher',
+      teachers: 'input#teacher'
     },
     create: 'button.action_button'
   }

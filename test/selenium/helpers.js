@@ -56,7 +56,7 @@ const newProblem = {
 const newSection = {
   details: {
     name: 'Test Section',
-    teachers: 'steve'
+    teachers: 'rick'
   }
 };
 

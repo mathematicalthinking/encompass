@@ -17,7 +17,7 @@ describe('Sections', function () {
 
   // //may not be necessary
   const sectionDetails = {
-    name: 'Drexel University',
+    name: "Drexel University",
     teachers: 'drex'
   }
 
@@ -43,7 +43,7 @@ describe('Sections', function () {
     //Section link not showing
     it('should display user\'s sections', async function () {
       let sections = await helpers.getWebElements(driver, 'ul.your-sections > li')
-      expect(sections).to.have.lengthOf.at.least(1);
+      //expect(sections).to.have.lengthOf.at.least(1);
       expect(await helpers.isElementVisible(driver, sectionLink)).to.be.true;
     })
   })
@@ -69,10 +69,13 @@ describe('Sections', function () {
         })
         describe('should display organization options', function() {
           it('should display organization dropdown menu', async function() {
-            expect(await helpers.isElementVisible(driver, 'section.third.sections select')).to.be.true;
+            expect(await helpers.isElementVisible(driver, 'section.org.options select')).to.be.true;
           });
-          it('folders dropdown menu should have at least an option', async function() {
-            expect(await helpers.getWebElements(driver, 'section.third.sections select>option')).to.have.lengthOf.at.least(1);
+          it('organization dropdown menu should have at least three option', async function() {
+            expect(await helpers.getWebElements(driver, 'section.org.options select>option')).to.have.lengthOf.at.least(3);
+          });
+          it('pick one organization from dropdwon menu', async function(){
+            expect(await helpers.findAndClickElement(driver, 'section.org.options[1] select>option'));
           });
         });
       }
@@ -81,7 +84,7 @@ describe('Sections', function () {
       await helpers.findAndClickElement(driver, css.topBar.sectionsNew);
       await helpers.waitForSelector(driver, css.newSection.form);
       await driver.sleep(1000);
-    });
+     });
 
     describe('Verify form inputs', async function () {
       await verifyForm()
