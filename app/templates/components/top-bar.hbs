@@ -5,8 +5,7 @@
 
   <div class="clear_r"></div>
 
-  {{#if user.isAuthenticated}}
-
+{{#if user.isAuthenticated}}
   {{#if user.isStudent}}
     <div id="menu-toggle">
         <nav id="al_nav">
@@ -29,53 +28,70 @@
         </nav>
       </div>
     {{else}}
-    <div id="menu-toggle">
+
     <nav id="al_nav">
-      <ul id="main-nav">
-        <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
-        <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-        <li>
-          <div class="dropdown">
-            {{#link-to 'problems' classNames='menu problems'}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
+      <div id="menu-toggle">
+        <ul id="main-nav">
+          <span id="menu-items">
+          <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
+          <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
+          <li>
+            <div class="dropdown">
+              {{#link-to 'problems' classNames='menu problems'}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              <div class="dropdown-content">
+                {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div class="dropdown">
-            {{#link-to 'sections' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
+          </li>
+          <li>
+            <div class="dropdown">
+              {{#link-to 'sections' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              <div class="dropdown-content">
+                {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div class="dropdown">
-            {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+          </li>
+          <li>
+            <div class="dropdown">
+              {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              <div class="dropdown-content">
+                {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+              </div>
             </div>
-          </div>
-        </li>
-        <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
-        {{#if user.isAdmin}}
-        <li>
-          <div class="dropdown">
-            {{#link-to 'users' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-            <div class="dropdown-content">
-              {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
+          </li>
+          <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
+          {{#if user.isAdmin}}
+          <li>
+            <div class="dropdown">
+              {{#link-to 'users' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              <div class="dropdown-content">
+                {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
+              </div>
             </div>
-          </div>
-        </li>
-        {{else}}
-          <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
-        {{/if}}
-        <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
-        <li id="current-username">{{user.displayName}}</li>
-      </ul>
+          </li>
+          {{else}}
+            <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
+          {{/if}}
+          <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+          </span>
+          <li id="current-username"><span class="underline">{{user.displayName}}</span></li>
+          <li id="user-image"><input type="checkbox" id="menu-btn"><img src="./images/profile.png" alt="profile"></li>
+        </ul>
+      </div>
     </nav>
-  </div>
+
+    <div id="sidemenu">
+      <ul>
+        <li>{{#link-to 'index'}}home{{/link-to}}</li>
+        <li>{{#link-to 'import'}}import{{/link-to}}</li>
+        <li>{{#link-to 'problems'}}problems{{/link-to}}</li>
+        <li>{{#link-to 'sections'}}sections{{/link-to}}</li>
+        <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
+        <li>{{#link-to 'responses'}}responses{{/link-to}}</li>
+        <li>{{#link-to 'users'}}users{{/link-to}}</li>
+        <li>{{#link-to 'logout'}}logout{{/link-to}}</li>
+      </ul>
+    </div>
 
   {{/if}}
 
