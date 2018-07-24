@@ -6,35 +6,18 @@
   <div class="clear_r"></div>
 
 {{#if user.isAuthenticated}}
-  {{#if user.isStudent}}
-    <div id="menu-toggle">
-        <nav id="al_nav">
-          <ul id="main-nav">
-            <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
-            <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-            <li>
-              {{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}
-            </li>
-            <li>
-              {{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}
-            </li>
-            <li>
-                {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces{{/link-to}}
-            </li>
-            <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
-            <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
-            <li id="current-username">{{user.displayName}}</li>
-          </ul>
-        </nav>
-      </div>
-    {{else}}
-
     <nav id="al_nav">
       <div id="menu-toggle">
         <ul id="main-nav">
           <span id="menu-items">
           <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
-          <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
+          {{#if notStudent}}
+            <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
+          {{/if}}
+          {{#if isStudent}}
+            <li>{{#link-to 'index' classNames='menu assignments'}}assignments{{/link-to}}</li>
+          {{/if}}
+          {{#if notStudent}}
           <li>
             <div class="dropdown">
               {{#link-to 'problems' classNames='menu problems'}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
@@ -43,6 +26,10 @@
               </div>
             </div>
           </li>
+          {{else}}
+            <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}</li>
+          {{/if}}
+          {{#if notStudent}}
           <li>
             <div class="dropdown">
               {{#link-to 'sections' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
@@ -51,6 +38,10 @@
               </div>
             </div>
           </li>
+          {{else}}
+            <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}</li>
+          {{/if}}
+          {{#if notStudent}}
           <li>
             <div class="dropdown">
               {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
@@ -59,18 +50,21 @@
               </div>
             </div>
           </li>
+          {{/if}}
           <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
-          {{#if user.isAdmin}}
-          <li>
-            <div class="dropdown">
-              {{#link-to 'users' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
-              <div class="dropdown-content">
-                {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
+          {{#if notStudent}}
+            {{#if user.isAdmin}}
+            <li>
+              <div class="dropdown">
+                {{#link-to 'users' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                <div class="dropdown-content">
+                  {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
+                </div>
               </div>
-            </div>
-          </li>
-          {{else}}
-            <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
+            </li>
+            {{else}}
+              <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
+            {{/if}}
           {{/if}}
           <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
           </span>
@@ -96,8 +90,6 @@
         <li id="logout-btn-side">{{#link-to 'logout'}}logout{{/link-to}}</li>
       </ul>
     </div>
-
-  {{/if}}
 
   {{else}}
     <nav id="topbar-unauth">
