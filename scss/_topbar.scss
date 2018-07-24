@@ -2,7 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 800px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
   #al_header {
     #al_nav {
       #menu-items {
@@ -21,7 +21,7 @@
   }
 }
 
-@media screen and (min-width: 801px) and (max-width: 1367px) {
+@media screen and (min-width: 860px) and (max-width: 1367px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
