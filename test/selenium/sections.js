@@ -63,23 +63,24 @@ describe('Sections', function () {
       const inputs = css.newSection.inputs
       //const section = helpers.newSection
 
+      //testing for inputs
       for (let input of Object.keys(inputs)) {
         it (`${input} field should be visible`, async function() {
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         })
-        describe('should display organization options', function() {
-          it('should display organization dropdown menu', async function() {
-            expect(await helpers.isElementVisible(driver, 'section.org.options select')).to.be.true;
-          });
-          it('organization dropdown menu should have at least three option', async function() {
-            expect(await helpers.getWebElements(driver, 'section.org.options select>option')).to.have.lengthOf.at.least(3);
-          });
-          it('pick one organization from dropdwon menu', async function(){
-            expect(await helpers.findAndClickElement(driver, 'section.org.options[1] select>option'));
-          });
-        });
       }
     }
+    describe('should display organization options', function() {
+      it('should display organization dropdown menu', async function() {
+        expect(await helpers.isElementVisible(driver, 'section.org.options select')).to.be.true;
+      });
+      it('organization dropdown menu should have at least three option', async function() {
+        expect(await helpers.getWebElements(driver, 'section.org.options select>option')).to.have.lengthOf.at.least(3);
+      });
+      it('pick one organization from dropdwon menu', async function(){
+        expect(await helpers.findAndClickElement(driver, 'section.org.options select > option:first-child'));
+      });
+    });
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.sectionsNew);
       await helpers.waitForSelector(driver, css.newSection.form);
@@ -109,9 +110,10 @@ describe('Sections', function () {
     it('should display success message after creating', async function () {
       const section = helpers.newSection
       await submitSection(section.details, true);
-      await driver.sleep(1000)
+      //await driver.sleep(1000)
       expect(await helpers.isTextInDom(driver, `Successfully created section`)).to.be.true
     })
+
     it('should display link to newly created section', async function () {
       const section = helpers.newSection
       await helpers.waitForSelector(driver, 'a.section-new')
