@@ -32,10 +32,18 @@
                 {{#if invalidTeacherUsername}}
                 <p>Sorry, there is no teacher with that username.</p>
                 {{/if}}
-                <section class="org options">
+                <section>
+        {{!-- creat space between buttons --}}
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                </section>
+                <p>Organization: <span id="orgnization">{{user.organization.name}}</span></p>
+
+               {{!--  <section class="org options">
               <label for="organization">Organization  </label>
               {{my-select content=organizations optionLabelPath="name" prompt="Please select an organization" action=(action (mut selectedOrganization))}}
-              </section>
+              </section> --}}
+
             {{!-- {{input id="organization" type="text" value=organization placeholder="enter organization"}} --}}
           </li>
         </ol>
@@ -56,7 +64,7 @@
         {{!-- <label for="isAddStudents">Add Students?</label> --}}
         <button id="addNewStudents" {{action "addNewStudents"}}>Add Students</button>
         {{/unless}}
-        {{!-- {{input type="checkbox" checked=isAddStudents
+       {{!-- {{input type="checkbox" checked=isAddStudents
         name="isAddStudents" class="isAddStudent" }}
         <label>Yes</label> --}}
       </section>
@@ -92,8 +100,6 @@
                       <p class="error-message">Please provide a password.</p>
                     {{/if}}
                   </div>
-
-
               </form>
               {{#if studentsNotEmpty}}
               <div class="studentList">
@@ -108,7 +114,6 @@
               </div>
               {{/if}}
         {{/if}}
-
 
   </section>
 </fieldset>
@@ -133,3 +138,5 @@
       {{else}}
         <p>{{createSectionError}}</p>
         {{/if}}
+
+

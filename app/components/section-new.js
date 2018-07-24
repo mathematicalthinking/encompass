@@ -117,11 +117,12 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.set('missingFieldsError', true);
       return;
     }
-    var organization = this.get('selectedOrganization');
+    //var organization = this.get('selectedOrganization');
     var user = this.get('user');
-    var students = this.get('createdStudents');
+    var organization = user.get('organization');
+    //var students = this.get('createdStudents');
     var teacher = this.get('teacher');
-    var leader = this.get('leader');
+    //var leader = this.get('leader');
     var teachers = this.get('teachers');
     if (user.get('isAdmin')) {
       //check if user exists
@@ -146,9 +147,9 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       sectionData.get('teachers').addObject(teacher);
     }
 
-    for (let student of students) {
-      sectionData.get('students').addObject(student);
-    }
+    // for (let student of students) {
+    //   sectionData.get('students').addObject(student);
+    // }
 
     sectionData.save()
     .then((prob) => {
@@ -162,10 +163,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         console.log('clear after create section 11', []);
   },
 
-  // clearStudentsData: function() {
-  //   this.set('createdStudents2', []);
-  //   console.log('clear after create section 2', []);
-  // },
+
+
 
   checkError: function() {
     if (this.invalidTeacherUsername) {

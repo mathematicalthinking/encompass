@@ -15,7 +15,6 @@ describe('Sections', function () {
   const sectionId = '5b1e7b2aa5d2157ef4c91108'
   const sectionLink = `a[href='#/sections/${sectionId}`
 
-  // //may not be necessary
   const sectionDetails = {
     name: "Drexel University",
     teachers: 'drex'
@@ -40,12 +39,9 @@ describe('Sections', function () {
     before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.sections)
     })
-    //Section link not showing
-    it('should display user\'s sections', async function () {
-      let sections = await helpers.getWebElements(driver, 'ul.your-sections > li')
-      //expect(sections).to.have.lengthOf.at.least(1);
-      expect(await helpers.isElementVisible(driver, sectionLink)).to.be.true;
-    })
+    it('should display list of sections', async function () {
+      expect(await helpers.getWebElements(driver, 'ul.your-sections')).to.have.lengthOf.at.least(1);
+    });
   })
 
   describe(`Visiting ${sectionDetails.name}`, function () {
@@ -61,7 +57,6 @@ describe('Sections', function () {
   describe('Create section', function () {
     const verifyForm = async function () {
       const inputs = css.newSection.inputs
-      //const section = helpers.newSection
 
       //testing for inputs
       for (let input of Object.keys(inputs)) {
@@ -70,21 +65,10 @@ describe('Sections', function () {
         })
       }
     }
-    describe('should display organization options', function() {
-      it('should display organization dropdown menu', async function() {
-        expect(await helpers.isElementVisible(driver, 'section.org.options select')).to.be.true;
-      });
-      it('organization dropdown menu should have at least three option', async function() {
-        expect(await helpers.getWebElements(driver, 'section.org.options select>option')).to.have.lengthOf.at.least(3);
-      });
-      it('pick one organization from dropdwon menu', async function(){
-        expect(await helpers.findAndClickElement(driver, 'section.org.options select > option:first-child'));
-      });
-    });
+
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.sectionsNew);
       await helpers.waitForSelector(driver, css.newSection.form);
-      await driver.sleep(1000);
      });
 
     describe('Verify form inputs', async function () {
@@ -103,14 +87,13 @@ describe('Sections', function () {
             console.log(err);
           }
         }
-        //if user is admin
         await helpers.findAndClickElement(driver, css.newSection.create);
       };
 
     it('should display success message after creating', async function () {
       const section = helpers.newSection
       await submitSection(section.details, true);
-      //await driver.sleep(1000)
+      await helpers.waitForSelector(driver, css.successMessage);
       expect(await helpers.isTextInDom(driver, `Successfully created section`)).to.be.true
     })
 
@@ -130,4 +113,15 @@ describe('Sections', function () {
   })
 })
 
-// New username already in the system
+    // DROPDOWN MENU TO SELECT ORGANIZATION
+    // describe('should display organization options', function() {
+    //   it('should display organization dropdown menu', async function() {
+    //     expect(await helpers.isElementVisible(driver, 'section.org.options select')).to.be.true;
+    //   });
+    //   it('organization dropdown menu should have at least three option', async function() {
+    //     expect(await helpers.getWebElements(driver, 'section.org.options select>option')).to.have.lengthOf.at.least(3);
+    //   });
+    //   it('pick one organization from dropdwon menu', async function(){
+    //     expect(await helpers.findAndClickElement(driver, 'section.org.options select > option:first-child'));
+    //   });
+    // });
