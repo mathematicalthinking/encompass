@@ -177,7 +177,7 @@ describe('Visiting Workspaces', function() {
         await helpers.waitForSelector(driver, 'div#al_feedback_display');
       });
 
-      xit('should display a bunch of submissions', async function() {
+      it('should display a bunch of submissions', async function() {
       // This is commented out because there is a display issue with workspaces, uncomment after fixing
         let currentUrl;
         try {
@@ -185,7 +185,7 @@ describe('Visiting Workspaces', function() {
         }catch(err) {
           console.log(err);
         }
-        await driver.sleep(5000);
+        expect(currentUrl).to.match(/workspaces\/.*\/submissions\/.*\/selections\//);
         // 'span.submission_count'.should.contain.text('500');
         // 'span.submission_index'.should.contain.text('256');
       });
