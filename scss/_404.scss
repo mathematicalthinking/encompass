@@ -1,0 +1,25 @@
+.error-page {
+  margin: 0 auto;
+  padding-top: 50px;
+  max-width: 1000px;
+  text-align: center;
+  h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+  }
+  p {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  a {
+    color: $accent-color;
+    font-weight: $bolder-font-weight;
+    background-color: none;
+  }
+  img {
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+  }
+}

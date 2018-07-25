@@ -178,6 +178,7 @@ describe('Visiting Workspaces', function() {
       });
 
       it('should display a bunch of submissions', async function() {
+      // This is commented out because there is a display issue with workspaces, uncomment after fixing
         let currentUrl;
         try {
           currentUrl = await driver.getCurrentUrl();

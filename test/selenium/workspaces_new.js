@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver')
+const {Builder, Actions, By, Key, until} = require('selenium-webdriver')
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -19,7 +19,8 @@ describe('Visiting Workspace Creation', function() {
       .build();
       await dbSetup.prepTestDb();
       await helpers.login(driver, host);
-      await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
+      await helpers.findAndClickElement(driver, css.topBar.workspaces);
+      await helpers.findAndClickElement(driver, '#new-workspace-link')
       await helpers.waitForSelector(driver,'section.newWorkspace.sanity');
     });
 

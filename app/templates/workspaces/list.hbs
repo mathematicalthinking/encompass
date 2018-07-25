@@ -1,6 +1,5 @@
 <header>
 	<h2>Select a workspace</h2>
-  
 	<aside>
     <span class="meta pointer refresh" {{action 'reloadPage'}}>current as of {{currentAsOf}}</span>
     {{link-to 'all' 'workspaces.index'}}
@@ -33,10 +32,10 @@
           {{!link-to 'workspace.submission' workspace workspace.firstSubmission classNames='workspace'}}
           {{!link-to 'workspace.submissions.first' workspace classNames='workspace'}}
           <span class="workspace_name {{workspace.mode}}">
-              {{workspace.name}}             
+              {{workspace.name}}
             </span>
-          {{/link-to}} 
-          {{#link-to 'workspace.info' workspace.id}} 
+          {{/link-to}}
+          {{#link-to 'workspace.info' workspace.id}}
             <span class="workspace_info"></span>
           {{/link-to}}
         </td>
@@ -50,6 +49,10 @@
         <td>{{#link-to 'workspace.info' workspace}}{{workspace.editorsLength}}{{/link-to}}</td>
       </tr>
     {{/each}}
+      <p class="create-new-workspace">
+        <i class="fas fa-plus"></i>
+         {{#link-to 'workspaces.new' id="new-workspace-link"}}Create a New Workspace{{/link-to}}
+      </p>
    </tbody>
   </table>
 
