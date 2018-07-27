@@ -4,6 +4,11 @@
 
 
 #al_body {
+  font: $primary-font;
+}
+
+
+#al_body {
   @if $topbar-small==true {
     position: absolute;
     margin-top: 1px;

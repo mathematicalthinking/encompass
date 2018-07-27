@@ -126,6 +126,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         console.log('section name', section.name);
         this.set('isEditing', true);
         this.set('sectionName', section.get('name'));
+        let teacher = section.get('teachers');
         console.log('section Name is', this.sectionName);
       },
 
