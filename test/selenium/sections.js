@@ -67,7 +67,8 @@ describe('Sections', function () {
     }
 
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.sectionsNew);
+      await helpers.findAndClickElement(driver, css.topBar.sections);
+      await helpers.findAndClickElement(driver, '#newsection');
       await helpers.waitForSelector(driver, css.newSection.form);
      });
 
