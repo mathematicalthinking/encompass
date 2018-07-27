@@ -8,5 +8,11 @@ Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
     },
     renderTemplate: function () {
       this.render('sections/new');
+    },
+    actions: {
+      toSectionInfo: function() {
+        console.log('in toSectionInfo');
+        this.transitionTo('section');
+      }
     }
   });

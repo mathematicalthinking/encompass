@@ -53,6 +53,14 @@ const newProblem = {
   imageUrl: ''
 };
 
+const newSection = {
+  details: {
+    name: 'Test Section',
+    teachers: 'rick'
+  }
+};
+
+
 const getCurrentUrl = async function(webdriver) {
   let url;
   try {
@@ -247,3 +255,4 @@ module.exports.signinErrors = signinErrors;
 module.exports.clearElement = clearElement;
 module.exports.newProblem = newProblem;
 module.exports.waitForRemoval = waitForRemoval;
+module.exports.newSection = newSection;

@@ -22,3 +22,4 @@ Submissions           X
 Selections            X
 Taggings              X
 Responses        X    X
+Sections

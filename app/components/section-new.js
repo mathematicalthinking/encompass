@@ -117,16 +117,20 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.set('missingFieldsError', true);
       return;
     }
-    var organization = this.get('selectedOrganization');
+    //var organization = this.get('selectedOrganization');
     var user = this.get('user');
+    var organization = user.get('organization');
     var students = this.get('createdStudents');
-    var leader = this.get('leader');
+    var teacher = this.get('teacher');
+    //var leader = this.get('leader');
     var teachers = this.get('teachers');
     if (user.get('isAdmin')) {
       //check if user exists
-      let users = this.users.filterBy('username', leader);
+      let users = this.users.filterBy('username', teacher);
+      console.log('users');
       if (!Ember.isEmpty(users)) {
         let user = users.get('firstObject');
+        console.log('teacher', user);
         teachers.pushObject(user);
       } else {
         this.set('invalidTeacherUsername', true);
@@ -136,20 +140,25 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     var sectionData = this.store.createRecord('section', {
       name: newSectionName,
-      organization: organization
+      organization: organization,
+      student: students
     });
 
     for (let teacher of teachers) {
       sectionData.get('teachers').addObject(teacher);
     }
 
-    for (let student of students) {
-      sectionData.get('students').addObject(student);
-    }
+    //***How to give user the option to add students?***
+    // for (let student of students) {
+    //   sectionData.get('students').addObject(student);
+    // }
 
     sectionData.save()
     .then((prob) => {
       that.set('createdSection', prob);
+    })
+    .then((prob) => {
+      that.sendAction('toSectionInfo');
     })
     .catch((err) => {
       that.set('createdSectionError', err);
@@ -159,28 +168,25 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         console.log('clear after create section 11', []);
   },
 
-  // clearStudentsData: function() {
-  //   this.set('createdStudents2', []);
-  //   console.log('clear after create section 2', []);
-  // },
+      checkError: function() {
+        if (this.invalidTeacherUsername) {
+          this.set('invalidTeacherUsername', false);
+        }
 
-  checkError: function() {
-    if (this.invalidTeacherUsername) {
-      this.set('invalidTeacherUsername', false);
-    }
+        if(this.usernameAlreadyExists) {
+          this.set('usernameAlreadyExists', false);
+        }
 
-    if(this.usernameAlreadyExists) {
-      this.set('usernameAlreadyExists', false);
-    }
-
-    if (this.isMissingPassword) {
-      this.set('isMissingPassword', false);
-    }
-    if (this.missingFieldsError) {
-      this.set('missingFieldsError', false);
-    }
+        if (this.isMissingPassword) {
+          this.set('isMissingPassword', false);
+        }
+        if (this.missingFieldsError) {
+          this.set('missingFieldsError', false);
+        }
+      }
   }
-}
 });
+
+
 
 

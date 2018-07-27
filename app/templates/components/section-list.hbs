@@ -5,11 +5,13 @@
 
 <section>
   <nav class="users actions listing al_vertical_stretch">
-    <h2>Your sections</h2>
     <ul class="actions">
-      <li>{{#link-to 'sections.new'}}Create New Section{{/link-to}}</li>
+      <li>{{#link-to  'sections.new' id="newsection"}}Create New Section{{/link-to}}</li>
     </ul>
-    <ul class="listing">
+
+    <h2>{{currentUser.username}}'s sections</h2>
+
+    <ul class="your-sections">
       {{#each yourSections as |section|}}
       <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
       {{/each}}
