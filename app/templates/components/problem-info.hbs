@@ -1,57 +1,82 @@
+<header>
+  <h2>Problem Details</h2><style>h2{font-weight: bold;}</style>
+  <div class="clear"></div>
+</header>
 
-{{#if isEditing}}
-    <form id='problem' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="title">Problem Name</label>
-            {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
-          </li>
-          <li>
-            <label for="text">Problem Question</label>
-            {{input name="text" id="text" type="text" value=problemQuestion placeholder=problem.text}}
-          </li>
-          <li>
-            <label for="isPublic">Public</label>
-            {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
-            <label>Yes</label>
-            {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
-            <label>No</label>
-            <p>Currently Public: {{problem.isPublic}}</p>
-          </li>
-        </ol>
-      </fieldset>
-    </form>
-  <button {{action 'updateProblem'}}>Save Problem</button>
+<section class="sectionDetails">
+
+    {{#if isEditing}}
+        <form id='problemdetails' class='properForm'>
+          <fieldset>
+            <ol>
+              <li>
+                <label for="title">Problem Name</label>
+                {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
+              </li>
+                    <section>
+                      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    </section>
+              <li>
+                <label for="text">Problem Question</label>
+                {{input name="text" id="text" type="text" value=problemQuestion placeholder=problem.text}}
+              </li>
+                    <section>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    </section>
+              <li>
+                <label for="isPublic">Public</label>
+                {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
+                <label>Yes</label>
+                {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
+                <label>No</label>
+                <p>Currently Public: {{problem.isPublic}}</p>
+              </li>
+            </ol>
+          </fieldset>
+        </form>
+      <button {{action 'updateProblem'}}>Save Problem</button>
 
 
-{{else}}
-  <p>Problem Name: {{problem.title}}</p>
-  <p>Problem Question: {{problem.text}}</p>
-{{#if problem.imageData}}
-  <p>Problem Image: </p>
-  {{#if problem.isPdf}}
-    <object data="{{problem.imageData}}" type="application/pdf">
-      <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-    </object>
-  {{else}}
-    <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
-  {{/if}}
-{{/if}}
-  <p>Public? {{problem.isPublic}}</p>
-  {{#if problem.origin}}
-    <p>Problem Origin: {{problem.origin.title}}</p>
-  {{/if}}
-    <p>Creation Date: {{problem.createDate}}</p>
-  {{#if canEdit}}
-    <button {{action 'deleteProblem'}} id="deleteProblem">Delete Problem </button>
-    <button {{action 'editProblem'}} id="editProblem">Edit Problem</button>
-  {{else}}
-      <button {{action 'addToMyProblems'}}>Add to My Problems</button>
-  {{/if}}
+    {{else}}
 
-  {{#if savedProblem}}
-    <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
-  {{/if}}
+    <fieldset>
+      <p>Problem Name: {{problem.title}}</p>
+          <section>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          </section>
+     <p>Problem Question: {{problem.text}}</p>
+    {{#if problem.imageData}}
+      <p>Problem Image: </p>
+      {{#if problem.isPdf}}
+        <object data="{{problem.imageData}}" type="application/pdf">
+          <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+        </object>
+      {{else}}
+        <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
+      {{/if}}
+    {{/if}}
+          <section>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          </section>
+      <p>Problem Public: {{problem.isPublic}}</p>
+          <section>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          </section>
+      <p>Creation Date: {{problem.createDate}}</p>
+          <section>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          </section>
+      {{#if canEdit}}
+        <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
+        <button class="action_button" {{action 'editProblem'}}>Edit Problem</button>
+      {{else}}
+          <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
+      {{/if}}
 
-{{/if}}
+      {{#if savedProblem}}
+        <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
+      {{/if}}
+    </fieldset>
+    {{/if}}
+
+</section>
