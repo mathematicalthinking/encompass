@@ -86,7 +86,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               var students = section.get('students');
               console.log('students', students);
               // students.pushObject(userId);
-              // console.log('userID', userId);
+              console.log('userID', userId);
               var allUsers = this.get('store').findAll('user');
               console.log('allUsers', allUsers);
 
