@@ -27,7 +27,7 @@
 
 {{else}}
   <p>Problem Name: {{problem.title}}</p>
-<p>problem Question: {{problem.text}}</p>
+  <p>Problem Question: {{problem.text}}</p>
 {{#if problem.imageData}}
   <p>Problem Image: </p>
   {{#if problem.isPdf}}
@@ -39,8 +39,10 @@
   {{/if}}
 {{/if}}
   <p>Public? {{problem.isPublic}}</p>
-  <p>Problem Origin: {{problem.originId.title}}</p>
-  <p>Creation Date: {{problem.createDate}}</p>
+  {{#if problem.origin}}
+    <p>Problem Origin: {{problem.origin.title}}</p>
+  {{/if}}
+    <p>Creation Date: {{problem.createDate}}</p>
   {{#if canEdit}}
     <button {{action 'deleteProblem'}}>Delete Problem </button>
     <button {{action 'editProblem'}}>Edit Problem</button>

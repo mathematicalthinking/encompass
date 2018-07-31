@@ -7,7 +7,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   sourceUrl: DS.attr('string'),
   imageData: DS.attr('string'),
   imageId: DS.attr('string'),
-  originId: DS.belongsTo('problem', { async: false }),
+  origin: DS.belongsTo('problem', { inverse: null }),
   additionalInfo: DS.attr('string'),
   isPublic: DS.attr('boolean', {
       defaultValue: false
