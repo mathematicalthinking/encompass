@@ -1,35 +1,32 @@
-<header>
+<header id="probleminfoheader">
   <h2>Problem Details</h2>
   <div class="clear"></div>
 </header>
 
-<section class="sectionDetails">
+<section class="problemdetails">
 
     {{#if isEditing}}
-        <form id='probleminfor' class='properForm'>
+        <form id='probleminfo' class='properForm'>
           <fieldset>
             <ol>
               <li>
                 <label for="title">Problem Name</label>
                 {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
               </li>
-                    <section>
-                      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    </section>
+
               <li>
                 <label for="text">Problem Question</label>
                 {{input name="text" id="text" type="text" value=problemQuestion placeholder=problem.text}}
               </li>
-                    <section>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    </section>
+
               <li>
                 <label for="isPublic">Public</label>
                 {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
                 <label>Yes</label>
                 {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
                 <label>No</label>
-                <p>Currently Public: {{problem.isPublic}}</p>
+                <label>Currently Public</label>
+                 {{input name="text" id="text" type="text" value=isPublic placeholder=problem.isPublic}}
               </li>
             </ol>
           </fieldset>
@@ -39,46 +36,55 @@
 
     {{else}}
 
-    <fieldset>
-      <form id='probleminfo' class='properform'>
-      <p>Problem Name: {{problem.title}}</p>
-          <section>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          </section>
-     <p>Problem Question: {{problem.text}}</p>
-    {{#if problem.imageData}}
-      <p>Problem Image: </p>
-      {{#if problem.isPdf}}
-        <object data="{{problem.imageData}}" type="application/pdf">
-          <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-        </object>
-      {{else}}
-        <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
-      {{/if}}
-    {{/if}}
-          <section>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          </section>
-      <p>Problem Public: {{problem.isPublic}}</p>
-          <section>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          </section>
-      <p>Creation Date: {{problem.createDate}}</p>
-          <section>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          </section>
-      {{#if canEdit}}
-        <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
-        <button class="action_button" {{action 'editProblem'}}>Edit Problem</button>
-      {{else}}
-          <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
-      {{/if}}
+    <form id="problemdetails">
+     <form id='probleminfoform' class='properForm'>
+          <fieldset>
+            <ol>
+              <li>
+                <label for="title">Problem Name</label>
+                {{input name="title" id="title" type="text" value=problemName disabled=true placeholder=problem.title}}
+              </li>
 
-      {{#if savedProblem}}
-        <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
-      {{/if}}
-      </form>
-    </fieldset>
+              <li>
+                <label for="text">Problem Question</label>
+                {{input name="text" id="text" type="text" value=problemQuestion disabled=true placeholder=problem.text}}
+              </li>
+
+              <label>Currently Public</label>
+                 {{input name="text" id="text" type="text" value=isPublic disabled=true placeholder=problem.isPublic}}
+
+               <li>
+                <label for="text">Creation Date</label>
+                {{input name="text" id="text" type="text" value=createDate disabled=true placeholder=problem.createDate}}
+              </li>
+            </ol>
+          </fieldset>
+        </form>
+
+        {{#if problem.imageData}}
+          <label for="imagedata">Problem Image:</label>
+            {{#if problem.isPdf}}
+              <object data="{{problem.imageData}}" type="application/pdf">
+                <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+              </object>
+            {{else}}
+              <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
+            {{/if}}
+          {{/if}}
+
+            {{#if canEdit}}
+              <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
+              <button class="action_button" {{action 'editProblem'}}>Edit Problem</button>
+            {{else}}
+                <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
+            {{/if}}
+
+            {{#if savedProblem}}
+              <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
+            {{/if}}
+
+         </form>
+
     {{/if}}
 
 </section>

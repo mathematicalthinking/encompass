@@ -2,7 +2,11 @@
 @import "mixins";
 @import "responsive-font-size";
 
-form#problem {
+#problemnewheader {
+  color: #4E97E8;
+  font-weight: bold;
+}
+form#newproblemform {
   input[type=radio].required-error::after, input[type=checkbox].required-error::after  {
     display: block;
     width: 100%;
@@ -19,4 +23,20 @@ form#problem {
   .required-error {
     border: 2px solid red;
   }
+
+  input[type=text], select {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  label {
+    width: 20%;
+    padding: 12px 20px;
+  }
+
 }

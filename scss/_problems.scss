@@ -2,28 +2,77 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
-// problem details
-#probleminfo {
-
+#probleminfoheader {
+    h2 {
+        color: #4E97E8;
+        font-weight: bold;
+    }
 }
 
-//problem edit
-#problemdetails {
+section.problemdetails {
+    #probleminfoform {
+        input[type=text], select {
+            width: 70%;
+            padding: 12px 20px;
+            margin: 8px 0px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            width: 20%;
+            padding: 12px 20px;
+          }
+  }
 
+    #probleminfo {
+        input[type=text], select {
+            width: 70%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            width: 20%;
+            padding: 12px 20px;
+          }
+
+          .action_button {
+              padding: 12px 20px;
+          }
+    }
+
+      button.action_button {
+          margin: 8px 0;
+          padding: 12px 20px;
+      }
+
+    }
+
+
+
+
+//problem-list hbs
+#problemlistheader {
+    h2 {
+        color: #4E97E8;
+        font-weight: bold;
+    }
 }
-#save-problem-button {
 
-}
-
-h2 {
-    font-weight: bold;
-    color: blue;
-}
-
-#problem-new-link {
-    font-weight: bold;
-    color: brown;
+section.problemlist {
+    h2 {
+        color: #4E97E8;
+        font-weight: bold;
+    }
+    #problem-new-link {
+        color: #4E97E8;
+        font-weight: bold;
+    }
 }
 
 
