@@ -47,12 +47,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return;
       }
 
-      // if (password === 'Show') {
-      //   password.text('Hide');
-      // } else {
-      //   password.text('Show');
-      // }
-
       var createUserData = {
         username: username,
         password: password,
