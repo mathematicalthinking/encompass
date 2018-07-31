@@ -1,4 +1,4 @@
 Encompass.ResponseInfoComponent = Ember.Component.extend({
-    tagName: 'response',
+    elementId: 'response',
     className: ['response']
   });
