@@ -70,10 +70,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         createDate: new Date()
       });
 
-      newProblem.save().then((prob) => {
-        this.set('savedProblem', prob);
-      });
-
+      newProblem.save()
+        .then((problem) => {
+          this.set('savedProblem', problem);
+          this.sendAction('toProblemInfo', problem);
+        });
     }
 
   }
