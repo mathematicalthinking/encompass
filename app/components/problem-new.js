@@ -6,7 +6,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   validator: Ember.inject.service('form-validator'),
 
   didInsertElement: function() {
-    let formId = 'form#problem';
+    let formId = 'form#newproblemform';
     this.set('formId', formId);
 
     let isMissing = this.checkMissing.bind(this);
