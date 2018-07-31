@@ -65,6 +65,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
+        originId: problem,
         createdBy: createdBy,
         createDate: new Date()
       });
