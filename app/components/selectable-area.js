@@ -122,11 +122,12 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       highlighting.enableSelection();
       tagging.enable();
     }
-  }.observes('this.showingSelections', 'this.makingSelection'),
+  }.observes('showingSelections', 'makingSelection'),
 
   modelChanged: function() {
-    this.rerender(); //we want SelectionHighlighting.init() to be called again so that
+    //this.rerender();
+    this.selectionHighlighting.init(); //we want SelectionHighlighting.init() to be called again so that
       //each of the DOM elements has an id ENC-450
-  }.observes('this.model.id')
+  }.observes('model.id')
 
 });
