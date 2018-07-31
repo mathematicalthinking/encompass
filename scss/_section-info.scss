@@ -54,3 +54,15 @@
 .action_button {
     margin: 10px;
 }
+
+
+#show-password-btn {
+  border: none;
+  i {
+    font-size: 1.4em;
+    color: $primary-font-color;
+  }
+  &:focus {
+    outline: 0;
+  }
+}

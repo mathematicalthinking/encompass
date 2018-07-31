@@ -13,31 +13,60 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
+  showingPassword: false,
+  fieldType: 'password',
 
 
 
   willDestroyElement: function () {
-    console.log('destroyingEl');
     this.set('createdStudents', null);
   },
 
+  isShowingPassword: Ember.computed(function () {
+    var showing = this.get('showingPassword');
+    return showing;
+  }),
+
+  // //Array containing students in a section/class
+  // studentsNotEmpty: Ember.computed('createdStudents.[]', function () {
+  //   var createdStudents = this.get('createdStudents');
+  //   if (createdStudents === null) {
+  //     return false;
+  //   }
+  //   console.log('createdStudents', createdStudents);
+  //   console.log('len', createdStudents.length);
+  //   return createdStudents.get('length') > 0;
+  // }),
+
   actions: {
     addNewStudents: function () {
-        this.set('isAddingStudents', true);
-      },
+      this.set('isAddingStudents', true);
+    },
+
+    showPassword: function () {
+      var isShowingPassword = this.get('showingPassword');
+      console.log('isShowingPassword =', isShowingPassword);
+      if (isShowingPassword === false) {
+        this.set('showingPassword', true);
+        this.set('fieldType', 'text');
+      } else {
+        this.set('showingPassword', false);
+        this.set('fieldType', 'password');
+      }
+
+    },
 
     createStudent: function () {
       var that = this;
       var username = this.get('studentUsername');
-      //var students = this.get('createdStudents');
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
 
       if (usingDefaultPassword) {
         password = this.get('defaultPassword');
-        } else {
+      } else {
         password = this.get('studentPassword');
-        }
+      }
       if (!password) {
         this.set('isMissingPassword', true);
         return;
@@ -52,85 +81,77 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         password: password,
         isStudent: true
       };
-        return Ember.$.post({
-            url: '/auth/signup',
-            data: createUserData
-          })
-           .then((res) => {
-            if (res.message === 'Username already exists') {
-              that.set('usernameAlreadyExists', true);
-             }
-            else {
-              var userId = res._id;
-              console.log('userID', userId);
-              var section = this.get('section');
-              console.log('section', section);
-              var sectionID = section.get('id');
-              console.log('id', sectionID);
-              var students = section.get('students');
-              console.log('students', students);
-              // students.pushObject(userId);
+      return Ember.$.post({
+          url: '/auth/signup',
+          data: createUserData
+        })
+        .then((res) => {
+          if (res.message === 'Username already exists') {
+            that.set('usernameAlreadyExists', true);
+          } else {
+            var userId = res._id;
+            var section = this.get('section');
+            var students = section.get('students');
 
-              return this.store.findRecord('user', userId)
-                .then((user) => {
-                  console.log('user found', user.get('username'));
-                  students.pushObject(user);
-                  section.save();
-                  this.set('studentUsername', '');
-                  if (!usingDefaultPassword) {
-                    this.set('studentPassword', '');
-                  }
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        },
+            return this.store.findRecord('user', userId)
+              .then((user) => {
+                students.pushObject(user);
+                section.save();
+                this.set('studentUsername', '');
+                if (!usingDefaultPassword) {
+                  this.set('studentPassword', '');
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
 
+    // insertStudent: function () {
+    //   let giveStudent = this.get('students');
+    //   this.set('studentUsername', giveStudent.get('students'));
+    // },
 
-      doneAdding: function () {
-        this.set('isAddingStudents', false);
-        console.log('done Adding button clicked');
-        // this.set('problemPublic', problem.get('isPublic'));
-      },
+    doneAdding: function () {
+      this.set('isAddingStudents', false);
+      // this.set('problemPublic', problem.get('isPublic'));
+    },
 
-      editSection: function () {
-        let section = this.get('section');
-        console.log('edit section button clicked');
-        console.log('section name', section.name);
-        this.set('isEditing', true);
-        this.set('sectionName', section.get('name'));
-        let teacher = section.get('teachers');
-        console.log('section Name is', this.sectionName);
-      },
+    editSection: function () {
+      let section = this.get('section');
+      this.set('isEditing', true);
+      this.set('sectionName', section.get('name'));
+      let teacher = section.get('teachers');
+    },
 
-      updateSection: function () {
-        let name = this.get('sectionName');
-        let section = this.get('section');
-        section.set('name', name);
-        section.save();
-        this.set('isEditing', false);
-      },
+    updateSection: function () {
+      let name = this.get('sectionName');
+      let section = this.get('section');
+      section.set('name', name);
+      section.save();
+      this.set('isEditing', false);
+    },
 
-      checkError: function () {
-        if (this.invalidTeacherUsername) {
-          this.set('invalidTeacherUsername', false);
-        }
-
-        if (this.usernameAlreadyExists) {
-          this.set('usernameAlreadyExists', false);
-        }
-
-        if (this.isMissingPassword) {
-          this.set('isMissingPassword', false);
-        }
-        if (this.missingFieldsError) {
-          this.set('missingFieldsError', false);
-        }
+    checkError: function () {
+      if (this.invalidTeacherUsername) {
+        this.set('invalidTeacherUsername', false);
       }
+
+      if (this.usernameAlreadyExists) {
+        this.set('usernameAlreadyExists', false);
+      }
+
+      if (this.isMissingPassword) {
+        this.set('isMissingPassword', false);
+      }
+      if (this.missingFieldsError) {
+        this.set('missingFieldsError', false);
+      }
+    }
   }
 });
