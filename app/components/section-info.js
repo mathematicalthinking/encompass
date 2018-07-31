@@ -1,5 +1,5 @@
 Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  tagName: 'section-info',
+  ElementId: 'section-info',
   className: ['section-info'],
   isEditing: false,
   sectionName: null,
