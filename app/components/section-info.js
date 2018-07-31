@@ -71,29 +71,21 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               that.set('usernameAlreadyExists', true);
              }
             else {
-              var section = this.get('section');
-              var sectionID = section.get('id');
-              console.log('section', section);
-              console.log('id', sectionID);
               var userId = res._id;
-              var createdStudents = this.get('createdStudents');
-
-              // if (that.get('createdStudents') === null) {
-              //   that.set('createdStudents', []);
-              // }
-              // console.log('createdStudents', createdStudents);
-
+              console.log('userID', userId);
+              var section = this.get('section');
+              console.log('section', section);
+              var sectionID = section.get('id');
+              console.log('id', sectionID);
               var students = section.get('students');
               console.log('students', students);
               // students.pushObject(userId);
-              console.log('userID', userId);
-              var allUsers = this.get('store').findAll('user');
-              console.log('allUsers', allUsers);
 
               return this.store.findRecord('user', userId)
                 .then((user) => {
                   console.log('user found', user.get('username'));
                   students.pushObject(user);
+                  section.save();
                   this.set('studentUsername', '');
                   if (!usingDefaultPassword) {
                     this.set('studentPassword', '');

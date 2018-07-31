@@ -67,7 +67,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.set('isMissingPassword', true);
         return;
       }
-      if(!username) {
+      if (!username) {
         this.set('isMissingUsername', true);
         return;
       }
@@ -85,16 +85,25 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         if (res.message === 'Username already exists') {
           that.set('usernameAlreadyExists', true);
           return;
-        }else {
+        } else {
           var userId = res._id;
-          if (that.get('createdStudents') === null) {
-            that.set('createdStudents', []);
-          }
-          var students = that.get('createdStudents');
-          return that.store.findRecord('user', userId)
+          console.log('userID', userId);
+          var section = this.get('createdSection');
+          console.log('created section is', section);
+          var sectionID = section.get('id');
+          console.log('section id is', sectionID);
+          var sectionName = section.get('name');
+          console.log('section name is', sectionName);
+          var students = section.get('students');
+          console.log('section students', students);
+
+          return this.store.findRecord('user', userId)
             .then((user) => {
               console.log('user found', user.get('username'));
+              console.log('students array before push is', students);
               students.pushObject(user);
+              section.save();
+              console.log('students array after push is', students);
               that.set('studentUsername', '');
               if (!usingDefaultPassword) {
                 that.set('studentPassword', '');
@@ -120,7 +129,6 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     //var organization = this.get('selectedOrganization');
     var user = this.get('user');
     var organization = user.get('organization');
-    var students = this.get('createdStudents');
     var teacher = this.get('teacher');
     //var leader = this.get('leader');
     var teachers = this.get('teachers');
@@ -141,23 +149,17 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var sectionData = this.store.createRecord('section', {
       name: newSectionName,
       organization: organization,
-      student: students
     });
 
     for (let teacher of teachers) {
       sectionData.get('teachers').addObject(teacher);
     }
 
-    //***How to give user the option to add students?***
-    // for (let student of students) {
-    //   sectionData.get('students').addObject(student);
-    // }
-
     sectionData.save()
-    .then((prob) => {
-      that.set('createdSection', prob);
+    .then((sec) => {
+      that.set('createdSection', sec);
     })
-    .then((prob) => {
+    .then(() => {
       that.sendAction('toSectionInfo');
     })
     .catch((err) => {
