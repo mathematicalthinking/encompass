@@ -12,52 +12,38 @@
 
 </div>
 
-<fieldset>
   <section class="newSection">
-    <section class="third sections">
-      <form id='section' class='properForm'>
+      <form id='newsectionform' class='properForm'>
+        <fieldset>
         <ol>
           <li>
             <label for="title">Class/Group Names</label>
-            {{input id="newSectionName" type="text" value=newSectionName placeholder="enter class/group name" action="checkError" on="key-down"}}
+            {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="enter class/group name" action="checkError" on="key-down"}}
             {{#if missingFieldsError}}
             <p class="error-message">Please fill in all fields.</p>
             {{/if}}
+          </li>
+
+          <li>
             <label for="teacher">Teacher/Leader</label>
             {{#if user.isAdmin}} {{input id="teacher" type="text" value=teacher placeholder="username" action="checkError" on="key-down"}}
             {{else}} {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}} {{/if}}
             {{#if invalidTeacherUsername}}
             <p>Sorry, there is no teacher with that username.</p>
             {{/if}}
-            <p>Organization:
-              <span id="organization">{{user.organization.name}}</span>
-            </p>
-            {{!--
-            <label for="organization">Organization </label> --}} {{!-- {{my-select content = organizations optionLabelPath="name" prompt="Please select
-            an organization" action=(action (mut selectedOrganization))}} --}} {{!-- {{input id="organization" type="text"
-            value=organization placeholder="enter organization"}} --}}
+          </li>
+
+          <li>
+            <label for="organization">Organization</label>
+            {{input id="organization" type="text" value=organization placeholder=user.organization.name action="checkError" on="key-down"}}
           </li>
         </ol>
+        </fieldset>
       </form>
-    </section>
-    <style>
-      input {
-        margin: 15px;
-      }
-    </style>
-    <div class="clear"></div>
-    <section>
-      {{!-- creat space between buttons --}} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-      &nbsp; &nbsp;
-    </section>
   </section>
-</fieldset>
 
 {{!-- submit button to add a new section --}}
-<section>
-  {{!-- creat space between buttons --}} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-  &nbsp; &nbsp;
-</section>
+
 <section class="submit">
   <button class="action_button" {{action 'createSection'}} style="margin-right: 30px">
     Create Section
