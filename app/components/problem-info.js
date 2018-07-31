@@ -73,7 +73,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       newProblem.save()
         .then((problem) => {
           this.set('savedProblem', problem);
-          this.sendAction('toProblemInfo', problem);
         });
     }
 

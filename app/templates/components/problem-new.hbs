@@ -48,12 +48,9 @@
       Create Problem
     </button>
   </section>
-  {{#if createdProblem}}
-  <p class="success-message">Successfully created problem
-     {{#link-to 'problem' createdProblem  classNames='problem-new'}}{{title}}
-    {{/link-to}}</p>
-  {{else}}
-  <p>{{createProblemError}}</p>
+
+  {{#if createdProblemError}}
+    <p>{{createProblemError}}</p>
   {{/if}}
 
 </section>
