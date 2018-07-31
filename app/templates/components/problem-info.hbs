@@ -39,9 +39,10 @@
   {{/if}}
 {{/if}}
   <p>Public? {{problem.isPublic}}</p>
+  <p>Problem Origin: {{problem.originId.title}}</p>
   <p>Creation Date: {{problem.createDate}}</p>
   {{#if canEdit}}
-    <button {{action 'deleteProblem'}}>Delete Problem</button>
+    <button {{action 'deleteProblem'}}>Delete Problem </button>
     <button {{action 'editProblem'}}>Edit Problem</button>
   {{else}}
       <button {{action 'addToMyProblems'}}>Add to My Problems</button>
