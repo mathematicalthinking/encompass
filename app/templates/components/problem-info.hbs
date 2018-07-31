@@ -1,12 +1,12 @@
 <header>
-  <h2>Problem Details</h2><style>h2{font-weight: bold;}</style>
+  <h2>Problem Details</h2>
   <div class="clear"></div>
 </header>
 
 <section class="sectionDetails">
 
     {{#if isEditing}}
-        <form id='problemdetails' class='properForm'>
+        <form id='probleminfor' class='properForm'>
           <fieldset>
             <ol>
               <li>
@@ -34,12 +34,13 @@
             </ol>
           </fieldset>
         </form>
-      <button {{action 'updateProblem'}}>Save Problem</button>
+      <button class="action_button" {{action 'updateProblem'}}>Save Problem</button>
 
 
     {{else}}
 
     <fieldset>
+      <form id='probleminfo' class='properform'>
       <p>Problem Name: {{problem.title}}</p>
           <section>
             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -76,6 +77,7 @@
       {{#if savedProblem}}
         <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
       {{/if}}
+      </form>
     </fieldset>
     {{/if}}
 

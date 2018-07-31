@@ -1,13 +1,13 @@
 <header>
-  <h2>Problems</h2><style>h2{font-weight: bold;}</style>
+  <h2>Problems</h2>
   <div class="clear"></div>
 </header>
 
 
-<section>
+<section class="problemlist">
   <nav class="actions listing al_vertical_stretch">
     <ul class="actions">
-      <li>{{#link-to 'problems.new' id="problem-new-link"}}New Problem{{/link-to}}</li>
+      <li>{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</li>
     </ul>
     <h2>{{currentUser.username}}'s problems</h2>
     <ul class="your-problems">
@@ -26,9 +26,10 @@
 </section>
 
 <fieldset>
-  <div class="listOutlet users">
+  <div class="listOutlet-users">
     {{outlet}}
   </div>
-</fieldset>
+  </fieldset>
+
 
 

@@ -21,17 +21,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('createdStudents', null);
   },
 
-  // //Array containing students in a section/class
-  // studentsNotEmpty: Ember.computed('createdStudents.[]', function () {
-  //   var createdStudents = this.get('createdStudents');
-  //   if (createdStudents === null) {
-  //     return false;
-  //   }
-  //   console.log('createdStudents', createdStudents);
-  //   console.log('len', createdStudents.length);
-  //   return createdStudents.get('length') > 0;
-  // }),
-
   actions: {
     addNewStudents: function () {
         this.set('isAddingStudents', true);
@@ -40,7 +29,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     createStudent: function () {
       var that = this;
       var username = this.get('studentUsername');
-      var students = this.get('createdStudents');
+      //var students = this.get('createdStudents');
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
 
@@ -57,6 +46,13 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('isMissingUsername', true);
         return;
       }
+
+      // if (password === 'Show') {
+      //   password.text('Hide');
+      // } else {
+      //   password.text('Show');
+      // }
+
       var createUserData = {
         username: username,
         password: password,
@@ -101,10 +97,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
         },
 
-        // insertStudent: function () {
-        //   let giveStudent = this.get('students');
-        //   this.set('studentUsername', giveStudent.get('students'));
-        // },
 
       doneAdding: function () {
         this.set('isAddingStudents', false);

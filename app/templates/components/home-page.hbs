@@ -1,3 +1,4 @@
+<div id="homepage">
 {{#if user.isStudent}}
   <div>
     <h1>Welcome Student!</h1>
@@ -30,10 +31,11 @@
     </p>
     <p><span class="al_link">{{#link-to 'problems'}}Create a Problem{{/link-to}}</span>.</p>
   {{else}}
-    <h2>It looks like you are not logged in</h2>
+    <h3>It looks like you are not logged in</h3>
     <p>Please login <a href="#/auth/login">here</a></p>
     <p>New to EnCoMPASS, sign up <a href="#/auth/signup">here</a></p>
   {{/if}}
   </div>
 
 {{/if}}
+</div>
