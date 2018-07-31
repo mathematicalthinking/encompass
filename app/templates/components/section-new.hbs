@@ -46,54 +46,10 @@
       }
     </style>
     <div class="clear"></div>
-
-    {{#if isAddingStudents}}
-    <form id='createSectionForm' class='properForm'>
-      <div style="clear: left"></div>
-      <p class="info">You have the option to create and use a single password for all students in this section, or you can create a password
-        for each student individually</p>
-      <br>
-      <label>Use default password for all students?</label>
-      {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} {{#if usingDefaultPassword}}
-      <label>Default Password: </label>
-      {{input type="password" value=defaultPassword placeholder="default password" action="checkError" on="key-down"}} {{/if}}
-      {{!--
-      <label for="title"> Students</label> --}}
-      <div class="addStudentInput">
-        {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}} {{#unless
-        usingDefaultPassword}} {{input id="studentPassword" type="password" value=studentPassword placeholder="password"
-        action="checkError" on="key-down"}} {{/unless}}
-        <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px">
-          +
-        </button>
-        {{#if usernameAlreadyExists}}
-        <p class="error-message">Sorry, that username already exists.</p>
-        {{/if}} {{#if isMissingUsername}}
-        <p class="error-message">Username required.</p>
-        {{/if}} {{#if isMissingPassword}}
-        <p class="error-message">Please provide a password.</p>
-        {{/if}}
-      </div>
-    </form>
-
-    {{#if studentsNotEmpty}}
-    <div class="studentList">
-      <h2>Created Student Accounts</h2>
-      <ul>
-        {{#each createdStudents as |student|}}
-        <li>{{student.username}}</li>
-        {{/each}}
-      </ul>
-      <ul></ul>
-    </div>
-    {{/if}} {{/if}}
-
     <section>
       {{!-- creat space between buttons --}} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
       &nbsp; &nbsp;
     </section>
-
-
   </section>
 </fieldset>
 
@@ -103,21 +59,12 @@
   &nbsp; &nbsp;
 </section>
 <section class="submit">
-  {{#if createdSection}}
-  <button class="action_button" {{action 'addNewStudents'}} style="margin-right: 30px">
-    Add Students
-  </button>
-  {{else}}
   <button class="action_button" {{action 'createSection'}} style="margin-right: 30px">
     Create Section
   </button>
-  {{/if}}
 </section>
 
-
-{{!-- verify if section successfully created --}} {{#if isAddingStudents}} {{else}} {{#if createdSection}}
-<p>Successfully created section {{#link-to 'section' createdSection classNames='section'}}{{createdSection.name}} {{/link-to}}
-</p>
-{{else}}
-<p>{{createSectionError}}</p>
-{{/if}} {{/if}}
+{{!-- verify if section successfully created --}}
+{{#if createSectionError}}
+  <p>{{createSectionError}}</p>
+{{/if}}
