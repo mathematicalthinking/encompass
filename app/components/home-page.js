@@ -1,4 +1,4 @@
 Encompass.HomePageComponent = Ember.Component.extend({
-  tagName: 'index',
+  elementId: 'homepage',
   className: ['homepage', 'index']
 });

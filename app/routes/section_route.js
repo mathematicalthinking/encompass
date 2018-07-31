@@ -1,6 +1,6 @@
 Encompass.SectionRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
-    var section = this.get('store').findRecord('problem', params.id);
+    var section = this.get('store').findRecord('section', params.id);
     return section;
   },
 

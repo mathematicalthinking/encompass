@@ -23,6 +23,7 @@ var ProblemSchema = new Schema({
   imageId: {type: String},
   imageData: {type: String},
   additionalInfo: { type: String },
+  originId: {type: ObjectId, ref: 'Problem'},
   isPublic: { type: Boolean, default: false },
   categories: [{ type: ObjectId, ref: 'Category' }]
 }, { versionKey: false });

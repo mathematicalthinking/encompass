@@ -1,4 +1,8 @@
 Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  ElementId: 'section-info',
+  className: ['section-info'],
+  isEditing: false,
+  sectionName: null,
   teacher: null,
   isAddStudents: false,
   createdStudents: null,
@@ -9,6 +13,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
+
+
 
   willDestroyElement: function () {
     console.log('destroyingEl');
@@ -65,29 +71,21 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               that.set('usernameAlreadyExists', true);
              }
             else {
-              var section = this.get('section');
-              var sectionID = section.get('id');
-              console.log('section', section);
-              console.log('id', sectionID);
               var userId = res._id;
-              var createdStudents = this.get('createdStudents');
-
-              // if (that.get('createdStudents') === null) {
-              //   that.set('createdStudents', []);
-              // }
-              // console.log('createdStudents', createdStudents);
-
+              console.log('userID', userId);
+              var section = this.get('section');
+              console.log('section', section);
+              var sectionID = section.get('id');
+              console.log('id', sectionID);
               var students = section.get('students');
               console.log('students', students);
               // students.pushObject(userId);
-              // console.log('userID', userId);
-              var allUsers = this.get('store').findAll('user');
-              console.log('allUsers', allUsers);
 
               return this.store.findRecord('user', userId)
                 .then((user) => {
                   console.log('user found', user.get('username'));
                   students.pushObject(user);
+                  section.save();
                   this.set('studentUsername', '');
                   if (!usingDefaultPassword) {
                     this.set('studentPassword', '');
@@ -107,6 +105,30 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         //   let giveStudent = this.get('students');
         //   this.set('studentUsername', giveStudent.get('students'));
         // },
+
+      doneAdding: function () {
+        this.set('isAddingStudents', false);
+        console.log('done Adding button clicked');
+        // this.set('problemPublic', problem.get('isPublic'));
+      },
+
+      editSection: function () {
+        let section = this.get('section');
+        console.log('edit section button clicked');
+        console.log('section name', section.name);
+        this.set('isEditing', true);
+        this.set('sectionName', section.get('name'));
+        let teacher = section.get('teachers');
+        console.log('section Name is', this.sectionName);
+      },
+
+      updateSection: function () {
+        let name = this.get('sectionName');
+        let section = this.get('section');
+        section.set('name', name);
+        section.save();
+        this.set('isEditing', false);
+      },
 
       checkError: function () {
         if (this.invalidTeacherUsername) {
