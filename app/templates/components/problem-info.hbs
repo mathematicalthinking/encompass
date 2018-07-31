@@ -44,8 +44,8 @@
   {{/if}}
     <p>Creation Date: {{problem.createDate}}</p>
   {{#if canEdit}}
-    <button {{action 'deleteProblem'}}>Delete Problem </button>
-    <button {{action 'editProblem'}}>Edit Problem</button>
+    <button {{action 'deleteProblem'}} id="deleteProblem">Delete Problem </button>
+    <button {{action 'editProblem'}} id="editProblem">Edit Problem</button>
   {{else}}
       <button {{action 'addToMyProblems'}}>Add to My Problems</button>
   {{/if}}

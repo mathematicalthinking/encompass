@@ -82,7 +82,6 @@ describe('Problems', function() {
 
     describe('Submitting a problem without an image', function() {
       const inputs = css.newProblem.inputs;
-      const problem = helpers.newProblem;
 
       const submitProblem = async function(details, isPublic, image) {
         for (let detail of Object.keys(details)) {
@@ -100,21 +99,14 @@ describe('Problems', function() {
         await helpers.findAndClickElement(driver, css.newProblem.submit);
       };
 
-      it ('should display success message after submitting', async function() {
+      it('should redirect to problem info after creation', async function () {
+        const problem = helpers.newProblem;
         await submitProblem(problem.details, true);
-        await helpers.waitForSelector(driver, css.successMessage);
-        expect(await helpers.isTextInDom(driver, `Successfully created problem`)).to.be.true;
-      });
-
-      it('should display link to newly created problem', async function() {
-        await helpers.waitForSelector(driver, 'a.problem-new');
-        expect(await helpers.findAndGetText(driver, 'a.problem-new')).to.eql(problem.details.name);
-      });
-
-      it('should display newly created problem details after clicking link', async function() {
-        await helpers.findAndClickElement(driver, 'a.problem-new');
+        await helpers.waitForSelector(driver, '#editProblem');
+        expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/\w/);
         expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
         expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
+
       });
     });
   });
