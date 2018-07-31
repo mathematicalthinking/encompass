@@ -95,16 +95,9 @@ describe('Sections', function () {
       const section = helpers.newSection
       await submitSection(section.details, true);
       await helpers.waitForSelector(driver, '#editSection');
-      //await helpers.waitForSelector(driver, css.successMessage);
       expect(await helpers.isTextInDom(driver, section.details.name)).to.be.true;
       expect(await helpers.getCurrentUrl(driver)).to.match(/sections\/\w/);
       expect(await helpers.isTextInDom(driver, section.details.teachers)).to.be.true;
-    })
-
-    xit('should display link to newly created section', async function () {
-      const section = helpers.newSection;
-      await helpers.waitForSelector(driver, 'a.section-new');
-      expect(await helpers.findAndGetText(driver, 'a.section-new')).to.eql(section.details.name);
     });
   });
 });
