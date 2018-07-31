@@ -156,11 +156,9 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     }
 
     sectionData.save()
-    .then((sec) => {
-      that.set('createdSection', sec);
-    })
-    .then(() => {
-      that.sendAction('toSectionInfo');
+    .then((section) => {
+      that.set('createdSection', section);
+      that.sendAction('toSectionInfo', section);
     })
     .catch((err) => {
       that.set('createdSectionError', err);
