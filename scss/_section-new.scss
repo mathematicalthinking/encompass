@@ -2,20 +2,20 @@
 @import "mixins";
 @import "responsive-font-size";
 
-section.newSection {
-form#newsectionform {
-    input[type=text], select {
-        color: red;
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-      .action_button {
-          color: red;
-      }
+
+    #newsectionform {
+        input[type=text], select {
+            width: 70%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            width: 20%;
+            padding: 12px 20px;
+          }
     }
-}
+
