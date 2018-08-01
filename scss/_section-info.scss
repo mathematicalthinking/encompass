@@ -21,7 +21,7 @@
 
 #sectioninfo {
     input[type=text], select {
-        width: 70%;
+        width: 100%;
         padding: 12px 20px;
         margin: 8px 0;
         display: inline-block;
@@ -38,9 +38,13 @@
           padding: 12px;
       }
       ol.b {
-        display: inline-block;
-          color: red;
-          margin: 10px;
+          width: 100%;
+          padding: 12px 100px;
+          margin: 2px 0px;
+          display: inline-block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
       }
 }
 

@@ -18,6 +18,7 @@
   <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Section</button>
 
 {{else}}
+<fieldset>
   <form id="sectioninfo">
     <fieldset>
       <ul>
@@ -35,18 +36,16 @@
             {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
           </li>
           <li>
-            <label for="teacher">Teachers</label>
+            <label for="teachers">Teachers</label>
              {{#each section.teachers as |teacher| }}
-              {{teacher.username}}
-
+              <ol class="b">{{teacher.username}}</ol>
               {{/each}}
-            {{!-- {{input name="teacher" id="teacher" type="text" value=teachers disabled=true placeholder=teacher.username}} --}}
           </li>
 
           <li>
              <label for="students">Students</label>
             {{#each section.students as |student|}}
-            <ol class="b"><li>{{student.username}}</li></ol>
+            <ol class="b">{{student.username}}</ol>
             {{/each}}
           </li>
         </ul>
@@ -62,6 +61,7 @@
       Edit Section
     </button>
   </section>
+  </fieldset>
   {{/if}}
 
 
