@@ -65,14 +65,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
+        origin: problem,
         createdBy: createdBy,
         createDate: new Date()
       });
 
-      newProblem.save().then((prob) => {
-        this.set('savedProblem', prob);
-      });
-
+      newProblem.save()
+        .then((problem) => {
+          this.set('savedProblem', problem);
+        });
     }
 
   }

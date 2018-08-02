@@ -21,7 +21,7 @@ describe('Visiting Workspace Creation', function() {
       await helpers.login(driver, host);
       await helpers.findAndClickElement(driver, css.topBar.workspaces);
       await helpers.findAndClickElement(driver, '#new-workspace-link')
-      await helpers.waitForSelector(driver,'section.newWorkspace.sanity');
+      // await helpers.waitForSelector(driver,'#create-workspace-btn');
     });
 
   after(() => {

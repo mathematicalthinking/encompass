@@ -92,7 +92,7 @@ describe('Sections', function () {
       };
 
     it('should redirect to section-info page after creating', async function () {
-      const section = helpers.newSection
+      const section = helpers.newSection;
       await submitSection(section.details, true);
       await helpers.waitForSelector(driver, '#editSection');
       expect(await helpers.isTextInDom(driver, section.details.name)).to.be.true;
