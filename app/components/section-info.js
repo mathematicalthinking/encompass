@@ -92,6 +92,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             var userId = res._id;
             var section = this.get('section');
             var students = section.get('students');
+            var sectionPassword = section.get('sectionPassword');
 
             return this.store.findRecord('user', userId)
               .then((user) => {
