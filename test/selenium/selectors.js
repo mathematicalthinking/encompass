@@ -37,7 +37,7 @@ module.exports = {
     submit: 'button[type=submit]'
   },
   newProblem: {
-    form: 'form#problem',
+    form: 'form#newproblemform',
     inputs: {
       name: 'input#title',
       question: 'input#text',
