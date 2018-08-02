@@ -1,5 +1,5 @@
 {{#if isEditing}}
-    <form id='section' class='properForm'>
+    <form id='sectionupdateform' class='properForm'>
       <fieldset>
         <ol>
           <li>
@@ -8,7 +8,7 @@
           </li>
           {{#each section.teachers as |teacher|}}
             <li>
-              <label for="teacher">Section Teacher/Leader</label>
+              <label for="teacher">Teacher</label>
               {{input name="teacher" id="teacher" type="text" value=teacherName placeholder=teacher.username}}
             </li>
           {{/each}}
@@ -18,25 +18,39 @@
   <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Section</button>
 
 {{else}}
-  <h3>Section Name: {{section.name}}</h3>
-  <h3>Problems:</h3>
-  <ul class="listing">
-    {{#each section.problems as |problem|}}
-    <li>{{problem.title}}</li>
-    {{/each}}
-  </ul>
-  <h3>Teachers: </h3>
-  {{#each section.teachers as |teacher|}}
-  <li>{{teacher.username}}</li>
-  {{/each}}
-  <h3>Students:</h3>
-  {{#each section.students as |student|}}
-  <li>{{student.username}}</li>
-  {{/each}}
-  <ul>
-    <li></li>
-  </ul>
 
+  <form id="sectioninfo">
+    <fieldset>
+      <ul>
+        <li>
+            <label for="name">Section Name</label>
+            {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
+          </li>
+          <li>
+            <label for="problems">Problems</label>
+              {{!-- <ul class="listing">
+                {{#each section.problems as |problem|}}
+                <li>{{problem.title}}</li>
+                {{/each}}
+              </ul> --}}
+            {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
+          </li>
+          <li>
+            <label for="teachers">Teachers</label>
+             {{#each section.teachers as |teacher| }}
+              <ol class="b">{{teacher.username}}</ol>
+              {{/each}}
+          </li>
+
+          <li>
+             <label for="students">Students</label>
+            {{#each section.students as |student|}}
+            <ol class="b">{{student.username}}</ol>
+            {{/each}}
+          </li>
+        </ul>
+      </fieldset>
+    </form>
   {{#if isAddingStudents}}
   {{else}}
   <section class="submit">
@@ -47,29 +61,38 @@
       Edit Section
     </button>
   </section>
+
   {{/if}}
 
 
   {{#if isAddingStudents}}
   <form id='createSectionForm' class='properForm'>
-    <div style="clear: left"></div>
-    <p class="info">You have the option to create and use a single password for all students in this section, or you can create a password
-      for each student individually</p>
-    <br>
-    <label>Use default password for all students?</label>
-    {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} {{#if usingDefaultPassword}}
-    <label>Default Password: </label>
-    {{input type="password" value=defaultPassword placeholder="default password" action="checkError" on="key-down"}} {{/if}}
-    {{!--
-    <label for="title"> Students</label> --}}
-    <div class="addStudentInput">
-      {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}} {{#unless
-      usingDefaultPassword}} {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError"
+    <fieldset>
+    {{!-- <div style="clear: left"></div> --}}
+    {{!-- <p class="info">You have the option to create and use a single password for all students in this section, or you can create a password
+      for each student individually</p> --}}
+
+    <h2>Use default password for all new students?
+    {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
+
+      <label for="addusername">Username</label>
+      {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
+      {{#unless usingDefaultPassword}}
+
+      <label for="addpassword">Password</label>
+      {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError"
       on="key-down"}} {{/unless}}
-      <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px">
-        +
-      </button>
-      <br />
+
+      <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
+
+
+    {{#if usingDefaultPassword}}
+    <label>Password </label>
+    {{input type="password" value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
+    {{/if}}
+    </fieldset>
+    {{!--<label for="title"> Students</label> --}}
+
       <button class="action_button" {{action 'doneAdding'}}>Done</button>
       {{#if usernameAlreadyExists}}
       <p class="error-message">Sorry, that username already exists.</p>
@@ -78,7 +101,6 @@
       {{/if}} {{#if isMissingPassword}}
       <p class="error-message">Please provide a password.</p>
       {{/if}}
-    </div>
   </form>
 
   {{#if studentsNotEmpty}}
@@ -92,11 +114,5 @@
     <ul></ul>
   </div>
   {{/if}} {{/if}}
-
-  <section>
-    {{!-- creat space between buttons --}} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-    &nbsp; &nbsp;
-  </section>
-  {{!-- submit button to add a new section --}}
 
 {{/if}}

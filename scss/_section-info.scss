@@ -1,0 +1,56 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+#sectionupdateform {
+    input[type=text], select {
+        font-size: 15px;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    label {
+        width: 20%;
+        padding: 12px 20px;
+      }
+}
+
+#sectioninfo {
+    input[type=text], select {
+        font-size: 15px;
+        color: black;
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    label {
+        width: 20%;
+        margin: 0px;
+        padding: 12px 20px;
+      }
+      li {
+          padding: 12px;
+      }
+      ol.b {
+          width: 100%;
+          padding: 12px 100px;
+          margin: 2px 0px;
+          display: inline-block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+      }
+}
+
+.action_button {
+    margin: 10px;
+}

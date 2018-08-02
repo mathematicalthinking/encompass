@@ -1,0 +1,17 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#sectionlist {
+    color: #4E97E8;
+    font-weight: bold;
+}
+
+
+.sectionlist {
+   #newsection, h2 {
+        color: #4E97E8;
+        font-weight: bold;
+    }
+
+}
