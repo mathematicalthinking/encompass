@@ -7,6 +7,10 @@
 Encompass.SelectableAreaComponent = Ember.Component.extend({
   //classNameBindings: ['id'],
   didInsertElement: function() {
+    console.log('running didInsertEl');
+    this.set('currSubId', this.model.id);
+    this.set('selecting', this.makingSelection);
+    this.set('showing', this.showingSelections);
     var comp = this;
     var containerId = 'submission_container';
     var scrollableContainer = 'al_submission';
@@ -89,45 +93,100 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
     comp.selectionHighlighting.loadSelections(selections);
     comp.imageTagging.loadTags(imgTags);
-    comp.myPropertyDidChange();
-  },
-  willDestroyElement: function() {
-    this.selectionHighlighting.destroy();
-    this.imageTagging.destroy();
-  },
-  myPropertyDidChange: function() {
-    var comp = this,
-      containerId = 'submission_container',
-      container = document.getElementById(containerId),
-      highlighting = comp.selectionHighlighting,
-      tagging = comp.imageTagging;
-
-    if (!container) {
-      return;
+    //comp.myPropertyDidChange();
+    if (comp.showingSelections) {
+      comp.selectionHighlighting.highlightAllSelections();
+      comp.imageTagging.showAllTags();
     }
-
-    console.log("Prop changed, showingSelections: " + this.showingSelections );
-    if (this.showingSelections) {
-      highlighting.removeAllHighlights();
-      highlighting.highlightAllSelections();
-      highlighting.disableSelection();
-      tagging.removeAllTags();
-      tagging.showAllTags();
-      tagging.disable();
-    } else {
-      highlighting.removeAllHighlights();
-      tagging.removeAllTags();
+    if (!comp.makingSelection) {
+      comp.selectionHighlighting.disableSelection();
+      comp.imageTagging.disable();
     }
-    if (this.makingSelection && !this.showingSelections) {
+  },
+
+  didUpdateAttrs: function() {
+    var highlighting = this.selectionHighlighting;
+    var tagging = this.imageTagging;
+    var modelId = this.model.id;
+    console.log('model id', this.model.id);
+    if (this.get('currSubId') !== this.model.id) {
+      console.log('diff!');
+      this.imageTagging.removeAllTags();
+    this.sendAction('handleTransition', true);
+    }
+    var isSelecting = this.makingSelection;
+    var isShowing = this.showingSelections;
+    console.log('isShowing');
+    if (isSelecting !== this.get('selecting')) {
+      if (isSelecting) {
+        this.set('selecting', true);
       highlighting.enableSelection();
       tagging.enable();
+      }
     }
-  }.observes('showingSelections', 'makingSelection'),
 
-  modelChanged: function() {
-    //this.rerender();
-    this.selectionHighlighting.init(); //we want SelectionHighlighting.init() to be called again so that
-      //each of the DOM elements has an id ENC-450
-  }.observes('model.id')
+    if (isShowing !== this.get('showing')) {
+      if (isShowing) {
+        this.set('showing', true);
+        highlighting.highlightAllSelections();
+        tagging.showAllTags();
+
+      } else {
+        this.set('showing', false);
+        highlighting.removeAllHighlights();
+        tagging.removeAllTags();
+
+      }
+    }
+  },
+
+
+  willDestroyElement: function() {
+    console.log('destroying selArea Comp');
+    this.sendAction('handleTransition', false);
+    this.selectionHighlighting.destroy();
+    this.imageTagging.destroy();
+    //this.imageTagging.removeAllTags();
+
+  },
+  // myPropertyDidChange: function() {
+  //   var comp = this,
+  //     containerId = 'submission_container',
+  //     container = document.getElementById(containerId),
+  //     highlighting = comp.selectionHighlighting,
+  //     tagging = comp.imageTagging;
+
+  //   if (!container) {
+  //     return;
+  //   }
+
+  //   console.log("Prop changed, showingSelections: " + this.showingSelections );
+  //   if (this.showingSelections) {
+  //     //highlighting.removeAllHighlights();
+  //     highlighting.highlightAllSelections();
+  //     //highlighting.disableSelection();
+  //     //tagging.removeAllTags();
+  //     tagging.showAllTags();
+  //     //tagging.disable();
+  //   } else {
+  //     highlighting.removeAllHighlights();
+  //     tagging.removeAllTags();
+  //   }
+  //   if (this.makingSelection && !this.showingSelections) {
+  //     highlighting.enableSelection();
+  //     tagging.enable();
+  //   }
+  // }.observes('showingSelections', 'makingSelection'),
+
+  // modelChanged: function() {
+  //   //this.rerender();
+  //   console.log('changing model');
+  //   console.log('removing tags');
+  //   this.imageTagging.removeAllTags();
+  //   //record previous state
+  //   this.sendAction('handleTransition', true);
+  //   //this.selectionHighlighting.init(); //we want SelectionHighlighting.init() to be called again so that
+  //     //each of the DOM elements has an id ENC-450
+  // }.observes('model.id')
 
 });
