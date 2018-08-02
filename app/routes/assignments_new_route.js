@@ -1,8 +1,8 @@
 Encompass.AssignmentsNewRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
     return Ember.RSVP.hash({
-      users: this.get('store').findAll('user'),
-      organizations: this.get('store').findAll('organization'),
+      sections: this.get('store').findAll('section'),
+      problems: this.get('store').findAll('problem'),
     });
   },
   renderTemplate: function () {
