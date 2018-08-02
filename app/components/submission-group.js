@@ -12,6 +12,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
   lastThread: Ember.computed.alias('submissionThreadHeads.lastObject'),
   manyRevisions: Ember.computed.gte('currentRevisions.length', 10),
   showStudents: false,
+  switching: false,
 
   //TODO Use the new thread.threadId property on submissions
   submissionThreads: function() {
@@ -139,6 +140,11 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
   currentSubmissionIndex: function() {
     return this.get('sortedSubmissions').indexOf(this.submission) + 1;
   }.property('submissionThreads.[]', 'submission'),
+
+  modelChanged: function() {
+    console.log('sub changed');
+    this.set('switching', true);
+  }.observes('submission'),
 
   actions: {
     toggleStudentList: function() {
