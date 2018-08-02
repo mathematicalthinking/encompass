@@ -24,7 +24,7 @@ var AssignmentSchema = new Schema({
 }, { versionKey: false });
 
 /* + The Problem exists */
-TaggingSchema.pre('save', true, function (next, done) {
+AssignmentSchema.pre('save', true, function (next, done) {
   mongoose.models.Problem.findById(this.problem)
     .lean()
     .exec(function (err, found) {
@@ -37,7 +37,7 @@ TaggingSchema.pre('save', true, function (next, done) {
 });
 
 /* + The Student exists */
-TaggingSchema.pre('save', true, function (next, done) {
+AssignmentSchema.pre('save', true, function (next, done) {
   mongoose.models.User.findById(this.user)
     .lean()
     .exec(function (err, found) {
@@ -50,7 +50,7 @@ TaggingSchema.pre('save', true, function (next, done) {
 });
 
 /* + The Section exists */
-TaggingSchema.pre('save', true, function (next, done) {
+AssignmentSchema.pre('save', true, function (next, done) {
   mongoose.models.Section.findById(this.section)
     .lean()
     .exec(function (err, found) {
