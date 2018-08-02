@@ -15,10 +15,6 @@
   margin: 20px 0 20px 0;
 }
 
-input:required {
-    box-shadow: none;
-}
-
 // LOGIN PAGE SYLING
 .login-page {
   height: 90vh;
@@ -54,6 +50,9 @@ input:required {
     background-color: white;
     border: none;
     border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
   }
   .auth-button {
     @include auth-button;
