@@ -1,0 +1,28 @@
+<header id="assignmentlist">
+  <h2>Assignments</h2>
+  <div class="clear"></div>
+</header>
+
+<section class="assignmentlist">
+  <nav class="users actions listing al_vertical_stretch">
+    {{#unless currentUser.isStudent}}
+      <ul class="actions">
+        <li>{{#link-to  'assignments.new' id="newassignment" }}Create New Assignment{{/link-to}}</li>
+      </ul>
+    {{/unless}}
+
+    <h2>{{currentUser.username}}'s Assignments</h2>
+
+    <ul class="your-assignments">
+      {{#each assignments as |assignment|}}
+      <li>{{#link-to 'assignment' assignment classNames='assignment'}}{{assignment.problem.title}}{{/link-to}}</li>
+      {{/each}}
+    </ul>
+  </nav>
+
+   <div class="listOutlet assignments">
+      {{outlet}}
+  </div>
+
+  <div class="clear"/>
+</section>
