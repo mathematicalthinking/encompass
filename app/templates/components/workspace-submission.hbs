@@ -11,7 +11,7 @@
       {{#if this.canSelect}}
         <td>
           <label class="makingSelection">
-            {{input type="checkbox" disabled=showingSelections checked=makingSelection}}
+            {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
             <span class="al_sprite al_makeselections"></span>
           </label>
         </td>
@@ -39,7 +39,7 @@
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
     <h3>Selectabe View!</h3>
-    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"}}
+    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition"}}
       <div id="submission_container">
         <div class="submission short">
           {{{currentSubmission.shortAnswer}}}

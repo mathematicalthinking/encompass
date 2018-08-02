@@ -7,8 +7,26 @@
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   makingSelection: true,
   showingSelections: false,
+  isTransitioning: false,
 
-  showSelectableView: Ember.computed.or('makingSelection', 'showingSelections'),
+  showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
+    var making = this.get('makingSelection');
+    var showing = this.get('showingSelections');
+    var transitioning = this.get('isTransitioning');
+    return (making || showing) && !transitioning && !this.switching;
+  }),
+
+  shouldCheck: Ember.computed('makingSelection', function() {
+    return this.get('makingSelection');
+  }),
+
+  didRender: function() {
+    console.log('rendering ws-sub');
+    if(this.get('switching')) {
+      this.set('switching', false);
+    }
+ },
+
   /* Next: get selections to show up */
 
   workspaceSelections: function() {
@@ -58,7 +76,26 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     },
 
     hideSelections: function() {
+      console.log('hiding selections');
       this.set('showingSelections', false);
+    },
+    toggleSelecting: function() {
+      var selecting = this.get('makingSelection');
+      this.set('makingSelection', !selecting);
+    },
+    handleTransition: function(isBeginning) {
+      console.log('in handleTransition', isBeginning);
+      this.get('showSelectableView');
+      if (Ember.isEmpty(isBeginning)) {
+        return;
+      }
+      if (isBeginning === true) {
+        console.log('setting isTr true');
+        this.set('isTransitioning', true);
+      } else {
+        console.log('setting is Trans false');
+        this.set('isTransitioning', false);
+      }
     }
   }
 });
