@@ -33,17 +33,20 @@ function accessibleAssignments(user) {
   return {
     $or: [
       { createdBy: user },
-      { student: { user } },
+      { student: user  },
     ],
     isTrashed: false
   };
 }
 
 const getAssignments = (req, res, next) => {
+  console.log('in get Assignments');
   const user = userAuth.requireUser(req);
+  console.log('user in get assn', user);
   const criteria = accessibleAssignments(user);
   models.Assignment.find(criteria)
   .exec((err, assignments) => {
+    console.log('assns', assignments);
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
