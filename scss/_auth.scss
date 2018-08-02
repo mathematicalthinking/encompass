@@ -15,6 +15,9 @@
   margin: 20px 0 20px 0;
 }
 
+input:required {
+    box-shadow: none;
+}
 
 // LOGIN PAGE SYLING
 .login-page {
@@ -71,7 +74,6 @@
     }
   }
 }
-
 
 // SIGNUP PAGE SYLING
 .signup-page {
