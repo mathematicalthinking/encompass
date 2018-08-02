@@ -12,18 +12,18 @@
               <label for="title">Problem Name</label>
               {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
             </li>
-
             <li>
               <label for="text">Problem Question</label>
               {{input name="text" id="text" type="text" value=problemText placeholder=problem.text}}
             </li>
-
             <li>
               <label for="isPublic">Public</label>
               {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
               <label>Yes</label>
               {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
               <label>No</label>
+            </li>
+            <li>
               <label>Currently Public</label>
                 {{input name="ispublic" id="isPublic" type="text" value=isPublic placeholder=problem.isPublic}}
             </li>
@@ -39,19 +39,18 @@
         <ol>
           <li>
             <label for="title">Problem Name</label>
-            {{input name="title" id="title" type="text" value=problemName disabled=true placeholder=problem.title}}
+            {{input name="title" id="problemTitle" type="text" value=problemName disabled=true placeholder=problem.title}}
           </li>
-
           <li>
             <label for="text">Problem Question</label>
-            {{input name="text" id="text" type="text" value=problemQuestion disabled=true placeholder=problem.text}}
+            {{input name="text" id="problemText" type="text" value=problemText disabled=true placeholder=problem.text}}
           </li>
-
-          <label>Currently Public</label>
-              {{input name="isPublic" id="isPublic" type="text" value=isPublic disabled=true placeholder=problem.isPublic}}
-
-            <li>
-            <label for="text">Creation Date</label>
+          <li>
+            <label for="currentlyPublic">Currently Public</label>
+            {{input name="currentlyPublic" id="currentlyPublic" type="text" value=isPublic disabled=true placeholder=problem.isPublic}}
+          </li>
+          <li>
+            <label for="createDate">Creation Date</label>
             {{input name="createDate" id="createDate" type="text" value=createDate disabled=true placeholder=problem.createDate}}
           </li>
         </ol>
