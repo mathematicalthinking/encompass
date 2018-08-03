@@ -2,26 +2,31 @@
 @import "mixins";
 @import "responsive-font-size";
 
+#section-new {
+  h2 {
+    font-size: 1.5em;
+  }
+}
 
-    #newsectionform {
-        input[type=text], select {
-            width: 70%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
-        }
-        input:required {
-            box-shadow: none;
-        }
-        label {
-            width: 20%;
-            padding: 12px 20px;
-            color: black;
-            font-size: 1em;
-          }
-    }
-
+#newsectionform {
+  input[type=text],
+  select {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+  }
+  input:required {
+    box-shadow: none;
+  }
+  label {
+    width: 20%;
+    padding: 12px 20px;
+    color: black;
+    font-size: 1em;
+  }
+}
