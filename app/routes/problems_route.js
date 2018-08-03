@@ -1,7 +1,6 @@
 Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
     let problems = this.get('store').findAll('problem');
-    console.log('problems route model called');
     return problems;
   },
 

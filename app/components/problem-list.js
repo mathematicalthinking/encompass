@@ -10,8 +10,8 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   didRender: function () {
     this._super(...arguments);
     let problems = this.get('store').findAll('problem');
-    console.log('did render ran');
-    console.log('problem list in did render is', problems);
+    // console.log('did render ran');
+    // console.log('problem list in did render is', problems);
   },
 
   // This displays only the problems beloging to the current user

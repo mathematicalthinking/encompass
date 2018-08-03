@@ -3,6 +3,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   createProblemError: null,
   isMissingRequiredFields: null,
   isPublic: null,
+  privacySetting: null,
   validator: Ember.inject.service('form-validator'),
 
   didInsertElement: function() {
@@ -26,7 +27,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var text = that.get('text');
     //var categories = [];
     var additionalInfo = that.get('additionalInfo');
-    var isPublic = that.get('isPublic');
+    var privacySetting = that.get('privacySetting');
     //var imageUrl = null;
 
     var createProblemData =   that.store.createRecord('problem', {
@@ -36,7 +37,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       text: text,
       // categories: categories,
       additionalInfo: additionalInfo,
-      isPublic: isPublic,
+      privacySetting: privacySetting,
       //imageUrl: imageUrl
     });
 
@@ -82,7 +83,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   actions: {
     radioSelect: function (value) {
-      this.set('isPublic', value);
+      this.set('privacySetting', value);
+      console.log('current value is ', value);
+      console.log('privacy setting now is ', this.get('privacySetting'));
     },
 
     validate: function() {

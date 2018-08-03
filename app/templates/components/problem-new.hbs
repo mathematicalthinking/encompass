@@ -28,12 +28,14 @@
             <label for="imageUrl">Upload Images</label>
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
-          <li>
-            <label for="isPublic">Privacy Settings <span class="required-star">*</span></label>
-            {{input type="radio" value=isPublic required="true" name="isPublic" class="private" click=(action "radioSelect" false)}}
-            <label>Private</label>
-            {{input type="radio" value=isPublic required="true" name="isPublic" class="public" click=(action "radioSelect" true)}}
-            <label>Public</label>
+          <li class="privacy-settings">
+            <label>Privacy Settings <span class="required-star">*</span></label>
+              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'justMe')}}
+              <label class="radio-label">Just Me</label>
+              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'myOrg')}}
+              <label class="radio-label">My Organization</label>
+              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'everyone')}}
+              <label class="radio-label">Everyone</label>
           </li>
         </ol>
       </fieldset>

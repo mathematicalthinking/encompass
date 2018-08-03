@@ -16,16 +16,16 @@
               <label for="text">Problem Statement</label>
               {{input name="text" id="text" type="text" value=problemText placeholder=problem.text}}
             </li>
-            <li>
-              <label for="isPublic">Public</label>
-              {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
-              <label>Yes</label>
-              {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
-              <label>No</label>
-            </li>
-            <li>
-              <label>Currently Public</label>
-                {{input name="ispublic" id="isPublic" type="text" value=isPublic placeholder=problem.isPublic}}
+            <li class="privacy-settings">
+              <label>Privacy Settings
+                <span class="required-star">*</span>
+              </label>
+              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'justMe')}}
+              <label class="radio-label">Just Me</label>
+              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'myOrg')}}
+              <label class="radio-label">My Organization</label>
+              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'everyone')}}
+              <label class="radio-label">Everyone</label>
             </li>
           </ol>
         </fieldset>
@@ -54,8 +54,8 @@
           {{/if}}
 
           <li>
-            <label for="currentlyPublic">Currently Public</label>
-            {{input name="currentlyPublic" id="currentlyPublic" type="text" value=isPublic disabled=true placeholder=problem.isPublic}}
+            <label for="currentlyPublic">Privacy Setting</label>
+            {{input name="currentlyPublic" id="currentlyPublic" type="text" value=isPublic disabled=true placeholder=problem.privacySetting}}
           </li>
           <li>
             <label for="createDate">Creation Date</label>

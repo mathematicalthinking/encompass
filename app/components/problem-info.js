@@ -4,6 +4,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemName: null,
   problemText: null,
   problemPublic: true,
+  privacySetting: null,
   savedProblem: null,
   isWide: false,
 
@@ -41,17 +42,17 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     radioSelect: function (value) {
-      this.set('isPublic', value);
+      this.set('privacySetting', value);
     },
 
     updateProblem: function () {
       let title = this.get('problemName');
       let text = this.get('problemText');
-      let isPublic = this.get('isPublic');
+      let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       problem.set('title', title);
       problem.set('text', text);
-      problem.set('isPublic', isPublic);
+      problem.set('privacySetting', privacy);
       problem.save();
       this.set('isEditing', false);
     },
