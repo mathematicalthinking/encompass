@@ -77,6 +77,13 @@ Encompass.Router.map(function() {
     });
     this.route("new");
   });
+
+  // ANSWERS ROUTE
+  this.route("answers", function(){
+    this.route("answer", {resetNamespace: true, path: '/:answer_id'}, function() {
+    });
+    this.route("new");
+  });
   this.route("logout");
   this.route("unauthorized");
 });
