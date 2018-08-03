@@ -1,0 +1,42 @@
+<header id="answernewheader">
+  <h2>Create New Answer</h2>
+  <div class="clear"></div>
+</header>
+
+
+  <section class="third submissions">
+    <form id='newanswerform' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="answer">Brief Summary</label>
+            {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
+            {{input id="answer" required="true" type="hidden" value=answer}}
+          </li>
+          <li>
+            <label for="explanation">Explain your ideas and how you figured them out</label>
+            {{textarea cols="80" rows="6" value=explanation placeholder="Explain your ideas..."}}
+            {{input id="explanation" required="true" type="hidden" value=explanation}}
+          </li>
+         <li>
+            <label for="uploadedFile">Optional Image</label>
+            {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
+          </li>
+        </ol>
+      </fieldset>
+      {{#if isMissingRequiredFields}}
+        <p class="error-message">Please provide all required fields.</p>
+      {{/if}}
+    </form>
+  </section>
+  <div style="clear: left"></div>
+  <section class="submit">
+    <button class="action_button" {{action 'validate'}}>
+      Create Answer
+    </button>
+  </section>
+
+  {{#if createdAnswerError}}
+    <p>{{createAnswerError}}</p>
+  {{/if}}
+
