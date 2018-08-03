@@ -58,6 +58,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         // the first image url as the image in the problem doc
         createProblemData.set('imageId', res.images[0]._id);
         createProblemData.save()
+          .then((problem) => {
+            that.sendAction('toProblemInfo', problem);
+          })
           .catch((err) => {
             that.set('createProblemError', err);
           });
@@ -66,16 +69,16 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       });
     } else {
       createProblemData.save()
-          .then((problem) => {
-            that.sendAction('toProblemInfo', problem);
-            //TODO: decide how to handle clearing form and whether to redirect to the created problem
-            //that.get('validator').clearForm();
-          })
-          .catch((err) => {
-            that.set('createProblemError', err);
-          });
-        }
-      },
+        .then((problem) => {
+          that.sendAction('toProblemInfo', problem);
+          //TODO: decide how to handle clearing form and whether to redirect to the created problem
+          //that.get('validator').clearForm();
+        })
+        .catch((err) => {
+          that.set('createProblemError', err);
+        });
+      }
+    },
 
   actions: {
     radioSelect: function (value) {
