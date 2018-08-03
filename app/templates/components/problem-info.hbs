@@ -69,7 +69,9 @@
                 <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
               </object>
             {{else}}
-              <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
+              <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
+                <img src="{{problem.imageData}}" alt="{{problem.title}}">
+              </a>
             {{/if}}
           {{/if}}
           </li>

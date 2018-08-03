@@ -1,9 +1,10 @@
 @import "variables";
 @import "mixins";
 @import "responsive-font-size";
+
 #probleminfoheader {
   h2 {
-    color: #4E97E8;
+    color: $accent-color;
     font-weight: bold;
     font-size: 1.5em;
   }
@@ -59,9 +60,6 @@ section.problemdetails {
     .action_button {
       padding: 12px 20px;
     }
-    img {
-      max-width: 500px;
-    }
   }
   button.action_button {
     margin: 8px 0;
@@ -72,18 +70,35 @@ section.problemdetails {
 //problem-list hbs
 #problemlistheader {
   h2 {
-    color: #4E97E8;
+    color: $accent-color;
     font-weight: bold;
   }
 }
 
 section.problemlist {
   h2 {
-    color: #4E97E8;
+    color: $accent-color;
     font-weight: bold;
   }
   #problem-new-link {
-    color: #4E97E8;
+    color: $accent-color;
     font-weight: bold;
   }
 }
+
+
+#problem-info {
+  a.image.wide {
+    max-width: 100%;
+    position: relative;
+    z-index: 999;
+  }
+
+  .wide img {
+    height: initial;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+}
+
+
