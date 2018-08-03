@@ -1,0 +1,99 @@
+<header id="assignmentinfoheader">
+  <h2>Assignment Details</h2>
+  <div class="clear"></div>
+</header>
+
+{{#if currentUser.isStudent}}
+  <section class="assignment-info">
+    <div>
+      <p>Problem Name: {{assignment.problem.title}}</p>
+    </div>
+    <div>
+      <p>Problem Statement: {{assignment.problem.text}}</p>
+      {{#if assignment.problem.imageData}}
+
+        {{#if problem.isPdf}}
+          <div class="assignmentPdf">
+            <object data="{{assignment.problem.imageData}}" type="application/pdf">
+            <embed src="{{assignment.problem.imageData}}" type="application/pdf" height="100%" width="100%">
+            </object>
+        </div>
+        {{else}}
+          <div class="assignmentImage">
+            <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
+          </div>
+        {{/if}}
+    {{/if}}
+    </div>
+  </section>
+{{else}}
+<section class="assignmentdetails">
+    <form id="assignmentdetails">
+      <form id='assignmentinfoform' class='properForm'>
+            <fieldset>
+              <ol>
+                <li>
+                  <label for="problem">Problem</label>
+                  {{input name="problem" id="problem" type="text" value=problem disabled=true placeholder=assignment.problem.title}}
+                </li>
+
+                <li>
+                  <label for="section">Section</label>
+                  {{input name="section" id="section" type="text" value=section disabled=true placeholder=assignment.section.name}}
+                </li>
+
+                <label for="assignedDate">Date Assigned</label>
+                  {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=true}}
+
+                <li>
+                  <label for="dueDate">Due Date</label>
+                  {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=true}}
+                </li>
+              </ol>
+            </fieldset>
+          </form>
+
+
+              {{#if canEdit}}
+                <button class="action_button" {{action 'deleteassignment'}}>Delete Assignment</button>
+                <button class="action_button" {{action 'editassignment'}}>Edit Assignment</button>
+              {{/if}}
+
+              {{#if savedassignment}}
+                <p>You added {{#link-to 'assignment' savedassignment classNames='assignment'}}{{assignment.title}}{{/link-to}} to your assignment list</p>
+              {{/if}}
+
+    </form>
+  </section>
+{{/if}}
+<div>
+  <h3>Past Submissions</h3>
+    {{#if sortedAnswers.length}}
+      <p>You have made a total of {{answers.length}} submissions to this assignment. Click 'Revise' below to update your most recent submission</p>
+      {{else}}
+      It looks like you have not made any submissions to this assignment. Click 'Respond' below to begin making a submission.
+    {{/if}}
+
+    <ol>
+    {{#each sortedAnswers as |answer|}}
+      {{#link-to 'answer' answer}}
+        <li>{{answer.createDate}}</li>
+      {{/link-to}}
+    {{/each}}
+    </ol>
+</div>
+
+
+
+
+{{#if isResponding}}
+  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo"}}
+{{else if isRevising}}
+  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo"}}
+{{else}}
+  {{#if sortedAnswers.length}}
+  <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
+  {{else}}
+  <button class="action_button" {{action 'beginAssignmentResponse'}}>Respond</button>
+  {{/if}}
+{{/if}}
