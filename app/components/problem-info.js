@@ -23,7 +23,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     deleteProblem: function () {
       let problem = this.get('problem');
         problem.set('isTrashed', true);
+        problem.set('imageData', null);
         problem.save();
+        problem.set('imageData', problem.get('imageData'));
     },
 
     editProblem: function () {
