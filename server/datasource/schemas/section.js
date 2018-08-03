@@ -24,6 +24,7 @@ var SectionSchema = new Schema({
   teachers: [{ type: ObjectId, ref: 'User' }],
   students: [{ type: ObjectId, ref: 'User' }],
   problems: [{ type: ObjectId, ref: 'Problem' }],
+  assignments: [{type: ObjectId, ref: 'Assignment'}]
 }, { versionKey: false });
 
 /**
