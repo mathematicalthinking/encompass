@@ -33,7 +33,7 @@ function accessibleAssignments(user) {
   return {
     $or: [
       { createdBy: user },
-      { student: user  },
+      { students: user},
     ],
     isTrashed: false
   };
