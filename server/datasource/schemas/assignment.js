@@ -16,7 +16,7 @@ var AssignmentSchema = new Schema({
   isTrashed: { type: Boolean, 'default': false },
   //====
   problem: { type: ObjectId, ref: 'Problem' },
-  student: { type: ObjectId, ref: 'User' },
+  students: [{ type: ObjectId, ref: 'User' }],
   section: { type: ObjectId, ref: 'Section' },
   assignedDate: { type: Date },
   answers: [{ type: ObjectId, ref: 'Answer'}],
@@ -26,19 +26,6 @@ var AssignmentSchema = new Schema({
 /* + The Problem exists */
 AssignmentSchema.pre('save', true, function (next, done) {
   mongoose.models.Problem.findById(this.problem)
-    .lean()
-    .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); }
-      else {
-        next();
-      }
-      done();
-    });
-});
-
-/* + The Student exists */
-AssignmentSchema.pre('save', true, function (next, done) {
-  mongoose.models.User.findById(this.user)
     .lean()
     .exec(function (err, found) {
       if (err) { next(new Error(err.message)); }
@@ -79,6 +66,7 @@ AssignmentSchema.pre('save', function (next) {
     */
   try {
     this.answers.forEach(toObjectId);
+    this.students.forEach(toObjectId);
     next();
   }
   catch (err) {
@@ -90,23 +78,28 @@ AssignmentSchema.pre('save', function (next) {
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
-AssignmentSchema.post('save', function (Assignment) {
-  var update = { $addToSet: { 'Assignments': Assignment } };
-  if (Assignment.isTrashed) {
-    var AssignmentIdObj = mongoose.Types.ObjectId(Assignment._id);
-    /* + If deleted, all references are also deleted */
-    update = { $pull: { 'Assignments': AssignmentIdObj } };
+
+AssignmentSchema.post('save', function (assignment) {
+  console.log('in post hook assignment');
+  if (assignment.isTrashed) {
+    var assignmentIdObj = mongoose.Types.ObjectId( assignment._id );
+
+    mongoose.models.User.update({'assignments': assignment.students},
+      {$pull: {"assignments": assignmentIdObj}},
+      function(err, affected, result) {
+        if (err) { throw new Error(err.message); }
+    });
   }
 
-  if (Assignment.student) {
-    mongoose.models.User.update({ '_id': Assignment.student },
-      update,
-      function (err, affected, result) {
-        if (err) {
-          throw new Error(err.message);
-        }
-      });
-  }
+
+
+  mongoose.models.User.update({_id: {$in: assignment.students}},
+    {$addToSet: { 'assignments': assignment }},
+    {'multi': true},
+    function (err, affected, results) {
+      if (err) { throw new Error(err.message); }
+      console.log('affected', affected);
+    });
 });
 
 module.exports.Assignment = mongoose.model('Assignment', AssignmentSchema);
