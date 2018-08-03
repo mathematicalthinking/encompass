@@ -3,8 +3,9 @@
 @import "responsive-font-size";
 
 #problemnewheader {
-  color: #4E97E8;
+  color: $accent-color;
   font-weight: bold;
+  font-size: 1.5em;
 }
 form#newproblemform {
   input[type=radio].required-error::after, input[type=checkbox].required-error::after, input[type=text].required-error::after  {
@@ -36,6 +37,15 @@ form#newproblemform {
   }
   input:required {
     box-shadow: none;
+  }
+
+  .image-upload {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    border-radius: 4px;
   }
   // input:invalid {
   //   box-shadow: 0 0 3px red;

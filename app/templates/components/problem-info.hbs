@@ -61,31 +61,28 @@
             <label for="createDate">Creation Date</label>
             {{input name="createDate" id="createDate" type="text" value=createDate disabled=true placeholder=problem.createDate}}
           </li>
+          <li>
+          {{#if problem.imageData}}
+            <label for="imagedata">Problem Image:</label>
+            {{#if problem.isPdf}}
+              <object data="{{problem.imageData}}" type="application/pdf">
+                <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+              </object>
+            {{else}}
+              <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
+            {{/if}}
+          {{/if}}
+          </li>
         </ol>
       </fieldset>
     </section>
 
-      {{#if problem.imageData}}
-        <label for="imagedata">Problem Image:</label>
-          {{#if problem.isPdf}}
-            <object data="{{problem.imageData}}" type="application/pdf">
-              <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-            </object>
-          {{else}}
-            <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
-          {{/if}}
-        {{/if}}
-
-          {{#if canEdit}}
-            <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
-            <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
-          {{else}}
-              <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
-          {{/if}}
-
-          {{#if savedProblem}}
-            <p>You added {{#link-to 'problem' savedProblem classNames='problem'}}{{problem.title}}{{/link-to}} to your problem list</p>
-          {{/if}}
+      {{#if canEdit}}
+        <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
+        <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
+      {{else}}
+          <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
+      {{/if}}
 
   {{/if}}
 
