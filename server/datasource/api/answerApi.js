@@ -30,9 +30,19 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
+ function accessibleAnswers(user) {
+  return {
+    $or: [
+      { createdBy: user },
+    ],
+    isTrashed: false
+  };
+}
+
 const getAnswers = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
+  // const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+  const criteria = accessibleAnswers(user);
   models.Answer.find(criteria)
   .exec((err, answers) => {
     if (err) {
@@ -76,11 +86,26 @@ const getAnswer = (req, res, next) => {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-
-const postAnswer = (req, res, next) => {
+/* jshint ignore:start */
+ const postAnswer = async function(req, res, next) {
   const user = userAuth.requireUser(req);
-  // what permissions are needed to post and answer
+  // Add permission checks here
   const answer = new models.Answer(req.body.answer);
+  const uploadedFileId = answer.uploadedFileId;
+  console.log('uploadedFileId', uploadedFileId);
+  // use uploadedFileId to get image data and set on record
+  try {
+    if (uploadedFileId) {
+      console.log('uploadedFileId', uploadedFileId);
+      const image = await models.Image.findById(uploadedFileId);
+      console.log('image', image);
+      //answer.imageSrc = `<img src="${image.data}" alt="${imageAlt}">`
+      answer.imageData = image.data;
+    }
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
   answer.createdBy = user;
   answer.createDate = Date.now();
   answer.save((err, doc) => {
@@ -140,3 +165,4 @@ module.exports.get.answers = getAnswers;
 module.exports.get.answer = getAnswer;
 module.exports.post.answer = postAnswer;
 module.exports.put.answer = putAnswer;
+/* jshint ignore:end */
