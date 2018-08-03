@@ -24,7 +24,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
         problem.set('isTrashed', true);
         problem.set('imageData', null);
-        problem.save();
+        problem.save()
+          .then(() => {
+              this.sendAction('toProblemList');
+          });
         problem.set('imageData', problem.get('imageData'));
     },
 
