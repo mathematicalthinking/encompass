@@ -10,6 +10,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   origin: DS.belongsTo('problem', { inverse: null }),
   modifiedBy: DS.belongsTo('user', { inverse: null }),
   additionalInfo: DS.attr('string'),
+  privacySetting: DS.attr('string'),
   isPublic: DS.attr('boolean', {
       defaultValue: false
   }),

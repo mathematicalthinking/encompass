@@ -20,11 +20,12 @@ var ProblemSchema = new Schema({
   text: { type: String },
   imageUrl: { type: String },
   sourceUrl: { type: String },
-  imageId: {type: String},
-  imageData: {type: String},
+  imageId: { type: String },
+  imageData: { type: String },
   additionalInfo: { type: String },
-  origin: {type: ObjectId, ref: 'Problem'},
-  modifiedBy: { type: ObjectId, ref: 'User'},
+  origin: { type: ObjectId, ref: 'Problem' },
+  modifiedBy: { type: ObjectId, ref: 'User' },
+  privacySetting: { type: String },
   isPublic: { type: Boolean, default: false },
   categories: [{ type: ObjectId, ref: 'Category' }]
 }, { versionKey: false });
