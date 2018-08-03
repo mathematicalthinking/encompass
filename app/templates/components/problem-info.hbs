@@ -65,9 +65,11 @@
           {{#if problem.imageData}}
             <label for="imagedata">Problem Image:</label>
             {{#if problem.isPdf}}
-              <object data="{{problem.imageData}}" type="application/pdf">
-                <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+            <div id="pdf-view">
+              <object data="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+                <embed src="{{problem.imageData}}" type="application/pdf">
               </object>
+            </div>
             {{else}}
               <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
                 <img src="{{problem.imageData}}" alt="{{problem.title}}">
