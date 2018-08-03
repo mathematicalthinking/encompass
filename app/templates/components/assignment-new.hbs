@@ -11,18 +11,20 @@
           <li>
             <label for="section">Section</label>
             {{my-select selectedSection=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedSection))}}
+            {{input required=true type="hidden" value=selectedSection}}
           </li>
           <li>
             <label for="text">Problem</label>
-            {{my-select selectedProblem=selectedProblem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut selectedProblem))}}
+            {{my-select isRequired=true selectedProblem=selectedProblem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut selectedProblem))}}
+            {{input required=true type="hidden" value=selectedProblem}}
           </li>
           <li>
             <label for="additionalInfo">Date Assigned</label>
-            {{input id="assignedDate" type="text" value=assignedDate placeholder="Date Assigned"}}
+            {{input id="assignedDate" type="date" value=assignedDate required=true}}
           </li>
           <li>
             <label for="dueDate">Due Date</label>
-            {{input id="dueDate" type="text" value=dueDate placeholder="Due Date"}}
+            {{input id="dueDate" type="date" value=dueDate required=true}}
           </li>
         </ol>
       </fieldset>
