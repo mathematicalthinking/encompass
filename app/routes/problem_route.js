@@ -14,3 +14,4 @@ Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
     },
   }
 });
+
