@@ -40,19 +40,48 @@
               </ul> --}}
             {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
           </li>
-          <li>
+          <li class="teacherslist">
             <label for="teachers">Teachers</label>
              {{#each section.teachers as |teacher| }}
               <ol class="b">{{teacher.username}}</ol>
               {{/each}}
           </li>
 
-          <li>
-             <label for="students">Students</label>
+        {{#if isAddingExistingStudents}}
+        {{else}}
+          <li class="studentslist">
+             <label for="students">Students - "TO DO ADD/EDIT/REMOVE"
+                <button class="_button" {{action 'removeStudent'}} style=""> ADD </button>
+             </label>
+     {{/if}}
+
+     {{#if isAddingExistingStudents}}
+          <label for="newUserName">Name</label>
+          {{input id="newUserName" type="newUserName" value=studentUsername placeholder="newUserName" action="checkError" on="key-down"}}
+
+
+          <label for="addusername">Username</label>
+          {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
+          {{#unless usingDefaultPassword}}
+
+          <label for="addpassword">Password</label>
+          {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
+          {{/unless}}
+
+          <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
+     {{/if}}
+
+
             {{#each section.students as |student|}}
-            <ol class="b">{{student.username}}</ol>
+            <ol class="c"> {{student.username}}
+
+             <button class="student_button" {{action 'removeStudent'}} style="">Remove</button>
+              <button class="student_button" {{action 'editStudent'}} style="">EDIT </button>
+
+            </ol>
             {{/each}}
           </li>
+
         </ul>
       </fieldset>
     </form>
@@ -66,27 +95,27 @@
       Edit Section
     </button>
   </section>
-
   {{/if}}
 
 
   {{#if isAddingStudents}}
   <form id='createSectionForm' class='properForm'>
     <fieldset>
-    {{!-- <div style="clear: left"></div> --}}
-    {{!-- <p class="info">You have the option to create and use a single password for all students in this section, or you can create a password
-      for each student individually</p> --}}
 
     <h2>Use default password for all new students?
     {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
+
+      <label for="newUserName">Name</label>
+      {{input id="newUserName" type="newUserName" value=studentUsername placeholder="newUserName" action="checkError" on="key-down"}}
+
 
       <label for="addusername">Username</label>
       {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
       {{#unless usingDefaultPassword}}
 
       <label for="addpassword">Password</label>
-      {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError"
-      on="key-down"}} {{/unless}}
+      {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
+      {{/unless}}
 
       <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
 
