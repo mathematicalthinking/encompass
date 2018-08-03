@@ -2,6 +2,18 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   classNames: ['problem-list', 'left-list'],
   yourProblemList: null,
 
+  // didUpdate: function () {
+  //   this._super(...arguments);
+  //   console.log('did update ran');
+  // },
+
+  didRender: function () {
+    this._super(...arguments);
+    let problems = this.get('store').findAll('problem');
+    console.log('did render ran');
+    console.log('problem list in did render is', problems);
+  },
+
   // This displays only the problems beloging to the current user
   yourProblems: Ember.computed(function () {
     var problems = this.problems;
