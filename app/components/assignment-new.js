@@ -23,12 +23,16 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const that = this;
 
     const createdBy = that.get('currentUser');
-    const section = that.get('section');
-    const problem = that.get('problem');
-    const assignedDate = that.get('assignedDate');
-    const dueDate = that.get('dueDate');
+    const section = that.get('selectedSection');
+    const problem = that.get('selectedProblem');
+    const assignedDate = new Date(that.get('assignedDate'));
+    const dueDate = new Date(that.get('dueDate'));
 
-    const createAssignmentData =   that.store.createRecord('assignment', {
+    // need to get all students from section
+    const students = section.get('students');
+
+
+    const createAssignmentData = that.store.createRecord('assignment', {
       createdBy: createdBy,
       createDate: new Date(),
       section: section,
@@ -36,17 +40,23 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       assignedDate: assignedDate,
       dueDate: dueDate,
     });
-      createAssignmentData.save()
-          .then((assignment) => {
-            that.sendAction('toAssignmentInfo', assignment);
-            //TODO: decide how to handle clearing form and whether to redirect to the created assignment
+
+    students.forEach((student) => {
+      createAssignmentData.get('students').pushObject(student);
+    });
+
+    createAssignmentData.save()
+      .then((assignment) => {
+        console.log('assignment', assignment);
+        //this.set('createdAssignment', assignment);
+        that.sendAction('toAssignmentInfo', assignment);
+        //TODO: decide how to handle clearing form and whether to redirect to the created assignment
             //that.get('validator').clearForm();
-          })
-          .catch((err) => {
+        })
+        .catch((err) => {
             that.set('createAssignmentError', err);
           });
-
-      },
+    },
 
   actions: {
     validate: function() {
