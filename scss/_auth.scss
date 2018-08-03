@@ -15,7 +15,6 @@
   margin: 20px 0 20px 0;
 }
 
-
 // LOGIN PAGE SYLING
 .login-page {
   height: 90vh;
@@ -51,6 +50,9 @@
     background-color: white;
     border: none;
     border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
   }
   .auth-button {
     @include auth-button;
@@ -71,7 +73,6 @@
     }
   }
 }
-
 
 // SIGNUP PAGE SYLING
 .signup-page {

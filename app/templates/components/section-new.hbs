@@ -17,19 +17,19 @@
         <fieldset>
           <ol>
             <li>
-              <label for="title">Class/Group Names</label>
-              {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="enter class/group name" action="checkError" on="key-down"}}
+              <label for="title">Class/Group Name <span class="required-star">*</span></label>
+              {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class/group name" action="checkError" on="key-down"}}
               {{#if missingFieldsError}}
-              <p class="error-message">Please fill in all fields.</p>
+              <p class="error-message">Please provide a Class or Group Name.</p>
               {{/if}}
             </li>
 
             <li>
-              <label for="teacher">Teacher/Leader</label>
-              {{#if user.isAdmin}} {{input id="teacher" type="text" value=teacher placeholder="username" action="checkError" on="key-down"}}
+              <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
+              {{#if user.isAdmin}} {{input id="teacher" type="text" value=teacher placeholder="Teacher's username" action="checkError" on="key-down"}}
               {{else}} {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}} {{/if}}
               {{#if invalidTeacherUsername}}
-              <p>Sorry, there is no teacher with that username.</p>
+              <p class="error-message">Sorry, there is no teacher with that username.</p>
               {{/if}}
             </li>
 

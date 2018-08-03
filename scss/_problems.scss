@@ -3,78 +3,102 @@
 @import "responsive-font-size";
 
 #probleminfoheader {
-    h2 {
-        color: #4E97E8;
-        font-weight: bold;
-    }
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+    font-size: 1.5em;
+  }
 }
 
 section.problemdetails {
-    #probleminfoform {
-        input[type=text], select {
-            font-size: 15px;
-            color: black;
-            width: 70%;
-            padding: 12px 20px;
-            margin: 8px 0px;
-            display: inline-block;
-            border: 0px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        label {
-            width: 20%;
-            padding: 12px 20px;
-          }
-  }
-
-    #probleminfo {
-        input[type=text], select {
-            width: 70%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        label {
-            width: 20%;
-            padding: 12px 20px;
-          }
-
-          .action_button {
-              padding: 12px 20px;
-          }
-    }
-
-      button.action_button {
-          margin: 8px 0;
-          padding: 12px 20px;
+  #probleminfoform {
+    input[type=text],
+    select {
+      font-size: 1em;
+      color: $primary-font-color;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0px;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background: none;
+      &::placeholder {
+        color: $primary-font-color;
       }
-
     }
-
-
-
+    label {
+      width: 20%;
+      font-size: 1em;
+      padding: 12px 20px;
+      color: black;
+    }
+  }
+  #probleminfo {
+    input[type=text],
+    select {
+      font-size: 1em;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: none;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background: none;
+      &::placeholder {
+        color: $primary-font-color;
+      }
+    }
+    label {
+      width: 20%;
+      font-size: 1em;
+      padding: 12px 20px;
+      color: black;
+    }
+    .action_button {
+      padding: 12px 20px;
+    }
+  }
+  button.action_button {
+    margin: 8px 0;
+    padding: 12px 20px;
+  }
+}
 
 //problem-list hbs
 #problemlistheader {
-    h2 {
-        color: #4E97E8;
-        font-weight: bold;
-    }
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
 }
 
 section.problemlist {
-    h2 {
-        color: #4E97E8;
-        font-weight: bold;
-    }
-    #problem-new-link {
-        color: #4E97E8;
-        font-weight: bold;
-    }
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
+  #problem-new-link {
+    color: $accent-color;
+    font-weight: bold;
+  }
+}
+
+
+#problem-info {
+  a.image.wide {
+    max-width: 100%;
+    position: relative;
+    z-index: 999;
+  }
+
+  .wide img {
+    height: initial;
+    width: 100%;
+    margin-bottom: 30px;
+  }
 }
 
 

@@ -1,9 +1,11 @@
 Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'problem-info',
   isEditing: false,
   problemName: null,
-  problemQuestion: null,
+  problemText: null,
   problemPublic: true,
   savedProblem: null,
+  isWide: false,
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
@@ -26,10 +28,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     editProblem: function () {
       let problem = this.get('problem');
-      console.log('problem title', problem.title);
       this.set('isEditing', true);
       this.set('problemName', problem.get('title'));
-      this.set('problemQuestion', problem.get('text'));
+      this.set('problemText', problem.get('text'));
+      console.log('ProblemQuestion is currently', problem.get('text'));
       // this.set('problemPublic', problem.get('isPublic'));
     },
 
@@ -39,9 +41,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     updateProblem: function () {
       let title = this.get('problemName');
-      let text = this.get('problemQuestion');
+      let text = this.get('problemText');
       let isPublic = this.get('isPublic');
-
       let problem = this.get('problem');
       problem.set('title', title);
       problem.set('text', text);
@@ -74,7 +75,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         .then((problem) => {
           this.set('savedProblem', problem);
         });
-    }
+    },
+
+    toggleImageSize: function () {
+      console.log('expand image button clicked');
+      this.toggleProperty('isWide');
+
+    },
 
   }
 });

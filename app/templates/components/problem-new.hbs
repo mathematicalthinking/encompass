@@ -9,11 +9,11 @@
       <fieldset>
         <ol>
           <li>
-            <label for="title">Problem Name</label>
+            <label for="title">Problem Name <span class="required-star">*</span></label>
             {{input id="title" required="true" type="text" value=title placeholder="enter problem name"}}
           </li>
           <li>
-            <label for="text">Problem Question</label>
+            <label for="text">Problem Statement <span class="required-star">*</span></label>
             {{input id="text" required="true" type="text" value=text placeholder="enter problem question"}}
           </li>
           <li>
@@ -29,7 +29,7 @@
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
           <li>
-            <label for="isPublic">Privacy Settings</label>
+            <label for="isPublic">Privacy Settings <span class="required-star">*</span></label>
             {{input type="radio" value=isPublic required="true" name="isPublic" class="private" click=(action "radioSelect" false)}}
             <label>Private</label>
             {{input type="radio" value=isPublic required="true" name="isPublic" class="public" click=(action "radioSelect" true)}}

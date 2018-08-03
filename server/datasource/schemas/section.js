@@ -18,6 +18,7 @@ var SectionSchema = new Schema({
   name: { type: String },
   organization: { type: ObjectId, ref: 'Organization' },
   sectionId: { type: Number },
+  sectionPassword: { type: String },
   teachers: [{ type: ObjectId, ref: 'User' }],
   students: [{ type: ObjectId, ref: 'User' }],
   problems: [{ type: ObjectId, ref: 'Problem' }],
