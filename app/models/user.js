@@ -18,8 +18,8 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   key: DS.attr('string'),
   history: DS.attr(),
   sections: DS.attr(),
-  assignments: DS.hasMany('assignment'),
-  answers: DS.hasMany('answer'),
+  assignments: DS.hasMany('assignment', {async: true, inverse: null}),
+  answers: DS.hasMany('answer', {async: true}),
   isAuthenticated: function() {
     return !this.get('isGuest');
   }.property('isGuest'),
