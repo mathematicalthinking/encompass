@@ -66,19 +66,41 @@ AnswerSchema.post('save', function (Answer) {
     /* + If deleted, all references are also deleted */
     update = { $pull: { 'Answers': AnswerIdObj } };
   }
-  console.log('Answer post', Answer);
-  console.log('createdBy', Answer.createdBy);
+
   if (Answer.createdBy) {
     console.log('in post answer hook');
     var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
-    console.log('userIdObj', userIdObj);
     mongoose.models.User.update({ '_id': userIdObj },
       update,
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('affected', affected);
+        console.log('affected users', affected);
+      });
+  }
+
+  if (Answer.assignment) {
+    var assignmentIdObj = mongoose.Types.ObjectId(Answer.assignment);
+    mongoose.models.Assignment.update({ '_id': assignmentIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected assignments', affected);
+      });
+  }
+
+  if (Answer.problem) {
+    var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
+    mongoose.models.Problem.update({ '_id': problemIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected problems', affected);
       });
   }
 
