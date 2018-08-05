@@ -1,0 +1,51 @@
+<section class="assignment-info">
+    <div>
+      <p>Problem Name: {{assignment.problem.title}}</p>
+    </div>
+    <div>
+      <p>Problem Statement: {{assignment.problem.text}}</p>
+      {{#if assignment.problem.imageData}}
+
+        {{#if problem.isPdf}}
+          <div class="assignmentPdf">
+            <object data="{{assignment.problem.imageData}}" type="application/pdf">
+            <embed src="{{assignment.problem.imageData}}" type="application/pdf" height="100%" width="100%">
+            </object>
+        </div>
+        {{else}}
+          <div class="assignmentImage">
+            <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
+          </div>
+        {{/if}}
+    {{/if}}
+    </div>
+  </section>
+
+  <section class="pastSubmissions">
+    <h2>Past Submissions</h3>
+    {{#if answers.length}}
+      <p>You have made a total of {{answers.length}} submissions to this assignment. Click 'Revise' below to update your most recent submission</p>
+      {{else}}
+      It looks like you have not made any submissions to this assignment. Click 'Respond' below to begin making a submission.
+    {{/if}}
+
+    <ol>
+      {{#each sortedAnswers as |answer|}}
+        {{#link-to 'answer' answer}}
+          <li>{{answer.createDate}}</li>
+        {{/link-to}}
+      {{/each}}
+    </ol>
+</section>
+
+{{#if isResponding}}
+  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse"}}
+{{else if isRevising}}
+  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse"}}
+{{else}}
+  {{#if sortedAnswers.length}}
+  <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
+  {{else}}
+  <button class="action_button" {{action 'beginAssignmentResponse'}}>Respond</button>
+  {{/if}}
+{{/if}}
