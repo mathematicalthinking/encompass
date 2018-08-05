@@ -1,0 +1,42 @@
+<section class="answer-info">
+    <div>
+      <p>Assignment: {{problem.title}} / {{answer.createDate}}</p>
+    </div>
+    <div>
+      <p>Problem Statement: {{problem.text}}</p>
+      {{#if problem.imageData}}
+
+        {{#if problem.isPdf}}
+          <div class="assignmentPdf">
+            <object data="{{problem.imageData}}" type="application/pdf">
+            <embed src="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+            </object>
+        </div>
+        {{else}}
+          <div class="assignmentImage">
+            <img src="{{{problem.imageData}}}" alt={{{problem.title}}} />
+          </div>
+        {{/if}}
+    {{/if}}
+    </div>
+    <div>
+      <p>Brief Summary: {{answer.answer}}</p>
+    </div>
+    <div>
+      <p>Explanation: {{answer.explanation}}</p>
+    </div>
+
+    {{#if answer.imageData}}
+      {{#if answer.isPdf}}
+          <div class="assignmentPdf">
+            <object data="{{answer.imageData}}" type="application/pdf">
+            <embed src="{{answer.imageData}}" type="application/pdf" height="100%" width="100%">
+            </object>
+        </div>
+        {{else}}
+          <div class="assignmentImage">
+            <img src="{{{answer.imageData}}}" alt={{{answer.createDate}}} />
+          </div>
+      {{/if}}
+    {{/if}}
+  </section>
