@@ -1,0 +1,23 @@
+<section class="assignmentReport">
+    <h2>Assignment Report</h2>
+    <table class="report rows values">
+    <tr>
+      <th>Student Username</th>
+      <th>Number of Submissions</th>
+      <th>Most Recent Revision</th>
+    </tr>
+    {{#each studentList as |student|}}
+    <tr>
+        <td>{{student.username}}</td>
+        <td>{{student.answers.length}}</td>
+        {{#if student.answers.length}}
+          <td>{{student.answers}}</td>
+        {{else}}
+        <td> N/A</td>
+        {{/if}}
+
+    </tr>
+    {{/each}}
+
+  </table>
+  </section>
