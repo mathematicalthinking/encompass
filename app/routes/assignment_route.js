@@ -1,9 +1,8 @@
 Encompass.AssignmentRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
-    return Ember.RSVP.hash({
-      assignment: this.get('store').findRecord('assignment', params.id),
-      answers: this.get('store').findAll('answer'),
-    });
+    console.log('params in assn route', params);
+    return this.get('store').findRecord('assignment', params.id);
+
   },
 
   actions: {
