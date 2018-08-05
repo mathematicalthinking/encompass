@@ -63,6 +63,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         // the first image url as the image in the answer doc
         createAnswerData.set('uploadedFileId', res.images[0]._id);
         createAnswerData.save()
+          .then((answer) => {
+            that.sendAction('toAnswerInfo', answer);
+          })
           .catch((err) => {
             that.set('createAnswerError', err);
           });
@@ -72,9 +75,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     } else {
       createAnswerData.save()
           .then((answer) => {
-            console.log('ttt', answer.get('assignment'));
-            that.set('isResponding', false);
-            that.set('isRevising', false);
+            // that.set('isResponding', false);
+            // that.set('isRevising', false);
             that.sendAction('toAnswerInfo', answer);
             //TODO: decide how to handle clearing form and whether to redirect to the created answer
             //that.get('validator').clearForm();
@@ -105,5 +107,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       })
       .catch(console.log);
     },
+
+    cancelResponse: function() {
+      this.sendAction('cancelResponse');
+    }
   }
 });

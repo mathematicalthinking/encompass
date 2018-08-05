@@ -31,10 +31,15 @@
   </section>
   <div style="clear: left"></div>
   <section class="submit">
-    <button class="action_button" {{action 'validate'}}>
-      Create Answer
-    </button>
+    <span>
+      <button class="action_button" {{action 'validate'}}>Create Answer</button>
+    </span>
+    <span class="cancelResponse">
+      <button class="action_button" {{action 'cancelResponse'}}>Cancel</button>
+    </span>
+
   </section>
+
 
   {{#if createdAnswerError}}
     <p>{{createAnswerError}}</p>
