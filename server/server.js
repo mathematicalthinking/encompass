@@ -189,7 +189,7 @@ server.get('/api/category/:id', path.validateId(), api.get.category);
 server.get('/api/organizations', api.get.organizations);
 server.get('/api/organization/:id', path.validateId(), api.get.organization);
 server.get('/api/assignments', api.get.assignments);
-server.get('/api/assignment/:id', path.validateId(), api.get.assignment);
+server.get('/api/assignments/:id', path.validateId(), api.get.assignment);
 
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
