@@ -58,12 +58,11 @@ describe('Sections', function () {
     const verifyForm = async function () {
       const inputs = css.newSection.inputs;
 
-      const thisUrl = await helpers.getCurrentUrl(driver);
-      console.log('url', thisUrl);
-
       //testing for inputs
       for (let input of Object.keys(inputs)) {
         it(`${input} field should be visible`, async function() {
+          const thisUrl = await helpers.getCurrentUrl(driver);
+          console.log('url', thisUrl);
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         });
       }
