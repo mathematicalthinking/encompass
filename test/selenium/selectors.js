@@ -55,7 +55,7 @@ module.exports = {
   successMessage: '.success-message',
 
   newSection: {
-    form: 'form#section',
+    form: 'form#newsectionform',
     inputs: {
       name: 'input#newSectionName',
       teachers: 'input#teacher'

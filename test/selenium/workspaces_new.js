@@ -11,7 +11,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 describe('Visiting Workspace Creation', function() {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {
     driver = new Builder()

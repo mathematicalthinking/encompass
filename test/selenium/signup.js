@@ -16,7 +16,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 describe('Signup form', async function () {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
     driver = new Builder()

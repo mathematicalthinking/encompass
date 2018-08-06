@@ -10,7 +10,7 @@ const dbSetup = require('../data/restore');
 const host = helpers.host;
 
 describe('Folders', function() {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
 
   before(async function() {
