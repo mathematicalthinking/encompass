@@ -32,7 +32,7 @@
             <label>Privacy Settings <span class="required-star">*</span></label>
               {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'M')}}
               <label class="radio-label">Just Me</label>
-              {{input type="radio" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'O')}}
+              {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'O')}}
               <label class="radio-label">My Organization</label>
               {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
               <label class="radio-label">Everyone</label>

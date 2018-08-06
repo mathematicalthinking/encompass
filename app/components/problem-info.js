@@ -7,6 +7,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   privacySetting: null,
   savedProblem: null,
   isWide: false,
+  checked: true,
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
@@ -37,7 +38,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isEditing', true);
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
-      // this.set('problemPublic', problem.get('isPublic'));
+      // this.set('privacySetting', problem.get('privacySetting'));
     },
 
     radioSelect: function (value) {

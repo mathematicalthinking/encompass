@@ -4,6 +4,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   isMissingRequiredFields: null,
   isPublic: null,
   privacySetting: null,
+  checked: true,
   validator: Ember.inject.service('form-validator'),
 
   didInsertElement: function() {
@@ -27,6 +28,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     //var categories = [];
     var additionalInfo = that.get('additionalInfo');
     var privacySetting = that.get('privacySetting');
+    var currentUser = that.get('currentUser');
+    var organization = currentUser.get('organization');
 
     //var imageUrl = null;
 
@@ -38,6 +41,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       // categories: categories,
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
+      organization: organization,
       //imageUrl: imageUrl
     });
 
@@ -71,13 +75,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((problem) => {
-          let organization = problem.get('organization');
-          console.log('problem org is', organization);
-          let currentUser = this.get('currentUser');
-          console.log('Current user is', currentUser);
-          let userOrg = currentUser.get('organization');
-          console.log('users org is', userOrg);
-
           that.sendAction('toProblemInfo', problem);
           //TODO: decide how to handle clearing form and whether to redirect to the created problem
           //that.get('validator').clearForm();

@@ -6,7 +6,7 @@ Encompass.PrivacySettingHelper = Ember.Helper.helper(function (setting) {
   } else if (setting[0] === "E") {
     return 'Everyone';
   } else {
-    return 'Error';
+    return 'Undefined';
   }
 
 });

@@ -39,6 +39,11 @@ form#newproblemform {
     box-shadow: none;
   }
 
+  input[type=radio] {
+    padding: 12px 20px;
+    margin: 24px 2px;
+  }
+
   .image-upload {
     width: 70%;
     padding: 12px 20px;
@@ -53,17 +58,26 @@ form#newproblemform {
   label {
     width: 20%;
     padding: 12px 20px;
+    margin: 8px 0;
     font-size: 1em;
     color:black;
   }
 
   .radio-label {
-    padding: 0px 5px;
-    margin-top: -10px;
+    // padding: 0px 5px;
+    // margin-top: -10px;
+    width: 175px;
+    padding: 12px 3px;
+    margin: 8px 0;
+    font-size: 1em;
   }
 
   .privacy-settings {
     margin-bottom: 20px;
+  }
+
+  #myOrg {
+    margin-left: -40px;
   }
 
 }
