@@ -1,0 +1,59 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#assignmentnewheader {
+  color: $accent-color;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+form#newassignmentform {
+  .required-error {
+    border: 2px solid red;
+  }
+  div.mySelect {
+    display: inline-block;
+    padding: 12px 0px;
+    margin: 8px 0;
+    font-size: 1em;
+    width: 70%;
+
+    select {
+      width: 100%;
+      font-size: 1em;
+      margin-left: 0px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background: none;
+      &::placeholder {
+        color: $primary-font-color;
+      }
+    }
+
+  }
+
+  input[type=date] {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  input:required {
+    box-shadow: none;
+  }
+  // input:invalid {
+  //   box-shadow: 0 0 3px red;
+  // }
+  label {
+    width: 20%;
+    padding: 12px 20px;
+    font-size: 1em;
+    color:black;
+  }
+
+}

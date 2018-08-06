@@ -1,0 +1,113 @@
+//assignment-list hbs
+#assignmentlistheader {
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
+}
+
+section.assignmentlist {
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
+  #assignment-new-link {
+    color: $accent-color;
+    font-weight: bold;
+  }
+}
+
+section.assignment-info-student {
+  p {
+    font-size: 1em;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+  }
+  label {
+    width: 20%;
+    font-size: 1em;
+    padding: 12px 20px;
+    color: black;
+  }
+  .action_button {
+    padding: 12px 20px;
+  }
+  button.action_button {
+    margin: 8px 0;
+    padding: 12px 20px;
+  }
+}
+
+
+section.pastSubmissions {
+  p {
+    font-size: 1em;
+    padding: 5px;
+    margin: 8px 0px;
+  }
+  ol {
+    li {
+      padding: 5px;
+
+    }
+  }
+}
+
+section.assignment-info-teacher {
+    #assignmentinfoform {
+      input[type=text], input[type=date]
+      select {
+        font-size: 1em;
+        color: $primary-font-color;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+      label {
+        width: 20%;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+      }
+    }
+    #assignmentinfo {
+      input[type=text],
+      select {
+        font-size: 1em;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+      label {
+        width: 20%;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+      }
+      .action_button {
+        padding: 12px 20px;
+      }
+    }
+    button.action_button {
+      margin: 8px 0;
+      padding: 12px 20px;
+    }
+}
