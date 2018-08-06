@@ -31,10 +31,6 @@ describe('Visiting Workspace Creation', function() {
   describe('should display an overview, and some sections', () => {
     const els = ['section.overview', 'section.submissions', 'section.folders', 'section.permissions', 'section.submit>button'];
 
-    // it('create workspace button should be displayed', async function() {
-    //   expect(await helpers.waitForSelector(driver, '#create-workspace-btn')).to.be.true;
-    // });
-
     els.forEach((el) => {
       it(`should display ${el}`, async function() {
         const thisUrl = await helpers.getCurrentUrl(driver);
