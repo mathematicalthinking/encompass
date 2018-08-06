@@ -43,8 +43,7 @@ section.problemdetails {
     }
   }
   #probleminfo {
-    input[type=text],
-    select {
+    .problem-info {
       font-size: 1em;
       width: 70%;
       padding: 12px 20px;
@@ -60,6 +59,7 @@ section.problemdetails {
     }
     label {
       width: 20%;
+      margin: 8px 0;
       font-size: 1em;
       padding: 12px 20px;
       color: black;
