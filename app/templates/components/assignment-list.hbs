@@ -1,4 +1,4 @@
-<header id="assignmentlist">
+<header id="assignmentlistheader">
   <h2>Assignments</h2>
   <div class="clear"></div>
 </header>
@@ -15,7 +15,7 @@
 
     <ul class="your-assignments">
       {{#each assignments as |assignment|}}
-      <li>{{#link-to 'assignment' assignment classNames='assignment'}}{{assignment.problem.title}}{{/link-to}}</li>
+      <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}}{{/link-to}}</li>
       {{/each}}
     </ul>
   </nav>
