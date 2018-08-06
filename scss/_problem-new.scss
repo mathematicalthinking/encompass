@@ -44,17 +44,6 @@ form#newproblemform {
     margin: 24px 2px;
   }
 
-  .image-upload {
-    width: 70%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    font-size: 1em;
-    display: inline-block;
-    border-radius: 4px;
-  }
-  // input:invalid {
-  //   box-shadow: 0 0 3px red;
-  // }
   label {
     width: 20%;
     padding: 12px 20px;
@@ -63,21 +52,37 @@ form#newproblemform {
     color:black;
   }
 
+  #image-upload {
+    width: 70%;
+    padding: 12px 0px;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    box-sizing: border-box;
+    input {
+      font-size: 1em;
+    }
+  }
+
   .radio-label {
     // padding: 0px 5px;
     // margin-top: -10px;
-    width: 175px;
+    width: 200px;
     padding: 12px 3px;
     margin: 8px 0;
     font-size: 1em;
   }
 
   .privacy-settings {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
   #myOrg {
     margin-left: -40px;
+  }
+
+  #problemName {
+    margin-top: 20px;
   }
 
 }
