@@ -1,9 +1,11 @@
-<section class="assignment-info">
+<section class="assignment-info-student">
     <div>
-      <p>Problem Name: {{assignment.problem.title}}</p>
+      <label>Problem Name:</label>
+      <p>{{assignment.problem.title}}</p>
     </div>
     <div>
-      <p>Problem Statement: {{assignment.problem.text}}</p>
+      <label>Problem Statement:</label>
+      <p>{{assignment.problem.text}}</p>
       {{#if assignment.problem.imageData}}
 
         {{#if problem.isPdf}}
@@ -29,7 +31,7 @@
       It looks like you have not made any submissions to this assignment. Click 'Respond' below to begin making a submission.
     {{/if}}
 
-    <ol>
+    <ol class="submission-list">
       {{#each sortedAnswers as |answer|}}
         {{#link-to 'answer' answer}}
           <li>{{answer.createDate}}</li>
