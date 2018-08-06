@@ -26,6 +26,7 @@ var ProblemSchema = new Schema({
   origin: { type: ObjectId, ref: 'Problem' },
   modifiedBy: { type: ObjectId, ref: 'User' },
   privacySetting: { type: String },
+  organization: { type: ObjectId, ref: 'Organization' },
   isPublic: { type: Boolean, default: false },
   categories: [{ type: ObjectId, ref: 'Category' }]
 }, { versionKey: false });
