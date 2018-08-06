@@ -3,22 +3,36 @@
       <form id='assignmentinfoform' class='properForm'>
             <fieldset>
               <ol>
-                <li>
-                  <label for="problem">Problem</label>
-                  {{input name="problem" id="problem" type="text" value=assignment.problem.title disabled=isProblemLocked placeholder=assignment.problem.title}}
+                {{#if isProblemLocked}}
+                  <li class="assignment-info">
+                    <label for="problem">Problem</label>
+                    {{input name="problem" id="problem" type="text" value=assignment.problem.title disabled=isProblemLocked }}
+                  </li>
+                {{else}}
+                  <li>
+                    <label for="problem">Problem</label>
+                    {{my-select selectedProblem=selectedProblem selectedValue=selectedProblem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut selectedProblem))}}
+                    {{input required=true type="hidden" value=selectedProblem}}
                 </li>
+                {{/if}}
+                {{#if isDisplaying}}
+                  <li class= "assignment-info">
+                    <label for="section">Section</label>
+                    {{input name="section" id="section" type="text" value=assignment.section.name disabled=isDisplaying }}
+                  </li>
+                {{else}}
+                  <li>
+                    <label for="section">Section</label>
+                    {{my-select selectedSection=selectedSection selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedSection))}}
+                    {{input required=true type="hidden" value=selectedSection}}
+                </li>
+                {{/if}}
+                  <li class="assignment-info">
+                    <label for="assignedDate">Date Assigned</label>
+                      {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDisplaying}}
+                  </li>
 
-                <li>
-                  <label for="section">Section</label>
-                  {{my-select selectedSection=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedSection))}}
-                  {{input required=true type="hidden" value=selectedSection}}
-                </li>
-                <li>
-                  <label for="assignedDate">Date Assigned</label>
-                    {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDisplaying}}
-                </li>
-
-                <li>
+                <li class={{if isDisplaying "assignment-info"}}>
                   <label for="dueDate">Due Date</label>
                   {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=isDisplaying}}
                 </li>
