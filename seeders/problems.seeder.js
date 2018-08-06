@@ -13,6 +13,7 @@ var data = [
     "createdBy": "5b245760ac75842be3189525",
     "categories": [],
     "isPublic": true,
+    "privacySetting" : 'Everyone',
     "isTrashed": false,
   }, {
     "_id": "5b4e2e56be1e18425515308c",
