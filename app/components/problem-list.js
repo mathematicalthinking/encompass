@@ -19,7 +19,6 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var problems = this.problems;
     var currentUser = this.get('currentUser');
     var yourProblems = problems.filterBy('createdBy.content', currentUser);
-    console.log(currentUser);
     // this.set('yourProblemList', yourProblems);
     return yourProblems;
   }),

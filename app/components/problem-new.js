@@ -21,13 +21,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
   createProblem: function() {
     var that = this;
-    console.log('creating Problem');
     var createdBy = that.get('currentUser');
     var title = that.get('title');
     var text = that.get('text');
     //var categories = [];
     var additionalInfo = that.get('additionalInfo');
     var privacySetting = that.get('privacySetting');
+
     //var imageUrl = null;
 
     var createProblemData =   that.store.createRecord('problem', {
@@ -71,6 +71,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((problem) => {
+          let organization = problem.get('organization');
+          console.log('problem org is', organization);
+          let currentUser = this.get('currentUser');
+          console.log('Current user is', currentUser);
+          let userOrg = currentUser.get('organization');
+          console.log('users org is', userOrg);
+
           that.sendAction('toProblemInfo', problem);
           //TODO: decide how to handle clearing form and whether to redirect to the created problem
           //that.get('validator').clearForm();
@@ -84,7 +91,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   actions: {
     radioSelect: function (value) {
       this.set('privacySetting', value);
-      console.log('current value is ', value);
       console.log('privacy setting now is ', this.get('privacySetting'));
     },
 

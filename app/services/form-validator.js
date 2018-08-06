@@ -69,7 +69,6 @@ Encompass.FormValidatorService = Ember.Service.extend({
   },
 
   isValid: function() {
-    console.log('computing isValid');
     if(this.get('isPristine')) {
       return false;
     }

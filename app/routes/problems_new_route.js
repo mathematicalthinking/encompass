@@ -1,7 +1,8 @@
 Encompass.ProblemsNewRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
     return Ember.RSVP.hash({
-      problems: this.get('store').findAll('problem')
+      problems: this.get('store').findAll('problem'),
+      organizations: this.get('store').findAll('organization'),
     });
   },
   renderTemplate: function () {
@@ -13,3 +14,5 @@ Encompass.ProblemsNewRoute = Encompass.AuthenticatedRoute.extend({
     }
   }
 });
+
+

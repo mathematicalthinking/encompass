@@ -37,7 +37,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isEditing', true);
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
-      console.log('ProblemQuestion is currently', problem.get('text'));
       // this.set('problemPublic', problem.get('isPublic'));
     },
 
@@ -50,9 +49,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let text = this.get('problemText');
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
+      let currentUser = this.get('currentUser');
       problem.set('title', title);
       problem.set('text', text);
       problem.set('privacySetting', privacy);
+      problem.set('modifiedBy', currentUser);
       problem.save();
       this.set('isEditing', false);
     },
@@ -84,7 +85,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     toggleImageSize: function () {
-      console.log('expand image button clicked');
       this.toggleProperty('isWide');
 
     },
