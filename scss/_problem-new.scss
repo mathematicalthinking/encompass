@@ -86,3 +86,12 @@ form#newproblemform {
   }
 
 }
+
+.submit {
+  .action_button {
+    font-size: .8em;
+    border-radius: 3px;
+    padding: 10px 15px;
+    font-weight: $bold-font-weight;
+  }
+}

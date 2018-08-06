@@ -69,8 +69,11 @@ section.problemdetails {
     }
   }
   button.action_button {
-    margin: 8px 0;
-    padding: 12px 20px;
+    margin: 8px 15px 8px 5px;
+    padding: 10px 15px;
+    font-size: .8em;
+    border-radius: 3px;
+    font-weight: $bold-font-weight;
   }
 }
 
