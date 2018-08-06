@@ -6,7 +6,6 @@ Encompass.LogInComponent = Ember.Component.extend({
 
   actions: {
     login: function () {
-      console.log('login action called');
       var that = this;
       var username = that.get('username');
       var password = that.get('password');

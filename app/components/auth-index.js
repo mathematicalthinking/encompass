@@ -9,7 +9,6 @@ Encompass.AuthIndexComponent = Ember.Component.extend({
 
   actions: {
     changeComponent: function () {
-      console.log('shouldShowLogin:', this.shouldShowLogin);
       if (this.shouldShowLogin) {
         this.set('shouldShowLogin', false);
       } else {
