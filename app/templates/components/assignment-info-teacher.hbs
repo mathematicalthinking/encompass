@@ -1,40 +1,40 @@
-<section class="assignmentdetails">
+<section class="assignment-info-teacher">
     <form id="assignmentdetails">
       <form id='assignmentinfoform' class='properForm'>
             <fieldset>
               <ol>
                 <li>
                   <label for="problem">Problem</label>
-                  {{input name="problem" id="problem" type="text" value=assignment.problem.title disabled=true placeholder=assignment.problem.title}}
+                  {{input name="problem" id="problem" type="text" value=assignment.problem.title disabled=isProblemLocked placeholder=assignment.problem.title}}
                 </li>
 
                 <li>
                   <label for="section">Section</label>
-                  {{input name="section" id="section" type="text" value=assignment.section.name disabled=true placeholder=assignment.section.name}}
+                  {{my-select selectedSection=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedSection))}}
+                  {{input required=true type="hidden" value=selectedSection}}
                 </li>
-
-                <label for="assignedDate">Date Assigned</label>
-                  {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=true}}
+                <li>
+                  <label for="assignedDate">Date Assigned</label>
+                    {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDisplaying}}
+                </li>
 
                 <li>
                   <label for="dueDate">Due Date</label>
-                  {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=true}}
+                  {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=isDisplaying}}
                 </li>
               </ol>
             </fieldset>
           </form>
 
 
-              {{#if canEdit}}
-                <button class="action_button" {{action 'deleteassignment'}}>Delete Assignment</button>
-                <button class="action_button" {{action 'editassignment'}}>Edit Assignment</button>
-              {{/if}}
-
-              {{#if savedassignment}}
-                <p>You added {{#link-to 'assignment' savedassignment classNames='assignment'}}{{assignment.title}}{{/link-to}} to your assignment list</p>
-              {{/if}}
-
-    </form>
+          {{#if isEditing}}
+            <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
+            <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
+          {{else}}
+            <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+            <button class="action_button" {{action 'deleteAssignment'}}>Delete Assignment</button>
+          {{/if}}
+       </form>
   </section>
 
   {{!-- {{assignment-report  assignment=assignment students=assignment.students}} --}}

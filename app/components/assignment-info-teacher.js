@@ -1,6 +1,8 @@
 Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
+  isEditing: false,
+  isDisplaying: Ember.computed.not('isEditing'),
 
   getAnswers: function() {
     return this.store.findAll('answer');
@@ -17,10 +19,11 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return this.get('sortedAnswers').get('firstObject');
   }.property('sortedAnswers.[]'),
 
-  isEditable: function() {
+
+  isProblemLocked: function() {
     //can be edited only if no submissions have been recorded yet
-    return Ember.isEmpty(this.get('answers'));
-  }.property('answers.[]'),
+    return !Ember.isEmpty(this.get('answers')) || this.get('isDisplaying');
+  }.property('answers.[]', 'isDisplaying'),
 
   didReceiveAttrs: function() {
     if (this.assignment) {
@@ -41,7 +44,29 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   actions: {
+    editAssignment: function() {
+      this.set('isEditing', true);
+    },
 
+    deleteAssignment: function() {
+      console.log('deleting assignment');
+    },
+    updateAssignment: function() {
+      const assignment = this.get('assignment');
+
+      const values = ['selectedSection', 'selectedProblem', 'assignedDate', 'dueDate'];
+
+      for (let value of values) {
+
+      }
+
+      for (let input of input) {
+
+      }
+      },
+    stopEditing: function() {
+      this.set('isEditing', false);
+    }
   }
 
 });
