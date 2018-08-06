@@ -57,8 +57,28 @@ section.pastSubmissions {
 
 section.assignment-info-teacher {
     #assignmentinfoform {
-      input[type=text], input[type=date]
-      select {
+      div.mySelect {
+        display: inline-block;
+        padding: 12px 0px;
+        margin: 8px 0;
+        font-size: 1em;
+        width: 70%;
+
+        select {
+          width: 100%;
+          font-size: 1em;
+          margin-left: 0px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          background: none;
+          &::placeholder {
+            color: $primary-font-color;
+          }
+        }
+
+      }
+      input[type=text], input[type=date] {
         font-size: 1em;
         color: $primary-font-color;
         width: 70%;
@@ -78,6 +98,11 @@ section.assignment-info-teacher {
         font-size: 1em;
         padding: 12px 20px;
         color: black;
+      }
+      li.assignment-info {
+        input[type=text], input[type=date] {
+          border:none;
+        }
       }
     }
     #assignmentinfo {
