@@ -9,6 +9,7 @@ const fs = require('fs');
 const nconf = require('nconf');
 const logs = require('log4js');
 const build = process.env.BUILD;
+console.log('build: ', build);
 
 const today = new Date();
 const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
@@ -21,22 +22,15 @@ nconf.defaults({
   port: '8080',
   devPort: '8080',
   testPort: '8082',
-  prodPort: '80',
   web: {
     base: '/'
   },
-  // sso: {
-  //   // http://dev.nctm.org/SSO/TmfCheckToken.ashx
-  //   baseUrl: 'http://localhost:3000',
-  //   validateUrl: "/SSO/TmfCheckToken.ashx",
-  //   //baseUrl: 'http://dev.nctm.org',
-  //   //validateUrl: "/SSO/TmfCheckToken.ashx"
-  //   service: 'http://localhost:8080/back',
-  // },
   devDBName: 'encompass',
   testDBName: 'encompass_test',
   seedDBName: 'encompass_seed',
-  prodDBName: 'encompass',
+  // Default database configuration updated by server.js
+  //   - dev, tet and seed are hard coded
+  //   - staging and production are updated from .env file values
   database: {
     host: 'localhost',
     name: 'encompass',

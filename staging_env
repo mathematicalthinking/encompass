@@ -1,0 +1,6 @@
+PORT=1338
+NODE_ENV="staging"
+DB_NAME="encompass_stage"
+
+# url for seeding database
+MONGO_URL="mongodb://localhost:27017/encompass_stage"

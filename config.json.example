@@ -1,20 +1,3 @@
 {
-  "cas": {
-    "service": "http://localhost:8080/back"
-  },
-  "database": {
-    "name": "encompass",
-    "user": "encompass"
-  },
-  "logs": {
-    "server":  "DEBUG",
-    "auth":  "DEBUG",
-    "console":  "DEBUG",
-    "misc":  "DEBUG"
-  },
-  "cache": {
-    "key": "CACHE_KEY",
-    "searchUrl": "POW_SEARCH_URL",
-    "getUrl": "POW_GET_URL"
-  }
+  "not": "needed anymore"
 }

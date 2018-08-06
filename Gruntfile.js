@@ -376,6 +376,35 @@ module.exports = function (grunt) {
           logConcurrentOutput: true
         }
       }
+    },
+    // Would like to be able to put .env_* files in temp file in concat, and then output to .env filename in zip file.
+    compress: {
+      staging: {
+        options: {
+          archive: 'staging.zip'
+        },
+        files: [
+          {src: [ 'build/**', 'common/**', 'dependencies/**', 'server/**', 'seeders/**', 'package.json', 'package-lock.json', '.env_staging', 'md-seed-config.js', 'md-seed-generator.json'], dest: './staging/', expand: true, cwd: '.'}
+        ]
+      },
+      prod: {
+        options: {
+          archive: 'prod.zip'
+        },
+        files: [
+          {src: [ 'build/**', 'common/**', 'dependencies/**', 'server/**', 'package.json', 'package-lock.json', '.env_prod'], dest: './prod/', expand: true, cwd: '.'}
+        ]
+      }
+    },
+    concat: {
+      staging_env: {
+        src: ['.env', 'staging_env'],
+        dest: './.env_staging'
+      },
+      prod_env: {
+        src: ['.env', 'prod_env'],
+        dest: './.env_prod'
+      }
     }
   });
 
@@ -448,10 +477,10 @@ module.exports = function (grunt) {
   grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+  grunt.registerTask('dist', ['concat', 'compress']);
 
 
   // CURRENTLY NOT USED TASKS
-  grunt.registerTask('sleep3', ['shell:sleep3']);
-  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
-  grunt.registerTask('dist', ['test', 'uglify']);
+  // grunt.registerTask('sleep3', ['shell:sleep3']);
+  // grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
 };
