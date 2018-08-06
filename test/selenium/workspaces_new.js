@@ -37,6 +37,8 @@ describe('Visiting Workspace Creation', function() {
 
     els.forEach((el) => {
       it(`should display ${el}`, async function() {
+        const thisUrl = await helpers.getCurrentUrl(driver);
+        console.log('url', thisUrl);
         expect(await helpers.isElementVisible(driver, el)).to.be.true;
       });
     });
