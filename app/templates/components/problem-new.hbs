@@ -30,11 +30,11 @@
           </li>
           <li class="privacy-settings">
             <label>Privacy Settings <span class="required-star">*</span></label>
-              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'justMe')}}
+              {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'Just Me')}}
               <label class="radio-label">Just Me</label>
-              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'myOrg')}}
+              {{input type="radio" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'My Organization')}}
               <label class="radio-label">My Organization</label>
-              {{input type="radio" value=privacySetting required="true" name="privacy" click=(action "radioSelect" 'everyone')}}
+              {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'Everyone')}}
               <label class="radio-label">Everyone</label>
           </li>
         </ol>

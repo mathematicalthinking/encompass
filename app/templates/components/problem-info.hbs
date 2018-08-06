@@ -20,11 +20,11 @@
               <label>Privacy Settings
                 <span class="required-star">*</span>
               </label>
-              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'justMe')}}
+              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'Just Me')}}
               <label class="radio-label">Just Me</label>
-              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'myOrg')}}
+              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'My Organization')}}
               <label class="radio-label">My Organization</label>
-              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'everyone')}}
+              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'Everyone')}}
               <label class="radio-label">Everyone</label>
             </li>
           </ol>
