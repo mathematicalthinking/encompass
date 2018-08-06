@@ -20,11 +20,11 @@
               <label>Privacy Settings
                 <span class="required-star">*</span>
               </label>
-              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'Just Me')}}
+              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'M')}}
               <label class="radio-label">Just Me</label>
-              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'My Organization')}}
+              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'O')}}
               <label class="radio-label">My Organization</label>
-              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'Everyone')}}
+              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'E')}}
               <label class="radio-label">Everyone</label>
             </li>
           </ol>
@@ -39,27 +39,27 @@
         <ol>
           <li>
             <label for="title">Problem Name</label>
-            {{input name="title" id="problemTitle" type="text" value=problemName disabled=true placeholder=problem.title}}
+            <p class="problem-info">{{problem.title}}</p>
           </li>
           <li>
             <label for="text">Problem Statement</label>
-            {{input name="text" id="problemText" type="text" value=problemText disabled=true placeholder=problem.text}}
+            <p class="problem-info">{{problem.text}}</p>
           </li>
 
           {{#if problem.origin}}
           <li>
             <label for="origin">Problem Origin</label>
-            {{input name="origin" id="problemOrigin" type="text" disabled=true placeholder=problem.origin.title}}
+            <p class="problem-info">{{problem.origin.title}}</p>
           </li>
           {{/if}}
 
           <li>
             <label for="currentlyPublic">Privacy Setting</label>
-            {{input name="currentlyPublic" id="currentlyPublic" type="text" value=isPublic disabled=true placeholder=problem.privacySetting}}
+            <p class="problem-info">{{privacy-setting problem.privacySetting}}</p>
           </li>
           <li>
             <label for="createDate">Creation Date</label>
-            {{input name="createDate" id="createDate" type="text" value=createDate disabled=true placeholder=problem.createDate}}
+            <p class="problem-info">{{problem.createDate}}</p>
           </li>
           <li>
           {{#if problem.imageData}}
