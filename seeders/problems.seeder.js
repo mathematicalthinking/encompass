@@ -13,7 +13,7 @@ var data = [
     "createdBy": "5b245760ac75842be3189525",
     "categories": [],
     "isPublic": true,
-    "privacySetting" : 'Everyone',
+    "privacySetting" : 'E',
     "isTrashed": false,
   }, {
     "_id": "5b4e2e56be1e18425515308c",
@@ -26,6 +26,7 @@ var data = [
     "createdBy": "5b245760ac75842be3189525",
     "categories": [],
     "isPublic": false,
+    "privacySetting": 'M',
     "isTrashed": false,
   }, {
     "_id": "5b4e2e6cbe1e18425515308d",
@@ -38,6 +39,7 @@ var data = [
     "createdBy": "5b245841ac75842be3189526",
     "categories": [],
     "isPublic": true,
+    "privacySetting": 'E',
     "isTrashed": false,
   }, {
     "_id": "5b1e7a0ba5d2157ef4c91028",
@@ -45,6 +47,7 @@ var data = [
     "puzzleId": 973,
     "categories": [],
     "isPublic": false,
+    "privacySetting": 'M',
     "isTrashed": false
   }
 ];

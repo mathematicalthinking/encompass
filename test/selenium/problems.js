@@ -56,7 +56,6 @@ describe('Problems', function() {
     //TODO: update these tests to be more robust once this page is updated
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
-      await driver.sleep('5000');
       expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
       //expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
     });
@@ -92,9 +91,9 @@ describe('Problems', function() {
           }
         }
         if (privacySetting) {
-          await helpers.findAndClickElement(driver, inputs.isPublicYes);
+          await helpers.findAndClickElement(driver, inputs.everyone);
         } else {
-          await helpers.findAndClickElement(driver, inputs.isPublicNo);
+          await helpers.findAndClickElement(driver, inputs.justMe);
         }
         await helpers.findAndClickElement(driver, css.newProblem.submit);
       };
