@@ -20,8 +20,8 @@ describe('Visiting Workspace Creation', function() {
       await dbSetup.prepTestDb();
       await helpers.login(driver, host);
       await helpers.findAndClickElement(driver, css.topBar.workspaces);
-      await helpers.findAndClickElement(driver, '#new-workspace-link')
-      // await helpers.waitForSelector(driver,'#create-workspace-btn');
+      await helpers.findAndClickElement(driver, '#new-workspace-link');
+      await helpers.waitForSelector(driver,'#create-workspace-btn');
     });
 
   after(() => {
@@ -30,6 +30,10 @@ describe('Visiting Workspace Creation', function() {
 
   describe('should display an overview, and some sections', () => {
     const els = ['section.overview', 'section.submissions', 'section.folders', 'section.permissions', 'section.submit>button'];
+
+    // it('create workspace button should be displayed', async function() {
+    //   expect(await helpers.waitForSelector(driver, '#create-workspace-btn')).to.be.true;
+    // });
 
     els.forEach((el) => {
       it(`should display ${el}`, async function() {
