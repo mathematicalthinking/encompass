@@ -234,7 +234,7 @@ server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.ad
 server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
 server.put('/api/categories/:id', path.validateId(), api.put.category);
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
-server.put('/api/assignment/:id', path.validateId(), api.put.assignment);
+server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 
 
 server.get('/api/stats', api.get.stats);
