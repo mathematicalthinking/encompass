@@ -20,8 +20,7 @@ describe('Problems', function() {
   const problemDetails = {
     name: "Rick's Public",
     question: 'What is it?',
-    isPublic: 'true',
-    //creationDate: 'Mon Jul 02 2018 11:12:25 GMT-0400 (Eastern Daylight Time)'
+    privacySetting: 'Everyone',
   };
 
   before(async function () {
@@ -57,7 +56,8 @@ describe('Problems', function() {
     //TODO: update these tests to be more robust once this page is updated
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.isPublic)).to.be.true;
+      await driver.sleep('5000');
+      expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
       //expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
     });
   });
@@ -83,7 +83,7 @@ describe('Problems', function() {
     describe('Submitting a problem without an image', function() {
       const inputs = css.newProblem.inputs;
 
-      const submitProblem = async function(details, isPublic, image) {
+      const submitProblem = async function(details, privacySetting, image) {
         for (let detail of Object.keys(details)) {
           try {
             await helpers.findInputAndType(driver, inputs[detail], details[detail]);
@@ -91,7 +91,7 @@ describe('Problems', function() {
             console.log(err);
           }
         }
-        if (isPublic) {
+        if (privacySetting) {
           await helpers.findAndClickElement(driver, inputs.isPublicYes);
         } else {
           await helpers.findAndClickElement(driver, inputs.isPublicNo);

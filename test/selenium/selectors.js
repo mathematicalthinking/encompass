@@ -45,6 +45,9 @@ module.exports = {
       additionalInfo: 'input#additionalInfo',
       isPublicYes: 'input.public',
       isPublicNo: 'input.private',
+      everyone: 'input.',
+      justMe: 'input.',
+      myOrg: 'input.',
       file: 'input.image-upload'
     },
     imageUpload: 'form.image-upload',

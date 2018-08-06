@@ -53,7 +53,7 @@ const newProblem = {
     category: '',
     additionalInfo: 'Be careful!',
   },
-  isPublic: 'true',
+  privacySetting: 'Everyone',
   imageUrl: ''
 };
 
