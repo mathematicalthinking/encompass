@@ -30,17 +30,26 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
+  // teacher needs to be able to access student's answers
+  // check if answer is in one of teacher's assignments
  function accessibleAnswers(user) {
+  // get users sections where role is teacher
+  const teacherSections = user.sections.map((section) => {
+    if (section.role === 'teacher') {
+      return section.sectionId;
+    }
+  });
+
   return {
     $or: [
       { createdBy: user },
+      {section: {$in: teacherSections}}
     ],
     isTrashed: false
   };
 }
 
 const getAnswers = (req, res, next) => {
-  // const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
   const criteria = accessibleAnswers(user);
   models.Answer.find(criteria)
