@@ -34,7 +34,7 @@
           <li>
             <label for="assignments">Assignments</label>
               {{#each section.assignments as |assignment|}}
-            <ol class="b">{{#link-to 'assignment' assignment}}{{assignment.problem.title}} / {{assignment.createDate}}{{/link-to}}</ol>
+            <ol class="b">{{#link-to 'assignment' assignment}}{{assignment.problem.title}} / {{format-date assignment.createDate 'MMM Do YYYY'}}{{/link-to}}</ol>
             {{/each}}
             {{!-- {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}} --}}
           </li>
