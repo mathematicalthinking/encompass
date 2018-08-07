@@ -15,7 +15,7 @@
 
     <ul class="your-assignments">
       {{#each assignmentList as |assignment|}}
-      <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}}{{/link-to}}</li>
+      <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY' }}{{/link-to}}</li>
       {{/each}}
     </ul>
   </nav>
