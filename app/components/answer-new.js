@@ -33,8 +33,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const answer = that.get('answer');
     const explanation = that.get('explanation');
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
-    console.log('section', that.section);
-    console.log('problem', that.problem);
 
     let createAnswerData =   that.store.createRecord('answer', {
       createdBy: createdBy,
