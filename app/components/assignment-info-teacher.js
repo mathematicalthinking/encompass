@@ -27,6 +27,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   }.property('answers.[]', 'isDisplaying'),
 
   didReceiveAttrs: function() {
+
     this.set('selectedSection', this.section);
     if (this.assignment) {
       let dateTime = 'YYYY-MM-DD';
@@ -34,18 +35,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let assignedDate = this.assignment.get('assignedDate');
       this.set('formattedDueDate', moment(dueDate).format(dateTime));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
-      return this.getAnswers()
-        .then((answers) => {
-          let filtered = answers.filterBy('assignment.id', this.assignment.id);
-          this.set('answers', filtered);
-          return this.store.findAll('section');
-        })
+      return this.store.findAll('section')
         .then((sections) => {
           this.set('sections', sections);
           return this.store.findAll('problem');
         })
         .then((problems) => {
           this.set('problems', problems);
+
         })
       .catch((err) => {
         console.log(err);
@@ -62,7 +59,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       console.log('deleting assignment');
       const assignment = this.get('assignment');
       assignment.set('isTrashed', true);
-      assignment.save().then((assignment) => {
+      return assignment.save().then((assignment) => {
+        console.log('assignment', assignment);
+        console.log('changed attrs', assignment.changedAttributes());
         this.set('deleteAssignmentSuccess', true);
         this.sendAction('toAssignments');
       })
