@@ -11,7 +11,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 describe('Visiting Workspace Creation', function() {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {
     driver = new Builder()
@@ -20,8 +20,8 @@ describe('Visiting Workspace Creation', function() {
       await dbSetup.prepTestDb();
       await helpers.login(driver, host);
       await helpers.findAndClickElement(driver, css.topBar.workspaces);
-      await helpers.findAndClickElement(driver, '#new-workspace-link')
-      // await helpers.waitForSelector(driver,'#create-workspace-btn');
+      await helpers.findAndClickElement(driver, '#new-workspace-link');
+      await helpers.waitForSelector(driver,'#create-workspace-btn');
     });
 
   after(() => {
@@ -33,6 +33,8 @@ describe('Visiting Workspace Creation', function() {
 
     els.forEach((el) => {
       it(`should display ${el}`, async function() {
+        const thisUrl = await helpers.getCurrentUrl(driver);
+        console.log('url', thisUrl);
         expect(await helpers.isElementVisible(driver, el)).to.be.true;
       });
     });

@@ -11,7 +11,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 describe('Problems', function() {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   const problemId = '5b4e25c638a46a41edf1709a';
   const problemLink = `a[href='#/problems/${problemId}`;

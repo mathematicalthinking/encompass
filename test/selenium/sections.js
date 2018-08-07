@@ -10,7 +10,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 describe('Sections', function () {
-  this.timeout('10s');
+  this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   const sectionId = '5b1e7b2aa5d2157ef4c91108';
   const sectionLink = `a[href='#/sections/${sectionId}`;
@@ -61,6 +61,8 @@ describe('Sections', function () {
       //testing for inputs
       for (let input of Object.keys(inputs)) {
         it(`${input} field should be visible`, async function() {
+          const thisUrl = await helpers.getCurrentUrl(driver);
+          console.log('url', thisUrl);
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         });
       }
@@ -69,7 +71,7 @@ describe('Sections', function () {
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.sections);
       await helpers.findAndClickElement(driver, '#newsection');
-      await helpers.waitForSelector(driver, css.newSection.form);
+      //await helpers.waitForSelector(driver, css.newSection.form);
      });
 
     describe('Verify form inputs', async function () {

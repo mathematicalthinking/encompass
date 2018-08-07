@@ -32,11 +32,9 @@ Instructions for getting started with this setup, are located [Github Repo](http
 5. `npm install` for the rest of the dependencies
 6. Download existing encompass database
   * `mongorestore -d encompass filepath`
-7. Setting up cache values (with information to be kept private and not in repo)
-  * `cp config.json.example config.json`
-  * edit values as given to you from cohort.
 7. Setting up .env file
   * follow instructions from the .env.example file to create a new .env file
+  * edit values as given to you from cohort.
 8. From root directory run `grunt`
   * Visit app at <http://localhost:8080>
 

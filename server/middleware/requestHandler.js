@@ -16,7 +16,7 @@ const path = require('./path');
 const models = require('../datasource/schemas');
 const config = require('../config');
 const nconf = config.nconf;
-const powConf = nconf.get('cache');
+//const powConf = nconf.get('cache');
 
 
 /**
@@ -193,7 +193,7 @@ function modelize(obj, currentField) {
   */
 function generateApiSecret(time) {
   var timestamp = (!!arguments.length) ? time : Date.now(),
-      salt = powConf.key,
+      salt = process.env.key,
       hash = 'md5',
       secret = timestamp + salt;
 

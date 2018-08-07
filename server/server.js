@@ -39,12 +39,10 @@ const server = express();
 let port = nconf.get('port');
 let dbConf = nconf.get('database');
 
+console.log('process.env.PORT: ',process.env.PORT);
+console.log('process.env.MONGO_URL: ',process.env.MONGO_URL);
+
 switch(process.env.NODE_ENV) {
-  case 'development':
-    console.log("NODE_ENV == development");
-    port = nconf.get('devPort');
-    dbConf.name = nconf.get('devDBName');
-    break;
   case 'test':
     console.log("NODE_ENV == test");
     port = nconf.get('testPort');
@@ -55,10 +53,21 @@ switch(process.env.NODE_ENV) {
     port = nconf.get('testPort');
     dbConf.name = nconf.get('seedDBName');
     break;
+  case 'staging':
+    console.log("NODE_ENV == staging");
+    port = process.env.PORT;
+    dbConf.name = process.env.DB_NAME;
+    break;
   case 'production':
     console.log("NODE_ENV == production");
-    port = nconf.get('prodPort');
-    dbConf.name = nconf.get('prodDBName');
+    port = process.env.PORT;
+    dbConf.name = process.env.DB_NAME;
+    break;
+  case 'development':
+    console.log("NODE_ENV == development");
+  default:
+    port = nconf.get('devPort');
+    dbConf.name = nconf.get('devDBName');
     break;
 }
 
@@ -67,6 +76,7 @@ mongoose.connect(dbConf.host, dbConf.name, {
   pass: dbConf.pass
 });
 
+console.info (`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
 console.info (`Port: ${port.toString()}`);
 console.info (`db name: ${dbConf.name}`);
 

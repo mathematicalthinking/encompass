@@ -20,7 +20,7 @@ const Q = require('q');
 const api = require('./submissionApi');
 const models = require('../schemas/submission');
 const db = require('../../config').nconf.get('database');
-const config = require('../../config').nconf.get('cache');
+//const config = require('../../config').nconf.get('cache');
 const utils = require('../../middleware/requestHandler');
 
 /*
@@ -328,7 +328,7 @@ function cache(options) {
   if (hasRequiredUrlOptions) {
     var key = utils.generateApiKey(Date.now());
     var query = toQueryString(options, allowed);
-    var restEndpoint = (options.submissions) ? config.getUrl : config.searchUrl;
+    var restEndpoint = (options.submissions) ? process.env.CACHE_GETURL : process.env.CACHE_SEARCHURL;
 
     var params = {
       uri: restEndpoint.concat("?", query),

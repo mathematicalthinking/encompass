@@ -5,6 +5,10 @@ const { Builder, By, Key, until } = require('selenium-webdriver')
 const config = require('../../server/config');
 const css = require('./selectors');
 
+// testing timeout values
+const timeoutMs = 5000;  // timeout per await
+const timeoutTestMsStr = '20s';  // timeout per test
+
 const nconf = config.nconf;
 const port = nconf.get('testPort');
 const host = `http://localhost:${port}`
@@ -94,7 +98,7 @@ const getWebElements = async function (webDriver, selector) {
   return webElements;
 };
 
-const navigateAndWait = async function (webDriver, url, selector, timeout=3000) {
+const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
   await webDriver.get(url);
   return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 };
@@ -133,7 +137,7 @@ const findAndClickElement = async function (webDriver, selector) {
   return;
 };
 
-const waitForAndClickElement = async function (webDriver, selector, timeout = 3000) {
+const waitForAndClickElement = async function (webDriver, selector, timeout = timeoutMs) {
   try {
     let element = await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
     await element.click();
@@ -142,7 +146,7 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = 30
   }
 };
 
-const waitForSelector = async function (webDriver, selector, timeout = 3000) {
+const waitForSelector = async function (webDriver, selector, timeout = timeoutMs) {
   try {
     return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
   } catch (err) {
@@ -150,11 +154,11 @@ const waitForSelector = async function (webDriver, selector, timeout = 3000) {
   }
 };
 
-const waitForRemoval = async function (webDriver, selector, timeout=3000) {
+const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   try {
     return await webDriver.wait(async function() {
       return await isElementVisible(webDriver, selector) === false;
-    }, timeout=3000);
+    }, timeout=timeoutMs);
   } catch (err) {
     console.log(err);
   }
@@ -256,3 +260,4 @@ module.exports.clearElement = clearElement;
 module.exports.newProblem = newProblem;
 module.exports.waitForRemoval = waitForRemoval;
 module.exports.newSection = newSection;
+module.exports.timeoutTestMsStr = timeoutTestMsStr;
