@@ -15,21 +15,25 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // This displays only the problems beloging to the current user's organizaton
   orgProblems: function () {
     var problems = this.problems.filterBy('isTrashed', false);
+    var currentUser = this.get('currentUser');
     var orgProblems = problems.filterBy('privacySetting', 'O');
-    return orgProblems;
+    var yourOrg = orgProblems.filter((el) => {
+      let content = el.get('createdBy.content');
+      return content.id !== currentUser.id;
+    });
+    return yourOrg;
   }.property('problems.@each.isTrashed'),
 
   // This sorts all the problems that are visible to everyone
   publicProblems: function () {
     var problems = this.problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
-    console.log('currentUser is', currentUser);
     var publicProblems = problems.filterBy('privacySetting', 'E');
-    // var yourPublic = publicProblems.filter((el) => {
-    //   let content = el.get('createdBy.content');
-    //   return content.id !== currentUser.id;
-    // });
-    return publicProblems;
+    var yourPublic = publicProblems.filter((el) => {
+      let content = el.get('createdBy.content');
+      return content.id !== currentUser.id;
+    });
+    return yourPublic;
   }.property('problems@each.isTrashed'),
 
 });
