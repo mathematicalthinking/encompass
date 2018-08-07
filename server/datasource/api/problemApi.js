@@ -54,8 +54,7 @@ function accessibleProblems(user) {
     };
   })
   .catch((err) => {
-    logger.error(err);
-    return utils.sendError.InternalError(err, res);
+    console.log(err);
   });
 
 }
