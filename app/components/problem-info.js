@@ -52,13 +52,32 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
+
+      if(this.filesToBeUploaded) {
+        var uploadData = this.get('filesToBeUploaded');
+        var formData = new FormData();
+        for (let f of uploadData) {
+          formData.append('photo', f);
+        }
+        Ember.$.post({
+          url: '/image',
+          processData: false,
+          contentType: false,
+          data: formData
+        }).then((res) => {
+          this.set('uploadResults', res.images);
+          problem.set('imageId', res.images[0]._id);
+          problem.set('imageData', res.images[0].data);
+          problem.save();
+        });
+      }
+
       problem.set('title', title);
       problem.set('text', text);
       if (privacy !== null) {
         problem.set('privacySetting', privacy);
       }
       problem.set('modifiedBy', currentUser);
-      console.log('before save called');
       problem.save();
       this.set('isEditing', false);
     },
