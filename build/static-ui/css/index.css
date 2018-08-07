@@ -12,11 +12,6 @@ blockquote:before,blockquote:after,q:before,q:after { content:''; content:none; 
 table { border-collapse:collapse; border-spacing:0; } img { vertical-align:bottom; }
 /* end reset */
 
-body { font-family:'Helvetica Neue', Helvetica, sans-serif; background:#fefefe; color:#5e5e5e; min-width:1024px; }
-a { color:#5e5e5e; text-decoration:none; }
-strong { font-weight:bold; }
-textarea { font-family:'Helvetica Neue', Helvetica, sans-serif; font-size:13px; }
-
 .clear { clear:both; }
 .clear_l { clear:left; }
 .clear_r { clear:right; }

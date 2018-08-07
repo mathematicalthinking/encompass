@@ -3,6 +3,26 @@
 @import "responsive-font-size";
 
 
+body {
+  font-family: $primary-font;
+  background: #fefefe;
+  color: $primary-font-color;
+}
+
+a {
+  color: $primary-font-color;
+  text-decoration: none;
+}
+
+strong {
+  font-weight: $bold-font-weight;
+}
+
+textarea {
+  font-family: $primary-font;
+  font-size: 1em;
+}
+
 .required-star {
   color: red;
 }
