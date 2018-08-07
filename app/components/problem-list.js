@@ -15,17 +15,17 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   // This displays only the problems beloging to the current user
-  yourProblems: Ember.computed(function () {
-    var problems = this.problems;
+  yourProblems: function () {
+    var problems = this.problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
     var yourProblems = problems.filterBy('createdBy.content', currentUser);
-    // this.set('yourProblemList', yourProblems);
+    this.set('yourProblemList', yourProblems);
     return yourProblems;
-  }),
+  }.property('problems.@each.isTrashed'),
 
   // This sorts all the problems in the database and returns only the ones that are public
   publicProblems: Ember.computed(function () {
-    var problems = this.problems;
+    var problems = this.problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
     var publicProblems = problems.filterBy('isPublic', true);
     var yourPublic = publicProblems.filter((el) => {
