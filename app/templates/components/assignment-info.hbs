@@ -4,9 +4,9 @@
 </header>
 
 {{#if currentUser.isStudent}}
-  {{assignment-info-student assignment=assignment store=store toAnswerInfo="toAnswerInfo"}}
+  {{assignment-info-student assignment=assignment problem=problem section=section store=store}}
 {{else}}
-  {{assignment-info-teacher assignment=assignment store=store}}
+  {{assignment-info-teacher assignment=assignment store=store toAssignments="toAssignments"}}
 {{/if}}
 
 
