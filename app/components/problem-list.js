@@ -2,17 +2,6 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   classNames: ['problem-list', 'left-list'],
   yourProblemList: null,
 
-  // didUpdate: function () {
-  //   this._super(...arguments);
-  //   console.log('did update ran');
-  // },
-
-  didRender: function () {
-    this._super(...arguments);
-    let problems = this.get('store').findAll('problem');
-    // console.log('did render ran');
-    // console.log('problem list in did render is', problems);
-  },
 
   // This displays only the problems beloging to the current user
   yourProblems: function () {
@@ -23,8 +12,15 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return yourProblems;
   }.property('problems.@each.isTrashed'),
 
-  // This sorts all the problems in the database and returns only the ones that are public
-  publicProblems: Ember.computed(function () {
+  // This displays only the problems beloging to the current user's organizaton
+  orgProblems: function () {
+    var problems = this.problems.filterBy('isTrashed', false);
+    var orgProblems = problems.filterBy('privacySetting', 'O');
+    return orgProblems;
+  }.property('problems.@each.isTrashed'),
+
+  // This sorts all the problems that are visible to everyone
+  publicProblems: function () {
     var problems = this.problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
     console.log('currentUser is', currentUser);
@@ -34,7 +30,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     //   return content.id !== currentUser.id;
     // });
     return publicProblems;
-  })
+  }.property('problems@each.isTrashed'),
 
 });
 

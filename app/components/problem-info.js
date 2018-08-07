@@ -38,7 +38,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isEditing', true);
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
-      // this.set('privacySetting', problem.get('privacySetting'));
+      this.set('privacySetting', problem.get('privacySetting'));
     },
 
     radioSelect: function (value) {
@@ -57,6 +57,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         problem.set('privacySetting', privacy);
       }
       problem.set('modifiedBy', currentUser);
+      console.log('before save called');
       problem.save();
       this.set('isEditing', false);
     },
