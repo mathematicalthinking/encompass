@@ -1,3 +1,9 @@
+//general
+.success-message {
+  @include success-message;
+  margin: 20px 0 20px 0;
+}
+
 //assignment-list hbs
 #assignmentlistheader {
   h2 {
