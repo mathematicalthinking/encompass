@@ -53,7 +53,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let currentUser = this.get('currentUser');
       problem.set('title', title);
       problem.set('text', text);
-      problem.set('privacySetting', privacy);
+      if (privacy !== null) {
+        problem.set('privacySetting', privacy);
+      }
       problem.set('modifiedBy', currentUser);
       problem.save();
       this.set('isEditing', false);

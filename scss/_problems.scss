@@ -111,6 +111,7 @@ section.problemdetails {
     text-transform: capitalize;
     margin: 10px 0 5px 10px;
     font-size: 1.4em;
+    // color: darken($primary-font-color, 5%);
     color: $accent-color;
     font-weight: bold;
   }
