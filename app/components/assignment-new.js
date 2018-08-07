@@ -4,13 +4,36 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedSection: null,
   selectedProblem: null,
   validator: Ember.inject.service('form-validator'),
+  sectionList: null,
+  problemList: null,
+  formId: null,
+
+  init: function() {
+    console.log('running Init problem-new');
+    this._super(...arguments);
+    const formId = 'form#newassignmentform';
+    this.set('formId', formId);
+  },
+
+  didReceiveAttrs: function() {
+    if (this.sections) {
+      const sections = this.sections.filterBy('isTrashed', false);
+      this.set('sectionList', sections);
+    }
+
+    if (this.problems) {
+      const problems = this.problems.filterBy('isTrashed', false);
+      this.set('problemList', problems);
+    }
+  },
 
   didInsertElement: function() {
-    let formId = 'form#newassignmentform';
-    this.set('formId', formId);
-
+    console.log('running didInsertElement problemNew');
+    const formId = this.get('formId');
     let isMissing = this.checkMissing.bind(this);
-    this.get('validator').initialize(formId, isMissing);
+    if (formId) {
+      this.get('validator').initialize(formId, isMissing);
+    }
   },
 
   checkMissing: function() {
