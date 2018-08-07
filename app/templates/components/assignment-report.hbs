@@ -6,7 +6,7 @@
       <th>Number of Submissions</th>
       <th>Most Recent Revision</th>
     </tr>
-    {{#each studentList as |student|}}
+    {{#each students as |student|}}
     <tr>
         <td>{{student.username}}</td>
         <td>{{student.answers.length}}</td>
@@ -17,6 +17,8 @@
         {{/if}}
 
     </tr>
+    {{else}}
+    <p>No submissions yet.</p>
     {{/each}}
 
   </table>
