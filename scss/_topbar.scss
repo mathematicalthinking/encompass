@@ -179,7 +179,7 @@
     vertical-align: middle;
     text-align: center;
       .active {
-        background-color: #ffd204;
+        background-color: $accent-yellow;
         padding: 10px 10px;
         border-radius: 3px;
         color: $primary-font-color;
@@ -201,7 +201,7 @@
       font-weight: $bolder-font-weight;
     }
     .active {
-      border-bottom: 2px solid #ffd204;
+      border-bottom: 2px solid $accent-yellow;
     }
   }
 }
@@ -298,7 +298,7 @@ nav.actions>ul {
 }
 
 .dropdown-content a:hover {
-  background-color: #ffd204;
+  background-color: $accent-yellow;
 }
 
 .dropdown:hover .dropdown-content {
@@ -312,7 +312,7 @@ nav.actions>ul {
 }
 
 .underline {
-  border-bottom: 2px solid #ffd204;
+  border-bottom: 2px solid $accent-yellow;
 }
 
 #user-image {

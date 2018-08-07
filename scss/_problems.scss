@@ -82,20 +82,10 @@ section.problemdetails {
   h2 {
     color: $accent-color;
     font-weight: bold;
+    font-size: 1.4em;
+    margin-left: 10px;
   }
 }
-
-section.problemlist {
-  h2 {
-    color: $accent-color;
-    font-weight: bold;
-  }
-  #problem-new-link {
-    color: $accent-color;
-    font-weight: bold;
-  }
-}
-
 
 #problem-info {
   a.image.wide {
@@ -121,8 +111,33 @@ section.problemlist {
     text-transform: capitalize;
     margin: 10px 0 5px 10px;
     font-size: 1.4em;
+    color: $accent-color;
+    font-weight: bold;
   }
   li {
-    padding: 5px;
+    padding: 6px 0 6px 10px;
+    border-radius: 5px;
+    &:hover {
+      font-weight: $bold-font-weight;
+      background-color: lighten($background-color, 5%);
+    }
+  }
+}
+
+.problem-new-header {
+  #problem-new-link {
+    color: white;
+    background: $accent-color;
+    font-weight: $main-font-weight;
+    font-family: $primary-font;
+    font-size: .7em;
+    border-radius: 3px;
+    padding: 10px 15px;
+    margin-left: -5px;
+    &:hover {
+      font-weight: $bold-font-weight;
+      cursor: pointer;
+      background: darken($accent-color, 10%);
+    }
   }
 }

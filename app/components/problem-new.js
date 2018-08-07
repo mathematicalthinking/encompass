@@ -20,6 +20,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
   },
+
   createProblem: function() {
     var that = this;
     var createdBy = that.get('currentUser');

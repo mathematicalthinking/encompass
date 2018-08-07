@@ -65,6 +65,7 @@ switch(process.env.NODE_ENV) {
     break;
   case 'development':
     console.log("NODE_ENV == development");
+    break;
   default:
     port = nconf.get('devPort');
     dbConf.name = nconf.get('devDBName');

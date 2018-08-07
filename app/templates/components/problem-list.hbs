@@ -1,15 +1,13 @@
 <header id="problemlistheader">
-  <h2>Problems</h2>
+  <h2 class="problem-new-header">{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</h2>
   <div class="clear"></div>
 </header>
 
 
 <section class="problemlist">
   <nav class="actions listing al_vertical_stretch">
-    <ul class="actions">
-      <li>{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</li>
-    </ul>
-    <h2>{{currentUser.username}}'s Problems</h2>
+    {{!-- <h2 class="problem-new-header">{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</h2> --}}
+    <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
     <ul class="your-problems">
       {{#each yourProblems as |problem|}}
       <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
