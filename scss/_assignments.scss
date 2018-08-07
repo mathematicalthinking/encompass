@@ -47,18 +47,39 @@ section.assignment-info-student {
 }
 
 
-section.pastSubmissions {
-  p {
-    font-size: 1em;
-    padding: 5px;
-    margin: 8px 0px;
-  }
-  ol {
-    li {
+div.past-submissions {
+  display: flex;
+  width: 800px;
+  section.past-submissions-list {
+    width: 50%;
+    display: inline-block;
+    p {
+      font-size: 1em;
       padding: 5px;
+      margin: 8px 0px;
+    }
+    ol {
+      li {
+        padding: 6px 0 6px 10px;
 
+        &.highlight {
+          font-weight: $bold-font-weight;
+            background-color: lighten($background-color, 5%);
+        }
+      }
     }
   }
+
+  section.past-answer-view {
+    width: 50%;
+    display: inline-block;
+  }
+  div#answer-info {
+    display: inline-block;
+    width: 100%;
+    margin-top: 0px;
+  }
+
 }
 
 section.assignment-info-teacher {

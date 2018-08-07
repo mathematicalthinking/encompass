@@ -29,10 +29,21 @@
         {{/if}}
     {{/if}}
     </div>
-
   </section>
 
-  <section class="pastSubmissions">
+
+
+{{#if isResponding}}
+  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"
+  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+
+{{else if isRevising}}
+  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
+  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+
+{{else}}
+  <div class="past-submissions">
+  <section class="past-submissions-list">
     <h2>Past Submissions</h2>
     {{#if answerCreated}}
       <p class="success-message">Successfully created new answer!</p>
@@ -45,20 +56,16 @@
 
     <ol class="submission-list">
       {{#each sortedList as |answer|}}
-        <li {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
+        <li class={{if (is-equal answer.answerId displayedAnswer.answerId) "highlight"}} {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
       {{/each}}
     </ol>
 </section>
-
-{{#if isResponding}}
-  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"
-  handleCreatedAnswer=(action "handleCreatedAnswer")}}
-
-{{else if isRevising}}
-  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
-  handleCreatedAnswer=(action "handleCreatedAnswer")}}
-
-{{else}}
+<section class="past-answer-view">
+  {{#if displayedAnswer}}
+    {{answer-info answer=displayedAnswer assignment=assignment problem=problem}}
+  {{/if}}
+</section>
+</div>
   {{#if filteredList.length}}
   <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
   {{else}}
@@ -68,6 +75,4 @@
 
 
 
-{{#if displayedAnswer}}
-  {{answer-info answer=displayedAnswer assignment=assignment problem=problem}}
-{{/if}}
+
