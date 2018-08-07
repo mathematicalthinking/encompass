@@ -4,6 +4,14 @@
       <p>{{assignment.problem.title}}</p>
     </div>
     <div>
+    <div>
+      <label>Assigned Date:</label>
+      <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+    </div>
+    <div>
+      <label>Due Date:</label>
+      <p>{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
+    </div>
       <label>Problem Statement:</label>
       <p>{{assignment.problem.text}}</p>
       {{#if assignment.problem.imageData}}
@@ -21,6 +29,7 @@
         {{/if}}
     {{/if}}
     </div>
+
   </section>
 
   <section class="pastSubmissions">
@@ -36,7 +45,7 @@
 
     <ol class="submission-list">
       {{#each sortedList as |answer|}}
-        <li {{action "displayAnswer" answer}}>{{answer.createDate}}</li>
+        <li {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
       {{/each}}
     </ol>
 </section>
