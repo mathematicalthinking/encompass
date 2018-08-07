@@ -8,6 +8,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   savedProblem: null,
   isWide: false,
   checked: true,
+  filesToBeUploaded: null,
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
@@ -90,8 +91,26 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     toggleImageSize: function () {
       this.toggleProperty('isWide');
+    },
+
+
+    addImage: function () {
 
     },
+
+    changeImage: function () {
+      console.log('update image clicked');
+      let problem = this.get('problem');
+      let imageData = this.get('imageData');
+      let imageId = this.get('imageId');
+    },
+
+    deleteImage: function () {
+      let problem = this.get('problem');
+      problem.set('imageId', null);
+      problem.set('imageData', null);
+      problem.save();
+    }
 
   }
 });
