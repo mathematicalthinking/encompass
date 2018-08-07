@@ -33,6 +33,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const answer = that.get('answer');
     const explanation = that.get('explanation');
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
+    console.log('section', that.section);
+    console.log('problem', that.problem);
 
     let createAnswerData =   that.store.createRecord('answer', {
       createdBy: createdBy,
@@ -41,8 +43,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       explanation: explanation,
       assignment: that.assignment,
       isSubmitted: true,
-      problem: that.assignment.problem,
-      priorAnswer: priorAnswer
+      problem: that.problem,
+      priorAnswer: priorAnswer,
+      section: that.section
     });
 
     if (that.filesToBeUploaded) {
