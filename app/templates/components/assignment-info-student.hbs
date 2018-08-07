@@ -35,6 +35,7 @@
 
 {{#if isResponding}}
   {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"
+  section=section problem=problem
   handleCreatedAnswer=(action "handleCreatedAnswer")}}
 
 {{else if isRevising}}
