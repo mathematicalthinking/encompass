@@ -1,4 +1,5 @@
-Encompass.FormatDateHelper = Ember.Helper.helper(function (date, format) {
-  return moment(date[0]).format("MMM Do YYYY");
-  // return moment(date[0]).format("L");
+Encompass.FormatDateHelper = Ember.Helper.helper(function (args) {
+  // args is array of arguments passed in from template
+  let [date, format] = args;
+  return moment(date).format(format);
 });
