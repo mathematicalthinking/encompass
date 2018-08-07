@@ -37,6 +37,9 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   didReceiveAttrs: function() {
     if (this.assignment) {
       console.log('assignment in route', this.assignment);
+    if (this.get('displayedAnswer')) {
+      this.set('displayedAnswer', null);
+    }
     let dateTime = 'YYYY-MM-DD';
     let dueDate = this.assignment.get('dueDate');
     let assignedDate = this.assignment.get('assignedDate');
