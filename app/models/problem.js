@@ -12,9 +12,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   organization: DS.belongsTo('organization', { inverse: null }),
   additionalInfo: DS.attr('string'),
   privacySetting: DS.attr('string'),
-  isPublic: DS.attr('boolean', {
-      defaultValue: false
-  }),
+  // isPublic: DS.attr('boolean'),
   isPdf: function() {
     var imageData = this.get('imageData');
     if (imageData) {
