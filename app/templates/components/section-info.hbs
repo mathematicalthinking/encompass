@@ -32,13 +32,11 @@
             {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
           </li>
           <li>
-            <label for="problems">Problems</label>
-              {{!-- <ul class="listing">
-                {{#each section.problems as |problem|}}
-                <li>{{problem.title}}</li>
-                {{/each}}
-              </ul> --}}
-            {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
+            <label for="assignments">Assignments</label>
+              {{#each section.assignments as |assignment|}}
+            <ol class="b">{{#link-to 'assignment' assignment}}{{assignment.problem.title}} / {{assignment.createDate}}{{/link-to}}</ol>
+            {{/each}}
+            {{!-- {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}} --}}
           </li>
           <li class="teacherslist">
             <label for="teachers">Teachers</label>
