@@ -80,26 +80,41 @@ AssignmentSchema.pre('save', function (next) {
   */
 
 AssignmentSchema.post('save', function (assignment) {
-  console.log('in post hook assignment');
+  var update = { $addToSet: { 'assignments':  assignment._id }};
   if (assignment.isTrashed) {
-    var assignmentIdObj = mongoose.Types.ObjectId( assignment._id );
-
-    mongoose.models.User.update({'assignments': assignment.students},
-      {$pull: {"assignments": assignmentIdObj}},
-      function(err, affected, result) {
-        if (err) { throw new Error(err.message); }
-    });
+    var assignmentIdObj = mongoose.Types.ObjectId(assignment._id);
+    /* + If deleted, all references are also deleted */
+    update = { $pull: { 'assignments': assignmentIdObj }};
   }
 
 
 
-  mongoose.models.User.update({_id: {$in: assignment.students}},
-    {$addToSet: { 'assignments': assignment }},
-    {'multi': true},
-    function (err, affected, results) {
-      if (err) { throw new Error(err.message); }
-      console.log('affected', affected);
-    });
+
+  console.log('REMOVED STUDENT');
+
+  if (assignment.students) {
+    mongoose.models.User.update({ '_id': {$in: assignment.students }},
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected students');
+      });
+  }
+
+    if (assignment.section) {
+      console.log('assignment.section', assignment.section._id);
+      mongoose.models.Section.update({'_id': assignment.section},
+        update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected section', affected);
+        console.log('section results', result);
+      });
+    }
 });
 
 module.exports.Assignment = mongoose.model('Assignment', AssignmentSchema);
