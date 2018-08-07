@@ -75,8 +75,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     } else {
       createAnswerData.save()
           .then((answer) => {
-            that.sendAction('cancelResponse');
-            that.sendAction('displayAnswer', answer);
+            return that.get('handleCreatedAnswer')(answer);
 
             //TODO: decide how to handle clearing form and whether to redirect to the created answer
             //that.get('validator').clearForm();
@@ -109,7 +108,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     },
 
     cancelResponse: function() {
-      this.sendAction('cancelResponse');
+      this.get('cancelResponse')();
     }
   }
 });
