@@ -27,12 +27,13 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   publicProblems: Ember.computed(function () {
     var problems = this.problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
-    var publicProblems = problems.filterBy('isPublic', true);
-    var yourPublic = publicProblems.filter((el) => {
-      let content = el.get('createdBy.content');
-      return content.id !== currentUser.id;
-    });
-    return yourPublic;
+    console.log('currentUser is', currentUser);
+    var publicProblems = problems.filterBy('privacySetting', 'E');
+    // var yourPublic = publicProblems.filter((el) => {
+    //   let content = el.get('createdBy.content');
+    //   return content.id !== currentUser.id;
+    // });
+    return publicProblems;
   })
 
 });
