@@ -1,5 +1,9 @@
 <header id="probleminfoheader">
-  <h2>Problem Details</h2>
+  {{#if isEditing}}
+    <h2>Editing Problem</h2>
+  {{else}}
+    <h2>Problem Details</h2>
+  {{/if}}
   <div class="clear"></div>
 </header>
 
