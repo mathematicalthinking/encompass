@@ -33,21 +33,23 @@
 
     <ol class="submission-list">
       {{#each sortedAnswers as |answer|}}
-        {{#link-to 'answer' answer}}
-          <li>{{answer.createDate}}</li>
-        {{/link-to}}
+        <li {{action "displayAnswer" answer}}>{{answer.createDate}}</li>
       {{/each}}
     </ol>
 </section>
 
 {{#if isResponding}}
-  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse"}}
+  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"}}
 {{else if isRevising}}
-  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse"}}
+  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"}}
 {{else}}
   {{#if sortedAnswers.length}}
   <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
   {{else}}
   <button class="action_button" {{action 'beginAssignmentResponse'}}>Respond</button>
   {{/if}}
+{{/if}}
+
+{{#if displayedAnswer}}
+  {{answer-info answer=displayedAnswer assignment=assignment problem=problem}}
 {{/if}}
