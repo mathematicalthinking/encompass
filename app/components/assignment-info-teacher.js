@@ -5,8 +5,29 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isDisplaying: Ember.computed.not('isEditing'),
   selectedSection: null,
 
+  didInsertElement: function() {
+    return this.getAnswers().then((answers) => {
+      this.set('answerList', answers);
+    });
+  },
+
   getAnswers: function() {
-    return this.store.findAll('answer');
+    const id = this.assignment.id;
+    //return this.store.findAll('answer');
+    return this.assignment.get('students').then((students) => {
+      this.set('studentList', students);
+      return Promise.all(students.map((student) => {
+        return student.get('answers');
+      }));
+
+    })
+    .then((answers) => {
+      console.log('answers', answers);
+      return answers;
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
 },
 
   sortedAnswers: function() {
