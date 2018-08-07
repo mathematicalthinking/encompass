@@ -6,4 +6,5 @@ Encompass.Section = DS.Model.extend(Encompass.Auditable, {
   sectionPassword: DS.attr('string'),
   students: DS.hasMany('user'),
   problems: DS.hasMany('problem'),
+  assignments: DS.hasMany('assignment')
 });
