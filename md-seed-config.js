@@ -22,8 +22,6 @@ var Taggings = require('./seeders/taggings.seeder');
 var Workspaces = require('./seeders/workspaces.seeder');
 var Organizations = require('./seeders/organizations.seeder');
 
-require('dotenv').config();
-
 // to be able to read the .env file
 require('dotenv').config();
 
