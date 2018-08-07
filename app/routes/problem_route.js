@@ -6,5 +6,12 @@ Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
 
   renderTemplate: function () {
     this.render('problems/problem');
+  },
+
+  actions: {
+    toProblemList: function () {
+      this.transitionTo('problems');
+    },
   }
 });
+

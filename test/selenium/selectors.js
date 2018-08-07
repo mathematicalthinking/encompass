@@ -43,8 +43,11 @@ module.exports = {
       question: 'input#text',
       category: 'input#categories',
       additionalInfo: 'input#additionalInfo',
-      isPublicYes: 'input.public',
-      isPublicNo: 'input.private',
+      // isPublicYes: 'input.public',
+      // isPublicNo: 'input.private',
+      justMe: 'input.justMe',
+      myOrg: 'input.myOrg',
+      everyone: 'input.everyone',
       file: 'input.image-upload'
     },
     imageUpload: 'form.image-upload',

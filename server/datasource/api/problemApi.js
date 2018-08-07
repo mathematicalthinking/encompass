@@ -33,8 +33,12 @@ module.exports.put = {};
 function accessibleProblems(user) {
   return {
     $or: [
-      { createdBy: user},
-      { isPublic: true },
+      { createdBy: user },
+      { privacySetting: "E" },
+      { $and: [
+        { organization: user.organization },
+        { privacySetting: "O" }
+      ]}
     ],
     isTrashed: false
   };

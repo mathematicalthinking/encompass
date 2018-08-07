@@ -1,4 +1,5 @@
 Encompass.ImageUploadComponent = Ember.Component.extend({
+  elementId: 'image-upload',
   isHidden: false,
   //uploadedFiles: null,
   filesToBeUploaded: null,

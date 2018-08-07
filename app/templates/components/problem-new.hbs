@@ -9,7 +9,7 @@
       <fieldset>
         <ol>
           <li>
-            <label for="title">Problem Name <span class="required-star">*</span></label>
+            <label for="title" id="problemName">Problem Name <span class="required-star">*</span></label>
             {{input id="title" required="true" type="text" value=title placeholder="enter problem name"}}
           </li>
           <li>
@@ -28,12 +28,14 @@
             <label for="imageUrl">Upload Images</label>
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
-          <li>
-            <label for="isPublic">Privacy Settings <span class="required-star">*</span></label>
-            {{input type="radio" value=isPublic required="true" name="isPublic" class="private" click=(action "radioSelect" false)}}
-            <label>Private</label>
-            {{input type="radio" value=isPublic required="true" name="isPublic" class="public" click=(action "radioSelect" true)}}
-            <label>Public</label>
+          <li class="privacy-settings">
+            <label>Privacy Settings <span class="required-star">*</span></label>
+              {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'M')}}
+              <label class="radio-label">Just Me</label>
+              {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'O')}}
+              <label class="radio-label">My Organization</label>
+              {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
+              <label class="radio-label">Everyone</label>
           </li>
         </ol>
       </fieldset>

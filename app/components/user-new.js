@@ -24,7 +24,7 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
         });
 
         user.save().then((res) => {
-          this.sendAction('toUserList');
+          // this.sendAction('toUserList');
         });
       },
 

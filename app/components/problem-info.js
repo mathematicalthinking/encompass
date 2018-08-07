@@ -4,8 +4,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemName: null,
   problemText: null,
   problemPublic: true,
+  privacySetting: null,
   savedProblem: null,
   isWide: false,
+  checked: true,
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
@@ -23,7 +25,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     deleteProblem: function () {
       let problem = this.get('problem');
         problem.set('isTrashed', true);
-        problem.save();
+        problem.set('imageData', null);
+        problem.save()
+          .then(() => {
+              this.sendAction('toProblemList');
+          });
+        problem.set('imageData', problem.get('imageData'));
     },
 
     editProblem: function () {
@@ -31,22 +38,26 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isEditing', true);
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
-      console.log('ProblemQuestion is currently', problem.get('text'));
-      // this.set('problemPublic', problem.get('isPublic'));
+      this.set('privacySetting', problem.get('privacySetting'));
     },
 
     radioSelect: function (value) {
-      this.set('isPublic', value);
+      this.set('privacySetting', value);
     },
 
     updateProblem: function () {
       let title = this.get('problemName');
       let text = this.get('problemText');
-      let isPublic = this.get('isPublic');
+      let privacy = this.get('privacySetting');
       let problem = this.get('problem');
+      let currentUser = this.get('currentUser');
       problem.set('title', title);
       problem.set('text', text);
-      problem.set('isPublic', isPublic);
+      if (privacy !== null) {
+        problem.set('privacySetting', privacy);
+      }
+      problem.set('modifiedBy', currentUser);
+      console.log('before save called');
       problem.save();
       this.set('isEditing', false);
     },
@@ -78,7 +89,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     toggleImageSize: function () {
-      console.log('expand image button clicked');
       this.toggleProperty('isWide');
 
     },
