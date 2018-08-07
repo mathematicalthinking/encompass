@@ -14,7 +14,7 @@
     <h2>{{currentUser.username}}'s Assignments</h2>
 
     <ul class="your-assignments">
-      {{#each assignments as |assignment|}}
+      {{#each assignmentList as |assignment|}}
       <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}}{{/link-to}}</li>
       {{/each}}
     </ul>
