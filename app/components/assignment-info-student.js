@@ -2,6 +2,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   formattedDueDate: null,
   formattedAssignedDate: null,
   isResponding: false,
+  displayedAnswer: null,
 
   getAnswers: function() {
     return this.store.findAll('answer');
@@ -62,6 +63,10 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
     toAnswerInfo: function(answer) {
       this.sendAction('toAnswerInfo', answer);
+    },
+    displayAnswer: function(answer) {
+      //this.set('isDisplayingAnswer', true);
+      this.set('displayedAnswer', answer);
     }
   }
 
