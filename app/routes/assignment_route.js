@@ -9,6 +9,9 @@ Encompass.AssignmentRoute = Encompass.AuthenticatedRoute.extend({
     toAnswerInfo: function(answer) {
       console.log('in toAnswerInfo');
       this.transitionTo('answer', answer);
+    },
+    toAssignments: function() {
+      this.transitionTo ('assignments');
     }
   },
 
