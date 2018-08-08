@@ -13,6 +13,8 @@ var SelectionSchema = new Schema({
     createdBy: {type:ObjectId, ref:'User'},
     createDate: {type:Date, 'default':Date.now()},
     isTrashed: {type: Boolean, 'default': false},
+    lastModifiedBy: { type: ObjectId, ref: 'User' },
+    lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
     /* Coordinates are used by the frontend to help highlight a selection within submission text */
     coordinates: String,

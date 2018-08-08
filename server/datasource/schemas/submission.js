@@ -15,6 +15,8 @@ var baseSubmission = {
   createdBy: {type:ObjectId, ref:'User'},
   createDate: {type:Date, 'default':Date.now()},
   isTrashed: {type: Boolean, 'default': 0},
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
   shortAnswer: String,
   longAnswer: String,

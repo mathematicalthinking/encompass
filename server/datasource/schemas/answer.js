@@ -13,6 +13,8 @@ var AnswerSchema = new Schema({
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
