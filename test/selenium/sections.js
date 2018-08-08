@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder} = require('selenium-webdriver');
+const {Builder, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
