@@ -65,13 +65,19 @@ module.exports.put = {};
           return section.sectionId;
         }
       });
+      if (ids) {
+        return {
+          section: {$in: teacherSections},
+          _id: { $in: ids },
+          isTrashed: false
+        };
+      }
       return {
-        $or: [
-          { createdBy: user },
-          {section: {$in: teacherSections}}
-        ],
+        section: {$in: teacherSections},
         isTrashed: false
       };
+
+
     }
     // else actingRole must be student
     return {
