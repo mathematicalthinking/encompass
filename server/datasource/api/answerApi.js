@@ -32,26 +32,68 @@ module.exports.put = {};
 
   // teacher needs to be able to access student's answers
   // check if answer is in one of teacher's assignments
- function accessibleAnswers(user) {
-  // get users sections where role is teacher
-  const teacherSections = user.sections.map((section) => {
-    if (section.role === 'teacher') {
-      return section.sectionId;
-    }
-  });
+ function accessibleAnswers(user, ids) {
+  let teacherSections;
 
-  return {
-    $or: [
-      { createdBy: user },
-      {section: {$in: teacherSections}}
-    ],
-    isTrashed: false
-  };
+  if (user.isAdmin) {
+    if (ids) {
+      return {
+        _id: {$in : ids},
+        isTrashed: false
+      };
+    }
+    return { isTrashed: false };
+  }
+  // Students
+  if (user.isStudent) {
+    if (ids) {
+      return {
+        createdBy: user,
+        _id: { $in: ids },
+        isTrashed: false,
+      };
+    }
+    return {
+      createdBy: user,
+      isTrashed: false,
+    };
+  }
+    // TEACHERS
+    if (user.actingRole === 'teacher') {
+      teacherSections = user.sections.map((section) => {
+        if (section.role === 'teacher') {
+          return section.sectionId;
+        }
+      });
+      return {
+        $or: [
+          { createdBy: user },
+          {section: {$in: teacherSections}}
+        ],
+        isTrashed: false
+      };
+    }
+    // else actingRole must be student
+    return {
+      createdBy: user,
+        _id: { $in: ids },
+        isTrashed: false,
+      };
 }
 
 const getAnswers = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  const criteria = accessibleAnswers(user);
+  let ids;
+  let criteria;
+
+  // array of oids
+  if (req.query.ids) {
+    ids = req.query.ids;
+    criteria = accessibleAnswers(user, ids);
+  } else {
+    criteria = accessibleAnswers(user);
+  }
+
   models.Answer.find(criteria)
   .exec((err, answers) => {
     if (err) {
