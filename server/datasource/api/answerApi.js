@@ -115,7 +115,7 @@ const getAnswer = (req, res, next) => {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
   }
-  answer.createdBy = user;
+
   answer.createDate = Date.now();
   answer.save((err, doc) => {
     if (err) {
