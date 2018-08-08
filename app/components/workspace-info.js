@@ -19,12 +19,16 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     return people;
   }.property('searchText'),
 
-  canEdit: function () {
-    console.log('current model', this.get('workspace'));
-    var canEdit = Permissions.userCanModifyWorkspace(this.get('currentUser'), this.get('workspace'));
-    return canEdit;
-  }.property('workspace.owner'),
 
+  canEdit: Ember.computed('workspace.id', function () {
+    let workspace = this.get('workspace');
+    let owner = workspace.get('owner');
+    let creator = owner.get('content');
+    let currentUser = this.get('currentUser');
+
+    let canEdit = creator.id === currentUser.id ? true : false;
+    return canEdit;
+  }),
 
   modes: function () {
     return Permissions.modeValues();
