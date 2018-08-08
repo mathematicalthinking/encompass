@@ -8,17 +8,19 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   searchResults: function () {
     var searchText = this.get('searchText');
+    console.log('search text is', searchText);
     searchText = searchText.replace(/\W+/g, "");
     if (searchText.length < 2) {
       return;
     }
-
-    var people = this.store.find('user', {
-      name: searchText
+    var people = this.get('store').query('user', {
+      filter: {
+        username: searchText,
+      }
     });
+    console.log('people', people);
     return people;
   }.property('searchText'),
-
 
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');
