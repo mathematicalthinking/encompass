@@ -20,19 +20,14 @@
               <label>Privacy Settings
                 <span class="required-star">*</span>
               </label>
-              {{!-- <input type="radio"  required="true" name="privacy" value="M" {{action "radioSelect"}}>
+              <input type="radio" checked={{is-equal privacySetting "M"}} required="true" name="privacy" value="M" onclick={{action "radioSelect" "M"}}>
               <label class="radio-label">Just Me</label>
-              <input type="radio"  required="true" name="privacy" value="O" {{action "radioSelect"}}>
+              <input type="radio" checked={{is-equal privacySetting "O"}} required="true" name="privacy" value="O" onclick={{action "radioSelect" "O"}}>
               <label class="radio-label">My Organization</label>
-              <input type="radio"  required="true" name="privacy" value="E" {{action "radioSelect"}}>
-              <label class="radio-label">Everyone</label> --}}
-
-              {{input type="radio" value=justMe required="true" name="privacy" click=(action "radioSelect" 'M')}}
-              <label class="radio-label">Just Me</label>
-              {{input type="radio" value=myOrg required="true" name="privacy" click=(action "radioSelect" 'O')}}
-              <label class="radio-label">My Organization</label>
-              {{input type="radio" value=everyone required="true" name="privacy" click=(action "radioSelect" 'E')}}
+              <input type="radio" checked={{is-equal privacySetting "E"}} required="true" name="privacy" value="E" onclick={{action "radioSelect" "E"}}>
               <label class="radio-label">Everyone</label>
+
+
             </li>
           </ol>
         </fieldset>
