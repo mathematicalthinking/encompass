@@ -9,9 +9,9 @@
     {{#each students as |student|}}
     <tr>
         <td>{{student.username}}</td>
-        <td>{{student.answers.length}}</td>
-        {{#if student.answers.length}}
-          <td>{{student.answers}}</td>
+        <td>{{student.filteredAnswers.length}}</td>
+        {{#if student.filteredAnswers.length}}
+          <td>{{format-date student.filteredAnswers.[0].createDate "MMM Do YYYY h:mm A"}}</td>
         {{else}}
         <td> N/A</td>
         {{/if}}
