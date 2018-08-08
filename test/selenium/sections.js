@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder} = require('selenium-webdriver');
+const {Builder, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -69,10 +69,15 @@ describe('Sections', function () {
     }
 
     before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.sections);
-      await helpers.findAndClickElement(driver, '#newsection');
-      //await helpers.waitForSelector(driver, css.newSection.form);
-     });
+      try {
+        await helpers.findAndClickElement(driver, css.topBar.sections);
+        await helpers.findAndClickElement(driver, '#newsection');
+        await driver.wait(until.urlIs(`${host}/#/sections/new`), 5000);
+        await helpers.waitForSelector(driver, css.newSection.form);
+      }catch(err) {
+        console.log(err);
+      }
+    });
 
     describe('Verify form inputs', async function () {
       await verifyForm();
