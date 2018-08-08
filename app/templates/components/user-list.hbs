@@ -1,10 +1,8 @@
-<header>
-	<h2>Users</h2>
-	<div class="clear"></div>
-    <ul class="actions">
-      <li>{{#link-to 'users.new' id='new-user-link'}}new user{{/link-to}}</li>
-    </ul>
+{{#if currentUser.isAdmin}}
+<header id="user-list-header">
+  <h2>{{#link-to 'users.new' id='new-user-link'}}Create New User{{/link-to}}</h2>
 </header>
+{{/if}}
 
 <section>
   <fieldset>
@@ -22,23 +20,46 @@
 </section>
 
 <section>
-<nav class="users actions listing al_vertical_stretch">
-{{#if currentUser.isAdmin}}
-<ul class="actions">
-  <li>{{#link-to 'users.new'}}new user{{/link-to}}</li>
-</ul>
-{{/if}}
-<ul class="listing">
-  {{#each users as |user|}}
-  <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
-{{/each}}
-</ul>
-</nav>
+  <nav class="users actions listing al_vertical_stretch">
+    {{#if currentUser.isAdmin}}
 
- <div class="listOutlet users">
-{{outlet}}
-</div>
+      <h2>Waiting for Authorization</h2>
+      <ul class="listing">
+        {{#each unauthUsers as |user|}}
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+      {{/each}}
+      </ul>
 
-<div class="clear"/>
+      <h2>Administrators</h2>
+      <ul class="listing">
+        {{#each adminUsers as |user|}}
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+      {{/each}}
+      </ul>
+
+    <h2>Authorized</h2>
+    <ul class="listing">
+      {{#each users as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+    {{/each}}
+    </ul>
+
+
+  {{/if}}
+
+    <h2>Students</h2>
+    <ul class="listing">
+      {{#each users as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
+    {{/each}}
+    </ul>
+    
+  </nav>
+
+  <div class="listOutlet users">
+    {{outlet}}
+  </div>
+
+  <div class="clear"/>
 
 </section>
