@@ -2,7 +2,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   elementId: 'workspace-info',
   comments: Ember.inject.controller,
   isEditing: false,
-  selectedValue: null,
+  selectedMode: null,
   searchText: "",
 
 
@@ -43,20 +43,18 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     },
 
-    changeMode: function () {
-      var mode = this.get('selectedMode');
-      var workspace = this.get('workspace');
-      workspace.set('mode', mode);
-      workspace.save();
-    },
-
     editWorkspace: function () {
       this.set('isEditing', true);
+      let workspace = this.get('workspace');
+      this.set('selectedMode', workspace.get('mode'));
     },
 
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
+      var mode = this.get('selectedMode');
+      console.log('selected mode is', mode);
       var workspace = this.get('workspace');
+      workspace.set('mode', mode);
       workspace.save();
       this.set('isEditing', false);
     }
