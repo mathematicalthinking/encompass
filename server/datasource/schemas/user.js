@@ -53,6 +53,9 @@ var UserSchema = new Schema({
   isAuthorized: Boolean,
   authorizedBy: { type: ObjectId, ref: 'User' },
   isStudent: Boolean,
+
+  // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
+  actingRole: String,
   name: String,
   email: String,
   googleId: String,
