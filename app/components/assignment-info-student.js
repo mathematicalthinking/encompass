@@ -4,11 +4,14 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   isResponding: false,
   displayedAnswer: null,
   answerList: [],
+  isLoadingAnswers: null,
 
   init: function() {
     this._super(...arguments);
+    this.set('isLoadingAnswers', true);
     return this.getAnswers().then((answers) => {
       this.set('answerList', answers);
+      this.set('isLoadingAnswers', false);
     });
   },
 
@@ -21,7 +24,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   },
 
   filteredList: function() {
-      const answers = this.get('answerList');
+    const answers = this.get('answerList');
       return answers.filterBy('assignment.id', this.assignment.id);
     }.property('answerList.[]', 'assignment.id'),
 
