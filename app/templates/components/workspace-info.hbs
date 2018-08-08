@@ -55,7 +55,7 @@
           <th>Name</th>
           <td>
             {{#if isEditing}}
-              {{input type="text" value=name}}
+              {{input type="text" id="edit-name-input" value=workspace.name}}
             {{else}}
               {{workspace.name}}
             {{/if}}
