@@ -39,7 +39,7 @@
 
     <h2>Authorized</h2>
     <ul class="listing">
-      {{#each users as |user|}}
+      {{#each authUsers as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
     {{/each}}
     </ul>
@@ -49,7 +49,7 @@
 
     <h2>Students</h2>
     <ul class="listing">
-      {{#each users as |user|}}
+      {{#each studentUsers as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
     {{/each}}
     </ul>
