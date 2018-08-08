@@ -50,5 +50,6 @@
           {{/if}}
        </form>
   </section>
-
-  {{assignment-report assignment=assignment students=assignment.students answerList=answerList}}
+  {{#if showReport}}
+    {{assignment-report assignment=assignment students=studentList }}
+  {{/if}}
