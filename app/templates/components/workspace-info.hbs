@@ -33,11 +33,14 @@
   </section>
 
   <section class="attributes half">
-    <h2>Attributes {{#if canEdit}} {{#if isEditing}}
-      <button class="action_button" {{action 'saveWorkspace'}}>Save</button>
-      {{else}}
-      <button class="action_button" {{action 'editWorkspace'}}>Edit</button>
-      {{/if}} {{/if}}
+    <h2>Attributes
+      {{#if canEdit}}
+        {{#if isEditing}}
+          <button class="action_button" {{action 'saveWorkspace'}}>Save</button>
+        {{else}}
+          <button class="action_button" {{action 'editWorkspace'}}>Edit</button>
+        {{/if}}
+      {{/if}}
     </h2>
 
     <div class="half">
@@ -51,13 +54,21 @@
         <tr>
           <th>Name</th>
           <td>
-            {{#if isEditing}} {{input type="text" value=name}} {{else}} {{workspace.name}} {{/if}}
+            {{#if isEditing}}
+              {{input type="text" value=name}}
+            {{else}}
+              {{workspace.name}}
+            {{/if}}
           </td>
         </tr>
         <tr>
           <th>Mode</th>
           <td>
-            {{#if isEditing}} {{my-select-mode content=modes action=(action (mut selectedMode))}} {{else}} {{workspace.mode}} {{/if}}
+            {{#if isEditing}}
+              {{my-select-mode content=modes action=(action (mut selectedMode))}}
+            {{else}}
+              {{workspace.mode}}
+            {{/if}}
           </td>
         </tr>
         <tr>
@@ -66,9 +77,10 @@
             <ul>
               {{#each workspace.editors as |editor|}}
               <li class="editor">
-                {{editor.displayName}} {{#if isEditing}}
-                <span {{action 'removeEditor' editor}} class="remove_editor al_sprite delete_button"></span>
-                {{/if}}
+                {{editor.displayName}}
+                  {{#if isEditing}}
+                    <span {{action 'removeEditor' editor}} class="remove_editor al_sprite delete_button"></span>
+                  {{/if}}
               </li>
               {{/each}}
             </ul>

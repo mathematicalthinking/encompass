@@ -5,6 +5,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedValue: null,
   searchText: "",
 
+
   searchResults: function () {
     var searchText = this.get('searchText');
     searchText = searchText.replace(/\W+/g, "");
@@ -19,7 +20,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   }.property('searchText'),
 
   canEdit: function () {
-    console.log('current model', this.get('model'));
+    console.log('current model', this.get('workspace'));
     var canEdit = Permissions.userCanModifyWorkspace(this.get('currentUser'), this.get('workspace'));
     return canEdit;
   }.property('workspace.owner'),
@@ -31,12 +32,12 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   actions: {
     removeEditor: function (editor) {
-        var workspace = this.get('model');
+        var workspace = this.get('workspace');
         workspace.get('editors').removeObject(editor);
     },
 
     addEditor: function (editor) {
-      var workspace = this.get('model');
+      var workspace = this.get('workspace');
       if (!workspace.get('editors').contains(editor)) {
         workspace.get('editors').pushObject(editor);
       }
@@ -45,7 +46,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     changeMode: function () {
       var mode = this.get('selectedMode');
       console.log('current mode is', mode);
-      var workspace = this.get('model');
+      var workspace = this.get('workspace');
       console.log('current model inside changemode is', workspace);
       workspace.set('mode', mode);
       workspace.save();
@@ -57,7 +58,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
-      var workspace = this.get('model');
+      var workspace = this.get('workspace');
       workspace.save().then(function () {
         this.set('isEditing', false);
       });
