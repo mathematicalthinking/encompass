@@ -43,6 +43,8 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     if (this.get('displayedAnswer')) {
       this.set('displayedAnswer', null);
     }
+    this.toggleResponse();
+
     let dateTime = 'YYYY-MM-DD';
     let dueDate = this.assignment.get('dueDate');
     let assignedDate = this.assignment.get('assignedDate');
