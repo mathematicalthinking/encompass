@@ -103,8 +103,8 @@ section.problemdetails {
 }
 
 #problem-info {
-  a.image.wide {
-    max-width: 100%;
+  img {
+    width: 60%;
     position: relative;
     z-index: 999;
   }
