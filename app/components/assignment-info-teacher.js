@@ -4,31 +4,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
   selectedSection: null,
+  showReport: false,
 
-  didInsertElement: function() {
-    return this.getAnswers().then((answers) => {
-      this.set('answerList', answers);
-    });
-  },
-
-  getAnswers: function() {
-    const id = this.assignment.id;
-    //return this.store.findAll('answer');
-    return this.assignment.get('students').then((students) => {
-      this.set('studentList', students);
-      return Promise.all(students.map((student) => {
-        return student.get('answers');
-      }));
-
-    })
-    .then((answers) => {
-      console.log('answers', answers);
-      return answers;
-    })
-    .catch((err) => {
-      console.log('err', err);
-    });
-},
 
   sortedAnswers: function() {
     if (this.get('answers')) {
@@ -48,7 +25,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   }.property('answers.[]', 'isDisplaying'),
 
   didReceiveAttrs: function() {
-
+    if (this.get('showReport')) {
+      this.set('showReport', false);
+    }
+    const assignment = this.assignment;
     this.set('selectedSection', this.section);
     if (this.assignment) {
       let dateTime = 'YYYY-MM-DD';
@@ -63,7 +43,25 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         })
         .then((problems) => {
           this.set('problems', problems);
-
+          return assignment.get('students');
+        }).then((students) => {
+          this.set('studentList', students);
+          return students;
+        }).then(() => {
+          const id = this.assignment.id;
+          return this.store.findAll('answer').then((answers) => {
+            return answers.filterBy('assignment.id', id);
+        }).then((answers) => {
+          const sorted = answers.sortBy('createdBy.username');
+          this.set('assignmentAnswers', sorted);
+          let studentList = this.get('studentList');
+          return studentList.map((student) => {
+            let filtered = sort.filterBy('createdBy.username', student.get('username'));
+            student.set('filteredAnswers', filtered);
+            this.set('showReport', true);
+            return student;
+      });
+    });
         })
       .catch((err) => {
         console.log(err);
@@ -81,8 +79,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       const assignment = this.get('assignment');
       assignment.set('isTrashed', true);
       return assignment.save().then((assignment) => {
-        console.log('assignment', assignment);
-        console.log('changed attrs', assignment.changedAttributes());
         this.set('deleteAssignmentSuccess', true);
         this.sendAction('toAssignments');
       })
