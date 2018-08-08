@@ -18,3 +18,20 @@
 #edit-name-input {
   min-width: 250px;
 }
+
+
+#workspace-info {
+  header {
+    padding: 15px 10px;
+    background: #e3e3e3;
+    span {
+      display: inline-block;
+    }
+    h2 {
+      display: inline-block;
+      font-size: 1.2em;
+      margin-top: 5px;
+      margin-left: 10px;
+    }
+  }
+}
