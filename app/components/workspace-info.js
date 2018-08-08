@@ -13,12 +13,12 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     if (searchText.length < 2) {
       return;
     }
-    var people = this.get('store').query('user', {
-      filter: {
+
+    let people = this.get('store').query('user', {
+      name: {
         username: searchText,
       }
     });
-    console.log('people', people);
     return people;
   }.property('searchText'),
 
