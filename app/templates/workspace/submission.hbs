@@ -1,7 +1,7 @@
 <header class="{{makingSelection}}">
   <h2>{{currentWorkspace.name}}</h2>
   <span class="meta workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}"> by {{currentWorkspace.owner.displayName}} |</span>
-  <span class="meta">{{#link-to 'workspace.info'}}info{{/link-to}}</span>
+  <span class="meta">{{#link-to 'workspace.info' workspace}}info{{/link-to}}</span>
   <aside>
     <!-- <a id="takeTour" {{action 'tour'}}>Take Tour</a> -->
     {{! this needs to be here so the GuideJS can click it when done

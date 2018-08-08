@@ -1,5 +1,5 @@
 <header>
-  <h2>{{model.name}}</h2>
+  <h2>{{workspace.name}}</h2>
   <span class="meta">{{#link-to 'workspace.work'}}open workspace{{/link-to}}</span>
   <div class="clear"></div>
 </header>
@@ -11,23 +11,23 @@
     <table class="rows values">
       <tr>
         <th>Submission Dates</th>
-        <td>{{model.submissionDates}}</td>
+        <td>{{workspace.submissionDates}}</td>
       </tr>
       <tr>
         <th># Submissions</th>
-        <td>{{model.submissionsLength}}</td>
+        <td>{{workspace.submissionsLength}}</td>
       </tr>
       <tr>
         <th># Selections</th>
-        <td>{{model.selectionsLength}}</td>
+        <td>{{workspace.selectionsLength}}</td>
       </tr>
       <tr>
         <th># Folders</th>
-        <td>{{model.foldersLength}}</td>
+        <td>{{workspace.foldersLength}}</td>
       </tr>
       <tr>
         <th># Comments</th>
-        <td>{{model.commentsLength}}</td>
+        <td>{{workspace.commentsLength}}</td>
       </tr>
     </table>
   </section>
@@ -45,26 +45,26 @@
         <tr>
           <th>Owner</th>
           <td>
-            <span class="owner username">{{model.owner.username}}</span>
+            <span class="owner username">{{workspace.owner.username}}</span>
           </td>
         </tr>
         <tr>
           <th>Name</th>
           <td>
-            {{#if isEditing}} {{input type="text" value=name}} {{else}} {{model.name}} {{/if}}
+            {{#if isEditing}} {{input type="text" value=name}} {{else}} {{workspace.name}} {{/if}}
           </td>
         </tr>
         <tr>
           <th>Mode</th>
           <td>
-            {{#if isEditing}} {{my-select-mode content=modes action=(action (mut selectedMode))}} {{else}} {{model.mode}} {{/if}}
+            {{#if isEditing}} {{my-select-mode content=modes action=(action (mut selectedMode))}} {{else}} {{workspace.mode}} {{/if}}
           </td>
         </tr>
         <tr>
           <th>Editors</th>
           <td>
             <ul>
-              {{#each model.editors as |editor|}}
+              {{#each workspace.editors as |editor|}}
               <li class="editor">
                 {{editor.displayName}} {{#if isEditing}}
                 <span {{action 'removeEditor' editor}} class="remove_editor al_sprite delete_button"></span>
