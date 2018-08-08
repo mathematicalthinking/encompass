@@ -45,9 +45,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     changeMode: function () {
       var mode = this.get('selectedMode');
-      console.log('current mode is', mode);
       var workspace = this.get('workspace');
-      console.log('current model inside changemode is', workspace);
       workspace.set('mode', mode);
       workspace.save();
     },
@@ -59,9 +57,8 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
       var workspace = this.get('workspace');
-      workspace.save().then(function () {
-        this.set('isEditing', false);
-      });
+      workspace.save();
+      this.set('isEditing', false);
     }
   }
 
