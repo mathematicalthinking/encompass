@@ -56,8 +56,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
           this.set('assignmentAnswers', sorted);
           let studentList = this.get('studentList');
           return studentList.map((student) => {
-            let filtered = sort.filterBy('createdBy.username', student.get('username'));
-            student.set('filteredAnswers', filtered);
+            let filtered = sorted.filterBy('createdBy.username', student.get('username'));
+            let sortedByDate = filtered.sortBy('createDate').reverse();
+            student.set('filteredAnswers', sortedByDate);
             this.set('showReport', true);
             return student;
       });
