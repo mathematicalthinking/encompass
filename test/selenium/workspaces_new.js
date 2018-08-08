@@ -17,11 +17,17 @@ describe('Visiting Workspace Creation', function() {
     driver = new Builder()
       .forBrowser('chrome')
       .build();
-      await dbSetup.prepTestDb();
-      await helpers.login(driver, host);
-      await helpers.findAndClickElement(driver, css.topBar.workspaces);
-      await helpers.findAndClickElement(driver, '#new-workspace-link');
-      await helpers.waitForSelector(driver,'#create-workspace-btn');
+      try {
+        await dbSetup.prepTestDb();
+        await helpers.login(driver, host);
+        await helpers.findAndClickElement(driver, css.topBar.workspaces);
+        await helpers.findAndClickElement(driver, '#new-workspace-link');
+        await driver.wait(until.urlIs(`${host}/#/workspaces/new`), 5000);
+        await helpers.waitForSelector(driver,'#create-workspace-btn');
+      }catch(err) {
+        console.log(err);
+      }
+
     });
 
   after(() => {
