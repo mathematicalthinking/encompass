@@ -10,8 +10,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   checked: true,
   filesToBeUploaded: null,
 
-  // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
 
+    didReceiveAttrs: function () {
+      console.log('did recieve attrs problem info called');
+      this.set('isWide', false);
+    },
+
+  // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
     let problem = this.get('problem');
