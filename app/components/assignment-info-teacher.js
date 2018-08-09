@@ -3,39 +3,50 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   formattedAssignedDate: null,
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
-  selectedSection: null,
   showReport: false,
 
 
-  sortedAnswers: function() {
-    if (this.get('answers')) {
-      return this.get('answers').sortBy('createDate').reverse();
-    }
-    return [];
-  }.property('answers.[]'),
+  // sortedAnswers: function() {
+  //   if (this.get('answers')) {
+  //     return this.get('answers').sortBy('createDate').reverse();
+  //   }
+  //   return [];
+  // }.property('answers.[]'),
 
-  priorAnswer: function() {
-    return this.get('sortedAnswers').get('firstObject');
-  }.property('sortedAnswers.[]'),
+  // priorAnswer: function() {
+  //   return this.get('sortedAnswers').get('firstObject');
+  // }.property('sortedAnswers.[]'),
+
+  isDeletable: function() {
+    // const currentUser = this.get('currentUser');
+    // console.log('assn id', this.assignment.id);
+    // const creatorId = this.assignment.get('createdBy.username');
+    // console.log('crtorid', creatorId);
+    // console.log('currentUser id', currentUser.get('userId'));
+    // return currentUser.get('username') === creatorId;
+  }.property('assignment.id'),
 
 
   isProblemLocked: function() {
     //can be edited only if no submissions have been recorded yet
-    return !Ember.isEmpty(this.get('answers')) || this.get('isDisplaying');
-  }.property('answers.[]', 'isDisplaying'),
+    return !Ember.isEmpty(this.get('assignmentAnswers')) || this.get('isDisplaying');
+  }.property('assignmentAnswers.[]', 'isDisplaying'),
 
   didReceiveAttrs: function() {
     if (this.get('showReport')) {
       this.set('showReport', false);
     }
+    console.log('this.currus', this.get('currentUser.id'));
+    console.log('this.assncby', this.assignment.get('createdBy'));
     const assignment = this.assignment;
-    this.set('selectedSection', this.section);
     if (this.assignment) {
       let dateTime = 'YYYY-MM-DD';
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
       this.set('formattedDueDate', moment(dueDate).format(dateTime));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
+
+      // get sections
       return this.store.findAll('section')
         .then((sections) => {
           this.set('sections', sections);
@@ -89,13 +100,13 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     },
     updateAssignment: function() {
       const assignment = this.get('assignment');
-
-      const values = ['selectedSection', 'selectedProblem', 'assignedDate', 'dueDate'];
+      const values = ['section', 'problem', 'assignedDate', 'dueDate'];
 
       for (let value of values) {
         assignment.set(value, this.get(value));
       }
-      },
+
+    },
     stopEditing: function() {
       this.set('isEditing', false);
     }
