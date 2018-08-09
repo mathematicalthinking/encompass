@@ -11,8 +11,8 @@
                 {{else}}
                   <li>
                     <label for="problem">Problem</label>
-                    {{my-select selectedProblem=selectedProblem selectedValue=selectedProblem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut selectedProblem))}}
-                    {{input required=true type="hidden" value=selectedProblem}}
+                    {{my-select selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem))}}
+                    {{input required=true type="hidden" value=problem}}
                 </li>
                 {{/if}}
                 {{#if isDisplaying}}
@@ -23,8 +23,8 @@
                 {{else}}
                   <li>
                     <label for="section">Section</label>
-                    {{my-select selectedSection=selectedSection selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedSection))}}
-                    {{input required=true type="hidden" value=selectedSection}}
+                    {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection))}}
+                    {{input required=true type="hidden" value=selectedsection}}
                 </li>
                 {{/if}}
                   <li class="assignment-info">
