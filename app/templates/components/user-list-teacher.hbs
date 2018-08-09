@@ -1,0 +1,55 @@
+<header id="user-list-header">
+  <h1>Users Listing</h1>
+  <button>{{#link-to 'users.new' id='new-user-link'}}Create New User{{/link-to}}</button>
+</header>
+
+<section>
+  <fieldset>
+    <p>
+      Select a user from the below
+    </p>
+    <p class="help">
+      Users are automatically created when they visit but may not be authorized. Authorized users are bold. Admin users are red.
+      If you aren't authorized
+      <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">DROP US A NOTE</a>
+    </p>
+  </fieldset>
+</section>
+
+<section id="user-list-side">
+  <nav class="user-list-box">
+    {{!-- <h2>Your Students</h2>
+    <ul class="listing waiting-auth">
+      {{#each unauthUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
+
+    <h2>Users you have created</h2>
+    <ul class="listing admin-users">
+      {{#each adminUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul> --}}
+
+    <h2>Users in {{currentUser.organization.name}}</h2>
+    <ul class="listing auth-users">
+      {{#each orgUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
+  </nav>
+
+</section>
+
+<div class="list-outlet users">
+  {{outlet}}
+</div>
+
+<div class="clear" />
