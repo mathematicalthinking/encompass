@@ -34,57 +34,25 @@
 
 
             </li>
-            <li> --}}
-
-
-    {{#if isEditing}}
-        <form id='probleminfo' class='properForm'>
-          <fieldset>
-            <ol>
-              <li>
-                <label for="title">Problem Name</label>
-                {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
-              </li>
-
-              <li>
-                <label for="problemquestion">Problem Question</label>
-                {{input name="text" id="problemquestion" type="text" value=problemQuestion placeholder=problem.text}}
-              </li>
-
-              <li>
-                <label for="isPublic">Public</label>
-                {{input type="radio" name="isPublic" class="isTrue" value=true click=(action "radioSelect" true)}}
-                <label>Yes</label>
-                {{input type="radio" name="isPublic" class="isFalse" value=false click=(action "radioSelect" false)}}
-                <label>No</label>
-                <label>Currently Public</label>
-                 {{input name="text" id="text" type="text" value=isPublic placeholder=problem.isPublic}}
-              </li>
-            </ol>
-          </fieldset>
-        </form>
-      <button class="action_button" {{action 'updateProblem'}}>Save Problem</button>
-
-
-    {{else}}
-
-    <form id="problemdetails">
-     <form id='probleminfoform' class='properForm'>
-          <fieldset>
-            <ol>
-              <li>
-                <label for="title">Problem Name</label>
-                {{input name="title" id="title" type="text" value=problemName disabled=true placeholder=problem.title}}
-              </li>
-
-              <li>
-                <label for="text">Problem Question</label>
-                {{input name="text" id="text" type="text" value=problemQuestion disabled=true placeholder=problem.text}}
-              </li>
-
-
-              <label>Currently Public</label>
-                {{input name="ispublic" id="isPublic" type="text" value=isPublic placeholder=problem.isPublic}}
+            <li>
+              <label for="imagedata">Problem Image:</label>
+              {{#if problem.imageData}}
+                {{#if problem.isPdf}}
+                  <div id="pdf-view">
+                    <object data="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
+                      <embed src="{{problem.imageData}}" type="application/pdf">
+                    </object>
+                  </div>
+                {{else}}
+                  <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
+                    <img src="{{problem.imageData}}" alt="{{problem.title}}">
+                  </a>
+                {{/if}}
+                  <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
+                  <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
+              {{else}}
+                  {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
+              {{/if}}
             </li>
           </ol>
         </fieldset>

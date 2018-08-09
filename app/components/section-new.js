@@ -49,7 +49,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
       var sectionData = this.store.createRecord('section', {
         name: newSectionName,
-        organization: organization,
+        organization: organization
       });
 
       for (let teacher of teachers) {

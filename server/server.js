@@ -187,7 +187,7 @@ server.get('/api/categories', api.get.categories);
 server.get('/api/category/:id', path.validateId(), api.get.category);
 
 server.get('/api/organizations', api.get.organizations);
-server.get('/api/organization/:id', path.validateId(), api.get.organization);
+server.get('/api/organizations/:id', path.validateId(), api.get.organization);
 
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);

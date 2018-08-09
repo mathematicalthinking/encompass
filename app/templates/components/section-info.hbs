@@ -47,41 +47,28 @@
               {{/each}}
           </li>
 
-        {{#if isAddingExistingStudents}}
-        {{else}}
-          <li class="studentslist">
+
+
+            {{!--
              <label for="students">Students - "TO DO ADD/EDIT/REMOVE"
-                <button class="_button" {{action 'removeStudent'}} style=""> ADD </button>
+                <button class="_button" {{action 'toggleAddExistingStudent'}} style=""> ADD/DONE </button>
              </label>
-     {{/if}}
 
-     {{#if isAddingExistingStudents}}
-          <label for="newUserName">Name</label>
-          {{input id="newUserName" type="newUserName" value=studentUsername placeholder="newUserName" action="checkError" on="key-down"}}
-
-
-          <label for="addusername">Username</label>
-          {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
-          {{#unless usingDefaultPassword}}
-
-          <label for="addpassword">Password</label>
-          {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
-          {{/unless}}
-
-          <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
-     {{/if}}
-
-
+               {{#if isAddingExistingStudents}}
+                  <label for="addusername">Username</label>
+                  {{input id="addExistingStudent" type="text" value=studentUsername placeholder="add-exiting-student" action="checkError" on="key-down"}}
+                  <button class="action_button" {{action 'addExistingStudent'}} style=""> ADD </button>
+                  {{!-- <button class="action_button" {{action 'doneAddingStudent'}}>Done</button>
+                {{/if}} --}}
+            <li class="studentslist">
             {{#each section.students as |student|}}
             <ol class="c"> {{student.username}}
 
              <button class="student_button" {{action 'removeStudent'}} style="">Remove</button>
-              <button class="student_button" {{action 'editStudent'}} style="">EDIT </button>
-
+              {{!-- <button class="student_button" {{action 'editStudent'}} style="">Change Password[on hold]</button> --}}
             </ol>
             {{/each}}
           </li>
-
         </ul>
       </fieldset>
     </form>
@@ -105,8 +92,8 @@
     <h2>Use default password for all new students?
     {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
 
-      <label for="newUserName">Name</label>
-      {{input id="newUserName" type="newUserName" value=studentUsername placeholder="newUserName" action="checkError" on="key-down"}}
+      <label for="name">Name</label>
+      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}}
 
 
       <label for="addusername">Username</label>
@@ -157,3 +144,26 @@
   {{/if}} {{/if}}
 
 {{/if}}
+
+{{!-- {{#if isEditingStudents}}
+  <form id='editStudentForm' class='properForm'>
+    <fieldset>
+
+    {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}}
+
+      <label for="editUserName">Name</label>
+      {{input id="editUserName" type="text" value=studentName placeholder="newUserName" action="checkError" on="key-down"}}
+
+
+      <label for="editstudents">Username</label>
+      {{input id="editstudents" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
+      {{#unless usingDefaultPassword}}
+
+      <label for="editstudentpassword">Password</label>
+      {{input id="editstudentpassword" type="password" value=editstudentPassword placeholder="password" action="checkError" on="key-down"}}
+      {{/unless}}
+
+      <button class="action_button" {{action 'updateStudents'}} style="margin-right: 30px"> + </button>
+  </fieldset>
+  </form>
+{{/if}} --}}

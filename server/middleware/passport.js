@@ -85,6 +85,13 @@ module.exports = (passport) => {
           }
 
           if (user) {
+            console.log('user org', user.organization);
+            if (JSON.stringify(user.organization) === JSON.stringify(req.user.organization) || req.user.isAdmin) {
+              return next(null, false, {
+                message: "Can add existing user",
+                user: user
+              });
+            }
             return next(null, false, {
               message: "Username already exists"
             });

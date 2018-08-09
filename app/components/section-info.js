@@ -15,8 +15,25 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   missingFieldsError: null,
   showingPassword: false,
   fieldType: 'password',
+  isEditingStudents: false,
+  removeObject: null,
+  organization: null,
+  isStudent: false,
 
+  didInsertElement: function () {
+    var user = this.get('user');
+    var teachers = this.get('teachers');
+  },
 
+  didReceiveAttrs: function() {
+    return this.section.get('organization').then((org) => {
+      console.log(('organization', org));
+      this.set('organization', org);
+    })
+    .catch((err) => {
+      console.log('error getting org', err);
+    });
+  },
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -53,14 +70,21 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('showingPassword', false);
         this.set('fieldType', 'password');
       }
-
     },
 
     createStudent: function () {
       var that = this;
+      let section = this.get('section');
+      //let teachers = this.get('teachers');
+      let organization = this.get('organization');
+      var user = this.get('user');
+      var name = this.get('studentName');
+      console.log('name', name);
       var username = this.get('studentUsername');
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
+
+
 
       if (usingDefaultPassword) {
         password = this.get('defaultPassword');
@@ -76,33 +100,52 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return;
       }
 
+      //let student organization = teacher organization
+        console.log('org', organization);
       var createUserData = {
+        name: name,
         username: username,
         password: password,
         isStudent: true
       };
+
+      if (organization) {
+        createUserData.organization = organization.id;
+      }
       return Ember.$.post({
-          url: '/auth/signup',
-          data: createUserData
-        })
+        url: '/auth/signup',
+        data: createUserData
+      })
         .then((res) => {
+          console.log('res', res);
           if (res.message === 'Username already exists') {
             that.set('usernameAlreadyExists', true);
-          } else {
+          } else if(res.message === 'Can add existing user') {
+            // TODO: display to user message that user already exists within your organization, and display info about existing user and give the user the option to add the existing user to the section
+            console.log('User already exists inside your org, add them if you wish.');
+            console.log('res.user', res.user);
+          }
+          else {
             var userId = res._id;
             var section = this.get('section');
+            //var name = section.get('name');
             var students = section.get('students');
+            //var organization = section.get('organization');
             var sectionPassword = section.get('sectionPassword');
-            console.log('section password is currently', sectionPassword);
 
+            console.log('section password is currently', sectionPassword);
             return this.store.findRecord('user', userId)
               .then((user) => {
                 students.pushObject(user);
                 section.save();
+                this.set('name', '');
                 this.set('studentUsername', '');
                 if (!usingDefaultPassword) {
                   this.set('studentPassword', '');
                 }
+                // this.removeUsername = function () {
+                //   students.removeObject(user);
+                // };
               })
               .catch((err) => {
                 console.log(err);
@@ -114,10 +157,59 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         });
     },
 
-    // insertStudent: function () {
-    //   let giveStudent = this.get('students');
-    //   this.set('studentUsername', giveStudent.get('students'));
-    // },
+      /*findrecord of user
+        then push to students array if new student (username) message 'student info not found'  */
+
+    addExistingStudent: function (res) {
+     //var students = section.get('students');
+     var userId = res._id;
+     let username = this.get('addExistingStudent');
+     this.store.findAll('user', username)
+     .then((res) => {
+      if (res.message === 'Username already exists') {
+        this.set('usernameAlreadyExists', true);
+      } else {
+      let section = this.get('section');
+      var students = section.get('addExistingStudent')
+     .then((user) => {
+       students.pushObject(user);
+       section.save();
+       this.set('studentUsername', '');
+     })
+     .catch((err) => {
+       console.log(err);
+        });
+      }
+    });
+    },
+
+    removeStudent: function (user) {
+      let section = this.get('section');
+      let students = this.get('students');
+      let username = section.get('studentUsername');
+
+      console.log('user', username);
+      //this.get('studentUsername').removeObject(this.get(username));
+      this.get('students').removeObject(this.get(username));
+      students.removeObject(username);
+
+      // Save to Database
+      section.save();
+      // Route to
+      this.transitionTo('section');
+    },
+
+    toggleAddExistingStudent: function () {
+      if (this.get('isAddingExistingStudents') !== true) {
+        this.set('isAddingExistingStudents', true);
+      } else {
+        this.set('isAddingExistingStudents', false);
+      }
+    },
+
+    doneAddingStudent: function () {
+      this.set('addExistingStudent', false);
+    },
 
     doneAdding: function () {
       this.set('isAddingStudents', false);
@@ -157,3 +249,30 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   }
 });
+
+
+
+
+   // editStudent: function (_id) {
+    //   let section = this.get('section');
+    //   this.set('isEditingStudents', true);
+    //   //var students = section.get('students');
+    //   let name = section.get('editstudentName');
+    //   let username = section.get('editstudentUsername');
+    //   let password = section.get('editstudentPassword');
+
+    //   this.store.findRecord('user', _id).then(function (user){
+    //     this.set('studentName', name);
+    //     this.set('studentUsername', username);
+    //     this.set('studentpassword', password);
+
+		// 		// Save to Database
+    //     section.save();
+    //     // Route to
+    //     this.transitionTo('section');
+    //   });
+    // },
+
+    // updateStudents: function () {
+    //   //when finish editing update button to update & close
+    // },

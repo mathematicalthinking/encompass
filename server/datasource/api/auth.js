@@ -46,6 +46,9 @@ const localSignup = (req, res, next) => {
     }
 
     if (!user) {
+      if (info.message && info.user && info.message === 'Can add existing user') {
+        return utils.sendResponse(res, info);
+      }
       console.log('user: ', user);
       return utils.sendResponse(res, info);
     }
