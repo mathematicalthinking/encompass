@@ -7,10 +7,9 @@
 <section>
   <fieldset>
   <p>
-    Select a user from the bottom (left).
+    Select a user from the below
   </p>
   <p class="help">
-    {{#if currentUser.isAdmin}}A list of all users in the system is to the left.{{/if}}
     Users are automatically created when they visit but may not be authorized.
     Authorized users are bold.
     Admin users are red.
@@ -19,8 +18,8 @@
   </fieldset>
 </section>
 
-<section>
-  <nav class="users actions listing al_vertical_stretch">
+<section id="user-list-side">
+  <nav class="user-list-box">
     {{#if currentUser.isAdmin}}
 
       <h2>Waiting for Authorization</h2>
@@ -48,13 +47,15 @@
   {{/if}}
 
     <h2>Students</h2>
-    <ul class="listing">
+    <ul class="listing last-list">
       {{#each studentUsers as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">{{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}</li>
     {{/each}}
     </ul>
-    
+
   </nav>
+
+</section>
 
   <div class="listOutlet users">
     {{outlet}}
@@ -62,4 +63,3 @@
 
   <div class="clear"/>
 
-</section>

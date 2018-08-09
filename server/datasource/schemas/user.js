@@ -33,6 +33,7 @@ Log.virtual('message').get(function () {
 /**
   * @public
   * @class User
+  * @class User
   * @description A user is created by signup using passport and authorized by admin
   * @todo We need to decide how to handle different user types/roles
 */

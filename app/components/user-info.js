@@ -1,4 +1,5 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'user-info',
   isEditing: false,
 
   lastSeenDate: function () {

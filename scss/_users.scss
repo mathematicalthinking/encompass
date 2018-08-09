@@ -18,18 +18,42 @@
   }
   h2 {
     text-transform: capitalize;
-    margin: 10px 0 5px 10px;
+    margin: 20px 0 10px 20px;
     font-size: 1.4em;
     // color: darken($primary-font-color, 5%);
     color: $accent-color;
     font-weight: bold;
   }
   li {
-    padding: 6px 0 6px 10px;
+    padding: 6px 0 6px 15px;
+    margin: 0 30px;
     border-radius: 5px;
+    &:last-child {
+      margin-bottom: 30px;
+    }
     &:hover {
       font-weight: $bold-font-weight;
       background-color: lighten($background-color, 5%);
+    }
+  }
+}
+
+#user-list-side {
+  background: $background-color;
+  width: 25%;
+  height: 80%;
+  position: fixed;
+  overflow: auto;
+  clear: both;
+  .user-list-box {
+    margin-bottom: 100px;
+    .listing {
+      .is-admin a {
+        color: $error-color;
+      }
+      .is-authorized {
+        font-weight: $bolder-font-weight;
+      }
     }
   }
 }
