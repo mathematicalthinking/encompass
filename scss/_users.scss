@@ -35,7 +35,7 @@
     margin: 20px 0 10px 20px;
     font-size: 1.4em;
     color: $accent-color;
-    font-weight: bold;
+    font-weight: $bold-font-weight;
   }
   li {
     padding: 6px 0 6px 15px;
@@ -80,4 +80,35 @@
   }
 }
 
+#user-info {
+  margin: 0 auto;
+  width: 70%;
+  h3 {
+    text-transform: capitalize;
+    margin: 20px 0 30px 20px;
+    font-size: 1.4em;
+    color: $primary-font-color;
+    font-weight: bold;
+    text-align: center;
+  }
+  table {
+    margin: 0 auto;
+    min-width: 70%;
+    text-align: center;
+    td {
+      padding: 10px;
+      padding-left: 0;
+      margin-left: 0;
+    }
+  }
+  button.action_button {
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: .8em;
+    border-radius: 3px;
+    font-weight: $bold-font-weight;
+  }
+}
 

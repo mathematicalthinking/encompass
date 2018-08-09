@@ -1,7 +1,6 @@
-<h1>User Detail Info</h1>
+<h3>{{user.username}}'s Account Details</h3>
 
 <article class="user">
-  <h2>{{user.username}}</h2>
   <table class="values rows" style="background-color: #efefef">
     <tr>
       <th>Label</th>
@@ -126,9 +125,9 @@
   </table>
   {{#if canEdit}}
     {{#if isEditing}}
-      <button class='saveUser' {{action 'saveUser'}}>save</button>
+      <button class='action_button' {{action 'saveUser'}}>save</button>
     {{else}}
-      <button class='editUser' {{action 'editUser'}}>edit</button>
+      <button class='action_button' {{action 'editUser'}}>edit</button>
     {{/if}}
   {{/if}}
 </article>
