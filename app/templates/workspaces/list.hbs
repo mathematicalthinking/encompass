@@ -28,7 +28,7 @@
     {{#each model as |workspace|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
         <td style="background: url(images/sprite-workspace-icon.png) 0 0 no-repeat; padding-left: 55px;">
-          {{#link-to 'workspace.work' workspace.id classNames='workspace'}}
+          {{#link-to 'workspace.work' workspace classNames='workspace'}}
           {{!link-to 'workspace.submission' workspace workspace.firstSubmission classNames='workspace'}}
           {{!link-to 'workspace.submissions.first' workspace classNames='workspace'}}
           <span class="workspace_name {{workspace.mode}}">
@@ -36,7 +36,7 @@
             </span>
           {{/link-to}}
           {{#link-to 'workspace.info' workspace.id}}
-            <span class="workspace_info"></span>
+            <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
           {{/link-to}}
         </td>
         <!-- <td>{{!submissionDates}}</td> -->

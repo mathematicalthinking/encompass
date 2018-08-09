@@ -33,13 +33,28 @@ section.problemdetails {
       font-size: 1em;
       padding: 12px 20px;
       color: black;
+      margin: 8px 0px;
     }
     .radio-label {
       padding: 0px 5px;
-      margin-top: -10px;
+      width: 200px;
+      padding: 12px 3px;
+      margin: 8px 0;
+      font-size: 1em;
     }
-    .privacy-settings {
-      margin-bottom: 20px;
+
+    input[type=radio] {
+      padding: 12px 20px;
+      margin: 24px 2px;
+    }
+    .edit-image-btn {
+      margin-bottom: 15px;
+      padding: 5px 15px;
+      font-size: .8em;
+      background-color: none;
+      border-radius: 3px;
+      border: .5px solid $primary-font-color;
+      color: $primary-font-color;
     }
   }
   #probleminfo {
@@ -88,8 +103,8 @@ section.problemdetails {
 }
 
 #problem-info {
-  a.image.wide {
-    max-width: 100%;
+  img {
+    width: 60%;
     position: relative;
     z-index: 999;
   }
@@ -142,3 +157,15 @@ section.problemdetails {
     }
   }
 }
+
+  #image-upload {
+    width: 70%;
+    padding: 12px 0px;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    box-sizing: border-box;
+    input {
+      font-size: 1em;
+    }
+  }

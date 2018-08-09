@@ -8,9 +8,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   savedProblem: null,
   isWide: false,
   checked: true,
+  filesToBeUploaded: null,
+
+
+  didReceiveAttrs: function () {
+    console.log('did recieve attrs problem info called');
+    this.set('isWide', false);
+  },
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
-
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
     let problem = this.get('problem');
@@ -51,13 +57,32 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
+
+      if(this.filesToBeUploaded) {
+        var uploadData = this.get('filesToBeUploaded');
+        var formData = new FormData();
+        for (let f of uploadData) {
+          formData.append('photo', f);
+        }
+        Ember.$.post({
+          url: '/image',
+          processData: false,
+          contentType: false,
+          data: formData
+        }).then((res) => {
+          this.set('uploadResults', res.images);
+          problem.set('imageId', res.images[0]._id);
+          problem.set('imageData', res.images[0].data);
+          problem.save();
+        });
+      }
+
       problem.set('title', title);
       problem.set('text', text);
       if (privacy !== null) {
         problem.set('privacySetting', privacy);
       }
       problem.set('modifiedBy', currentUser);
-      console.log('before save called');
       problem.save();
       this.set('isEditing', false);
     },
@@ -90,8 +115,26 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     toggleImageSize: function () {
       this.toggleProperty('isWide');
+    },
+
+
+    addImage: function () {
 
     },
+
+    changeImage: function () {
+      console.log('update image clicked');
+      let problem = this.get('problem');
+      let imageData = this.get('imageData');
+      let imageId = this.get('imageId');
+    },
+
+    deleteImage: function () {
+      let problem = this.get('problem');
+      problem.set('imageId', null);
+      problem.set('imageData', null);
+      problem.save();
+    }
 
   }
 });

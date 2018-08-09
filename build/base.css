@@ -5,21 +5,12 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,
 form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,
 footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video
-{ margin:0; padding:0; border:0; font-size:100%; font:inherit; vertical-align:baseline; }
+{ margin:0; padding:0; border:0; font-size:100%; vertical-align:baseline; }
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section { display:block; }
 body { line-height:1; } ol,ul { list-style:none; } blockquote,q { quotes:none; }
 blockquote:before,blockquote:after,q:before,q:after { content:''; content:none; }
 table { border-collapse:collapse; border-spacing:0; } img { vertical-align:bottom; }
 /* end reset */
-
-body { font-family:'Helvetica Neue', Helvetica, sans-serif; background:#fefefe; color:#5e5e5e;
-  /* min-width:1024p;  */
-}
-
-a { color:#5e5e5e; text-decoration:none; cursor: pointer }
-a.highlight { color:#3333cc; text-decoration: none; cursor: pointer; } /* General highlighted link */
-strong { font-weight:bold; }
-textarea { font-family:'Helvetica Neue', Helvetica, sans-serif; font-size:13px; }
 
 .clear { clear:both; }
 .clear_l { clear:left; }
@@ -148,14 +139,14 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
 /* */
 #al_comments { solid #d3d3d3; padding-bottom: 2px; }
 .al_enabled #al_comments { display:block; }
-#al_comments textarea { height:25px; font-family:'Helvetica Neue', Helvetica, sans-serif; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
+#al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
 #al_comments textarea.has-text { height:75px; }
 /* */
 #al_workspace { width:100%; position:absolute; bottom:0px; border-top:1px solid #d3d3d3; line-height:16px; text-indent:10px; padding:5px 0; }
 #al_workspace ul { font-size:11px; margin-top:4px; }
 
 
-#al_feedback textarea { font-size:13px; font-family:'Helvetica Neue', Helvetica, sans-serif; padding:10px; width:350px; height:150px; border:1px solid #d3d3d3; margin-bottom:10px; }
+#al_feedback textarea { font-size:13px; padding:10px; width:350px; height:150px; border:1px solid #d3d3d3; margin-bottom:10px; }
 #al_feedback .al_controller { text-align:right; margin:10px 0; }
 #al_feedback .al_controller .al_popup_close { padding-right:10px; margin-right:10px; border-right:1px solid #d3d3d3; }
 .al_controller { text-align:center; }
@@ -530,7 +521,7 @@ table.cols td {
 
 .action_button { background:#ffcc00; padding:5px 10px; display:inline-block; zoom:1; border: 0; }
 
-#workspace_listing { width: 100%; background: #f3f3f3; font: 16px 'Helvetica Neue', Helvetica, sans-serif; }
+#workspace_listing { width: 100%; background: #f3f3f3;}
 #workspace_listing .theader { border-bottom: 1px solid #d3d3d3; line-height: 50px; }
 #workspace_listing .theader>th { padding: 0em 0.5em 0em 0.5em; text-align: center; }
 #workspace_listing .theader>th:first-child { text-align: justify; padding-left: 55px; }
@@ -614,7 +605,7 @@ label.makingSelection>input {
   padding: 2em;
 }
 
-textarea#responseTextarea { height:300px; font-family:'Helvetica Neue', Helvetica, sans-serif; font-size:13px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; }
+textarea#responseTextarea { height:300px; font-size:13px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; }
 
 /* #devTool { float: left; padding-left: 20px; } */
 

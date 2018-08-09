@@ -34,7 +34,7 @@ describe('Visiting Workspaces', function() {
 
   it('should display 2 workspaces', async function() {
     let names;
-    let workspaces = await helpers.getWebElements(driver, 'span.workspace_info');
+    let workspaces = await helpers.getWebElements(driver, 'i.workspace_info');
 
     try {
       names = await Promise.all(workspaces.map((el) => {

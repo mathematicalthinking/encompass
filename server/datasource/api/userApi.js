@@ -41,6 +41,7 @@ function makeGuest() {
 */
 function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
+  console.log('user', user);
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -52,13 +53,20 @@ function sendUsers(req, res, next) {
     utils.sendResponse(res, {user: [user]});
     return next();
   }
-
   var criteria = utils.buildCriteria(req);
   if(req.query.name) { //if we're doing a search GET /users/?name=xyz
     var name = req.query.name;
-    name = name.replace(/\W+/g, "");
-    var regex = new RegExp(name, 'i');
-    criteria.$or = [{username: regex}, {name: regex}];
+    var username = name.username;
+    var regex;
+    if (username) {
+      username = username.replace(/\W+/g, "");
+      regex = new RegExp(username, 'i');
+      criteria = { username: regex };
+    } else {
+      name = name.replace(/\W+/g, "");
+      regex = new RegExp(name, 'i');
+      criteria = { name: regex };
+    }
   }
   models.User.find(criteria)
     .lean()
