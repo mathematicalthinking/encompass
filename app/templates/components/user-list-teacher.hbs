@@ -18,9 +18,9 @@
 
 <section id="user-list-side">
   <nav class="user-list-box">
-    {{!-- <h2>Your Students</h2>
+    <h2>Your Students</h2>
     <ul class="listing waiting-auth">
-      {{#each unauthUsers as |user|}}
+      {{#each yourStudents as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
         {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
       </li>
@@ -29,12 +29,12 @@
 
     <h2>Users you have created</h2>
     <ul class="listing admin-users">
-      {{#each adminUsers as |user|}}
+      {{#each yourUsers as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
         {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
       </li>
       {{/each}}
-    </ul> --}}
+    </ul>
 
     <h2>Users in {{currentUser.organization.name}}</h2>
     <ul class="listing auth-users">
