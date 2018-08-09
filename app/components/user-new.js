@@ -10,6 +10,7 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
         var newUserUsername = this.get('newUserUsername');
         var newUserName = this.get('newUserName');
         var newUserAuthorized = this.get('newUserAuthorized');
+        var currentUser = this.get('currentUser');
         this.set('newUserUsername', '');
         console.debug('creating new user ' + newUserUsername);
 
@@ -20,7 +21,8 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
         var user = this.store.createRecord('user', {
           username: newUserUsername,
           name: newUserName,
-          isAuthorized: newUserAuthorized
+          isAuthorized: newUserAuthorized,
+          createdBy: currentUser,
         });
 
         user.save().then((res) => {

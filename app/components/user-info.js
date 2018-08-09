@@ -1,6 +1,7 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-info',
   isEditing: false,
+  isAuth: null,
 
   lastSeenDate: function () {
       var last = this.get('lastSeen');
@@ -21,6 +22,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     actions: {
       editUser: function () {
         this.set('isEditing', true);
+        let user = this.get('user');
+        let isAuth = user.get('isAuthorized');
+        this.set('isAuth', isAuth);
       },
 
       saveUser: function () {
@@ -29,6 +33,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let newDate = new Date();
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
+
         user.save();
         this.set('isEditing', false);
       },
