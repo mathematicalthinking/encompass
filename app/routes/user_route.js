@@ -1,6 +1,6 @@
 Encompass.UserRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
-    var user = this.modelFor('users').filterBy('username', params.id).get('firstObject');
+    var user = this.get('store').findRecord('user', params.id);
     return user;
   },
 
