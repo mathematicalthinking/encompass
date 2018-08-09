@@ -57,6 +57,7 @@
     position: fixed;
     overflow: auto;
     clear: both;
+    z-index: -1;
     .user-list-box {
       margin-bottom: 100px;
       padding-top: 10px;

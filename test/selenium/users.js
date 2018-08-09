@@ -32,7 +32,6 @@ describe('Users', function() {
       console.log(err);
     }
     await helpers.navigateAndWait(driver, host, css.topBar.login);
-    await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
    });
 
   //  function validateAnon(){
@@ -42,12 +41,11 @@ describe('Users', function() {
   //  }
 
    describe('Visiting the users page', function() {
-     it('there is only one user in the list', async function() {
-      expect(await helpers.getWebElements(driver, 'a.user')).to.have.lengthOf(1);
-      expect(await helpers.findAndGetText(driver, 'a.user')).to.eql('anon');
+     it('there should be an empty list displaying you are not authorized', async function() {
+      expect(await helpers.waitForSelector(driver, '#not-auth'));
      });
 
-     describe('clicking the user link', function() {
+     xdescribe('clicking the user link', function() {
        before(async function() {
          await helpers.findAndClickElement(driver, 'a.user');
          await helpers.waitForSelector(driver, 'article.user');
@@ -56,7 +54,7 @@ describe('Users', function() {
      });
    });
 
-   describe('Visiting a user page directly', function() {
+   xdescribe('Visiting a user page directly', function() {
      before(async function() {
       await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
      });
@@ -64,7 +62,7 @@ describe('Users', function() {
    });
   });
 
-  describe('Logged in as a regular user', function() {
+  xdescribe('Logged in as a teacher', function() {
     before(async function() {
       await helpers.login(driver, host, helpers.regUser);
       await helpers.waitForSelector(driver, css.topBar.users);
@@ -160,7 +158,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
         await helpers.findAndClickElement(driver, 'button.newUser');
         await helpers.waitForSelector(driver, 'ul.listing');
-        expect(await helpers.findAndGetText(driver, 'ul.listing>li.is-authorized:last-of-type')).to.contain(username);
+        expect(await helpers.findAndGetText(driver, 'ul.auth-users>li.is-authorized:last-child')).to.contain(username);
       });
     }
 
