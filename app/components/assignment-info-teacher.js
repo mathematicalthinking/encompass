@@ -17,15 +17,29 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   //   return this.get('sortedAnswers').get('firstObject');
   // }.property('sortedAnswers.[]'),
 
-  isDeletable: function() {
-    // const currentUser = this.get('currentUser');
-    // console.log('assn id', this.assignment.id);
-    // const creatorId = this.assignment.get('createdBy.username');
-    // console.log('crtorid', creatorId);
-    // console.log('currentUser id', currentUser.get('userId'));
-    // return currentUser.get('username') === creatorId;
-  }.property('assignment.id'),
+  isYourOwn: function() {
+    const currentUser = this.get('currentUser');
+    const creatorId = this.assignment.get('createdBy.userId');
+    return currentUser.get('userId') === creatorId;
+  }.property('assignment.id', 'currentUser.userId'),
 
+  isAnswersEmpty: function() {
+    const answers = this.get('assignmentAnswers');
+    return Ember.isEmpty(answers);
+  }.property('assignmentAnswers.[]'),
+
+  isAssignedDateLocked: function() {
+    // locked if current date is later than assigned date
+    const currentDate = new Date();
+    const assignedDate = this.assignment.get('assignedDate');
+    console.log('currentDate', currentDate);
+    console.log('assignedDate', assignedDate);
+    let x = currentDate > assignedDate;
+    console.log('x', x);
+    return currentDate > assignedDate;
+  }.property('assignment.id','isEditing'),
+
+  canDelete: Ember.computed.and('isYourOwn', 'isAnswersEmpty'),
 
   isProblemLocked: function() {
     //can be edited only if no submissions have been recorded yet
@@ -36,8 +50,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     if (this.get('showReport')) {
       this.set('showReport', false);
     }
-    console.log('this.currus', this.get('currentUser.id'));
-    console.log('this.assncby', this.assignment.get('createdBy'));
     const assignment = this.assignment;
     if (this.assignment) {
       let dateTime = 'YYYY-MM-DD';
@@ -99,12 +111,21 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       });
     },
     updateAssignment: function() {
+      console.log('updating assignment');
       const assignment = this.get('assignment');
       const values = ['section', 'problem', 'assignedDate', 'dueDate'];
 
       for (let value of values) {
         assignment.set(value, this.get(value));
       }
+      return assignment.save().then((assignment) => {
+        this.set('assignmentUpdateSuccess', true);
+        this.set('isEditing', false);
+        return;
+      })
+      .catch((err) => {
+        this.set('updateAssignmentError', err);
+      });
 
     },
     stopEditing: function() {
