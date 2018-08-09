@@ -46,6 +46,7 @@
     clear: both;
     .user-list-box {
       margin-bottom: 100px;
+      padding-top: 10px;
       .listing {
         .is-admin a {
           color: $error-color;
@@ -61,7 +62,7 @@
     margin-left: 25%;
     float: left;
     border-left: 1px solid #bfbfbf;
-    padding: 5px;
+    padding: 10px 5px 5px 10px;
   }
 }
 

@@ -24,8 +24,13 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       },
 
       saveUser: function () {
+        let currentUser = this.get('currentUser');
+        let user = this.get('user');
+        let newDate = new Date();
+        user.set('lastModifiedBy', currentUser);
+        user.set('lastModifiedDate', newDate);
+        user.save();
         this.set('isEditing', false);
-        this.get('user').save();
       },
 
       clearTour: function () {
