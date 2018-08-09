@@ -36,24 +36,33 @@
       background-color: lighten($background-color, 5%);
     }
   }
-}
 
-#user-list-side {
-  background: $background-color;
-  width: 25%;
-  height: 80%;
-  position: fixed;
-  overflow: auto;
-  clear: both;
-  .user-list-box {
-    margin-bottom: 100px;
-    .listing {
-      .is-admin a {
-        color: $error-color;
-      }
-      .is-authorized {
-        font-weight: $bolder-font-weight;
+  #user-list-side {
+    background: $background-color;
+    width: 25%;
+    height: 80%;
+    position: fixed;
+    overflow: auto;
+    clear: both;
+    .user-list-box {
+      margin-bottom: 100px;
+      .listing {
+        .is-admin a {
+          color: $error-color;
+        }
+        .is-authorized {
+          font-weight: $bolder-font-weight;
+        }
       }
     }
   }
+  .list-outlet {
+    width: 74%;
+    margin-left: 25%;
+    float: left;
+    border-left: 1px solid #bfbfbf;
+    padding: 5px;
+  }
 }
+
+
