@@ -3,6 +3,18 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   isEditing: false,
   isAuth: null,
 
+  canEdit: Ember.computed('user.id', function () {
+    let user = this.get('user');
+    console.log('user is', user);
+    let creator = user.get('createdBy.content.id');
+    console.log('creator id is', creator);
+    let currentUserId = this.get('currentUser').get('id');
+    console.log('currentUserId is', currentUserId);
+
+    let canEdit = (creator === currentUserId ? true : false) || this.get('currentUser').get('isAdmin');
+    return canEdit;
+  }),
+
   lastSeenDate: function () {
       var last = this.get('lastSeen');
       if (last) {
@@ -29,8 +41,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       saveUser: function () {
         let currentUser = this.get('currentUser');
-        let user = this.get('user');
         let newDate = new Date();
+        let user = this.get('user');
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
 

@@ -124,7 +124,7 @@
       {{/if}}
     {{/if}}
   </table>
-  {{#if currentUser.isAdmin}}
+  {{#if canEdit}}
     {{#if isEditing}}
       <button class='saveUser' {{action 'saveUser'}}>save</button>
     {{else}}
