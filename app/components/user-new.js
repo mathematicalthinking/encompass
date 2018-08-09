@@ -1,6 +1,6 @@
 Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-    elementId: 'users',
-    className: ['users'],
+    elementId: 'user-new',
+    className: ['user-new'],
     newUserUsername: '',
     newUserName: '',
     newUserAuthorized: true,

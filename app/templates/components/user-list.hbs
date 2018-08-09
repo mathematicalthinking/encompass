@@ -1,4 +1,13 @@
 {{#if currentUser.isAdmin}}
+  {{user-list-admin currentUser=currentUser users=users organization=organiztions}}
+{{else}}
+  {{user-list-teacher currentUser=currentUser users=users organization=organiztions}}
+{{/if}}
+
+
+
+{{!--
+{{#if currentUser.isAdmin}}
 <header id="user-list-header">
   <h1>Users Listing</h1>
   <button>{{#link-to 'users.new' id='new-user-link'}}Create New User{{/link-to}}</button>
@@ -7,15 +16,14 @@
 
 <section>
   <fieldset>
-  <p>
-    Select a user from the below
-  </p>
-  <p class="help">
-    Users are automatically created when they visit but may not be authorized.
-    Authorized users are bold.
-    Admin users are red.
-    If you aren't authorized <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">DROP US A NOTE</a>
-  </p>
+    <p>
+      Select a user from the below
+    </p>
+    <p class="help">
+      Users are automatically created when they visit but may not be authorized. Authorized users are bold. Admin users are red.
+      If you aren't authorized
+      <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">DROP US A NOTE</a>
+    </p>
   </fieldset>
 </section>
 
@@ -23,55 +31,51 @@
   <nav class="user-list-box">
     {{#if currentUser.isAdmin}}
 
-      <h2>Waiting for Authorization</h2>
-      <ul class="listing waiting-auth">
-        {{#each unauthUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Waiting for Authorization</h2>
+    <ul class="listing waiting-auth">
+      {{#each unauthUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
-      <h2>Administrators</h2>
-      <ul class="listing admin-users">
-        {{#each adminUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Administrators</h2>
+    <ul class="listing admin-users">
+      {{#each adminUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
-      <h2>Authorized</h2>
-      <ul class="listing auth-users">
-        {{#each authUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Authorized</h2>
+    <ul class="listing auth-users">
+      {{#each authUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
+    {{else}} {{#if user.isAuthorized}}
+    <h2>Students</h2>
+    <ul class="listing student-users">
+      {{#each studentUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
     {{else}}
-      {{#if user.isAuthorized}}
-        <h2>Students</h2>
-        <ul class="listing student-users">
-          {{#each studentUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-          </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <h2 id="not-auth">You are not authorized</h2>
-      {{/if}}
-
-    {{/if}}
+    <h2 id="not-auth">You are not authorized</h2>
+    {{/if}} {{/if}}
   </nav>
 
 </section>
 
-  <div class="list-outlet users">
-    {{outlet}}
-  </div>
+<div class="list-outlet users">
+  {{outlet}}
+</div>
 
-  <div class="clear"/>
-
+<div class="clear" /> --}}
