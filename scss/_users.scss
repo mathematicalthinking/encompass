@@ -1,18 +1,32 @@
 #user-list {
   #user-list-header {
-    #new-user-link {
-      color: white;
-      background: $accent-color;
-      font-weight: $main-font-weight;
-      font-family: $primary-font;
-      font-size: .7em;
-      border-radius: 3px;
-      padding: 10px 15px;
-      margin-left: 5px;
-      &:hover {
-        font-weight: $bold-font-weight;
-        cursor: pointer;
-        background: darken($accent-color, 10%);
+    h1 {
+      text-transform: capitalize;
+      margin: 10px 0 10px 10px;
+      font-size: 1.8em; // color: darken($primary-font-color, 5%);
+      color: $primary-font-color;
+      font-weight: bold;
+      display: inline-block;
+    }
+    button {
+      border: none;
+      #new-user-link {
+        color: white;
+        background: $accent-color;
+        font-weight: $main-font-weight;
+        font-family: $primary-font;
+        font-size: 1.3em;
+        border-radius: 3px;
+        padding: 10px 15px;
+        display: inline-block;
+        position: relative;
+        top: -5px;
+        left: 5px;
+        &:hover {
+          font-weight: $bold-font-weight;
+          cursor: pointer;
+          background: darken($accent-color, 10%);
+        }
       }
     }
   }
@@ -20,7 +34,6 @@
     text-transform: capitalize;
     margin: 20px 0 10px 20px;
     font-size: 1.4em;
-    // color: darken($primary-font-color, 5%);
     color: $accent-color;
     font-weight: bold;
   }

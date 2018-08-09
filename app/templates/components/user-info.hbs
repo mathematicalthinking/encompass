@@ -52,7 +52,11 @@
     <tr>
       <td>Location</td>
       <td>
-        {{user.location}}
+        {{#if isEditing}}
+          {{input value=user.locaiton classNames='user.userName'}}
+        {{else}}
+          {{user.location}}
+        {{/if}}
       </td>
     </tr>
     <tr>
