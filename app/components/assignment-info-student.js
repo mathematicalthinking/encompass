@@ -60,15 +60,19 @@ toggleResponse: function() {
   }
 },
 
-
-
   actions: {
     beginAssignmentResponse: function() {
       this.set('isResponding', true);
+      if (this.get('answerCreated')) {
+        this.set('answerCreated', false);
+      }
     },
 
     reviseAssignmentResponse: function() {
       this.set('isRevising', true);
+      if (this.get('answerCreated')) {
+        this.set('answerCreated', false);
+      }
     },
 
     toAnswerInfo: function(answer) {
@@ -76,6 +80,9 @@ toggleResponse: function() {
     },
     displayAnswer: function(answer) {
       //this.set('isDisplayingAnswer', true);
+      if (this.get('answerCreated')) {
+        this.set('answerCreated', false);
+      }
       this.set('displayedAnswer', answer);
     },
 
