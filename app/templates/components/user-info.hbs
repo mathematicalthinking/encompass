@@ -1,66 +1,151 @@
-<h1>USER DETAIL INFO</h1>
+<h3><span class="username">{{user.username}}</span>'s Account Details</h3>
 
-      <div class="clear"/>
-
-      <div class="clear"/>
-
- <article class="user">
-<h2>{{user.username}}</h2>
-<table class="values rows" style="background-color: #efefef">
-  <tr> <th>Label</th> <th>Value</th> </tr>
-  <tr> <td>Name</td><td>
-         {{#if isEditing}}
-           {{input value=name classNames='user.userName'}}
-         {{else}}
-           {{user.name}}
-         {{/if}}
-         </td> </tr>
-  <tr>
+<article class="user">
+  <table class="values rows">
+    <tr>
+      <th>Label</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Username</td>
+      <td>
+        {{#if isEditing}}
+          {{input value=user.username classNames='user.userName'}}
+        {{else}}
+          {{user.username}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>
+        {{#if isEditing}}
+          {{input value=user.name classNames='user.userName'}}
+        {{else}}
+          {{user.name}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Display Name</td>
+      <td>
+        <span class='displayName'>{{user.displayName}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td>
+        {{#if isEditing}}
+          {{input value=user.email classNames='user.userName'}}
+        {{else}}
+          {{user.email}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Organization</td>
+      <td>
+        {{user.organization.name}}
+      </td>
+    </tr>
+    <tr>
+      <td>Location</td>
+      <td>
+        {{#if isEditing}}
+          {{input value=user.locaiton classNames='user.userName'}}
+        {{else}}
+          {{user.location}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
+      <td>Seen Tour</td>
+      <td>
+        {{#if isEditing}} {{#if seenTour}}
+        <button class='clearTour' {{action 'clearTour'}}>re-take tour</button>
+        {{else}}
+        <button class='doneTour' {{action 'doneTour'}}>don't show the tour</button>
+        {{/if}} {{/if}}
+        <span class='tourDate'>{{tourDate}}</span>
+      </td>
+    </tr>
+    <tr>
       <td>Last Seen</td>
       <td>{{lastSeenDate}}</td>
-  </tr>
-  <tr> <td>Seen Tour</td><td>
-         {{#if isEditing}}
-           {{#if seenTour}}
-             <button class='clearTour' {{action 'clearTour'}}>re-take tour</button>
-           {{else}}
-             <button class='doneTour' {{action 'doneTour'}}>don't show the tour</button>
-           {{/if}}
-         {{/if}}
-         <span class='tourDate'>{{tourDate}}</span>
-         </td> </tr>
-  <tr> <td>Username</td><td>{{user.username}}</td> </tr>
-  <tr> <td>Display Name</td><td>
-         <span class='displayName'>{{user.displayName}}</span>
-         </td> </tr>
-  <tr> <td>Admin</td><td>
-         {{#if isEditing}}
-           {{#if currentUser.isAdmin}}
-             {{input type="checkbox" checked=user.isAdmin classNames='isAdmin'}}
-           {{else}}
-             {{user.isAdmin}}
-           {{/if}}
-         {{else}}
-           {{user.isAdmin}}
-         {{/if}}
-         </td> </tr>
-  <tr> <td>Authorized</td><td>
-        {{#if isEditing}}
-          {{#if currentUser.isAdmin}}
-            {{input type="checkbox" checked=user.isAuthorized classNames='isAuthorized'}}
+    </tr>
+    {{#if user.lastModifiedBy}}
+    <tr>
+      <td>Last Modified</td>
+      <td>{{user.lastModifiedBy.username}} on {{user.lastModifiedDate}}</td>
+    </tr>
+    {{/if}}
+    {{#if user.isStudent}}
+    <tr>
+      <td>Student</td>
+      <td>Yes</td>
+    </tr>
+    {{/if}}
+    <tr>
+      <td>Admin</td>
+      <td>
+        {{#if isEditing}} {{#if currentUser.isAdmin}} {{input type="checkbox" checked=user.isAdmin value=admin classNames='isAdmin'}}
+        {{else}} {{user.isAdmin}} {{/if}} {{else}} {{user.isAdmin}} {{/if}}
+      </td>
+    </tr>
+    {{#if user.isAuthorized}}
+      <tr>
+        <td>Authorized</td>
+        <td>
+          {{#if isEditing}}
+            {{#if currentUser.isAdmin}}
+              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
+              {{else}}
+                {{user.isAuthorized}}
+            {{/if}}
           {{else}}
-            {{user.isAuthorized}}
+              {{user.isAuthorized}}
           {{/if}}
-        {{else}}
-          {{user.isAuthorized}}
-        {{/if}}
-        </td> </tr>
-</table>
-{{#if currentUser.isAdmin}}
-  {{#if isEditing}}
-  <button class='saveUser' {{action 'saveUser'}}>save</button>
-  {{else}}
-   <button class='editUser' {{action 'editUser'}}>edit</button>
+        </td>
+      </tr>
+      {{#if user.authorizedBy}}
+      <tr>
+        <td>Authorized By</td>
+        <td>{{user.authorizedBy.username}}</td>
+      </tr>
+      {{/if}}
+    {{else}}
+      <tr>
+        <td>Request Reason</td>
+        <td>
+          {{user.requestReason}}
+        </td>
+      </tr>
+      {{#if isEditing}}
+        <tr>
+          <td>Authorize</td>
+          <td>
+            {{#if currentUser.isAdmin}}
+              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
+            {{else}}
+              {{user.isAuthorized}}
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td>Authorized</td>
+          <td>
+            No
+          </td>
+        </tr>
+      {{/if}}
+    {{/if}}
+  </table>
+  {{#if canEdit}}
+    {{#if isEditing}}
+      <button class='action_button' {{action 'saveUser'}}>save</button>
+    {{else}}
+      <button class='action_button' {{action 'editUser'}}>edit</button>
+    {{/if}}
   {{/if}}
-{{/if}}
 </article>

@@ -33,6 +33,7 @@ Log.virtual('message').get(function () {
 /**
   * @public
   * @class User
+  * @class User
   * @description A user is created by signup using passport and authorized by admin
   * @todo We need to decide how to handle different user types/roles
 */
@@ -41,6 +42,8 @@ var UserSchema = new Schema({
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   /* + The username is the mfapps username */
   username: { type: String, unique: true },
@@ -48,6 +51,7 @@ var UserSchema = new Schema({
   isAdmin: Boolean,
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: Boolean,
+  authorizedBy: { type: ObjectId, ref: 'User' },
   isStudent: Boolean,
   name: String,
   email: String,

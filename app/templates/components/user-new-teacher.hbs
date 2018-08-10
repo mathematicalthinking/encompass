@@ -1,0 +1,34 @@
+<h3>Create a New Student</h3>
+<article class="user">
+  <table class="values rows">
+    <tr>
+      <th>Label</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Username</td>
+      <td>
+        {{input type="text" value=username}}
+      </td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td>
+        {{input type="password" value=password}}
+      </td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>
+        {{input type="text" value=name}}
+      </td>
+    </tr>
+  </table>
+
+  {{#if usernameExists}}
+    <p class="error-message">Username already exists</p>
+  {{/if}}
+
+
+  <button class='action_button' {{action 'newUser'}}>Create New Student</button>
+</article>

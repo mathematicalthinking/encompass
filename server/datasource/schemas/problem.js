@@ -14,6 +14,8 @@ var ProblemSchema = new Schema({
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   title: { type: String },
   puzzleId: { type: Number },
