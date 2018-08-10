@@ -46,10 +46,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isAddingStudents', true);
     },
 
-    // doneAddingExistingUsername: function () {
-    //   this.set('usernameAlreadyExists', false);
-    //   // this.set('problemPublic', problem.get('isPublic'));
-    // },
 
     doyouwanttoaddexistinguser: function () {
       this.set('doyouwanttoaddexistinguser', false);
@@ -71,7 +67,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       return this.store.findRecord('user', student.id).then((student) => {
         console.log('student rec', student);
-        students.pushObject(student);
+        students.pushObject(student);  //add student into students list
         section.save().then((section) => {
           console.log('saved section', section);
 
@@ -80,7 +76,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             console.log('saved student', rec);
             this.set('studentUsername', '');
           });
-
         });
      });
 
@@ -89,7 +84,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     removeStudent: function (user) {
       let section = this.get('section');
       let students = section.get('students');
-
       students.removeObject(user);
 
       // Save to Database
@@ -114,7 +108,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       var that = this;
       let organization = this.get('organization');
       var name = this.get('studentName');
-      console.log('username =', name);
       var username = this.get('studentUsername');
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
@@ -136,8 +129,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return;
       }
 
-      //let student organization = teacher organization
-        console.log('org', organization);
       var createUserData = {
         name: name,
         username: username,
