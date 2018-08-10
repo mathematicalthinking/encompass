@@ -122,10 +122,9 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
                 this.set('usernameExists', true);
               } else if (res.message === 'There already exists a user with this email address.') {
                 this.set('emailExistsError', res.message);
-              } else {
-                // TODO: Change how we're redirecting
-                this.sendAction('toUserInfo', res);
               }
+            }).then((user) => {
+              this.sendAction('toUserInfo', user);
             })
             .catch((err) => {
               console.log(err);
