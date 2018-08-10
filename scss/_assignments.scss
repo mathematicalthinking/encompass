@@ -83,7 +83,7 @@ div.past-submissions {
 }
 
 section.assignment-info-teacher {
-    #assignmentinfoform {
+    #assignment-info-form {
       div.mySelect {
         display: inline-block;
         padding: 12px 0px;
@@ -126,15 +126,14 @@ section.assignment-info-teacher {
         padding: 12px 20px;
         color: black;
       }
-      li.assignment-info {
+      p.assignment-info {
         input[type=text], input[type=date] {
           border:none;
         }
       }
     }
-    #assignmentinfo {
-      input[type=text],
-      select {
+    #assignment-info {
+      .assignment-info {
         font-size: 1em;
         width: 70%;
         padding: 12px 20px;
@@ -147,6 +146,7 @@ section.assignment-info-teacher {
         &::placeholder {
           color: $primary-font-color;
         }
+
       }
       label {
         width: 20%;
