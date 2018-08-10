@@ -87,20 +87,20 @@ AssignmentSchema.post('save', function (assignment) {
     update = { $pull: { 'assignments': assignmentIdObj }};
   }
 
-  // if (assignment.students) {
-  //   mongoose.models.User.update({ '_id': {$in: assignment.students }},
-  //     update, {multi: true},
-  //     function (err, affected, result) {
-  //       if (err) {
-  //         throw new Error(err.message);
-  //       }
-  //       if (assignment.isTrashed) {
-  //         console.log(`removed assignment from students: `, affected);
-  //       } else {
-  //         console.log(`added assignment to students: `, affected);
-  //       }
-  //     });
-  // }
+  if (assignment.students) {
+    mongoose.models.User.update({ '_id': {$in: assignment.students }},
+      update, {multi: true},
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        if (assignment.isTrashed) {
+          console.log(`removed assignment from students: `, affected);
+        } else {
+          console.log(`added assignment to students: `, affected);
+        }
+      });
+  }
 
     if (assignment.section) {
       mongoose.models.Section.update({'_id': assignment.section},
