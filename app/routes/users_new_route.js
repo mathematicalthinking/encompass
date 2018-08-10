@@ -1,8 +1,6 @@
 Encompass.UsersNewRoute = Encompass.AuthenticatedRoute.extend({
-  model: function (params) {
-    return Ember.RSVP.hash({
-      organizations: this.get('store').findAll('organization'),
-    });
+  model: function () {
+    return this.store.findAll('organization');
   },
   renderTemplate: function () {
     this.render('users/new');

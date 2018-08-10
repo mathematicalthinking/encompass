@@ -62,5 +62,11 @@
       </td>
     </tr>
   </table>
+
+  {{#if incorrectEmail}}
+    <p class="error-message">Invalid email address.</p>
+  {{/if}} {{#if emailExistsError}}
+    <p class="error-message">{{emailExistsError}}</p>
+  {{/if}}
   <button class='action_button' {{action 'newUser'}}>Create New User</button>
 </article>

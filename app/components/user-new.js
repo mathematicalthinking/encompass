@@ -87,7 +87,6 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
         password: password,
         name: name,
         email: email,
-        organization: organization,
         location: location,
         isStudent: isStudent,
         isAdmin: isAdmin,
@@ -119,8 +118,6 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
           console.log(err);
         });
     },
-
-
 
     checkUsername: function (keysPressed) {
       var errorMsg = 'Please enter usernames in lower case only';
