@@ -175,11 +175,7 @@ function postUser(req, res, next) {
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
-<<<<<<< HEAD
     if (user.isAdmin || !user.isStudent) {
-=======
-    if (user.isAdmin || req.body.user.isStudent) {
->>>>>>> Allow student users to be modified
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,
