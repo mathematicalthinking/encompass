@@ -4,47 +4,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
   showReport: false,
-
-
-  // sortedAnswers: function() {
-  //   if (this.get('answers')) {
-  //     return this.get('answers').sortBy('createDate').reverse();
-  //   }
-  //   return [];
-  // }.property('answers.[]'),
-
-  // priorAnswer: function() {
-  //   return this.get('sortedAnswers').get('firstObject');
-  // }.property('sortedAnswers.[]'),
-
-  isYourOwn: function() {
-    const currentUser = this.get('currentUser');
-    const creatorId = this.assignment.get('createdBy.userId');
-    return currentUser.get('userId') === creatorId;
-  }.property('assignment.id', 'currentUser.userId'),
-
-  isAnswersEmpty: function() {
-    const answers = this.get('assignmentAnswers');
-    return Ember.isEmpty(answers);
-  }.property('assignmentAnswers.[]'),
-
-  isAssignedDateLocked: function() {
-    // locked if current date is later than assigned date
-    const currentDate = new Date();
-    const assignedDate = this.assignment.get('assignedDate');
-    console.log('currentDate', currentDate);
-    console.log('assignedDate', assignedDate);
-    let x = currentDate > assignedDate;
-    console.log('x', x);
-    return currentDate > assignedDate;
-  }.property('assignment.id','isEditing'),
-
-  canDelete: Ember.computed.and('isYourOwn', 'isAnswersEmpty'),
-
-  isProblemLocked: function() {
-    //can be edited only if no submissions have been recorded yet
-    return !Ember.isEmpty(this.get('assignmentAnswers')) || this.get('isDisplaying');
-  }.property('assignmentAnswers.[]', 'isDisplaying'),
+  htmlDateFormat: 'YYYY-MM-DD',
+  displayDateFormat: "MMM Do YYYY",
 
   didReceiveAttrs: function() {
     if (this.get('showReport')) {
@@ -52,7 +13,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     }
     const assignment = this.assignment;
     if (this.assignment) {
-      let dateTime = 'YYYY-MM-DD';
+      let dateTime = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
       this.set('formattedDueDate', moment(dueDate).format(dateTime));
@@ -92,6 +53,54 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       });
     }
   },
+
+  isYourOwn: function() {
+    const currentUserId = this.get('currentUser.id');
+    const creatorId = this.assignment.get('createdBy.id');
+    return currentUserId === creatorId;
+  }.property('assignment.id'),
+
+  isDirty: function() {
+    const answers = this.get('assignmentAnswers');
+    return !Ember.isEmpty(answers);
+  }.property('assignmentAnswers.[]'),
+
+  isClean: Ember.computed.not('isDirty'),
+
+  canDelete: function() {
+    const isAdmin = this.get('currentUser.isAdmin');
+    const isClean = this.get('isClean');
+    const isYourOwn = this.get('isYourOwn');
+
+    return isAdmin || (isClean && isYourOwn);
+  },
+
+  canEdit: function() {
+    const isAdmin = this.get('currentUser.isAdmin');
+    const isClean = this.get('isClean');
+    const isYourOwn = this.get('isYourOwn');
+
+    return isAdmin || (isClean && isYourOwn);
+  },
+  isReadOnly: Ember.computed.not('canEdit'),
+
+  isBeforeAssignedDate: function() {
+    // true if assignedDate is in future
+    const currentDate = new Date();
+    const assignedDate = this.assignment.get('assignedDate');
+    return currentDate < assignedDate;
+  }.property('assignment.id', 'assignment.assignedDate'),
+
+  canEditDate: function() {
+    const isAdmin = this.get('currentUser.isAdmin');
+    const canEdit = this.get('canEdit');
+    const isBeforeAssignedDate = this.get('isBeforeAssignedDate');
+    return isAdmin || (canEdit && isBeforeAssignedDate);
+  },
+
+  isDateLocked: Ember.computed.not('canEditDate'),
+
+
 
   actions: {
     editAssignment: function() {
