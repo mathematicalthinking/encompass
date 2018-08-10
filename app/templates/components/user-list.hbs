@@ -1,7 +1,11 @@
 {{#if currentUser.isAdmin}}
   {{user-list-admin currentUser=currentUser users=users organization=organiztions}}
 {{else}}
-  {{user-list-teacher currentUser=currentUser users=users organization=organiztions}}
+  {{#if currentUser.isStudent}}
+    <div class="centered">FORBIDDEN</div>
+  {{else}}
+    {{user-list-teacher currentUser=currentUser users=users organization=organiztions}}
+  {{/if}}
 {{/if}}
 
 <div class="list-outlet users">
