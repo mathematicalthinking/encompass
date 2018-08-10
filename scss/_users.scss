@@ -10,6 +10,9 @@
     }
     button {
       border: none;
+      &:focus {
+        outline: none;
+      }
       #new-user-link {
         color: white;
         background: $accent-color;
