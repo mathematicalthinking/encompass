@@ -1,54 +1,59 @@
 <section class="assignment-info-teacher">
-    <form id="assignmentdetails">
-      <form id='assignmentinfoform' class='properForm'>
-            <fieldset>
-              <ol>
-                {{#if isProblemLocked}}
-                  <li class="assignment-info">
-                    <label for="problem">Problem</label>
-                    {{input name="problem" id="problem" type="text" value=assignment.problem.title disabled=isProblemLocked }}
-                  </li>
-                {{else}}
-                  <li>
-                    <label for="problem">Problem</label>
-                    {{my-select selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem))}}
-                    {{input required=true type="hidden" value=problem}}
-                </li>
-                {{/if}}
-                {{#if isDisplaying}}
-                  <li class= "assignment-info">
-                    <label for="section">Section</label>
-                    {{input name="section" id="section" type="text" value=assignment.section.name disabled=isDisplaying }}
-                  </li>
-                {{else}}
-                  <li>
-                    <label for="section">Section</label>
-                    {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection))}}
-                    {{input required=true type="hidden" value=selectedsection}}
-                </li>
-                {{/if}}
-                  <li class="assignment-info">
-                    <label for="assignedDate">Date Assigned</label>
-                      {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDisplaying}}
-                  </li>
+  {{#if isEditing}}
+    <form id='assignment-info-form' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="problem">Problem</label>
+            {{my-select selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
+            {{input required=true type="hidden" value=problem}}
+          </li>
+          <li>
+            <label for="section">Section</label>
+            {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
+            {{input required=true type="hidden" value=selectedsection}}
+        </li>
+        <li class="assignment-info">
+          <label for="assignedDate">Assigned Date</label>
+            {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDateLocked}}
+        </li>
+        <li class="assignment-info">
+          <label for="dueDate">Due Date</label>
+          {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=isReadOnly}}
+        </li>
+        </ol>
+      </fieldset>
+    </form>
+    <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
+    <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
+  {{/if}}
+  {{#if isDisplaying}}
+    <section id='assignment-info' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="problem">Problem Title</label>
+            <p class="assignment-info">{{problem.title}}</p>
+          </li>
+          <li>
+            <label for="section">Section Name</label>
+            <p class="assignment-info">{{assignment.section.name}}</p>
+          </li>
+          <li>
+            <label for="assignedDate">Assigned Date</label>
+            <p class="assignment-info">{{format-date assignment.assignedDate displayDateFormat}}</p>
+          </li>
+          <li>
+            <label for="dueDate">Due Date</label>
+            <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
+          </li>
+        </ol>
+      </fieldset>
+    </section>
+    <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+    <button class="action_button" {{action 'deleteAssignment'}}>Delete Assignment</button>
+  {{/if}}
 
-                <li class={{if isDisplaying "assignment-info"}}>
-                  <label for="dueDate">Due Date</label>
-                  {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate disabled=isDisplaying}}
-                </li>
-              </ol>
-            </fieldset>
-          </form>
-
-
-          {{#if isEditing}}
-            <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
-            <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
-          {{else}}
-            <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
-            <button class="action_button" {{action 'deleteAssignment'}}>Delete Assignment</button>
-          {{/if}}
-       </form>
   </section>
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
