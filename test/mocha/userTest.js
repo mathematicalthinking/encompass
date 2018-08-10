@@ -141,7 +141,7 @@ describe('User CRUD operations', function() {
 
   /** PUT addAssignment **/
   describe('/PUT add assignment', () => {
-    it('should add an assignment to the user steve', done => {
+    xit('should add an assignment to the user steve', done => {
       const url = baseUrl + 'addAssignment/' + fixtures.user._id;
       agent
       .put(url)
@@ -157,7 +157,7 @@ describe('User CRUD operations', function() {
 
   /** PUT removeAssignment **/
   describe('/PUT remove assignment', () => {
-    it('should remove the assignment we just added', done => {
+    xit('should remove the assignment we just added', done => {
       const url = baseUrl + 'removeAssignment/' + fixtures.user._id;
       agent
       .put(url)

@@ -30,9 +30,76 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
+  // teacher needs to be able to access student's answers
+  // check if answer is in one of teacher's assignments
+ function accessibleAnswers(user, ids) {
+  let teacherSections;
+
+  if (user.isAdmin) {
+    if (ids) {
+      return {
+        _id: {$in : ids},
+        isTrashed: false
+      };
+    }
+    return { isTrashed: false };
+  }
+  // Students
+  if (user.isStudent) {
+    if (ids) {
+      return {
+        createdBy: user,
+        _id: { $in: ids },
+        isTrashed: false,
+      };
+    }
+    return {
+      createdBy: user,
+      isTrashed: false,
+    };
+  }
+    // TEACHERS
+    if (user.actingRole === 'teacher') {
+      teacherSections = user.sections.map((section) => {
+        if (section.role === 'teacher') {
+          return section.sectionId;
+        }
+      });
+      if (ids) {
+        return {
+          section: {$in: teacherSections},
+          _id: { $in: ids },
+          isTrashed: false
+        };
+      }
+      return {
+        section: {$in: teacherSections},
+        isTrashed: false
+      };
+
+
+    }
+    // else actingRole must be student
+    return {
+      createdBy: user,
+        _id: { $in: ids },
+        isTrashed: false,
+      };
+}
+
 const getAnswers = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+  let ids;
+  let criteria;
+
+  // array of oids
+  if (req.query.ids) {
+    ids = req.query.ids;
+    criteria = accessibleAnswers(user, ids);
+  } else {
+    criteria = accessibleAnswers(user);
+  }
+
   models.Answer.find(criteria)
   .exec((err, answers) => {
     if (err) {
@@ -76,12 +143,27 @@ const getAnswer = (req, res, next) => {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-
-const postAnswer = (req, res, next) => {
+/* jshint ignore:start */
+ const postAnswer = async function(req, res, next) {
   const user = userAuth.requireUser(req);
-  // what permissions are needed to post and answer
+  // Add permission checks here
   const answer = new models.Answer(req.body.answer);
-  answer.createdBy = user;
+  const uploadedFileId = answer.uploadedFileId;
+  console.log('uploadedFileId', uploadedFileId);
+  // use uploadedFileId to get image data and set on record
+  try {
+    if (uploadedFileId) {
+      console.log('uploadedFileId', uploadedFileId);
+      const image = await models.Image.findById(uploadedFileId);
+      console.log('image', image);
+      //answer.imageSrc = `<img src="${image.data}" alt="${imageAlt}">`
+      answer.imageData = image.data;
+    }
+  }catch(err) {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  }
+
   answer.createDate = Date.now();
   answer.save((err, doc) => {
     if (err) {
@@ -140,3 +222,4 @@ module.exports.get.answers = getAnswers;
 module.exports.get.answer = getAnswer;
 module.exports.post.answer = postAnswer;
 module.exports.put.answer = putAnswer;
+/* jshint ignore:end */

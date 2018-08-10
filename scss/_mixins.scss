@@ -55,3 +55,7 @@
   font-weight: $light-font-weight;
 }
 
+@mixin success-message {
+  color: $success-color;
+  font-weight: $light-font-weight;
+}

@@ -50,10 +50,11 @@ function sendUsers(req, res, next) {
 
   if(req.query.alias === 'current') {
     // if all they wanted was the current user, fine
-    utils.sendResponse(res, {user: [user]});
-    return next();
+    return utils.sendResponse(res, {user: [user]});
+    //return next();
   }
   var criteria = utils.buildCriteria(req);
+
   if(req.query.name) { //if we're doing a search GET /users/?name=xyz
     var name = req.query.name;
     var username = name.username;
@@ -61,12 +62,24 @@ function sendUsers(req, res, next) {
     if (username) {
       username = username.replace(/\W+/g, "");
       regex = new RegExp(username, 'i');
-      criteria = { username: regex };
+      criteria = {
+        username: regex,
+        isTrashed: false
+      };
     } else {
       name = name.replace(/\W+/g, "");
       regex = new RegExp(name, 'i');
-      criteria = { name: regex };
+      criteria = {
+        name: regex,
+        isTrashed: false
+      };
     }
+  } else if (req.query.ids) { //if we're doing a search GET /users/?ids=
+    const ids = req.query.ids;
+    criteria = {
+      _id: {$in: ids},
+      isTrashed: false
+    };
   }
   models.User.find(criteria)
     .lean()
@@ -154,12 +167,13 @@ function postUser(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
   function putUser(req, res, next) {
-
+    console.log('req.body in put user', req.body);
     /* These fields are uneditable */
     delete req.body.user.username;
     delete req.body.user.createDate;
     delete req.body.user.key;
 
+    //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
     if (user.isAdmin || !user.isStudent) {
       models.User.findByIdAndUpdate(

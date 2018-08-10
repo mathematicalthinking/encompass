@@ -13,8 +13,16 @@ Encompass.TypeAheadComponent = Ember.Component.extend({
     window.autocomplete(document.getElementById("organization"), byPath);
   },
 
-  getValue: function() {
-    let text = this.get('textValue');
+  getValue: function(optionalText) {
+    console.log('running getVal');
+    let text;
+    if (typeof optionalText === 'string') {
+      console.log('running get with arg', optionalText);
+      text = optionalText;
+    } else {
+      text = this.get('textValue');
+    }
+
     if (!text) {
       this.set('selectedValue', '');
       return '';
@@ -39,4 +47,26 @@ Encompass.TypeAheadComponent = Ember.Component.extend({
     this.set('selectedValue', text);
     return text;
   }.observes('textValue'),
+
+  getText: function() {
+    let $org = document.getElementById('organization');
+    const val = $org.value;
+    if (typeof val ==='string') {
+      this.getValue(val);
+    }
+  },
+
+  actions: {
+    toggleFocus: function(type) {
+      console.log('toggling focus', type);
+      if (type === 'out') {
+        let $org = document.getElementById('organization');
+
+        let getTextfn = this.getText.bind(this);
+        setTimeout(getTextfn, 1000);
+      }
+    },
+
+
+  }
 });

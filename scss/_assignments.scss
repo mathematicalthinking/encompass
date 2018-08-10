@@ -1,0 +1,165 @@
+//general
+.success-message {
+  @include success-message;
+  margin: 20px 0 20px 0;
+}
+
+//assignment-list hbs
+#assignmentlistheader {
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
+}
+
+section.assignmentlist {
+  h2 {
+    color: $accent-color;
+    font-weight: bold;
+  }
+  #assignment-new-link {
+    color: $accent-color;
+    font-weight: bold;
+  }
+}
+
+section.assignment-info-student {
+  p {
+    font-size: 1em;
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+  }
+  label {
+    width: 20%;
+    font-size: 1em;
+    padding: 12px 20px;
+    color: black;
+  }
+  .action_button {
+    padding: 12px 20px;
+  }
+  button.action_button {
+    margin: 8px 0;
+    padding: 12px 20px;
+  }
+}
+
+
+div.past-submissions {
+  display: flex;
+  width: 800px;
+  section.past-submissions-list {
+    width: 50%;
+    display: inline-block;
+    p {
+      font-size: 1em;
+      padding: 5px;
+      margin: 8px 0px;
+    }
+    ol {
+      li {
+        padding: 6px 0 6px 10px;
+
+        &.highlight {
+          font-weight: $bold-font-weight;
+            background-color: lighten($background-color, 5%);
+        }
+      }
+    }
+  }
+
+  section.past-answer-view {
+    width: 50%;
+    display: inline-block;
+  }
+  div#answer-info {
+    display: inline-block;
+    width: 100%;
+    margin-top: 0px;
+  }
+
+}
+
+section.assignment-info-teacher {
+    #assignment-info-form {
+      div.mySelect {
+        display: inline-block;
+        padding: 12px 0px;
+        margin: 8px 0;
+        font-size: 1em;
+        width: 70%;
+
+        select {
+          width: 100%;
+          font-size: 1em;
+          margin-left: 0px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          background: none;
+          &::placeholder {
+            color: $primary-font-color;
+          }
+        }
+
+      }
+      input[type=text], input[type=date] {
+        font-size: 1em;
+        color: $primary-font-color;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+      label {
+        width: 20%;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+      }
+      p.assignment-info {
+        input[type=text], input[type=date] {
+          border:none;
+        }
+      }
+    }
+    #assignment-info {
+      .assignment-info {
+        font-size: 1em;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+
+      }
+      label {
+        width: 20%;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+      }
+      .action_button {
+        padding: 12px 20px;
+      }
+    }
+    button.action_button {
+      margin: 8px 0;
+      padding: 12px 20px;
+    }
+}

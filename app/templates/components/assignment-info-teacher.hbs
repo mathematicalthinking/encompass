@@ -1,0 +1,60 @@
+<section class="assignment-info-teacher">
+  {{#if isEditing}}
+    <form id='assignment-info-form' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="problem">Problem</label>
+            {{my-select selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
+            {{input required=true type="hidden" value=problem}}
+          </li>
+          <li>
+            <label for="section">Section</label>
+            {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
+            {{input required=true type="hidden" value=selectedsection}}
+        </li>
+        <li class="assignment-info">
+          <label for="assignedDate">Assigned Date</label>
+            {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDateLocked}}
+        </li>
+        <li class="assignment-info">
+          <label for="dueDate">Due Date</label>
+          {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate}}
+        </li>
+        </ol>
+      </fieldset>
+    </form>
+    <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
+    <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
+  {{/if}}
+  {{#if isDisplaying}}
+    <section id='assignment-info' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="problem">Problem Title</label>
+            <p class="assignment-info">{{problem.title}}</p>
+          </li>
+          <li>
+            <label for="section">Section Name</label>
+            <p class="assignment-info">{{assignment.section.name}}</p>
+          </li>
+          <li>
+            <label for="assignedDate">Assigned Date</label>
+            <p class="assignment-info">{{format-date assignment.assignedDate displayDateFormat}}</p>
+          </li>
+          <li>
+            <label for="dueDate">Due Date</label>
+            <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
+          </li>
+        </ol>
+      </fieldset>
+    </section>
+    <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+    <button class="action_button" {{action 'deleteAssignment'}}>Delete Assignment</button>
+  {{/if}}
+
+  </section>
+  {{#if showReport}}
+    {{assignment-report assignment=assignment students=studentList }}
+  {{/if}}

@@ -1,0 +1,46 @@
+<header id="assignmentnewheader">
+  <h2>Create New Assignment</h2>
+  <div class="clear"></div>
+</header>
+
+
+  <section class="third submissions">
+    <form id='newassignmentform' class='properForm'>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="section">Section</label>
+            {{my-select selectedSection=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
+            {{input required=true type="hidden" value=selectedSection}}
+          </li>
+          <li>
+            <label for="text">Problem</label>
+            {{my-select isRequired=true selectedProblem=selectedProblem prompt="Select a problem." content=problemList optionLabelPath="title" action=(action (mut selectedProblem))}}
+            {{input required=true type="hidden" value=selectedProblem}}
+          </li>
+          <li>
+            <label for="additionalInfo">Date Assigned</label>
+            {{input id="assignedDate" type="date" value=assignedDate required=true}}
+          </li>
+          <li>
+            <label for="dueDate">Due Date</label>
+            {{input id="dueDate" type="date" value=dueDate required=true}}
+          </li>
+        </ol>
+      </fieldset>
+      {{#if isMissingRequiredFields}}
+        <p class="error-message">Please provide all required fields.</p>
+      {{/if}}
+    </form>
+  </section>
+  <div style="clear: left"></div>
+  <section class="submit">
+    <button class="action_button" {{action 'validate'}}>
+      Create Assignment
+    </button>
+  </section>
+
+  {{#if createdAssignmentError}}
+    <p>{{createAssignmentError}}</p>
+  {{/if}}
+
