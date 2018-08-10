@@ -13,11 +13,13 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     }
     const assignment = this.assignment;
     if (this.assignment) {
-      let dateTime = this.get('htmlDateFormat');
+      let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
-      this.set('formattedDueDate', moment(dueDate).format(dateTime));
-      this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
+      console.log('dueDate', dueDate);
+      console.log('assignedDate', assignedDate);
+      this.set('formattedDueDate', moment(dueDate).format(dateFormat));
+      this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
       // get sections
       return this.store.findAll('section')
@@ -100,7 +102,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
   isDateLocked: Ember.computed.not('canEditDate'),
 
-
+  getMongoDate: function(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    return new Date(dateMoment);
+  },
 
   actions: {
     editAssignment: function() {
@@ -124,6 +133,12 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       const assignment = this.get('assignment');
       const values = ['section', 'problem', 'assignedDate', 'dueDate'];
 
+      const htmlDueDate = this.get('formattedDueDate');
+      const htmlAssignedDate = this.get('formattedAssignedDate');
+
+      this.set('dueDate', this.getMongoDate(htmlDueDate));
+      this.set('assignedDate', this.getMongoDate(htmlAssignedDate));
+
       for (let value of values) {
         assignment.set(value, this.get(value));
       }
@@ -139,7 +154,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     },
     stopEditing: function() {
       this.set('isEditing', false);
-    }
+    },
   }
-
 });
