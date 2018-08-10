@@ -1,0 +1,76 @@
+<h3>Create a New User</h3>
+<article class="user">
+  <table class="values rows">
+    <tr>
+      <th>Label</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Username</td>
+      <td>
+        {{input type="text" value=username}}
+      </td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td>
+        {{input type="password" value=password}}
+      </td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>
+        {{input type="text" value=name}}
+      </td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td>
+        {{input type="text" value=email}}
+      </td>
+    </tr>
+    <tr>
+      <td>Organization</td>
+      <td>
+        {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
+      </td>
+    </tr>
+    <tr>
+      <td>Location</td>
+      <td>
+        {{input type="text" value=location}}
+      </td>
+    </tr>
+    <tr>
+      <td>Student</td>
+      <td>
+        {{input type="checkbox" checked=isStudent value=isStudent}}
+      </td>
+    </tr>
+    {{#if currentUser.isAdmin}}
+    <tr>
+      <td>Admin</td>
+      <td>
+        {{input type="checkbox" checked=isAdmin value=isAdmin}}
+      </td>
+    </tr>
+    {{/if}}
+    <tr>
+      <td>Authorized</td>
+      <td>
+        {{input type="checkbox" checked=isAuthorized name=isAuthorized}}
+      </td>
+    </tr>
+  </table>
+
+  {{#if usernameExists}}
+    <p class="error-message">Username already exists</p>
+  {{/if}}
+
+  {{#if emailExistsError}}
+    <p class="error-message">Email address has already been used</p>
+  {{/if}}
+
+  <button class='action_button' {{action 'newUser'}}>Create New User</button>
+</article>
+
