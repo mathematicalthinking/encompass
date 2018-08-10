@@ -7,7 +7,7 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   explanation: DS.attr('string'),
   section: DS.belongsTo('section'),
   isSubmitted: DS.attr('boolean'),
-  students: DS.belongsTo('user'),
+  students: DS.hasMany('users', {inverse: null}),
   uploadedFileId: DS.attr('string'),
   priorAnswer: DS.belongsTo('answer'),
   assignment: DS.belongsTo('assignment', {async: true}),
