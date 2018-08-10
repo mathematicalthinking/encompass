@@ -1,7 +1,7 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-info',
   isEditing: false,
-  isAuth: null,
+  authorized: null,
 
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
@@ -31,12 +31,21 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       return 'no';
     }.property('user.seenTour'),
 
+    authorizedBy: function () {
+      let isAuth = this.get('user.isAuthorized');
+      let authBy = this.get('user.authorizedBy');
+      if (isAuth && !authBy) {
+        let user = this.get('user');
+        user.set('authorizedBy', this.get('currentUser'));
+      }
+    }.observes('user.isAuthorized'),
+
     actions: {
       editUser: function () {
         this.set('isEditing', true);
         let user = this.get('user');
         let isAuth = user.get('isAuthorized');
-        this.set('isAuth', isAuth);
+        this.set('authorized', isAuth);
       },
 
       saveUser: function () {
@@ -46,6 +55,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
 
+      //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save();
         this.set('isEditing', false);
       },

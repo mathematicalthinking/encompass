@@ -84,12 +84,14 @@
   margin: 0 auto;
   width: 70%;
   h3 {
-    text-transform: capitalize;
     margin: 20px 0 30px 20px;
     font-size: 1.4em;
     color: $primary-font-color;
     font-weight: bold;
     text-align: center;
+    .username {
+      text-transform: capitalize;
+    }
   }
   table {
     margin: 0 auto;

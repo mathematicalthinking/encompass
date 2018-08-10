@@ -1,4 +1,4 @@
-<h3>{{user.username}}'s Account Details</h3>
+<h3><span class="username">{{user.username}}</span>'s Account Details</h3>
 
 <article class="user">
   <table class="values rows">
@@ -73,6 +73,18 @@
       <td>Last Seen</td>
       <td>{{lastSeenDate}}</td>
     </tr>
+    {{#if user.lastModifiedBy}}
+    <tr>
+      <td>Last Modified</td>
+      <td>{{user.lastModifiedBy.username}} on {{user.lastModifiedDate}}</td>
+    </tr>
+    {{/if}}
+    {{#if user.isStudent}}
+    <tr>
+      <td>Student</td>
+      <td>Yes</td>
+    </tr>
+    {{/if}}
     <tr>
       <td>Admin</td>
       <td>
@@ -95,6 +107,12 @@
           {{/if}}
         </td>
       </tr>
+      {{#if user.authorizedBy}}
+      <tr>
+        <td>Authorized By</td>
+        <td>{{user.authorizedBy.username}}</td>
+      </tr>
+      {{/if}}
     {{else}}
       <tr>
         <td>Request Reason</td>
@@ -107,7 +125,7 @@
           <td>Authorize</td>
           <td>
             {{#if currentUser.isAdmin}}
-              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
+              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
             {{else}}
               {{user.isAuthorized}}
             {{/if}}
