@@ -93,12 +93,20 @@
   }
   table {
     margin: 0 auto;
-    min-width: 70%;
+    min-width: 60%;
     text-align: center;
-    td {
+    background-color: #efefef;
+    td, th {
       padding: 10px;
-      padding-left: 0;
-      margin-left: 0;
+      text-align: left;
+      margin: 0 auto;
+      padding-left: 20px;
+      border-left: 1px solid $primary-font-color;
+      border-right: 1px solid $primary-font-color;
+      width: 150px;
+    }
+    th {
+      border-top: 1px solid $primary-font-color;
     }
   }
   button.action_button {
