@@ -47,43 +47,29 @@
               {{/each}}
           </li>
 
-
-
-            {{!--
-             <label for="students">Students - "TO DO ADD/EDIT/REMOVE"
-                <button class="_button" {{action 'toggleAddExistingStudent'}} style=""> ADD/DONE </button>
-             </label>
-
-               {{#if isAddingExistingStudents}}
-                  <label for="addusername">Username</label>
-                  {{input id="addExistingStudent" type="text" value=studentUsername placeholder="add-exiting-student" action="checkError" on="key-down"}}
-                  <button class="action_button" {{action 'addExistingStudent'}} style=""> ADD </button>
-                  {{!-- <button class="action_button" {{action 'doneAddingStudent'}}>Done</button>
-                {{/if}} --}}
             <li class="studentslist">
             {{#each section.students as |student|}}
             <ol class="c"> {{student.username}}
-
-             <button class="student_button" {{action 'removeStudent'}} style="">Remove</button>
-              {{!-- <button class="student_button" {{action 'editStudent'}} style="">Change Password[on hold]</button> --}}
+             <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
             </ol>
             {{/each}}
           </li>
         </ul>
       </fieldset>
     </form>
+
   {{#if isAddingStudents}}
   {{else}}
   <section class="submit">
     <button class="action_button" {{action 'addNewStudents'}} style="margin-right: 30px">
-      Add Students
+      Add New Students
     </button>
+
     <button class="action_button" id="editSection" {{action 'editSection'}} style="margin-right: 30px">
       Edit Section
     </button>
   </section>
   {{/if}}
-
 
   {{#if isAddingStudents}}
   <form id='createSectionForm' class='properForm'>
@@ -97,7 +83,7 @@
 
 
       <label for="addusername">Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="username" action="checkError" on="key-down"}}
+      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}}
       {{#unless usingDefaultPassword}}
 
       <label for="addpassword">Password</label>
@@ -118,18 +104,21 @@
         {{/if}}
       </button>
     {{/if}}
-    </fieldset>
-    {{!--<label for="title"> Students</label> --}}
 
-      <button class="action_button" {{action 'doneAdding'}}>Done</button>
-      {{#if usernameAlreadyExists}}
-      <p class="error-message">Sorry, that username already exists.</p>
-      {{/if}} {{#if isMissingUsername}}
-      <p class="error-message">Username required.</p>
-      {{/if}} {{#if isMissingPassword}}
-      <p class="error-message">Please provide a password.</p>
+         {{#if doyouwanttoaddexistinguser}}
+      <p class="error-message"> {{studentUsername}} belongs to the same organization. Do you want to add {{studentUsername}} to this section?
+      <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
+      <button class="action_button" {{action 'exitaddexistingusername'}} style="margin-right: 10px"> no </button>
+      </p>
       {{/if}}
+
+    </fieldset>
+      <button class="action_button" {{action 'doneAdding'}}>Done</button>
   </form>
+
+    {{#if usernameAlreadyExists}}
+      <p class="error-message"> Can not add username:{{studentUsername}} to this section.</p>
+      {{/if}}
 
   {{#if studentsNotEmpty}}
   <div class="studentList">
@@ -144,6 +133,26 @@
   {{/if}} {{/if}}
 
 {{/if}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {{!-- {{#if isEditingStudents}}
   <form id='editStudentForm' class='properForm'>

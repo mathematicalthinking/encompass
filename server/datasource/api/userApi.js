@@ -161,7 +161,7 @@ function postUser(req, res, next) {
     delete req.body.user.key;
 
     var user = userAuth.requireUser(req);
-    if (user.isAdmin) {
+    if (user.isAdmin || !user.isStudent) {
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,
