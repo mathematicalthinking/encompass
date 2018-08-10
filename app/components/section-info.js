@@ -10,13 +10,27 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isAddingStudents: false,
   usingDefaultPassword: true,
   usernameAlreadyExists: null,
+  doyouwanttoaddexistinguser: null,
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
   showingPassword: false,
   fieldType: 'password',
+  isEditingStudents: false,
+  removeObject: null,
+  organization: null,
+  isStudent: false,
 
 
+  didReceiveAttrs: function () {
+    return this.section.get('organization').then((org) => {
+      console.log(('organization', org));
+      this.set('organization', org);
+    })
+    .catch((err) => {
+      console.log('error getting org', err);
+    });
+  },
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -27,20 +41,55 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return showing;
   }),
 
-  // //Array containing students in a section/class
-  // studentsNotEmpty: Ember.computed('createdStudents.[]', function () {
-  //   var createdStudents = this.get('createdStudents');
-  //   if (createdStudents === null) {
-  //     return false;
-  //   }
-  //   console.log('createdStudents', createdStudents);
-  //   console.log('len', createdStudents.length);
-  //   return createdStudents.get('length') > 0;
-  // }),
-
   actions: {
     addNewStudents: function () {
       this.set('isAddingStudents', true);
+    },
+
+
+    doyouwanttoaddexistinguser: function () {
+      this.set('doyouwanttoaddexistinguser', false);
+    },
+    exitaddexistingusername: function () {
+      this.set('doyouwanttoaddexistinguser', false);
+      this.set('studentUsername', '');
+    },
+
+    addExistingStudent: function ()  {
+      let student = this.get('existingUser');
+      let section = this.get('section');
+      let students = section.get('students');
+
+      let sectionObj = {
+        sectionId: section.id,
+        role: 'student'
+      };
+
+      return this.store.findRecord('user', student.id).then((student) => {
+        console.log('student rec', student);
+        students.pushObject(student);  //add student into students list
+        section.save().then((section) => {
+          console.log('saved section', section);
+
+          student.get('sections').addObject(sectionObj);
+          student.save().then((rec) => {
+            console.log('saved student', rec);
+            this.set('studentUsername', '');
+          });
+        });
+     });
+
+    },
+
+    removeStudent: function (user) {
+      let section = this.get('section');
+      let students = section.get('students');
+      students.removeObject(user);
+
+      // Save to Database
+      section.save().then((section) => {
+        this.set('removedStudent', true);
+      });
     },
 
     showPassword: function () {
@@ -53,14 +102,18 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('showingPassword', false);
         this.set('fieldType', 'password');
       }
-
     },
 
     createStudent: function () {
       var that = this;
+      let organization = this.get('organization');
+      var name = this.get('studentName');
       var username = this.get('studentUsername');
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
+      var sectionId = this.get('section').id;
+      var sectionRole = 'student';
+      var currentUser = that.get('currentUser');
 
       if (usingDefaultPassword) {
         password = this.get('defaultPassword');
@@ -77,31 +130,45 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       var createUserData = {
+        name: name,
         username: username,
         password: password,
-        isStudent: true
+        isStudent: true,
+        sectionId: sectionId,
+        sectionRole: sectionRole,
+        createdBy: currentUser.id
       };
+
+      if (organization) {
+        createUserData.organization = organization.id;
+      }
+
       return Ember.$.post({
-          url: '/auth/signup',
-          data: createUserData
-        })
+        url: '/auth/signup',
+        data: createUserData
+      })
         .then((res) => {
+          console.log('res', res);
           if (res.message === 'Username already exists') {
             that.set('usernameAlreadyExists', true);
-          } else {
+          } else if(res.message === 'Can add existing user') {
+            this.set('doyouwanttoaddexistinguser', true);
+            this.set('existingUser', res.user);
+          }
+          else {
             var userId = res._id;
             var section = this.get('section');
             var students = section.get('students');
             var sectionPassword = section.get('sectionPassword');
             console.log('section password is currently', sectionPassword);
-
             return this.store.findRecord('user', userId)
               .then((user) => {
-                students.pushObject(user);
-                section.save();
-                this.set('studentUsername', '');
+                students.pushObject(user);   //add student to students aray
+                section.save();  //save section
+                this.set('name', '');   //after save clear fields
+                this.set('studentUsername', '');   //after save clear fields
                 if (!usingDefaultPassword) {
-                  this.set('studentPassword', '');
+                  this.set('studentPassword', '');   //after save clear fields
                 }
               })
               .catch((err) => {
@@ -114,10 +181,13 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         });
     },
 
-    // insertStudent: function () {
-    //   let giveStudent = this.get('students');
-    //   this.set('studentUsername', giveStudent.get('students'));
-    // },
+    toggleAddExistingStudent: function () {
+      if (this.get('isAddingExistingStudents') !== true) {
+        this.set('isAddingExistingStudents', true);
+      } else {
+        this.set('isAddingExistingStudents', false);
+      }
+    },
 
     doneAdding: function () {
       this.set('isAddingStudents', false);
@@ -146,6 +216,10 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       if (this.usernameAlreadyExists) {
         this.set('usernameAlreadyExists', false);
+      }
+
+      if (this.doyouwanttoaddexistinguser) {
+        this.set('doyouwanttoaddexistinguser', false);
       }
 
       if (this.isMissingPassword) {

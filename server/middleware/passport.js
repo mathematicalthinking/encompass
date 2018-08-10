@@ -85,6 +85,14 @@ module.exports = (passport) => {
           }
 
           if (user) {
+            console.log('user org', user.organization);
+            console.log('req.body', req.body);
+            if (JSON.stringify(user.organization) === JSON.stringify(req.user.organization) || req.user.isAdmin) {
+              return next(null, false, {
+                message: "Can add existing user",
+                user: user
+              });
+            }
             return next(null, false, {
               message: "Username already exists"
             });
@@ -102,7 +110,11 @@ module.exports = (passport) => {
               }
             });
           }
-
+            console.log('req.body.section', req.body);
+            let userSection = {
+              sectionId: req.body.sectionId,
+              role: req.body.sectionRole
+            };
           const {
             name,
             email,
@@ -111,7 +123,8 @@ module.exports = (passport) => {
             username,
             password,
             requestReason,
-            isStudent
+            isStudent,
+            createdBy
           } = req.body;
           const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
           const newUser = new User({
@@ -123,8 +136,11 @@ module.exports = (passport) => {
             password: hashPass,
             isAuthorized: true,
             requestReason,
-            isStudent
+            createdBy,
+            isStudent,
+            sections: [userSection]
           });
+          console.log('newUSer', newUser);
 
           newUser.save((err) => {
             if (err) {
