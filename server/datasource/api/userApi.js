@@ -167,14 +167,15 @@ function postUser(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
   function putUser(req, res, next) {
-
+    console.log('req.body in put user', req.body);
     /* These fields are uneditable */
     delete req.body.user.username;
     delete req.body.user.createDate;
     delete req.body.user.key;
 
+    //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
-    if (user.isAdmin) {
+    if (user.isAdmin || req.body.user.isStudent) {
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,
