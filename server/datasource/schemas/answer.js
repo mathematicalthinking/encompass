@@ -14,15 +14,17 @@ var AnswerSchema = new Schema({
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   //====
-  student: { type: ObjectId, ref: 'User' },
+  //student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem' },
+  assignment: {type: ObjectId, ref: 'Assignment'},
   answer: { type: String },
   explanation: { type: String },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
-  uploadedFile: { type: String},
-  priorAnswerId: { type: String},
+  uploadedFileId: { type: String},
+  imageData: {type: String},
+  priorAnswer: { type: ObjectId, ref: 'Answer'},
   isSubmitted: { type: Boolean }
 }, { versionKey: false });
 
@@ -55,34 +57,51 @@ var AnswerSchema = new Schema({
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
-// AnswerSchema.post('save', function (Answer) {
-//   var update = { $addToSet: { 'Answers': Answer } };
-//   if (Answer.isTrashed) {
-//     var AnswerIdObj = mongoose.Types.ObjectId(Answer._id);
-//     /* + If deleted, all references are also deleted */
-//     update = { $pull: { 'Answers': AnswerIdObj } };
-//   }
+AnswerSchema.post('save', function (Answer) {
+  var update = { $addToSet: { 'answers': Answer } };
+  if (Answer.isTrashed) {
+    var AnswerIdObj = mongoose.Types.ObjectId(Answer._id);
+    /* + If deleted, all references are also deleted */
+    update = { $pull: { 'Answers': AnswerIdObj } };
+  }
 
-//   if (Answer.workspace) {
-//     mongoose.models.Workspace.update({ '_id': Answer.workspace },
-//       update,
-//       function (err, affected, result) {
-//         if (err) {
-//           throw new Error(err.message);
-//         }
-//       });
-//   }
+  if (Answer.createdBy) {
+    console.log('in post answer hook');
+    var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
+    mongoose.models.User.update({ '_id': userIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected users', affected);
+      });
+  }
 
-//   if (Answer.submission) {
-//     mongoose.models.Submission.update({ '_id': Answer.submission },
-//       update,
-//       function (err, affected, result) {
-//         if (err) {
-//           throw new Error(err.message);
-//         }
-//       });
-//   }
+  if (Answer.assignment) {
+    var assignmentIdObj = mongoose.Types.ObjectId(Answer.assignment);
+    mongoose.models.Assignment.update({ '_id': assignmentIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected assignments', affected);
+      });
+  }
 
-// });
+  if (Answer.problem) {
+    var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
+    mongoose.models.Problem.update({ '_id': problemIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('affected problems', affected);
+      });
+  }
+
+});
 
 module.exports.Answer = mongoose.model('Answer', AnswerSchema);

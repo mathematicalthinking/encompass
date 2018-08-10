@@ -22,6 +22,7 @@ var SectionSchema = new Schema({
   teachers: [{ type: ObjectId, ref: 'User' }],
   students: [{ type: ObjectId, ref: 'User' }],
   problems: [{ type: ObjectId, ref: 'Problem' }],
+  assignments: [{type: ObjectId, ref: 'Assignment'}]
 }, { versionKey: false });
 
 /**
@@ -53,34 +54,35 @@ SectionSchema.pre('save', function (next) {
 //   * ## Post-Validation
 //   * After saving we must ensure (synchonously) that:
 //   */
-// SectionSchema.post('save', function (Section) {
-//   var update = { $addToSet: { 'Sections': Section } };
-//   if (Section.isTrashed) {
-//     var SectionIdObj = mongoose.Types.ObjectId(Section._id);
-//     /* + If deleted, all references are also deleted */
-//     update = { $pull: { 'Sections': SectionIdObj } };
-//   }
+SectionSchema.post('save', function (Section) {
+  console.log('section post', Section);
+  var update = { $addToSet: { 'sections': { sectionId: Section, role: 'teacher'} } };
+  if (Section.isTrashed) {
+    var SectionIdObj = mongoose.Types.ObjectId(Section._id);
+    /* + If deleted, all references are also deleted */
+    update = { $pull: { 'sections': {sectionId: SectionIdObj, role: 'teacher'} } };
+  }
 
-//   if (Section.workspace) {
-//     mongoose.models.Workspace.update({ '_id': Section.workspace },
-//       update,
-//       function (err, affected, result) {
-//         if (err) {
-//           throw new Error(err.message);
-//         }
-//       });
-//   }
+  // if (Section.createdBy) {
+  //   mongoose.models.User.update({ '_id': Section.createdBy },
+  //     update,
+  //     function (err, affected, result) {
+  //       if (err) {
+  //         throw new Error(err.message);
+  //       }
+  //     });
+  // }
 
-//   if (Section.submission) {
-//     mongoose.models.Submission.update({ '_id': Section.submission },
-//       update,
-//       function (err, affected, result) {
-//         if (err) {
-//           throw new Error(err.message);
-//         }
-//       });
-//   }
+  if (Section.teachers) {
+    mongoose.models.User.update({ '_id': {$in: Section.teachers }},
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+      });
+  }
 
-// });
+});
 
 module.exports.Section = mongoose.model('Section', SectionSchema);

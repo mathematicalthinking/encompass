@@ -1,0 +1,19 @@
+<header id="assignmentinfoheader">
+  <h2>Assignment Details</h2>
+  <div class="clear"></div>
+</header>
+
+{{#if currentUser.isStudent}}
+  {{assignment-info-student assignment=assignment problem=problem section=section store=store}}
+{{else}}
+  {{assignment-info-teacher assignment=assignment store=store section=section problem=problem toAssignments="toAssignments"}}
+{{/if}}
+
+
+
+
+
+
+
+
+

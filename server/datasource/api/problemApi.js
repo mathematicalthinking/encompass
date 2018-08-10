@@ -31,24 +31,38 @@ module.exports.put = {};
 // This only returns problems that are public or belong to you
 // Needd to update to handle problems you participate in
 function accessibleProblems(user) {
-  return {
-    $or: [
-      { createdBy: user },
-      { privacySetting: "E" },
-      { $and: [
-        { organization: user.organization },
-        { privacySetting: "O" }
-      ]}
-    ],
-    isTrashed: false
-  };
+  let studentProblems = [];
+
+  return models.Assignment.find({'_id': {$in: user.assignments}}).then((assignments) => {
+      assignments.forEach((assn) => {
+        studentProblems.push(assn.problem);
+      });
+      return studentProblems;
+  })
+  .then((probs) => {
+    return {
+      $or: [
+        { createdBy: user },
+        { privacySetting: "E" },
+        { $and: [
+          { organization: user.organization },
+          { privacySetting: "O" }
+        ]},
+        {_id: {$in: probs}},
+      ],
+      isTrashed: false
+    };
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 }
 
 const getProblems = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  const criteria = accessibleProblems(user);
-  // add permissions here
-  models.Problem.find(criteria)
+  return accessibleProblems(user).then((criteria) => {
+    models.Problem.find(criteria)
   .exec((err, problems) => {
     if (err) {
       logger.error(err);
@@ -58,6 +72,12 @@ const getProblems = (req, res, next) => {
     utils.sendResponse(res, data);
     next();
   });
+  }).catch((err) => {
+    logger.error(err);
+    return utils.sendError.InternalError(err, res);
+  });
+  // add permissions here
+
 };
 
 

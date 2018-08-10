@@ -1,0 +1,25 @@
+<section class="assignmentReport">
+    <h2>Assignment Report</h2>
+    <table class="report rows values">
+    <tr>
+      <th>Student Username</th>
+      <th>Number of Submissions</th>
+      <th>Most Recent Revision</th>
+    </tr>
+    {{#each students as |student|}}
+    <tr>
+        <td>{{student.username}}</td>
+        <td>{{student.filteredAnswers.length}}</td>
+        {{#if student.filteredAnswers.length}}
+          <td>{{format-date student.filteredAnswers.[0].createDate "MMM Do YYYY h:mm A"}}</td>
+        {{else}}
+        <td> N/A</td>
+        {{/if}}
+
+    </tr>
+    {{else}}
+    <p>No submissions yet.</p>
+    {{/each}}
+
+  </table>
+  </section>

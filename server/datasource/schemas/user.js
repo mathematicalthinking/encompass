@@ -49,6 +49,9 @@ var UserSchema = new Schema({
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: Boolean,
   isStudent: Boolean,
+
+  // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
+  actingRole: String,
   name: String,
   email: String,
   googleId: String,
@@ -64,7 +67,7 @@ var UserSchema = new Schema({
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
-  assignments: [{ problemId: { type: ObjectId, ref: 'Problem' }, answerId: { type: ObjectId, ref: 'Answer' } }],
+  assignments: [{type: ObjectId, ref: 'Assignment'}],
   seenTour: Date,
   lastSeen: Date,
   history: [Log],

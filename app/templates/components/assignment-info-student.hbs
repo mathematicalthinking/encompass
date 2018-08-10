@@ -1,0 +1,89 @@
+<section class="assignment-info-student">
+    <div>
+      <label>Problem Name:</label>
+      <p>{{assignment.problem.title}}</p>
+    </div>
+    <div>
+    <div>
+      <label>Assigned Date:</label>
+      <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+    </div>
+    <div>
+      <label>Due Date:</label>
+      <p>{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
+    </div>
+      <label>Problem Statement:</label>
+      <p>{{assignment.problem.text}}</p>
+      {{#if assignment.problem.imageData}}
+
+        {{#if problem.isPdf}}
+          <div class="assignmentPdf">
+            <object data="{{assignment.problem.imageData}}" type="application/pdf">
+            <embed src="{{assignment.problem.imageData}}" type="application/pdf" height="100%" width="100%">
+            </object>
+        </div>
+        {{else}}
+          <div class="assignmentImage">
+            <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
+          </div>
+        {{/if}}
+    {{/if}}
+    </div>
+  </section>
+
+
+
+{{#if isResponding}}
+  {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse="cancelResponse" displayAnswer="displayAnswer"
+  section=section problem=problem
+  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+
+{{else if isRevising}}
+  {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer
+  section= section problem=problem toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
+  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+
+{{else}}
+  {{#if isLoadingAnswers}}
+    <p>Loading answers... Thanks for your patience.</p>
+  {{else}}
+    {{#if filteredList.length}}
+      <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
+    {{else}}
+      <button class="action_button" {{action 'beginAssignmentResponse'}}>Respond</button>
+    {{/if}}
+  {{/if}}
+    {{#if sortedList.length}}
+      <p>You have made a total of {{sortedList.length}} submissions to this assignment. You can view the details of each submission by clicking on one of the Past Submissions items below.</p>
+      <p>If you would like to revise your most recently submitted revision, cick Revise.</p>
+      {{else}}
+      It looks like you have not made any submissions to this assignment. Click 'Respond' below to begin making a submission.
+    {{/if}}
+  {{/if}}
+
+  <div class="past-submissions">
+
+  <section class="past-submissions-list">
+    <h2>Past Submissions</h2>
+    {{#if answerCreated}}
+      <p class="success-message">Successfully created new answer!</p>
+    {{/if}}
+
+
+    <ol class="submission-list">
+      {{#each sortedList as |answer|}}
+        <li class={{if (is-equal answer.answerId displayedAnswer.answerId) "highlight"}} {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
+      {{/each}}
+    </ol>
+</section>
+<section class="past-answer-view">
+  {{#if displayedAnswer}}
+    {{answer-info answer=displayedAnswer assignment=assignment problem=problem}}
+  {{/if}}
+</section>
+</div>
+
+
+
+
+

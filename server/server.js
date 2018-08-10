@@ -188,6 +188,8 @@ server.get('/api/category/:id', path.validateId(), api.get.category);
 
 server.get('/api/organizations', api.get.organizations);
 server.get('/api/organization/:id', path.validateId(), api.get.organization);
+server.get('/api/assignments', api.get.assignments);
+server.get('/api/assignments/:id', path.validateId(), api.get.assignment);
 
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
@@ -203,6 +205,7 @@ server.post('/api/problems', api.post.problem);
 server.post('/api/answers', api.post.answer);
 server.post('/api/sections', api.post.section);
 server.post('/api/organizations', api.post.organization);
+server.post('/api/assignments', api.post.assignment);
 
 //ALL PUT REQUESTS
 server.put('/api/folders/:id', path.validateId(), api.put.folder);
@@ -230,6 +233,7 @@ server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.ad
 server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
 server.put('/api/categories/:id', path.validateId(), api.put.category);
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
+server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 
 
 server.get('/api/stats', api.get.stats);

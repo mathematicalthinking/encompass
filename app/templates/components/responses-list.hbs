@@ -26,7 +26,7 @@
       <td>{{response.source}}</td>
       <td>
         {{#link-to 'response' response}}
-        <span title="{{response.strCreateDate}}">{{response.createDate}}</span>
+        <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
         {{/link-to}}
       </td>
       <td>{{response.createdBy.displayName}}</td>
