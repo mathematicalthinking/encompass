@@ -122,6 +122,7 @@ module.exports = (passport) => {
             location,
             username,
             password,
+            isAuthorized,
             requestReason,
             isStudent,
             createdBy,

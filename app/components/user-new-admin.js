@@ -10,8 +10,9 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   location: '',
   isStudent: '',
   isAdmin: false,
-  isAuthorized: '',
+  isAuthorized: null,
   authorizedBy: '',
+  newUserData: {},
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -69,35 +70,51 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var isAdmin = this.get('isAdmin');
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
-      console.log('currentuser id', currentUserId);
       if (isAuthorized) {
+        let userData = {
+          username: username,
+          password: password,
+          name: name,
+          email: email,
+          location: location,
+          isStudent: isStudent,
+          isAdmin: isAdmin,
+          isAuthorized: isAuthorized,
+          authorizedBy: currentUserId,
+          createdBy: currentUserId,
+          createDate: new Date(),
+        };
         this.set('authorizedBy', currentUserId);
+        this.set('newUserData', userData);
       } else {
-        this.set('authorizedBy', null);
+        let userData = {
+          username: username,
+          password: password,
+          name: name,
+          email: email,
+          location: location,
+          isStudent: isStudent,
+          isAdmin: isAdmin,
+          isAuthorized: false,
+          createdBy: currentUserId,
+          createDate: new Date(),
+        };
+        this.set('newUserData', userData);
       }
-      this.set('newUserUsername', '');
-      console.debug('creating new user ' + username);
+      this.set('username', '');
+      this.set('password', '');
+      this.set('name', '');
+      this.set('email', '');
+      this.set('location', '');
+      this.set('organization', '');
 
       if (!username) {
         return;
       }
 
-      var newUserData = {
-        username: username,
-        password: password,
-        name: name,
-        email: email,
-        location: location,
-        isStudent: isStudent,
-        isAdmin: isAdmin,
-        isAuthorized: isAuthorized,
-        // authorizedBy: this.get('authorizedBy'),
-        createdBy: currentUserId,
-        createDate: new Date(),
-      };
-
       return this.handleOrg(organization)
         .then((org) => {
+          let newUserData = this.get('newUserData');
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
