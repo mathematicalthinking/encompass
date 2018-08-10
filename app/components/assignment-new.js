@@ -17,7 +17,10 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   didReceiveAttrs: function() {
     if (this.sections) {
-      const sections = this.sections.filterBy('isTrashed', false);
+      // let sections = this.sections.filterBy('isTrashed', false);
+      const sections = this.sections.filter((section) => {
+        return !section.get('isTrashed') && section.id;
+      });
       this.set('sectionList', sections);
     }
 
