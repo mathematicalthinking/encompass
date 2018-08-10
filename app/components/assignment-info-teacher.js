@@ -75,7 +75,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     const isYourOwn = this.get('isYourOwn');
 
     return isAdmin || (isClean && isYourOwn);
-  },
+  }.property('isClean', 'isYourOwn'),
 
   canEdit: function() {
     const isAdmin = this.get('currentUser.isAdmin');
@@ -83,7 +83,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     const isYourOwn = this.get('isYourOwn');
 
     return isAdmin || (isClean && isYourOwn);
-  },
+  }.property('isClean', 'isYourOwn'),
   isReadOnly: Ember.computed.not('canEdit'),
 
   isBeforeAssignedDate: function() {
@@ -98,7 +98,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     const canEdit = this.get('canEdit');
     const isBeforeAssignedDate = this.get('isBeforeAssignedDate');
     return isAdmin || (canEdit && isBeforeAssignedDate);
-  },
+  }.property('isBeforeAssignedDate', 'canEdit'),
 
   isDateLocked: Ember.computed.not('canEditDate'),
 
