@@ -1,14 +1,4 @@
-{{#if currentUser.isAdmin}}
-  {{user-new-admin currentUser=currentUser store=store  organizations=organizations toUserInfo="toUserInfo"}}
-{{else}}
-  {{#if currentUser.isStudent}}
-    <div class="centered">FORBIDDEN</div>
-  {{else}}
-    {{user-new-teacher currentUser=currentUser store=store organizations=organizations toUserInfo="toUserInfo"}}
-  {{/if}}
-{{/if}}
-
-{{!-- <h3>Create a New User</h3>
+<h3>Create a New Student</h3>
 <article class="user">
   <table class="values rows">
     <tr>
@@ -42,7 +32,7 @@
     <tr>
       <td>Organization</td>
       <td>
-       {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
+        {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
       </td>
     </tr>
     <tr>
@@ -61,7 +51,7 @@
     <tr>
       <td>Admin</td>
       <td>
-          {{input type="checkbox" checked=isAdmin value=isAdmin}}
+        {{input type="checkbox" checked=isAdmin value=isAdmin}}
       </td>
     </tr>
     {{/if}}
@@ -74,10 +64,9 @@
   </table>
 
   {{#if incorrectEmail}}
-    <p class="error-message">Invalid email address.</p>
+  <p class="error-message">Invalid email address.</p>
   {{/if}} {{#if emailExistsError}}
-    <p class="error-message">{{emailExistsError}}</p>
+  <p class="error-message">{{emailExistsError}}</p>
   {{/if}}
   <button class='action_button' {{action 'newUser'}}>Create New User</button>
 </article>
-{{/if}} --}}
