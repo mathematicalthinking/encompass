@@ -13,6 +13,11 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
   // isAdmin: false,
   // isAuthorized: '',
   // authorizedBy: '',
+  actions: {
+    toUserInfo: function(user) {
+      this.sendAction('toUserInfo', user);
+    }
+  }
 
   // actions: {
   //   createNewUser: function (data) {

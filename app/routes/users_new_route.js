@@ -7,6 +7,7 @@ Encompass.UsersNewRoute = Encompass.AuthenticatedRoute.extend({
   },
   actions: {
     toUserInfo: function (user) {
+      console.log('inside to userinfo and user is', user);
       this.transitionTo('user', user);
     }
   }
