@@ -124,7 +124,10 @@ module.exports = (passport) => {
             password,
             requestReason,
             isStudent,
-            createdBy
+            createdBy,
+            isAdmin,
+            createdBy,
+            authorizedBy,
           } = req.body;
           const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
           const newUser = new User({
@@ -134,11 +137,14 @@ module.exports = (passport) => {
             location,
             username,
             password: hashPass,
-            isAuthorized: true,
+            isAuthorized,
             requestReason,
             createdBy,
             isStudent,
-            sections: [userSection]
+            sections: [userSection],
+            isAdmin,
+            createdBy,
+            authorizedBy,
           });
           console.log('newUSer', newUser);
 
