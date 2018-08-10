@@ -19,9 +19,45 @@
             {{input id="explanation" required="true" type="hidden" value=explanation}}
           </li>
          <li>
-            <label for="uploadedFile">Optional Image</label>
-            {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
-          </li>
+              <label for="uploadedFile">Uploaded File:</label>
+              {{#if imageData}}
+                {{#if isPdf}}
+                  <div id="pdf-view">
+                    <object data="{{imageData}}" type="application/pdf" height="100%" width="100%">
+                      <embed src="{{imageData}}" type="application/pdf">
+                    </object>
+                  </div>
+                {{else}}
+                  <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
+                    <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
+                  </a>
+                {{/if}}
+                  <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
+                  <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
+              {{else}}
+                  {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
+              {{/if}}
+            </li>
+            <li>
+
+              <label for="students">Contributing Students</label>
+              <ol>
+              {{#each students as |student|}}
+
+                <li>{{student.username}}</li>
+
+
+              {{/each}}
+              </ol>
+              {{input type="text" value=student id="student" key-press=(action "toggleAddStudentMessages")}}
+              {{#if addStudentError}}
+                <p class="error-message"></p>Sorry, that user is not in your class.
+              {{/if}}
+              {{#if addedStudent}}
+              <p class="success-message"></p>Successfully added student.
+              {{/if}}
+
+            </li>
         </ol>
       </fieldset>
       {{#if isMissingRequiredFields}}
