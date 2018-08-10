@@ -50,6 +50,7 @@
               {{/each}}
               </ol>
               {{input type="text" value=student id="student" key-press=(action "toggleAddStudentMessages")}}
+              <button id="addStudent"{{action "addStudent"}}>Add</button>
               {{#if addStudentError}}
                 <p class="error-message"></p>Sorry, that user is not in your class.
               {{/if}}
