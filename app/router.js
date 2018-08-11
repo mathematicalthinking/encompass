@@ -7,6 +7,7 @@ Encompass.Router.map(function() {
   this.route("auth", function(){
     this.route("login");
     this.route("signup");
+    this.route("forgot");
   });
   // PROBLEMS PARENT ROUTE
   this.route("problems", function(){
