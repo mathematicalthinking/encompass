@@ -63,6 +63,8 @@ var UserSchema = new Schema({
   // key: String,
   password: String,
   forcePwdChg: Boolean,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   organization: {type: ObjectId, ref: 'Organization'},
   location: String,
   requestReason: String,
