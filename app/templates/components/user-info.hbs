@@ -76,7 +76,7 @@
     {{#if user.lastModifiedBy}}
     <tr>
       <td>Last Modified</td>
-      <td>{{user.lastModifiedBy.username}} on {{user.lastModifiedDate}}</td>
+      <td>{{user.lastModifiedBy.username}} on  {{format-date user.lastModifiedDate 'MMM Do YYYY'}}</td>
     </tr>
     {{/if}}
     {{#if user.isStudent}}
