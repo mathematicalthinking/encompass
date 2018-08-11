@@ -66,7 +66,7 @@
               <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
             {{/if}}
           {{/if}}
-          <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}log out{{/link-to}}</li>
+          <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
           </span>
           <li id="current-username"><span class="underline">{{user.displayName}}</span></li>
           <li id="user-image">
@@ -79,6 +79,7 @@
 
     <div class="sidemenu-style" id="{{unless openMenu 'sidemenu'}}">
       <ul>
+        <li>{{#link-to 'assignments'}}assignments{{/link-to}}</li>
         <li>{{#link-to 'index'}}home{{/link-to}}</li>
         <li>{{#link-to 'import'}}import{{/link-to}}</li>
         <li>{{#link-to 'problems'}}problems{{/link-to}}</li>

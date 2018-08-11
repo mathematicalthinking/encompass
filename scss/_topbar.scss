@@ -21,21 +21,29 @@
   }
 }
 
-@media screen and (min-width: 860px) and (max-width: 1367px) {
+@media screen and (min-width: 860px) and (max-width: 1319px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
-      font-size: .85em;
+      font-size: .8em;
       li {
-        padding: 0 12px;
+        padding: 0 10px;
       }
       #home-btn {
         display: none;
       }
       .logout {
         margin: 0;
+        padding: 8px 9px;
+        border-radius: 50px;
+        #logout-text {
+          display: none;
+        }
       }
       #menu-btn {
+        display: none;
+      }
+      #user-image {
         display: none;
       }
     }
@@ -55,21 +63,27 @@
   }
 }
 
-@media screen and (min-width: 1368px) and (max-width: 10000px) {
+@media screen and (min-width: 1320px) and (max-width: 10000px) {
   #al_header {
     #menu-toggle {
       // background-color: yellow;
       font-size: 1em;
     }
+    #user-image {
+      display: none;
+    }
     #al_nav {
       li {
-        padding: 0 20px;
+        padding: 0 15px;
       }
     }
     #sidemenu {
       display: none;
     }
     #menu-btn {
+      display: none;
+    }
+    .logout-icon {
       display: none;
     }
   }
@@ -308,7 +322,7 @@ nav.actions>ul {
 #current-username {
   color: $accent-color;
   font-weight: $bolder-font-weight;
-  margin: 0 -10px;
+  margin-right:10px;
 }
 
 .underline {
