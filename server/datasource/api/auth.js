@@ -7,6 +7,10 @@
 //REQUIRE MODULES
 const passport = require('passport');
 const utils = require('../../middleware/requestHandler');
+const crypto = require('crypto');
+const models = require('../../datasource/schemas');
+const User = models.User;
+const nodemailer = require('nodemailer');
 
 
 const localLogin = (req, res, next) => {
@@ -85,8 +89,46 @@ const logout = (req, res, next) => {
   res.redirect('/');
 };
 
+const getResetToken = function(size) {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(size, (err, buf) => {
+      if (err) {
+        return reject(err);
+      }
+      const token = buf.toString('hex');
+      return resolve(token);
+    });
+  });
+};
+/* jshint ignore:start */
+const forgot = async function(req, res, next) {
+  console.log('in forgot', req.body.email);
+  let token;
+  let user;
+  let savedUser;
+  try {
+    token = await getResetToken(20);
+    console.log('token', token);
+    user = await User.findOne({ email: req.body.email });
+      if (!user) {
+        const msg = {
+          info: 'There is no account associated with that email address'};
+        return utils.sendResponse(res, msg);
+      }
+
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000;
+      user.save();
+      return next();
+  }catch(err) {
+    return utils.sendError.InternalError(err, res);
+  }
+};
+
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
 module.exports.googleAuth = googleAuth;
 module.exports.googleReturn = googleReturn;
+module.exports.forgot = forgot;
+/* jshint ignore:start */
