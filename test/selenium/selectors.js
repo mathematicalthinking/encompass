@@ -27,10 +27,12 @@ module.exports = {
     inputs: {
       name: 'input[name=name]',
       email: 'input[name=email]',
+      confirmEmail: 'input[name=confirmEmail]',
       organization: 'input[name=organization]',
       location: 'input[name=location]',
       username: 'input[name=username]',
       password: 'input[name=password]',
+      confirmPassword: 'input[name=confirmPassword]',
       requestReason: 'input[name=requestReason]',
       terms: 'input[name=terms]'
     },
