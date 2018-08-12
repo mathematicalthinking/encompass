@@ -1,5 +1,5 @@
 Encompass.ForgotPasswordComponent = Ember.Component.extend({
-  classnames: ['forgot-page'],
+  classNames: ['forgot-page'],
 
   actions: {
     handleRequest: function() {
