@@ -8,6 +8,7 @@ Encompass.Router.map(function() {
     this.route("login");
     this.route("signup");
     this.route("forgot");
+    this.route("reset", {path: '/reset/:token'});
   });
   // PROBLEMS PARENT ROUTE
   this.route("problems", function(){
