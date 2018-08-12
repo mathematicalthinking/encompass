@@ -207,10 +207,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let section = this.get('section');
       window.alert('Are you sure you want to delete this section?');
       section.set('isTrashed', true);
-      section.save().then(() => {
-        this.sendAction('toSectionList');
-      });
-      this.set('isEditing', false);
+      section.save();
+      this.sendAction('toSectionList');
     },
 
     updateSection: function () {
