@@ -14,6 +14,7 @@ const models = require('../../datasource/schemas');
 const User = models.User;
 const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
+const userAuth = require('../../middleware/userAuth');
 
 
 const localLogin = (req, res, next) => {
@@ -169,6 +170,49 @@ const validateResetToken = async function(req, res, next) {
   }
 };
 
+const resetPasswordById = async function(req, res, next) {
+  try {
+
+    const reqUser = userAuth.getUser(req);
+
+    // need to be admin or be teacher and resetting one of your students
+    const hasPermission = reqUser && !reqUser.isStudent;
+    console.log('reqUser permission', reqUser, hasPermission);
+
+    if (!hasPermission) {
+      return utils.sendError.NotAuthorizedError(err, res);
+    }
+
+    const { id, password } = req.body;
+
+    if (!id || !password) {
+      const err = {
+        info: 'Invalid user id or password'
+      }
+      return utils.sendError.InvalidArgumentError(err, res);
+    }
+
+    const user = await User.findOne({ _id: id });
+    if (!user) {
+      return utils.sendResponse(res, {
+        info: 'Cannot find user'
+      });
+    }
+      const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+      user.password = hashPass;
+      user.lastModifiedBy = reqUser.id;
+      user.lastModifiedDate = Date.now();
+
+      // should we store most recent password and block that password in future? or all past passwords and block all of them?
+
+      await user.save();
+      return utils.sendResponse(res, user);
+
+    }catch(err) {
+      return utils.sendError.InternalError(err, res);
+    }
+  };
+
 const resetPassword = async function(req, res, next) {
   console.log('body', req.body);
   console.log('token', req.params.token);
@@ -206,4 +250,5 @@ module.exports.googleReturn = googleReturn;
 module.exports.forgot = forgot;
 module.exports.validateResetToken = validateResetToken;
 module.exports.resetPassword = resetPassword;
+module.exports.resetPasswordById = resetPasswordById;
 /* jshint ignore:end */
