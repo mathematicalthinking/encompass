@@ -20,8 +20,16 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
     console.log('receiving attrs reset');
 
   },
+
+  doPasswordsMatch: function() {
+    return this.get('password') === this.get('confirmPassword');
+  }.property('password', 'confirmPassword'),
+
   actions: {
     resetPassword: function() {
+      if (!this.get('doPasswordsMatch')) {
+        this.set('matchError', true);
+      }
       const password = this.get('password');
       const confirmPassword = this.get('confirmPassword');
 
@@ -39,6 +47,15 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
         .catch((err) => {
           this.set(('resetPasswordErr', err));
         });
+    },
+    resetErrors: function(e) {
+      console.log('event', e);
+      const errors = ['matchError', 'missingCredentials'];
+      for (let error of errors) {
+        if (this.get(error)) {
+          this.set(error, false);
+        }
+      }
     }
   }
 });
