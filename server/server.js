@@ -152,6 +152,8 @@ server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
 server.get('/logout', auth.logout);
 server.post('/auth/forgot', auth.forgot);
+server.get('/auth/reset/:token', auth.validateResetToken);
+server.post('/auth/reset/:token', auth.resetPassword);
 
 //  GOOGLE AUTHENTICATION CALLS
 server.get('/auth/google', auth.googleAuth);

@@ -5,12 +5,15 @@
  */
 
 //REQUIRE MODULES
+/* jshint ignore:start */
 const passport = require('passport');
 const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const models = require('../../datasource/schemas');
 const User = models.User;
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 
 const localLogin = (req, res, next) => {
@@ -89,6 +92,7 @@ const logout = (req, res, next) => {
   res.redirect('/');
 };
 
+
 const getResetToken = function(size) {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(size, (err, buf) => {
@@ -100,12 +104,26 @@ const getResetToken = function(size) {
     });
   });
 };
-/* jshint ignore:start */
+
+const sendResetLinkEmail = function(token, user, template) {
+
+  return new Promise((resolve, reject) => {
+    const smtpTransport = nodemailer.createTransport('SMTP', {
+      service: 'SendGrid',
+      auth: {
+        user: '!!! YOUR SENDGRID USERNAME !!!',
+        pass: '!!! YOUR SENDGRID PASSWORD !!!'
+      }
+    });
+  });
+};
+
 const forgot = async function(req, res, next) {
   console.log('in forgot', req.body.email);
   let token;
   let user;
   let savedUser;
+
   try {
     token = await getResetToken(20);
     console.log('token', token);
@@ -118,9 +136,64 @@ const forgot = async function(req, res, next) {
 
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 3600000;
-      user.save();
-      return next();
+      await user.save();
+      console.log('req.headers', req.headers);
+      const msg = {
+        to: req.body.email,
+        from: 'djk8552@gmail.com',
+        subject: 'Request to reset your EnCoMpass password',
+        text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.'
+        'Please click on the following link, or paste this into your browser to complete the process: http://${req.headers.host}/#/auth/reset/${token}
+        If you did not request this, please ignore this email and your password will remain unchanged.`
+      };
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      await sgMail.send(msg);
+      console.log('after sgmail send');
+      return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`});
   }catch(err) {
+    return utils.sendError.InternalError(err, res);
+  }
+};
+
+const validateResetToken = async function(req, res, next) {
+  try {
+    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}});
+
+    if (!user) {
+      return utils.sendResponse(res, {info: 'Password reset token is invalid or has expired', isValid: false});
+    }
+    return utils.sendResponse(res, { info: 'valid token', isValid: true });
+
+  }catch(err) {
+    return utils.sendError.InternalError(err, res);
+  }
+};
+
+const resetPassword = async function(req, res, next) {
+  console.log('body', req.body);
+  console.log('token', req.params.token);
+  try {
+    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } });
+    if (!user) {
+      return utils.sendResponse(res, {
+        info: 'Password reset token is invalid or has expired.'
+      });
+    }
+      const hashPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(12), null);
+      user.password = hashPass;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+
+      await user.save();
+      console.log('user saved');
+      req.logIn(user, (err) => {
+        if (err) {
+          return utils.sendError.InternalError(err, res);
+        }
+        return utils.sendResponse(res, user);
+      });
+  }catch(err) {
+    console.log(err);
     return utils.sendError.InternalError(err, res);
   }
 };
@@ -131,4 +204,6 @@ module.exports.localSignup = localSignup;
 module.exports.googleAuth = googleAuth;
 module.exports.googleReturn = googleReturn;
 module.exports.forgot = forgot;
-/* jshint ignore:start */
+module.exports.validateResetToken = validateResetToken;
+module.exports.resetPassword = resetPassword;
+/* jshint ignore:end */
