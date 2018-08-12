@@ -205,6 +205,7 @@
 .forgot-page {
   height: 90vh;
   padding-top: 12vh;
+  z-index: -1;
 }
 .forgot-box {
   margin: 0 auto;
@@ -247,7 +248,7 @@
     font-weight: $light-font-weight;
     text-align: center;
   }
-  .signup-link {
+  .login-link {
     margin-top: 40px;
     padding-bottom: 40px;
     font-weight: $light-font-weight;
@@ -255,5 +256,10 @@
     a {
       @include main-link;
     }
+  }
+  .info {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
   }
 }
