@@ -136,7 +136,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isStudent: true,
         sectionId: sectionId,
         sectionRole: sectionRole,
-        createdBy: currentUser.id
+        createdBy: currentUser.id,
+        isAuthorized: true,
+        authorizedBy: currentUser.id
       };
 
       if (organization) {
