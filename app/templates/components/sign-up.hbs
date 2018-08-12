@@ -9,14 +9,24 @@
     </div>
     <div class="auth-form-input">
       <label for="email">Email:</label>
-        {{input class="form-control" type="text" name="email" id="email" value=email action="emailValidate" on="key-down"}}
-        {{#if incorrectEmail}}
+        {{input class="form-control" type="text" name="email" id="email" value=email action="resetErrors" on="key-down"}}
+        {{#if isEmailInvalid}}
           <p class="error-message">Invalid email address.</p>
         {{/if}}
         {{#if emailExistsError}}
          <p class="error-message">{{emailExistsError}}</p>
        {{/if}}
     </div>
+    {{#if isEmailValid}}
+      <div class="auth-form-input">
+        <label for="confirmEmail">Confirm Email:</label>
+          {{input class="form-control" type="text" name="confirmEmail" id="confirmEmail" value=confirmEmail action="emailValidate" on="key-down"}}
+
+          {{#unless doEmailsMatch}}
+            <p class="error-message">Emails do not match.</p>
+          {{/unless}}
+      </div>
+    {{/if}}
     <div class="auth-form-input">
       <label for="organization">Institution, Organization, School or District Name:</label>
       {{type-ahead content=organizations  inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
@@ -35,7 +45,21 @@
     <div class="auth-form-input">
       <label for="password">Password:</label>
         {{input class="form-control" type="password" name="password" id="password" value=password action="resetErrors" on="key-down"}}
+
+        {{#if isPasswordInvalid}}
+          <p class="error-message">Invalid password</p>
+        {{/if}}
     </div>
+    {{#if isPasswordValid}}
+      <div class="auth-form-input">
+        <label for="confirmPassword">Confirm Password:</label>
+          {{input class="form-control" type="password" name="confirmPassword" id="confirmPassword" value=confirmPassword action="resetErrors" on="key-down"}}
+
+          {{#unless doPasswordsMatch}}
+            <p class="error-message">Passwords do not match.</p>
+          {{/unless}}
+      </div>
+    {{/if}}
     <div class="auth-form-input">
       <label for="requestReason">Reason for Registering with EnCoMPASS:</label>
         {{input class="form-control" type="text" name="requestReason" id="requestReason" value=requestReason action="resetErrors"
