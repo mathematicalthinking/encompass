@@ -34,9 +34,11 @@ describe('Signup form', async function () {
     async function verifySignupForm() {
       const inputs = css.signup.inputs;
       for (let input of Object.keys(inputs)) {
-        it(`should display ${input} field`, async function () {
-          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
-        });
+        if (input !== 'confirmEmail' && input !== 'confirmPassword') {
+          it(`should display ${input} field`, async function () {
+            expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+          });
+        }
       }
       it('should display submit button', async function () {
         expect(await helpers.isElementVisible(driver, css.signup.submit)).to.be.true;

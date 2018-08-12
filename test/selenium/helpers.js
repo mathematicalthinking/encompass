@@ -28,10 +28,12 @@ const regUser = {
 const newUser = {
   name: 'John Doe',
   email: 'johndoe111@gmail.com',
+  confirmEmail: 'johndoe111@gmail.com',
   organization: 'Mathematical Thinking',
   location: 'Philadelphia, PA',
   username: 'johndoe111',
   password: 'noone11',
+  confirmPassword: 'noone11',
   requestReason: 'professional development'
 };
 
