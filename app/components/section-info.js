@@ -203,6 +203,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let teacher = section.get('teachers');
     },
 
+    deleteSection: function () {
+      let section = this.get('section');
+      window.alert('Are you sure you want to delete this section?');
+      section.set('isTrashed', true);
+      section.save().then(() => {
+        this.sendAction('toSectionList');
+      });
+      this.set('isEditing', false);
+    },
+
     updateSection: function () {
       let name = this.get('sectionName');
       let section = this.get('section');
