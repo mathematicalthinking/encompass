@@ -3,7 +3,7 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
   didReceiveAttrs: function() {
     const token = this.token;
     const that = this;
-    if(token) {
+    if (token) {
       Ember.$.get({
         url: `/auth/reset/${token}`
       })
@@ -11,14 +11,14 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
           if (res.isValid) {
             that.set('isTokenValid', true);
           } else {
-            console.log('invalid token');
             that.set('invalidTokenError', res.info);
-            //that.sendAction('toForgot');
           }
+
+        })
+        .catch((err) => {
+          that.set('invalidTokenError', err);
         });
     }
-    console.log('receiving attrs reset');
-
   },
 
   doPasswordsMatch: function() {
@@ -27,11 +27,15 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
 
   actions: {
     resetPassword: function() {
+      const password = this.get('password');
+      const confirmPassword = this.get('confirmPassword');
+
+      if (!password || !confirmPassword) {
+        this.set('missingRequiredFields', true);
+      }
       if (!this.get('doPasswordsMatch')) {
         this.set('matchError', true);
       }
-      const password = this.get('password');
-      const confirmPassword = this.get('confirmPassword');
 
       const resetPasswordData = { password };
       const that = this;
