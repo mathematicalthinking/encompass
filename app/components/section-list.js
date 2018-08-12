@@ -6,8 +6,8 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var currentUser = this.get('currentUser');
     var yourSections = sections.filterBy('createdBy.content', currentUser);
     console.log('your Sections', yourSections);
-    return yourSections;
-  }.property('sections@each.isTrashed'),
+    return yourSections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed'),
 
   // This displays the sections if you are inside the teachers array
   // This works but by default if you create it you are in the teacher's array
@@ -17,7 +17,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var currentUser = this.get('currentUser');
     var collabSections = sections.filterBy('teachers');
     console.log('your collab sections =', collabSections);
-    return collabSections;
-  }.property('sections@each.isTrashed'),
+    return collabSections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed'),
 
 });
