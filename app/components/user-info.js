@@ -16,14 +16,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let accountType = this.get('currentUser').get('accountType');
     let isAdmin = accountType === 'A';
 
-<<<<<<< HEAD
     let canEdit = (creator === currentUserId ? true : false) || isAdmin;
-=======
-    if (currentUserId === user.id) {
-      return true;
-    }
-    let canEdit = (creator === currentUserId ? true : false) || this.get('currentUser').get('isAdmin');
->>>>>>> Add functionality to reset a user's password from their user info page
     return canEdit;
   }),
 
