@@ -1,4 +1,5 @@
 Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'section-list',
 
   // This sorts all the sections in the database and returns only the ones you created
   yourSections: function () {
