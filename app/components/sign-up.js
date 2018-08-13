@@ -97,6 +97,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
       console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
+      var usernameTrim = username.trim();
       var password = that.get('password');
       var confirmPassword = that.get('confirmPassword');
       var requestReason = that.get('requestReason');
@@ -122,7 +123,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
         name: name,
         email: email,
         location: location,
-        username: username,
+        username: usernameTrim,
         password: password,
         requestReason: requestReason,
         accountType: 'T'

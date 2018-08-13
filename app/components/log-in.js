@@ -8,6 +8,7 @@ Encompass.LogInComponent = Ember.Component.extend({
     login: function () {
       var that = this;
       var username = that.get('username');
+      var usernameTrim = username.trim();
       var password = that.get('password');
 
       if (!username || !password) {
@@ -16,7 +17,7 @@ Encompass.LogInComponent = Ember.Component.extend({
       }
 
       var createUserData = {
-        username: username,
+        username: usernameTrim,
         password: password,
       };
       Ember.$.post({
