@@ -9,6 +9,7 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   requestReason: DS.attr('string'),
   isGuest: DS.attr('boolean'),
   accountType: DS.attr('string'),
+  isEmailConfirmed: DS.attr('boolean'),
   isAuthorized: DS.attr('boolean'),
   authorizedBy: DS.belongsTo('user', { inverse: null }),
   seenTour: DS.attr('date'),
