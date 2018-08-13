@@ -61,14 +61,12 @@ const localSignup = (req, res, next) => {
       console.log('user: ', user);
       return utils.sendResponse(res, info);
     }
-    return utils.sendResponse(res, user);
-    // console.log('user', user);
-    // req.logIn(user, function (err) {
-    //   if (err) {
-    //     return next(err);
-    //   }
-    //   return utils.sendResponse(res, user);
-    // });
+    //return utils.sendResponse(res, user);
+    console.log('logging in user', user);
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return utils.sendResponse(res, user);
+    });
   }
 )(req, res, next);
 };
@@ -254,12 +252,8 @@ const confirmEmail = async function(req, res, next) {
     const user = await User.findOne({ confirmEmailToken: req.params.token, confirmEmailExpires: { $gt: Date.now() } });
     if (!user) {
       return utils.sendResponse(res, {
+        isValid: false,
         info: 'Confirm email token is invalid or has expired.'
-      });
-    }
-    if (user.isEmailConfirmed) {
-      return utils.sendResponse(res, {
-        info: 'Email already confirmed'
       });
     }
 
@@ -267,7 +261,7 @@ const confirmEmail = async function(req, res, next) {
       user.confirmEmailToken = undefined;
       user.confirmEmailExpires = undefined;
 
-      await user.save();
+      const savedUser = await user.save();
       console.log('user saved');
       // req.logIn(user, (err) => {
       //   if (err) {
@@ -275,9 +269,40 @@ const confirmEmail = async function(req, res, next) {
       //   }
       //   return utils.sendResponse(res, user);
       // });
-      return utils.sendResponse(res, user);
+      const data = {
+        isValid: true,
+        isEmailConfirmed: savedUser.isEmailConfirmed
+      };
+      return utils.sendResponse(res, data);
   }catch(err) {
     console.log(err);
+    return utils.sendError.InternalError(err, res);
+  }
+};
+
+resendConfirmationEmail = async function(req, res, next) {
+  console.log('in resend', req.user);
+  const user = userAuth.getUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError(err, res);
+  }
+
+  try {
+    let userRec = await models.User.findById(user._id);
+    console.log('userRec', userRec);
+    const recipient = user.email;
+    const token = await getResetToken(20);
+
+
+      userRec.confirmEmailToken = token;
+      userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
+      let savedUser = await userRec.save();
+     await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token);
+     return utils.sendResponse(res, {
+       isSuccess: true,
+       info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`
+     });
+  }catch(err) {
     return utils.sendError.InternalError(err, res);
   }
 };
@@ -292,4 +317,7 @@ module.exports.validateResetToken = validateResetToken;
 module.exports.resetPassword = resetPassword;
 module.exports.resetPasswordById = resetPasswordById;
 module.exports.confirmEmail = confirmEmail;
+module.exports.getResetToken = getResetToken;
+module.exports.sendEmailSMTP = sendEmailSMTP;
+module.exports.resendConfirmationEmail = resendConfirmationEmail;
 /* jshint ignore:end */
