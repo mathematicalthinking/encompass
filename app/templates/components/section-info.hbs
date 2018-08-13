@@ -35,11 +35,13 @@
             {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
           </li>
           <li>
-            <label for="assignments">Assignments</label>
-              {{#each section.assignments as |assignment|}}
-            <ol class="b">{{#link-to 'assignment' assignment}}{{assignment.problem.title}} / {{format-date assignment.createDate 'MMM Do YYYY'}}{{/link-to}}</ol>
-            {{/each}}
-            {{!-- {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}} --}}
+            <label for="problems">Problems</label>
+              {{!-- <ul class="listing">
+                {{#each section.problems as |problem|}}
+                <li>{{problem.title}}</li>
+                {{/each}}
+              </ul> --}}
+            {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
           </li>
           <li class="teacherslist">
             <label for="teachers">Teachers</label>
@@ -51,10 +53,9 @@
             <li class="studentslist">
             {{#each section.students as |student|}}
             <ol class="c"> {{student.username}}
-              <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
-            {{/each}}
+             <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
             </ol>
-
+            {{/each}}
           </li>
         </ul>
       </fieldset>
@@ -92,7 +93,7 @@
       {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
       {{/unless}}
 
-      <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
+
 
 
     {{#if usingDefaultPassword}}
@@ -107,11 +108,17 @@
       </button>
     {{/if}}
 
-         {{#if doyouwanttoaddexistinguser}}
+    <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
+
+         {{#if doYouWantToAddExistingUser}}
       <p class="error-message"> {{studentUsername}} belongs to the same organization. Do you want to add {{studentUsername}} to this section?
       <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
       <button class="action_button" {{action 'exitaddexistingusername'}} style="margin-right: 10px"> no </button>
       </p>
+      {{/if}}
+
+      {{# studentAlreadyInSection}}
+        <p class="error-message"> Username:{{studentUsername}} registered in this section.</p>
       {{/if}}
 
     </fieldset>

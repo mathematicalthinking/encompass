@@ -10,7 +10,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isAddingStudents: false,
   usingDefaultPassword: true,
   usernameAlreadyExists: null,
-  doyouwanttoaddexistinguser: null,
+  doYouWantToAddExistingUser: null,
+  studentAlreadyInSection: null,
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
@@ -47,11 +48,11 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
 
-    doyouwanttoaddexistinguser: function () {
-      this.set('doyouwanttoaddexistinguser', false);
+    doYouWantToAddExistingUser: function () {
+      this.set('doYouWantToAddExistingUser', false);
     },
     exitaddexistingusername: function () {
-      this.set('doyouwanttoaddexistinguser', false);
+      this.set('doYouWantToAddExistingUser', false);
       this.set('studentUsername', '');
     },
 
@@ -67,18 +68,22 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       return this.store.findRecord('user', student.id).then((student) => {
         console.log('student rec', student);
-        students.pushObject(student);  //add student into students list
-        section.save().then((section) => {
-          console.log('saved section', section);
-
-          student.get('sections').addObject(sectionObj);
-          student.save().then((rec) => {
-            console.log('saved student', rec);
-            this.set('studentUsername', '');
+        //if (student) already in the STUDENTS list
+          if (res.message === 'Username already exists') {
+          this.set('studentAlreadyInSection', true);
+        } else {
+          students.pushObject(student);  //add student into students list
+          section.save().then((section) => {
+            console.log('saved section', section);
+            student.get('sections').addObject(sectionObj);
+            student.save().then((rec) => {
+              this.set('doYouWantToAddExistingUser', false);
+              console.log('saved student', rec);
+              this.set('studentUsername', '');
+            });
           });
-        });
+        }
      });
-
     },
 
     removeStudent: function (user) {
@@ -154,7 +159,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           if (res.message === 'Username already exists') {
             that.set('usernameAlreadyExists', true);
           } else if(res.message === 'Can add existing user') {
-            this.set('doyouwanttoaddexistinguser', true);
+            this.set('doYouWantToAddExistingUser', true);
             this.set('existingUser', res.user);
           }
           else {
@@ -228,8 +233,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('usernameAlreadyExists', false);
       }
 
-      if (this.doyouwanttoaddexistinguser) {
-        this.set('doyouwanttoaddexistinguser', false);
+      if (this.doYouWantToAddExistingUser) {
+        this.set('doYouWantToAddExistingUser', false);
+      }
+
+      if (this.studentAlreadyInSection) {
+        this.set('studentAlreadyInSection', false);
       }
 
       if (this.isMissingPassword) {
