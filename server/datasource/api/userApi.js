@@ -175,7 +175,7 @@ function postUser(req, res, next) {
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
-    if (user.isAdmin || !user.isStudent) {
+    if (user.accountType === 'A' || user.accountType === 'T' || user.accountType === 'P') {
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,

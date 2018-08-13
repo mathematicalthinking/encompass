@@ -147,7 +147,7 @@ function protect(options) {
 
     var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
     console.log('is user authenticated in protect: ', userAuthenticated);
-    var userAuthorized = (userAuthenticated && (user.isAdmin || user.isAuthorized));
+    var userAuthorized = (userAuthenticated && (user.accountType === 'A' || user.isAuthorized));
 
     var notAuthenticated = !userAuthenticated;
     var notAuthorized = !userAuthorized;

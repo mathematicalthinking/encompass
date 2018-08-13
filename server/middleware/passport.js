@@ -124,8 +124,7 @@ module.exports = (passport) => {
             password,
             isAuthorized,
             requestReason,
-            isStudent,
-            isAdmin,
+            accountType,
             createdBy,
             authorizedBy,
           } = req.body;
@@ -139,9 +138,8 @@ module.exports = (passport) => {
             password: hashPass,
             isAuthorized,
             requestReason,
-            isStudent,
+            accountType,
             sections: [userSection],
-            isAdmin,
             createdBy,
             authorizedBy,
           });
