@@ -13,4 +13,24 @@ const resetTokenEmail = function(recipient, host, token) {
   };
 };
 
+const confirmEmailAddress = function(recipient, host, token) {
+  if (! recipient) {
+    return;
+  }
+  return {
+    to: recipient,
+    from: 'encompassmath@gmail.com',
+    subject: 'Please confirm your EnCoMPASS email address',
+    text: `You are receiving this because you (or someone else) have signed up for an EnCOMPASS account.
+    Please click on the following link, or paste it into your browser to confirm your email address: http://${host}/#/auth/confirm/${token}
+
+    Once your email address is confirmed, the final step is for an administrator to approve and authorize your account.
+
+    If you did not sign up for an EnCOMPASS account, please contact an administrator at admin@mathematicalthinking.org.`,
+  };
+};
+
+
+
 module.exports.resetTokenEmail = resetTokenEmail;
+module.exports.confirmEmailAddress = confirmEmailAddress;
