@@ -5,8 +5,8 @@
 </header>
 
 
-<section class="sectionlist">
-  <nav class="users actions listing al_vertical_stretch">
+<section id="section-list-side">
+  <nav id="section-list-box">
     <h2>{{currentUser.username}}'s sections</h2>
     <ul class="your-sections">
       {{#each yourSections as |section|}}
@@ -22,7 +22,7 @@
     </ul>
   </nav>
 
-   <div class="listOutlet sections">
+   <div class="list-outlet">
       {{outlet}}
   </div>
 
