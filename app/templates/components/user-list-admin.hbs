@@ -19,41 +19,41 @@
 
 <section id="user-list-side">
   <nav class="user-list-box">
-      <h2>Waiting for Authorization</h2>
-      <ul class="listing waiting-auth">
-        {{#each unauthUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Waiting for Authorization</h2>
+    <ul class="listing waiting-auth">
+      {{#each unauthUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
-      <h2>Administrators</h2>
-      <ul class="listing admin-users">
-        {{#each adminUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Administrators</h2>
+    <ul class="listing admin-users">
+      {{#each adminUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
-      <h2>Authorized</h2>
-      <ul class="listing auth-users">
-        {{#each authUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Authorized</h2>
+    <ul class="listing auth-users">
+      {{#each authUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
 
-      <h2>Students</h2>
-      <ul class="listing student-users">
-        {{#each studentUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
-      </ul>
+    <h2>Students</h2>
+    <ul class="listing student-users">
+      {{#each studentUsers as |user|}}
+      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+      </li>
+      {{/each}}
+    </ul>
   </nav>
 
 </section>
