@@ -42,15 +42,10 @@
       </td>
     </tr>
     <tr>
-      <td>Student</td>
+      <td>Account Type</td>
       <td>
-        {{input type="checkbox" checked=isStudent value=isStudent}}
-      </td>
-    </tr>
-    <tr>
-      <td>Admin</td>
-      <td>
-        {{input type="checkbox" checked=isAdmin value=isAdmin}}
+        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+        {{input required=true type="hidden" value=selectedType}}
       </td>
     </tr>
     <tr>
