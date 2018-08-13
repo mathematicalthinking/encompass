@@ -47,26 +47,28 @@ var UserSchema = new Schema({
   //====
   /* + The username is the mfapps username */
   username: { type: String, unique: true },
+  accountType: { type: String },
   /* + Are they a magical admin user granting every imaginable permission? */
-  isAdmin: Boolean,
+  // isAdmin: Boolean,
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: Boolean,
   authorizedBy: { type: ObjectId, ref: 'User' },
-  isStudent: Boolean,
+  // isStudent: Boolean,
 
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
   actingRole: String,
   name: String,
   email: String,
   googleId: String,
-  key: String,
+  // key: String,
   password: String,
   forcePwdChg: Boolean,
   organization: {type: ObjectId, ref: 'Organization'},
   location: String,
   requestReason: String,
-  authSource: String,
-  authUserId: String,
+  // We only use google for external auth, we can use these fields if we use more OAuths
+  // authSource: String,
+  // authUserId: String,
   sessionId: String,
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   answers: [{ type: ObjectId, ref: 'Answer' }],
