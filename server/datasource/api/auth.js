@@ -15,6 +15,7 @@ const User = models.User;
 const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 const userAuth = require('../../middleware/userAuth');
+const emails = require('../../datasource/email_templates');
 
 
 const localLogin = (req, res, next) => {
@@ -106,24 +107,30 @@ const getResetToken = function(size) {
   });
 };
 
-const sendResetLinkEmail = function(token, user, template) {
+const sendEmailSMTP = function(recipient, host, template, token=null) {
+  const smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: process.env.TEST_GMAIL_USERNAME,
+      pass: process.env.TEST_GMAIL_PASSWORD
+    }
+  });
 
-  return new Promise((resolve, reject) => {
-    const smtpTransport = nodemailer.createTransport('SMTP', {
-      service: 'SendGrid',
-      auth: {
-        user: '!!! YOUR SENDGRID USERNAME !!!',
-        pass: '!!! YOUR SENDGRID PASSWORD !!!'
-      }
+  const msg = emails[template](recipient, host, token);
+    return new Promise( (resolve, reject) => {
+      smtpTransport.sendMail(msg, (err) => {
+        if (err) {
+          return reject(err);
+        }
+      return resolve('email sent!');
     });
   });
-};
+}
 
 const forgot = async function(req, res, next) {
   console.log('in forgot', req.body.email);
   let token;
   let user;
-  let savedUser;
 
   try {
     token = await getResetToken(20);
@@ -137,19 +144,12 @@ const forgot = async function(req, res, next) {
 
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 3600000;
+
       await user.save();
-      console.log('req.headers', req.headers);
-      const msg = {
-        to: req.body.email,
-        from: 'djk8552@gmail.com',
-        subject: 'Request to reset your EnCoMpass password',
-        text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.'
-        'Please click on the following link, or paste this into your browser to complete the process: http://${req.headers.host}/#/auth/reset/${token}
-        If you did not request this, please ignore this email and your password will remain unchanged.`
-      };
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-      await sgMail.send(msg);
-      console.log('after sgmail send');
+
+      await sendEmailSMTP(req.body.email, req.headers.host, 'resetTokenEmail', token);
+
+      console.log('after email sent');
       return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`});
   }catch(err) {
     return utils.sendError.InternalError(err, res);
@@ -176,6 +176,7 @@ const resetPasswordById = async function(req, res, next) {
     const reqUser = userAuth.getUser(req);
 
     // need to be admin or be teacher and resetting one of your students
+    //TODO: update this to only let you reset one of your student's passwords
     const hasPermission = reqUser && !reqUser.isStudent;
     console.log('reqUser permission', reqUser, hasPermission);
 
@@ -198,6 +199,7 @@ const resetPasswordById = async function(req, res, next) {
         info: 'Cannot find user'
       });
     }
+    console.log('user.password before', user.password);
       const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
       user.password = hashPass;
       user.lastModifiedBy = reqUser.id;
@@ -206,6 +208,8 @@ const resetPasswordById = async function(req, res, next) {
       // should we store most recent password and block that password in future? or all past passwords and block all of them?
 
       await user.save();
+      console.log('user p after', user.password);
+
       return utils.sendResponse(res, user);
 
     }catch(err) {
