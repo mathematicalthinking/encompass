@@ -11,7 +11,7 @@
     <ul class="your-problems">
     {{#if yourProblems}}
       {{#each yourProblems as |problem|}}
-      <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
     {{else}}
       <li>You have no problems</li>
@@ -21,17 +21,25 @@
     {{#if currentUser.organization}}
     <h2>{{currentUser.organization.name}}'s Problems</h2>
     <ul class="public">
+    {{#if orgProblems}}
       {{#each orgProblems as |problem|}}
-      <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
+    {{else}}
+      <li>Your organization does not have any problems</li>
+    {{/if}}
     </ul>
     {{/if}}
 
     <h2>Public Problems</h2>
     <ul class="public">
+    {{#if publicProblems}}
       {{#each publicProblems as |problem|}}
-      <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
       {{/each}}
+      <li>There are no public problems</li>
+    {{else}}
+    {{/if}}
     </ul>
   </nav>
 </section>
