@@ -1,85 +1,18 @@
-#user-list {
-  .list-header {
-    h1 {
-      text-transform: capitalize;
-      margin: 10px 0 10px 10px;
-      font-size: 1.8em; // color: darken($primary-font-color, 5%);
-      color: $primary-font-color;
-      font-weight: bold;
-      display: inline-block;
-    }
-    button {
-      border: none;
-      &:focus {
-        outline: none;
-      }
-      #new-user-link {
-        color: white;
-        background: $accent-color;
-        font-weight: $main-font-weight;
-        font-family: $primary-font;
-        font-size: 1.3em;
-        border-radius: 3px;
-        padding: 10px 15px;
-        display: inline-block;
-        position: relative;
-        top: -5px;
-        left: 5px;
-        &:hover {
-          font-weight: $bold-font-weight;
-          cursor: pointer;
-          background: darken($accent-color, 10%);
-        }
-      }
-    }
-  }
-  h2 {
-    text-transform: capitalize;
-    margin: 20px 0 10px 20px;
-    font-size: 1.4em;
-    color: $accent-color;
-    font-weight: $bold-font-weight;
-  }
-  li {
-    padding: 6px 0 6px 15px;
-    margin: 0 20px;
-    border-radius: 5px;
-    &:last-child {
-      margin-bottom: 30px;
-    }
-    &:hover {
-      font-weight: $bold-font-weight;
-      background-color: lighten($background-color, 5%);
-    }
-  }
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
 
-  .list-side {
-    background: $background-color;
-    width: 25%;
-    height: 80%;
-    position: fixed;
-    overflow: auto;
-    clear: both;
-    z-index: 1;
-    .list-box {
-      margin-bottom: 100px;
-      padding-top: 10px;
-      .listing {
-        .is-admin a {
-          color: $error-color;
-        }
-        .is-authorized {
-          font-weight: $bolder-font-weight;
-        }
-      }
-    }
+#user-list {
+  .list-heading {
+    padding: 0px;
   }
-  .list-outlet {
-    width: 74%;
-    margin-left: 25%;
-    float: left;
-    border-left: 1px solid #bfbfbf;
-    padding: 10px 5px 5px 10px;
+  .listing {
+    .is-admin a {
+      color: $error-color;
+    }
+    .is-authorized {
+      font-weight: $bolder-font-weight;
+    }
   }
   .centered {
     font-size: 2em;

@@ -1,47 +1,49 @@
-<header class="list-header">
-  <h1>Problems</h1>
-  <button>{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</button>
-  <div class="clear"></div>
-</header>
-
-
 <section class="list-side">
-  <nav class="list-box">
-    <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
-    <ul class="your-problems">
-    {{#if yourProblems}}
-      {{#each yourProblems as |problem|}}
-        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-      {{/each}}
-    {{else}}
-      <li>You have no problems</li>
-    {{/if}}
-    </ul>
+  <header class="list-header">
+    <h1>Problems</h1>
+    <button>{{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}Create New Problem{{/link-to}}</button>
+    <div class="clear"></div>
+  </header>
 
-    {{#if currentUser.organization}}
-    <h2>{{currentUser.organization.name}}'s Problems</h2>
-    <ul class="public">
-    {{#if orgProblems}}
-      {{#each orgProblems as |problem|}}
-        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-      {{/each}}
-    {{else}}
-      <li>Your organization does not have any problems</li>
-    {{/if}}
-    </ul>
-    {{/if}}
 
-    <h2>Public Problems</h2>
-    <ul class="public">
-    {{#if publicProblems}}
-      {{#each publicProblems as |problem|}}
-        <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-      {{/each}}
-      <li>There are no public problems</li>
-    {{else}}
-    {{/if}}
-    </ul>
-  </nav>
+  <section>
+    <nav class="list-box">
+      <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
+      <ul class="your-problems">
+      {{#if yourProblems}}
+        {{#each yourProblems as |problem|}}
+          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        {{/each}}
+      {{else}}
+        <li>You have no problems</li>
+      {{/if}}
+      </ul>
+
+      {{#if currentUser.organization}}
+      <h2>{{currentUser.organization.name}}'s Problems</h2>
+      <ul class="public">
+      {{#if orgProblems}}
+        {{#each orgProblems as |problem|}}
+          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        {{/each}}
+      {{else}}
+        <li>Your organization does not have any problems</li>
+      {{/if}}
+      </ul>
+      {{/if}}
+
+      <h2>Public Problems</h2>
+      <ul class="public">
+      {{#if publicProblems}}
+        {{#each publicProblems as |problem|}}
+          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+        {{/each}}
+        <li>There are no public problems</li>
+      {{else}}
+      {{/if}}
+      </ul>
+    </nav>
+  </section>
 </section>
 
 <fieldset>
