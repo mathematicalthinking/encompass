@@ -33,7 +33,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
     const intendedUrl = transition.intent.url;
-    const regex = /\/auth\/reset\/[0-9]+/;
+    const regex = /\/auth\/reset\/[A-Za-z0-9]+/;
     if (regex.test(intendedUrl)) {
       return;
     }
