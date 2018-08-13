@@ -45,7 +45,7 @@ describe('Signup form', async function () {
       });
     }
 
-    it('should display login form', async function () {
+    it('should display signup form', async function () {
       expect(await helpers.isElementVisible(driver, css.signup.form)).to.be.true;
     });
     await verifySignupForm();
@@ -86,11 +86,11 @@ describe('Signup form', async function () {
     });
 
     // We are not going to automatically login users, they need to be approved, change to approval page
-    xit('should redirect to homepage after successful signup', async function () {
+    it('should redirect to unconfirmed after successful signup', async function () {
       await helpers.findAndClickElement(driver, css.signup.submit);
       await helpers.waitForSelector(driver, css.topBar.logout);
 
-      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/unconfirmed`);
       expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(`${helpers.newUser.name}`);
     });
   });
