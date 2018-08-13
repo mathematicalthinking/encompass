@@ -2,30 +2,28 @@
 @import "mixins";
 @import "responsive-font-size";
 
-#createSectionForm {
-  input [type=text] {
-    font-size: 15px;
-    color: black;
-    width: 30%;
-    padding: 12px 20px;
-    margin: 8px 0px;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  label {
-    padding: 12px 10px;
-  }
-}
 
 #section-new {
   h2 {
     font-size: 1.5em;
   }
-}
-
-#newsectionform {
+  #createSectionForm {
+    input [type=text] {
+      font-size: 15px;
+      color: black;
+      width: 30%;
+      padding: 12px 20px;
+      margin: 8px 0px;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    label {
+      padding: 12px 10px;
+    }
+  }
+  #newsectionform {
   input[type=text],
   select {
     width: 70%;
@@ -46,4 +44,5 @@
     color: black;
     font-size: 1em;
   }
+}
 }

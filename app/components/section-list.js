@@ -22,3 +22,5 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('sections.@each.isTrashed'),
 
 });
+
+// we want to get all the sections that you are in the teachers array but not createdBy
