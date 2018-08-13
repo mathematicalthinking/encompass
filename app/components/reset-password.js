@@ -1,5 +1,5 @@
 Encompass.ResetPasswordComponent = Ember.Component.extend({
-  ElementId: 'reset-password',
+  classNames: ['reset-page'],
   didReceiveAttrs: function() {
     const token = this.token;
     const that = this;
