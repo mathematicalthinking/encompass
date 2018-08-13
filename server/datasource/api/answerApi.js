@@ -35,7 +35,7 @@ module.exports.put = {};
  function accessibleAnswers(user, ids) {
   let teacherSections;
 
-  if (user.isAdmin) {
+  if (user.accountType === 'A') {
     if (ids) {
       return {
         _id: {$in : ids},
@@ -45,7 +45,7 @@ module.exports.put = {};
     return { isTrashed: false };
   }
   // Students
-  if (user.isStudent) {
+  if (user.accountType === 'S') {
     if (ids) {
       return {
         createdBy: user,

@@ -133,10 +133,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         name: name,
         username: username,
         password: password,
-        isStudent: true,
+        accountType: 'S',
         sectionId: sectionId,
         sectionRole: sectionRole,
-        createdBy: currentUser.id
+        createdBy: currentUser.id,
+        isAuthorized: true,
+        authorizedBy: currentUser.id
       };
 
       if (organization) {
@@ -199,6 +201,14 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isEditing', true);
       this.set('sectionName', section.get('name'));
       let teacher = section.get('teachers');
+    },
+
+    deleteSection: function () {
+      let section = this.get('section');
+      window.alert('Are you sure you want to delete this section?');
+      section.set('isTrashed', true);
+      section.save();
+      this.sendAction('toSectionList');
     },
 
     updateSection: function () {

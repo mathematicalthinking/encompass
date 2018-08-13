@@ -48,7 +48,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
         password: password,
         name: name,
         organization: organization,
-        isStudent: true,
+        accountType: 'S',
         isAuthorized: true,
         authorizedBy: currentUserId,
         createdBy: currentUserId,
@@ -63,7 +63,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
             this.set('emailExistsError', res.message);
           }
         }).then((user) => {
-          this.sendAction('toUserInfo', user);
+          this.sendAction('toUserInfo', user.username);
         })
         .catch((err) => {
           console.log(err);

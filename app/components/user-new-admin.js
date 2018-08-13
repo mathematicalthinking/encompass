@@ -8,8 +8,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   email: '',
   org: null,
   location: '',
-  isStudent: '',
-  isAdmin: false,
+  // isStudent: '',
+  // isAdmin: false,
   isAuthorized: null,
   authorizedBy: '',
   newUserData: {},
@@ -66,8 +66,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var email = this.get('email');
       var organization = this.get('org');
       var location = this.get('location');
-      var isStudent = this.get('isStudent');
-      var isAdmin = this.get('isAdmin');
+      // var isStudent = this.get('isStudent');
+      // var isAdmin = this.get('isAdmin');
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
       if (isAuthorized) {
@@ -77,8 +77,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           name: name,
           email: email,
           location: location,
-          isStudent: isStudent,
-          isAdmin: isAdmin,
+          // isStudent: isStudent,
+          // isAdmin: isAdmin,
           isAuthorized: isAuthorized,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
@@ -93,8 +93,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           name: name,
           email: email,
           location: location,
-          isStudent: isStudent,
-          isAdmin: isAdmin,
+          // isStudent: isStudent,
+          // isAdmin: isAdmin,
           isAuthorized: false,
           createdBy: currentUserId,
           createDate: new Date(),

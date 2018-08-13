@@ -84,7 +84,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
         username: username,
         password: password,
         requestReason: requestReason,
-        isStudent: false
+        accountType: 'T'
       };
 
       return that.handleOrg(organization)

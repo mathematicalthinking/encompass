@@ -1,16 +1,13 @@
-<header id="sectionlist">
-  <h2>Sections</h2>
+<header class="list-header">
+  <h1>Sections</h1>
+  <button>{{#link-to 'sections.new' id='new-section-link'}}Create New Section{{/link-to}}</button>
   <div class="clear"></div>
 </header>
 
-<section class="sectionlist">
-  <nav class="users actions listing al_vertical_stretch">
-    <ul class="actions">
-      <li>{{#link-to  'sections.new' id="newsection" }}Create New Section{{/link-to}}</li>
-    </ul>
 
+<section class="list-side">
+  <nav class="list-box">
     <h2>{{currentUser.username}}'s sections</h2>
-
     <ul class="your-sections">
       {{#each yourSections as |section|}}
       <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
@@ -24,10 +21,8 @@
       {{/each}}
     </ul>
   </nav>
-
-   <div class="listOutlet sections">
-      {{outlet}}
-  </div>
-
-  <div class="clear"/>
 </section>
+
+<div class="list-outlet">
+  {{outlet}}
+</div>
