@@ -71,7 +71,7 @@ describe('Sections', function () {
     before(async function() {
       try {
         await helpers.findAndClickElement(driver, css.topBar.sections);
-        await helpers.findAndClickElement(driver, '#newsection');
+        await helpers.findAndClickElement(driver, '#new-section-link');
         await driver.wait(until.urlIs(`${host}/#/sections/new`), 5000);
         await helpers.waitForSelector(driver, css.newSection.form);
       }catch(err) {
