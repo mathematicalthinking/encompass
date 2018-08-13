@@ -51,9 +51,10 @@
             <li class="studentslist">
             {{#each section.students as |student|}}
             <ol class="c"> {{student.username}}
-             <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
-            </ol>
+              <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
             {{/each}}
+            </ol>
+
           </li>
         </ul>
       </fieldset>
