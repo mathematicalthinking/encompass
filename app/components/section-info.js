@@ -133,7 +133,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         name: name,
         username: username,
         password: password,
-        isStudent: true,
+        accountType: 'S',
         sectionId: sectionId,
         sectionRole: sectionRole,
         createdBy: currentUser.id,
