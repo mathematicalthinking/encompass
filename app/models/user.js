@@ -8,7 +8,7 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   password: DS.attr('string'),
   requestReason: DS.attr('string'),
   isGuest: DS.attr('boolean'),
-  isAdmin: DS.attr('boolean'),
+  accountType: DS.attr('string'),
   isAuthorized: DS.attr('boolean'),
   authorizedBy: DS.belongsTo('user', { inverse: null }),
   isStudent: DS.attr('boolean'),
@@ -20,6 +20,18 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   sections: DS.attr(),
   assignments: DS.hasMany('assignment', {async: true, inverse: null}),
   answers: DS.hasMany('answer', {async: true}),
+  isAdmin: function () {
+    return this.get('accountType') === 'A';
+  }.property('accountType'),
+  isTeacher: function () {
+    return this.get('accountType') === 'T';
+  }.property('accountType'),
+  isStudent: function () {
+    return this.get('accountType') === 'S';
+  }.property('accountType'),
+  isPdAdmin: function () {
+    return this.get('accountType') === 'P';
+  }.property('accountType'),
   isAuthenticated: function() {
     return !this.get('isGuest');
   }.property('isGuest'),
