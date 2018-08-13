@@ -1,12 +1,12 @@
-<header id="problem-list-header">
+<header class="list-header">
   <h1>Problems</h1>
   <button>{{#link-to 'problems.new' id="problem-new-link"}}Create New Problem{{/link-to}}</button>
   <div class="clear"></div>
 </header>
 
 
-<section id="problem-list-side">
-  <nav class="problem-list-box">
+<section class="list-side">
+  <nav class="list-box">
     <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
     <ul class="your-problems">
     {{#if yourProblems}}

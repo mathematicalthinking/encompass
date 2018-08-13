@@ -1,12 +1,12 @@
-<header id="section-list-header">
+<header class="list-header">
   <h1>Sections</h1>
   <button>{{#link-to 'sections.new' id='new-section-link'}}Create New Section{{/link-to}}</button>
   <div class="clear"></div>
 </header>
 
 
-<section id="section-list-side">
-  <nav id="section-list-box">
+<section class="list-side">
+  <nav class="list-box">
     <h2>{{currentUser.username}}'s sections</h2>
     <ul class="your-sections">
       {{#each yourSections as |section|}}

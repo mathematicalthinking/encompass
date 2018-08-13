@@ -1,4 +1,4 @@
-<header id="user-list-header">
+<header class="list-header">
   <h1>Users Listing</h1>
   <button>{{#link-to 'users.new' id='new-user-link'}}Create New User{{/link-to}}</button>
 </header>
@@ -17,8 +17,8 @@
   </fieldset>
 </section>
 
-<section id="user-list-side">
-  <nav class="user-list-box">
+<section class="list-side">
+  <nav class="list-box">
     <h2>Waiting for Authorization</h2>
     <ul class="listing waiting-auth">
       {{#each unauthUsers as |user|}}

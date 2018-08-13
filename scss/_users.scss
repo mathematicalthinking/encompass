@@ -1,5 +1,5 @@
 #user-list {
-  #user-list-header {
+  .list-header {
     h1 {
       text-transform: capitalize;
       margin: 10px 0 10px 10px;
@@ -53,7 +53,7 @@
     }
   }
 
-  #user-list-side {
+  .list-side {
     background: $background-color;
     width: 25%;
     height: 80%;
@@ -61,7 +61,7 @@
     overflow: auto;
     clear: both;
     z-index: 1;
-    .user-list-box {
+    .list-box {
       margin-bottom: 100px;
       padding-top: 10px;
       .listing {
