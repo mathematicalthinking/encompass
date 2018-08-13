@@ -32,16 +32,20 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     console.log('in afterModel app route', transition);
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
-    const intendedUrl = transition.intent.url;
-    const regex = /\/auth\/reset\/[A-Za-z0-9]+/;
-    if (regex.test(intendedUrl)) {
+    const allowedPaths = ['auth.reset', 'auth.confirm'];
+    //const intendedUrl = transition.intent.url;
+    const targetPath = transition.targetName;
+    //const regex = /\/auth\/reset\/[A-Za-z0-9]+/;
+    if (allowedPaths.includes(targetPath)) {
       return;
     }
     //Do we need this check for isAuthenticated here? All routes that should be authenticated
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
       this.transitionTo('/');
-    } else if(!user.get('isAuthz')) {
+    }else if (!user.get('isEmailConfirmed')) {
+      this.transitionTo('unconfirmed');
+    }else if(!user.get('isAuthz')) {
       this.transitionTo('unauthorized');
     }
   },
