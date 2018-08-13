@@ -8,12 +8,15 @@
   position: fixed;
   overflow: auto;
   z-index: 1;
+  box-shadow: $box-shadow;
+  background: $background-color;
   .list-header {
     position: fixed;
     height: 70px;
     background-color: white;
     width: 25%;
-    border-right: .5px solid $primary-font-color;
+    // border-right: .5px solid $primary-font-color;
+    box-shadow: $box-shadow;
     h1 {
       text-transform: capitalize;
       margin: 10px 0 10px 20px;
@@ -38,7 +41,7 @@
         display: inline-block;
         position: relative;
         top: -5px;
-        left: 5px;
+        left: 10px;
         &:hover {
           font-weight: $bold-font-weight;
           cursor: pointer;
