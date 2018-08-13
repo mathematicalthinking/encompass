@@ -87,17 +87,14 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('isResettingPassword', true);
       },
 
-      handleResetSuccess: function(userResponse) {
+      handleResetSuccess: function(updatedUser) {
         const user = this.get('user');
         const currentUser = this.get('currentUser');
-        console.log('user in hrs', userResponse);
 
-        user.set('lastModifiedBy', currentUser);
-        user.set('lastModifiedDate', new Date());
-        user.save().then((user) => {
+        return this.store.findRecord('user', user.id).then((user) => {
+          this.set('user', user);
           this.set('isResettingPassword', false);
           this.set('resetPasswordSuccess', true);
-          return;
         });
       },
 
