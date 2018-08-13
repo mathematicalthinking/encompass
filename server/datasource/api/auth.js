@@ -138,7 +138,8 @@ const forgot = async function(req, res, next) {
     user = await User.findOne({ email: req.body.email });
       if (!user) {
         const msg = {
-          info: 'There is no account associated with that email address'};
+          info: 'There is no account associated with that email address',
+          isSuccess: false};
         return utils.sendResponse(res, msg);
       }
 
@@ -150,7 +151,7 @@ const forgot = async function(req, res, next) {
       await sendEmailSMTP(req.body.email, req.headers.host, 'resetTokenEmail', token);
 
       console.log('after email sent');
-      return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`});
+      return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`, isSuccess: true});
   }catch(err) {
     return utils.sendError.InternalError(err, res);
   }
