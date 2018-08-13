@@ -9,16 +9,24 @@
   <nav class="list-box">
     <h2>{{currentUser.username}}'s sections</h2>
     <ul class="your-sections">
-      {{#each yourSections as |section|}}
-      <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
-      {{/each}}
+      {{#if yourSections}}
+        {{#each yourSections as |section|}}
+          <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{/each}}
+      {{else}}
+        <li>You have no sections</li>
+      {{/if}}
     </ul>
 
     <h2>Sections you belong to</h2>
     <ul class="listing">
-      {{#each collabSections as |section|}}
-      <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
-      {{/each}}
+      {{#if collabSections}}
+        {{#each collabSections as |section|}}
+          <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+        {{/each}}
+      {{else}}
+          <li>You don't belong to any sections yet</li>
+      {{/if}}
     </ul>
   </nav>
 </section>
