@@ -13,29 +13,21 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   adminUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let adminUsers = users.filterBy('isAdmin', true);
+    let adminUsers = users.filterBy('accountType', 'A');
     return adminUsers.sortBy('createDate').reverse();
-  }.property('users.@each.isAdmin'),
+  }.property('users.@each.accountType'),
 
   studentUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let students = users.filterBy('isStudent', true);
+    let students = users.filterBy('accountType', 'S');
     return students.sortBy('createDate').reverse();
-  }.property('users.@each.isStudent'),
+  }.property('users.@each.accountType'),
 
-  authUsers: function () {
+  teacherUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let notStudent = authUsers.filter((user) => {
-      let student = user.get('isStudent');
-      return student !== true;
-    });
-    let notAdmin = notStudent.filter((user) => {
-      let admin = user.get('isAdmin');
-      return admin !== true;
-    });
-    return notAdmin.sortBy('createDate').reverse();
-  }.property('users.@each.isAuthorized'),
+    let teacherUsers = users.filterBy('accountType', 'T');
+    return teacherUsers.sortBy('createDate').reverse();
+  }.property('users.@each.accountType'),
 
   actions: {}
 

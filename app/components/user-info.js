@@ -10,8 +10,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     console.log('creator id is', creator);
     let currentUserId = this.get('currentUser').get('id');
     console.log('currentUserId is', currentUserId);
+    let accountType = this.get('currentUser').get('accountType');
+    let isAdmin = accountType === 'A';
 
-    let canEdit = (creator === currentUserId ? true : false) || this.get('currentUser').get('isAdmin');
+    let canEdit = (creator === currentUserId ? true : false) || isAdmin;
     return canEdit;
   }),
 

@@ -37,9 +37,9 @@
       {{/each}}
     </ul>
 
-    <h2>Authorized</h2>
+    <h2>Teachers</h2>
     <ul class="listing auth-users">
-      {{#each authUsers as |user|}}
+      {{#each teacherUsers as |user|}}
       <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
         {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
       </li>
