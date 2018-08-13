@@ -77,6 +77,7 @@ module.exports = (passport) => {
     },
     (req, username, password, next) => {
       process.nextTick(() => {
+        let isStudent = req.body.accountType === 'S';
         User.findOne({
           'username': username
         }, (err, user) => {
@@ -87,7 +88,8 @@ module.exports = (passport) => {
           if (user) {
             console.log('user org', user.organization);
             console.log('req.body', req.body);
-            if (JSON.stringify(user.organization) === JSON.stringify(req.user.organization) || req.user.isAdmin) {
+            let isAdmin = req.user.accountType === 'A';
+            if (JSON.stringify(user.organization) === JSON.stringify(req.user.organization) || isAdmin) {
               return next(null, false, {
                 message: "Can add existing user",
                 user: user
@@ -96,7 +98,7 @@ module.exports = (passport) => {
             return next(null, false, {
               message: "Username already exists"
             });
-          } else if(!req.body.isStudent) {
+          } else if(!isStudent) {
             User.findOne({
               'email': req.body.email
             }, (err, user) => {
@@ -183,7 +185,8 @@ module.exports = (passport) => {
         name: profile.name.givenName + " " + profile.name.familyName,
         username: profile.emails[0].value,
         email: profile.emails[0].value,
-        isAuthorized: true
+        isAuthorized: false,
+        accountType: 'T'
       });
       newUser.save((err) => {
         if (err) {
