@@ -8,8 +8,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   email: '',
   org: null,
   location: '',
-  // isStudent: '',
-  // isAdmin: false,
+  accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
   isAuthorized: null,
   authorizedBy: '',
   newUserData: {},
@@ -66,8 +65,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var email = this.get('email');
       var organization = this.get('org');
       var location = this.get('location');
-      // var isStudent = this.get('isStudent');
-      // var isAdmin = this.get('isAdmin');
+      var accountType = this.get('selectedType');
+      var accountTypeLetter = accountType.charAt(0).toUpperCase();
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
       if (isAuthorized) {
@@ -77,8 +76,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           name: name,
           email: email,
           location: location,
-          // isStudent: isStudent,
-          // isAdmin: isAdmin,
+          accountType: accountTypeLetter,
           isAuthorized: isAuthorized,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
@@ -124,7 +122,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
                 this.set('emailExistsError', res.message);
               }
             }).then((user) => {
-              this.sendAction('toUserInfo', user);
+              this.sendAction('toUserInfo', user.username);
             })
             .catch((err) => {
               console.log(err);
