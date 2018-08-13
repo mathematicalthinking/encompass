@@ -12,6 +12,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const auth = require('../datasource/api/auth');
 
 //PASSWORD ENCRYPTION
 const bcrypt = require('bcrypt');
@@ -113,10 +114,20 @@ module.exports = (passport) => {
             });
           }
             console.log('req.body.section', req.body);
-            let userSection = {
-              sectionId: req.body.sectionId,
-              role: req.body.sectionRole
-            };
+            // When a user is first created, they should only ever have 0 or 1 sections as of now
+            // If its a student being added to a section, they will have that sectionId and role student
+            // If a user has just signed up through the signup form, they will not be in any sections, so sections should
+            // just be an empty array
+
+            let userSections = [];
+            if (req.body.sectionId) {
+              let section = {
+                sectionId: req.body.sectionId,
+                role: req.body.sectionRole
+              };
+              userSections.push(section);
+            }
+
           const {
             name,
             email,
@@ -141,21 +152,52 @@ module.exports = (passport) => {
             isAuthorized,
             requestReason,
             accountType,
-            sections: [userSection],
+            sections: userSections,
             createdBy,
             authorizedBy,
           });
           console.log('newUSer', newUser);
 
-          newUser.save((err) => {
-            if (err) {
-              next(err);
-            }
-            return next(null, newUser);
-          });
+          // students don't have emails
+          if (newUser.accountType !== 'S') {
+            // generate confirmEmailToken && confirmEmailExpires
+          // send email upon successfull save
+            auth.getResetToken(20).then((token) => {
+              newUser.confirmEmailToken = token;
+              newUser.confirmEmailExpires = Date.now() + 86400000; //1 day
+
+              newUser.save((err) => {
+                if (err) {
+                  next(err);
+                }
+                auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token).then((res) => {
+                  console.log('email send success');
+                  return next(null, newUser);
+                })
+                .catch((err) => {
+                  console.log('error sending email', err);
+                });
+
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          } else {
+            newUser.save((err) => {
+              if (err) {
+                next(err);
+              }
+            });
+          }
         });
       });
     }));
+
+
+
+
+
 
 
  /* This is the Google Strategy for login and signup
