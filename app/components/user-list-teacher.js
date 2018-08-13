@@ -18,7 +18,7 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
     let students = users.filterBy('isStudent', true);
     // Then we want to get all the sections the student belongs to and if they match the teachers, return them
     return students;
-  }.property('users.@each.isStudent'),
+  }.property('users.@each.accountType'),
 
 //get all users, check for users that have sections the same as the one as the teacher
 
