@@ -79,18 +79,16 @@
       <td>{{user.lastModifiedBy.username}} on  {{format-date user.lastModifiedDate 'MMM Do YYYY'}}</td>
     </tr>
     {{/if}}
-    {{#if user.isStudent}}
     <tr>
-      <td>Student</td>
-      <td>Yes</td>
-    </tr>
-    {{/if}}
-    <tr>
-      <td>Admin</td>
+      <td>Account Type</td>
+      {{#if isEditing}}
       <td>
-        {{#if isEditing}} {{#if currentUser.isAdmin}} {{input type="checkbox" checked=user.isAdmin value=admin classNames='isAdmin'}}
-        {{else}} {{user.isAdmin}} {{/if}} {{else}} {{user.isAdmin}} {{/if}}
+        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+        {{input required=true type="hidden" value=selectedType}}
       </td>
+      {{else}}
+      <td>{{account-types user.accountType}}</td>
+      {{/if}}
     </tr>
     {{#if user.isAuthorized}}
       <tr>

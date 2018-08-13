@@ -2,17 +2,15 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   elementId: 'user-info',
   isEditing: false,
   authorized: null,
+  accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
   // should teachers who sign up through the site themselves have createdBy be set to their own id?
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
-    console.log('user is', user);
     let creator = user.get('createdBy.content.id');
-    console.log('creator id is', creator);
     let currentUserId = this.get('currentUser').get('id');
-    console.log('currentUserId is', currentUserId);
     let accountType = this.get('currentUser').get('accountType');
     let isAdmin = accountType === 'A';
 
@@ -69,8 +67,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let user = this.get('user');
 
         // should we check to see if any information was actually updated before updating modified by/date?
+        let accountType = this.get('selectedType');
+        let accountTypeLetter = accountType.charAt(0).toUpperCase();
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
+        user.set('accountType', accountTypeLetter);
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save();
