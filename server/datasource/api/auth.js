@@ -247,6 +247,41 @@ const resetPassword = async function(req, res, next) {
   }
 };
 
+const confirmEmail = async function(req, res, next) {
+  console.log('body', req.body);
+  console.log('token', req.params.token);
+  try {
+    const user = await User.findOne({ confirmEmailToken: req.params.token, confirmEmailExpires: { $gt: Date.now() } });
+    if (!user) {
+      return utils.sendResponse(res, {
+        info: 'Confirm email token is invalid or has expired.'
+      });
+    }
+    if (user.isEmailConfirmed) {
+      return utils.sendResponse(res, {
+        info: 'Email already confirmed'
+      });
+    }
+
+      user.isEmailConfirmed = true;
+      user.confirmEmailToken = undefined;
+      user.confirmEmailExpires = undefined;
+
+      await user.save();
+      console.log('user saved');
+      // req.logIn(user, (err) => {
+      //   if (err) {
+      //     return utils.sendError.InternalError(err, res);
+      //   }
+      //   return utils.sendResponse(res, user);
+      // });
+      return utils.sendResponse(res, user);
+  }catch(err) {
+    console.log(err);
+    return utils.sendError.InternalError(err, res);
+  }
+};
+
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
@@ -256,4 +291,5 @@ module.exports.forgot = forgot;
 module.exports.validateResetToken = validateResetToken;
 module.exports.resetPassword = resetPassword;
 module.exports.resetPasswordById = resetPasswordById;
+module.exports.confirmEmail = confirmEmail;
 /* jshint ignore:end */
