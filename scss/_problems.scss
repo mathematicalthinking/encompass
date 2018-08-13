@@ -2,6 +2,45 @@
 @import "mixins";
 @import "responsive-font-size";
 
+
+#problem-list {
+  #problem-list-header {
+    h1 {
+      text-transform: capitalize;
+      margin: 10px 0 10px 10px;
+      font-size: 1.8em; // color: darken($primary-font-color, 5%);
+      color: $primary-font-color;
+      font-weight: bold;
+      display: inline-block;
+    }
+    button {
+      border: none;
+      &:focus {
+        outline: none;
+      }
+      #problem-new-link {
+        color: white;
+        background: $accent-color;
+        font-weight: $main-font-weight;
+        font-family: $primary-font;
+        font-size: 1.3em;
+        border-radius: 3px;
+        padding: 10px 15px;
+        display: inline-block;
+        position: relative;
+        top: -5px;
+        left: 5px;
+        &:hover {
+          font-weight: $bold-font-weight;
+          cursor: pointer;
+          background: darken($accent-color, 10%);
+        }
+      }
+    }
+  }
+}
+
+
 #probleminfoheader {
   h2 {
     color: $accent-color;
@@ -92,16 +131,6 @@ section.problemdetails {
   }
 }
 
-//problem-list hbs
-#problemlistheader {
-  h2 {
-    color: $accent-color;
-    font-weight: bold;
-    font-size: 1.4em;
-    margin-left: 10px;
-  }
-}
-
 #problem-info {
   img {
     width: 60%;
@@ -121,51 +150,15 @@ section.problemdetails {
   height: 500px;
 }
 
-.problemlist {
-  h2 {
-    text-transform: capitalize;
-    margin: 10px 0 5px 10px;
-    font-size: 1.4em;
-    // color: darken($primary-font-color, 5%);
-    color: $accent-color;
-    font-weight: bold;
-  }
-  li {
-    padding: 6px 0 6px 10px;
-    border-radius: 5px;
-    &:hover {
-      font-weight: $bold-font-weight;
-      background-color: lighten($background-color, 5%);
-    }
-  }
-}
 
-.problem-new-header {
-  #problem-new-link {
-    color: white;
-    background: $accent-color;
-    font-weight: $main-font-weight;
-    font-family: $primary-font;
-    font-size: .7em;
-    border-radius: 3px;
-    padding: 10px 15px;
-    margin-left: -5px;
-    &:hover {
-      font-weight: $bold-font-weight;
-      cursor: pointer;
-      background: darken($accent-color, 10%);
-    }
-  }
-}
-
-  #image-upload {
-    width: 70%;
-    padding: 12px 0px;
-    margin: 8px 0;
+#image-upload {
+  width: 70%;
+  padding: 12px 0px;
+  margin: 8px 0;
+  font-size: 1em;
+  display: inline-block;
+  box-sizing: border-box;
+  input {
     font-size: 1em;
-    display: inline-block;
-    box-sizing: border-box;
-    input {
-      font-size: 1em;
-    }
   }
+}

@@ -1,4 +1,5 @@
 Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'problem-list',
   classNames: ['problem-list', 'left-list'],
   yourProblemList: null,
 
