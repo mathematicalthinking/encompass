@@ -1,6 +1,6 @@
 <section class="list-side">
   <header class="list-header">
-    <h1>Users Listing</h1>
+    <h1>Users</h1>
     <button>{{#link-to 'users.new' id='new-user-link' class="new-link-btn"}}Create New Student{{/link-to}}</button>
   </header>
 
@@ -22,29 +22,41 @@
     <nav class="list-box">
       <h2>Your Students</h2>
       <ul class="listing waiting-auth">
-        {{#each yourStudents as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if yourStudents}}
+          {{#each yourStudents as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>You don't have any students yet</li>
+        {{/if}}
       </ul>
 
       <h2>Users you have created</h2>
       <ul class="listing admin-users">
-        {{#each yourUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if yourUsers}}
+          {{#each yourUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>You haven't created any users yet</li>
+        {{/if}}
       </ul>
 
       <h2>Users in {{currentUser.organization.name}}</h2>
       <ul class="listing auth-users">
-        {{#each orgUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if orgUsers}}
+          {{#each orgUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>There are no users in your organization</li>
+        {{/if}}
       </ul>
     </nav>
 

@@ -1,6 +1,6 @@
 <section class="list-side">
   <header class="list-header">
-    <h1>Users Listing</h1>
+    <h1>Users</h1>
     <button>{{#link-to 'users.new' id='new-user-link' class="new-link-btn"}}Create New User{{/link-to}}</button>
   </header>
 
@@ -22,11 +22,15 @@
     <nav class="list-box">
       <h2>Waiting for Authorization</h2>
       <ul class="listing waiting-auth">
-        {{#each unauthUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if unauthUsers}}
+          {{#each unauthUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>There are no users waiting to be authorized</li>
+        {{/if}}
       </ul>
 
       <h2>Administrators</h2>
@@ -40,20 +44,28 @@
 
       <h2>Teachers</h2>
       <ul class="listing auth-users">
-        {{#each teacherUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if teacherUsers}}
+          {{#each teacherUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>There are no teachers yet</li>
+        {{/if}}
       </ul>
 
       <h2>Students</h2>
       <ul class="listing student-users">
-        {{#each studentUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-          {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-        </li>
-        {{/each}}
+        {{#if studentUsers}}
+          {{#each studentUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>There are no students yet</li>
+        {{/if}}
       </ul>
     </nav>
 

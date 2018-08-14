@@ -11,9 +11,13 @@
     <nav class="list-box">
       <h2>{{currentUser.username}}'s Assignments</h2>
       <ul class="your-assignments">
-        {{#each assignmentList as |assignment|}}
-        <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY' }}{{/link-to}}</li>
-        {{/each}}
+        {{#if assignmentList}}
+          {{#each assignmentList as |assignment|}}
+            <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}} / {`{format-date assignment.assignedDate 'MMM Do YYYY' }}{{/link-to}}</li>
+          {{/each}}
+        {{else}}
+          <li>You have no assignments yet</li>
+        {{/if}}
       </ul>
     </nav>
   </section>
