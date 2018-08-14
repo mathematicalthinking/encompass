@@ -27,8 +27,8 @@ const regUser = {
 
 const newUser = {
   name: 'John Doe',
-  email: 'johndoe111@gmail.com',
-  confirmEmail: 'johndoe111@gmail.com',
+  email: 'encmath2@gmail.com',
+  confirmEmail: 'encmath2@gmail.com',
   organization: 'Mathematical Thinking',
   location: 'Philadelphia, PA',
   username: 'johndoe111',
