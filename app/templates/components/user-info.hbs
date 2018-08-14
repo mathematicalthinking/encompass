@@ -83,8 +83,10 @@
       <td>Account Type</td>
       {{#if isEditing}}
       <td>
-        {{my-select selectedValue=selectedType content=accountTypes action=(action (mut selectedType))}}
-        {{input required=true type="hidden" value=selectedType}}
+        {{#if currentUser.isAdmin}}
+          {{my-select selectedValue=selectedType content=accountTypes action=(action (mut selectedType))}}
+          {{input required=true type="hidden" value=selectedType}}
+        {{/if}}
       </td>
       {{else}}
       <td>{{account-types user.accountType}}</td>
@@ -95,7 +97,7 @@
         <td>Authorized</td>
         <td>
           {{#if isEditing}}
-            {{#if currentUser.isAdmin}}
+            {{#if canEdit}}
               {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
               {{else}}
                 {{user.isAuthorized}}
@@ -122,7 +124,7 @@
         <tr>
           <td>Authorize</td>
           <td>
-            {{#if currentUser.isAdmin}}
+            {{#if canEdit}}
               {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
             {{else}}
               {{user.isAuthorized}}

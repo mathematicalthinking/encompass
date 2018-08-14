@@ -87,6 +87,7 @@ Encompass.Router.map(function() {
     });
     this.route("new");
   });
+  this.route('error', { path: '/*path'});
   this.route("logout");
   this.route("unconfirmed");
   this.route("unauthorized");
