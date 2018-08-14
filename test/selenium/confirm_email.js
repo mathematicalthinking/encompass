@@ -21,7 +21,7 @@ const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`
 const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`
 const expiredResetLink = `${host}${confirmPath}/${fixtures.userExpiredToken.token}`
 
-describe('Resetting Password', async function () {
+describe('Confirm Email', async function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -56,7 +56,7 @@ describe('Resetting Password', async function () {
 
   describe('Valid token', async function() {
     before(async function() {
-      await helpers.navigateAndWait(driver, confirmLink, css.confirmEmail.successMessage);
+      await helpers.navigateAndWait(driver, confirmLink, css.confirmEmail.successMessage, 10000);
     });
 
     it('should display success message', async function() {
