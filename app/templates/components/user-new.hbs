@@ -1,9 +1,13 @@
 {{#if currentUser.isAdmin}}
   {{user-new-admin currentUser=currentUser store=store  organizations=organizations toUserInfo="toUserInfo"}}
-{{else}}
-  {{#if currentUser.isStudent}}
-    <div class="centered">FORBIDDEN</div>
-  {{else}}
-    {{user-new-teacher currentUser=currentUser store=store organizations=organizations toUserInfo="toUserInfo"}}
-  {{/if}}
 {{/if}}
+{{#if currentUser.isPdAdmin}}
+  {{user-new-pd currentUser=currentUser store=store organizations=organizations toUserInfo="toUserInfo"}}
+{{/if}}
+{{#if currentUser.isTeacher}}
+  {{user-new-teacher currentUser=currentUser store=store organizations=organizations toUserInfo="toUserInfo"}}
+{{/if}}
+{{#if currentUser.isStudent}}
+    <div class="centered">FORBIDDEN</div>
+{{/if}}
+
