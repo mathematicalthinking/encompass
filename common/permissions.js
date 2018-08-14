@@ -36,7 +36,8 @@ module.exports = {
 
   // returns true if user has isAdmin: true
   isAdmin: function(user) {
-    return !!Properties.resolveProperty('isAdmin', user);
+    return Properties.resolveProperty('accountType', user) === 'A';
+    //return !!Properties.resolveProperty('isAdmin', user);
   },
 
   // compares username to the owner field on a workspace
@@ -57,6 +58,8 @@ module.exports = {
 
   // returns true if editors field on object
   // contains the username of user
+
+  //TODO: This does not work properly. Fix or replace
   isEditor: function(user, object) {
     if(!user || !object) {
       return false;
@@ -91,6 +94,7 @@ module.exports = {
   // should this check isOwner as well as isEditor
   // and isAdmin?
   userCan: function(user, workspace, permission) {
+    console.log('user in userCan', user);
     if(!this.isValidPermission(permission)) {
       throw "bogus permission request: " + permission;
     }
@@ -99,6 +103,7 @@ module.exports = {
     //console.log("Check is Editor.");
     var isEditor = this.isEditor(user, workspace);
     //console.log("Check is Admin.");
+    console.log('isEditor', isEditor);
     var isAdmin  = this.isAdmin(user, workspace);
     //console.log("Done with checks");
     console.log("IS ADMIN: ", isAdmin);
