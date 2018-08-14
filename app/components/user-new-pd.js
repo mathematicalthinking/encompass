@@ -41,18 +41,24 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       var email = this.get('email');
       var organization = currentUser.get('organization');
       var organizationId = organization.get('id');
-      console.log('currentUser is', currentUser);
-      console.log('currentUser org is', organization);
-      console.log('currentUser org id is', organizationId);
       var location = this.get('location');
       var accountType = this.get('selectedType');
       var accountTypeLetter = accountType.charAt(0).toUpperCase();
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = currentUser.get('id');
 
-      if (!username || !password || !email || !accountType) {
+      if (!username || !password || !accountType) {
         this.set('errorMessage', true);
         return;
+      }
+
+      if (accountTypeLetter !== "S") {
+        if (!email) {
+          this.set('errorMessage', true);
+          return;
+        }
+      } else {
+        email = null;
       }
 
       if (isAuthorized) {

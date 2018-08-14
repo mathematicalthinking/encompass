@@ -71,9 +71,18 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
 
-      if (!username || !password || !email || !organization || !accountType) {
+      if (!username || !password || !organization || !accountType) {
         this.set('errorMessage', true);
         return;
+      }
+
+      if (accountTypeLetter !== "S") {
+        if (!email) {
+          this.set('errorMessage', true);
+          return;
+        }
+      } else {
+        email = null;
       }
 
       if (isAuthorized) {
