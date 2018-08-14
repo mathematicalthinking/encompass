@@ -65,7 +65,7 @@ describe('Forgot Password', async function () {
           expect(await helpers.isTextInDom(driver, msg)).to.be.true;
         });
       });
-      describe('Using existing email address', async function() {
+      xdescribe('Using existing email address', async function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.email);

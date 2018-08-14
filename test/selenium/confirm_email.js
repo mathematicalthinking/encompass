@@ -103,7 +103,7 @@ describe('Confirm Email', async function () {
       expect(await helpers.isElementVisible(driver, css.confirmEmail.newEmailButton)).to.be.true;
     });
 
-    it('should send new email successfully after clicking button', async function() {
+    xit('should send new email successfully after clicking button', async function() {
       await helpers.findAndClickElement(driver, css.confirmEmail.newEmailButton);
       await helpers.waitForSelector(driver, css.confirmEmail.resentConfirm);
 
