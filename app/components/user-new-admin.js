@@ -105,12 +105,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         };
         this.set('newUserData', userData);
       }
-      this.set('username', '');
-      this.set('password', '');
-      this.set('name', '');
-      this.set('email', '');
-      this.set('location', '');
-      this.set('organization', '');
 
       if (!username) {
         return;
@@ -122,13 +116,15 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           newUserData.organization = org;
           return this.createNewUser(newUserData)
             .then((res) => {
-              if (res.message === 'Username already exists') {
+              console.log('res is', res);
+              console.log('res message is', res.message);
+              if (res.message === 'Can add existing user') {
                 this.set('usernameExists', true);
-              } else if (res.message === 'There already exists a user with this email address.') {
+              } else if (res.message === 'There already exists a user with that email address.') {
                 this.set('emailExistsError', res.message);
               }
             }).then((user) => {
-              this.sendAction('toUserInfo', user.username);
+              // this.sendAction('toUserInfo', user.username);
             })
             .catch((err) => {
               console.log(err);
