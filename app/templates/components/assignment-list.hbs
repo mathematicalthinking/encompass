@@ -2,7 +2,7 @@
   <header class="list-header">
     <h1>Assignments</h1>
     {{#unless currentUser.isStudent}}
-      <button>{{#link-to 'assignments.new' id='new-assignment-link' class="new-link-btn"}}Create New Assignment{{/link-to}}</button>
+      {{#link-to 'assignments.new' id='' class="new-link-btn"}}<span>Create New Assignment</span><i class="fas fa-plus"></i>{{/link-to}}
     {{/unless}}
     <div class="clear"></div>
   </header>
