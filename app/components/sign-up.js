@@ -87,32 +87,6 @@ Encompass.SignUpComponent = Ember.Component.extend({
     });
   },
 
-  handleOrg: function(org) {
-    var that = this;
-    return new Promise((resolve, reject) => {
-      if (!org) {
-        return reject('Invalid Data');
-      }
-      if (typeof org === 'string') {
-        let rec = that.store.createRecord('organization', {
-          name: org
-        });
-
-        rec.save()
-        .then((res) => {
-          console.log('res', res);
-          return resolve(res.get('organizationId'));
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-      } else {
-        return resolve(org.get('organizationId'));
-      }
-
-    });
-  },
-
   actions: {
     signup: function () {
       var that = this;
@@ -144,7 +118,6 @@ Encompass.SignUpComponent = Ember.Component.extend({
         return;
       }
 
-
       var createUserData = {
         name: name,
         email: email,
@@ -154,28 +127,26 @@ Encompass.SignUpComponent = Ember.Component.extend({
         requestReason: requestReason,
         accountType: 'T'
       };
+      if (typeof organization === 'string') {
+        createUserData.organizationRequest = organization;
+      } else {
+        createUserData.organization = organization.id;
+      }
 
-      return that.handleOrg(organization)
-      .then((org) => {
-        createUserData.organization = org;
-        return that.createUser(createUserData)
+      return that.createUser(createUserData)
         .then((res) => {
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
           } else if (res.message === 'There already exists a user with that email address.') {
             that.set('emailExistsError', res.message);
           } else {
-            // TODO: Change how we're redirecting
+            console.log('res from signup', res);
             that.sendAction('toHome');
           }
         })
         .catch((err) => {
           console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
     },
 
     resetErrors(e) {
