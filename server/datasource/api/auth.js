@@ -13,7 +13,6 @@ const bcrypt = require('bcrypt');
 const models = require('../../datasource/schemas');
 const User = models.User;
 const nodemailer = require('nodemailer');
-const sgMail = require('@sendgrid/mail');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
 
