@@ -78,7 +78,19 @@ module.exports = (passport) => {
     },
     (req, username, password, next) => {
       process.nextTick(() => {
-        let isStudent = req.body.accountType === 'S';
+        console.log('req.user?', req.user);
+        const isFromSignupForm = !req.user;
+        let newUserType;
+        let creatorType;
+        if (!isFromSignupForm) {
+          creatorType = req.user.accountType;
+          newUserType = req.body.accountType;
+        } else {
+          newUserType = 'T';
+        }
+
+        // let isStudent = req.body.accountType === 'S';
+
         User.findOne({
           'username': username
         }, (err, user) => {
@@ -87,116 +99,175 @@ module.exports = (passport) => {
           }
 
           if (user) {
-            console.log('user org', user.organization);
-            console.log('req.body', req.body);
-            let isAdmin = req.user.accountType === 'A';
-            if (JSON.stringify(user.organization) === JSON.stringify(req.user.organization) || isAdmin) {
-              return next(null, false, {
-                message: "Can add existing user",
-                user: user
-              });
+            console.log('USER ALREADY EXISTS', user);
+
+            // let isAdmin = req.user.accountType === 'A';
+
+            if (!isFromSignupForm) {
+              if ((JSON.stringify(user.organization) === JSON.stringify(req.user.organization)) || creatorType === 'A') {
+                return next(null, false, {
+                  message: "Can add existing user",
+                  user: user
+                });
+              }
             }
+
             return next(null, false, {
               message: "Username already exists"
             });
-          } else if(!isStudent) {
-            User.findOne({
-              'email': req.body.email
-            }, (err, user) => {
-              if (err) {
-                return next(err);
-              }
-              if (user) {
-                return next(null, false, {
-                  message: "There already exists a user with that email address."
-                });
-              }
-            });
-          }
-            console.log('req.body.section', req.body);
-            // When a user is first created, they should only ever have 0 or 1 sections as of now
-            // If its a student being added to a section, they will have that sectionId and role student
-            // If a user has just signed up through the signup form, they will not be in any sections, so sections should
-            // just be an empty array
-
-            let userSections = [];
-            if (req.body.sectionId) {
-              let section = {
-                sectionId: req.body.sectionId,
-                role: req.body.sectionRole
-              };
-              userSections.push(section);
-            }
-
-          const {
-            name,
-            email,
-            organization,
-            organizationRequest,
-            location,
-            username,
-            password,
-            isAuthorized,
-            requestReason,
-            accountType,
-            createdBy,
-            authorizedBy,
-            isEmailConfirmed,
-          } = req.body;
-          const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-          const newUser = new User({
-            name,
-            email,
-            organization,
-            organizationRequest,
-            location,
-            username,
-            password: hashPass,
-            isAuthorized,
-            requestReason,
-            accountType,
-            sections: userSections,
-            createdBy,
-            authorizedBy,
-            isEmailConfirmed,
-          });
-          console.log('newUSer', newUser);
-
-          // students don't have emails
-          if (newUser.accountType !== 'S') {
-            // generate confirmEmailToken && confirmEmailExpires
-          // send email upon successfull save
-            auth.getResetToken(20).then((token) => {
-              newUser.confirmEmailToken = token;
-              newUser.confirmEmailExpires = Date.now() + 86400000; //1 day
-
-              newUser.save((err) => {
+          } else {
+            if (newUserType !== 'S') {
+              User.findOne({
+                'email': req.body.email, 'accountType': {$ne: 'S'}
+              }, (err, user) => {
                 if (err) {
-                  next(err);
+                  return next(err);
                 }
-                auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token).then((res) => {
-                  console.log('email send success');
-                  return next(null, newUser);
-                })
-                .catch((err) => {
-                  console.log('error sending email', err);
-                });
+                if (user) {
+                  console.log('EMAIL IN USE ALREADY!!');
+                  return next(null, false, {
+                    message: "There already exists a user with that email address."
+                  });
+                } else {
+                  // When a user is first created, they should only ever have 0 or 1 sections as of now
+                  // If its a student being added to a section, they will have that sectionId and role student
+                  // If a user has just signed up through the signup form, they will not be in any sections, so sections should
+                  // just be an empty array
 
-              });
-            })
-            .catch((err) => {
-              console.log(err);
+                  let userSections = [];
+                  if (req.body.sectionId) {
+                    console.log('in sectionid if', req.body.sectionId);
+                    let section = {
+                      sectionId: req.body.sectionId,
+                      role: req.body.sectionRole
+                    };
+                    userSections.push(section);
+                  }
+
+                  const {
+                    name,
+                    email,
+                    organization,
+                    organizationRequest,
+                    location,
+                    username,
+                    password,
+                    isAuthorized,
+                    requestReason,
+                    accountType,
+                    createdBy,
+                    authorizedBy,
+                    isEmailConfirmed,
+                  } = req.body;
+
+                  const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+
+                  const newUser = new User({
+                    name,
+                    email,
+                    organization,
+                    organizationRequest,
+                    location,
+                    username,
+                    password: hashPass,
+                    isAuthorized,
+                    requestReason,
+                    accountType,
+                    sections: userSections,
+                    createdBy,
+                    authorizedBy,
+                    isEmailConfirmed,
+                  });
+                  console.log('newUSer', newUser);
+
+                  // generate confirmEmailToken && confirmEmailExpires
+                  // send email upon successfull save
+                  auth.getResetToken(20).then((token) => {
+                    newUser.confirmEmailToken = token;
+                    newUser.confirmEmailExpires = Date.now() + 86400000; //1 day
+
+                    newUser.save((err) => {
+                      if (err) {
+                        next(err);
+                      }
+                      auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token).then((res) => {
+                        console.log('email send success');
+                        return next(null, newUser);
+                      })
+                      .catch((err) => {
+                        console.log('error sending email', err);
+                      });
+                    });
+                  })
+                .catch((err) => {
+                  console.log(err);
+                });
+              }
             });
           } else {
+            let userSections = [];
+                  if (req.body.sectionId) {
+                    console.log('in sectionid if', req.body.sectionId);
+                    let section = {
+                      sectionId: req.body.sectionId,
+                      role: req.body.sectionRole
+                    };
+                    userSections.push(section);
+                  }
+
+                  const {
+                    name,
+                    email,
+                    organization,
+                    organizationRequest,
+                    location,
+                    username,
+                    password,
+                    isAuthorized,
+                    requestReason,
+                    accountType,
+                    createdBy,
+                    authorizedBy,
+                    isEmailConfirmed,
+                  } = req.body;
+
+                  const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+
+                  const newUser = new User({
+                    name,
+                    email,
+                    organization,
+                    organizationRequest,
+                    location,
+                    username,
+                    password: hashPass,
+                    isAuthorized,
+                    requestReason,
+                    accountType,
+                    sections: userSections,
+                    createdBy,
+                    authorizedBy,
+                    isEmailConfirmed,
+                  });
+                  console.log('newUSer', newUser);
             newUser.save((err) => {
               if (err) {
                 next(err);
               }
+              return next(null, newUser);
+
             });
           }
-        });
+        }
       });
-    }));
+    });
+  }));
+
+
+
+
+
+
 
 
 
