@@ -57,10 +57,9 @@ const localSignup = (req, res, next) => {
       if (info.message && info.user && info.message === 'Can add existing user') {
         return utils.sendResponse(res, info);
       }
-      console.log('user: ', user);
       return utils.sendResponse(res, info);
     }
-    //return utils.sendResponse(res, user);
+
     console.log('logging in user', user);
     req.logIn(user, function(err) {
       if (err) { return next(err); }
