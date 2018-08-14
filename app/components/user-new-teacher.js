@@ -1,6 +1,7 @@
 Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-new-teacher',
-  usernameExists: false,
+  usernameExists: null,
+  errorMessage: null,
   username: '',
   password: '',
   name: '',
@@ -35,9 +36,10 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
       var currentUserId = currentUser.get('id');
       var organization = currentUser.get('organization.id');
 
-      this.set('username', '');
-      this.set('password', '');
-      this.set('name', '');
+      if (!username || !password) {
+        this.set('errorMessage', true);
+        return;
+      }
 
       if (!username) {
         return;
@@ -64,6 +66,9 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
           }
         }).then((user) => {
           this.sendAction('toUserInfo', user.username);
+          this.set('username', '');
+          this.set('password', '');
+          this.set('name', '');
         })
         .catch((err) => {
           console.log(err);
@@ -71,15 +76,13 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
-    checkUsername: function (keysPressed) {
-      var errorMsg = 'Please enter usernames in lower case only';
-      var caseSensitive = /[A-Z]/;
-      var username = this.get('newUserUsername');
-
-      if (caseSensitive.test(username)) {
-        window.alert(errorMsg);
-        this.set('newUserUsername', keysPressed.toLowerCase());
+    resetErrors() {
+      if (this.get('usernameExists')) {
+        this.set('usernameExists', false);
       }
-    }
+      if (this.get('errorMessage')) {
+        this.set('errorMessage', false);
+      }
+    },
   }
 });

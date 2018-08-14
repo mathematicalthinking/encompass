@@ -8,13 +8,13 @@
     <tr>
       <td>Username</td>
       <td>
-        {{input type="text" value=username}}
+        {{input type="text" value=username action="resetErrors" on="key-down"}}
       </td>
     </tr>
     <tr>
       <td>Password</td>
       <td>
-        {{input type="password" value=password}}
+        {{input type="password" value=password action="resetErrors" on="key-down"}}
       </td>
     </tr>
     <tr>
@@ -29,6 +29,9 @@
     <p class="error-message">Username already exists</p>
   {{/if}}
 
+  {{#if errorMessage}}
+    <p class="error-message">Username & Password are required</p>
+  {{/if}}
 
   <button class='action_button' {{action 'newUser'}}>Create New Student</button>
 </article>
