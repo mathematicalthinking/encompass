@@ -126,13 +126,11 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
 }
 
 const forgot = async function(req, res, next) {
-  console.log('in forgot', req.body.email);
   let token;
   let user;
 
   try {
     token = await getResetToken(20);
-    console.log('token', token);
     user = await User.findOne({ email: req.body.email });
       if (!user) {
         const msg = {
@@ -148,7 +146,6 @@ const forgot = async function(req, res, next) {
 
       await sendEmailSMTP(req.body.email, req.headers.host, 'resetTokenEmail', token);
 
-      console.log('after email sent');
       return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`, isSuccess: true});
   }catch(err) {
     return utils.sendError.InternalError(err, res);
@@ -171,13 +168,11 @@ const validateResetToken = async function(req, res, next) {
 
 const resetPasswordById = async function(req, res, next) {
   try {
-
     const reqUser = userAuth.getUser(req);
 
     // need to be admin or be teacher and resetting one of your students
     //TODO: update this to only let you reset one of your student's passwords
     const hasPermission = reqUser && !reqUser.isStudent;
-    console.log('reqUser permission', reqUser, hasPermission);
 
     if (!hasPermission) {
       return utils.sendError.NotAuthorizedError(err, res);
@@ -198,18 +193,17 @@ const resetPasswordById = async function(req, res, next) {
         info: 'Cannot find user'
       });
     }
-    console.log('user.password before', user.password);
-      const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-      user.password = hashPass;
-      user.lastModifiedBy = reqUser.id;
-      user.lastModifiedDate = Date.now();
 
-      // should we store most recent password and block that password in future? or all past passwords and block all of them?
+    const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+    user.password = hashPass;
+    user.lastModifiedBy = reqUser.id;
+    user.lastModifiedDate = Date.now();
 
-      await user.save();
-      console.log('user p after', user.password);
+    // should we store most recent password and block that password in future? or all past passwords and block all of them?
 
-      return utils.sendResponse(res, user);
+    await user.save();
+
+    return utils.sendResponse(res, user);
 
     }catch(err) {
       return utils.sendError.InternalError(err, res);
@@ -217,8 +211,6 @@ const resetPasswordById = async function(req, res, next) {
   };
 
 const resetPassword = async function(req, res, next) {
-  console.log('body', req.body);
-  console.log('token', req.params.token);
   try {
     const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } });
     if (!user) {
@@ -226,19 +218,21 @@ const resetPassword = async function(req, res, next) {
         info: 'Password reset token is invalid or has expired.'
       });
     }
-      const hashPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(12), null);
-      user.password = hashPass;
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
 
-      await user.save();
-      console.log('user saved');
-      req.logIn(user, (err) => {
-        if (err) {
-          return utils.sendError.InternalError(err, res);
-        }
-        return utils.sendResponse(res, user);
-      });
+    const hashPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(12), null);
+    user.password = hashPass;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return utils.sendError.InternalError(err, res);
+      }
+      return utils.sendResponse(res, user);
+    });
+
   }catch(err) {
     console.log(err);
     return utils.sendError.InternalError(err, res);
@@ -246,8 +240,6 @@ const resetPassword = async function(req, res, next) {
 };
 
 const confirmEmail = async function(req, res, next) {
-  console.log('body', req.body);
-  console.log('token', req.params.token);
   try {
     const user = await User.findOne({ confirmEmailToken: req.params.token, confirmEmailExpires: { $gt: Date.now() } });
     if (!user) {
@@ -262,26 +254,18 @@ const confirmEmail = async function(req, res, next) {
       user.confirmEmailExpires = undefined;
 
       const savedUser = await user.save();
-      console.log('user saved');
-      // req.logIn(user, (err) => {
-      //   if (err) {
-      //     return utils.sendError.InternalError(err, res);
-      //   }
-      //   return utils.sendResponse(res, user);
-      // });
+
       const data = {
         isValid: true,
         isEmailConfirmed: savedUser.isEmailConfirmed
       };
       return utils.sendResponse(res, data);
   }catch(err) {
-    console.log(err);
     return utils.sendError.InternalError(err, res);
   }
 };
 
 resendConfirmationEmail = async function(req, res, next) {
-  console.log('in resend', req.user);
   const user = userAuth.getUser(req);
   if (!user) {
     return utils.sendError.InvalidCredentialsError(err, res);
@@ -289,19 +273,18 @@ resendConfirmationEmail = async function(req, res, next) {
 
   try {
     let userRec = await models.User.findById(user._id);
-    console.log('userRec', userRec);
     const recipient = user.email;
     const token = await getResetToken(20);
 
+    userRec.confirmEmailToken = token;
+    userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
+    let savedUser = await userRec.save();
+    await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token);
+    return utils.sendResponse(res, {
+     isSuccess: true,
+     info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`
+   });
 
-      userRec.confirmEmailToken = token;
-      userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
-      let savedUser = await userRec.save();
-     await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token);
-     return utils.sendResponse(res, {
-       isSuccess: true,
-       info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`
-     });
   }catch(err) {
     return utils.sendError.InternalError(err, res);
   }
