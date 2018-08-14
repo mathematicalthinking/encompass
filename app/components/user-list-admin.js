@@ -14,15 +14,17 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   adminUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let adminUsers = users.filterBy('accountType', 'A');
+    let authUsers = users.filterBy('isAuthorized', true);
+    let adminUsers = authUsers.filterBy('accountType', 'A');
     return adminUsers.sortBy('createDate').reverse();
-  }.property('users.@each.accountType'),
+  }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
   studentUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let students = users.filterBy('accountType', 'S');
+    let authUsers = users.filterBy('isAuthorized', true);
+    let students = authUsers.filterBy('accountType', 'S');
     return students.sortBy('createDate').reverse();
-  }.property('users.@each.accountType'),
+  }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
   teacherUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
