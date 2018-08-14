@@ -78,7 +78,15 @@ describe('Confirm Email', async function () {
     };
     before(async function() {
       await dbSetup.prepTestDb();
-      await helpers.login(driver, host, user);
+      //await helpers.login(driver, host, user);
+      await helpers.findAndClickElement(driver, css.confirmEmail.loginLink);
+      await helpers.waitForSelector(driver, css.login.username);
+
+      await helpers.findInputAndType(driver, css.login.username, user.username);
+      await helpers.findInputAndType(driver, css.login.password, user.password);
+      await helpers.findAndClickElement(driver, css.login.submit);
+      await helpers.waitForSelector(driver, css.topBar.logout);
+      await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 7000);
     });
 
     it('should redirect to /unconfirmed', async function() {
