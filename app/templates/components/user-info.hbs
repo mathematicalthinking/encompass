@@ -83,7 +83,7 @@
       <td>Account Type</td>
       {{#if isEditing}}
       <td>
-        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+        {{my-select selectedValue=selectedType content=accountTypes action=(action (mut selectedType))}}
         {{input required=true type="hidden" value=selectedType}}
       </td>
       {{else}}

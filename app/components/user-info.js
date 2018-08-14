@@ -8,6 +8,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
   // should teachers who sign up through the site themselves have createdBy be set to their own id?
+
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
     let creator = user.get('createdBy.content.id');
@@ -56,14 +57,22 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
     actions: {
       editUser: function () {
-        this.set('isEditing', true);
         let user = this.get('user');
+        let accountType = user.get('accountType');
+        if (accountType === "S") {
+          this.set('selectedType', 'Student');
+        } else if (accountType === "T") {
+          this.set('selectedType', 'Teacher');
+        } else if (accountType === "A") {
+          this.set('selectedType', 'Admin');
+        } else if (accountType === "P") {
+          this.set('selectedType', 'Pd Admin');
+        } else {
+          this.set('selectedType', 'null');
+        }
+        this.set('isEditing', true);
         let isAuth = user.get('isAuthorized');
         this.set('authorized', isAuth);
-        let accountType = user.get('accountType');
-        console.log('current account type is', accountType);
-        this.set('selectedType', accountType);
-        console.log('selectedType', this.get('selectedType'));
       },
 
       saveUser: function () {
