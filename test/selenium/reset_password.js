@@ -17,9 +17,9 @@ const fixtures = require('./fixtures/reset_password');
 const host = helpers.host;
 const resetPath = '/#/auth/reset';
 
-const resetLink = `${host}/${resetPath}/${fixtures.userLiveToken.token}`
-const invalidResetLink = `${host}/${resetPath}/${fixtures.userLiveToken.invalidToken}`
-const expiredResetLink = `${host}/${resetPath}/${fixtures.userExpiredToken.token}`
+const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`
+const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`
+const expiredResetLink = `${host}${resetPath}/${fixtures.userExpiredToken.token}`
 
 describe('Resetting Password', async function () {
   this.timeout(helpers.timeoutTestMsStr);
