@@ -7,7 +7,7 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   unauthUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
-    let accountTypeUsers = this.users.filterBy('accountType');
+    let accountTypeUsers = users.filterBy('accountType');
     let unauthUsers = accountTypeUsers.filterBy('isAuthorized', false);
     return unauthUsers.sortBy('createDate').reverse();
   }.property('users.@each.isAuthorized'),

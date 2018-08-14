@@ -3,6 +3,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   isEditing: false,
   authorized: null,
   accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
+  selectedType: null,
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
@@ -59,6 +60,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let user = this.get('user');
         let isAuth = user.get('isAuthorized');
         this.set('authorized', isAuth);
+        let accountType = user.get('accountType');
+        console.log('current account type is', accountType);
+        this.set('selectedType', accountType);
+        console.log('selectedType', this.get('selectedType'));
       },
 
       saveUser: function () {

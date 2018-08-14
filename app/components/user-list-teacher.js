@@ -17,7 +17,7 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
     let users = this.users.filterBy('isTrashed', false);
     let students = users.filterBy('isStudent', true);
     // Then we want to get all the sections the student belongs to and if they match the teachers, return them
-    return students;
+    return students.sortBy('createDate').reverse();
   }.property('users.@each.accountType'),
 
 //get all users, check for users that have sections the same as the one as the teacher
@@ -28,7 +28,7 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
   yourUsers: function () {
     let yourId = this.get('currentUser').get('id');
     let yourUsers = this.users.filterBy('createdBy.id', yourId);
-    return yourUsers;
+    return yourUsers.sortBy('createDate').reverse();
   }.property('users.@each.isTrashed'),
 
   // These are all the users that are in the same org as you
@@ -37,7 +37,8 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
       return !user.get('isTrashed') && user.get('organization.id') && !user.get('isStudent');
     });
     let yourOrgId = this.get('currentUser').get('organization').get('id');
-    return usersWithOrgs.filterBy('organization.id', yourOrgId);
+    usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
+    return usersWithOrgs.sortBy('createDate').reverse();
   }.property('users.@each.isTrashed'),
 
   actions: {
