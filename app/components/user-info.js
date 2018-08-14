@@ -15,8 +15,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let currentUserId = this.get('currentUser').get('id');
     let accountType = this.get('currentUser').get('accountType');
     let isAdmin = accountType === 'A';
+    let isPdAdmin = accountType === 'P';
 
-    let canEdit = (creator === currentUserId ? true : false) || isAdmin;
+    let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin;
     return canEdit;
   }),
 

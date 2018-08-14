@@ -42,6 +42,19 @@
         {{/each}}
       </ul>
 
+      <h2>Pd Admins</h2>
+      <ul class="listing pd-users">
+        {{#if pdUsers}}
+          {{#each pdUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+        <li>There are no Pd Admins yet</li>
+        {{/if}}
+      </ul>
+
       <h2>Teachers</h2>
       <ul class="listing auth-users">
         {{#if teacherUsers}}

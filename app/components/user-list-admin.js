@@ -19,10 +19,10 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
     return adminUsers.sortBy('createDate').reverse();
   }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
-  studentUsers: function () {
+  pdUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
     let authUsers = users.filterBy('isAuthorized', true);
-    let students = authUsers.filterBy('accountType', 'S');
+    let students = authUsers.filterBy('accountType', 'P');
     return students.sortBy('createDate').reverse();
   }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
@@ -32,6 +32,14 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
     let authTeachers = teacherUsers.filterBy('isAuthorized', true);
     return authTeachers.sortBy('createDate').reverse();
   }.property('users.@each.isAuthorized', 'users.@each.accountType'),
+
+  studentUsers: function () {
+    let users = this.users.filterBy('isTrashed', false);
+    let authUsers = users.filterBy('isAuthorized', true);
+    let students = authUsers.filterBy('accountType', 'S');
+    return students.sortBy('createDate').reverse();
+  }.property('users.@each.accountType', 'users.@each.isAuthorized'),
+
 
   actions: {}
 
