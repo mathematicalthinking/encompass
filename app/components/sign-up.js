@@ -136,6 +136,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
 
       return that.createUser(createUserData)
         .then((res) => {
+          console.log('RES', res);
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
           } else if (res.message === 'There already exists a user with that email address.') {
@@ -156,6 +157,25 @@ Encompass.SignUpComponent = Ember.Component.extend({
       for (let error of errors) {
         if (this.get(error)) {
           this.set(error, false);
+        }
+      }
+    },
+
+    emailValidate() {
+      var email = this.get('email');
+      if (email) {
+        var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+        var emailTest = emailPattern.test(email);
+        console.log(emailTest);
+
+        if (emailTest === false) {
+          this.set('incorrectEmail', true);
+          return;
+        }
+
+        if (emailTest === true) {
+          this.set('incorrectEmail', false);
+          return;
         }
       }
     },
