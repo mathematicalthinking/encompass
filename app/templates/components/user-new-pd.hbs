@@ -1,0 +1,72 @@
+<h3>Create a New User</h3>
+<article class="user">
+  <table class="values rows">
+    <tr>
+      <th>Label</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Username</td>
+      <td>
+        {{input type="text" value=username action="resetErrors" on="key-down"}}
+      </td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td>
+        {{input type="password" value=password action="resetErrors" on="key-down"}}
+      </td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>
+        {{input type="text" value=name}}
+      </td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td>
+        {{input type="text" value=email action="resetErrors" on="key-down"}}
+      </td>
+    </tr>
+    <tr>
+      <td>Organization</td>
+      <td>
+        {{input type="text" value=currentUser.organization.name}}
+        {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
+      </td>
+    </tr>
+    <tr>
+      <td>Location</td>
+      <td>
+        {{input type="text" value=location}}
+      </td>
+    </tr>
+    <tr>
+      <td>Account Type</td>
+      <td>
+        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+      </td>
+    </tr>
+    <tr>
+      <td>Authorized</td>
+      <td>
+        {{input type="checkbox" checked=isAuthorized value=isAuthorized}}
+      </td>
+    </tr>
+  </table>
+
+  {{#if usernameExists}}
+    <p class="error-message">Username already exists</p>
+  {{/if}}
+  {{#if emailExistsError}}
+    <p class="error-message">Email address has already been used</p>
+  {{/if}}
+  {{#if errorMessage}}
+    <p class="error-message">Missing required fields</p>
+  {{/if}}
+
+
+
+  <button class='action_button' {{action 'newUser'}}>Create New User</button>
+</article>
