@@ -1,4 +1,8 @@
 module.exports = {
+  general: {
+    successMessage: '.success-message',
+    errorMessage: '.error-message',
+  },
   topBar: {
     login: 'a.menu.login',
     signup: 'a.menu.signup',
@@ -75,6 +79,15 @@ module.exports = {
     },
     submit: '#reset-password',
     invalidToken: 'p.error-message',
+  },
+
+  forgotPassword: {
+    forgotForm: 'form.form-forgot',
+    inputs: {
+      email: 'input#email',
+      username: 'input#username'
+    },
+    submit: 'button#request-reset-link',
   },
 
   confirmEmail: {
