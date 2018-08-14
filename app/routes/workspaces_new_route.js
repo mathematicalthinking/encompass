@@ -1,11 +1,12 @@
 Encompass.WorkspacesNewRoute = Ember.Route.extend({
 
   model: function() {
-    var store = this.get('store');
-    var pdSets = store.findAll('PdSet');
-    var folderSets = store.findAll('folderSet');
-
-    return {pdSets: pdSets, folderSets: folderSets};
+    return Ember.RSVP.hash({
+      pdSets: this.get('store').findAll('PdSet'),
+      folderSets: this.get('store').findAll('folderSet'),
+      sections: this.get('store').findAll('section'),
+      assignments: this.get('store').findAll('assignment')
+    });
   },
 
   actions: {

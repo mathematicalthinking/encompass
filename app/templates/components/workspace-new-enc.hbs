@@ -1,0 +1,46 @@
+<h2>Create a workspace from encompass submissions</h2>
+
+<h3>Create workspace from assignment</h3>
+
+<form id='powImportForm' class='properForm'>
+     <fieldset>
+       <ol>
+         <li>
+           <label for="teacher">Teacher <em>*</em></label>
+           {{input id="teacher" type="text" value=teacher disabled=currentUser.isTeacher placeholder="enter username"}}
+         </li>
+         {{#unless currentUser.isTeacher}}
+          <li>
+            <label for="submitter">Submitter</label>
+            {{input id="submitter" type="text" value=submitter placeholder="enter username"}}
+          </li>
+         {{/unless}}
+         <li>
+           <label for="assignment">Assignment</label>
+           {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment" action=(action (mut selectedAssignment))}}
+         </li>
+         {{!-- <li>
+           <label for="section">Section</label>
+           {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment" action=(action (mut selectedAssignment))}}
+         </li> --}}
+         {{!-- <li style="border-bottom:2px dashed; padding:0.2em; text-align:center;">OR</li> --}}
+         {{!-- <li >
+           <label for="subs">Submissions</label>
+           {{input id="subs" type="text" value=subs size="33" placeholder="one or more IDs" pattern="([0-9]+(,?))*"}}
+          </li> --}}
+         </ol>
+     </fieldset><br />
+
+     <fieldset> <legend> By Date </legend>
+       <ol>
+         <li>
+           <label for="start">From</label>
+           {{input id="start" type="date" value=startDate placeholder="mm/dd/yyyy"}}
+         </li>
+         <li>
+         <label for="end">To</label>
+         {{input id="end" type="date" value=endDate placeholder="mm/dd/yyyy"}}
+         </li>
+       </ol>
+     </fieldset>
+     </form>
