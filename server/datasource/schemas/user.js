@@ -69,6 +69,7 @@ var UserSchema = new Schema({
   confirmEmailExpires: { type: Date },
   isEmailConfirmed: { type: Boolean },
   organization: {type: ObjectId, ref: 'Organization'},
+  organizationRequest: { type: String },
   location: String,
   requestReason: String,
   // We only use google for external auth, we can use these fields if we use more OAuths
