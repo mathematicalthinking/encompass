@@ -2,6 +2,63 @@
 @import "mixins";
 @import "responsive-font-size";
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
+  .list-side {
+    .list-header {
+      h1 {
+        font-size: 1.2em;
+      }
+      .new-link-btn {
+        font-size: .8em;
+        span {
+          display: none;
+        }
+        i {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 860px) and (max-width: 1319px) {
+  .list-side {
+    .list-header {
+      h1 {
+        font-size: 1.5em;
+      }
+      .new-link-btn {
+        font-size: .8em;
+        span {
+          display: none;
+        }
+        i {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 1320px) and (max-width: 10000px) {
+  .list-side {
+    .list-header {
+      h1 {
+        font-size: 1.7em;
+      }
+      .new-link-btn {
+        font-size: 1em;
+        span {
+          display: block;
+        }
+        i {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 .list-side {
   width: 25%;
   height: 100%;
@@ -20,33 +77,30 @@
     h1 {
       text-transform: capitalize;
       margin: 10px 0 10px 20px;
-      font-size: 1.8em; // color: darken($primary-font-color, 5%);
       color: $primary-font-color;
       font-weight: bold;
       display: inline-block;
     }
-    button {
-      border: none;
-      &:focus {
-        outline: none;
-      }
-      .new-link-btn {
-        color: white;
-        background: $accent-color;
-        font-weight: $main-font-weight;
-        font-family: $primary-font;
-        font-size: 1.3em;
-        border-radius: 3px;
-        padding: 10px 15px;
-        display: inline-block;
-        position: relative;
-        top: -5px;
-        left: 10px;
-        &:hover {
-          font-weight: $bold-font-weight;
-          cursor: pointer;
-          background: darken($accent-color, 10%);
-        }
+    .new-link-btn,
+    #new-user-link,
+    #new-assignment-link,
+    #problem-new-link,
+    #new-section-link {
+      color: white;
+      background: $accent-color;
+      font-weight: $main-font-weight;
+      font-family: $primary-font;
+      border-radius: 3px;
+      padding: 0px 15px;
+      margin-left: 10px;
+      display: inline-block;
+      position: relative;
+      top: -4px;
+      line-height: 40px;
+      &:hover {
+        font-weight: $bold-font-weight;
+        cursor: pointer;
+        background: darken($accent-color, 10%);
       }
     }
   }
@@ -62,6 +116,7 @@
       font-size: 1.4em;
       color: $accent-color;
       font-weight: $bold-font-weight;
+      @include responsive-font-size (.5em, 1.3em, 540px, 1500px, 0.5em);
     }
 
     li {
