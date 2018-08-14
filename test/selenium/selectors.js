@@ -66,5 +66,14 @@ module.exports = {
       teachers: 'input#teacher'
     },
     create: 'button.action_button'
-  }
+  },
+  resetPassword: {
+    resetForm: 'form.form-reset',
+    inputs: {
+      password: 'input#password',
+      confirmPassword: 'input#confirmPassword'
+    },
+    submit: '#reset-password',
+    invalidToken: 'p.error-message',
+  },
 };
