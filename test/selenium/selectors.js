@@ -76,4 +76,14 @@ module.exports = {
     submit: '#reset-password',
     invalidToken: 'p.error-message',
   },
+
+  confirmEmail: {
+    submit: '#reset-password',
+    invalidToken: 'p.error-message',
+    successMessage: 'p.success-message',
+    loginLink: 'a.login-link',
+    infoMessage: 'p.info',
+    newEmailButton: 'button.action_button',
+    resentConfirm: 'p#resent-confirm',
+  }
 };
