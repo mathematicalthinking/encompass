@@ -154,6 +154,7 @@ var data = [
     "assignments": [],
     "sections": [],
     "isTrashed": false,
+    "isEmailConfirmed": true,
   }, {
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
@@ -163,6 +164,7 @@ var data = [
     "assignments": [],
     "sections": [],
     "isTrashed": false,
+    "isEmailConfirmed": true,
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
