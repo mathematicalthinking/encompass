@@ -110,16 +110,20 @@
 
     <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
 
+
+       {{#if userAlreadyInSection}}
+        <p class="error-message"> Username: {{studentUsername}} registered in this section.</p>
+        <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> Close </button>
+      {{/if}}
+
          {{#if doYouWantToAddExistingUser}}
       <p class="error-message"> {{studentUsername}} belongs to the same organization. Do you want to add {{studentUsername}} to this section?
       <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
-      <button class="action_button" {{action 'exitaddexistingusername'}} style="margin-right: 10px"> no </button>
+      <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> no </button>
       </p>
       {{/if}}
 
-      {{# studentAlreadyInSection}}
-        <p class="error-message"> Username:{{studentUsername}} registered in this section.</p>
-      {{/if}}
+
 
     </fieldset>
       <button class="action_button" {{action 'doneAdding'}}>Done</button>
