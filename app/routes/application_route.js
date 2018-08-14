@@ -32,7 +32,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     console.log('in afterModel app route', transition);
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
-    const allowedPaths = ['auth.reset', 'auth.confirm'];
+    const allowedPaths = ['auth.reset', 'auth.confirm', 'auth.forgot'];
     const targetPath = transition.targetName;
 
     if (allowedPaths.includes(targetPath)) {
