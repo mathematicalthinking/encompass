@@ -8,13 +8,13 @@
     <tr>
       <td>Username</td>
       <td>
-        {{input type="text" value=username}}
+        {{input type="text" value=username action="resetErrors" on="key-down"}}
       </td>
     </tr>
     <tr>
       <td>Password</td>
       <td>
-        {{input type="password" value=password}}
+        {{input type="password" value=password action="resetErrors" on="key-down"}}
       </td>
     </tr>
     <tr>
@@ -26,7 +26,7 @@
     <tr>
       <td>Email</td>
       <td>
-        {{input type="text" value=email}}
+        {{input type="text" value=email action="resetErrors" on="key-down"}}
       </td>
     </tr>
     <tr>
@@ -45,7 +45,6 @@
       <td>Account Type</td>
       <td>
         {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
-        {{input required=true type="hidden" value=selectedType}}
       </td>
     </tr>
     <tr>
@@ -63,6 +62,12 @@
   {{#if emailExistsError}}
     <p class="error-message">Email address has already been used</p>
   {{/if}}
+
+  {{#if errorMessage}}
+    <p class="error-message">Missing required fields</p>
+  {{/if}}
+
+
 
   <button class='action_button' {{action 'newUser'}}>Create New User</button>
 </article>

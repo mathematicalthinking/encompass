@@ -1,7 +1,8 @@
 Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-new-admin',
-  usernameExists: false,
+  usernameExists: null,
   emailExistsError: null,
+  errorMessage: null,
   username: '',
   password: '',
   name: '',
@@ -69,6 +70,12 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var accountTypeLetter = accountType.charAt(0).toUpperCase();
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
+
+      if (!username || !password || !email || !organization || !accountType) {
+        this.set('errorMessage', true);
+        return;
+      }
+
       if (isAuthorized) {
         let userData = {
           username: username,
@@ -77,7 +84,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           email: email,
           location: location,
           accountType: accountTypeLetter,
-          isAuthorized: isAuthorized,
+          isAuthorized: true,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
           createDate: new Date(),
@@ -91,8 +98,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           name: name,
           email: email,
           location: location,
-          // isStudent: isStudent,
-          // isAdmin: isAdmin,
+          accountType: accountTypeLetter,
           isAuthorized: false,
           createdBy: currentUserId,
           createDate: new Date(),
@@ -142,6 +148,18 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         window.alert(errorMsg);
         this.set('newUserUsername', keysPressed.toLowerCase());
       }
-    }
+    },
+
+    resetErrors(e) {
+      if (this.get('usernameExists')) {
+        this.set('usernameExists', false);
+      }
+      if (this.get('emailExistsError')) {
+        this.set('emailExistsError', false);
+      }
+      if (this.get('errorMessage')) {
+        this.set('errorMessage', false);
+      }
+    },
   }
 });

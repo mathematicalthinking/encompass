@@ -18,9 +18,11 @@ Encompass.MySelectComponent = Ember.Component.extend({
     selectChange: function() {
       var changeAction = this.get('action');
       var selectedEl = this.$('select')[0];
+      var prompt = this.$('#select-prompt');
+      console.log('prompt is', prompt);
       var selectedIndex;
 
-      if (this.prompt) {
+      if (prompt.length > 0) {
         selectedIndex = selectedEl.selectedIndex - 1;
       } else {
         selectedIndex = selectedEl.selectedIndex;
