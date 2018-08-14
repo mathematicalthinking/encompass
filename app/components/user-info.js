@@ -2,7 +2,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   elementId: 'user-info',
   isEditing: false,
   authorized: null,
-  accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
+  // accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
   selectedType: null,
 
   // this was returning undefined if you are logged in and viewing your own profile and
@@ -30,6 +30,23 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       }
     }
   }.observes('isResettingPassword', 'isEditing', 'user.id'),
+
+  accountTypes: Ember.computed(function () {
+    let accountType = this.get('currentUser').get('accountType');
+    let accountTypes;
+
+    if (accountType === 'A') {
+      accountTypes = ['Teacher', 'Student', 'Pd Admin', 'Admin'];
+    } else if (accountType === 'P') {
+      accountTypes = ['Teacher', 'Student'];
+    } else if (accountType === 'T') {
+      accountTypes = ['Student'];
+    } else {
+      accountTypes = [];
+    }
+
+    return accountTypes;
+  }),
 
   lastSeenDate: function () {
       var last = this.get('lastSeen');

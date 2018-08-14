@@ -83,7 +83,7 @@
       <td>Account Type</td>
       {{#if isEditing}}
       <td>
-        {{#if currentUser.isAdmin}}
+        {{#if canEdit}}
           {{my-select selectedValue=selectedType content=accountTypes action=(action (mut selectedType))}}
           {{input required=true type="hidden" value=selectedType}}
         {{/if}}
