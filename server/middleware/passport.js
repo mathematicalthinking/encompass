@@ -132,6 +132,7 @@ module.exports = (passport) => {
             name,
             email,
             organization,
+            organizationRequest,
             location,
             username,
             password,
@@ -140,12 +141,14 @@ module.exports = (passport) => {
             accountType,
             createdBy,
             authorizedBy,
+            isEmailConfirmed,
           } = req.body;
           const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
           const newUser = new User({
             name,
             email,
             organization,
+            organizationRequest,
             location,
             username,
             password: hashPass,
@@ -155,6 +158,7 @@ module.exports = (passport) => {
             sections: userSections,
             createdBy,
             authorizedBy,
+            isEmailConfirmed,
           });
           console.log('newUSer', newUser);
 
