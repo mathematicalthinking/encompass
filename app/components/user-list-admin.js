@@ -1,10 +1,6 @@
 Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-list-admin',
 
-  // init: function () {
-  //   this.get('users');
-  // },
-
   unauthUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
     let accountTypeUsers = users.filterBy('accountType');

@@ -31,7 +31,7 @@
       <ul class="listing waiting-auth">
         {{#if unauthUsers}}
           {{#each unauthUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
           </li>
           {{/each}}
@@ -43,7 +43,7 @@
       <h2>Administrators</h2>
       <ul class="listing admin-users">
         {{#each adminUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
           {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
         </li>
         {{/each}}
@@ -53,7 +53,7 @@
       <ul class="listing pd-users">
         {{#if pdUsers}}
           {{#each pdUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
           </li>
           {{/each}}
@@ -66,7 +66,7 @@
       <ul class="listing auth-users">
         {{#if teacherUsers}}
           {{#each teacherUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
           </li>
           {{/each}}

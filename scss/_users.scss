@@ -13,6 +13,9 @@
     .is-authorized {
       font-weight: $bolder-font-weight;
     }
+    .is-unconfirmed {
+      font-style: italic;
+    }
   }
   .centered {
     font-size: 2em;

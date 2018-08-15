@@ -43,6 +43,16 @@
       </td>
     </tr>
     <tr>
+      <td>Email Confirmed</td>
+      <td>
+        {{#if isEditing}}
+          {{input type="checkbox" checked=user.isEmailConfirmed value=authorized}}
+        {{else}}
+          {{user.isEmailConfirmed}}
+        {{/if}}
+      </td>
+    </tr>
+    <tr>
       <td>Organization</td>
       <td>
         {{user.organization.name}}

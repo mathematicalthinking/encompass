@@ -32,7 +32,7 @@
       <h2>Waiting for Authorization</h2>
       <ul class="listing waiting-auth">
         {{#if unauthUsers}} {{#each unauthUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
           {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
         </li>
         {{/each}} {{else}}
@@ -43,7 +43,7 @@
       <h2>Teachers</h2>
       <ul class="listing auth-users">
         {{#if teacherUsers}} {{#each teacherUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
           {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
         </li>
         {{/each}} {{else}}

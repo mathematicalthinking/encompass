@@ -126,7 +126,8 @@ Encompass.SignUpComponent = Ember.Component.extend({
         username: usernameTrim,
         password: password,
         requestReason: requestReason,
-        accountType: 'T'
+        accountType: 'T',
+        isAuthorized: false,
       };
       if (typeof organization === 'string') {
         createUserData.organizationRequest = organization;
