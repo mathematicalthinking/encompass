@@ -20,6 +20,13 @@
 
   <section>
     <nav class="list-box">
+      <h2>Your account</h2>
+      <ul class="listing">
+        <li class="{{if currentUser.isAuthorized 'is-authorized'}} {{if currentUser.isAdmin 'is-admin'}}">
+          {{#link-to 'user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
+        </li>
+      </ul>
+
       <h2>Waiting for Authorization</h2>
       <ul class="listing waiting-auth">
         {{#if unauthUsers}}
