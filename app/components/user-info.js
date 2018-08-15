@@ -14,10 +14,17 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let creator = user.get('createdBy.content.id');
     let currentUserId = this.get('currentUser').get('id');
     let accountType = this.get('currentUser').get('accountType');
+    let yourUsername = this.get('currentUser').get('username');
+    console.log('your username is', yourUsername);
+    let selectedUsername = user.get('username');
+    console.log('selected username is', selectedUsername);
+    // you cant edit if you have the same username?
+
+    let isOwner = yourUsername === selectedUsername;
     let isAdmin = accountType === 'A';
     let isPdAdmin = accountType === 'P';
 
-    let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin;
+    let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin || isOwner;
     return canEdit;
   }),
 
