@@ -1,28 +1,31 @@
 Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-list-teacher',
 
+  // Get all the teacher's sections where they are role student. Then get all the students inside the teacher's sections
+
   // These are all the students that are in sections you are a teacher of
   yourStudents: function () {
     let yourSections = this.get('currentUser').get('sections');
+    console.log('your sections are', yourSections);
+    let yourTeacherSections = yourSections.filterBy('role', 'teacher');
+    console.log('yourTeacher Sections is', yourTeacherSections);
+    let firstId = yourTeacherSections[0].sectionId;
+    console.log('first sectionid is', firstId);
 
-    // we want to get the id's of all the sections the teacher belongs to
-    let sectionIdArray = [];
-    yourSections.forEach((section) => {
-      sectionIdArray.push(section.sectionId);
+    let section1 = this.store.findRecord('section', firstId).then((section) => {
+      console.log('section is', section);
+      let sectionStudents = section.get('students');
+      console.log('section students', sectionStudents);
     });
-    let section = this.store.findRecord('section', sectionIdArray[0]);
-
-    console.log('store section', section);
+    // console.log('section 1 is', section1);
+    // let section1Students = section1.get('name');
+    // console.log('section1 name is', section1Students);
 
     let users = this.users.filterBy('isTrashed', false);
     let students = users.filterBy('isStudent', true);
-    // Then we want to get all the sections the student belongs to and if they match the teachers, return them
     return students.sortBy('createDate').reverse();
   }.property('users.@each.accountType'),
 
-//get all users, check for users that have sections the same as the one as the teacher
-
-//can we just search the teacher's sections and return all the students in the students array
 
   // These are all the users that you have created - filter out duplicates
   yourUsers: function () {
