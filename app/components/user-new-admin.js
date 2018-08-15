@@ -156,14 +156,12 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     },
 
     resetErrors(e) {
-      if (this.get('usernameExists')) {
-        this.set('usernameExists', false);
-      }
-      if (this.get('emailExistsError')) {
-        this.set('emailExistsError', false);
-      }
-      if (this.get('errorMessage')) {
-        this.set('errorMessage', false);
+      const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];
+
+      for (let error of errors) {
+        if (this.get(error)) {
+          this.set(error, false);
+        }
       }
     },
   }

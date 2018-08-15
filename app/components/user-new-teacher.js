@@ -76,13 +76,16 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
-    resetErrors() {
-      if (this.get('usernameExists')) {
-        this.set('usernameExists', false);
-      }
-      if (this.get('errorMessage')) {
-        this.set('errorMessage', false);
+    resetErrors(e) {
+      const errors = ['usernameExists', 'errorMessage'];
+
+      for (let error of errors) {
+        if (this.get(error)) {
+          this.set(error, false);
+        }
       }
     },
   }
 });
+
+
