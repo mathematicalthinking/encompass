@@ -42,7 +42,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
       this.transitionTo('/');
-    }else if (!user.get('isEmailConfirmed')) {
+    }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {
       this.transitionTo('unauthorized');
