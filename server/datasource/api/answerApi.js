@@ -3,7 +3,7 @@
   * @description This is the API for answer based requests
   * @author Michael McVeigh
 */
-
+/* jshint ignore:start */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
@@ -14,6 +14,7 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
+const access= require('../../middleware/access');
 
 
 module.exports.get = {};
@@ -32,62 +33,8 @@ module.exports.put = {};
 
   // teacher needs to be able to access student's answers
   // check if answer is in one of teacher's assignments
- function accessibleAnswers(user, ids) {
-  let teacherSections;
 
-  if (user.accountType === 'A') {
-    if (ids) {
-      return {
-        _id: {$in : ids},
-        isTrashed: false
-      };
-    }
-    return { isTrashed: false };
-  }
-  // Students
-  if (user.accountType === 'S') {
-    if (ids) {
-      return {
-        createdBy: user,
-        _id: { $in: ids },
-        isTrashed: false,
-      };
-    }
-    return {
-      createdBy: user,
-      isTrashed: false,
-    };
-  }
-    // TEACHERS
-    if (user.actingRole === 'teacher') {
-      teacherSections = user.sections.map((section) => {
-        if (section.role === 'teacher') {
-          return section.sectionId;
-        }
-      });
-      if (ids) {
-        return {
-          section: {$in: teacherSections},
-          _id: { $in: ids },
-          isTrashed: false
-        };
-      }
-      return {
-        section: {$in: teacherSections},
-        isTrashed: false
-      };
-
-
-    }
-    // else actingRole must be student
-    return {
-      createdBy: user,
-        _id: { $in: ids },
-        isTrashed: false,
-      };
-}
-
-const getAnswers = (req, res, next) => {
+const getAnswers = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   let ids;
   let criteria;
@@ -95,9 +42,9 @@ const getAnswers = (req, res, next) => {
   // array of oids
   if (req.query.ids) {
     ids = req.query.ids;
-    criteria = accessibleAnswers(user, ids);
+    criteria = await access.get.answers(user, ids);
   } else {
-    criteria = accessibleAnswers(user);
+    criteria = await access.get.answers(user);
   }
 
   models.Answer.find(criteria)
@@ -143,7 +90,7 @@ const getAnswer = (req, res, next) => {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-/* jshint ignore:start */
+
  const postAnswer = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
