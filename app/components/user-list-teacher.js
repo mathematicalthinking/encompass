@@ -41,7 +41,8 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
     });
     let yourOrgId = this.get('currentUser').get('organization').get('id');
     usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
-    return usersWithOrgs.sortBy('createDate').reverse();
+    let orgUsersNotYou = usersWithOrgs.rejectBy('username', this.get('currentUser.username'));
+    return orgUsersNotYou.sortBy('createDate').reverse();
   }.property('users.@each.isTrashed'),
 
   actions: {
