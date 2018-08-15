@@ -85,7 +85,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           email: email,
           location: location,
           accountType: accountTypeLetter,
-          organization: organization,
+          organization: organizationId,
           isAuthorized: false,
           createdBy: currentUserId,
           createDate: new Date(),
