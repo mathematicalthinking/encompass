@@ -2,8 +2,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   elementId: 'user-info',
   isEditing: false,
   authorized: null,
-  // accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
   selectedType: null,
+  willOveride: null,
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
@@ -15,10 +15,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let currentUserId = this.get('currentUser').get('id');
     let accountType = this.get('currentUser').get('accountType');
     let yourUsername = this.get('currentUser').get('username');
-    console.log('your username is', yourUsername);
     let selectedUsername = user.get('username');
-    console.log('selected username is', selectedUsername);
-    // you cant edit if you have the same username?
 
     let isOwner = yourUsername === selectedUsername;
     let isAdmin = accountType === 'A';
@@ -26,6 +23,26 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
     let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin || isOwner;
     return canEdit;
+  }),
+
+  canConfirm: Ember.computed('user.id', function () {
+    let accountType = this.get('currentUser').get('accountType');
+    let isAdmin = accountType === 'A';
+    let isPdAdmin = accountType === 'P';
+
+    let canConfirm = isPdAdmin || isAdmin;
+    return canConfirm;
+  }),
+
+  unconfirmedEmail: Ember.computed('user.id', function () {
+    let user = this.get('user');
+    let emailConfirm = user.get('isEmailConfirmed');
+
+    if (emailConfirm) {
+      return false;
+    } else if (!emailConfirm) {
+      return true;
+    }
   }),
 
   removeSuccessMessages: function() {
@@ -116,8 +133,13 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.save();
         this.set('isEditing', false);
       },
+
       resetPassword: function() {
         this.set('isResettingPassword', true);
+      },
+
+      authEmail: function() {
+        this.set('willOveride', true);
       },
 
       cancel: function () {
