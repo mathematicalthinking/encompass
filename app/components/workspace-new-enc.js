@@ -89,7 +89,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       const endDate = this.get('endDate');
       console.log(startDate, endDate);
       const criteria = {
-        teacher: this.get('teacher'),
+        teacher: this.get('selectedTeacher'),
         assignment: this.get('selectedAssignment'),
         problem: this.get('selectedProblem'),
         section: this.get('selectedSection'),
@@ -99,16 +99,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
       const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);
       encWorkspaceRequest.save();
-      // Ember.$.post({
-      //   url: 'workspaces/enc',
-      //   data: criteria
-      // })
-      //   .then((res) => {
-      //     console.log('res', res);
-      //   })
-      //  .catch((err) => {
-      //    this.set('createWorkspaceErr', err);
-      //  });
+
 
 
     },
