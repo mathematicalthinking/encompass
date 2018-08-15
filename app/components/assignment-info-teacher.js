@@ -7,6 +7,24 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   htmlDateFormat: 'YYYY-MM-DD',
   displayDateFormat: "MMM Do YYYY",
 
+  init: function() {
+    this._super(...arguments);
+    // get all sections and problems
+    // only need to get these on init because user won't be creating new sections or problems from this component
+    return this.store.findAll('section')
+      .then((sections) => {
+        this.set('sections', sections);
+        return this.store.findAll('problem');
+      })
+      .then((problems) => {
+        this.set('problems', problems);
+        return;
+      })
+      .catch((err) => {
+        this.set('initalDataFetchError', err);
+      });
+  },
+
   didReceiveAttrs: function() {
     if (this.get('showReport')) {
       this.set('showReport', false);
@@ -16,44 +34,33 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
-      console.log('dueDate', dueDate);
-      console.log('assignedDate', assignedDate);
+
       this.set('formattedDueDate', moment(dueDate).format(dateFormat));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
-      // get sections
-      return this.store.findAll('section')
-        .then((sections) => {
-          this.set('sections', sections);
-          return this.store.findAll('problem');
-        })
-        .then((problems) => {
-          this.set('problems', problems);
-          return assignment.get('students');
-        }).then((students) => {
+      return assignment.get('students')
+        .then((students) => {
           this.set('studentList', students);
-          return students;
-        }).then(() => {
-          const id = this.assignment.id;
-          return this.store.findAll('answer').then((answers) => {
-            return answers.filterBy('assignment.id', id);
-        }).then((answers) => {
+          return this.assignment.get('answers');
+        })
+        .then((answers) => {
           const sorted = answers.sortBy('createdBy.username');
           this.set('assignmentAnswers', sorted);
+
           let studentList = this.get('studentList');
+
           return studentList.map((student) => {
             let filtered = sorted.filterBy('createdBy.username', student.get('username'));
             let sortedByDate = filtered.sortBy('createDate').reverse();
             student.set('filteredAnswers', sortedByDate);
             this.set('showReport', true);
             return student;
-      });
-    });
+          });
         })
-      .catch((err) => {
-        console.log(err);
-      });
-    }
+        .catch((err) => {
+          console.log(err);
+        });
+      }
   },
 
   isYourOwn: function() {
