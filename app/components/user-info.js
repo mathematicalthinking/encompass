@@ -142,6 +142,27 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('willOveride', true);
       },
 
+      createNewOrg: function () {
+        let user = this.get('user');
+        let reqOrg = user.get('organizationRequest');
+        let newOrg = this.store.createRecord('organization', {
+          name: reqOrg
+        });
+        newOrg.save()
+          .then((org) => {
+            let user = this.get('user');
+            user.set('organization', org);
+            user.save();
+            user.set('organizationRequest', null);
+          });
+      },
+
+      removeOrg: function () {
+        let user = this.get('user');
+        user.set('organizationRequest', null);
+        user.save();
+      },
+
       cancel: function () {
         this.set('isEditing', false);
         this.set('isResettingPassword', false);

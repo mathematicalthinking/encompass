@@ -62,12 +62,31 @@
       </td>
     </tr>
     {{/if}}
+
+    {{#if user.organization.name}}
     <tr>
       <td>Organization</td>
       <td>
         {{user.organization.name}}
       </td>
     </tr>
+    {{/if}}
+    {{#if user.organizationRequest}}
+      <tr>
+        <td>Requested Organization</td>
+        {{#if isEditing}}
+          <td>
+            Would you like to create {{user.organizationRequest}}<br/>
+            <button {{action 'createNewOrg'}}>Yes</button>
+            <button{{action 'removeOrg'}}>No</button>
+          </td>
+        {{else}}
+          <td>
+            {{user.organizationRequest}}
+          </td>
+        {{/if}}
+      </tr>
+    {{/if}}
     <tr>
       <td>Location</td>
       <td>
