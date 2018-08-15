@@ -84,29 +84,37 @@
       <label for="name">Name</label>
       {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}}
 
+      <br>
+      <div></div>
+      <br>
+      <div class="add-username">
+          <div class="username-select">
+            <label for="addusername">Username</label>
+               {{my-select selectedStudent=selectedStudent prompt="Select a username." content=userList optionLabelPath="username" action=(action (mut selectedStudent))}}
+            {{input required=true type="hidden" value=selectedStudent}}
+             <br>
+         </div>
+      </div>
+    <br>
 
-      <label for="addusername">Username</label>
+     <label for="addusername">Username</label>
       {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}}
       {{#unless usingDefaultPassword}}
-
       <label for="addpassword">Password</label>
       {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
       {{/unless}}
 
-
-
-
     {{#if usingDefaultPassword}}
     <label>Password </label>
     {{input type=fieldType value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
-      <button id="show-password-btn" {{action "showPassword"}}>
+    {{/if}}
+    <button id="show-password-btn" {{action "showPassword"}}>
         {{#if showingPassword}}
         <i class="fas fa-eye-slash"></i>
         {{else}}
         <i class="fas fa-eye"></i>
         {{/if}}
       </button>
-    {{/if}}
 
     <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
 
@@ -123,10 +131,8 @@
       </p>
       {{/if}}
 
-
-
     </fieldset>
-      <button class="action_button" {{action 'doneAdding'}}>Done</button>
+        <button class="action_button" {{action 'doneAdding'}}>Done</button>
   </form>
 
     {{#if usernameAlreadyExists}}

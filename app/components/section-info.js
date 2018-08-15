@@ -21,12 +21,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   removeObject: null,
   organization: null,
   isStudent: false,
+  studentList: null,
 
 
   didReceiveAttrs: function () {
     return this.section.get('organization').then((org) => {
       console.log(('organization', org));
       this.set('organization', org);
+    })
+    .then(() => {
+      // get users and set result on component
+      this.store.findAll('user').then((users) => {
+        this.set('userList', users);
+      });
     })
     .catch((err) => {
       console.log('error getting org', err);
@@ -67,7 +74,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     addExistingStudent: function ()  {
       let student = this.get('existingUser');
       let section = this.get('section');
-      let students = section.get('students');
+      let students = this.get('selectedStudent');
+      //let students = section.get('students');
 
       let sectionObj = {
         sectionId: section.id,
@@ -117,19 +125,23 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       var that = this;
       let organization = this.get('organization');
       var name = this.get('studentName');
-      var username = this.get('studentUsername');
+      var username = this.get('selectedStudent');
+      console.log('username', username);
       var usingDefaultPassword = this.get('usingDefaultPassword');
       var password;
       var sectionId = this.get('section').id;
       var sectionRole = 'student';
       var currentUser = that.get('currentUser');
       let section = this.get('section');
-      let students = section.get('students');
-      var checkRegisteredStudent = students.filterBy('username', username);
+      //let students = section.get('students');
+      let students = section.get('username');
 
-      //isempty
+      var checkRegisteredStudent = students.filterBy('username', username);
+      //isempty will check the STUDENTS list (in front-end) to see if
+      //the new username we are trying to add already exists.
       if (!Ember.isEmpty(checkRegisteredStudent)) {
         this.set('userAlreadyInSection', true);
+        console.log('user not in this section');
         return;
       }
 
