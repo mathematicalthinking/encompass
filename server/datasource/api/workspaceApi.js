@@ -18,6 +18,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
+const access = require('../../middleware/access');
 
 
 module.exports.get = {};
@@ -837,69 +838,76 @@ function newWorkspaceRequest(req, res, next) {
 }
 /*jshint ignore:start*/
 
-function pruneCriteria(crit) {
+function pruneObj(obj) {
 
+  for (let key of Object.keys(obj)) {
+    const val = obj[key];
+    if (_.isUndefined(val) || (_.isNull(val))) {
+      console.log('deleting', key);
+      delete obj[key];
+    }
+  }
+  return obj;
 }
 
-async function buildCriteria(crit) {
-
-}
-async function accessibleAnswersQuery(user) {
-  const accountType = user.accountType;
-  let filter = {
-    isTrashed: false
-  }
-  if (accountType === 'A') {
-    return filter;
+function buildCriteria(ids, criteria) {
+  let filter = {};
+  if (!_.isEmpty(ids)) {
+    filter._id = {$in: ids};
   }
 
-  if (accountType === 'P') {
-    // only answers tied to organization
-    return filter;
+  let startDate = criteria.startDate;
+  let endDate = criteria.endDate;
+
+  if (!_.isEmpty(startDate) && !_.isEmpty(endDate)) {
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+
+    filter.createDate = {
+      $gte: startDate,
+      $lte: endDate
+    };
   }
 
-  if (accountType === 'T') {
-    // only answers from either a teacher's assignments or from a section where they are in the teachers array
-    const ownAssignments = user.assignments;
-    const ownSections = user.sections.map((section) => {
-      if (section.role === 'teacher') {
-        return section.sectionId;
-      }
-     });
-
-     filter.assignment = { createdBy: user.id };
-
-    filter['section.sectionId'] = { $in: ownSections };
-    return filter;
+  for (let key of Object.keys(criteria)) {
+    if (key !== 'startDate' && key !== 'endDate') {
+      const val = criteria[key];
+      filter[key] = val;
+    }
   }
+
+  return filter;
 }
 
-async function getAnswers(criteria) {
-  return await models.Answer.find(criteria);
-
+async function getAnswerIds(criteria) {
+  const answers = await models.Answer.find(criteria, {_id: 1});
+  return answers.map(obj => obj._id);
 }
-
-
 
 async function postWorkspaceEnc(req, res, next) {
-  console.log('req.body', req.body);
   const user = req.user;
-  console.log('user', user);
-try {
-  const criteria = await accessibleAnswersQuery(user);
-  console.log('criteria', criteria.assignment);
-  const answers = await getAnswers(criteria);
-  console.log('answers', answers);
+  const workspaceCriteria = req.body.encWorkspaceRequest;
 
+  try {
+    const pruned = pruneObj(workspaceCriteria);
 
+    // accessibleAnswersQuery will take care of isTrashed
+    delete pruned.isTrashed;
 
-return utils.sendResponse(res, { isSuccess: true, answers: answers });
-}catch(err) {
-  return utils.sendError.InternalError(err, res);
-}
+    console.log('pruned', pruned);
 
+    const accessibleCriteria = await access.get.answers(user);
+    const allowedIds = await getAnswerIds(accessibleCriteria);
 
+    const wsCriteria = buildCriteria(allowedIds, pruned);
+    console.log('wsCritieria', wsCriteria);
+    const answers = await models.Answer.find(wsCriteria);
+    console.log('answers', answers.length);
+    return utils.sendResponse(res, { isSuccess: true});
 
+    }catch(err) {
+      return utils.sendError.InternalError(err, res);
+    }
 }
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
