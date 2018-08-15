@@ -67,7 +67,7 @@ var UserSchema = new Schema({
   resetPasswordExpires: Date,
   confirmEmailToken: { type: String },
   confirmEmailExpires: { type: Date },
-  isEmailConfirmed: { type: Boolean },
+  isEmailConfirmed: { type: Boolean, default: false },
   organization: {type: ObjectId, ref: 'Organization'},
   organizationRequest: { type: String },
   location: String,
