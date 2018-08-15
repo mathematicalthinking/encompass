@@ -18,12 +18,99 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
   },
 
+  teacherPool: function() {
+    const currentUser = this.get('currentUser');
+    const accountType = currentUser.get('accountType');
+
+    if (accountType === 'T') {
+      return [currentUser];
+    }
+
+    const teachers = this.get('users').filterBy('accountType', 'T');
+
+    if (accountType === 'P') {
+      return teachers.filterBy('organization', currentUser.organization);
+    }
+    if (accountType === 'P') {
+      return teachers;
+    }
+  }.property('users', 'currentUser.accountType'),
+
+  isDateRangeValid: function() {
+    const htmlFormat = 'YYYY-MM-DD';
+    let start = this.get('startDate');
+    let end = this.get('endDate');
+
+    if (Ember.isEmpty(start) || Ember.isEmpty(end)) {
+      return false;
+    }
+    start = moment(start, htmlFormat);
+    end = moment(end, htmlFormat);
+
+    return end > start;
+  }.property('startDate', 'endDate'),
+
+  getMongoDate: function(htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    return new Date(dateMoment);
+  },
+
+  isAnswerCriteriaValid: function() {
+    const params = ['teacher', 'assignment', 'problem', 'section'];
+    for (let param of params) {
+      if (!Ember.isEmpty(this.get(param))) {
+        return true;
+      }
+    }
+  }.property('teacher', 'assignment', 'problem', 'section'),
+
+  isFormValid: Ember.computed.or('isDateRangeValid', 'isAnswerCriteriaValid'),
 
 
   actions: {
     radioSelect: function( value ){
       console.log("Radio select: " + value );
       this.set('importMode', value );
+    },
+
+    buildCriteria: function() {
+      if (!this.get('isFormValid')) {
+        this.set('missingRequiredFields', true);
+        return;
+      }
+      if (!this.get('selectedTeacher')) {
+        this.set('teacher', this.get('currentUser'));
+      }
+      const startDate = this.get('startDate');
+      const endDate = this.get('endDate');
+      console.log(startDate, endDate);
+      const criteria = {
+        teacher: this.get('teacher'),
+        assignment: this.get('selectedAssignment'),
+        problem: this.get('selectedProblem'),
+        section: this.get('selectedSection'),
+        startDate: this.getMongoDate(this.get('startDate')),
+        endDate: this.getMongoDate(this.get('endDate')),
+      };
+
+      const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);
+      encWorkspaceRequest.save();
+      // Ember.$.post({
+      //   url: 'workspaces/enc',
+      //   data: criteria
+      // })
+      //   .then((res) => {
+      //     console.log('res', res);
+      //   })
+      //  .catch((err) => {
+      //    this.set('createWorkspaceErr', err);
+      //  });
+
+
     },
 
     createWorkspace: function() {

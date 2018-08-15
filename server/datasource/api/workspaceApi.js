@@ -835,7 +835,75 @@ function newWorkspaceRequest(req, res, next) {
     });
 
 }
+/*jshint ignore:start*/
 
+function pruneCriteria(crit) {
+
+}
+
+async function buildCriteria(crit) {
+
+}
+async function accessibleAnswersQuery(user) {
+  const accountType = user.accountType;
+  let filter = {
+    isTrashed: false
+  }
+  if (accountType === 'A') {
+    return filter;
+  }
+
+  if (accountType === 'P') {
+    // only answers tied to organization
+    return filter;
+  }
+
+  if (accountType === 'T') {
+    // only answers from either a teacher's assignments or from a section where they are in the teachers array
+    const ownAssignments = user.assignments;
+    const ownSections = user.sections.map((section) => {
+      if (section.role === 'teacher') {
+        return section.sectionId;
+      }
+     });
+
+     filter.assignment = { createdBy: user.id };
+
+    filter['section.sectionId'] = { $in: ownSections };
+    return filter;
+  }
+}
+
+async function getAnswers(criteria) {
+  return await models.Answer.find(criteria);
+
+}
+
+
+
+async function postWorkspaceEnc(req, res, next) {
+  console.log('req.body', req.body);
+  const user = req.user;
+  console.log('user', user);
+try {
+  const criteria = await accessibleAnswersQuery(user);
+  console.log('criteria', criteria.assignment);
+  const answers = await getAnswers(criteria);
+  console.log('answers', answers);
+
+
+
+return utils.sendResponse(res, { isSuccess: true, answers: answers });
+}catch(err) {
+  return utils.sendError.InternalError(err, res);
+}
+
+
+
+}
+
+module.exports.post.workspaceEnc = postWorkspaceEnc;
+/*jshint ignore:end*/
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
