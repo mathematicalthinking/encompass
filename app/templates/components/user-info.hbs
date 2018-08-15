@@ -150,14 +150,18 @@
     {{else}}
     <div class="button-row">
       <button class='action_button' {{action 'editUser'}}>Edit</button>
+      <button class='action_button' {{action 'resetPassword'}}>Reset Password</button>
     </div>
     {{/if}}
     {{#if isResettingPassword}}
       {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess")}}
+      <button class='action_button' {{action 'cancel'}}>Cancel</button>
     {{else}}
       {{#if resetPasswordSuccess}}
         <p class="success-message">Succesfully reset password for {{user.username}}</p>
       {{/if}}
     {{/if}}
+  {{else}}
+    <p class="error-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
   {{/if}}
 </article>

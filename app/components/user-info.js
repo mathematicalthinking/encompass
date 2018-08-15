@@ -122,6 +122,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       cancel: function () {
         this.set('isEditing', false);
+        this.set('isResettingPassword', false);
       },
 
       handleResetSuccess: function(updatedUser) {
