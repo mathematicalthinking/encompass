@@ -32,9 +32,11 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
 
       if (!password || !confirmPassword) {
         this.set('missingRequiredFields', true);
+        return;
       }
       if (!this.get('doPasswordsMatch')) {
         this.set('matchError', true);
+        return;
       }
 
       const resetPasswordData = { password };

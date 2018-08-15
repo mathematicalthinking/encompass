@@ -63,8 +63,17 @@
     font-weight: $light-font-weight;
     text-align: center;
   }
-  .signup-link, .forgot-link {
+  .signup-link  {
     margin-top: 40px;
+    padding-bottom: 40px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .forgot-link {
+    margin-top: 10px;
     padding-bottom: 40px;
     font-weight: $light-font-weight;
     text-align: center;
@@ -217,7 +226,7 @@
     display: block;
     margin: 0 auto;
     width: 200px;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
   }
   .auth-form-input {
     margin: 0 auto;
@@ -241,7 +250,7 @@
   }
   .auth-button {
     @include auth-button;
-    margin-top: 40px;
+    margin-top: 50px;
   }
   .or {
     margin-top: 20px;
@@ -249,18 +258,20 @@
     text-align: center;
   }
   .login-link {
-    margin-top: 40px;
-    padding-bottom: 40px;
+    margin-top: 50px;
+    padding-bottom: 50px;
     font-weight: $light-font-weight;
     text-align: center;
     a {
       @include main-link;
     }
   }
-  .info {
+  .info, .error-message, .success-message {
     margin-bottom: 20px;
     font-weight: $light-font-weight;
     text-align: center;
+    font-size: 1em;
+    padding: 20px 50px;
   }
 }
 
@@ -273,7 +284,7 @@
 .reset-box {
   margin: 0 auto;
   width: 500px;
-  padding-top: 40px;
+  padding: 40px 0;
   background-color: white;
   box-shadow: $box-shadow;
   .encompass-logo {
@@ -305,6 +316,7 @@
   .auth-button {
     @include auth-button;
     margin-top: 40px;
+    margin-bottom: 30px;
   }
   .or {
     margin-top: 20px;
@@ -324,5 +336,13 @@
     margin-bottom: 20px;
     font-weight: $light-font-weight;
     text-align: center;
+  }
+  .error-message,
+  .success-message {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    font-size: 1em;
+    padding: 20px 50px;
   }
 }
