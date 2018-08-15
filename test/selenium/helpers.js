@@ -27,11 +27,13 @@ const regUser = {
 
 const newUser = {
   name: 'John Doe',
-  email: 'johndoe111@gmail.com',
+  email: 'encompass21pstem@gmail.com',
+  confirmEmail: 'encompass21pstem@gmail.com',
   organization: 'Mathematical Thinking',
   location: 'Philadelphia, PA',
   username: 'johndoe111',
   password: 'noone11',
+  confirmPassword: 'noone11',
   requestReason: 'professional development'
 };
 

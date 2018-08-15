@@ -35,15 +35,13 @@ Encompass.LogInComponent = Ember.Component.extend({
       .catch(console.log);
     },
 
-    resetErrors(e) {
-      if (this.get('incorrectUsername')) {
-        this.set('incorrectUsername', false);
-      }
-      if (this.get('incorrectPassword')) {
-        this.set('incorrectPassword', false);
-      }
-      if (this.get('missingCredentials')) {
-        this.set('missingCredentials', false);
+    resetErrors() {
+      const errors = ['incorrectUsername', 'incorrectPassword', 'missingCredentials'];
+
+      for (let error of errors) {
+        if (this.get(error)) {
+          this.set(error, false);
+        }
       }
     }
   }

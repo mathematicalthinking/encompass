@@ -143,9 +143,17 @@
   </table>
   {{#if canEdit}}
     {{#if isEditing}}
-      <button class='action_button' {{action 'saveUser'}}>save</button>
+      <button class='action_button' {{action 'saveUser'}}>Save</button>
     {{else}}
-      <button class='action_button' {{action 'editUser'}}>edit</button>
+      <button class='action_button' {{action 'editUser'}}>Edit</button>
+    {{/if}}
+    {{#if isResettingPassword}}
+      {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess")}}
+    {{else}}
+    <button class='action_button' {{action 'resetPassword'}}>Reset Password</button>
+      {{#if resetPasswordSuccess}}
+        <p class="success-message">Succesfully reset password for {{user.username}}</p>
+      {{/if}}
     {{/if}}
   {{/if}}
 </article>

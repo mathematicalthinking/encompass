@@ -50,16 +50,22 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   permittedToComment: function() {
     var cws = this.get('currentWorkspace');
     var owner = cws.get('owner');
-    this.get('workspaceOwner').then( function(owner){
-      console.log("WORKSPACE OWNER: " + owner.get('username') );
-    });
+    var currentUser = this.get('currentUser');
+    // this.get('workspaceOwner').then( function(owner){
+    //   console.log("WORKSPACE OWNER: " + owner.get('username') );
+    // });
+    var editors = cws.get('editors').mapBy('id');
+    var isEditor = editors.includes(currentUser.id);
+    var isAdmin = currentUser.get('isAdmin');
+    var isOwner = Ember.isEqual(owner, currentUser);
 
-    var canComment = Permissions.userCan(
-      this.get('currentUser'),
-      this.get('currentWorkspace'),
-      "COMMENTS"
-    );
-
+    // var canComment = Permissions.userCan(
+    //   this.get('currentUser'),
+    //   this.get('currentWorkspace'),
+    //   "COMMENTS"
+    // );
+    var canComment = isEditor || isAdmin || isOwner;
+    console.log('canComment', canComment);
     return canComment;
 
     /*

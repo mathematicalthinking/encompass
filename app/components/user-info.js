@@ -3,6 +3,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   isEditing: false,
   authorized: null,
 
+  // this was returning undefined if you are logged in and viewing your own profile and
+  // your account does not have a createdBy
+  // should teachers who sign up through the site themselves have createdBy be set to their own id?
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
     console.log('user is', user);
@@ -16,6 +19,16 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let canEdit = (creator === currentUserId ? true : false) || isAdmin;
     return canEdit;
   }),
+
+  removeSuccessMessages: function() {
+    const succesStates = ['resetPasswordSuccess'];
+
+    for (let state of succesStates) {
+      if (this.get(state)) {
+        this.set(state, false);
+      }
+    }
+  }.observes('isResettingPassword', 'isEditing', 'user.id'),
 
   lastSeenDate: function () {
       var last = this.get('lastSeen');
@@ -54,12 +67,28 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let currentUser = this.get('currentUser');
         let newDate = new Date();
         let user = this.get('user');
+
+        // should we check to see if any information was actually updated before updating modified by/date?
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save();
         this.set('isEditing', false);
+      },
+      resetPassword: function() {
+        this.set('isResettingPassword', true);
+      },
+
+      handleResetSuccess: function(updatedUser) {
+        const user = this.get('user');
+        const currentUser = this.get('currentUser');
+
+        return this.store.findRecord('user', user.id).then((user) => {
+          this.set('user', user);
+          this.set('isResettingPassword', false);
+          this.set('resetPasswordSuccess', true);
+        });
       },
 
       clearTour: function () {

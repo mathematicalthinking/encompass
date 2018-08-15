@@ -7,6 +7,9 @@ Encompass.Router.map(function() {
   this.route("auth", function(){
     this.route("login");
     this.route("signup");
+    this.route("forgot");
+    this.route("reset", {path: '/reset/:token'});
+    this.route("confirm", {path: '/confirm/:token'});
   });
   // PROBLEMS PARENT ROUTE
   this.route("problems", function(){
@@ -85,6 +88,7 @@ Encompass.Router.map(function() {
     this.route("new");
   });
   this.route("logout");
+  this.route("unconfirmed");
   this.route("unauthorized");
 });
 

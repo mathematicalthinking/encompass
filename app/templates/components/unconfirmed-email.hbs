@@ -1,0 +1,9 @@
+<p class="info">It looks like the email address associated with your EnCoMPASS account has not been confirmed yet. Please check {{currentUser.email}} for an email containing a link to confirm your email address.</p>
+
+<p class="info">You can also request for a new confirmation email to be sent.</p>
+
+<button class="action_button" {{action "sendEmail"}}>Send New Email</button>
+
+{{#if emailSuccess}}
+<p id="resent-confirm" class="success-message">Email sent!</p>
+{{/if}}

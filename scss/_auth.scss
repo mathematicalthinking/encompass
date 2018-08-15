@@ -4,7 +4,7 @@
 
 
 // GENERAL STYLING
-.auth-page, .login-page, .signup-page {
+.auth-page, .login-page, .signup-page, .forgot-page, .reset-page {
   background-color: $background-color;
   width: 100%;
   font-family: $primary-font;
@@ -63,7 +63,7 @@
     font-weight: $light-font-weight;
     text-align: center;
   }
-  .signup-link {
+  .signup-link, .forgot-link {
     margin-top: 40px;
     padding-bottom: 40px;
     font-weight: $light-font-weight;
@@ -198,5 +198,131 @@
       display: block;
       margin-top: 5px;
     }
+  }
+}
+
+//FORGOT PASSWORD
+.forgot-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+}
+.forgot-box {
+  margin: 0 auto;
+  width: 500px;
+  padding-top: 40px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  .encompass-logo {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    margin-bottom: 50px;
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    padding: 0;
+    width: 350px;
+  }
+  input {
+    display: block;
+    width: 350px;
+    font-size: 1em;
+    padding: 10px 0;
+    margin: 0 auto;
+    color: lighten($primary-font-color, 25);
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 40px;
+  }
+  .or {
+    margin-top: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .login-link {
+    margin-top: 40px;
+    padding-bottom: 40px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .info {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+}
+
+//RESET PASSWORD
+.reset-page {
+  height: 90vh;
+  padding-top: 12vh;
+  z-index: -1;
+}
+.reset-box {
+  margin: 0 auto;
+  width: 500px;
+  padding-top: 40px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  .encompass-logo {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    margin-bottom: 50px;
+  }
+  .auth-form-input {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    padding: 0;
+    width: 350px;
+  }
+  input {
+    display: block;
+    width: 350px;
+    font-size: 1em;
+    padding: 10px 0;
+    margin: 0 auto;
+    color: lighten($primary-font-color, 25);
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid $primary-font-color;
+    &:required {
+      box-shadow: none;
+    }
+  }
+  .auth-button {
+    @include auth-button;
+    margin-top: 40px;
+  }
+  .or {
+    margin-top: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
+  }
+  .forgot-link {
+    margin-top: 40px;
+    padding-bottom: 40px;
+    font-weight: $light-font-weight;
+    text-align: center;
+    a {
+      @include main-link;
+    }
+  }
+  .info {
+    margin-bottom: 20px;
+    font-weight: $light-font-weight;
+    text-align: center;
   }
 }

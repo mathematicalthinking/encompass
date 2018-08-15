@@ -78,7 +78,7 @@ describe('User CRUD operations', function() {
 
 
   /** POST **/
-  describe('/POST user', () => {
+  xdescribe('/POST user', () => {
     it('should post a new user', done => {
       agent
       .post(baseUrl)

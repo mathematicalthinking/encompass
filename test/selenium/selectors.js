@@ -1,4 +1,8 @@
 module.exports = {
+  general: {
+    successMessage: '.success-message',
+    errorMessage: '.error-message',
+  },
   topBar: {
     login: 'a.menu.login',
     signup: 'a.menu.signup',
@@ -27,10 +31,12 @@ module.exports = {
     inputs: {
       name: 'input[name=name]',
       email: 'input[name=email]',
+      confirmEmail: 'input[name=confirmEmail]',
       organization: 'input[name=organization]',
       location: 'input[name=location]',
       username: 'input[name=username]',
       password: 'input[name=password]',
+      confirmPassword: 'input[name=confirmPassword]',
       requestReason: 'input[name=requestReason]',
       terms: 'input[name=terms]'
     },
@@ -64,5 +70,33 @@ module.exports = {
       teachers: 'input#teacher'
     },
     create: 'button.action_button'
+  },
+  resetPassword: {
+    resetForm: 'form.form-reset',
+    inputs: {
+      password: 'input#password',
+      confirmPassword: 'input#confirmPassword'
+    },
+    submit: '#reset-password',
+    invalidToken: 'p.error-message',
+  },
+
+  forgotPassword: {
+    forgotForm: 'form.form-forgot',
+    inputs: {
+      email: 'input#email',
+      username: 'input#username'
+    },
+    submit: 'button#request-reset-link',
+  },
+
+  confirmEmail: {
+    submit: '#reset-password',
+    invalidToken: 'p.error-message',
+    successMessage: 'p.success-message',
+    loginLink: 'a.login-link',
+    infoMessage: 'p.info',
+    newEmailButton: 'button.action_button',
+    resentConfirm: 'p#resent-confirm',
   }
 };

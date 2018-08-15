@@ -63,7 +63,13 @@ var UserSchema = new Schema({
   // key: String,
   password: String,
   forcePwdChg: Boolean,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
+  confirmEmailToken: { type: String },
+  confirmEmailExpires: { type: Date },
+  isEmailConfirmed: { type: Boolean },
   organization: {type: ObjectId, ref: 'Organization'},
+  organizationRequest: { type: String },
   location: String,
   requestReason: String,
   // We only use google for external auth, we can use these fields if we use more OAuths
