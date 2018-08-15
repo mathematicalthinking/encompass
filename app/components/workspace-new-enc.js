@@ -26,12 +26,12 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       return [currentUser];
     }
 
-    const teachers = this.get('users').filterBy('accountType', 'T');
+    const teachers = this.model.users.rejectBy('accountType', 'S');
 
     if (accountType === 'P') {
       return teachers.filterBy('organization', currentUser.organization);
     }
-    if (accountType === 'P') {
+    if (accountType === 'A') {
       return teachers;
     }
   }.property('users', 'currentUser.accountType'),
