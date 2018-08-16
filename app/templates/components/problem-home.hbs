@@ -1,4 +1,16 @@
 <h1>Welcome to the Problems Page</h1>
 <p>Click on a problem name to see more info, edit or add it to your problem list</p>
 <p class="or">Or</p>
-<button>Create a New Problem</button>
+{{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span>{{/link-to}}
+
+{{!-- <section>
+  <h2>Your Recently Created Problems</h2>
+</section>
+
+<section>
+  <h2>Problems by Category</h2>
+</section>
+
+<section>
+  <h2>New Problems in your Organization</h2>
+</section> --}}
