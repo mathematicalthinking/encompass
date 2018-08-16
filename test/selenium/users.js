@@ -23,45 +23,6 @@ describe('Users', function() {
     driver.quit();
   });
 
-  describe('Anonymously', function() {
-   before(async function() {
-    try {
-      let options = await driver.manage();
-      await options.deleteAllCookies();
-    }catch(err) {
-      console.log(err);
-    }
-    await helpers.navigateAndWait(driver, host, css.topBar.login);
-   });
-
-  //  function validateAnon(){
-  //    xit('should show various fields', async function(){
-  //     expect(await helpers.isTextInDom(driver, 'Display Name')).to.be.true;
-  //    });
-  //  }
-
-   describe('Visiting the users page', function() {
-     it('there should be an empty list displaying you are not authorized', async function() {
-      expect(await helpers.waitForSelector(driver, '#not-auth'));
-     });
-
-     describe('clicking the user link', function() {
-       before(async function() {
-         await helpers.findAndClickElement(driver, 'a.user');
-         await helpers.waitForSelector(driver, 'article.user');
-       });
-      //  validateAnon();
-     });
-   });
-
-   describe('Visiting a user page directly', function() {
-     before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/#/users/home`);
-     });
-    //  validateAnon();
-   });
-  });
-
   describe('Logged in as a teacher', function() {
     before(async function() {
       await helpers.login(driver, host, helpers.regUser);
@@ -116,16 +77,16 @@ describe('Users', function() {
     });
   });
 
-  describe('Logged in as an admin user', function() {
-    before(async function() {
+  describe('Logged in as an pd Admin', function () {
+    before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.login);
       await helpers.login(driver, host);
       await helpers.waitForSelector(driver, css.topBar.users);
     });
 
-    function validateUsersPage(){
-      xit('should show/hide various editable fields', async function(){
+    function validateUsersPage() {
+      xit('should show/hide various editable fields', async function () {
         const inputs = ['button.doneTour', 'input.isAdmin', 'input.isAuthorized'];
         expect(await helpers.isTextInDom(driver, helpers.admin.username)).to.be.true;
 
@@ -140,18 +101,18 @@ describe('Users', function() {
     }
 
     function validateNewUserPage() {
-      xit('should display the page title and form', async function() {
+      xit('should display the page title and form', async function () {
         expect(await helpers.isTextInDom(driver, 'Create New User')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'form#newUser')).to.be.true;
       });
 
-      xit('should show certain fields', async function() {
+      xit('should show certain fields', async function () {
         expect(await helpers.isElementVisible(driver, 'input.displayName')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.userName')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
       });
 
-      xit('should let you create a new authorized user', async function() {
+      xit('should let you create a new authorized user', async function () {
         let username = `muzzy`
         let displayName = 'muzzy'
         await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
@@ -162,38 +123,38 @@ describe('Users', function() {
       });
     }
 
-    describe('Visiting the users page', function() {
-      before(async function() {
+    describe('Visiting the users page', function () {
+      before(async function () {
         await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
       });
 
-      it('should have a create new user link', async function() {
+      it('should have a create new user link', async function () {
         //expect(await helpers.isElementVisible(driver, 'a[href="#/users/new"]')).to.be.true;
         await helpers.findAndClickElement(driver, `a[href="users/new"]`);
       });
 
-      it('should have a list of users', async function() {
+      it('should have a list of users', async function () {
         expect(await helpers.getWebElements(driver, 'a.user')).to.have.lengthOf.at.least(10);
       });
 
-      describe('clicking the user link', function() {
-        before(async function() {
+      describe('clicking the user link', function () {
+        before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="${helpers.admin.username}"]`);
           await helpers.waitForSelector(driver, 'article.user');
         });
         validateUsersPage();
       });
 
-      describe('Visiting a user page directly', async function() {
-        before(async function() {
+      describe('Visiting a user page directly', async function () {
+        before(async function () {
           await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
 
         });
         validateUsersPage();
       });
 
-      describe('clicking the new user link', function() {
-        before(async function() {
+      describe('clicking the new user link', function () {
+        before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'form#newUser');
         });
@@ -201,4 +162,91 @@ describe('Users', function() {
       });
     });
   });
+
+  describe('Logged in as an admin user', function () {
+    before(async function () {
+      await helpers.findAndClickElement(driver, css.topBar.logout);
+      await helpers.waitForSelector(driver, css.topBar.login);
+      await helpers.login(driver, host);
+      await helpers.waitForSelector(driver, css.topBar.users);
+    });
+
+    function validateUsersPage() {
+      xit('should show/hide various editable fields', async function () {
+        const inputs = ['button.doneTour', 'input.isAdmin', 'input.isAuthorized'];
+        expect(await helpers.isTextInDom(driver, helpers.admin.username)).to.be.true;
+
+        await helpers.findAndClickElement(driver, 'button.editUser');
+
+        // should there be an input to change username?
+        for (let input of inputs) {
+          expect(await helpers.isElementVisible(driver, input)).to.be.true;
+        }
+        await helpers.findAndClickElement(driver, 'button.saveUser');
+      });
+    }
+
+    function validateNewUserPage() {
+      xit('should display the page title and form', async function () {
+        expect(await helpers.isTextInDom(driver, 'Create New User')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'form#newUser')).to.be.true;
+      });
+
+      xit('should show certain fields', async function () {
+        expect(await helpers.isElementVisible(driver, 'input.displayName')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.userName')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
+      });
+
+      xit('should let you create a new authorized user', async function () {
+        let username = `muzzy`
+        let displayName = 'muzzy'
+        await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
+        await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
+        await helpers.findAndClickElement(driver, 'button.newUser');
+        await helpers.waitForSelector(driver, 'ul.listing');
+        expect(await helpers.findAndGetText(driver, 'ul.auth-users>li.is-authorized:last-child')).to.contain(username);
+      });
+    }
+
+    describe('Visiting the users page', function () {
+      before(async function () {
+        await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
+      });
+
+      it('should have a create new user link', async function () {
+        //expect(await helpers.isElementVisible(driver, 'a[href="#/users/new"]')).to.be.true;
+        await helpers.findAndClickElement(driver, `a[href="users/new"]`);
+      });
+
+      it('should have a list of users', async function () {
+        expect(await helpers.getWebElements(driver, 'a.user')).to.have.lengthOf.at.least(10);
+      });
+
+      describe('clicking the user link', function () {
+        before(async function () {
+          await helpers.findAndClickElement(driver, `a[href$="${helpers.admin.username}"]`);
+          await helpers.waitForSelector(driver, 'article.user');
+        });
+        validateUsersPage();
+      });
+
+      describe('Visiting a user page directly', async function () {
+        before(async function () {
+          await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
+
+        });
+        validateUsersPage();
+      });
+
+      describe('clicking the new user link', function () {
+        before(async function () {
+          await helpers.findAndClickElement(driver, '#new-user-link');
+          await helpers.waitForSelector(driver, 'form#newUser');
+        });
+        validateNewUserPage();
+      });
+    });
+  });
+
 });
