@@ -32,7 +32,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, username) {
   }
 
   if (username) {
-    filter.username = { username }
+    filter.username = username
   }
 
   // students can only retrieve their own user record or
