@@ -281,7 +281,7 @@ module.exports = function (grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js', '!server/middleware/access/*.js'],
       options: {
         jshintrc: '.jshintrc'
       }
