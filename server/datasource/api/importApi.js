@@ -189,4 +189,5 @@ const buildSubmissionSet = async function(submissions, user) {
 
 
 module.exports.post.import = postImport;
+module.exports.buildSubmissionSet = buildSubmissionSet;
 /* jshint ignore:end */
