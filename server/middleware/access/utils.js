@@ -129,7 +129,7 @@ async function getPdAdminUsers(user) {
       {createdBy: user._id}
     ]
   }
-  const orgUserIds = await getModelIds('Organization', filter);
+  const orgUserIds = await getModelIds('User', filter);
 
   ids.push(orgUserIds);
 
