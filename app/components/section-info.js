@@ -22,6 +22,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   organization: null,
   isStudent: false,
   studentList: null,
+  studentUsername: "",
 
 
   didReceiveAttrs: function () {
@@ -39,6 +40,23 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       console.log('error getting org', err);
     });
   },
+
+  searchResults: function () {
+    var searchText = this.get('studentUsername');
+    console.log('search text is', searchText);
+    searchText = searchText.replace(/\W+/g, "");
+    if (searchText.length < 1) {
+      return;
+    }
+
+    let people = this.get('store').query('user', {
+      name: {
+        username: searchText
+      }
+    });
+    return people;
+  }.property('studentUsername'),
+
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -69,6 +87,21 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('doYouWantToAddExistingUser', false);
       this.set('userAlreadyInSection', false);
       this.set('studentUsername', '');
+    },
+
+    addStudent: function (student) {
+      //onClick addStudent = studentUsername
+      let section = this.get('section');
+      // let student = this.get('searchResults');
+      let username = this.get('studentUsername');
+      console.log('editor', student);
+      console.log('username', username);
+      //section.get('students').pushObject(student);
+
+      if (!section.get('students').contains(student)){
+        section.get('students').pushObject(student);
+        this.set('studentUsername', '');
+      }
     },
 
     addExistingStudent: function ()  {
@@ -187,9 +220,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           } else {
             var userId = res._id;
             var section = this.get('section');
-            var students = section.get('students');
-            var sectionPassword = section.get('sectionPassword');
-            console.log('section password is currently', sectionPassword);
+            var students = section.get('studentUsername');
+            var studentPassword = section.get('studentPassword');
+            console.log('section password is currently', studentPassword);
             return this.store.findRecord('user', userId)
               .then((user) => {
                 students.pushObject(user);   //add student to students aray

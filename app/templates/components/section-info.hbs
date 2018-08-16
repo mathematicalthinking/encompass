@@ -81,24 +81,25 @@
     <h2>Use default password for all new students?
     {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
 
-      <label for="name">Name</label>
-      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}}
+      {{!-- <label for="name">Name</label>
+      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}} --}}
 
-      {{!-- <br>
-      <div></div>
-      <br>
-      <div class="add-username">
-          <div class="username-select">
-            <label for="addusername">Username</label>
-               {{my-select selectedStudent=selectedStudent prompt="Select a username." content=userList optionLabelPath="username" action=(action (mut selectedStudent))}}
-            {{input required=true type="hidden" value=selectedStudent}}
-             <br>
-         </div>
+     <div class="half">
+
+      <label>Username</label>
+      {{input id="students" type="text" value=studentUsername placeholder="Filter by username" classNames="editor search" action="checkError" on="key-down"}}
+        <ul>
+        {{#each searchResults as |result|}}
+          <li>
+            <button class="addStudent" id="addStudent" {{action 'addStudent' result}}>{{result.username}}</button>
+          </li>
+          {{/each}}
+        </ul>
       </div>
-    <br> --}}
 
-     <label for="addusername">Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}}
+     {{!-- <label for="addusername">Username</label>
+      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}} --}}
+
       {{#unless usingDefaultPassword}}
       <label for="addpassword">Password</label>
       {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
