@@ -197,8 +197,8 @@
         padding: 10px 10px;
         border-radius: 3px;
         color: $primary-font-color;
-        i {
-          margin-right: 8px;
+        .caret-down {
+          margin-right: 7px;
         }
         &:hover {
           color: $primary-font-color;
