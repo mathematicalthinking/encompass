@@ -1,7 +1,12 @@
-<h1>Welcome to the Problems Page</h1>
-<p>Click on a problem name to see more info, edit or add it to your problem list</p>
-<p class="or">Or</p>
-{{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span>{{/link-to}}
+{{#if currentUser.isStudent}}
+  <h1>Welcome to the Problems Page</h1>
+  <p>Click on a problem to view it, you can submit an answer to public problems</p>
+{{else}}
+  <h1>Welcome to the Problems Page</h1>
+  <p>Click on a problem name to see more info, edit or add it to your problem list</p>
+  <p class="or">Or</p>
+  {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span>{{/link-to}}
+{{/if}}
 
 {{!-- <section>
   <h2>Your Recently Created Problems</h2>

@@ -1,8 +1,13 @@
-<h1>Welcome to the Sections Page</h1>
-<p>Click on a section name to see more info and add or remove students</p>
-<p class="or">Or</p>
-{{#link-to 'sections.new' id="section-new-link" class="new-link-btn"}}
-<span>Create New Section</span>{{/link-to}}
+{{#if currentUser.isStudent}}
+  <h1>Welcome to the Sections Page</h1>
+  <p>Click on a section name to see more info about your sections</p>
+{{else}}
+  <h1>Welcome to the Sections Page</h1>
+  <p>Click on a section name to see more info and add or remove students</p>
+  <p class="or">Or</p>
+  {{#link-to 'sections.new' id="section-new-link" class="new-link-btn"}}
+  <span>Create New Section</span>{{/link-to}}
+{{/if}}
 
 {{!--
 <section>
