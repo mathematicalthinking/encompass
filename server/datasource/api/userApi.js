@@ -43,7 +43,7 @@ function makeGuest() {
 */
 async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-  console.log('user', req.query.username);
+  console.log('req.query', req.query);
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -74,32 +74,6 @@ async function sendUsers(req, res, next) {
     criteria = await access.get.users(user, null, null);
   }
   console.log('criteria users', criteria);
-  // if(req.query.name) { //if we're doing a search GET /users/?name=xyz
-  //   var name = req.query.name;
-  //   var username = name.username;
-  //   var regex;
-  //   if (username) {
-  //     username = username.replace(/\W+/g, "");
-  //     regex = new RegExp(username, 'i');
-  //     criteria = {
-  //       username: regex,
-  //       isTrashed: false
-  //     };
-  //   } else {
-  //     name = name.replace(/\W+/g, "");
-  //     regex = new RegExp(name, 'i');
-  //     criteria = {
-  //       name: regex,
-  //       isTrashed: false
-  //     };
-  //   }
-  // } else if (req.query.ids) { //if we're doing a search GET /users/?ids=
-  //   const ids = req.query.ids;
-  //   criteria = {
-  //     _id: {$in: ids},
-  //     isTrashed: false
-  //   };
-  // }
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
