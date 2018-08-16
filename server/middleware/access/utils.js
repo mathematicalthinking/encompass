@@ -26,7 +26,7 @@ const getModelIds = async function(model, filter={}) {
 
 async function getTeacherAssignments(userId) {
   try {
-    const ownAssignmentIds = await models.Assignment.find({createdBy: userId}, {_id: 1});
+    const ownAssignmentIds = await models.Assignment.find({createdBy: userId}, {_id: 1}).lean().exec();
     return ownAssignmentIds.map(obj => obj._id);
   }catch(err) {
     console.log('error getting teacher assignments', err);
@@ -61,7 +61,7 @@ async function getStudentUsers(user) {
     ids.push(user._id);
 
     const sectionIds = getStudentSections(user);
-    const sections = await models.Section.find({_id: {$in: sectionIds}});
+    const sections = await models.Section.find({_id: {$in: sectionIds}}).lean().exec();
     const studentIds = sections.map(section => section.students);
 
     ids.push(studentIds);
