@@ -43,12 +43,7 @@ function makeGuest() {
 */
 async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-<<<<<<< HEAD
-  console.log('user', user);
-  console.log('req.query sendUsers', req.query);
-=======
   console.log('user', req.query.username);
->>>>>>> Change add editor typeahead to use username as query param instead of name
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
