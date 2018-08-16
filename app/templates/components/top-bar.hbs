@@ -20,7 +20,7 @@
           {{#if notStudent}}
           <li>
             <div class="dropdown">
-              {{#link-to 'problems.home' classNames='menu problems'}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              {{#link-to 'problems.home' classNames='menu problems' id="problems-home"}}problems <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'problems.new' classNames='menu problems-new'}}new{{/link-to}}
               </div>
@@ -32,7 +32,7 @@
           {{#if notStudent}}
           <li>
             <div class="dropdown">
-              {{#link-to 'sections.home' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
               </div>
@@ -56,7 +56,7 @@
             {{#if user.isAdmin}}
             <li>
               <div class="dropdown">
-                {{#link-to 'users.home' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                {{#link-to 'users.home' classNames='menu users' id="users-home"}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
                 <div class="dropdown-content">
                   {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
                 </div>

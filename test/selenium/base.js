@@ -115,7 +115,7 @@ describe('Home Page', function () {
   });
 
   describe('NavBar', async function () {
-    const elements = ['workspaces', 'responses', 'users', 'logout', 'problems', 'sections'];
+    const elements = ['workspaces', 'responses', 'users/home', 'logout', 'problems/home', 'sections/home'];
 
     function verifyNavElement(navElement) {
       let isVisible;
