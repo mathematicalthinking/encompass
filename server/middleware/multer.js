@@ -16,19 +16,25 @@ const utils = require('../middleware/requestHandler');
 const fs = require('fs');
 
 
-  const buildDestination = function(req, res, next) {
+  const buildDestination = function(req, res, file, next) {
+    console.log('build destination is running');
     if (!req.user) {
       return utils.sendError.InvalidCredentialsError('Unauthenticated request', res);
     }
-    const rootPath = process.cwd();
-    const username = req.user.username || 'anonymous';
-    let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
-    fs.mkdir(dest, (err) => {
-      if (err) {
-        console.log(err);
-      }
+    let isPdf = file.mimetype.startsWith('application/pdf');
+    console.log('isPdf', isPdf);
+
+    if (isPdf) {
+      const rootPath = process.cwd();
+      const username = req.user.username || 'anonymous';
+      let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
+      fs.mkdir(dest, (err) => {
+        if (err) {
+          console.log(err);
+        }
         next(null, dest);
-    });
+      });
+    }
     };
 
     const filename = (req, file, next) => {

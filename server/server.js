@@ -140,7 +140,7 @@ server.use(path.validateContent());
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  fileFilter: multerMw.fileFilter
+  fileFilter: multerMw.fileFilter,
 });
 
 // // IMAGE UPLOAD

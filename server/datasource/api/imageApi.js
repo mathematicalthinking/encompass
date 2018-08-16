@@ -16,6 +16,7 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
+const PDFImage = require('pdf-image').PDFImage;
 
 
 module.exports.get = {};
@@ -92,6 +93,17 @@ const postImages = async function(req, res, next) {
     let data = f.buffer;
     let mimeType = f.mimetype;
     let isPdf = mimeType === 'application/pdf';
+
+    if (isPdf) {
+      console.log('inside isPdf for post Images')
+      var pdfImage = new PDFImage("/tmp/slide.pdf");
+      console.log('pdfImage is', pdfImage);
+      pdfImage.convertPage(0).then(function (imagePath) {
+        console.log('inside pdf image convert page');
+        // 0-th page (first page) of the slide.pdf is available as slide-0.png
+        fs.existsSync("/tmp/slide-0.png"); // => true
+      });
+    }
     let str = data.toString('base64');
     let alt = '';
     let format = `data:${mimeType};base64,`;
