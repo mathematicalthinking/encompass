@@ -14,6 +14,7 @@ const models   = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
+const accessUtils = require('../../middleware/access/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -54,38 +55,50 @@ async function sendUsers(req, res, next) {
   if(req.query.alias === 'current') {
     // if all they wanted was the current user, fine
     return utils.sendResponse(res, {user: [user]});
-    //return next();
+
   }
-  //var criteria = utils.buildCriteria(req);
+
   var criteria;
+
   if (req.query.username) {
     var username = req.query.username;
     var regex;
-    // we currently allow emails as usernames so had to fix this
+    // we currently allow emails as usernames so had to fix this to just replace whitespace
     username = username.replace(/\s+/g, "");
     regex = new RegExp(username, 'i');
-    const requestedUser = await models.User.find({username}).lean().exec();
 
-    const accessibleUsers = await access.get.users(user, null, null, username);
+    const requestedUser = await models.User.findOne({username: regex}).lean().exec();
 
-    if (_.contains(accessibleUsers, requestedUser._id)) {
-      delete requestedUser.key;
-      delete requestedUser.password;
-      delete requestedUser.history;
+    criteria = await access.get.users(user, null, null, username);
 
-      let data = {'user': requestedUser};
-      return utils.sendResponse(res, data);
-    } else {
+    // either empty array or array of one user
+    const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
+
+    // if requestedUser exists but don't have permission
+    if (requestedUser && !_.isEqual(accessibleUserIds[0], requestedUser._id)) {
       return utils.sendError.NotAuthorizedError(null, res);
     }
+    let data;
+      if (requestedUser) {
+        delete requestedUser.key;
+        delete requestedUser.password;
+        delete requestedUser.history;
+
+        data = {'user': requestedUser};
+      } else {
+        data = null;
+      }
+
+      return utils.sendResponse(res, data);
+
   } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids);
-  } else if (req.query.usernames) {
-    criteria = await access.get.users(user, null, req.query.usernames);
   } else {
-    criteria = await access.get(user, null, null);
+    criteria = await access.get.users(user, null, null);
   }
+
   console.log('criteria users', criteria);
+
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
