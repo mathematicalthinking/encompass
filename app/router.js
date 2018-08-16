@@ -64,7 +64,7 @@ Encompass.Router.map(function() {
   });
   // USERS PARENT ROUTE
   this.route("users", function(){
-    this.route("user", {resetNamespace: true, path: ':username'}, function(){
+    this.route("user", {resetNamespace: true, path: '/:username'}, function(){
       //this.route("edit");
     });
     this.route("new");
