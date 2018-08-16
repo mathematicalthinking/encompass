@@ -1,5 +1,5 @@
-Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  elementId: 'user-list-admin',
+Encompass.UserListPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'user-list-pd',
 
   unauthUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
@@ -7,21 +7,6 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
     let unauthUsers = accountTypeUsers.filterBy('isAuthorized', false);
     return unauthUsers.sortBy('createDate').reverse();
   }.property('users.@each.isAuthorized'),
-
-  adminUsers: function () {
-    let users = this.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let adminUsers = authUsers.filterBy('accountType', 'A');
-    let adminUsersNotYou = adminUsers.rejectBy('username', this.get('currentUser.username'));
-    return adminUsersNotYou.sortBy('createDate').reverse();
-  }.property('users.@each.accountType', 'users.@each.isAuthorized'),
-
-  pdUsers: function () {
-    let users = this.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let students = authUsers.filterBy('accountType', 'P');
-    return students.sortBy('createDate').reverse();
-  }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
   teacherUsers: function () {
     let users = this.users.filterBy('isTrashed', false);
@@ -37,7 +22,5 @@ Encompass.UserListAdminComponent = Ember.Component.extend(Encompass.CurrentUserM
     return students.sortBy('createDate').reverse();
   }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
-
-  actions: {}
 
 });

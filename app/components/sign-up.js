@@ -97,6 +97,12 @@ Encompass.SignUpComponent = Ember.Component.extend({
       console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
+      var usernameTrim;
+      if (username) {
+        usernameTrim = username.trim();
+      } else {
+        usernameTrim = '';
+      }
       var password = that.get('password');
       var confirmPassword = that.get('confirmPassword');
       var requestReason = that.get('requestReason');
@@ -104,7 +110,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
       var doEmailsMatch = that.get('doEmailsMatch');
 
 
-      if (!name || !email || !organization || !location || !username || !password || !requestReason || !confirmEmail || !confirmPassword) {
+      if (!name || !email || !organization || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
         that.set('missingCredentials', true);
         return;
       }
@@ -122,10 +128,11 @@ Encompass.SignUpComponent = Ember.Component.extend({
         name: name,
         email: email,
         location: location,
-        username: username,
+        username: usernameTrim,
         password: password,
         requestReason: requestReason,
-        accountType: 'T'
+        accountType: 'T',
+        isAuthorized: false,
       };
       if (typeof organization === 'string') {
         createUserData.organizationRequest = organization;
@@ -135,6 +142,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
 
       return that.createUser(createUserData)
         .then((res) => {
+          console.log('RES', res);
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
           } else if (res.message === 'There already exists a user with that email address.') {
@@ -155,6 +163,25 @@ Encompass.SignUpComponent = Ember.Component.extend({
       for (let error of errors) {
         if (this.get(error)) {
           this.set(error, false);
+        }
+      }
+    },
+
+    emailValidate() {
+      var email = this.get('email');
+      if (email) {
+        var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+        var emailTest = emailPattern.test(email);
+        console.log(emailTest);
+
+        if (emailTest === false) {
+          this.set('incorrectEmail', true);
+          return;
+        }
+
+        if (emailTest === true) {
+          this.set('incorrectEmail', false);
+          return;
         }
       }
     },

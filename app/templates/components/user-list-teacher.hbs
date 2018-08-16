@@ -1,52 +1,58 @@
-<header class="list-header">
-  <h1>Users Listing</h1>
-  <button>{{#link-to 'users.new' id='new-user-link'}}Create New Student{{/link-to}}</button>
-</header>
-
-<section>
-  <fieldset>
-    <p>
-      Select a user from the below
-      <button {{action 'consoleInfo'}}>click me</button>
-    </p>
-    <p class="help">
-      Users are automatically created when they visit but may not be authorized. Authorized users are bold. Admin users are red.
-      If you aren't authorized
-      <a href="http://mathforum.org/cgi-bin/mailto.pl?key=92&to=the%20EnCoMPASS%20team">DROP US A NOTE</a>
-    </p>
-  </fieldset>
-</section>
-
 <section class="list-side">
-  <nav class="list-box">
-    <h2>Your Students</h2>
-    <ul class="listing waiting-auth">
-      {{#each yourStudents as |user|}}
-      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-      </li>
-      {{/each}}
-    </ul>
+  <header class="list-header">
+    <h1>Users</h1>
+    {{#link-to 'users.new' id='new-user-link' class="new-link-btn"}}<span class="create-text">Create New Student</span><i class="fas fa-plus"></i>{{/link-to}}
+  </header>
 
-    <h2>Users you have created</h2>
-    <ul class="listing admin-users">
-      {{#each yourUsers as |user|}}
-      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-      </li>
-      {{/each}}
-    </ul>
+  <section>
+    <nav class="list-box">
+      <h2>Your account</h2>
+      <ul class="listing">
+        <li class="{{if currentUser.isAuthorized 'is-authorized'}} {{if currentUser.isAdmin 'is-admin'}}">
+          {{#link-to 'user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
+        </li>
+      </ul>
+      {{!-- <h2>Your Students</h2>
+      <ul class="listing waiting-auth">
+        {{#if yourStudents}}
+          {{#each yourStudents as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>You don't have any students yet</li>
+        {{/if}}
+      </ul> --}}
 
-    <h2>Users in {{currentUser.organization.name}}</h2>
-    <ul class="listing auth-users">
-      {{#each orgUsers as |user|}}
-      <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
-        {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-      </li>
-      {{/each}}
-    </ul>
-  </nav>
+      <h2>Users you have created</h2>
+      <ul class="listing admin-users">
+        {{#if yourUsers}}
+          {{#each yourUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>You haven't created any users yet</li>
+        {{/if}}
+      </ul>
 
+      <h2>Users in {{currentUser.organization.name}}</h2>
+      <ul class="listing auth-users">
+        {{#if orgUsers}}
+          {{#each orgUsers as |user|}}
+          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+            {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          </li>
+          {{/each}}
+        {{else}}
+          <li>There are no users in your organization</li>
+        {{/if}}
+      </ul>
+    </nav>
+
+  </section>
 </section>
 
 

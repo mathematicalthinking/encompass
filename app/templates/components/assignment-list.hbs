@@ -1,28 +1,30 @@
-<header id="assignmentlistheader">
-  <h2>Assignments</h2>
-  <div class="clear"></div>
-</header>
-
-<section class="assignmentlist">
-  <nav class="users actions listing al_vertical_stretch">
+<section class="list-side">
+  <header class="list-header">
+    <h1>Assignments</h1>
     {{#unless currentUser.isStudent}}
-      <ul class="actions">
-        <li>{{#link-to  'assignments.new' id="newassignment" }}Create New Assignment{{/link-to}}</li>
-      </ul>
+      {{#link-to 'assignments.new' id='' class="new-link-btn"}}<span>Create New Assignment</span><i class="fas fa-plus"></i>{{/link-to}}
     {{/unless}}
+    <div class="clear"></div>
+  </header>
 
-    <h2>{{currentUser.username}}'s Assignments</h2>
-
-    <ul class="your-assignments">
-      {{#each assignmentList as |assignment|}}
-      <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY' }}{{/link-to}}</li>
-      {{/each}}
-    </ul>
-  </nav>
-
-   <div class="listOutlet assignments">
-      {{outlet}}
-  </div>
-
-  <div class="clear"/>
+  <section>
+    <nav class="list-box">
+      <h2>{{currentUser.username}}'s Assignments</h2>
+      <ul class="your-assignments">
+        {{#if assignmentList}}
+          {{#each assignmentList as |assignment|}}
+            <li>{{#link-to 'assignment' assignment classNames='assignment-new-link'}}{{assignment.problem.title}} / {`{format-date assignment.assignedDate 'MMM Do YYYY' }}{{/link-to}}</li>
+          {{/each}}
+        {{else}}
+          <li>You have no assignments yet</li>
+        {{/if}}
+      </ul>
+    </nav>
+  </section>
 </section>
+
+<div class="list-outlet">
+  {{outlet}}
+</div>
+
+<div class="clear"/>

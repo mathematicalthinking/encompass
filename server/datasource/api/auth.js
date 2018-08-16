@@ -61,10 +61,14 @@ const localSignup = (req, res, next) => {
     }
 
     console.log('logging in user', user);
-    req.logIn(user, function(err) {
-      if (err) { return next(err); }
-      return utils.sendResponse(res, user);
-    });
+    console.log('req user', req.user);
+    if(!req.user) {
+      req.logIn(user, function(err) {
+        if (err) { return next(err); }
+        return utils.sendResponse(res, user);
+      });
+    }
+    return utils.sendResponse(res, user);
   }
 )(req, res, next);
 };

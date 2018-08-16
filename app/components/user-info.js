@@ -2,22 +2,47 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   elementId: 'user-info',
   isEditing: false,
   authorized: null,
+  selectedType: null,
+  willOveride: null,
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
   // should teachers who sign up through the site themselves have createdBy be set to their own id?
+
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
-    console.log('user is', user);
     let creator = user.get('createdBy.content.id');
-    console.log('creator id is', creator);
     let currentUserId = this.get('currentUser').get('id');
-    console.log('currentUserId is', currentUserId);
+    let accountType = this.get('currentUser').get('accountType');
+    let yourUsername = this.get('currentUser').get('username');
+    let selectedUsername = user.get('username');
+
+    let isOwner = yourUsername === selectedUsername;
+    let isAdmin = accountType === 'A';
+    let isPdAdmin = accountType === 'P';
+
+    let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin || isOwner;
+    return canEdit;
+  }),
+
+  canConfirm: Ember.computed('user.id', function () {
     let accountType = this.get('currentUser').get('accountType');
     let isAdmin = accountType === 'A';
+    let isPdAdmin = accountType === 'P';
 
-    let canEdit = (creator === currentUserId ? true : false) || isAdmin;
-    return canEdit;
+    let canConfirm = isPdAdmin || isAdmin;
+    return canConfirm;
+  }),
+
+  unconfirmedEmail: Ember.computed('user.id', function () {
+    let user = this.get('user');
+    let emailConfirm = user.get('isEmailConfirmed');
+
+    if (emailConfirm) {
+      return false;
+    } else if (!emailConfirm) {
+      return true;
+    }
   }),
 
   removeSuccessMessages: function() {
@@ -29,6 +54,23 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       }
     }
   }.observes('isResettingPassword', 'isEditing', 'user.id'),
+
+  accountTypes: Ember.computed(function () {
+    let accountType = this.get('currentUser').get('accountType');
+    let accountTypes;
+
+    if (accountType === 'A') {
+      accountTypes = ['Teacher', 'Student', 'Pd Admin', 'Admin'];
+    } else if (accountType === 'P') {
+      accountTypes = ['Teacher', 'Student'];
+    } else if (accountType === 'T') {
+      accountTypes = ['Student'];
+    } else {
+      accountTypes = [];
+    }
+
+    return accountTypes;
+  }),
 
   lastSeenDate: function () {
       var last = this.get('lastSeen');
@@ -57,8 +99,20 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
     actions: {
       editUser: function () {
-        this.set('isEditing', true);
         let user = this.get('user');
+        let accountType = user.get('accountType');
+        if (accountType === "S") {
+          this.set('selectedType', 'Student');
+        } else if (accountType === "T") {
+          this.set('selectedType', 'Teacher');
+        } else if (accountType === "A") {
+          this.set('selectedType', 'Admin');
+        } else if (accountType === "P") {
+          this.set('selectedType', 'Pd Admin');
+        } else {
+          this.set('selectedType', 'null');
+        }
+        this.set('isEditing', true);
         let isAuth = user.get('isAuthorized');
         this.set('authorized', isAuth);
       },
@@ -69,15 +123,49 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let user = this.get('user');
 
         // should we check to see if any information was actually updated before updating modified by/date?
+        let accountType = this.get('selectedType');
+        let accountTypeLetter = accountType.charAt(0).toUpperCase();
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
+        user.set('accountType', accountTypeLetter);
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save();
         this.set('isEditing', false);
       },
+
       resetPassword: function() {
         this.set('isResettingPassword', true);
+      },
+
+      authEmail: function() {
+        this.set('willOveride', true);
+      },
+
+      createNewOrg: function () {
+        let user = this.get('user');
+        let reqOrg = user.get('organizationRequest');
+        let newOrg = this.store.createRecord('organization', {
+          name: reqOrg
+        });
+        newOrg.save()
+          .then((org) => {
+            let user = this.get('user');
+            user.set('organization', org);
+            user.save();
+            user.set('organizationRequest', null);
+          });
+      },
+
+      removeOrg: function () {
+        let user = this.get('user');
+        user.set('organizationRequest', null);
+        user.save();
+      },
+
+      cancel: function () {
+        this.set('isEditing', false);
+        this.set('isResettingPassword', false);
       },
 
       handleResetSuccess: function(updatedUser) {

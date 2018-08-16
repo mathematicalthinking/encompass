@@ -197,12 +197,12 @@
         padding: 10px 10px;
         border-radius: 3px;
         color: $primary-font-color;
+        .caret-down {
+          margin-right: 7px;
+        }
         &:hover {
           color: $primary-font-color;
           font-weight: $bolder-font-weight;
-        }
-        .caret-down {
-          padding-right: 10px;
         }
       }
   }
@@ -286,8 +286,7 @@ nav.actions>ul {
 
 .dropdown {
   position: right;
-  overflow: hidden;
-  border-radius: 20px;
+  overflow: visible;
 }
 
 

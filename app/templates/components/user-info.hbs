@@ -32,6 +32,7 @@
         <span class='displayName'>{{user.displayName}}</span>
       </td>
     </tr>
+    {{#if user.email}}
     <tr>
       <td>Email</td>
       <td>
@@ -42,12 +43,50 @@
         {{/if}}
       </td>
     </tr>
+    {{/if}}
+    {{#if canConfirm}}
+    <tr>
+      <td>Email Confirmed</td>
+      <td>
+        {{#if isEditing}}
+          {{#if unconfirmedEmail}}
+          {{!-- <button {{action 'authEmail'}}>Manually confirm email?</button> --}}
+            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized}}
+            <label for="">Manually confirm email?</label>
+          {{else}}
+            {{user.isEmailConfirmed}}
+          {{/if}}
+        {{else}}
+          {{user.isEmailConfirmed}}
+        {{/if}}
+      </td>
+    </tr>
+    {{/if}}
+
+    {{#if user.organization.name}}
     <tr>
       <td>Organization</td>
       <td>
         {{user.organization.name}}
       </td>
     </tr>
+    {{/if}}
+    {{#if user.organizationRequest}}
+      <tr>
+        <td>Requested Organization</td>
+        {{#if isEditing}}
+          <td>
+            Would you like to create {{user.organizationRequest}}<br/>
+            <button {{action 'createNewOrg'}}>Yes</button>
+            <button{{action 'removeOrg'}}>No</button>
+          </td>
+        {{else}}
+          <td>
+            {{user.organizationRequest}}
+          </td>
+        {{/if}}
+      </tr>
+    {{/if}}
     <tr>
       <td>Location</td>
       <td>
@@ -79,25 +118,25 @@
       <td>{{user.lastModifiedBy.username}} on  {{format-date user.lastModifiedDate 'MMM Do YYYY'}}</td>
     </tr>
     {{/if}}
-    {{#if user.isStudent}}
     <tr>
-      <td>Student</td>
-      <td>Yes</td>
-    </tr>
-    {{/if}}
-    <tr>
-      <td>Admin</td>
+      <td>Account Type</td>
+      {{#if isEditing}}
       <td>
-        {{#if isEditing}} {{#if currentUser.isAdmin}} {{input type="checkbox" checked=user.isAdmin value=admin classNames='isAdmin'}}
-        {{else}} {{user.isAdmin}} {{/if}} {{else}} {{user.isAdmin}} {{/if}}
+        {{#if canEdit}}
+          {{my-select selectedValue=selectedType content=accountTypes action=(action (mut selectedType))}}
+          {{input required=true type="hidden" value=selectedType}}
+        {{/if}}
       </td>
+      {{else}}
+      <td>{{account-types user.accountType}}</td>
+      {{/if}}
     </tr>
     {{#if user.isAuthorized}}
       <tr>
         <td>Authorized</td>
         <td>
           {{#if isEditing}}
-            {{#if currentUser.isAdmin}}
+            {{#if canEdit}}
               {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
               {{else}}
                 {{user.isAuthorized}}
@@ -124,7 +163,7 @@
         <tr>
           <td>Authorize</td>
           <td>
-            {{#if currentUser.isAdmin}}
+            {{#if canEdit}}
               {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
             {{else}}
               {{user.isAuthorized}}
@@ -143,17 +182,25 @@
   </table>
   {{#if canEdit}}
     {{#if isEditing}}
+    <div class="button-row">
       <button class='action_button' {{action 'saveUser'}}>Save</button>
+      <button class='action_button' {{action 'cancel'}}>Cancel</button>
+    </div>
     {{else}}
+    <div class="button-row">
       <button class='action_button' {{action 'editUser'}}>Edit</button>
+      <button class='action_button' {{action 'resetPassword'}}>Reset Password</button>
+    </div>
     {{/if}}
     {{#if isResettingPassword}}
       {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess")}}
+      <button class='action_button' {{action 'cancel'}}>Cancel</button>
     {{else}}
-    <button class='action_button' {{action 'resetPassword'}}>Reset Password</button>
       {{#if resetPasswordSuccess}}
         <p class="success-message">Succesfully reset password for {{user.username}}</p>
       {{/if}}
     {{/if}}
+  {{else}}
+    <p class="error-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
   {{/if}}
 </article>

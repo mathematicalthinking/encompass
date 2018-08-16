@@ -32,7 +32,7 @@
     <tr>
       <td>Organization</td>
       <td>
-        {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
+        {{currentUser.organization.name}}
       </td>
     </tr>
     <tr>
@@ -58,11 +58,9 @@
   {{#if usernameExists}}
     <p class="error-message">Username already exists</p>
   {{/if}}
-
   {{#if emailExistsError}}
     <p class="error-message">Email address has already been used</p>
   {{/if}}
-
   {{#if errorMessage}}
     <p class="error-message">Missing required fields</p>
   {{/if}}
@@ -71,4 +69,3 @@
 
   <button class='action_button' {{action 'newUser'}}>Create New User</button>
 </article>
-

@@ -1,5 +1,5 @@
-Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  elementId: 'user-new-admin',
+Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'user-new-pd',
   usernameExists: null,
   emailExistsError: null,
   errorMessage: null,
@@ -9,7 +9,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   email: '',
   org: null,
   location: '',
-  accountTypes: ['Teacher', 'Student', 'Pd Admin', 'Admin'],
+  accountTypes: ['Teacher', 'Student'],
   isAuthorized: null,
   authorizedBy: '',
   newUserData: {},
@@ -32,46 +32,22 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     });
   },
 
-  handleOrg: function (org) {
-    var that = this;
-    return new Promise((resolve, reject) => {
-      if (!org) {
-        return reject('Invalid Data');
-      }
-      if (typeof org === 'string') {
-        let rec = that.store.createRecord('organization', {
-          name: org
-        });
-
-        rec.save()
-          .then((res) => {
-            console.log('res', res);
-            return resolve(res.get('organizationId'));
-          })
-          .catch((err) => {
-            return reject(err);
-          });
-      } else {
-        return resolve(org.get('organizationId'));
-      }
-
-    });
-  },
-
   actions: {
     newUser: function () {
+      var currentUser = this.get('currentUser');
       var username = this.get('username');
       var password = this.get('password');
       var name = this.get('name');
       var email = this.get('email');
-      var organization = this.get('org');
+      var organization = currentUser.get('organization');
+      var organizationId = organization.get('id');
       var location = this.get('location');
       var accountType = this.get('selectedType');
       var accountTypeLetter = accountType.charAt(0).toUpperCase();
       var isAuthorized = this.get('isAuthorized');
-      var currentUserId = this.get('currentUser').get('id');
+      var currentUserId = currentUser.get('id');
 
-      if (!username || !password || !organization || !accountType) {
+      if (!username || !password || !accountType) {
         this.set('errorMessage', true);
         return;
       }
@@ -93,6 +69,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           email: email,
           location: location,
           accountType: accountTypeLetter,
+          organization: organizationId,
           isAuthorized: true,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
@@ -108,6 +85,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
           email: email,
           location: location,
           accountType: accountTypeLetter,
+          organization: organizationId,
           isAuthorized: false,
           createdBy: currentUserId,
           createDate: new Date(),
@@ -119,40 +97,22 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         return;
       }
 
-      return this.handleOrg(organization)
-        .then((org) => {
-          let newUserData = this.get('newUserData');
-          newUserData.organization = org;
-          return this.createNewUser(newUserData)
-            .then((res) => {
-              console.log('res is', res);
-              console.log('res message is', res.message);
-              if (res.message === 'Can add existing user') {
-                this.set('usernameExists', true);
-              } else if (res.message === 'There already exists a user with that email address.') {
-                this.set('emailExistsError', res.message);
-              }
-            }).then((user) => {
-              // this.sendAction('toUserInfo', user.username);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+      let newUserData = this.get('newUserData');
+      return this.createNewUser(newUserData)
+        .then((res) => {
+          console.log('res is', res);
+          console.log('res message is', res.message);
+          if (res.message === 'Can add existing user') {
+            this.set('usernameExists', true);
+          } else if (res.message === 'There already exists a user with that email address.') {
+            this.set('emailExistsError', res.message);
+          }
+        }).then((user) => {
+          // this.sendAction('toUserInfo', user.username);
         })
         .catch((err) => {
           console.log(err);
         });
-    },
-
-    checkUsername: function (keysPressed) {
-      var errorMsg = 'Please enter usernames in lower case only';
-      var caseSensitive = /[A-Z]/;
-      var username = this.get('newUserUsername');
-
-      if (caseSensitive.test(username)) {
-        window.alert(errorMsg);
-        this.set('newUserUsername', keysPressed.toLowerCase());
-      }
     },
 
     resetErrors(e) {
