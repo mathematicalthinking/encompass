@@ -19,6 +19,7 @@ const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
 const access = require('../../middleware/access');
+const importApi = require('./importApi');
 
 
 module.exports.get = {};
@@ -150,10 +151,10 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-
-  var user = userAuth.requireUser(req);
+  console.log('in send WS');
+  var user = userAuth.getUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(!permissions.userCanLoadWorkspace(user, ws)) {
+    if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
     } else {
@@ -843,7 +844,6 @@ function pruneObj(obj) {
   for (let key of Object.keys(obj)) {
     const val = obj[key];
     if (_.isUndefined(val) || (_.isNull(val))) {
-      console.log('deleting', key);
       delete obj[key];
     }
   }
@@ -884,6 +884,75 @@ async function getAnswerIds(criteria) {
   return answers.map(obj => obj._id);
 }
 
+async function populateAnswers(answers) {
+  // return Promise.all(answerIds.map((ans) => {
+  //   return ans.populate('createdBy').populate('section').populate('problem').execPopulate();
+  // }));
+  const opts = [
+    {path: 'createdBy', select: 'username'},
+    {path: 'problem', select: 'title'},
+    {path: 'section', select: ['name', 'teachers']}
+  ];
+  return await models.Answer.populate(answers, opts);
+
+}
+
+async function answersToSubmissions(answers) {
+  if (!Array.isArray(answers)) {
+    return;
+  }
+  try {
+    const populated = await populateAnswers(answers);
+
+    const subs = answers.map((ans) => {
+      //const teachers = {};
+      const clazz = {};
+      const publication = {
+        publicationId: null,
+        puzzle: {}
+      };
+      const creator = {};
+      const teacher = {};
+
+
+      const student = ans.createdBy;
+      const section = ans.section;
+      const problem = ans.problem;
+
+
+      publication.puzzle.title = problem.title;
+      publication.puzzle.problemId = problem._id;
+
+      creator.studentId = student._id;
+      creator.username = student.username;
+
+      clazz.sectionId = section._id;
+      clazz.name = section.name;
+
+      const teachers = section.teachers;
+      const primaryTeacher = teachers[0];
+
+
+      teacher.id = primaryTeacher;
+      let sub = {
+        longAnswer: ans.explanation,
+        shortAnswer: ans.answer,
+        clazz: clazz,
+        creator: creator,
+        teacher: teacher,
+        publication: publication,
+        imageId: ans.uploadedFileId,
+      };
+      return sub;
+    });
+    return subs;
+  }catch(err) {
+    console.log('error mapping answers to subs', err);
+  }
+
+
+};
+
 async function postWorkspaceEnc(req, res, next) {
   const user = req.user;
   const workspaceCriteria = req.body.encWorkspaceRequest;
@@ -894,16 +963,43 @@ async function postWorkspaceEnc(req, res, next) {
     // accessibleAnswersQuery will take care of isTrashed
     delete pruned.isTrashed;
 
-    console.log('pruned', pruned);
 
     const accessibleCriteria = await access.get.answers(user);
     const allowedIds = await getAnswerIds(accessibleCriteria);
 
     const wsCriteria = buildCriteria(allowedIds, pruned);
-    console.log('wsCritieria', wsCriteria);
+
     const answers = await models.Answer.find(wsCriteria);
-    console.log('answers', answers.length);
-    return utils.sendResponse(res, { isSuccess: true});
+
+
+    let subs = await answersToSubmissions(answers);
+    console.log('subs', subs.length);
+
+    const submissions = await Promise.all(subs.map((obj) => {
+      let sub = new models.Submission(obj);
+      sub.createdBy = user;
+      sub.createDate = Date.now();
+      return sub.save();
+}));
+const submissionIds = submissions.map((sub) => {
+  return sub._id;
+});
+console.log('ids', submissionIds);
+const submissionSet = await importApi.buildSubmissionSet(submissions, user);
+console.log('submissionSet', submissionSet);
+let name = nameWorkspace(submissionSet, user, false);
+let workspace = new models.Workspace({
+  mode: 'private',
+  name: name,
+  owner: user,
+  submissionSet: submissionSet,
+  submissions: submissionIds
+});
+let ws = await workspace.save();
+const data = {'workspaceId': ws._id};
+
+    //convert to submissions
+    return utils.sendResponse(res,  data );
 
     }catch(err) {
       return utils.sendError.InternalError(err, res);
