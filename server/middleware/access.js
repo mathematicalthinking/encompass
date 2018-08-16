@@ -76,5 +76,41 @@ const accessibleAnswersQuery = async function(user, ids) {
   }
 };
 
+const canLoadWorkspace = function(user, ws) {
+  console.log('ws.editors', ws.editors);
+  const accountType = user.accountType;
+
+  if (accountType === 'S' || user.actingRole === 'student') {
+    return false;
+  }
+  if (accountType === 'A') {
+    return true;
+  }
+
+  const ownerOrg = ws.owner.organization.toString();
+  const userOrg = user.organization.toString();
+
+  if (accountType === 'P') {
+    if (ownerOrg === userOrg) {
+      return true;
+    }
+  }
+  const wsId = ws._id.toString();
+  const userId = user._id.toString();
+
+
+  const isOwner = userId === wsId;
+
+  const wsEditors = ws.editors.map(ws => ws._id.toString());
+  const isEditor = wsEditors.includes(userId);
+  console.log('isEditor', isEditor);
+  const isPublic = ws.mode === 'public';
+
+  return isOwner || isEditor || isPublic;
+
+
+};
+
 module.exports.get.answers = accessibleAnswersQuery;
+module.exports.get.workspace = canLoadWorkspace;
 /* jshint ignore:end */
