@@ -15,7 +15,7 @@
             <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
           {{/if}}
           {{!-- {{#if isStudent}} --}}
-            <li>{{#link-to 'assignments' classNames='menu assignments'}}assignments{{/link-to}}</li>
+            <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}</li>
           {{!-- {{/if}} --}}
           {{#if notStudent}}
           <li>
@@ -27,19 +27,19 @@
             </div>
           </li>
           {{else}}
-            <li>{{#link-to 'problems' classNames='menu problems'}}problems{{/link-to}}</li>
+            <li>{{#link-to 'problems.home' classNames='menu problems'}}problems{{/link-to}}</li>
           {{/if}}
           {{#if notStudent}}
           <li>
             <div class="dropdown">
-              {{#link-to 'sections' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              {{#link-to 'sections.home' classNames='menu sections'}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
               </div>
             </div>
           </li>
           {{else}}
-            <li>{{#link-to 'sections' classNames='menu sections'}}sections{{/link-to}}</li>
+            <li>{{#link-to 'sections.home' classNames='menu sections'}}sections{{/link-to}}</li>
           {{/if}}
           {{#if notStudent}}
           <li>
@@ -56,14 +56,14 @@
             {{#if user.isAdmin}}
             <li>
               <div class="dropdown">
-                {{#link-to 'users' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+                {{#link-to 'users.home' classNames='menu users'}}users <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
                 <div class="dropdown-content">
                   {{#link-to 'users.new' classNames='menu users-new'}}new{{/link-to}}
                 </div>
               </div>
             </li>
             {{else}}
-              <li>{{#link-to 'users' classNames='menu users'}}users{{/link-to}}</li>
+              <li>{{#link-to 'users.home' classNames='menu users'}}users{{/link-to}}</li>
             {{/if}}
           {{/if}}
           <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
@@ -79,14 +79,14 @@
 
     <div class="sidemenu-style" id="{{unless openMenu 'sidemenu'}}">
       <ul>
-        <li>{{#link-to 'assignments'}}assignments{{/link-to}}</li>
+        <li>{{#link-to 'assignments.home'}}assignments{{/link-to}}</li>
         <li>{{#link-to 'index'}}home{{/link-to}}</li>
         <li>{{#link-to 'import'}}import{{/link-to}}</li>
-        <li>{{#link-to 'problems'}}problems{{/link-to}}</li>
-        <li>{{#link-to 'sections'}}sections{{/link-to}}</li>
+        <li>{{#link-to 'problems.home'}}problems{{/link-to}}</li>
+        <li>{{#link-to 'sections.home'}}sections{{/link-to}}</li>
         <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
         <li>{{#link-to 'responses'}}responses{{/link-to}}</li>
-        <li>{{#link-to 'users'}}users{{/link-to}}</li>
+        <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
         <li>{{#link-to 'index'}}my account{{/link-to}}</li>
         <li id="logout-btn-side">{{#link-to 'logout'}}logout{{/link-to}}</li>
       </ul>
