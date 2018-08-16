@@ -52,65 +52,26 @@ const getStudentSections = function(user) {
   });
 }
 
-async function getTeacherStudents(teacher) {
-  try {
-    const teacherSections = getTeacherSections(teacher);
-    const students = await models.User.find({ _id:{ $in: teacherSections }}, { _id: 1 });
-    return students.map(obj => obj._id);
-  }catch(err) {
-    console.log(err);
-  }
-}
-
-async function getStudentPeers(user) {
-  if (!user) {
-    return;
-  }
-  try {
-  const sectionIds = getStudentSections(user);
-  const sections = await models.Section.find({$in: sectionIds});
-  const studentIds = sections.map(section => section.students);
-  return _.flatten(studentIds);
-  }catch(err) {
-    return new Error(err);
-  }
-}
-
 async function getStudentUsers(user) {
   if (!user) {
     return;
   }
   try {
     const ids = [];
-  ids.push(user._id);
+    ids.push(user._id);
 
-  const sectionIds = getStudentSections(user);
-  const sections = await models.Section.find({$in: sectionIds});
-  const studentIds = sections.map(section => section.students);
+    const sectionIds = getStudentSections(user);
+    const sections = await models.Section.find({_id: {$in: sectionIds}});
+    const studentIds = sections.map(section => section.students);
 
-  ids.push(studentIds);
+    ids.push(studentIds);
 
-  const teacherIds = sections.map(section => section.teachers);
+    const teacherIds = sections.map(section => section.teachers);
 
-  ids.push(teacherIds);
+    ids.push(teacherIds);
 
   return _.flatten(ids);
-  }catch(err) {
-    return new Error(err);
-  }
 
-
-}
-
-async function getStudentTeachers(user) {
-  if (!user) {
-    return;
-  }
-  try {
-    const sectionIds = getStudentSections(user);
-  const sections = await models.Section.find({$in: sectionIds});
-  const teacherIds = sections.map(section => section.teachers);
-  return _.flatten(teacherIds);
   }catch(err) {
     return new Error(err);
   }
@@ -143,8 +104,10 @@ async function getTeacherUsers(user) {
   }
   const ids = [];
   ids.push(user._id);
+
   const sectionIds = getTeacherSections(user);
   const sections = await models.Section.find({_id: {$in: sectionIds}});
+
   const students = _.flatten(sections.map(section => section.students));
 
   const filter = {
@@ -155,7 +118,9 @@ async function getTeacherUsers(user) {
   };
 
   const users = await getModelIds('User', filter);
+
   ids.push(users);
+
   return _.flatten(ids);
 
 }
@@ -163,8 +128,6 @@ async function getTeacherUsers(user) {
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
 module.exports.getStudentSections = getStudentSections;
-module.exports.getStudentPeers = getStudentPeers;
-module.exports.getStudentTeachers = getStudentTeachers;
 module.exports.getStudentUsers = getStudentUsers;
 module.exports.getPdAdminUsers = getPdAdminUsers;
 module.exports.getTeacherUsers = getTeacherUsers;
