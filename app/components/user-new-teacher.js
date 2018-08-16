@@ -61,14 +61,14 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
         .then((res) => {
           if (res.message === 'Username already exists') {
             this.set('usernameExists', true);
+            return;
           } else if (res.message === 'There already exists a user with this email address.') {
             this.set('emailExistsError', res.message);
+            return;
+          } else {
+            console.log('success new user username', res.username);
+            this.sendAction('toUserInfo', res.username);
           }
-        }).then((user) => {
-          this.sendAction('toUserInfo', user.username);
-          this.set('username', '');
-          this.set('password', '');
-          this.set('name', '');
         })
         .catch((err) => {
           console.log(err);
