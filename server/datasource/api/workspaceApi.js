@@ -18,7 +18,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
-const access = require('../../middleware/access');
+const access = require('../../middleware/access/workspaces');
 const importApi = require('./importApi');
 
 

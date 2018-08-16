@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 /**
   * @description This is the API for user based requests
   * @author Damola Mabogunje <damola@mathforum.org>
@@ -11,6 +12,7 @@ const logger   = require('log4js').getLogger('server');
 const models   = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
+const access   = require('../../middleware/access/users');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -39,7 +41,7 @@ function makeGuest() {
            the current user having a flag: isMe=true then the client would filter currentUser for isMe
            and do whatever they want with the rest of the users
 */
-function sendUsers(req, res, next) {
+async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
   console.log('user', user);
   console.log('req.query sendUsers', req.query);
@@ -54,39 +56,42 @@ function sendUsers(req, res, next) {
     return utils.sendResponse(res, {user: [user]});
     //return next();
   }
-  var criteria = utils.buildCriteria(req);
-
-  if (req.query.username) {
-    criteria = {
-      isTrashed: false,
-      username: req.query.username
-    };
-  } else if(req.query.name) { //if we're doing a search GET /users/?name=xyz
-    var name = req.query.name;
-    var username = name.username;
-    var regex;
-    if (username) {
-      username = username.replace(/\W+/g, "");
-      regex = new RegExp(username, 'i');
-      criteria = {
-        username: regex,
-        isTrashed: false
-      };
-    } else {
-      name = name.replace(/\W+/g, "");
-      regex = new RegExp(name, 'i');
-      criteria = {
-        name: regex,
-        isTrashed: false
-      };
-    }
-  } else if (req.query.ids) { //if we're doing a search GET /users/?ids=
-    const ids = req.query.ids;
-    criteria = {
-      _id: {$in: ids},
-      isTrashed: false
-    };
+  //var criteria = utils.buildCriteria(req);
+  var criteria;
+  if (req.query.ids) {
+    criteria = await access.get.users(user, req.query.ids);
+  } else if (req.query.usernames) {
+    criteria = await access.get.users(user, null, req.query.ids);
+  } else {
+    criteria = await access.get.users(user, null, null);
   }
+  console.log('criteria users', criteria);
+  // if(req.query.name) { //if we're doing a search GET /users/?name=xyz
+  //   var name = req.query.name;
+  //   var username = name.username;
+  //   var regex;
+  //   if (username) {
+  //     username = username.replace(/\W+/g, "");
+  //     regex = new RegExp(username, 'i');
+  //     criteria = {
+  //       username: regex,
+  //       isTrashed: false
+  //     };
+  //   } else {
+  //     name = name.replace(/\W+/g, "");
+  //     regex = new RegExp(name, 'i');
+  //     criteria = {
+  //       name: regex,
+  //       isTrashed: false
+  //     };
+  //   }
+  // } else if (req.query.ids) { //if we're doing a search GET /users/?ids=
+  //   const ids = req.query.ids;
+  //   criteria = {
+  //     _id: {$in: ids},
+  //     isTrashed: false
+  //   };
+  // }
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
@@ -305,3 +310,4 @@ function postUser(req, res, next) {
   module.exports.put.user.removeSection = removeSection;
   module.exports.put.user.addAssignment = addAssignment;
   module.exports.put.user.removeAssignment = removeAssignment;
+/* jshint ignore:start */

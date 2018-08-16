@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 /**
   * # Submissions API
   * @description This is the API for submission based requests
@@ -5,6 +6,7 @@
   * @since 1.0.0
   */
 //REQUIRE MODULES
+
 const mongoose = require('mongoose');
 const _ = require('underscore');
 const Q = require('q');
@@ -16,6 +18,7 @@ const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const spaces   = require('./workspaceApi');
+const access   = require('../../middleware/access/submissions');
 
     module.exports.get = {};
     module.exports.post = {};
@@ -33,6 +36,7 @@ const spaces   = require('./workspaceApi');
   * @example
   *     1. array.forEach(toSubmission);
  */
+
 function toSubmission(obj, index, arr) {
   if ( !_.isUndefined(obj) ) {
     var model = new models.Submission(),
@@ -98,9 +102,17 @@ function toPDSubmission(obj, index, arr) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getSubmissions(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+async function getSubmissions(req, res, next) {
+  var user = userAuth.getUser(req);
+  var criteria;
+  console.log('ids', req.query.ids);
+  if (req.query.ids) {
+    criteria = await access.get.submissions(user, req.query.ids);
+  } else {
+    criteria = await access.get.submissions(user, null);
+  }
 
+  console.log('req params', req.query);
   logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
   models.Submission.find(criteria)
     .exec(function(err, submissions) {
@@ -345,3 +357,4 @@ module.exports.get.submission = getSubmission;
 module.exports.post.submission = postSubmission;
 module.exports.put.submission = putSubmission;
 module.exports.post.importSubmissionsRequest = importSubmissions;
+/* jshint ignore:end */

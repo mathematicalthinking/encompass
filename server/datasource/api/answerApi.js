@@ -14,7 +14,7 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
-const access= require('../../middleware/access');
+const access= require('../../middleware/access/answers');
 
 
 module.exports.get = {};
