@@ -1,7 +1,21 @@
 const utils = require('./utils');
+const _ = require('underscore');
 
 module.exports.get = {};
-const accessibleUsersQuery = async function(user, ids, usernames) {
+
+
+/**
+  * @private
+  * @method accessibleUsersQuery
+  * @description
+  * @see [utils](..././utils.js)
+  * @returns {Object} A filter object that can be passed to a Mongoose find operation
+  *
+  */
+const accessibleUsersQuery = async function(user, ids, usernames, username) {
+  if (!user) {
+    return;
+  }
   const accountType = user.accountType;
   const actingRole = user.actingRole;
 
@@ -17,11 +31,14 @@ const accessibleUsersQuery = async function(user, ids, usernames) {
     filter.username = { $in: usernames }
   }
 
+  if (username) {
+    filter.username = { username }
+  }
+
   // students can only retrieve their own user record or
   // students from a section // or teachers?
   if (actingRole === 'student' || accountType === 'S') {
-   const users = await utils.getStudentUsers;
-  console.log('users', users);
+   const users = await utils.getStudentUsers(user);
 
   if (ids) {
     const intersection = _.intersection(ids, users);
@@ -31,6 +48,7 @@ const accessibleUsersQuery = async function(user, ids, usernames) {
   }
     return filter;
   }
+
   // will only reach here if admins/pdadmins are in actingRole teacher
   if (accountType === 'A') {
     return filter;
@@ -39,7 +57,7 @@ const accessibleUsersQuery = async function(user, ids, usernames) {
   if (accountType === 'P') {
     // can access all users from organization
     // can access all users who they created
-   const users = await utils.getPdAdminUsers(user);
+    const users = await utils.getPdAdminUsers(user);
 
    if (ids) {
     const intersection = _.intersection(ids, users);
@@ -53,14 +71,6 @@ const accessibleUsersQuery = async function(user, ids, usernames) {
   if (accountType === 'T') {
     // only answers from either a teacher's assignments or from a section where they are in the teachers array
 
-    // const ownSections = utils.getTeacherSections(user);
-    // // const ownAssignmentIds = await utils.getTeacherAssignments(user.id);
-
-    // const ownAssignmentIds = await utils.getModelIds('Assignment', {createdBy: user._id});
-
-    // filter.assignment = { $in: ownAssignmentIds };
-
-    // filter.section = { $in: ownSections };
     const users = await utils.getTeacherUsers(user);
 
     if (ids) {
