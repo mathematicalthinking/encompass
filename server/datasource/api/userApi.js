@@ -43,8 +43,12 @@ function makeGuest() {
 */
 async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
+<<<<<<< HEAD
   console.log('user', user);
   console.log('req.query sendUsers', req.query);
+=======
+  console.log('user', req.query.username);
+>>>>>>> Change add editor typeahead to use username as query param instead of name
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -58,10 +62,19 @@ async function sendUsers(req, res, next) {
   }
   //var criteria = utils.buildCriteria(req);
   var criteria;
-  if (req.query.ids) {
+  if (req.query.username) {
+    var regex;
+    var username = req.query.username;
+    username = username.replace(/\W+/g, "");
+    regex = new RegExp(username, 'i');
+    criteria = {
+      username: regex,
+      isTrashed: false
+    }
+  } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids);
   } else if (req.query.usernames) {
-    criteria = await access.get.users(user, null, req.query.ids);
+    criteria = await access.get.users(user, null, req.query.usernames);
   } else {
     criteria = await access.get.users(user, null, null);
   }
