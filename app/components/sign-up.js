@@ -97,7 +97,12 @@ Encompass.SignUpComponent = Ember.Component.extend({
       console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
-      var usernameTrim = username.trim();
+      var usernameTrim;
+      if (username) {
+        usernameTrim = username.trim();
+      } else {
+        usernameTrim = '';
+      }
       var password = that.get('password');
       var confirmPassword = that.get('confirmPassword');
       var requestReason = that.get('requestReason');
@@ -105,7 +110,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
       var doEmailsMatch = that.get('doEmailsMatch');
 
 
-      if (!name || !email || !organization || !location || !username || !password || !requestReason || !confirmEmail || !confirmPassword) {
+      if (!name || !email || !organization || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
         that.set('missingCredentials', true);
         return;
       }
