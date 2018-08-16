@@ -45,7 +45,7 @@ describe('Users', function() {
       expect(await helpers.waitForSelector(driver, '#not-auth'));
      });
 
-     xdescribe('clicking the user link', function() {
+     describe('clicking the user link', function() {
        before(async function() {
          await helpers.findAndClickElement(driver, 'a.user');
          await helpers.waitForSelector(driver, 'article.user');
@@ -54,15 +54,15 @@ describe('Users', function() {
      });
    });
 
-   xdescribe('Visiting a user page directly', function() {
+   describe('Visiting a user page directly', function() {
      before(async function() {
-      await helpers.navigateAndWait(driver, `${host}/#/users`, 'a.user');
+      await helpers.navigateAndWait(driver, `${host}/#/users/home`);
      });
     //  validateAnon();
    });
   });
 
-  xdescribe('Logged in as a teacher', function() {
+  describe('Logged in as a teacher', function() {
     before(async function() {
       await helpers.login(driver, host, helpers.regUser);
       await helpers.waitForSelector(driver, css.topBar.users);
