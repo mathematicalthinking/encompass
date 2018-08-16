@@ -7,6 +7,7 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
+const _        = require('underscore');
 
 //REQUIRE FILES
 const models   = require('../schemas');
@@ -58,20 +59,31 @@ async function sendUsers(req, res, next) {
   //var criteria = utils.buildCriteria(req);
   var criteria;
   if (req.query.username) {
-    var regex;
     var username = req.query.username;
-    username = username.replace(/\W+/g, "");
+    var regex;
+    // we currently allow emails as usernames so had to fix this
+    username = username.replace(/\s+/g, "");
     regex = new RegExp(username, 'i');
-    criteria = {
-      username: regex,
-      isTrashed: false
+    const requestedUser = await models.User.find({username}).lean().exec();
+
+    const accessibleUsers = await access.get.users(user, null, null, username);
+
+    if (_.contains(accessibleUsers, requestedUser._id)) {
+      delete requestedUser.key;
+      delete requestedUser.password;
+      delete requestedUser.history;
+
+      let data = {'user': requestedUser};
+      return utils.sendResponse(res, data);
+    } else {
+      return utils.sendError.NotAuthorizedError(null, res);
     }
   } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids);
   } else if (req.query.usernames) {
     criteria = await access.get.users(user, null, req.query.usernames);
   } else {
-    criteria = await access.get.users(user, null, null);
+    criteria = await access.get(user, null, null);
   }
   console.log('criteria users', criteria);
   models.User.find(criteria)
@@ -84,6 +96,7 @@ async function sendUsers(req, res, next) {
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
         delete doc.history; //don't send user history out
+        delete doc.password;
       });
       var data = {'user': docs};
       return utils.sendResponse(res, data);
@@ -100,9 +113,13 @@ async function sendUsers(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function sendUser(req, res, next) {
+async function sendUser(req, res, next) {
   var user = userAuth.getUser(req);
-  models.User.findById(req.params.id)
+  var accessibleUsers = await access.get(user, null, null);
+
+  // if user has permission to get this user record
+  if (_.contains(accessibleUsers, req.params.id)) {
+    models.User.findById(req.params.id)
     .lean()
     .exec(function(err, doc) {
       if (err) {
@@ -111,9 +128,13 @@ function sendUser(req, res, next) {
       var data = {'user': doc};
       delete data.user.key; //hide key
       delete data.user.history; // hide history
+      delete data.user.password;
       return utils.sendResponse(res, data);
-      //next();
     });
+  } else {
+    // does not have permission
+    return utils.sendError.NotAuthorizedError(null, res);
+  }
 }
 
 /**
