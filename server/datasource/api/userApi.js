@@ -42,6 +42,7 @@ function makeGuest() {
 function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
   console.log('user', user);
+  console.log('req.query sendUsers', req.query);
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -55,7 +56,12 @@ function sendUsers(req, res, next) {
   }
   var criteria = utils.buildCriteria(req);
 
-  if(req.query.name) { //if we're doing a search GET /users/?name=xyz
+  if (req.query.username) {
+    criteria = {
+      isTrashed: false,
+      username: req.query.username
+    };
+  } else if(req.query.name) { //if we're doing a search GET /users/?name=xyz
     var name = req.query.name;
     var username = name.username;
     var regex;
