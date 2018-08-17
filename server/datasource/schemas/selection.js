@@ -17,12 +17,12 @@ var SelectionSchema = new Schema({
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
     /* Coordinates are used by the frontend to help highlight a selection within submission text */
-    coordinates: String,
-    text: {type: String, required: true},
-    submission: {type:ObjectId, ref:'Submission', required: true},
-    workspace: {type:ObjectId, ref:'Workspace'},
-    comments: [{type:ObjectId, ref:'Comment'}],
-    taggings: [{type:ObjectId, ref:'Tagging'}]
+    coordinates: { type: String, required: true },
+    text: { type: String, required: true },
+    submission: { type: ObjectId, ref: 'Submission', required: true },
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    comments: [{type: ObjectId, ref: 'Comment'}],
+    taggings: [{type: ObjectId, ref: 'Tagging'}]
   }, {versionKey: false});
 
 

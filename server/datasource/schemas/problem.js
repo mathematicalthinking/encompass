@@ -17,8 +17,8 @@ var ProblemSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  title: { type: String },
-  puzzleId: { type: Number },
+  title: { type: String, required: true },
+  puzzleId: { type: Number }, // Not used now
   text: { type: String },
   imageUrl: { type: String },
   sourceUrl: { type: String },
@@ -27,7 +27,7 @@ var ProblemSchema = new Schema({
   additionalInfo: { type: String },
   origin: { type: ObjectId, ref: 'Problem' },
   modifiedBy: { type: ObjectId, ref: 'User' },
-  privacySetting: { type: String },
+  privacySetting: { type: String, enum: ['M', 'O', 'E'] },
   organization: { type: ObjectId, ref: 'Organization' },
   // isPublic: { type: Boolean },
   categories: [{ type: ObjectId, ref: 'Category' }]
