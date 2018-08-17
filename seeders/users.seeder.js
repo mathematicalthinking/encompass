@@ -7,7 +7,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "key": "5b8d3ded-cc7f-4aa7-9570-06077d799e81",
-    "name": "test name",
+    "name": "steve",
     "username": "steve",
     "createdBy": null,
     "sections": [],
@@ -181,7 +181,7 @@ var data = [{
     "sections": [],
     "isTrashed": false,
     "isEmailConfirmed": true,
-    "createDate": "2018-08-17T18:20:51.382Z",
+    "createDate": "2018-08-17T10:20:51.382Z",
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
@@ -200,7 +200,8 @@ var data = [{
     "username": "student1",
     "createdBy": null,
     "sections": [],
-    "assignments": []
+    "assignments": [],
+    "createDate": "2018-08-15T10:20:51.382Z",
   }, {
     "_id": "5b4e5180a2eed65e2434d475",
     "accountType": 'S',
