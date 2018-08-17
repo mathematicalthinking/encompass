@@ -424,6 +424,26 @@ module.exports = function (grunt) {
         regExp: false
       }
     },
+    assets_versioning: {
+      staging: {
+        options: {
+          versionsMapFile: 'temp_build/asset_versions.json',
+          files: {
+            'main.css',
+            'application.js'
+          }
+        }
+      },
+      production: {
+        options: {
+          versionsMapFile: 'temp_build/asset_versions.json',
+          files: {
+            'main.css',
+            'application-prod.js'
+          }
+        }
+      }
+    },
     'string-replace': {
       version: {
         files: {
