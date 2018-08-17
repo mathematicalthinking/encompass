@@ -10,6 +10,11 @@ Encompass.WorkspaceNewComponent = Ember.Component.extend({
       } else {
         this.set('isPows', false);
       }
+    },
+
+    toWorkspaces: function() {
+      console.log('in toWs ws-new comp');
+      this.sendAction('toWorkspaces');
     }
   }
 });
