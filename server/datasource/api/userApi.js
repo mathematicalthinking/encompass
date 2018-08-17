@@ -69,7 +69,7 @@ async function sendUsers(req, res, next) {
 
     const requestedUser = await models.User.findOne({username: regex}).lean().exec();
 
-    criteria = await access.get.users(user, null, null, username);
+    criteria = await access.get.users(user, null, [username]);
 
     // either empty array or array of one user
     const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
@@ -92,7 +92,7 @@ async function sendUsers(req, res, next) {
       return utils.sendResponse(res, data);
 
   } else if (req.query.ids) {
-    criteria = await access.get.users(user, req.query.ids);
+    criteria = await access.get.users(user, req.query.ids, null);
   } else {
     criteria = await access.get.users(user, null, null);
   }
@@ -127,26 +127,47 @@ async function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 async function sendUser(req, res, next) {
-  var user = userAuth.getUser(req);
-  var accessibleUsers = await access.get(user, null, null);
+  console.log('params.id', req.params.id);
+  try {
+    var user = userAuth.getUser(req);
 
-  // if user has permission to get this user record
-  if (_.contains(accessibleUsers, req.params.id)) {
-    models.User.findById(req.params.id)
-    .lean()
-    .exec(function(err, doc) {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      var data = {'user': doc};
+    if (!user) {
+      return utils.sendError.NotAuthorizedError(null, res);
+    }
+
+    // userPermissions is an object with doesExist, hasPermission, and requestedUser
+    const userPermissions = await access.get.user(user, req.params.id, null);
+
+    // Id or username was not provided
+    if (userPermissions === undefined) {
+      return utils.sendError.InternalError(null, res);
+    }
+
+    const { doesExist, hasPermission, requestedUser } = userPermissions;
+
+    // Record does not exist
+    if (!doesExist) {
+      return utils.sendResponse(res, null);
+    }
+
+    // Record exists but user does not have permission
+    if (!hasPermission) {
+      return utils.sendError.NotAuthorizedError(null, res);
+    }
+
+    // User exists and has permission
+    if (hasPermission && requestedUser) {
+      var data = {'user': requestedUser};
+
       delete data.user.key; //hide key
       delete data.user.history; // hide history
       delete data.user.password;
+
       return utils.sendResponse(res, data);
-    });
-  } else {
-    // does not have permission
-    return utils.sendError.NotAuthorizedError(null, res);
+    }
+  }catch(err) {
+    console.log('error sendUser', err);
+    return utils.sendError.InternalError(err, res);
   }
 }
 
