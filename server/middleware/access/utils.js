@@ -2,27 +2,17 @@
 const models = require('../../datasource/schemas');
 const _ = require('underscore');
 
+const wsAuth =require('./workspaces');
+
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
   try {
-    console.log('filter', filter);
-    console.log('model', model);
     const records = await models[model].find(filter, {_id: 1});
-    console.log('records', records);
     return records.map(rec => rec._id);
   }catch(err) {
     return new Error(`Error retrieving modelIds: ${err}`);
   }
 }
-
-// async function getOrgUsers(orgId) {
-//   try {
-//     const orgMembers = await models.User.find({organization: orgId}, {_id: 1});
-//     return orgMembers.map(obj => obj._id);
-//   }catch(err) {
-//     console.log('error getting orgusers', err);
-//   }
-// }
 
 async function getTeacherAssignments(userId) {
   try {
@@ -70,7 +60,8 @@ async function getStudentUsers(user) {
 
     ids.push(teacherIds);
 
-  return _.flatten(ids);
+  const flattened =  _.flatten(ids);
+  return flattened.map(id => id.toString());
 
   }catch(err) {
     return new Error(err);
@@ -89,15 +80,15 @@ async function getPdAdminUsers(user) {
       {organization: org},
       {createdBy: user._id}
     ]
-  }
+  };
   const orgUserIds = await getModelIds('User', filter);
 
   ids.push(orgUserIds);
 
-  return _.flatten(ids);
+  const flattened = _.flatten(ids);
+  return flattened.map(id => id.toString());
 }
-// teacher can get all students in one of their sections
-// or any student who they created
+// teachers can also get all users in org, but may not be able to edit all
 async function getTeacherUsers(user) {
   if (!user) {
     return user;
@@ -105,23 +96,56 @@ async function getTeacherUsers(user) {
   const ids = [];
   ids.push(user._id);
 
-  const sectionIds = getTeacherSections(user);
-  const sections = await models.Section.find({_id: {$in: sectionIds}});
-
-  const students = _.flatten(sections.map(section => section.students));
-
+  const org = user.organization;
   const filter = {
     $or: [
-      { _id: { $in: students} },
+      {organization: org},
       {createdBy: user._id}
     ]
   };
 
-  const users = await getModelIds('User', filter);
+  const orgUserIds = await getModelIds('User', filter);
 
-  ids.push(users);
+  ids.push(orgUserIds);
 
-  return _.flatten(ids);
+  const flattened = _.flatten(ids);
+  return flattened.map(id => id.toString());
+
+}
+
+async function getAccessibleWorkspaceIds(user) {
+  if (!user) {
+    return;
+  }
+  try {
+    const criteria = await wsAuth.get.workspaces(user, null);
+    const ids = await getModelIds('Workspace', criteria);
+    return ids;
+
+  } catch(err) {
+    console.log('err getacc ids', err);
+  }
+}
+
+async function getUsersFromWorkspaces(workspaceIds) {
+  if (!workspaceIds || !Array.isArray(workspaceIds)) {
+    return [];
+  }
+  try {
+
+    const workspaces = await models.Workspace.find({ _id: { $in: workspaceIds } }, { owner: 1, editors: 1 } ).lean().exec();
+    const userIds =  [];
+    workspaces.forEach((ws) => {
+      userIds.push(ws.owner.toString());
+      userIds.push(ws.editors.map(id => id.toString()));
+    });
+
+    const flattened = _.flatten(userIds);
+    return flattened;
+
+  }catch(err) {
+    console.log('err', err);
+  }
 
 }
 
@@ -131,4 +155,6 @@ module.exports.getStudentSections = getStudentSections;
 module.exports.getStudentUsers = getStudentUsers;
 module.exports.getPdAdminUsers = getPdAdminUsers;
 module.exports.getTeacherUsers = getTeacherUsers;
+module.exports.getAccessibleWorkspaceIds = getAccessibleWorkspaceIds;
+module.exports.getUsersFromWorkspaces = getUsersFromWorkspaces;
 /* jshint ignore:end */
