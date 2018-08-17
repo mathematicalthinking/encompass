@@ -20,16 +20,16 @@ var FolderSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
-    name: {type: String, required: true},
-    owner: {type:ObjectId, ref:'User'},
-    editors: [{type:ObjectId, ref:'User'}],
-    parent: {type:ObjectId, ref:'Folder'},
-    children: [{type:ObjectId, ref:'Folder'}],
-    /* Weight is used in the frontend for sort and dragNdrop functionality */
-    weight: Number,
-    taggings: [{type: ObjectId, ref:'Tagging'}],
-    workspace: {type:ObjectId, ref:'Workspace'}
-  }, {versionKey: false});
+  name: { type: String, required: true },
+  owner: { type:ObjectId, ref:'User' },
+  editors: [{type:ObjectId, ref:'User'}],
+  parent: { type:ObjectId, ref:'Folder' },
+  children: [{type:ObjectId, ref:'Folder'}],
+  /* Weight is used in the frontend for sort and dragNdrop functionality */
+  weight: Number,
+  taggings: [{type: ObjectId, ref:'Tagging'}],
+  workspace: { type:ObjectId, ref:'Workspace' }
+}, {versionKey: false});
 
 /**
   * ## Pre-Validation
