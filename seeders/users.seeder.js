@@ -1,8 +1,7 @@
 var Seeder = require('mongoose-data-seed').Seeder;
 var User = require('../server/datasource/schemas').User;
 
-var data = [
-  {
+var data = [{
     "_id": "529518daba1cd3d8c4013344",
     "accountType": 'A',
     "isAuthorized": true,
@@ -187,6 +186,7 @@ var data = [
     "_id": "5b4e5180a2eed65e2434d475",
     "accountType": 'S',
     "username": "testUser2",
+    "organization": "5b4a64a028e4b75919c28512",
     "assignments": [],
     "answers": [],
     "sections": [],
@@ -198,6 +198,7 @@ var data = [
     "actingRole": 'teacher',
     "name": 'Alice Carrol',
     "isEmailConfirmed": true,
+    "organization": "5b4a64a028e4b75919c28512",
     "resetPasswordToken": "64a9360d9bf51cfc85662fd845c964680d39768e",
     "resetPasswordExpires": "2088-08-14T21:13:47.107Z",
     "password": "$2a$08$Puko.4Ukg3fUVSfQsyhlauvFJ84/ymtidiL8qablVfic59zzC4gFi",
@@ -214,6 +215,7 @@ var data = [
     "resetPasswordToken": "64f9r60x9b2513f785q62fd845c964680d39768e",
     "resetPasswordExpires": "2018-08-12T21:13:47.107Z",
     "password": "$2a$08$Puko.4Ukg3yUVSfQsyhlauvFJ/4/ymtidiL8qab.Vfic59zzC4gFi",
+    "organization": "5b4a64a028e4b75919c28512",
     "isAuthorized": true,
     "isTrashed": false,
   },
@@ -224,6 +226,7 @@ var data = [
     "actingRole": 'teacher',
     "name": 'Perry Zeller',
     "email": 'encmath2@gmail.com',
+    "organization": "5b4a64a028e4b75919c28512",
     "isEmailConfirmed": false,
     "confirmEmailToken": "64y9r60x9b2513f785q62fdt45c924630339968e",
     "confirmEmailExpires": "2088-08-12T21:13:47.107Z",
@@ -238,6 +241,7 @@ var data = [
     "actingRole": 'teacher',
     "name": 'Perry Uller',
     "email": 'encmath2@gmail.com',
+    "organization": "5b4a64a028e4b75919c28512",
     "isEmailConfirmed": false,
     "confirmEmailToken": "62y9f60x9b2513f785f62fdt41f924630339968f",
     "confirmEmailExpires": "2018-08-12T21:13:47.107Z",
@@ -245,7 +249,22 @@ var data = [
     "isAuthorized": true,
     "isTrashed": false,
   },
-
+  {
+    "_id": "5b7321ee59a672806ec903d5",
+    "name": "PD Admin",
+    "email": "pdadmin@test.com",
+    "organization": "5b4a64a028e4b75919c28512",
+    "location": "Philadelphia, PA",
+    "username": "pdadmin",
+    "password": "$2a$12$nQafJwfxx19P2vyBhDLXUeDFNdZU81t1eosZEvs.plyCP1HNSZFtW",
+    "isAuthorized": true,
+    "accountType": "P",
+    "isEmailConfirmed": true,
+    "lastModifiedDate": "2018-08-14T18:20:51.382Z",
+    "isTrashed": false,
+    "createDate": "2018-08-14T18:20:51.382Z",
+    "lastSeen": "2018-08-16T20:19:26.457Z"
+  }
 ];
 
 var UsersSeeder = Seeder.extend({

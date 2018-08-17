@@ -57,7 +57,8 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
   // These are all the users that are in the same org as you
   orgUsers: function () {
     let usersWithOrgs = this.users.filter((user) => {
-      return !user.get('isTrashed') && user.get('organization.id') && !user.get('isStudent');
+      let accountType = user.get('accountType');
+      return !user.get('isTrashed') && user.get('organization.id') && accountType !== 'S' && accountType;
     });
     let yourOrgId = this.get('currentUser').get('organization').get('id');
     usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);

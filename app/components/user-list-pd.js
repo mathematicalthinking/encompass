@@ -2,8 +2,14 @@ Encompass.UserListPdComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   elementId: 'user-list-pd',
 
   unauthUsers: function () {
-    let users = this.users.filterBy('isTrashed', false);
-    let accountTypeUsers = users.filterBy('accountType');
+    let usersWithOrgs = this.users.filter((user) => {
+      return !user.get('isTrashed') && user.get('organization.id');
+    });
+    let yourOrgId = this.get('currentUser').get('organization').get('id');
+    usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
+    let orgUsersNotYou = usersWithOrgs.rejectBy('username', this.get('currentUser.username'));
+    orgUsersNotYou = orgUsersNotYou.sortBy('createDate').reverse();
+    let accountTypeUsers = orgUsersNotYou.filterBy('accountType');
     let unauthUsers = accountTypeUsers.filterBy('isAuthorized', false);
     return unauthUsers.sortBy('createDate').reverse();
   }.property('users.@each.isAuthorized'),
