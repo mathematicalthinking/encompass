@@ -10,7 +10,7 @@
       <td>Username</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.username classNames='user.userName'}}
+          {{input value=user.username classNames='user-username'}}
         {{else}}
           {{user.username}}
         {{/if}}
@@ -20,7 +20,7 @@
       <td>Name</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.name classNames='user.userName'}}
+          {{input value=user.name classNames='user-name'}}
         {{else}}
           {{user.name}}
         {{/if}}
@@ -37,7 +37,7 @@
       <td>Email</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.email classNames='user.userName'}}
+          {{input value=user.email classNames='user-email'}}
         {{else}}
           {{user.email}}
         {{/if}}
@@ -91,7 +91,7 @@
       <td>Location</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.locaiton classNames='user.userName'}}
+          {{input value=user.locaiton classNames='user-location'}}
         {{else}}
           {{user.location}}
         {{/if}}
@@ -183,13 +183,13 @@
   {{#if canEdit}}
     {{#if isEditing}}
     <div class="button-row">
-      <button class='action_button' {{action 'saveUser'}}>Save</button>
-      <button class='action_button' {{action 'cancel'}}>Cancel</button>
+      <button class='action_button save-user' {{action 'saveUser'}}>Save</button>
+      <button class='action_button canecel-user' {{action 'cancel'}}>Cancel</button>
     </div>
     {{else}}
     <div class="button-row">
-      <button class='action_button' {{action 'editUser'}}>Edit</button>
-      <button class='action_button' {{action 'resetPassword'}}>Reset Password</button>
+      <button class='action_button edit-user' {{action 'editUser'}}>Edit</button>
+      <button class='action_button reset-password' {{action 'resetPassword'}}>Reset Password</button>
     </div>
     {{/if}}
     {{#if isResettingPassword}}
