@@ -2,8 +2,9 @@ const utils = require('./utils');
 module.exports.get = {};
 
 const accessibleAnswersQuery = async function(user, ids) {
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+  try {
+    const accountType = user.accountType;
+    const actingRole = user.actingRole;
 
   let filter = {
     isTrashed: false
@@ -12,31 +13,29 @@ const accessibleAnswersQuery = async function(user, ids) {
   if (ids) {
     filter._id = {$in : ids};
   }
-
+  // Students can only get answers they've created
   if (actingRole === 'student' || accountType === 'S') {
     filter.createdBy = user.id;
     return filter;
   }
-  // will only reach here if admins/pdadmins are in actingRole teacher
+
+  // Admins with acting role 'teacher' can get everything
   if (accountType === 'A') {
     return filter;
   }
-
+  // PdAdmins with acting role 'teacher' can get all answers tied to their org
   if (accountType === 'P') {
-    // only answers tied to organization
-    //get users from org and then ch
     const userOrg = user.organization;
-    const userIds = await utils.getModelIds('Organization', {_id: userOrg});
-
+    const userIds = await utils.getModelIds('User', {organization: userOrg});
+    console.log(`List of users from org ${userOrg} in auq: ${userIds}`);
     filter.createdBy = {$in : userIds};
     return filter;
   }
-
+  // Teachers with acting role 'teacher' can get all answers tied to their assignments or sections
   if (accountType === 'T') {
     // only answers from either a teacher's assignments or from a section where they are in the teachers array
 
     const ownSections = utils.getTeacherSections(user);
-    // const ownAssignmentIds = await utils.getTeacherAssignments(user.id);
 
     const ownAssignmentIds = await utils.getModelIds('Assignment', {createdBy: user._id});
 
@@ -45,6 +44,10 @@ const accessibleAnswersQuery = async function(user, ids) {
     filter.section = { $in: ownSections };
     return filter;
   }
+  }catch(err) {
+    console.log('err', err);
+  }
+
 };
 
 module.exports.get.answers = accessibleAnswersQuery;
