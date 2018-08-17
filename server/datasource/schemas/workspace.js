@@ -21,10 +21,10 @@ var WorkspaceSchema = new Schema({
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
-    name: {type:String, required:true},
-    owner: {type:ObjectId, ref:'User'},
+    name: { type:String, required:true },
+    owner: { type:ObjectId, ref: 'User' },
     editors: [{type:ObjectId, ref:'User'}],
-    mode: {type: String},
+    mode: { type: String},
     folders: [{type:ObjectId, ref:'Folder'}],
     submissionSet: {
       criteria: Object,

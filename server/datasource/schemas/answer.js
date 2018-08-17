@@ -21,12 +21,13 @@ var AnswerSchema = new Schema({
   problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: {type: ObjectId, ref: 'Assignment'},
   answer: { type: String, required: true },
-  explanation: { type: String, required: true },
+  explanation: { type: String }, //Change to text if we can save image ObjectId
+  explanationImage: { type: ObjectId, ref: 'Image' },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
   uploadedFileId: { type: String },
-  imageData: { type: String },
-  priorAnswer: { type: ObjectId, ref: 'Answer'},
+  imageData: { type: String }, // Remove this is we only save imageId
+  priorAnswer: { type: ObjectId, ref: 'Answer' },
   isSubmitted: { type: Boolean, default: true }
 }, { versionKey: false });
 
