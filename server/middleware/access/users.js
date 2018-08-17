@@ -14,7 +14,7 @@ module.exports.get = {};
   * @returns {Object} A filter object that can be passed to a Mongoose find operation
   *
   */
-const accessibleUsersQuery = async function(user, ids, usernames) {
+const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   if (!user) {
     return;
   }
@@ -31,7 +31,12 @@ const accessibleUsersQuery = async function(user, ids, usernames) {
   }
 
   if (usernames) {
+    console.log('usernames', usernames);
     filter.username = { $in: usernames }
+  }
+
+  if (regex) {
+    filter.username = regex;
   }
 
   // students can only retrieve their own user record or

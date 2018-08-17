@@ -67,27 +67,28 @@ async function sendUsers(req, res, next) {
     username = username.replace(/\s+/g, "");
     regex = new RegExp(username, 'i');
 
-    const requestedUser = await models.User.findOne({username: regex}).lean().exec();
 
-    criteria = await access.get.users(user, null, [username]);
 
+    criteria = await access.get.users(user, null, null, regex);
+    const requestedUsers = await models.User.find(criteria).lean().exec();
     // either empty array or array of one user
-    const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
+    //const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
 
     // if requestedUser exists but don't have permission
-    if (requestedUser && !_.isEqual(accessibleUserIds[0], requestedUser._id)) {
-      return utils.sendError.NotAuthorizedError(null, res);
-    }
+    // if (requestedUser && !_.isEqual(accessibleUserIds[0], requestedUser._id)) {
+    //   return utils.sendError.NotAuthorizedError(null, res);
+    // }
     let data;
-      if (requestedUser) {
-        delete requestedUser.key;
-        delete requestedUser.password;
-        delete requestedUser.history;
+    requestedUsers.forEach((user) => {
+      delete user.key;
+      delete user.password;
+      delete user.history;
+    });
 
-        data = {'user': requestedUser};
-      } else {
-        data = null;
-      }
+
+        data = {'user': requestedUsers};
+
+
 
       return utils.sendResponse(res, data);
 
