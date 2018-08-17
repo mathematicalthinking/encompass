@@ -20,14 +20,14 @@ var AnswerSchema = new Schema({
   // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: {type: ObjectId, ref: 'Assignment'},
-  answer: { type: String },
-  explanation: { type: String },
+  answer: { type: String, required: true },
+  explanation: { type: String, required: true },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
-  uploadedFileId: { type: String},
-  imageData: {type: String},
+  uploadedFileId: { type: String },
+  imageData: { type: String },
   priorAnswer: { type: ObjectId, ref: 'Answer'},
-  isSubmitted: { type: Boolean }
+  isSubmitted: { type: Boolean, default: true }
 }, { versionKey: false });
 
 /**
