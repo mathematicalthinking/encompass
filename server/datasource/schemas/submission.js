@@ -35,7 +35,8 @@ var baseSubmission = {
   'status': String,
   pdSet: {type: String, 'default': 'default'},
   uploadedFile: {uploadedFileId: Number, savedFileName: String},
-  isPdf: {type: Boolean}
+  isPdf: {type: Boolean},
+  imageId: {type: String}
 };
 
 /**
