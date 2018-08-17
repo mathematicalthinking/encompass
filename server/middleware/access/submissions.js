@@ -1,69 +1,73 @@
 const utils = require('./utils');
 const wsAccess = require('./workspaces');
+
 module.exports.get = {};
 
 const accessibleSubmissionsQuery = async function(user, ids) {
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+  try {
+    const accountType = user.accountType;
+    const actingRole = user.actingRole;
 
-  let filter = {
-    isTrashed: false
-  };
+    let filter = {
+      isTrashed: false
+    };
 
-  if (ids) {
-    filter._id = {$in : ids};
-  }
-
-  // students should never be getting submissions as of now
-  // except for seeing responses??
-  if (actingRole === 'student' || accountType === 'S') {
-    //filter.createdBy = user.id;
-    filter['creator.studentId'] = user._id;
-    return filter;
-  }
-  // will only reach here if admins/pdadmins are in actingRole teacher
-  if (accountType === 'A') {
-    return filter;
-  }
+    if (ids) {
+      filter._id = {$in : ids};
+    }
 
 
-  const wsFilter = await wsAccess.get.workspaces(user, null);
-  console.log('wsfilter', wsFilter);
-  const accessibleWorkspaces = await utils.getModelIds('Workspace', wsFilter);
-  console.log('access workspaces', accessibleWorkspaces);
+    // should students ever be getting submissions?
+    // or should they be able to see submissions which have a response addressed to them?
+    // or just any submissions that they are creator of?
+    if (actingRole === 'student' || accountType === 'S') {
+      //filter.createdBy = user.id;
+      filter['creator.studentId'] = user._id;
+      return filter;
+    }
+    // will only reach here if admins/pdadmins are in actingRole teacher
+
+    if (accountType === 'A') {
+      return filter;
+    }
+
+    const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
 
-  // should have access to all submissions that belong to a workspace that you have access to
-  filter.$or = [];
-  filter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaces} }});
+    // everyone should have access to all submissions that belong to a workspace that they have access to
+    filter.$or = [];
+    filter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaceIds} }});
 
-  //should have access to all submissions that you created
-  // in case they are not in a workspace
+    //should have access to all submissions that you created
+    // in case they are not in a workspace
 
-  filter.$or.push({createdBy: user._id});
+    if (accountType === 'P') {
+      // PDamins can get any submissions created by someone from their organization
+      const userOrg = user.organization;
 
-  if (accountType === 'P') {
-    console.log('IN P');
-    // PDamins can get any submissions created by someone from their organization
-    const userOrg = user.organization;
-    console.log('user.org', userOrg);
-    //const userIds = await getOrgUsers(userOrg);
-    const userIds = await utils.getModelIds('Organization', {_id: userOrg});
+      //const userIds = await getOrgUsers(userOrg);
+      const userIds = await utils.getModelIds('User', {organization: userOrg});
 
-    console.log('userIds', userIds);
+      userIds.push(user_.id);
 
-    filter.$or.push({createdBy : {$in : userIds}});
-    return filter;
-  }
+      filter.$or.push({createdBy : {$in : userIds}});
+      return filter;
+    }
 
-  if (accountType === 'T') {
-    // only answers from either a teacher's assignments or from a section where they are in the teachers array
-    // sub.teacher.id = user.id or sub.teachers includes teacher id
+    if (accountType === 'T') {
+    // teachers can get any submissions where they are the primary teacher or in the teachers array
+    // should teachers be able to get all submissions from organization?
 
-    filter.createdBy = user._id;
-    filter['teacher.id'] = user.id;
-    filter.teachers = user.id
-    return filter;
+
+      filter.$or.push({ createdBy : user._id });
+      // filter.$or.push({ 'teacher.id': user.id });
+      // filter.$or.push({ teachers : user.id });
+
+      return filter;
+    }
+
+  }catch(err) {
+    console.log('err asq', err);
   }
 };
 
