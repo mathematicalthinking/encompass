@@ -25,14 +25,13 @@ module.exports = function (grunt) {
    */
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    revision: process.env.SVN_REVISION || '??',
-    build: process.env.BUILD_NUMBER || '??',
+    //revision: process.env.SVN_REVISION || '??',
+    //build: process.env.BUILD_NUMBER || '??',
     uglify: {
       application: {
         options: {
           banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-            '<%= grunt.template.today("yyyy-mm-dd") %> - ' +
-            'r<%= revision %> - build:<%= build %> */'
+            '<%= grunt.template.today("yyyy-mm-dd") %>'
         },
         files: {
           'dist/application-<%= pkg.version %>-min.js': 'build/application-prod.js'
@@ -405,7 +404,40 @@ module.exports = function (grunt) {
         src: ['.env', 'prod_env'],
         dest: './.env_prod'
       }
+    },
+    bump: {
+      options: {
+        files: ['package.json'],
+        updateConfigs: [],
+        commit: false,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['package.json'],
+        createTag: false,
+        tagName: 'v%VERSION%',
+        tagMessage: 'Version %VERSION%',
+        push: false,
+        pushTo: 'upstream',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        globalReplace: false,
+        prereleaseName: false,
+        metadata: '',
+        regExp: false
+      }
+    },
+    'string-replace': {
+      version: {
+        files: {
+          // the files I did string replacement on
+        },
+        options: {
+          replacements: [{
+            pattern: /{{ VERSION }}/g,
+            replacement: '<%= pkg.version %>'
+          }]
+        }
+      }
     }
+
   });
 
 
