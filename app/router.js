@@ -16,12 +16,14 @@ Encompass.Router.map(function() {
     this.route("problem", {resetNamespace: true, path: '/:problem_id'}, function() {
     });
     this.route("new");
+    this.route('home');
   });
   // SECTIONS ROUTE
   this.route("sections", function(){
     this.route("section", {resetNamespace: true, path: '/:section_id'}, function() {
     });
     this.route("new");
+    this.route('home');
   });
 
   // WORKSPACES PARENT ROUTE
@@ -68,6 +70,7 @@ Encompass.Router.map(function() {
       //this.route("edit");
     });
     this.route("new");
+    this.route('home');
   });
   // IMPORT ROUTE
   this.route("import", function() {
@@ -79,6 +82,7 @@ Encompass.Router.map(function() {
     this.route("assignment", {resetNamespace: true, path: '/:assignment_id'}, function() {
     });
     this.route("new");
+    this.route('home');
   });
 
   // ANSWERS ROUTE
@@ -86,6 +90,7 @@ Encompass.Router.map(function() {
     this.route("answer", {resetNamespace: true, path: '/:answer_id'}, function() {
     });
     this.route("new");
+    this.route('home');
   });
   this.route('error', { path: '/*path'});
   this.route("logout");

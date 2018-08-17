@@ -1,7 +1,10 @@
 <section class="list-side">
   <header class="list-header">
     <h1>Problems</h1>
+    {{#if currentUser.isStudent}}
+    {{else}}
       {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span><i class="fas fa-plus"></i>{{/link-to}}
+    {{/if}}
     <div class="clear"></div>
   </header>
 

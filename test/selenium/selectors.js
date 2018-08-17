@@ -8,13 +8,13 @@ module.exports = {
     signup: 'a.menu.signup',
     workspaces: 'a.menu.workspaces',
     responses: 'a.menu.responses',
-    users: 'a.menu.users',
+    users: '#users-home',
     logout: 'a.menu.logout',
-    problems: 'a.menu.problems',
+    problems: '#problems-home',
     workspacesNew: 'a.workspaces-new',
     home: 'a.menu.home',
     problemsNew: 'a.menu.problems-new',
-    sections: 'a.menu.sections',
+    sections: '#sections-home',
     sectionsNew: 'a.menu.sections-new',
     usersNew: 'a.menu.users-new'
 
