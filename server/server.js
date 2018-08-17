@@ -214,6 +214,9 @@ server.post('/api/sections', api.post.section);
 server.post('/api/organizations', api.post.organization);
 server.post('/api/assignments', api.post.assignment);
 
+server.post('/api/encWorkspaceRequests', api.post.workspaceEnc);
+
+
 //ALL PUT REQUESTS
 server.put('/api/folders/:id', path.validateId(), api.put.folder);
 server.put('/api/submissions/:id', path.validateId(), api.put.submission);

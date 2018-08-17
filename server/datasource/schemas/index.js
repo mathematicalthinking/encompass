@@ -24,7 +24,8 @@
   "category",
   "image",
   "organization",
-  "assignment"
+  "assignment",
+  "encWorkspaceRequest"
 ].forEach(function (path) {
   var module = require('./' + path);
 

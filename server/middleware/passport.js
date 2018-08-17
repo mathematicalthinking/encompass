@@ -57,7 +57,9 @@ module.exports = (passport) => {
           message: "Incorrect username"
         });
       }
-      if (!bcrypt.compareSync(password, user.password)) {
+      // crashes app if user.password does not exist
+      // users should always have a password if they are in db
+      if ( !user.password || !bcrypt.compareSync(password, user.password)) {
         return next(null, false, {
           message: "Incorrect password"
         });

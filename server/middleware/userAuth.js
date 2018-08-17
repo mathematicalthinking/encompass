@@ -140,8 +140,8 @@ function protect(options) {
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
-    var newOrgRequest = req.path === 'api.organizations' && req.method === 'POST';
-    if ((openRequest && req.method) || newOrgRequest) {
+    //var newOrgRequest = req.path === 'api.organizations' && req.method === 'POST';
+    if ((openRequest && req.method === 'GET')) {
       return next();
     }
 
@@ -194,6 +194,7 @@ function loadAccessibleWorkspaces(options) {
         return w._id;
       });
       req.mf.auth.workspaces = ids;
+      req.accessibleWorkspaces = ids;
       return (next());
     });
   }

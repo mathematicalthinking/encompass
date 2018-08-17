@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 /**
   * @description This is the API for user based requests
   * @author Damola Mabogunje <damola@mathforum.org>
@@ -6,11 +7,14 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
+const _        = require('underscore');
 
 //REQUIRE FILES
 const models   = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
+const access   = require('../../middleware/access/users');
+const accessUtils = require('../../middleware/access/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -39,10 +43,9 @@ function makeGuest() {
            the current user having a flag: isMe=true then the client would filter currentUser for isMe
            and do whatever they want with the rest of the users
 */
-function sendUsers(req, res, next) {
+async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-  console.log('user', user);
-  console.log('req.query sendUsers', req.query);
+  console.log('req.query', req.query);
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -52,41 +55,51 @@ function sendUsers(req, res, next) {
   if(req.query.alias === 'current') {
     // if all they wanted was the current user, fine
     return utils.sendResponse(res, {user: [user]});
-    //return next();
+
   }
-  var criteria = utils.buildCriteria(req);
+
+  var criteria;
 
   if (req.query.username) {
-    criteria = {
-      isTrashed: false,
-      username: req.query.username
-    };
-  } else if(req.query.name) { //if we're doing a search GET /users/?name=xyz
-    var name = req.query.name;
-    var username = name.username;
+    var username = req.query.username;
     var regex;
-    if (username) {
-      username = username.replace(/\W+/g, "");
-      regex = new RegExp(username, 'i');
-      criteria = {
-        username: regex,
-        isTrashed: false
-      };
-    } else {
-      name = name.replace(/\W+/g, "");
-      regex = new RegExp(name, 'i');
-      criteria = {
-        name: regex,
-        isTrashed: false
-      };
-    }
-  } else if (req.query.ids) { //if we're doing a search GET /users/?ids=
-    const ids = req.query.ids;
-    criteria = {
-      _id: {$in: ids},
-      isTrashed: false
-    };
+    // we currently allow emails as usernames so had to fix this to just replace whitespace
+    username = username.replace(/\s+/g, "");
+    regex = new RegExp(username, 'i');
+
+
+
+    criteria = await access.get.users(user, null, null, regex);
+    const requestedUsers = await models.User.find(criteria).lean().exec();
+    // either empty array or array of one user
+    //const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
+
+    // if requestedUser exists but don't have permission
+    // if (requestedUser && !_.isEqual(accessibleUserIds[0], requestedUser._id)) {
+    //   return utils.sendError.NotAuthorizedError(null, res);
+    // }
+    let data;
+    requestedUsers.forEach((user) => {
+      delete user.key;
+      delete user.password;
+      delete user.history;
+    });
+
+
+        data = {'user': requestedUsers};
+
+
+
+      return utils.sendResponse(res, data);
+
+  } else if (req.query.ids) {
+    criteria = await access.get.users(user, req.query.ids, null);
+  } else {
+    criteria = await access.get.users(user, null, null);
   }
+
+  console.log('criteria users', criteria);
+
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
@@ -97,6 +110,7 @@ function sendUsers(req, res, next) {
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
         delete doc.history; //don't send user history out
+        delete doc.password;
       });
       var data = {'user': docs};
       return utils.sendResponse(res, data);
@@ -113,20 +127,49 @@ function sendUsers(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function sendUser(req, res, next) {
-  var user = userAuth.getUser(req);
-  models.User.findById(req.params.id)
-    .lean()
-    .exec(function(err, doc) {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      var data = {'user': doc};
+async function sendUser(req, res, next) {
+  console.log('params.id', req.params.id);
+  try {
+    var user = userAuth.getUser(req);
+
+    if (!user) {
+      return utils.sendError.NotAuthorizedError(null, res);
+    }
+
+    // userPermissions is an object with doesExist, hasPermission, and requestedUser
+    const userPermissions = await access.get.user(user, req.params.id, null);
+
+    // Id or username was not provided
+    if (userPermissions === undefined) {
+      return utils.sendError.InternalError(null, res);
+    }
+
+    const { doesExist, hasPermission, requestedUser } = userPermissions;
+
+    // Record does not exist
+    if (!doesExist) {
+      return utils.sendResponse(res, null);
+    }
+
+    // Record exists but user does not have permission
+    if (!hasPermission) {
+      return utils.sendError.NotAuthorizedError(null, res);
+    }
+
+    // User exists and has permission
+    if (hasPermission && requestedUser) {
+      var data = {'user': requestedUser};
+
       delete data.user.key; //hide key
       delete data.user.history; // hide history
+      delete data.user.password;
+
       return utils.sendResponse(res, data);
-      //next();
-    });
+    }
+  }catch(err) {
+    console.log('error sendUser', err);
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 /**
@@ -305,3 +348,4 @@ function postUser(req, res, next) {
   module.exports.put.user.removeSection = removeSection;
   module.exports.put.user.addAssignment = addAssignment;
   module.exports.put.user.removeAssignment = removeAssignment;
+/* jshint ignore:start */

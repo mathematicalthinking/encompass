@@ -1,0 +1,51 @@
+<h2>Create a workspace from encompass submissions</h2>
+
+<h3>Create workspace from assignment</h3>
+
+<form id='powImportForm' class='properForm'>
+     <fieldset>
+       <ol>
+          <li>
+            <label for="teacher">Teacher</label>
+            {{#if currentUser.isTeacher}}
+              <p>{{currentUser.username}}</p>
+            {{else}}
+            {{my-select selectedValue=selectedTeacher content=teacherPool optionLabelPath="username" prompt="Please select a username" action=(action (mut selectedTeacher))}}
+            {{/if}}
+          </li>
+
+         <li>
+           <label for="assignment">Assignment</label>
+           {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment" action=(action (mut selectedAssignment))}}
+         </li>
+         <li>
+           <label for="problem">problem</label>
+           {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedproblem))}}
+         </li>
+         <li>
+           <label for="section">Section</label>
+           {{my-select content=model.sections optionLabelPath="name" prompt="Please select an assignment" action=(action (mut selectedSection))}}
+         </li>
+         <li>
+           <label for="startDate">From</label>
+           {{input id="startDate" type="date" value=startDate }}
+         </li>
+         <li>
+         <label for="endDate">To</label>
+         {{input id="endDate" type="date" value=endDate }}
+         </li>
+
+         </ol>
+     </fieldset>
+
+
+     </form>
+
+     {{#if createdWorkspace}}
+     <p class="success-message">Success!</p>
+     {{/if}}
+
+     {{#if isEmptyAnswerSet}}
+     <p class="error-message">Sorry, no answers were found matching your criteria.</p>
+     {{/if}}
+     <button class="action_button" {{action "buildCriteria"}}>Create</button>

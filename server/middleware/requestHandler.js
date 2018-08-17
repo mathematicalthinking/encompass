@@ -110,7 +110,7 @@ function buildCriteria(req) {
         { isTrashed: { $exists: false } },
         { isTrashed: false }
       ]
-    }
+    },
   ];
   if(req.mf.auth.workspaces) {
     criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });

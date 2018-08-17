@@ -18,6 +18,9 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
+const access = require('../../middleware/access/workspaces');
+const answerAccess = require('../../middleware/access/answers');
+const importApi = require('./importApi');
 
 
 module.exports.get = {};
@@ -149,10 +152,10 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-
-  var user = userAuth.requireUser(req);
+  console.log('in send WS');
+  var user = userAuth.getUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(!permissions.userCanLoadWorkspace(user, ws)) {
+    if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
     } else {
@@ -835,7 +838,200 @@ function newWorkspaceRequest(req, res, next) {
     });
 
 }
+/*jshint ignore:start*/
 
+function pruneObj(obj) {
+
+  for (let key of Object.keys(obj)) {
+    const val = obj[key];
+    if (_.isUndefined(val) || (_.isNull(val))) {
+      delete obj[key];
+    }
+  }
+  return obj;
+}
+
+function buildCriteria(ids, criteria) {
+  let filter = {};
+  if (!_.isEmpty(ids)) {
+    filter._id = {$in: ids};
+  }
+
+  let startDate = criteria.startDate;
+  let endDate = criteria.endDate;
+
+  if (!_.isEmpty(startDate) && !_.isEmpty(endDate)) {
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+
+    filter.createDate = {
+      $gte: startDate,
+      $lte: endDate
+    };
+  }
+// TODO: teacher filter is not working properly
+// will always return empty results
+  let teacher = criteria.teacher;
+  // if (!_.isEmpty(teacher)) {
+  //   // have to get teacher users and then filter the answers to be created by teacher
+
+  // }
+  for (let key of Object.keys(criteria)) {
+    if (key !== 'startDate' && key !== 'endDate') {
+      const val = criteria[key];
+      filter[key] = val;
+    }
+  }
+  return filter;
+}
+
+async function getAnswerIds(criteria) {
+  const answers = await models.Answer.find(criteria, {_id: 1}).lean().exec();
+  return answers.map(obj => obj._id);
+}
+
+async function populateAnswers(answers) {
+  // return Promise.all(answerIds.map((ans) => {
+  //   return ans.populate('createdBy').populate('section').populate('problem').execPopulate();
+  // }));
+  const opts = [
+    {path: 'createdBy', select: 'username'},
+    {path: 'problem', select: 'title'},
+    {path: 'section', select: ['name', 'teachers']}
+  ];
+  return await models.Answer.populate(answers, opts);
+
+}
+
+async function answersToSubmissions(answers) {
+  if (!Array.isArray(answers) || _.isEmpty(answers)) {
+    return [];
+  }
+  try {
+    const populated = await populateAnswers(answers);
+    const subs = populated.map((ans) => {
+      //const teachers = {};
+      const clazz = {};
+      const publication = {
+        publicationId: null,
+        puzzle: {}
+      };
+      const creator = {};
+      const teacher = {};
+
+
+      const student = ans.createdBy;
+      const section = ans.section;
+      const problem = ans.problem;
+
+
+      publication.puzzle.title = problem.title;
+      publication.puzzle.problemId = problem._id;
+
+      // answers should always have createdBy...
+      if (student) {
+        creator.studentId = student._id;
+        creator.username = student.username;
+      }
+
+
+      clazz.sectionId = section._id;
+      clazz.name = section.name;
+
+      const teachers = section.teachers;
+      const primaryTeacher = teachers[0];
+
+
+      teacher.id = primaryTeacher;
+      let sub = {
+        longAnswer: ans.explanation,
+        shortAnswer: ans.answer,
+        clazz: clazz,
+        creator: creator,
+        teacher: teacher,
+        publication: publication,
+        imageId: ans.uploadedFileId,
+        answer: ans._id
+      };
+      return sub;
+    });
+    return subs;
+  }catch(err) {
+    console.log('error mapping answers to subs', err);
+  }
+
+
+};
+
+async function postWorkspaceEnc(req, res, next) {
+  const user = req.user;
+  console.log('wsc', req.body.encWorkspaceRequest);
+  const workspaceCriteria = req.body.encWorkspaceRequest;
+
+  try {
+    const pruned = pruneObj(workspaceCriteria);
+
+    // accessibleAnswersQuery will take care of isTrashed
+    delete pruned.isTrashed;
+    delete pruned.isEmptyAnswerSet;
+
+console.log('pruned', pruned);
+    const accessibleCriteria = await answerAccess.get.answers(user);
+    console.log(accessibleCriteria, 'crit');
+    const allowedIds = await getAnswerIds(accessibleCriteria);
+    const wsCriteria = buildCriteria(allowedIds, pruned);
+
+    const answers = await models.Answer.find(wsCriteria);
+
+    if (_.isEmpty(answers)) {
+      //let rec = req.body.encWorkspaceRequest;
+      let rec = pruned;
+      rec.isEmptyAnswerSet = true;
+      let enc = new models.EncWorkspaceRequest(rec);
+      let saved = await enc.save();
+
+      const data = {encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+      }
+
+    let subs = await answersToSubmissions(answers);
+    console.log('subs', subs.length);
+    const submissions = await Promise.all(subs.map((obj) => {
+      let sub = new models.Submission(obj);
+      sub.createdBy = user;
+      sub.createDate = Date.now();
+      return sub.save();
+}));
+const submissionIds = submissions.map((sub) => {
+  return sub._id;
+});
+const submissionSet = await importApi.buildSubmissionSet(submissions, user);
+let name = nameWorkspace(submissionSet, user, false);
+let workspace = new models.Workspace({
+  mode: 'private',
+  name: name,
+  owner: user,
+  submissionSet: submissionSet,
+  submissions: submissionIds
+});
+let ws = await workspace.save();
+console.log('createdWs', ws._id);
+//const data = {'workspaceId': ws._id};
+let rec = pruned;
+rec.createdWorkspace = ws._id;
+const encRequest = new models.EncWorkspaceRequest(rec);
+const saved = await encRequest.save();
+
+    const data = {encWorkspaceRequest: saved };
+return utils.sendResponse(res,  data );
+
+    }catch(err) {
+      return utils.sendError.InternalError(err, res);
+    }
+}
+
+module.exports.post.workspaceEnc = postWorkspaceEnc;
+/*jshint ignore:end*/
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
