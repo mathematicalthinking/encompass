@@ -1,5 +1,7 @@
-const utils = require('./utils');
 const _ = require('underscore');
+
+const utils = require('./utils');
+const models = require('../../datasource/schemas');
 
 module.exports.get = {};
 
@@ -12,12 +14,13 @@ module.exports.get = {};
   * @returns {Object} A filter object that can be passed to a Mongoose find operation
   *
   */
-const accessibleUsersQuery = async function(user, ids, usernames, username) {
+const accessibleUsersQuery = async function(user, ids, usernames) {
   if (!user) {
     return;
   }
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+  try {
+    const accountType = user.accountType;
+    const actingRole = user.actingRole;
 
   let filter = {
     isTrashed: false
@@ -29,10 +32,6 @@ const accessibleUsersQuery = async function(user, ids, usernames, username) {
 
   if (usernames) {
     filter.username = { $in: usernames }
-  }
-
-  if (username) {
-    filter.username = username
   }
 
   // students can only retrieve their own user record or
@@ -54,16 +53,27 @@ const accessibleUsersQuery = async function(user, ids, usernames, username) {
     return filter;
   }
 
+  const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
+
+  const usersFromWs = await utils.getUsersFromWorkspaces(accessibleWorkspaceIds);
+
+    let intersection;
+    let union;
+
+
   if (accountType === 'P') {
     // can access all users from organization
     // can access all users who they created
     const users = await utils.getPdAdminUsers(user);
+    // get unique user list from workspace users and users from org
+    union = _.union(users, usersFromWs);
 
    if (ids) {
-    const intersection = _.intersection(ids, users);
+    // user_id needs to be in both the query ids and the union list
+    intersection = _.intersection(ids, union);
     filter._id = {$in: intersection};
    } else {
-     filter._id = {$in: users}
+    filter._id = {$in: union}
    }
     return filter;
   }
@@ -73,14 +83,66 @@ const accessibleUsersQuery = async function(user, ids, usernames, username) {
 
     const users = await utils.getTeacherUsers(user);
 
+    union = _.union(users, usersFromWs);
+
     if (ids) {
-      const intersection = _.intersection(ids, users);
-      filter._id = {$in: intersection};
+    intersection = _.intersection(ids, union);
+    filter._id = {$in: intersection};
      } else {
-       filter._id = {$in: users}
+      filter._id = {$in: union}
      }
     return filter;
   }
+  }catch(err) {
+    console.log('err auq', err);
+  }
+
 };
 
+const canGetUser = async function(user, id, username) {
+  if (!id && !username) {
+    return;
+  }
+
+  let criteria;
+  let requestedUser;
+  let accessibleUserIds;
+
+  if (id) {
+    requestedUser = await models.User.findById(id).lean().exec();
+
+  } else {
+    requestedUser = await models.User.findOne({username: username}).lean().exec();
+  }
+
+  if (!requestedUser) {
+    return {
+      doesExist: false,
+      hasPermission: null
+    };
+  }
+
+  if (id) {
+    criteria = await accessibleUsersQuery(user, [id], null);
+  } else {
+    criteria = await accessibleUsersQuery(user, null, [username]);
+  }
+
+  accessibleUserIds = await utils.getModelIds('User', criteria);
+
+  if (_.isEqual(requestedUser._id, accessibleUserIds[0])) {
+    return({
+      doesExist: true,
+      hasPermission: true,
+      requestedUser: requestedUser
+    });
+  }
+  return {
+    doesExist: true,
+    hasPermission: false,
+    requestedUser: null
+  };
+}
+
 module.exports.get.users = accessibleUsersQuery;
+module.exports.get.user = canGetUser;
