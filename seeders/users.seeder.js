@@ -11,7 +11,8 @@ var data = [{
     "username": "steve",
     "createdBy": null,
     "sections": [],
-    "assignments": []
+    "assignments": [],
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "529646eae4bad7087700014d",
     "accountType": 'A',
@@ -19,7 +20,8 @@ var data = [{
     "isTrashed": false,
     "key": "42043bb2-ac33-49bf-abf1-e69d3c81437b",
     "name": "",
-    "username": "jsilverman"
+    "username": "jsilverman",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "52964714e4bad7087700014e",
     "accountType": 'A',
@@ -27,7 +29,8 @@ var data = [{
     "isTrashed": false,
     "key": "12430982-a2c3-420c-b5d8-78a1f92fd8f6",
     "name": "",
-    "username": "maxray"
+    "username": "maxray",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "52a8823d729e9ef59ba7eb4a",
     "createdBy": null,
@@ -36,7 +39,8 @@ var data = [{
     "isTrashed": false,
     "key": "5574b5f9-71e1-4202-9c7c-90e252cd6306",
     "name": null,
-    "username": "matraa57"
+    "username": "matraa57",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "52a88ae2729e9ef59ba7eb4b",
     "accountType": 'T',
@@ -46,7 +50,8 @@ var data = [{
     "key": "b2134b34-6367-4f58-a385-717c297e70ba",
     "name": null,
     "seenTour": null,
-    "username": "wes"
+    "username": "wes",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "52a88def729e9ef59ba7eb4c",
     "accountType": 'T',
@@ -55,7 +60,8 @@ var data = [{
     "key": "149b31e3-b977-45ea-8534-68aead8b4444",
     "name": null,
     "seenTour": null,
-    "username": "candice.roberts"
+    "username": "candice.roberts",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "52b05fae729e9ef59ba7eb4d",
     "accountType": 'A',
@@ -64,7 +70,8 @@ var data = [{
     "key": "a07e247a-618a-4ac7-a6df-e7ed929aa963",
     "name": "Valerie Klein",
     "seenTour": null,
-    "username": "vklein"
+    "username": "vklein",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "5370dc9c8f3e3d1f21000022",
     "accountType": 'T',
@@ -73,7 +80,8 @@ var data = [{
     "key": "ffc2237f-ff27-43b1-8c48-fcd9fa0db8ab",
     "name": "Daniel Lewis",
     "seenTour": null,
-    "username": "dsl44"
+    "username": "dsl44",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "53a355a932f2863240000026",
     "createDate": null,
@@ -83,7 +91,8 @@ var data = [{
     "key": "4aaf0c43-ba27-4201-9e0a-28990984f62a",
     "name": "Harold",
     "seenTour": null,
-    "username": "hle22"
+    "username": "hle22",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "53a43f7c729e9ef59ba7ebf2",
     "accountType": 'T',
@@ -94,7 +103,8 @@ var data = [{
     "seenTour": null,
     "username": "absvalteaching",
     "assignments": [],
-    "sections": []
+    "sections": [],
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "53d274a032f2863240001a71",
     "name": "salejandre",
@@ -104,7 +114,8 @@ var data = [{
     "seenTour": null,
     "lastSeen": null,
     "isTrashed": false,
-    "createDate": null
+    "createDate": null,
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "53d9a577729e9ef59ba7f118",
     "accountType": 'T',
@@ -113,7 +124,8 @@ var data = [{
     "key": "3933f032-fa60-469a-b4ec-098083a51921",
     "name": null,
     "seenTour": null,
-    "username": "mrs. wren"
+    "username": "mrs. wren",
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "5b1e758ba5d2157ef4c90b2d",
     "accountType": 'A',
@@ -123,7 +135,8 @@ var data = [{
     "name": "superuser",
     "username": "superuser",
     "assignments": [],
-    "sections": []
+    "sections": [],
+    "createDate": "2018-08-14T18:20:51.382Z",
   }, {
     "_id": "5b1e7bf9a5d2157ef4c911a6",
     "accountType": 'T',
@@ -134,6 +147,7 @@ var data = [{
     "username": "drex",
     "assignments": [],
     "sections": [],
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "5b1e7ca6a5d2157ef4c91210",
     "accountType": 'T',
@@ -143,7 +157,8 @@ var data = [{
     "name": "Nope",
     "username": "nope",
     "assignments": [],
-    "sections": []
+    "sections": [],
+    "createDate": "2018-08-14T18:20:51.382Z",
   }, {
     "_id": "5b245760ac75842be3189525",
     "username": "rick",
@@ -166,6 +181,7 @@ var data = [{
     "sections": [],
     "isTrashed": false,
     "isEmailConfirmed": true,
+    "createDate": "2018-08-17T18:20:51.382Z",
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
@@ -207,6 +223,7 @@ var data = [{
     "password": "$2a$08$Puko.4Ukg3fUVSfQsyhlauvFJ84/ymtidiL8qablVfic59zzC4gFi",
     "isAuthorized": true,
     "isTrashed": false,
+    "createDate": "2018-08-12T18:20:51.382Z",
   },
   {
     "_id": "5b72278b5b50ea3fe3d01a34",
@@ -221,6 +238,7 @@ var data = [{
     "organization": "5b4a64a028e4b75919c28512",
     "isAuthorized": true,
     "isTrashed": false,
+    "createDate": "2018-08-12T18:20:51.382Z",
   },
   {
     "_id": "5b72e05ba459749f7d9c1709",
@@ -236,6 +254,7 @@ var data = [{
     "password": "$2a$12$q1.0QW/dcY.OzwqfkzKLf.D.4i02m4Ypa0fHTqcqivJD.bxLn6NLa",
     "isAuthorized": true,
     "isTrashed": false,
+    "createDate": "2018-08-12T18:20:51.382Z",
   },
   {
     "_id": "5b72e6465b50ea3fe3d1623c",
@@ -249,6 +268,7 @@ var data = [{
     "confirmEmailToken": "62y9f60x9b2513f785f62fdt41f924630339968f",
     "confirmEmailExpires": "2018-08-12T21:13:47.107Z",
     "password": "$2a112$11.0QW/dcY.O/wqfkzKLf.D.4i02m4Ypa0fHTqcqivJD.bxLn6NLa",
+    "createDate": "2018-08-14T18:20:51.382Z",
     "isAuthorized": true,
     "isTrashed": false,
   },
