@@ -15,17 +15,27 @@ Encompass.UserListPdComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   }.property('users.@each.isAuthorized'),
 
   teacherUsers: function () {
-    let users = this.users.filterBy('isTrashed', false);
-    let teacherUsers = users.filterBy('accountType', 'T');
-    let authTeachers = teacherUsers.filterBy('isAuthorized', true);
-    return authTeachers.sortBy('createDate').reverse();
+    let usersWithOrgs = this.users.filter((user) => {
+      let accountType = user.get('accountType');
+      let isAuthorized = user.get('isAuthorized');
+      return !user.get('isTrashed') && user.get('organization.id') && accountType === "T" && accountType && isAuthorized;
+    });
+    let yourOrgId = this.get('currentUser').get('organization').get('id');
+    usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
+    let orgUsersNotYou = usersWithOrgs.rejectBy('username', this.get('currentUser.username'));
+    return orgUsersNotYou.sortBy('createDate').reverse();
   }.property('users.@each.isAuthorized', 'users.@each.accountType'),
 
   studentUsers: function () {
-    let users = this.users.filterBy('isTrashed', false);
-    let authUsers = users.filterBy('isAuthorized', true);
-    let students = authUsers.filterBy('accountType', 'S');
-    return students.sortBy('createDate').reverse();
+    let usersWithOrgs = this.users.filter((user) => {
+      let accountType = user.get('accountType');
+      let isAuthorized = user.get('isAuthorized');
+      return !user.get('isTrashed') && user.get('organization.id') && accountType === "S" && accountType && isAuthorized;
+    });
+    let yourOrgId = this.get('currentUser').get('organization').get('id');
+    usersWithOrgs = usersWithOrgs.filterBy('organization.id', yourOrgId);
+    let orgUsersNotYou = usersWithOrgs.rejectBy('username', this.get('currentUser.username'));
+    return orgUsersNotYou.sortBy('createDate').reverse();
   }.property('users.@each.accountType', 'users.@each.isAuthorized'),
 
 
