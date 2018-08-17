@@ -43,18 +43,17 @@ describe('User CRUD operations', function() {
   });
 
   /** GET **/
-  describe('/GET user by name', () => {
-    it('should return all users with the name "steve"', done => {
+  describe('/GET user by username', () => {
+    it('should return user with the username "steve"', done => {
       agent
       .get(baseUrl)
-      .query('name=steve')
+      .query('username=steve')
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('user');
-        expect(res.body.user).to.be.a('array');
-        res.body.user.forEach(user => {
-          expect(user.username).to.have.string('steve');
-        });
+        expect(res.body.user).to.be.a('object');
+        expect(res.body.user.username).to.eql('steve');
+
         done();
       });
     });
