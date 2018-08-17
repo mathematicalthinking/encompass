@@ -56,13 +56,56 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input#organization')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-email')).to.be.true;
+        expect(await helpers.isElementVisible(driver, '#organization')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'select.user-account-type')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'select')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-isAuth')).to.be.true;
       });
 
-      xit('should let you create a new authorized user', async function () {
+      it('should not let you submit form with missing fields', async function () {
+        function selectOption(selector, item) {
+          var selectList, desiredOption;
+
+          selectList = driver.findElement(By.id(selector));
+          selectList.click();
+          selectList.sendKeys(item);
+          selectList.click();
+
+
+          // selectList.findElements(By.css('.option'))
+          //   .then(function findMatchingOption(options) {
+          //     options.some(function (option) {
+          //       option.getText().then(function doesOptionMatch(text) {
+          //         if (item === text) {
+          //           desiredOption = option;
+          //           return true;
+          //         }
+          //       });
+          //     });
+          //   })
+          //   .then(function clickOption() {
+          //     if (desiredOption) {
+          //       desiredOption.click();
+          //     }
+          //   });
+        }
+
+        let username = `muzzy`;
+        await helpers.findInputAndType(driver, 'input.user-username', username);
+        driver.selectOption = selectOption.bind('driver');
+        await driver.selectOption('my-select', 'Teacher');
+        await driver.sleep('1000');
+        // await driver.sendKeys(Key.ARROW_DOWN);
+
+        // await helpers.findAndClickElement(driver, 'option.option:first-child');
+        await helpers.findAndClickElement(driver, 'button.new-user');
+        await driver.sleep('1000');
+        await helpers.waitForSelector(driver, '.error-message');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
+      });
+
+      xit('should let you create a new authorized pdadmin', async function () {
         let username = `muzzy`
         let displayName = 'muzzy'
         await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
@@ -71,6 +114,27 @@ describe('Users', function() {
         await helpers.waitForSelector(driver, 'ul.listing');
         expect(await helpers.findAndGetText(driver, 'ul.auth-users>li.is-authorized:last-child')).to.contain(username);
       });
+
+      xit('should let you create a new unauthorized teacher', async function () {
+        let username = `muzzy`
+        let displayName = 'muzzy'
+        await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
+        await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
+        await helpers.findAndClickElement(driver, 'button.newUser');
+        await helpers.waitForSelector(driver, 'ul.listing');
+        expect(await helpers.findAndGetText(driver, 'ul.auth-users>li.is-authorized:last-child')).to.contain(username);
+      });
+
+      xit('should let you create a new student without an email', async function () {
+        let username = `muzzy`
+        let displayName = 'muzzy'
+        await helpers.findInputAndType(driver, 'form#newUser input.displayName', displayName);
+        await helpers.findInputAndType(driver, 'form#newUser input.userName', username);
+        await helpers.findAndClickElement(driver, 'button.newUser');
+        await helpers.waitForSelector(driver, 'ul.listing');
+        expect(await helpers.findAndGetText(driver, 'ul.auth-users>li.is-authorized:last-child')).to.contain(username);
+      });
+
     }
 
     describe('Visiting the users list home page', function () {
@@ -80,10 +144,6 @@ describe('Users', function() {
 
       it('should display a welcome page', async function () {
         await helpers.waitForSelector(driver, '#user-home');
-      });
-
-      it('should have a side list of users', async function () {
-        await helpers.waitForSelector(driver, 'nav.listbox');
       });
 
       it('should have a create new user link', async function () {
@@ -112,7 +172,7 @@ describe('Users', function() {
 
       it('should have a list of teachers', async function () {
         expect(await helpers.getWebElements(driver, 'ul.teacher-users>li')).to.have.lengthOf.at.least(11);
-        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:last-child')).to.contain('hle22');
+        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('morty');
       });
 
       it('should have a list of students', async function () {
