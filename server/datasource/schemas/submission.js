@@ -73,10 +73,10 @@ var encompassSubmission = _.extend({}, baseSubmission, {
     teacher: {
       teacherId: Number,
       username: String,
-      id: String,
+      id: String, // Our new teacherId
       safeName: String
     },
-  primaryTeacher: { type: ObjectId, ref: 'User' },
+  primaryTeacher: { type: ObjectId, ref: 'User' }, // Consider depricating
   selections: [{type: ObjectId, ref: 'Selection'}],
   comments: [{type: ObjectId, ref: 'Comment'}],
   workspaces: [{type: ObjectId, ref: 'Workspace'}],

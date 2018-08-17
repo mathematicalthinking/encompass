@@ -16,27 +16,27 @@ var mongoose = require('mongoose'),
 var WorkspaceSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
   createdBy: { type: ObjectId, ref: 'User', required: true },
-    createDate: { type: Date, 'default': Date.now() },
-    isTrashed: { type: Boolean, 'default': false },
-    lastModifiedBy: { type: ObjectId, ref: 'User' },
-    lastModifiedDate: { type: Date, 'default': Date.now() },
+  createDate: { type: Date, 'default': Date.now() },
+  isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
-    name: { type:String, required:true },
-    owner: { type:ObjectId, ref: 'User' },
-    editors: [{type:ObjectId, ref:'User'}],
-    mode: { type: String},
-    folders: [{type:ObjectId, ref:'Folder'}],
-    submissionSet: {
-      criteria: Object,
-      description: Object,
-      lastUpdated: Date
-    },
-    submissions: [{type:ObjectId, ref:'Submission'}],
-    responses:   [{type:ObjectId, ref:'Response'}],
-    selections: [{type:ObjectId, ref:'Selection'}],
-    comments: [{type:ObjectId, ref:'Comment'}],
-    taggings: [{type:ObjectId, ref:'Tagging'}]
-  }, {versionKey: false});
+  name: { type: String, required: true },
+  owner: { type: ObjectId, ref: 'User' },
+  editors: [{type: ObjectId, ref: 'User'}],
+  mode: { type: String, enum: ['public', 'private'] },
+  folders: [{type: ObjectId, ref: 'Folder'}],
+  submissionSet: {
+    criteria: Object,
+    description: Object,
+    lastUpdated: Date
+  },
+  submissions: [{type: ObjectId, ref: 'Submission'}],
+  responses:   [{type: ObjectId, ref: 'Response'}],
+  selections: [{type: ObjectId, ref: 'Selection'}],
+  comments: [{type: ObjectId, ref: 'Comment'}],
+  taggings: [{type: ObjectId, ref: 'Tagging'}]
+}, {versionKey: false});
 
 /**
   * ## Pre-Validation

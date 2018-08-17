@@ -11,11 +11,11 @@ var mongoose = require('mongoose'),
   *              Used as a subdocument of the user model
 */
 var Log = new Schema({
-  creator: { type: String, 'default': "system" },
-  time: { type: Date, 'default': Date.now() },
+  creator: { type: String, default: "system" },
+  time: { type: Date, default: Date.now() },
   event: { type: String, required: true },
-  duration: { type: Number, 'default': 0 },
-  isError: { type: Boolean, 'default': false }
+  duration: { type: Number, default: 0 },
+  isError: { type: Boolean, default: false }
 },
   {
     versionKey: false,
@@ -46,50 +46,56 @@ var UserSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   /* + The username is the mfapps username */
-  username: { type: String, unique: true },
-  accountType: { type: String },
+  username: { type: String, unique: true, required: true },
+  accountType: { type: String, enum: ['A', 'P', 'T', 'S'], required: true },
   /* + Are they a magical admin user granting every imaginable permission? */
   // isAdmin: Boolean,
   /* + Are they otherwise authorized for EnCoMPASS */
-  isAuthorized: Boolean,
+  isAuthorized: { type: Boolean, default: false },
   authorizedBy: { type: ObjectId, ref: 'User' },
   // isStudent: Boolean,
 
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
-  actingRole: String,
-  name: String,
-  email: String,
-  googleId: String,
-  // key: String,
-  password: String,
-  forcePwdChg: Boolean,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
+  actingRole: { type: String, enum: ['teacher', 'student'] },
+  name: { type: String },
+  email: { type: String },
+  googleId: { type: String },
+  // key: { type: String },
+  password: { type: String, required: true },
+  // forcePwdChg: { type: Boolean },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   confirmEmailToken: { type: String },
   confirmEmailExpires: { type: Date },
   isEmailConfirmed: { type: Boolean, default: false },
-  organization: {type: ObjectId, ref: 'Organization'},
+  organization: { type: ObjectId, ref: 'Organization' },
   organizationRequest: { type: String },
-  location: String,
-  requestReason: String,
+  location: { type: String },
+  requestReason: { type: String },
   // We only use google for external auth, we can use these fields if we use more OAuths
   // authSource: String,
   // authUserId: String,
-  sessionId: String,
-  sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
+  sections: [{
+    sectionId: {
+      type: ObjectId,
+      ref: 'Section'
+    },
+    role: String,
+    _id: false
+  }],
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
   assignments: [{type: ObjectId, ref: 'Assignment'}],
-  seenTour: Date,
-  lastSeen: Date,
-  history: [Log],
+  seenTour: { type: Date },
+  lastSeen: { type: Date },
+  history: [Log], // currently not working
   //sessions: [{key: String, starts: Number, ends: Number}]
 },
-  {
-    versionKey: false,
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-  });
+{
+  versionKey: false,
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true },
+});
 
 UserSchema.virtual('lastLogin')
   .get(function () {

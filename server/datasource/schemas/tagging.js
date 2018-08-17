@@ -19,9 +19,9 @@ var TaggingSchema = new Schema({
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //==
-    workspace: { type:ObjectId, ref:'Workspace', required: true },
-    selection: { type:ObjectId, ref:'Selection', required:true },
-    folder: { type:ObjectId, ref:'Folder', required:true }
+    workspace: { type: ObjectId, ref: 'Workspace', required: true },
+    selection: { type: ObjectId, ref: 'Selection', required: true },
+    folder: { type: ObjectId, ref: 'Folder', required: true }
   }, {
     versionKey: false,
     toObject: { virtuals: true },

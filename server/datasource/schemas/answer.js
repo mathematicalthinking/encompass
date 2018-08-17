@@ -19,7 +19,7 @@ var AnswerSchema = new Schema({
   //student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem', required: true },
-  assignment: {type: ObjectId, ref: 'Assignment'},
+  assignment: { type: ObjectId, ref: 'Assignment' },
   answer: { type: String, required: true },
   explanation: { type: String }, //Change to text if we can save image ObjectId
   explanationImage: { type: ObjectId, ref: 'Image' },
