@@ -178,6 +178,19 @@ const findInputAndType = async function (webDriver, selector, text) {
   return;
 };
 
+ const selectOption = async function (webDriver, selector, item) {
+   try {
+     let selectList = webDriver.findElement(By.id(selector));
+     selectList.click();
+     selectList.sendKeys(item);
+     selectList.click();
+     return;
+   } catch (err) {
+     console.log(err);
+   }
+   return;
+}
+
 const login = async function(webDriver, host, user=admin) {
   await navigateAndWait(webDriver, host, css.topBar.login);
   await findAndClickElement(webDriver, css.topBar.login);
@@ -247,6 +260,7 @@ module.exports.isTextInDom = isTextInDom;
 module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
+module.exports.selectOption = selectOption;
 module.exports.waitForAndClickElement = waitForAndClickElement;
 module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;

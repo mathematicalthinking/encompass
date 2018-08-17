@@ -9,6 +9,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
+
 describe('Users', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
@@ -64,37 +65,20 @@ describe('Users', function() {
       });
 
       it('should not let you submit form with missing fields', async function () {
-        function selectOption(selector, item) {
-          var selectList, desiredOption;
 
-          selectList = driver.findElement(By.id(selector));
-          selectList.click();
-          selectList.sendKeys(item);
-          selectList.click();
-
-
-          // selectList.findElements(By.css('.option'))
-          //   .then(function findMatchingOption(options) {
-          //     options.some(function (option) {
-          //       option.getText().then(function doesOptionMatch(text) {
-          //         if (item === text) {
-          //           desiredOption = option;
-          //           return true;
-          //         }
-          //       });
-          //     });
-          //   })
-          //   .then(function clickOption() {
-          //     if (desiredOption) {
-          //       desiredOption.click();
-          //     }
-          //   });
-        }
+        // function selectOption(selector, item) {
+        //   var selectList;
+        //   selectList = driver.findElement(By.id(selector));
+        //   selectList.click();
+        //   selectList.sendKeys(item);
+        //   selectList.click();
+        // }
 
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        driver.selectOption = selectOption.bind('driver');
-        await driver.selectOption('my-select', 'Teacher');
+        // driver.selectOption = selectOption.bind('driver');
+        await helpers.selectOption(driver, 'my-select', 'P');
+        // await driver.selectOption('my-select', 'P');
         await driver.sleep('1000');
         // await driver.sendKeys(Key.ARROW_DOWN);
 
