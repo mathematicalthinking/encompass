@@ -104,7 +104,8 @@ function toPDSubmission(obj, index, arr) {
   */
 async function getSubmissions(req, res, next) {
   var user = userAuth.getUser(req);
-  var criteria;
+  try {
+    var criteria;
   console.log('ids', req.query.ids);
   if (req.query.ids) {
     criteria = await access.get.submissions(user, req.query.ids);
@@ -125,6 +126,10 @@ async function getSubmissions(req, res, next) {
       logger.debug('Get Submissions found: ' + submissions.length );
       utils.sendResponse(res, data);
     });
+  }catch(err) {
+    return utils.sendError.InternalError(null, res);
+  }
+
 }
 
 /**
