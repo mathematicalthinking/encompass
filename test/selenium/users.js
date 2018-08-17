@@ -56,9 +56,9 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-organization')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input#organization')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.account-type')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'select.user-account-type')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.isAuthorized')).to.be.true;
       });
 

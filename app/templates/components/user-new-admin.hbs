@@ -8,25 +8,25 @@
     <tr>
       <td>Username</td>
       <td>
-        {{input type="text" value=username action="resetErrors" on="key-down"}}
+        {{input type="text" value=username action="resetErrors" on="key-down" classNames='user-username'}}
       </td>
     </tr>
     <tr>
       <td>Password</td>
       <td>
-        {{input type="password" value=password action="resetErrors" on="key-down"}}
+        {{input type="password" value=password action="resetErrors" on="key-down" classNames='user-password'}}
       </td>
     </tr>
     <tr>
       <td>Name</td>
       <td>
-        {{input type="text" value=name}}
+        {{input type="text" value=name classNames='user-name'}}
       </td>
     </tr>
     <tr>
       <td>Email</td>
       <td>
-        {{input type="text" value=email action="resetErrors" on="key-down"}}
+        {{input type="text" value=email action="resetErrors" on="key-down" classNames='user-email'}}
       </td>
     </tr>
     <tr>
@@ -38,19 +38,19 @@
     <tr>
       <td>Location</td>
       <td>
-        {{input type="text" value=location}}
+        {{input type="text" value=location classNames='user-location'}}
       </td>
     </tr>
     <tr>
       <td>Account Type</td>
       <td>
-        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType)) classNames='user-account-type'}}
       </td>
     </tr>
     <tr>
       <td>Authorized</td>
       <td>
-        {{input type="checkbox" checked=isAuthorized value=isAuthorized}}
+        {{input type="checkbox" checked=isAuthorized value=isAuthorized classNames='user-isAuth'}}
       </td>
     </tr>
   </table>
