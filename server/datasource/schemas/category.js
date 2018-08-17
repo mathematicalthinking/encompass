@@ -17,7 +17,7 @@ var CategorySchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String }
+  name: { type: String, required: true }
 }, { versionKey: false });
 
 /**

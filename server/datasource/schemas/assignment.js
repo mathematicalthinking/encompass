@@ -17,7 +17,7 @@ var AssignmentSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  problem: { type: ObjectId, ref: 'Problem' },
+  problem: { type: ObjectId, ref: 'Problem', required: true },
   students: [{ type: ObjectId, ref: 'User' }],
   section: { type: ObjectId, ref: 'Section' },
   assignedDate: { type: Date },

@@ -19,17 +19,17 @@ var EncWorkspaceRequestSchema = new Schema({
   //student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem' },
-  assignment: {type: ObjectId, ref: 'Assignment'},
+  assignment: { type: ObjectId, ref: 'Assignment' },
   answer: { type: String },
-  teacher: {type: ObjectId, ref: 'User'},
-  startDate: {type: Date},
-  endDate: {type: Date},
-  pdSetName: {type: String},
-  folderSetName: {type: String},
+  teacher: { type: ObjectId, ref: 'User' },
+  startDate: { type: Date },
+  endDate: { type: Date },
+  pdSetName: { type: String },
+  folderSetName: { type: String },
   section: { type: ObjectId, ref: 'Section' },
-  createdWorkspace: {type: ObjectId, ref: 'Workspace'},
-  isEmptyAnswerSet: {type: Boolean},
-  createWorkspaceError: {type: String}
+  createdWorkspace: { type: ObjectId, ref: 'Workspace' },
+  isEmptyAnswerSet: { type: Boolean },
+  createWorkspaceError: { type: String }
 }, { versionKey: false });
 
 /**
