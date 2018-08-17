@@ -41,4 +41,12 @@
 
 
      </form>
+
+     {{#if createdWorkspace}}
+     <p class="success-message">Success!</p>
+     {{/if}}
+
+     {{#if isEmptyAnswerSet}}
+     <p class="error-message">Sorry, no answers were found matching your criteria.</p>
+     {{/if}}
      <button class="action_button" {{action "buildCriteria"}}>Create</button>
