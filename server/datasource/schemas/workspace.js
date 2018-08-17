@@ -9,15 +9,15 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Workspace
-  * @description A workspace is the overarching object in Encompass. 
+  * @description A workspace is the overarching object in Encompass.
   *              It contains all folders, submissions, selections, &
   *              comments.
   */
 var WorkspaceSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-    createdBy: {type:ObjectId, ref:'User'},
-    createDate: {type: Date, 'default': Date.now()},
-    isTrashed: {type: Boolean, 'default': false},
+  createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, 'default': Date.now() },
+    isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
@@ -41,7 +41,7 @@ var WorkspaceSchema = new Schema({
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
-  */ 
+  */
 WorkspaceSchema.pre('save', function (next) {
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem) ) {
@@ -49,7 +49,7 @@ WorkspaceSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */

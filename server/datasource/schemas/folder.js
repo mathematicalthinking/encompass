@@ -14,11 +14,11 @@ var mongoose  = require('mongoose'),
   */
 var FolderSchema = new Schema({
 //== Shared properties (Because Mongoose doesn't support schema inheritance)
-    createdBy: {type:ObjectId, ref:'User'},
-    createDate: {type:Date, 'default':Date.now()},
-    isTrashed: {type:Boolean, 'default':false},
-    lastModifiedBy: { type: ObjectId, ref: 'User' },
-    lastModifiedDate: { type: Date, 'default': Date.now() },
+  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createDate: { type: Date, 'default': Date.now() },
+  isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
     name: {type: String, required: true},
     owner: {type:ObjectId, ref:'User'},

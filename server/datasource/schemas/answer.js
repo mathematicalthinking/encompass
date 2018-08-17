@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
   */
 var AnswerSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User' },
+  createdBy: { type: ObjectId, ref: 'User', required: true },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
@@ -18,7 +18,7 @@ var AnswerSchema = new Schema({
   //====
   //student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
-  problem: { type: ObjectId, ref: 'Problem' },
+  problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: {type: ObjectId, ref: 'Assignment'},
   answer: { type: String },
   explanation: { type: String },

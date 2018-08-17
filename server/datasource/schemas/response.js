@@ -10,11 +10,11 @@ var mongoose  = require('mongoose'),
   */
 var ResponseSchema = new Schema({
 //== Shared properties (Because Mongoose doesn't support schema inheritance)
-    createdBy: {type:ObjectId, ref:'User'},
-    createDate: {type:Date, 'default':Date.now()},
-    isTrashed: {type:Boolean, 'default':false},
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, 'default': Date.now() },
+    isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
-    lastModifiedDate: { type: Date, 'default': Date.now() },  
+    lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
     text: {type: String, required: true},
     source: {type: String, required: true}, // submission, workspace, etc - what triggered this?
@@ -28,7 +28,7 @@ var ResponseSchema = new Schema({
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
-  */ 
+  */
 ResponseSchema.pre('save', function (next) {
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
@@ -36,7 +36,7 @@ ResponseSchema.pre('save', function (next) {
     }
   };
 
-  /** + Every ID reference in our object is properly typed. 
+  /** + Every ID reference in our object is properly typed.
     *   This needs to be done BEFORE any other operation so
     *   that native lookups and updates don't fail.
     */
@@ -58,16 +58,16 @@ ResponseSchema.post('save', function (response) {
   var update = { $addToSet: { 'responses': response } };
   if( response.isTrashed ) {
     var responseIdObj = mongoose.Types.ObjectId( response._id );
-    /* + If deleted, all references are also deleted */ 
+    /* + If deleted, all references are also deleted */
     update = { $pull: { 'responses': responseIdObj } };
-  } 
+  }
 
   if(response.workspace){
     mongoose.models.Workspace.update({'_id': response.workspace},
       update,
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
   }
@@ -76,8 +76,8 @@ ResponseSchema.post('save', function (response) {
     mongoose.models.Submission.update({'_id': response.submission},
       update,
       function (err, affected, result) {
-        if (err) { 
-          throw new Error(err.message); 
+        if (err) {
+          throw new Error(err.message);
         }
       });
   }

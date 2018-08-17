@@ -11,9 +11,11 @@ var mongoose = require('mongoose'),
   */
 var AssignmentSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User' },
+  createdBy: { type: ObjectId, ref: 'User', required: true },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
+  lastModifiedBy: { type: ObjectId, ref: 'User' },
+  lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   problem: { type: ObjectId, ref: 'Problem' },
   students: [{ type: ObjectId, ref: 'User' }],
