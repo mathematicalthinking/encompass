@@ -19,6 +19,7 @@ const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
 const access = require('../../middleware/access/workspaces');
+const answerAccess = require('../../middleware/access/answers');
 const importApi = require('./importApi');
 
 
@@ -868,19 +869,24 @@ function buildCriteria(ids, criteria) {
       $lte: endDate
     };
   }
+// TODO: teacher filter is not working properly
+// will always return empty results
+  let teacher = criteria.teacher;
+  // if (!_.isEmpty(teacher)) {
+  //   // have to get teacher users and then filter the answers to be created by teacher
 
+  // }
   for (let key of Object.keys(criteria)) {
     if (key !== 'startDate' && key !== 'endDate') {
       const val = criteria[key];
       filter[key] = val;
     }
   }
-
   return filter;
 }
 
 async function getAnswerIds(criteria) {
-  const answers = await models.Answer.find(criteria, {_id: 1});
+  const answers = await models.Answer.find(criteria, {_id: 1}).lean().exec();
   return answers.map(obj => obj._id);
 }
 
@@ -898,13 +904,12 @@ async function populateAnswers(answers) {
 }
 
 async function answersToSubmissions(answers) {
-  if (!Array.isArray(answers)) {
-    return;
+  if (!Array.isArray(answers) || _.isEmpty(answers)) {
+    return [];
   }
   try {
     const populated = await populateAnswers(answers);
-
-    const subs = answers.map((ans) => {
+    const subs = populated.map((ans) => {
       //const teachers = {};
       const clazz = {};
       const publication = {
@@ -923,8 +928,12 @@ async function answersToSubmissions(answers) {
       publication.puzzle.title = problem.title;
       publication.puzzle.problemId = problem._id;
 
-      creator.studentId = student._id;
-      creator.username = student.username;
+      // answers should always have createdBy...
+      if (student) {
+        creator.studentId = student._id;
+        creator.username = student.username;
+      }
+
 
       clazz.sectionId = section._id;
       clazz.name = section.name;
@@ -942,6 +951,7 @@ async function answersToSubmissions(answers) {
         teacher: teacher,
         publication: publication,
         imageId: ans.uploadedFileId,
+        answer: ans._id
       };
       return sub;
     });
@@ -955,6 +965,7 @@ async function answersToSubmissions(answers) {
 
 async function postWorkspaceEnc(req, res, next) {
   const user = req.user;
+  console.log('wsc', req.body.encWorkspaceRequest);
   const workspaceCriteria = req.body.encWorkspaceRequest;
 
   try {
@@ -962,19 +973,29 @@ async function postWorkspaceEnc(req, res, next) {
 
     // accessibleAnswersQuery will take care of isTrashed
     delete pruned.isTrashed;
+    delete pruned.isEmptyAnswerSet;
 
-
-    const accessibleCriteria = await access.get.answers(user);
+console.log('pruned', pruned);
+    const accessibleCriteria = await answerAccess.get.answers(user);
+    console.log(accessibleCriteria, 'crit');
     const allowedIds = await getAnswerIds(accessibleCriteria);
-
     const wsCriteria = buildCriteria(allowedIds, pruned);
 
     const answers = await models.Answer.find(wsCriteria);
 
+    if (_.isEmpty(answers)) {
+      //let rec = req.body.encWorkspaceRequest;
+      let rec = pruned;
+      rec.isEmptyAnswerSet = true;
+      let enc = new models.EncWorkspaceRequest(rec);
+      let saved = await enc.save();
+
+      const data = {encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+      }
 
     let subs = await answersToSubmissions(answers);
     console.log('subs', subs.length);
-
     const submissions = await Promise.all(subs.map((obj) => {
       let sub = new models.Submission(obj);
       sub.createdBy = user;
@@ -984,9 +1005,7 @@ async function postWorkspaceEnc(req, res, next) {
 const submissionIds = submissions.map((sub) => {
   return sub._id;
 });
-console.log('ids', submissionIds);
 const submissionSet = await importApi.buildSubmissionSet(submissions, user);
-console.log('submissionSet', submissionSet);
 let name = nameWorkspace(submissionSet, user, false);
 let workspace = new models.Workspace({
   mode: 'private',
@@ -996,10 +1015,15 @@ let workspace = new models.Workspace({
   submissions: submissionIds
 });
 let ws = await workspace.save();
-const data = {'workspaceId': ws._id};
+console.log('createdWs', ws._id);
+//const data = {'workspaceId': ws._id};
+let rec = pruned;
+rec.createdWorkspace = ws._id;
+const encRequest = new models.EncWorkspaceRequest(rec);
+const saved = await encRequest.save();
 
-    //convert to submissions
-    return utils.sendResponse(res,  data );
+    const data = {encWorkspaceRequest: saved };
+return utils.sendResponse(res,  data );
 
     }catch(err) {
       return utils.sendError.InternalError(err, res);
