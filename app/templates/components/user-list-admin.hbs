@@ -21,7 +21,7 @@
   <section>
     <nav class="list-box">
       <h2>Your account</h2>
-      <ul class="listing">
+      <ul class="listing your-account">
         <li class="{{if currentUser.isAuthorized 'is-authorized'}} {{if currentUser.isAdmin 'is-admin'}}">
           {{#link-to 'user' currentUser classNames='user'}}{{currentUser.username}}{{/link-to}}
         </li>
@@ -63,7 +63,7 @@
       </ul>
 
       <h2>Teachers</h2>
-      <ul class="listing auth-users">
+      <ul class="listing teacher-users">
         {{#if teacherUsers}}
           {{#each teacherUsers as |user|}}
           <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">

@@ -10,19 +10,19 @@ var mongoose = require('mongoose'),
   */
 var SelectionSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-    createdBy: {type:ObjectId, ref:'User'},
-    createDate: {type:Date, 'default':Date.now()},
-    isTrashed: {type: Boolean, 'default': false},
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, 'default': Date.now() },
+    isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
     /* Coordinates are used by the frontend to help highlight a selection within submission text */
-    coordinates: String,
-    text: {type: String, required: true},
-    submission: {type:ObjectId, ref:'Submission', required: true},
-    workspace: {type:ObjectId, ref:'Workspace'},
-    comments: [{type:ObjectId, ref:'Comment'}],
-    taggings: [{type:ObjectId, ref:'Tagging'}]
+    coordinates: { type: String, required: true },
+    text: { type: String, required: true },
+    submission: { type: ObjectId, ref: 'Submission', required: true },
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    comments: [{type: ObjectId, ref: 'Comment'}],
+    taggings: [{type: ObjectId, ref: 'Tagging'}]
   }, {versionKey: false});
 
 

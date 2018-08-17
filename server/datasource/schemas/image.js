@@ -9,22 +9,23 @@ var mongoose = require('mongoose'),
   * @description Images are uploaded and saved in public/image_uploads using multer
   */
 var ImageSchema = new Schema({
+  // Currently only using encoding, mimetype, data, isPdf
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User' },
+  createdBy: { type: ObjectId, ref: 'User', required: true },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  originalName: { type: String },
+  originalName: { type: String }, //Not used yet, should implement
   encoding: { type: String },
   mimetype: { type: String },
-  destination:  { type: String },
-  filename: { type: String },
-  data: {type: String},
-  path: { type: String },
-  relativePath: { type: String },
-  isPdf: { type: Boolean},
+  destination:  { type: String }, //This should only be used if we aren't saving the data
+  filename: { type: String }, //Not used yet
+  data: { type: String },
+  path: { type: String }, //Not used yet
+  relativePath: { type: String }, //Not used yet
+  isPdf: { type: Boolean },
 }, { versionKey: false });
 
 /**

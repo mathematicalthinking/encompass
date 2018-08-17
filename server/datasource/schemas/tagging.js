@@ -13,15 +13,15 @@ var mongoose = require('mongoose'),
   */
 var TaggingSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-    createdBy: {type:ObjectId, ref:'User'},
-    createDate: {type:Date, 'default':Date.now()},
-    isTrashed: {type: Boolean, 'default': false},
+    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createDate: { type: Date, 'default': Date.now() },
+    isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //==
-    workspace: {type:ObjectId, ref:'Workspace', required: true},
-    selection: {type:ObjectId, ref:'Selection', required:true},
-    folder: {type:ObjectId, ref:'Folder', required:true}
+    workspace: { type: ObjectId, ref: 'Workspace', required: true },
+    selection: { type: ObjectId, ref: 'Selection', required: true },
+    folder: { type: ObjectId, ref: 'Folder', required: true }
   }, {
     versionKey: false,
     toObject: { virtuals: true },
@@ -35,30 +35,30 @@ TaggingSchema.pre('validate', true, function (next, done) {
   mongoose.models.Selection.findById(this.selection)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else {
         if(!this.workspace) {
           this.workspace = found.workspace;
         }
 
-        next(); 
+        next();
       }
       done();
     });
 });
- 
+
 /*
   * ## Pre-Save
   * Before saving we must verify (asynchonously) that:
-  */ 
+  */
 /* + The Selection exists */
 TaggingSchema.pre('save', true, function (next, done) {
   mongoose.models.Selection.findById(this.selection)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
-      else { 
-        next(); 
+      if (err) { next(new Error(err.message)); }
+      else {
+        next();
       }
       done();
     });
@@ -69,7 +69,7 @@ TaggingSchema.pre('save', true, function (next, done) {
   mongoose.models.Folder.findById(this.folder)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else { next(); }
       done();
     });
@@ -80,7 +80,7 @@ TaggingSchema.pre('save', true, function (next, done) {
   mongoose.models.Workspace.findById(this.workspace)
     .lean()
     .exec(function (err, found) {
-      if (err) { next(new Error(err.message)); } 
+      if (err) { next(new Error(err.message)); }
       else { next(); }
       done();
     });
@@ -89,7 +89,7 @@ TaggingSchema.pre('save', true, function (next, done) {
 /**
   * ## Post-Validation
   * After saving we must ensure (synchronously) that:
-  */ 
+  */
 TaggingSchema.post('save', function (tagging) {
   /* + If deleted, all references are updated */
   if( tagging.isTrashed ) {
@@ -100,7 +100,7 @@ TaggingSchema.post('save', function (tagging) {
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
-    
+
     mongoose.models.Folder.update({'_id': tagging.folder},
       {$pull: {"taggings": taggingIdObj}},
       function(err, affected, result) {

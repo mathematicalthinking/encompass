@@ -1,5 +1,5 @@
 {{! app/templates/components/my-select.hbs}}
-<select disabled={{isDisabled}} {{action 'selectChange' on='change'}}>
+<select disabled={{isDisabled}} {{action 'selectChange' on='change'}} id="my-select">
   {{#if prompt}}
     {{#unless selectedValue}}
     <option value="" id="select-prompt">{{prompt}}</option>
@@ -7,13 +7,13 @@
   {{/if}}
   {{#each content key="@index" as |item|}}
     {{#if item.id}}
-    <option value="{{item.id}}" selected={{is-equal item selectedValue}}>
+    <option class="option" value="{{item.id}}" selected={{is-equal item selectedValue}} >
       {{get item optionLabelPath}}
       {{!item.label}}
     </option>
     {{else}}
 
-    <option value="{{item}}" selected={{is-equal item selectedValue}}>
+    <option class="option" value="{{item}}" selected={{is-equal item selectedValue}}>
       {{item}} {{!item.label}}
     </option>
     {{/if}}

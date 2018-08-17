@@ -12,31 +12,42 @@ var mongoose = require('mongoose'),
 */
 var baseSubmission = {
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-  createdBy: {type:ObjectId, ref:'User'},
-  createDate: {type:Date, 'default':Date.now()},
-  isTrashed: {type: Boolean, 'default': 0},
+  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createDate: { type: Date, 'default': Date.now() },
+  isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
 //====
-  shortAnswer: String,
-  longAnswer: String,
-  // NEW VALUES
-  //student: {type: ObjectId, ref: 'User'},
-  // Need to update tests to use answer, breaking pdSet?
-  // answer: {type: ObjectId, ref: 'Answer'},
-  //problem: {type: ObjectId, ref:'Problem'},
-  //section: {type: ObjectId, ref: 'Section'},
-  answer: {type: ObjectId, ref: 'Answer'},
-  powId: Number,
-  creator: {creatorId: Number, studentId: String, username: String, safeName: String},
-  clazz: {clazzId: Number, sectionId: String, name: String},
-  publication: {publicationId: Number, puzzle: {puzzleId: Number, problemId: String, title: String}},
-  thread: {threadId: Number, currentSubmissionId: Number},
-  'status': String,
-  pdSet: {type: String, 'default': 'default'},
-  uploadedFile: {uploadedFileId: Number, savedFileName: String},
-  isPdf: {type: Boolean},
-  imageId: {type: String}
+  shortAnswer: { type: String },
+  longAnswer: { type: String },
+  answer: { type: ObjectId, ref: 'Answer' },
+  powId: Number, // Used by old data
+  creator: {
+    creatorId: Number,
+    studentId: String, // This is our new studentId
+    username: String,
+    safeName: String
+  },
+  clazz: {
+    clazzId: Number,
+    sectionId: String, // This is our new sectionId
+    name: String
+  },
+  publication: {
+    publicationId: Number, // This is from PoWs
+    puzzle: {
+      puzzleId: Number,
+      problemId: String, // This is our new problemId
+      title: String
+    }
+  },
+  thread: {
+    threadId: Number,
+    currentSubmissionId: Number
+  }, // This is PoW's data
+  status: { type: String },
+  pdSet: { type: String, default: 'default' },
+  uploadedFile: { uploadedFileId: Number, savedFileName: String } // This is from PoWs
 };
 
 /**
@@ -53,21 +64,30 @@ var pdSubmission = _.extend({}, baseSubmission, {
   * @description An Encompass submission is a local copy of a PoW submission. This will now become a grouping of problem, section and answer for each student
 */
 var encompassSubmission = _.extend({}, baseSubmission, {
-  pdSrcId: {type:ObjectId, ref:'PDSubmission'},
-  teachers: [{teacherId: Number, username: String, safeName: String}],
-  teacher: {teacherId: Number, username: String, id: String, safeName: String},
-  primaryTeacher: {type:ObjectId, ref:'User'},
-  selections: [{type:ObjectId, ref:'Selection'}],
-  comments: [{type:ObjectId, ref:'Comment'}],
-  workspaces: [{type:ObjectId, ref:'Workspace'}],
-  responses:  [{type:ObjectId, ref:'Response'}]
+  pdSrcId: { type: ObjectId, ref: 'PDSubmission' },
+  teachers: [{
+      teacherId: Number,
+      username: String,
+      safeName: String
+    }],
+    teacher: {
+      teacherId: Number,
+      username: String,
+      id: String, // Our new teacherId
+      safeName: String
+    },
+  primaryTeacher: { type: ObjectId, ref: 'User' }, // Consider depricating
+  selections: [{type: ObjectId, ref: 'Selection'}],
+  comments: [{type: ObjectId, ref: 'Comment'}],
+  workspaces: [{type: ObjectId, ref: 'Workspace'}],
+  responses:  [{type: ObjectId, ref: 'Response'}]
 });
 
 var PDSubmissionSchema = new Schema(pdSubmission, {versionKey: false});
 var EncompassSubmissionSchema = new Schema(encompassSubmission, {
   versionKey: false,
-  toObject: {virtuals: true},
-  toJSON: {virtuals: true}
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
 });
 
 /** ENC-467

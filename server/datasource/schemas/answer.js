@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
   */
 var AnswerSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User' },
+  createdBy: { type: ObjectId, ref: 'User', required: true },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
@@ -18,16 +18,17 @@ var AnswerSchema = new Schema({
   //====
   //student: { type: ObjectId, ref: 'User' },
   // studentName: { type: String },
-  problem: { type: ObjectId, ref: 'Problem' },
-  assignment: {type: ObjectId, ref: 'Assignment'},
-  answer: { type: String },
-  explanation: { type: String },
+  problem: { type: ObjectId, ref: 'Problem', required: true },
+  assignment: { type: ObjectId, ref: 'Assignment' },
+  answer: { type: String, required: true },
+  explanation: { type: String }, //Change to text if we can save image ObjectId
+  explanationImage: { type: ObjectId, ref: 'Image' },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
-  uploadedFileId: { type: String},
-  imageData: {type: String},
-  priorAnswer: { type: ObjectId, ref: 'Answer'},
-  isSubmitted: { type: Boolean }
+  uploadedFileId: { type: String },
+  imageData: { type: String }, // Remove this is we only save imageId
+  priorAnswer: { type: ObjectId, ref: 'Answer' },
+  isSubmitted: { type: Boolean, default: true }
 }, { versionKey: false });
 
 /**
