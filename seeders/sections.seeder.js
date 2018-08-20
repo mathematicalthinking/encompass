@@ -9,9 +9,11 @@ var data = [{
   "students": ["5b368afdca1375a94fabde39"],
   "teachers": ["5b1e7bf9a5d2157ef4c911a6"],
   "assignments": [],
+  "organization": "5b4e4d5f808c7eebc9f9e82c",
   "isTrashed": false,
   "createdBy": "5b245760ac75842be3189525",
 }];
+
 
 var SectionsSeeder = Seeder.extend({
   shouldRun: function () {
