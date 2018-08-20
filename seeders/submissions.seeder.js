@@ -4,7 +4,7 @@ var Submission = require('../server/datasource/schemas').Submission;
 var data = [
   {
   _id: "53e1156db48b12793f000407",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -36,7 +36,7 @@ var data = [
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000414",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -69,7 +69,7 @@ var data = [
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000415",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -104,7 +104,7 @@ var data = [
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000416",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -173,7 +173,7 @@ var data = [
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000417",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -238,7 +238,7 @@ var data = [
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000418",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -275,7 +275,7 @@ heads so 36 animals.",
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000419",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -352,7 +352,7 @@ I wounder If &nbsp;Xiao was Hosting Humans as well Because there are more animal
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00041a",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -392,7 +392,7 @@ heads: 64+16=80<br /> \
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00041b",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -425,7 +425,7 @@ heads: 64+16=80<br /> \
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00041d",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -492,7 +492,7 @@ heads: 64+16=80<br /> \
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00041e",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -567,7 +567,7 @@ check: &nbsp;32 &nbsp; &nbsp; &nbsp; &nbsp; 64<br /> \
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00041f",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -607,7 +607,7 @@ My refletion is that when i started i wanted to give up so much that i was just 
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000420",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -644,7 +644,7 @@ heads so 36 animals.",
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000421",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -784,7 +784,7 @@ heads so 36 animals.",
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000422",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -818,7 +818,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000423",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -851,7 +851,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000425",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -884,7 +884,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000426",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -917,7 +917,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000427",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -950,7 +950,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000428",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -983,7 +983,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00042c",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1016,7 +1016,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00042d",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1049,7 +1049,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00042e",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1082,7 +1082,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00042f",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1115,7 +1115,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000430",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1149,7 +1149,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000432",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1182,7 +1182,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000433",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1215,7 +1215,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000434",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1248,7 +1248,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000436",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1281,7 +1281,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000437",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1314,7 +1314,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000438",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1347,7 +1347,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000439",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1380,7 +1380,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00043a",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1413,7 +1413,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00043d",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1448,7 +1448,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f00043e",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1481,7 +1481,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e1156db48b12793f000440",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 103671,
     name: "Period 5 Basic Math"
@@ -1514,7 +1514,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e1156db48b12793f000442"]
 },   {
   _id: "53e36522729e9ef59ba7f4d2",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1545,7 +1545,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d3",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1576,7 +1576,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d4",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1607,7 +1607,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d5",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1638,7 +1638,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d6",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1669,7 +1669,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d7",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1700,7 +1700,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },  {
   _id: "53e36522729e9ef59ba7f4d8",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1730,7 +1730,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4d9",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1761,7 +1761,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4da",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1793,7 +1793,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4db",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1824,7 +1824,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4dc",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1855,7 +1855,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4dd",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1886,7 +1886,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4de",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1918,7 +1918,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4df",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1949,7 +1949,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4e0",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -1980,7 +1980,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4e1",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
@@ -2011,7 +2011,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   workspaces: ["53e36522b48b12793f000d3b"]
 },   {
   _id: "53e36522729e9ef59ba7f4e2",
-  createdBy: null,
+  createdBy : "5b245760ac75842be3189525",
   clazz:   {
     clazzId: 106870,
     name: "EnCoMPASS Summer Institute 2014"
