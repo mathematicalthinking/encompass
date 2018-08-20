@@ -3,7 +3,7 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.3
 */
-Encompass.ResponseController = Ember.Controller.extend({
+Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
   responses: Ember.inject.controller(),
   editing: false,
   anonymous: false,
@@ -180,7 +180,9 @@ Encompass.ResponseController = Ember.Controller.extend({
   _persistThen: function (callback) {
     this.set('editing', false);
     var response = this.get('model');
+    var currentUser = this.get('currentUser');
     response.set('original', this.get('response'));
+    response.set('createdBy', currentUser);
     response.save().then(function (saved) {
       if (callback instanceof Function) {
         callback(saved);
