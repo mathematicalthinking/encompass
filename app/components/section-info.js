@@ -96,13 +96,22 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let username = this.get('studentUsername');
       console.log('editor', student);
       console.log('username', username);
-      //section.get('students').pushObject(student);
+      //check if username already exists in section
+      let students = section.get('students');
+      //let students = section.get('username');
 
-      if (!section.get('students').contains(student)){
+
+      var checkRegisteredStudent = students.filterBy('username', username);
+      //isempty will check the STUDENTS list (in front-end) to see if
+      //the new username we are trying to add already exists.
+      if (!Ember.isEmpty(checkRegisteredStudent)) {
+        this.set('userAlreadyInSection', true);
+        console.log('user not in this section');
+      } else if (!section.get('students').contains(student)){
         section.get('students').pushObject(student);
-        this.set('studentUsername', '');
-      }
-    },
+        section.save();  //adds the new student (username) to database (backend)
+    }
+  },
 
     addExistingStudent: function ()  {
       let student = this.get('existingUser');
@@ -165,17 +174,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       var sectionRole = 'student';
       var currentUser = that.get('currentUser');
       let section = this.get('section');
-      let students = section.get('students');
-      //let students = section.get('username');
-
-      var checkRegisteredStudent = students.filterBy('username', username);
-      //isempty will check the STUDENTS list (in front-end) to see if
-      //the new username we are trying to add already exists.
-      if (!Ember.isEmpty(checkRegisteredStudent)) {
-        this.set('userAlreadyInSection', true);
-        console.log('user not in this section');
-        return;
-      }
+      //let students = section.get('students');
 
       if (usingDefaultPassword) {
         password = this.get('defaultPassword');
@@ -199,6 +198,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         sectionId: sectionId,
         sectionRole: sectionRole,
         createdBy: currentUser.id,
+        isAuthorized: true,
         accountType: 'S'
       };
 
@@ -220,7 +220,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           } else {
             var userId = res._id;
             var section = this.get('section');
-            var students = section.get('studentUsername');
+            var students = section.get('students');
             var studentPassword = section.get('studentPassword');
             console.log('section password is currently', studentPassword);
             return this.store.findRecord('user', userId)

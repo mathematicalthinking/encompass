@@ -34,7 +34,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     //var imageUrl = null;
 
-    var createProblemData =   that.store.createRecord('problem', {
+    var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
       title: title,
