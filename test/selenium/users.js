@@ -474,7 +474,7 @@ describe('Users', function() {
 
     function validateNewUserPage() {
       it('should display the page title and form', async function () {
-        expect(await helpers.isTextInDom(driver, 'Create New User')).to.be.true;
+        expect(await helpers.isTextInDom(driver, 'Create a New Student')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'article.user')).to.be.true;
       });
 
@@ -482,69 +482,42 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-email')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'select')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-isAuth')).to.be.true;
       });
 
       it('should not let you submit form with missing fields', async function () {
-        let username = `bunny`;
+        let username = `mystudent`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.selectOption(driver, 'my-select', 'T');
         await helpers.findAndClickElement(driver, 'button.user-new');
         await helpers.waitForSelector(driver, '.error-message');
-        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
+        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username & Password are required');
       });
 
-      it('should let you create a new unauthorized student', async function () {
+      it('should let you create a new student', async function () {
+        let oldUsername = `testUser`;
+        let username = `mystudent`;
         let password = `test`;
-        let name = `Bunny Doe`;
-        let email = `bdoe@gmail.com`;
-        let location = `Philadelphia, PA`;
-        await helpers.selectOption(driver, 'my-select', 'T');
-        await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
-        await helpers.findInputAndType(driver, 'input.user-email', email);
-        await helpers.findInputAndType(driver, 'input.user-location', location);
-        await helpers.findAndClickElement(driver, 'button.user-new');
-        await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep('1000');
-        expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('bunny');
-      });
-
-      it('should let you create a new authorized student', async function () {
-        let oldUsername = `bunny`;
-        let username = `beyonce`;
-        let password = `test`;
-        let name = `Beyonce`;
-        await helpers.findAndClickElement(driver, '#new-user-link');
-        await helpers.waitForSelector(driver, 'div#user-new');
-        await helpers.selectOption(driver, 'my-select', 'Student');
+        let name = `mystudent`;
+        await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
-        await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await helpers.findAndClickElement(driver, '#new-user-btn');
+        await helpers.findAndClickElement(driver, 'button.user-new');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username already exists');
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.findAndClickElement(driver, '#new-user-btn');
-        driver.sleep('1000');
         await helpers.waitForSelector(driver, '#user-info');
-        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('beyonce');
+        expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('mystudent');
       });
-
     }
 
     function changeAuth() {
-      it('should authorize a new user', async function () {
+      it('should unauthorize a new student', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('bunny');
+        expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('mystudent');
       });
     }
 
@@ -592,9 +565,9 @@ describe('Users', function() {
         validateNewUserPage();
       });
 
-      describe('authorizing a user', function () {
+      describe('unauthorizing a user', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/bunny"]`);
+          await helpers.findAndClickElement(driver, `a[href$="#/users/mystudent"]`);
         });
         changeAuth();
       });

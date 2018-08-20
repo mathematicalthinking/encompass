@@ -8,19 +8,19 @@
     <tr>
       <td>Username</td>
       <td>
-        {{input type="text" value=username action="resetErrors" on="key-down"}}
+        {{input type="text" value=username action="resetErrors" on="key-down" classNames="user-username"}}
       </td>
     </tr>
     <tr>
       <td>Password</td>
       <td>
-        {{input type="password" value=password action="resetErrors" on="key-down"}}
+        {{input type="password" value=password action="resetErrors" on="key-down"  classNames="user-password"}}
       </td>
     </tr>
     <tr>
       <td>Name</td>
       <td>
-        {{input type="text" value=name}}
+        {{input type="text" value=name  classNames="user-name"}}
       </td>
     </tr>
   </table>
@@ -33,5 +33,5 @@
     <p class="error-message">Username & Password are required</p>
   {{/if}}
 
-  <button class='action_button' {{action 'newUser'}}>Create New Student</button>
+  <button class='action_button user-new' {{action 'newUser'}}>Create New Student</button>
 </article>
