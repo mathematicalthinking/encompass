@@ -47,16 +47,6 @@ describe('Users', function() {
       });
     }
 
-    function validateUserChange() {
-      it('should authorize a new user', async function () {
-        await helpers.findAndClickElement(driver, 'button.edit-user');
-        await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await helpers.findAndClickElement(driver, 'button.save-user');
-        await helpers.waitForSelector(driver, '#user-info');
-        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('muzzy');
-      });
-    }
-
     function validateNewUserPage() {
       it('should display the page title and form', async function () {
         expect(await helpers.isTextInDom(driver, 'Create New User')).to.be.true;
@@ -156,6 +146,38 @@ describe('Users', function() {
 
     }
 
+    function changeAuth() {
+      it('should authorize a new user', async function () {
+        await helpers.findAndClickElement(driver, 'button.edit-user');
+        await helpers.findAndClickElement(driver, 'input.user-isAuth');
+        await helpers.findAndClickElement(driver, 'button.save-user');
+        await helpers.waitForSelector(driver, '#user-info');
+        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('muzzy');
+      });
+    }
+
+    function changeAccountType() {
+      it('should change a teacher to an admin', async function () {
+        await helpers.findAndClickElement(driver, 'button.edit-user');
+        await helpers.findAndClickElement(driver, 'input.user-isAuth');
+        await helpers.selectOption(driver, 'my-select', 'A');
+        await helpers.findAndClickElement(driver, 'button.save-user');
+        await helpers.waitForSelector(driver, '#user-info');
+        expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
+      });
+    }
+
+    function confirmEmail() {
+      it('should manually confirm email', async function () {
+        await helpers.findAndClickElement(driver, 'button.edit-user');
+        await helpers.findAndClickElement(driver, 'input.user-email-auth');
+        await helpers.findAndClickElement(driver, 'button.save-user');
+        await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep('2000');
+        expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
+      });
+    }
+
     describe('Visiting the users list home page', function () {
       before(async function () {
         await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
@@ -219,7 +241,21 @@ describe('Users', function() {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
         });
-        validateUserChange();
+        changeAuth();
+      });
+
+      describe("changing a user's account type", function () {
+        before(async function () {
+          await helpers.findAndClickElement(driver, `a[href$="#/users/nope"]`);
+        });
+        changeAccountType();
+      });
+
+      describe('manually authorize a users email', function () {
+        before(async function () {
+          await helpers.findAndClickElement(driver, `a[href$="#/users/superuser"]`);
+        });
+        confirmEmail();
       });
 
     });

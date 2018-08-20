@@ -43,11 +43,11 @@
     {{#if canConfirm}}
     <tr>
       <td>Email Confirmed</td>
-      <td>
+      <td class="is-email-confirm">
         {{#if isEditing}}
           {{#if unconfirmedEmail}}
           {{!-- <button {{action 'authEmail'}}>Manually confirm email?</button> --}}
-            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized}}
+            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized classNames="user-email-auth"}}
             <label for="">Manually confirm email?</label>
           {{else}}
             {{user.isEmailConfirmed}}
