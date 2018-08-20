@@ -34,12 +34,14 @@
             <label for="name">Section Name</label>
             {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
           </li>
+          
           <li>
             <label for="assignments">Assignments</label>
-              {{#each section.assignments as |assignment|}}
-            <ol class="b">{{#link-to 'assignment' assignment}}{{assignment.problem.title}} / {{format-date assignment.createDate 'MMM Do YYYY'}}{{/link-to}}</ol>
-            {{/each}}
-            {{!-- {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}} --}}
+               <ul class="listing">
+                {{#each section.assignments as |assignment|}}
+                <li>{{assignment.title}}</li>
+                {{/each}}
+              </ul>
           </li>
           <li class="teacherslist">
             <label for="teachers">Teachers</label>
@@ -79,42 +81,59 @@
     <h2>Use default password for all new students?
     {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
 
-      <label for="name">Name</label>
-      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}}
+      {{!-- <label for="name">Name</label>
+      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}} --}}
 
+     <div class="half">
 
-      <label for="addusername">Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}}
+      <label>Username</label>
+      {{input id="students" type="text" value=studentUsername placeholder="Filter by username" classNames="editor search" action="checkError" on="key-down"}}
+        <ul>
+        {{#each searchResults as |result|}}
+          <li>
+            <button class="addStudent" id="addStudent" {{action 'addStudent' result}}>{{result.username}}</button>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+
+     {{!-- <label for="addusername">Username</label>
+      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}} --}}
+
       {{#unless usingDefaultPassword}}
-
       <label for="addpassword">Password</label>
       {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
       {{/unless}}
 
-      <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
-
-
     {{#if usingDefaultPassword}}
     <label>Password </label>
     {{input type=fieldType value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
-      <button id="show-password-btn" {{action "showPassword"}}>
+    {{/if}}
+    <button id="show-password-btn" {{action "showPassword"}}>
         {{#if showingPassword}}
         <i class="fas fa-eye-slash"></i>
         {{else}}
         <i class="fas fa-eye"></i>
         {{/if}}
       </button>
-    {{/if}}
 
-         {{#if doyouwanttoaddexistinguser}}
+    <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
+
+
+       {{#if userAlreadyInSection}}
+        <p class="error-message"> Username: {{studentUsername}} already registered in this section.</p>
+        <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> Close </button>
+      {{/if}}
+
+         {{#if doYouWantToAddExistingUser}}
       <p class="error-message"> {{studentUsername}} belongs to the same organization. Do you want to add {{studentUsername}} to this section?
       <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
-      <button class="action_button" {{action 'exitaddexistingusername'}} style="margin-right: 10px"> no </button>
+      <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> no </button>
       </p>
       {{/if}}
 
     </fieldset>
-      <button class="action_button" {{action 'doneAdding'}}>Done</button>
+        <button class="action_button" {{action 'doneAdding'}}>Done</button>
   </form>
 
     {{#if usernameAlreadyExists}}
