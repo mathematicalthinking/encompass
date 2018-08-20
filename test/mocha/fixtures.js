@@ -7,13 +7,14 @@ const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   answer: {
-    _id: '5b27fa71d522ff21c58d40b8',
+    _id: '5b1e7abfa5d2157ef4c910b8',
     validAnswer: {
-      studentName: 'bill',
+      studentName: 'student1',
       answer: '4',
       explanation: 'I put 2 and 2 together',
-      problemId: '5b0d939baca0b80f78807cf5',
-      sectionId: '5b15522cdfa1745d8ca72277',
+      problem: '5b0d939baca0b80f78807cf5',
+      section: '5b15522cdfa1745d8ca72277',
+      createdBy: '5b368afdca1375a94fabde39',
     },
     invalidAnswer: {
       id: '',
@@ -22,6 +23,14 @@ module.exports = {
       explanation: '',
       problemId: '',
       sectionId: '',
+    },
+    updated: {
+      studentName: 'student1',
+      answer: '4',
+      explanation: 'actually Im not sticking with that answer',
+      problem: '5b0d939baca0b80f78807cf5',
+      section: '5b15522cdfa1745d8ca72277',
+      createdBy: '5b368afdca1375a94fabde39',
     }
   },
   category: {
