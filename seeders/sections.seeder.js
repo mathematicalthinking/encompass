@@ -8,8 +8,9 @@ var data = [{
   "problems": ["5b1e7a0ba5d2157ef4c91028"],
   "students": ["5b368afdca1375a94fabde39"],
   "teachers": ["5b1e7bf9a5d2157ef4c911a6"],
+  "assignments": [],
   "isTrashed": false,
-  "createdBy": "5b245760ac75842be3189525"
+  "createdBy": "5b245760ac75842be3189525",
 }];
 
 var SectionsSeeder = Seeder.extend({
