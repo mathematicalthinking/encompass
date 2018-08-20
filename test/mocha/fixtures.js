@@ -75,7 +75,7 @@ module.exports = {
     validSection: {
       name: 'A test section',
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
-      problems: [],
+      assignments: [],
       students: [],
       teachers: [],
     },

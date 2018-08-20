@@ -11,13 +11,13 @@ var mongoose = require('mongoose'),
   */
 var SectionSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String, required: true },
+  name: { type: String },
   organization: { type: ObjectId, ref: 'Organization' },
   sectionId: { type: Number }, // not yet used
   sectionPassword: { type: String },
