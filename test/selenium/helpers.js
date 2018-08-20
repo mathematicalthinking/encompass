@@ -29,6 +29,11 @@ const regUser = {
   password: 'smith'
 };
 
+const pdAdmin = {
+  username: 'pdadmin',
+  password: 'pdadmin'
+};
+
 const newUser = {
   name: 'John Doe',
   email: 'encompass21pstem@gmail.com',
@@ -270,6 +275,7 @@ module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
 module.exports.admin = admin;
 module.exports.regUser = regUser;
+module.exports.pdAdmin = pdAdmin;
 module.exports.unauth = unauth;
 module.exports.host = host;
 module.exports.loginUrl = loginUrl;
