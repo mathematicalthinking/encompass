@@ -46,6 +46,7 @@ module.exports = {
       workspace: '53e1156db48b12793f000442',
       useForResponse: true,
       isTrashed: false,
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
     }
   },
   problem: {
