@@ -75,14 +75,10 @@ var UserSchema = new Schema({
   // We only use google for external auth, we can use these fields if we use more OAuths
   // authSource: String,
   // authUserId: String,
-  sections: [{
-    sectionId: {
-      type: ObjectId,
-      ref: 'Section'
-    },
-    role: String,
-    _id: false
-  }],
+  sessionId: String,
+  teacherSections: [{ type: ObjectId, ref: 'Section' }],
+  studentSections: [{ type: ObjectId, ref: 'Section' }],
+  sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
   assignments: [{type: ObjectId, ref: 'Assignment'}],

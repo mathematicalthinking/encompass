@@ -60,6 +60,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('createdStudents', null);
   },
 
+  searchResults: function () {
+    var searchText = this.get('studentUsername');
+    searchText = searchText.replace(/\W+/g, "");
+    if (searchText.length < 2) {
+      return;
+    }
+
+    let people = this.get('store').query('user', {
+      username: searchText,
+    });
+    return people;
+  }.property('studentUsername'),
+
   isShowingPassword: Ember.computed(function () {
     var showing = this.get('showingPassword');
     return showing;
