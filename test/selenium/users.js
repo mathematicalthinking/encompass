@@ -67,7 +67,8 @@ describe('Users', function() {
       it('should not let you submit form with missing fields', async function () {
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.selectOption(driver, 'my-select', 'T');
+        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await driver.sleep('500');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -79,7 +80,7 @@ describe('Users', function() {
         let email = `mdoe@gmail.com`;
         let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
-        await helpers.selectOption(driver, 'my-select', 'P');
+        await helpers.selectOption(driver, 'my-select', 'Pd');
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
@@ -107,7 +108,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-email', oldEmail);
         await helpers.findInputAndType(driver, 'input#organization', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
-        await helpers.selectOption(driver, 'my-select', 'T');
+        await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await helpers.waitForSelector(driver, '.error-message');
@@ -132,14 +133,17 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input#organization', organization);
-        await helpers.selectOption(driver, 'my-select', 'S');
+        await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
+        await driver.sleep('1000');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username already exists');
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
+        await driver.sleep('1000');
         await helpers.findAndClickElement(driver, 'button.new-user');
+        await driver.sleep('1000');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newStudent');
       });
@@ -160,8 +164,9 @@ describe('Users', function() {
       it('should change a teacher to an admin', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await helpers.selectOption(driver, 'my-select', 'A');
+        await helpers.selectOption(driver, 'my-select', 'Admin');
         await helpers.findAndClickElement(driver, 'button.save-user');
+        await driver.sleep('100');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
@@ -301,7 +306,8 @@ describe('Users', function() {
       it('should not let you submit form with missing fields', async function () {
         let username = `bunny`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.selectOption(driver, 'my-select', 'T');
+        await helpers.selectOption(driver, 'my-select', 'Teacher');
+        await driver.sleep('500');
         await helpers.findAndClickElement(driver, 'button.user-new');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -312,7 +318,7 @@ describe('Users', function() {
         let name = `Bunny Doe`;
         let email = `bdoe@gmail.com`;
         let location = `Philadelphia, PA`;
-        await helpers.selectOption(driver, 'my-select', 'T');
+        await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
@@ -361,9 +367,10 @@ describe('Users', function() {
     function changeAccountType() {
       it('should change a teacher to a student', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
-        await helpers.selectOption(driver, 'my-select', 'S');
+        await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep('100');
+        await helpers.waitForSelector(driver, 'button.edit-user');
       });
     }
 
@@ -373,7 +380,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep('2000');
+        await driver.sleep('500');
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }

@@ -192,7 +192,8 @@ const findInputAndType = async function (webDriver, selector, text) {
      let selectList = webDriver.findElement(By.id(selector));
      selectList.click();
      selectList.sendKeys(item);
-     selectList.click();
+     selectList.sendKeys(Key.RETURN);
+    //  selectList.click();
      return;
    } catch (err) {
      console.log(err);
