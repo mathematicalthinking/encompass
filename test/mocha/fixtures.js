@@ -97,6 +97,9 @@ module.exports = {
     _id: '529518daba1cd3d8c4013344',
     validUser: {
       username: 'testUser3',
+      name: 'testUser3',
+      accountType: 'T',
+      password: '$2a$08$Puko.4Ukg3fUVSfQsyhlauvEJ84/ymUidiL7xablVfic59zzC4gFi'
     },
   },
   folder: {
@@ -130,7 +133,13 @@ module.exports = {
     validSubmission: {
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       shortAnswer: 'test short answer',
-      longAnswer: 'test long answer'
+      longAnswer: 'test long answer',
+      status: "SUBMITTED",
+      responses: [],
+      workspaces: [],
+      comments: [],
+      selections: [],
+      isTrashed: false,
     }
   }
 };
