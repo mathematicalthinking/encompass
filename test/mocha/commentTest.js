@@ -89,7 +89,7 @@ describe('Comment CRUD operations', function() {
         submission: fixtures.comment.validComment.submission,
         selection: fixtures.comment.validComment.workspace,
         text: 'new test text',
-        createdBy: '5b1e7bf9a5d2157ef4c911a6',
+        createdBy: fixtures.comment.validComment.createdBy,
       }})
       .end((err, res) => {
         expect(res).to.have.status(200);

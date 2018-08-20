@@ -78,7 +78,13 @@ describe('Selection CRUD operations', function() {
       let url = baseUrl + fixtures.selection._id;
       agent
       .put(url)
-      .send({selection: {text: 'updated text', submission: fixtures.selection.validSelection.submission}})
+      .send({
+            selection: {
+              text: 'updated text',
+              coordinates: fixtures.selection.validSelection.coordinates,
+              submission: fixtures.selection.validSelection.submission,
+              createdBy: fixtures.selection.validSelection.createdBy,
+      }})
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.selection).to.have.any.keys('text', 'submission', 'taggingins', 'workspace');

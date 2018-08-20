@@ -67,7 +67,7 @@ describe('Problem CRUD operations', function() {
       .send({
             problem: {
               title: 'test science problem',
-              createdBy: '5b1e7bf9a5d2157ef4c911a6',
+              createdBy: fixtures.problem.validProblem.createdBy,
       }})
       .end((err, res) => {
         expect(res).to.have.status(200);

@@ -110,6 +110,8 @@ module.exports = {
   selection: {
     _id: '53e11942b48b12793f000a5f',
     validSelection: {
+      coordinates: 'node-1 2 596 node-1 2 746',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       text: 'test selection text',
       submission: '53e1156db48b12793f000430', // this should be switched to answer
     }
@@ -117,6 +119,7 @@ module.exports = {
   tagging: {
     _id: '53e1194bb48b12793f000a62',
     validTagging: {
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '53e1156db48b12793f000442',
       selection: '53e11b38b48b12793f000ab7',
       folder: '53e11b0ab48b12793f000ab1'
@@ -125,8 +128,10 @@ module.exports = {
   submission: {
     _id: '53e1156db48b12793f000407',
     validSubmission: {
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       shortAnswer: 'test short answer',
       longAnswer: 'test long answer'
     }
   }
 };
+

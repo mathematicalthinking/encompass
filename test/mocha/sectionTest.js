@@ -83,7 +83,7 @@ describe('Section CRUD operations', function() {
       .send({
             section: {
               name: 'phils class',
-              createdBy: '5b1e7bf9a5d2157ef4c911a6',
+              createdBy: fixtures.section.validSection.createdBy,
       }})
       .end((err, res) => {
         expect(res).to.have.status(200);
