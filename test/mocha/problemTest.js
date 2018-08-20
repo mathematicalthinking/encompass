@@ -64,7 +64,11 @@ describe('Problem CRUD operations', function() {
       let url = baseUrl + fixtures.problem._id;
       agent
       .put(url)
-      .send({problem: {title: 'test science problem'}})
+      .send({
+            problem: {
+              title: 'test science problem',
+              createdBy: fixtures.problem.validProblem.createdBy,
+      }})
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.problem).to.have.any.keys('puzzleId', 'title', 'categories');

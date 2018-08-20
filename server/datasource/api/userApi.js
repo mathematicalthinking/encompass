@@ -81,7 +81,7 @@ async function sendUsers(req, res, next) {
     let data;
     requestedUsers.forEach((user) => {
       delete user.key;
-      delete user.password;
+      // delete user.password;
       delete user.history;
     });
 
@@ -110,7 +110,7 @@ async function sendUsers(req, res, next) {
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
         delete doc.history; //don't send user history out
-        delete doc.password;
+        // delete doc.password;
       });
       var data = {'user': docs};
       return utils.sendResponse(res, data);
@@ -162,7 +162,7 @@ async function sendUser(req, res, next) {
 
       delete data.user.key; //hide key
       delete data.user.history; // hide history
-      delete data.user.password;
+      // delete data.user.password;
 
       return utils.sendResponse(res, data);
     }

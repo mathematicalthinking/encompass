@@ -44,6 +44,7 @@ var data = [
   }, {
     "_id": "5b1e7a0ba5d2157ef4c91028",
     "title": "Mr. W. Goes Across Australia",
+    "createdBy": "5b245841ac75842be3189526",
     "puzzleId": 973,
     "categories": [],
     "isPublic": false,

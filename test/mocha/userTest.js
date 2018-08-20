@@ -44,16 +44,15 @@ describe('User CRUD operations', function() {
 
   /** GET **/
   describe('/GET user by username', () => {
-    it('should return user with the username "steve"', done => {
+    it('should return user with the username "rick"', done => {
       agent
       .get(baseUrl)
-      .query('username=steve')
+      .query('username=rick')
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('user');
-        expect(res.body.user).to.be.a('object');
-        expect(res.body.user.username).to.eql('steve');
-
+        expect(res.body.user).to.be.a('array');
+        expect(res.body.user[0].username).to.eql('rick');
         done();
       });
     });
@@ -96,7 +95,13 @@ describe('User CRUD operations', function() {
       const url = baseUrl + fixtures.user._id;
       agent
       .put(url)
-      .send({user: {'name': 'test name'}})
+      .send({
+        user: {
+          'name': 'test name',
+          'username': fixtures.user.validUser.username,
+          'accountType': fixtures.user.validUser.accountType,
+        }
+      })
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.user.username).to.eql('steve');
@@ -107,7 +112,7 @@ describe('User CRUD operations', function() {
   });
 
   /** PUT addSection **/
-  describe('/PUT add section', () => {
+  xdescribe('/PUT add section', () => {
     it('should add a section to the user steve', done => {
       const url = baseUrl + 'addSection/' + fixtures.user._id;
       agent
@@ -123,7 +128,7 @@ describe('User CRUD operations', function() {
   });
 
   /** PUT removeSection **/
-  describe('/PUT remove section', () => {
+  xdescribe('/PUT remove section', () => {
     it('should remove the section we just added', done => {
       const url = baseUrl + 'removeSection/' + fixtures.user._id;
       agent
@@ -139,8 +144,8 @@ describe('User CRUD operations', function() {
   });
 
   /** PUT addAssignment **/
-  describe('/PUT add assignment', () => {
-    xit('should add an assignment to the user steve', done => {
+  xdescribe('/PUT add assignment', () => {
+    it('should add an assignment to the user steve', done => {
       const url = baseUrl + 'addAssignment/' + fixtures.user._id;
       agent
       .put(url)
@@ -155,8 +160,8 @@ describe('User CRUD operations', function() {
   });
 
   /** PUT removeAssignment **/
-  describe('/PUT remove assignment', () => {
-    xit('should remove the assignment we just added', done => {
+  xdescribe('/PUT remove assignment', () => {
+    it('should remove the assignment we just added', done => {
       const url = baseUrl + 'removeAssignment/' + fixtures.user._id;
       agent
       .put(url)

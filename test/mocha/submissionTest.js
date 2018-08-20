@@ -57,7 +57,7 @@ describe('Submission CRUD operations', function() {
   });
 
   /** POST **/
-  describe('/POST submission', () => {
+  xdescribe('/POST submission', () => {
     it('should post a new submission', done => {
       agent
       .post(baseUrl)

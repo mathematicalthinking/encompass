@@ -41,24 +41,22 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
+  willDestroyElement: function () {
+    this.set('createdStudents', null);
+  },
+
   searchResults: function () {
     var searchText = this.get('studentUsername');
-    console.log('search text is', searchText);
     searchText = searchText.replace(/\W+/g, "");
-    if (searchText.length < 1) {
+    if (searchText.length < 2) {
       return;
     }
 
     let people = this.get('store').query('user', {
-      username: searchText
+      username: searchText,
     });
     return people;
   }.property('studentUsername'),
-
-
-  willDestroyElement: function () {
-    this.set('createdStudents', null);
-  },
 
   isShowingPassword: Ember.computed(function () {
     var showing = this.get('showingPassword');
@@ -108,13 +106,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       } else if (!section.get('students').contains(student)){
         section.get('students').pushObject(student);
         section.save();  //adds the new student (username) to database (backend)
-    }
-  },
-
-    addExistingStudent: function ()  {
-      let student = this.get('existingUser');
-      let section = this.get('section');
-      let students = section.get('students');
+      }
 
       let sectionObj = {
         sectionId: section.id,

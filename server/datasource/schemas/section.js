@@ -11,13 +11,13 @@ var mongoose = require('mongoose'),
   */
 var SectionSchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String, required: true },
+  name: { type: String },
   organization: { type: ObjectId, ref: 'Organization' },
   sectionId: { type: Number }, // not yet used
   sectionPassword: { type: String },
@@ -31,26 +31,26 @@ var SectionSchema = new Schema({
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
   */
-SectionSchema.pre('save', function (next) {
-  var toObjectId = function (elem, ind, arr) {
-    if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
-      arr[ind] = mongoose.Types.ObjectId(elem);
-    }
-  };
+// SectionSchema.pre('save', function (next) {
+//   var toObjectId = function (elem, ind, arr) {
+//     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
+//       arr[ind] = mongoose.Types.ObjectId(elem);
+//     }
+//   };
 
-  /** + Every ID reference in our object is properly typed.
-    *   This needs to be done BEFORE any other operation so
-    *   that native lookups and updates don't fail.
-    */
-  try {
-    this.teachers.forEach(toObjectId);
-    this.problems.forEach(toObjectId);
-    next();
-  }
-  catch (err) {
-    next(new Error(err.message));
-  }
-});
+//   /** + Every ID reference in our object is properly typed.
+//     *   This needs to be done BEFORE any other operation so
+//     *   that native lookups and updates don't fail.
+//     */
+//   try {
+//     this.teachers.forEach(toObjectId);
+//     this.problems.forEach(toObjectId);
+//     next();
+//   }
+//   catch (err) {
+//     next(new Error(err.message));
+//   }
+// });
 
 // /**
 //   * ## Post-Validation

@@ -4,13 +4,16 @@ var Organization = require('../server/datasource/schemas').Organization
 var data = [
   {
     '_id': '5b4a64a028e4b75919c28512',
-    'name': 'Drexel University'
+    'name': 'Drexel University',
+    "createdBy": "5b245760ac75842be3189525",
   }, {
     '_id': '5b4e4b48808c7eebc9f9e827',
-    'name': 'Temple University'
+    'name': 'Temple University',
+    "createdBy": "5b245760ac75842be3189525",
   }, {
     '_id': '5b4e4d5f808c7eebc9f9e82c',
-    'name': 'Mathematical Thinking'
+    'name': 'Mathematical Thinking',
+    "createdBy": "5b245760ac75842be3189525",
   }
 ]
 

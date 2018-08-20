@@ -20,9 +20,18 @@ const admin = {
   password: 'sanchez'
 };
 
+const unauth = {
+  username: 'wes',
+};
+
 const regUser = {
   username: 'morty',
   password: 'smith'
+};
+
+const pdAdmin = {
+  username: 'pdadmin',
+  password: 'pdadmin'
 };
 
 const newUser = {
@@ -183,7 +192,8 @@ const findInputAndType = async function (webDriver, selector, text) {
      let selectList = webDriver.findElement(By.id(selector));
      selectList.click();
      selectList.sendKeys(item);
-     selectList.click();
+     selectList.sendKeys(Key.RETURN);
+    //  selectList.click();
      return;
    } catch (err) {
      console.log(err);
@@ -266,6 +276,8 @@ module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
 module.exports.admin = admin;
 module.exports.regUser = regUser;
+module.exports.pdAdmin = pdAdmin;
+module.exports.unauth = unauth;
 module.exports.host = host;
 module.exports.loginUrl = loginUrl;
 module.exports.newUser = newUser;

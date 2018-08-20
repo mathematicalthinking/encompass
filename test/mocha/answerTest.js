@@ -50,7 +50,7 @@ describe('Answer CRUD operations', function() {
       .send({answer: fixtures.answer.validAnswer})
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.answer).to.have.any.keys('problemId', 'studentName', 'answer');
+        expect(res.body.answer).to.have.any.keys('problem', 'studentName', 'answer');
         expect(res.body.answer.explanation).to.eql('I put 2 and 2 together');
         done();
       });
@@ -58,18 +58,17 @@ describe('Answer CRUD operations', function() {
   });
 
   /** PUT name**/
-  describe('/PUT update answer explanation', () => {
-    it('should change the explanation', done => {
+  describe('/PUT update answer explanation for already submitted', () => {
+    it('should return an error,', done => {
       let url = baseUrl + fixtures.answer._id;
       agent
       .put(url)
-      .send({answer: {explanation: 'actually Im not sticking with that answer'}})
+      .send({answer: fixtures.answer.updated})
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.answer).to.have.any.keys('answer', 'explanation', 'studentName');
-        expect(res.body.answer.explanation).to.eql('actually Im not sticking with that answer');
+        expect(res).to.have.status(403);
         done();
       });
     });
   });
 });
+

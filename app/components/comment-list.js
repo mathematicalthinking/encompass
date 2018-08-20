@@ -10,7 +10,7 @@
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
-Encompass.CommentListComponent = Ember.Component.extend({
+Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   myCommentsOnly: false,
   thisWorkspaceOnly: true,
   commentFilterText: '',
@@ -97,7 +97,7 @@ Encompass.CommentListComponent = Ember.Component.extend({
     },
 
     createComment: function() {
-      var user = this.get('currentUser');
+      var currentUser = this.get('currentUser');
       var label = this.get('newCommentLabel');
       var text = this.get('newComment');
       console.log("Create Comment text: " + text );
@@ -118,7 +118,8 @@ Encompass.CommentListComponent = Ember.Component.extend({
         submission: currentSubmission,
         workspace: this.currentWorkspace,
         parent: this.get('newCommentParent'),
-        useForResponse: !!useForResponse
+        useForResponse: !!useForResponse,
+        createdBy: currentUser,
       };
 
       console.log("New comment data:\n" + JSON.stringify(data) );

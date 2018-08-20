@@ -9,11 +9,7 @@
     <tr>
       <td>Username</td>
       <td>
-        {{#if isEditing}}
-          {{input value=user.username classNames='user-username'}}
-        {{else}}
-          {{user.username}}
-        {{/if}}
+        {{user.username}}
       </td>
     </tr>
     <tr>
@@ -47,11 +43,11 @@
     {{#if canConfirm}}
     <tr>
       <td>Email Confirmed</td>
-      <td>
+      <td class="is-email-confirm">
         {{#if isEditing}}
           {{#if unconfirmedEmail}}
           {{!-- <button {{action 'authEmail'}}>Manually confirm email?</button> --}}
-            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized}}
+            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized classNames="user-email-auth"}}
             <label for="">Manually confirm email?</label>
           {{else}}
             {{user.isEmailConfirmed}}
@@ -137,7 +133,7 @@
         <td>
           {{#if isEditing}}
             {{#if canEdit}}
-              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
+              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='user-isAuth'}}
               {{else}}
                 {{user.isAuthorized}}
             {{/if}}
@@ -164,7 +160,7 @@
           <td>Authorize</td>
           <td>
             {{#if canEdit}}
-              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
+              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized' classNames='user-isAuth'}}
             {{else}}
               {{user.isAuthorized}}
             {{/if}}

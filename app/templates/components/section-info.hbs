@@ -34,7 +34,7 @@
             <label for="name">Section Name</label>
             {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
           </li>
-          
+
           <li>
             <label for="assignments">Assignments</label>
                <ul class="listing">
@@ -87,7 +87,7 @@
      <div class="half">
 
       <label>Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="Filter by username" classNames="editor search" action="checkError" on="key-down"}}
+      {{input id="students" type="text" value=studentUsername placeholder="Username" classNames="user search" action="checkError" on="key-down"}}
         <ul>
         {{#each searchResults as |result|}}
           <li>
@@ -130,7 +130,7 @@
       <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
       <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> no </button>
       </p>
-      {{/if}}
+    {{/if}}
 
     </fieldset>
         <button class="action_button" {{action 'doneAdding'}}>Done</button>

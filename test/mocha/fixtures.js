@@ -7,13 +7,14 @@ const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   answer: {
-    _id: '5b27fa71d522ff21c58d40b8',
+    _id: '5b1e7abfa5d2157ef4c910b8',
     validAnswer: {
-      studentName: 'bill',
+      studentName: 'student1',
       answer: '4',
       explanation: 'I put 2 and 2 together',
-      problemId: '5b0d939baca0b80f78807cf5',
-      sectionId: '5b15522cdfa1745d8ca72277',
+      problem: '5b0d939baca0b80f78807cf5',
+      section: '5b15522cdfa1745d8ca72277',
+      createdBy: '5b368afdca1375a94fabde39',
     },
     invalidAnswer: {
       id: '',
@@ -22,6 +23,14 @@ module.exports = {
       explanation: '',
       problemId: '',
       sectionId: '',
+    },
+    updated: {
+      studentName: 'student1',
+      answer: '4',
+      explanation: 'actually Im not sticking with that answer',
+      problem: '5b0d939baca0b80f78807cf5',
+      section: '5b15522cdfa1745d8ca72277',
+      createdBy: '5b368afdca1375a94fabde39',
     }
   },
   category: {
@@ -37,6 +46,7 @@ module.exports = {
       workspace: '53e1156db48b12793f000442',
       useForResponse: true,
       isTrashed: false,
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
     }
   },
   problem: {
@@ -45,7 +55,8 @@ module.exports = {
       title: 'test math problem',
       puzzleId: '400000',
       text: 'This is a problem',
-      categories: []
+      categories: [],
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
     },
     invalidProblem: {
       title: '',
@@ -56,13 +67,15 @@ module.exports = {
   },
   assignment: {
     problemId: '5b1e7a0ba5d2157ef4c91028',
-    answerId: '5b1e7abfa5d2157ef4c910b8'
+    answerId: '5b1e7abfa5d2157ef4c910b8',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
   },
   section: {
     _id: '5b1e7b2aa5d2157ef4c91108',
     validSection: {
       name: 'A test section',
-      problems: [],
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+      assignments: [],
       students: [],
       teachers: [],
     },
@@ -84,18 +97,24 @@ module.exports = {
     _id: '529518daba1cd3d8c4013344',
     validUser: {
       username: 'testUser3',
+      name: 'testUser3',
+      accountType: 'T',
+      password: '$2a$08$Puko.4Ukg3fUVSfQsyhlauvEJ84/ymUidiL7xablVfic59zzC4gFi'
     },
   },
   folder: {
     _id: '53e118f3b48b12793f000a41',
     validFolder: {
       name: 'test folder',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '53e1156db48b12793f000442'
     }
   },
   selection: {
     _id: '53e11942b48b12793f000a5f',
     validSelection: {
+      coordinates: 'node-1 2 596 node-1 2 746',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       text: 'test selection text',
       submission: '53e1156db48b12793f000430', // this should be switched to answer
     }
@@ -103,6 +122,7 @@ module.exports = {
   tagging: {
     _id: '53e1194bb48b12793f000a62',
     validTagging: {
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '53e1156db48b12793f000442',
       selection: '53e11b38b48b12793f000ab7',
       folder: '53e11b0ab48b12793f000ab1'
@@ -111,8 +131,16 @@ module.exports = {
   submission: {
     _id: '53e1156db48b12793f000407',
     validSubmission: {
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       shortAnswer: 'test short answer',
-      longAnswer: 'test long answer'
+      longAnswer: 'test long answer',
+      status: "SUBMITTED",
+      responses: [],
+      workspaces: [],
+      comments: [],
+      selections: [],
+      isTrashed: false,
     }
   }
 };
+
