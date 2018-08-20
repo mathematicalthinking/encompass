@@ -122,17 +122,15 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         section.get('students').pushObject(student);
         section.save();  //adds the new student (username) to database (backend)
     }
-  },
 
-    addExistingStudent: function ()  {
-      let student = this.get('existingUser');
-      let section = this.get('section');
-      let students = section.get('students');
+    // addStudent: function (student)  {
+    //   let section = this.get('section');
+    //   let students = section.get('students');
 
-      let sectionObj = {
-        sectionId: section.id,
-        role: 'student'
-      };
+    //   let sectionObj = {
+    //     sectionId: section.id,
+    //     role: 'student'
+    //   };
 
       return this.store.findRecord('user', student.id).then((student) => {
         console.log('student rec', student);
