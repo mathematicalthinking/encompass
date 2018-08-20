@@ -493,19 +493,11 @@ describe('Users', function() {
       });
 
       it('should let you create a new student', async function () {
-        let oldUsername = `testUser`;
-        let username = `mystudent`;
         let password = `test`;
         let name = `mystudent`;
-        await helpers.clearElement(driver, 'input.user-username');
-        await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findAndClickElement(driver, 'button.user-new');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username already exists');
-        await helpers.clearElement(driver, 'input.user-username');
-        await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('mystudent');
       });
