@@ -50,9 +50,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
 
     let people = this.get('store').query('user', {
-      name: {
-        username: searchText
-      }
+      username: searchText
     });
     return people;
   }.property('studentUsername'),
