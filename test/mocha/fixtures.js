@@ -55,7 +55,8 @@ module.exports = {
       title: 'test math problem',
       puzzleId: '400000',
       text: 'This is a problem',
-      categories: []
+      categories: [],
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
     },
     invalidProblem: {
       title: '',
@@ -66,12 +67,14 @@ module.exports = {
   },
   assignment: {
     problemId: '5b1e7a0ba5d2157ef4c91028',
-    answerId: '5b1e7abfa5d2157ef4c910b8'
+    answerId: '5b1e7abfa5d2157ef4c910b8',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
   },
   section: {
     _id: '5b1e7b2aa5d2157ef4c91108',
     validSection: {
       name: 'A test section',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       problems: [],
       students: [],
       teachers: [],
@@ -100,6 +103,7 @@ module.exports = {
     _id: '53e118f3b48b12793f000a41',
     validFolder: {
       name: 'test folder',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '53e1156db48b12793f000442'
     }
   },

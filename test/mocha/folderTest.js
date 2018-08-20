@@ -76,7 +76,11 @@ describe('Folder CRUD operations', function() {
       let url = baseUrl + fixtures.folder._id;
       agent
       .put(url)
-      .send({folder: {name: 'phils class'}})
+      .send({
+            folder: {
+              name: 'phils class',
+              createdBy: '5b1e7bf9a5d2157ef4c911a6',
+            }})
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.folder).to.have.any.keys('name', );

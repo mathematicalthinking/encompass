@@ -58,8 +58,8 @@ describe('Answer CRUD operations', function() {
   });
 
   /** PUT name**/
-  describe('/PUT update answer explanation', () => {
-    it('should change the explanation', done => {
+  describe('/PUT update answer explanation for already submitted', () => {
+    it('should return an error,', done => {
       let url = baseUrl + fixtures.answer._id;
       agent
       .put(url)
