@@ -31,26 +31,26 @@ var SectionSchema = new Schema({
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
   */
-SectionSchema.pre('save', function (next) {
-  var toObjectId = function (elem, ind, arr) {
-    if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
-      arr[ind] = mongoose.Types.ObjectId(elem);
-    }
-  };
+// SectionSchema.pre('save', function (next) {
+//   var toObjectId = function (elem, ind, arr) {
+//     if (!(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem)) {
+//       arr[ind] = mongoose.Types.ObjectId(elem);
+//     }
+//   };
 
-  /** + Every ID reference in our object is properly typed.
-    *   This needs to be done BEFORE any other operation so
-    *   that native lookups and updates don't fail.
-    */
-  try {
-    this.teachers.forEach(toObjectId);
-    this.problems.forEach(toObjectId);
-    next();
-  }
-  catch (err) {
-    next(new Error(err.message));
-  }
-});
+//   /** + Every ID reference in our object is properly typed.
+//     *   This needs to be done BEFORE any other operation so
+//     *   that native lookups and updates don't fail.
+//     */
+//   try {
+//     this.teachers.forEach(toObjectId);
+//     this.problems.forEach(toObjectId);
+//     next();
+//   }
+//   catch (err) {
+//     next(new Error(err.message));
+//   }
+// });
 
 // /**
 //   * ## Post-Validation
