@@ -34,7 +34,7 @@ describe('Users', function() {
 
     function validateUsersPage() {
       it('should show/hide various editable fields', async function () {
-        const inputs = ['input.user-username', 'input.user-name', 'input.user-location'];
+        const inputs = ['input.user-email', 'input.user-name', 'input.user-location'];
         expect(await helpers.isTextInDom(driver, helpers.admin.username)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.edit-user');
@@ -44,6 +44,16 @@ describe('Users', function() {
           expect(await helpers.isElementVisible(driver, input)).to.be.true;
         }
         await helpers.findAndClickElement(driver, 'button.saveUser');
+      });
+    }
+
+    function validateUserChange() {
+      it('should authorize a new user', async function () {
+        await helpers.findAndClickElement(driver, 'button.edit-user');
+        await helpers.findAndClickElement(driver, 'input.user-isAuth');
+        await helpers.findAndClickElement(driver, 'button.save-user');
+        await helpers.waitForSelector(driver, '#user-info');
+        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('muzzy');
       });
     }
 
@@ -77,16 +87,17 @@ describe('Users', function() {
         let password = `test`;
         let name = `Muzzy Doe`;
         let email = `mdoe@gmail.com`;
-        let organization = `Drexel`;
+        let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
+        await helpers.selectOption(driver, 'my-select', 'P');
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input#organization', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
-        await helpers.selectOption(driver, 'my-select', 'P');
-        await helpers.findAndClickElement(driver, 'button.new-user');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep('1000');
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
       });
 
@@ -96,7 +107,7 @@ describe('Users', function() {
         let name = `John Doe`;
         let oldEmail = `mdoe@gmail.com`;
         let newEmail = `msmith@gmail.com`;
-        let organization = `Drexel`;
+        let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new-admin');
@@ -113,11 +124,10 @@ describe('Users', function() {
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Email address has already been used');
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
-        await helpers.findAndClickElement(driver, 'button.new-user');
+        await helpers.findAndClickElement(driver, '#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('msmith');
       });
-
       //check to make sure the user info page has the info
 
       it('should let you create a new student without an email', async function () {
@@ -125,7 +135,7 @@ describe('Users', function() {
         let newUsername = `newStudent`;
         let password = `test`;
         let name = `Student Doe`;
-        let organization = `Drexel`;
+        let organization = `Drexel University`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new-admin');
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
@@ -191,16 +201,8 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="${helpers.admin.username}"]`);
+          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username}"]`);
           await helpers.waitForSelector(driver, 'div#user-info');
-        });
-        validateUsersPage();
-      });
-
-      describe('Visiting a user page directly', async function () {
-        before(async function () {
-          await helpers.navigateAndWait(driver, `${host}/#/users/${helpers.admin.username}`, 'article.user');
-
         });
         validateUsersPage();
       });
@@ -212,6 +214,14 @@ describe('Users', function() {
         });
         validateNewUserPage();
       });
+
+      describe('authorizing a user', function () {
+        before(async function () {
+          await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
+        });
+        validateUserChange();
+      });
+
     });
   });
 

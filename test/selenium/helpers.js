@@ -20,6 +20,10 @@ const admin = {
   password: 'sanchez'
 };
 
+const unauth = {
+  username: 'wes',
+};
+
 const regUser = {
   username: 'morty',
   password: 'smith'
@@ -266,6 +270,7 @@ module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
 module.exports.admin = admin;
 module.exports.regUser = regUser;
+module.exports.unauth = unauth;
 module.exports.host = host;
 module.exports.loginUrl = loginUrl;
 module.exports.newUser = newUser;

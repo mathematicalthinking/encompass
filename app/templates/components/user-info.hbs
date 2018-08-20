@@ -133,7 +133,7 @@
         <td>
           {{#if isEditing}}
             {{#if canEdit}}
-              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='isAuthorized'}}
+              {{input type="checkbox" checked=user.isAuthorized value=authorized classNames='user-isAuth'}}
               {{else}}
                 {{user.isAuthorized}}
             {{/if}}
@@ -160,7 +160,7 @@
           <td>Authorize</td>
           <td>
             {{#if canEdit}}
-              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized'}}
+              {{input type="checkbox" checked=user.isAuthorized name='isAuthorized' classNames='user-isAuth'}}
             {{else}}
               {{user.isAuthorized}}
             {{/if}}
