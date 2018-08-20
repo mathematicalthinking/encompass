@@ -176,6 +176,7 @@ var data = [{
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
     "accountType": 'T',
+    "organization": '5b4a64a028e4b75919c28512',
     "password": "$2a$08$Puko.4Ukg3fUVSfQsyhlauvEJ84/ymUidiL7xablVfic59zzC4gFi",
     "isAuthorized": true,
     "assignments": [],
