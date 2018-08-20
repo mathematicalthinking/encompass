@@ -216,6 +216,7 @@ var data = [{
     "answers": [],
     "sections": [],
     "isTrashed": false,
+    "createDate": "2018-08-12T18:20:51.382Z",
   }, {
     "_id": "5b72273c5b50ea3fe3d01a0b",
     "username": "alice42",
