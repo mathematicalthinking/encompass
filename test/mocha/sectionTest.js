@@ -80,7 +80,11 @@ describe('Section CRUD operations', function() {
       let url = baseUrl + fixtures.section._id;
       agent
       .put(url)
-      .send({section: {name: 'phils class'}})
+      .send({
+            section: {
+              name: 'phils class',
+              createdBy: '5b1e7bf9a5d2157ef4c911a6',
+      }})
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
