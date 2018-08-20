@@ -34,14 +34,14 @@
             <label for="name">Section Name</label>
             {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
           </li>
+          
           <li>
-            <label for="problems">Problems</label>
-              {{!-- <ul class="listing">
-                {{#each section.problems as |problem|}}
-                <li>{{problem.title}}</li>
+            <label for="assignments">Assignments</label>
+               <ul class="listing">
+                {{#each section.assignments as |assignment|}}
+                <li>{{assignment.title}}</li>
                 {{/each}}
-              </ul> --}}
-            {{input name="problems" id="problems" type="text" value=problems disabled=true placeholder="N/A"}}
+              </ul>
           </li>
           <li class="teacherslist">
             <label for="teachers">Teachers</label>
