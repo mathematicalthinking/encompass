@@ -61,7 +61,7 @@ var UserSchema = new Schema({
   email: { type: String },
   googleId: { type: String },
   // key: { type: String },
-  password: { type: String, required: true },
+  password: { type: String },
   // forcePwdChg: { type: Boolean },
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
