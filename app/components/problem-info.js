@@ -9,10 +9,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isWide: false,
   checked: true,
   filesToBeUploaded: null,
+  answerList: [],
 
 
   didReceiveAttrs: function () {
-    console.log('did recieve attrs problem info called');
     this.set('isWide', false);
   },
 
@@ -26,6 +26,23 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let canEdit = creator === currentUser.id ? true : false;
     return canEdit;
   }),
+
+  problemUsed: Ember.computed('problem.id', function () {
+    let problem = this.get('problem');
+    let problemId = problem.get('id');
+    console.log('current problem is', problemId);
+
+    let answersWithProb = this.get('store').query('answer', {
+        problem: problemId
+    });
+    console.log('answers length', answersWithProb.length);
+    return answersWithProb;
+    }),
+
+    // });
+    //we need to check if any answer has this problem id, if it does the problem cannot be edited
+    //if you are an admin you can edit it but prompt the user
+
 
   actions: {
     deleteProblem: function () {

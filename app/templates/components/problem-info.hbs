@@ -109,8 +109,10 @@
     </section>
 
       {{#if canEdit}}
+      {{#unless problemUsed}}
         <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
         <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
+      {{/unless}}
       {{else}}
           <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
       {{/if}}
