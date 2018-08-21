@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
 */
 var baseSubmission = {
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
