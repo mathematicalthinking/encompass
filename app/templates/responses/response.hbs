@@ -77,7 +77,7 @@
     <button class="edit" {{action toggleProperty 'editing'}} disabled={{editing}}>Edit</button>
     <button class="save" {{action 'save'}} disabled={{notDirty}}>Save</button>
     <br/>
-    <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button>
+    {{!-- <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button> --}}
     {{#unless canRespond}}
     <a {{action toggleProperty 'showHelp'}}>?</a>
     {{#if showHelp}}
