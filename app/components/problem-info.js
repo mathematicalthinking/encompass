@@ -32,11 +32,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let problemId = problem.get('id');
     console.log('current problem is', problemId);
 
-    let answersWithProb = this.get('store').query('answer', {
+    let answersWithProb = this.get('store').queryRecord('answer', {
         problem: problemId
+    }).then((answer) => {
+      let jsonObject = JSON.stringify(answer);
+      console.log('answer is', jsonObject);
     });
-    console.log('answers length', answersWithProb.length);
-    return answersWithProb;
+
+    let jsonObject = JSON.stringify(answersWithProb);
+    console.log('json is', jsonObject);
     }),
 
     // });
