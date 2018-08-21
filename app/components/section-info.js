@@ -45,6 +45,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('createdStudents', null);
   },
 
+  cantEdit: Ember.computed('section.id', function () {
+    let currentUser = this.get('currentUser');
+    let userType = currentUser.get('accountType');
+    let isStudent = userType === 'S';
+
+    let cantEdit = isStudent;
+    return cantEdit;
+  }),
+
+
   searchResults: function () {
     var searchText = this.get('studentUsername');
     searchText = searchText.replace(/\W+/g, "");

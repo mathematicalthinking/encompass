@@ -53,7 +53,9 @@
             <li class="studentslist">
             {{#each section.students as |student|}}
             <ol class="c"> {{student.username}}
+             {{#unless cantEdit}}
              <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
+             {{/unless}}
             </ol>
             {{/each}}
           </li>
@@ -63,6 +65,7 @@
 
   {{#if isAddingStudents}}
   {{else}}
+  {{#unless cantEdit}}
   <section class="submit">
     <button class="action_button" {{action 'addNewStudents'}} style="margin-right: 30px">
       Add New Students
@@ -72,6 +75,7 @@
       Edit Section
     </button>
   </section>
+  {{/unless}}
   {{/if}}
 
   {{#if isAddingStudents}}
