@@ -182,6 +182,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
 
         if (usernameTest === true) {
           this.set('incorrectUsername', false);
+          this.set('missingCredentials', false);
           return;
         }
       }
