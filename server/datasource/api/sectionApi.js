@@ -34,6 +34,7 @@ function accessibleSections(user) {
     $or: [
       { createdBy: user },
       { teachers: { $in : [user] } },
+      { students: { $in : [user] } },
     ],
     isTrashed: false
   };
