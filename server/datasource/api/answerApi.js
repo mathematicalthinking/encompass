@@ -43,6 +43,16 @@ const getAnswers = async function(req, res, next) {
   if (req.query.ids) {
     ids = req.query.ids;
     criteria = await access.get.answers(user, ids);
+  } else if (req.query.problem) {
+    console.log('the req query is for problems');
+    console.log('the req is', req.query);
+    criteria = req.query;
+    const requestedAnswers = await models.Answer.find(criteria).lean().exec();
+    let data = {
+      'answers': requestedAnswers
+    };
+    return utils.sendResponse(res, data);
+    // criteria = search answers by problem id;
   } else {
     criteria = await access.get.answers(user);
   }
@@ -58,6 +68,8 @@ const getAnswers = async function(req, res, next) {
     next();
   });
 };
+
+
 
 /**
   * @public

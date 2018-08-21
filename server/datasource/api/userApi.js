@@ -45,7 +45,6 @@ function makeGuest() {
 */
 async function sendUsers(req, res, next) {
   var user = userAuth.getUser(req);
-  console.log('req.query', req.query);
   if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
@@ -67,8 +66,6 @@ async function sendUsers(req, res, next) {
     username = username.replace(/\s+/g, "");
     regex = new RegExp(username, 'i');
 
-
-
     criteria = await access.get.users(user, null, null, regex);
     const requestedUsers = await models.User.find(criteria).lean().exec();
     // either empty array or array of one user
@@ -84,12 +81,7 @@ async function sendUsers(req, res, next) {
       // delete user.password;
       delete user.history;
     });
-
-
         data = {'user': requestedUsers};
-
-
-
       return utils.sendResponse(res, data);
 
   } else if (req.query.ids) {
