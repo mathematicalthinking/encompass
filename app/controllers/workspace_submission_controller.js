@@ -122,7 +122,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
           text: selection.text,
           submission: submission,
           coordinates: selection.coords,
-          workspace: workspace
+          workspace: workspace,
+          createdBy: user,
         });
         break;
 
@@ -135,7 +136,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
               selection.coords.top + ' ' +
               selection.size.width + ' ' +
               selection.size.height,
-          workspace: workspace
+          workspace: workspace,
+          createdBy: user,
         });
         break;
 
