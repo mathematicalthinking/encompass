@@ -9,7 +9,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isWide: false,
   checked: true,
   filesToBeUploaded: null,
-  answerList: [],
   isProblemUsed: false,
 
 

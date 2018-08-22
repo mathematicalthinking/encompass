@@ -65,7 +65,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let people = this.get('store').query('user', {
       username: searchText,
     });
-    console.log('people are', people);
     return people;
   }.property('studentUsername'),
 
@@ -97,16 +96,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     addStudent: function (student) {
-      //onClick addStudent = studentUsername
       let section = this.get('section');
-      // let student = this.get('searchResults');
       let username = this.get('studentUsername');
       console.log('editor', student);
       console.log('username', username);
       //check if username already exists in section
       let students = section.get('students');
-      //let students = section.get('username');
-
 
       var checkRegisteredStudent = students.filterBy('username', username);
       //isempty will check the STUDENTS list (in front-end) to see if
