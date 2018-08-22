@@ -172,7 +172,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
     usernameValidate() {
       var username = this.get('username');
       if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_'@]{3,64}$/);
+        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
         var usernameTest = usernamePattern.test(username);
 
         if (usernameTest === false) {
