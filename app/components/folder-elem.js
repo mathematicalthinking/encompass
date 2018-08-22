@@ -4,8 +4,8 @@
  * Passed in from parent:
  * - model: The folder model for this component.
  * - currentWorkspace: The current workspace model.
- * - folderList: The paren component for this folder (may be able to get rid of that, or pass in an action)
- * - editFolerMode
+ * - folderList: The parent component for this folder (may be able to get rid of that, or pass in an action)
+ * - editFolderMode
  * - dropped: The action to trigger when something is dropped on this folder.
  *
  * TODO:
