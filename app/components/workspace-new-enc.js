@@ -81,6 +81,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       console.log(startDate, endDate);
       const criteria = {
         //teacher: this.get('selectedTeacher'),
+        createdBy: this.get('currentUser'),
         assignment: this.get('selectedAssignment'),
         problem: this.get('selectedProblem'),
         section: this.get('selectedSection'),
