@@ -13,15 +13,15 @@ var mongoose = require('mongoose'),
   */
 var TaggingSchema = new Schema({
 //== Shared properties (Because Monggose doesn't support schema inheritance)
-    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createdBy: { type: ObjectId, ref: 'User' },
     createDate: { type: Date, 'default': Date.now() },
     isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
     lastModifiedDate: { type: Date, 'default': Date.now() },
 //==
-    workspace: { type: ObjectId, ref: 'Workspace', required: true },
-    selection: { type: ObjectId, ref: 'Selection', required: true },
-    folder: { type: ObjectId, ref: 'Folder', required: true }
+    workspace: { type: ObjectId, ref: 'Workspace' },
+    selection: { type: ObjectId, ref: 'Selection' },
+    folder: { type: ObjectId, ref: 'Folder' }
   }, {
     versionKey: false,
     toObject: { virtuals: true },
