@@ -58,7 +58,12 @@
       </td>
     </tr>
     {{/if}}
-
+    {{#if isEditing}}
+    <tr>
+      <td>Password</td>
+      <td><button class='reset-password' {{action 'resetPassword'}}>Reset Password</button></td>
+    </tr>
+    {{/if}}
     {{#if user.organization.name}}
     <tr>
       <td>Organization</td>
@@ -178,25 +183,28 @@
   </table>
   {{#if canEdit}}
     {{#if isEditing}}
+      {{#if isResettingPassword}}
+        {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess") cancelReset=(action "handleCancelForm")}}
+      {{else}}
+        {{#if resetPasswordSuccess}}
+          <p class="success-message">Succesfully reset password for {{user.username}}</p>
+        {{/if}}
+      {{/if}}
+    {{#unless isResettingPassword}}
     <div class="button-row">
       <button class='action_button save-user' {{action 'saveUser'}}>Save</button>
       <button class='action_button canecel-user' {{action 'cancel'}}>Cancel</button>
     </div>
+    {{/unless}}
     {{else}}
     <div class="button-row">
       <button class='action_button edit-user' {{action 'editUser'}}>Edit</button>
-      <button class='action_button reset-password' {{action 'resetPassword'}}>Reset Password</button>
     </div>
-    {{/if}}
-    {{#if isResettingPassword}}
-      {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess")}}
-      <button class='action_button' {{action 'cancel'}}>Cancel</button>
-    {{else}}
-      {{#if resetPasswordSuccess}}
-        <p class="success-message">Succesfully reset password for {{user.username}}</p>
-      {{/if}}
     {{/if}}
   {{else}}
     <p class="error-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
   {{/if}}
 </article>
+
+
+
