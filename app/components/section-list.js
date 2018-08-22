@@ -15,11 +15,11 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var sections = this.sections;
     var currentUser = this.get('currentUser');
     var collabSections = sections.filterBy('teachers');
-    // var yourCollabSections= collabSections.filter((section) => {
-    //   let content = section.get('createdBy.content');
-    //   return content.id !== currentUser.id;
-    // });
-    return collabSections.sortBy('createDate').reverse();
+    var yourCollabSections= collabSections.filter((section) => {
+      let content = section.get('createdBy.content');
+      return content.id !== currentUser.id;
+    });
+    return yourCollabSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
   studentSections: function () {
@@ -31,3 +31,6 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 });
 
 // we want to get all the sections that you are in the teachers array but not createdBy
+
+// Your sections should be the ones you created or you are the first teacher
+// Collab sections should be the ones where you are in the teachers array
