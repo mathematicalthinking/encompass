@@ -19,6 +19,7 @@ var ResponseSchema = new Schema({
     text: { type: String, required: true },
     source: { type: String, required: true }, // submission, workspace, etc - what triggered this?
     original: { type: String },
+    recipient: { type: ObjectId, ref: 'User' },
     selections: [{type: ObjectId, ref:'Selections'}],
     comments: [{type: ObjectId, ref:'Comments'}],
     workspace: {type:ObjectId, ref:'Workspace'},
