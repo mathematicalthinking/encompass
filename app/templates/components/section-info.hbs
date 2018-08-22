@@ -51,8 +51,9 @@
             <li class="studentslist">
             <label for="students">Students</label>
             {{#each section.students as |student|}}
-            <ol class="b"> {{student.username}}
+            <ol class="b"> {{#link-to 'user' student}} {{student.username}} {{/link-to}}
              {{#unless cantEdit}}
+             {{#link-to 'user' student}} <i class="fas fa-pencil-alt"></i> {{/link-to}}
              <button class="trash-button" {{action 'removeStudent' student}}><i class="fa fa-trash" aria-hidden="true"></i></button>
              {{/unless}}
             </ol>
