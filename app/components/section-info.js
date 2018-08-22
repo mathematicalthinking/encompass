@@ -45,6 +45,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('createdStudents', null);
   },
 
+  cantEdit: Ember.computed('section.id', function () {
+    let currentUser = this.get('currentUser');
+    let userType = currentUser.get('accountType');
+    let isStudent = userType === 'S';
+
+    let cantEdit = isStudent;
+    return cantEdit;
+  }),
+
+
   searchResults: function () {
     var searchText = this.get('studentUsername');
     searchText = searchText.replace(/\W+/g, "");
@@ -86,16 +96,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     addStudent: function (student) {
-      //onClick addStudent = studentUsername
       let section = this.get('section');
-      // let student = this.get('searchResults');
       let username = this.get('studentUsername');
       console.log('editor', student);
       console.log('username', username);
       //check if username already exists in section
       let students = section.get('students');
-      //let students = section.get('username');
-
 
       var checkRegisteredStudent = students.filterBy('username', username);
       //isempty will check the STUDENTS list (in front-end) to see if

@@ -9,11 +9,26 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isWide: false,
   checked: true,
   filesToBeUploaded: null,
+  isProblemUsed: false,
 
 
   didReceiveAttrs: function () {
-    console.log('did recieve attrs problem info called');
     this.set('isWide', false);
+    let problem = this.get('problem');
+    let problemId = problem.get('id');
+    // let problemUsed = this.get('problemUsed');
+
+    this.get('store').queryRecord('answer', {
+      problem: problemId
+    }).then((answer) => {
+      if (answer !== null) {
+        console.log('answer exists and is', answer);
+        this.set('isProblemUsed', true);
+      } else {
+        console.log('answer does not exist and is', answer);
+        this.set('isProblemUsed', false);
+      }
+    });
   },
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
@@ -26,6 +41,25 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let canEdit = creator === currentUser.id ? true : false;
     return canEdit;
   }),
+
+  // problemUsed: Ember.computed('problem.id', function () {
+  //   let problem = this.get('problem');
+  //   let problemId = problem.get('id');
+  //   // let problemUsed = this.get('problemUsed');
+
+  //   this.get('store').queryRecord('answer', {
+  //       problem: problemId
+  //   }).then((answer) => {
+  //     if (answer !== null) {
+  //       console.log('answer exists and is', answer);
+  //       this.set('isProblemUsed', true);
+  //     } else {
+  //       console.log('answer does not exist and is', answer);
+  //       this.set('isProblemUsed', false);
+  //     }
+  //   });
+  // }),
+
 
   actions: {
     deleteProblem: function () {
@@ -89,7 +123,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     addToMyProblems: function() {
       let problem = this.get('problem');
-      let title = problem.get('title');
+      let originalTitle = problem.get('title');
+      let title = 'Copy of ' + originalTitle;
       let text = problem.get('text');
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
@@ -104,6 +139,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isPublic: isPublic,
         origin: problem,
         createdBy: createdBy,
+        privacySetting: "M",
         createDate: new Date()
       });
 
@@ -111,6 +147,34 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         .then((problem) => {
           this.set('savedProblem', problem);
         });
+    },
+
+    duplicateProblem: function () {
+      let problem = this.get('problem');
+      let originalTitle = problem.get('title');
+      let title = 'Copy of ' + originalTitle;
+      let text = problem.get('text');
+      let additionalInfo = problem.get('additionalInfo');
+      let isPublic = problem.get('isPublic');
+      let imageUrl = problem.get('imageUrl');
+      let createdBy = this.get('currentUser');
+
+      let newProblem = this.store.createRecord('problem', {
+        title: title,
+        text: text,
+        additionalInfo: additionalInfo,
+        imageUrl: imageUrl,
+        isPublic: isPublic,
+        origin: problem,
+        privacySetting: "M",
+        createdBy: createdBy,
+        createDate: new Date()
+      });
+
+      newProblem.save()
+        .then((problem) => {
+          this.set('savedProblem', problem);
+      });
     },
 
     toggleImageSize: function () {

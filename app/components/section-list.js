@@ -13,7 +13,6 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // This works but by default if you create it you are in the teacher's array
   collabSections: function () {
     var sections = this.sections;
-    console.log('sections =', sections);
     var currentUser = this.get('currentUser');
     var collabSections = sections.filterBy('teachers');
     // var yourCollabSections= collabSections.filter((section) => {
@@ -21,6 +20,12 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     //   return content.id !== currentUser.id;
     // });
     return collabSections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed'),
+
+  studentSections: function () {
+    var sections = this.sections;
+    var studentSections = sections.filterBy('students');
+    return studentSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
 });

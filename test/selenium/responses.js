@@ -64,7 +64,7 @@ describe('Responses', function() {
 
     describe('should have buttons', function() {
       async function validateButtons() {
-        const selectors = ['button.edit:enabled', 'button.save:disabled', 'button.send:enabled'];
+        const selectors = ['button.edit:enabled', 'button.save:disabled'];
         for (let selector of selectors) {
           let name = selector.slice(7,11);
           it(`${name} button should be visible`, async function() {

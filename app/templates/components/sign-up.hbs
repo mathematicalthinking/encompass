@@ -37,9 +37,12 @@
     </div>
     <div class="auth-form-input">
       <label for="username">Username:</label>
-       {{input class="form-control" type="text" name="username" id="username" value=username action="resetErrors" on="key-down"}}
+       {{input class="form-control" type="text" name="username" id="username" value=username action="usernameValidate" on="key-down"}}
        {{#if usernameExists}}
          <p class="error-message">Sorry, that username already exisits. Please try again.</p>
+       {{/if}}
+       {{#if incorrectUsername}}
+         <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following special characters .-_@</p>
        {{/if}}
     </div>
     <div class="auth-form-input">

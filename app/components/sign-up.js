@@ -4,12 +4,14 @@ Encompass.SignUpComponent = Ember.Component.extend({
   missingCredentials: false,
   noTermsAndConditions: false,
   incorrectEmail: false,
+  incorrectUsername: false,
+  incorrectPassword: false,
   agreedToTerms: false,
   emailExistsError: null,
   org: null,
 
 
-  regEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+  emailRegEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
   validateEmail: function() {
     var email = this.get('email');
@@ -167,12 +169,30 @@ Encompass.SignUpComponent = Ember.Component.extend({
       }
     },
 
+    usernameValidate() {
+      var username = this.get('username');
+      if (username) {
+        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernameTest = usernamePattern.test(username);
+
+        if (usernameTest === false) {
+          this.set('incorrectUsername', true);
+          return;
+        }
+
+        if (usernameTest === true) {
+          this.set('incorrectUsername', false);
+          this.set('missingCredentials', false);
+          return;
+        }
+      }
+    },
+
     emailValidate() {
       var email = this.get('email');
       if (email) {
         var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
         var emailTest = emailPattern.test(email);
-        console.log(emailTest);
 
         if (emailTest === false) {
           this.set('incorrectEmail', true);

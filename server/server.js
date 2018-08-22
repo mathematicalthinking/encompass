@@ -144,8 +144,7 @@ const upload = multer({
 });
 
 // // IMAGE UPLOAD
- server.post('/image', upload.array('photo', 10), api.post.images);
-
+server.post('/image', upload.array('photo', 10), api.post.images);
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
