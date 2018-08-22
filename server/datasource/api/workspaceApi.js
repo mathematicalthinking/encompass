@@ -974,14 +974,17 @@ async function postWorkspaceEnc(req, res, next) {
     // accessibleAnswersQuery will take care of isTrashed
     delete pruned.isTrashed;
     delete pruned.isEmptyAnswerSet;
-
-console.log('pruned', pruned);
+    console.log('pruned', pruned);
+    
     const accessibleCriteria = await answerAccess.get.answers(user);
-    console.log(accessibleCriteria, 'crit');
+    console.log('accessible criteria is', accessibleCriteria);
+
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = buildCriteria(allowedIds, pruned);
 
+    console.log('wsCriteria is', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
+    console.log('answers are', answers);
 
     if (_.isEmpty(answers)) {
       //let rec = req.body.encWorkspaceRequest;
@@ -1022,12 +1025,12 @@ rec.createdWorkspace = ws._id;
 const encRequest = new models.EncWorkspaceRequest(rec);
 const saved = await encRequest.save();
 
-    const data = {encWorkspaceRequest: saved };
+const data = {encWorkspaceRequest: saved };
 return utils.sendResponse(res,  data );
 
-    }catch(err) {
-      return utils.sendError.InternalError(err, res);
-    }
+  } catch(err) {
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
