@@ -4,6 +4,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   authorized: null,
   selectedType: null,
   willOveride: null,
+  fieldType: 'password',
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
