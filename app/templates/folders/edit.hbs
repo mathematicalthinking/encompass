@@ -12,8 +12,8 @@
 
 
 <div id="controls"> Browse:
-  {{input type="radio" name="browser2" value="0" default="true" click=(action "radioSelect" 1)}} <label>By Student</label>
-  {{input type="radio" name="browser2" value="1" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
+  {{input type="radio" name="browser2" value="0" click=(action "radioSelect" 1)}} <label>By Student</label>
+  {{input type="radio" name="browser2" value="1" default="true" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
   <label id="showSubFolders">
     {{input type="checkbox" checked=includeSubfolders}}
     Include Sub-Folders

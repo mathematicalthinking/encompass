@@ -1,9 +1,9 @@
 /**
   * # Folder Controller
-  * TODO: - remove selection sometimes generates an error.  
+  * TODO: - remove selection sometimes generates an error.
   *       - remove not reflected in the selection count on the workspace page.
-  * @description This controls the editable view of an individual folder. 
-  *              It is used by the folders.edit route & template.  
+  * @description This controls the editable view of an individual folder.
+  *              It is used by the folders.edit route & template.
   * @authors Damola Mabogunje <damola@mathforum.org>, Amir Tahvildaran <amir@mathforum.org>
   * @todo This should probably be a view
   * @since 1.0.0
@@ -28,7 +28,7 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   showSelectionSubmission: true,
   showSelectionComments: true,
   showSelectionFolders: true,
-  
+
   showSubmissionSelectionsStuff: Ember.computed.or('showSubmissionSelectionsComments', 'showSubmissionSelectionsFolders'),
 
   canEdit: function() {
@@ -102,22 +102,22 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
     changeSelection: function(selection) {
       var controller = this;
       var selector = '.selectionLink.' + selection.get('id');
-      
+
       //console.log(selector);
       Ember.run(function() {
         controller.send('changeSubmission', selection.get('submission'));
         if(window.opener) {
           window.opener.$(selector).click();
         } else {
-          controller.transitionToRoute('workspace.submission.selection', 
+          controller.transitionToRoute('workspace.submission.selection',
             selection.get('workspace'),
-            selection.get('submission'), 
+            selection.get('submission'),
             selection);
         }
       });
     },
 
-    removeSelection: function(selection, folder) { //ENC-574 Because a selection may also be in a sub-folder, also make the folder a param 
+    removeSelection: function(selection, folder) { //ENC-574 Because a selection may also be in a sub-folder, also make the folder a param
       this.propertyWillChange('taggings');
 
 //      console.log(selection, folder);
@@ -139,10 +139,10 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
 
       //just don't reload per max's request it takes too much time
       //if(window.opener) { //if we are a popup
-      //  // Refresh the workspace (opener) so the folder counts update... 
+      //  // Refresh the workspace (opener) so the folder counts update...
       //  //   (We shouldn't need to do this (why? we might want to use socket.io))
-      //  window.opener.location.reload(true); 
+      //  window.opener.location.reload(true);
       //}
-    }    
+    }
   }
 });
