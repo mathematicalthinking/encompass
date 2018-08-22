@@ -110,8 +110,13 @@
 
       {{#if canEdit}}
         {{#if isProblemUsed}}
+          {{#if currentUser.isAdmin}}
+            <p class="error-message">Warning, this problem has an answer. Be sure any changes do not change the intent or difficulty of the problem.</p>
+            <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
+          {{else}}
             <p class="error-message">You can't edit this problem because an answer has already been submitted.</p>
             <button class="action_button" {{action 'duplicateProblem'}}>Duplicate this Problem</button>
+          {{/if}}
         {{else}}
           <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
           <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
