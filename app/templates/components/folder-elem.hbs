@@ -39,8 +39,7 @@
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode}}
+        {{folder-elem model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped}}
       {{/each}}
     </ul>
 {{/if}}
-
