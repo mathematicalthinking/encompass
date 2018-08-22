@@ -42,8 +42,8 @@
         {{#each publicProblems as |problem|}}
           <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
         {{/each}}
-        <li>There are no public problems</li>
       {{else}}
+        <li>There are no public problems</li>
       {{/if}}
       </ul>
     </nav>

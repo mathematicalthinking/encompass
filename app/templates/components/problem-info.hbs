@@ -109,14 +109,18 @@
     </section>
 
       {{#if canEdit}}
-      {{#unless problemUsed}}
-        <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
-        <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
-      {{/unless}}
+        {{#if isProblemUsed}}
+            <p class="error-message">You can't edit this problem because an answer has already been submitted.</p>
+            <button class="action_button" {{action 'duplicateProblem'}}>Duplicate this Problem</button>
+        {{else}}
+          <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
+          <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
+        {{/if}}
       {{else}}
-          <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
+            <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
       {{/if}}
 
   {{/if}}
 
 </section>
+
