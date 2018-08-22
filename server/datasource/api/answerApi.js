@@ -44,14 +44,11 @@ const getAnswers = async function(req, res, next) {
     ids = req.query.ids;
     criteria = await access.get.answers(user, ids);
   } else if (req.query.problem) {
-    console.log('the req query is for problems');
-    console.log('the req is', req.query);
     criteria = req.query;
     const requestedAnswers = await models.Answer.find(criteria).exec();
     let data = {
       'answers': requestedAnswers
     };
-    console.log('data for requestAnswers is', data);
     return utils.sendResponse(res, data);
     // criteria = search answers by problem id;
   } else {
@@ -69,7 +66,6 @@ const getAnswers = async function(req, res, next) {
     next();
   });
 };
-
 
 
 /**
