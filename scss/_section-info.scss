@@ -1,6 +1,7 @@
 @import "variables";
 @import "mixins";
 @import "responsive-font-size";
+
 #sectionupdateform {
   input[type=text],
   select {
@@ -22,20 +23,20 @@
     color: black;
     font-size: 1em;
     width: 20%;
+    color: black;
     padding: 12px 20px;
+    margin: 8px 0px;
   }
 }
 
 #sectioninfo {
-  input[type=text],
-  select {
+  .section-info {
     font-size: 1em;
-    color: $primary-font-color;
-    width: 100%;
+    width: 70%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
-    border: 1px solid #ccc;
+    border: none;
     border-radius: 4px;
     box-sizing: border-box;
     background: none;
@@ -44,9 +45,9 @@
     }
   }
   label {
-    font-size: 1em;
     width: 20%;
-    margin: 0px;
+    margin: 8px 0;
+    font-size: 1em;
     padding: 12px 20px;
     color: black;
   }
@@ -62,10 +63,12 @@
     border-radius: 4px;
     box-sizing: border-box;
   }
-
-  .student_button {
+  .trash-button {
     float: right;
-    background-color: red;
+    border: none;
+    color: $primary-font-color;
+    background: none;
+    font-size: .8em;
   }
 }
 

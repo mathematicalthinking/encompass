@@ -1,4 +1,4 @@
-<header id="problemnewheader">
+<header class="info-header">
   <h2>Section Details</h2>
   <div class="clear"></div>
 </header>
@@ -27,14 +27,13 @@
 
 {{else}}
 
-  <form id="sectioninfo">
+  <form id="sectioninfo" class="properForm">
     <fieldset>
       <ul>
         <li>
             <label for="name">Section Name</label>
-            {{input name="name" id="name" type="text" value=sectionName disabled=true placeholder=section.name}}
+            <p class="section-info">{{section.name}}</p>
           </li>
-
           <li>
             <label for="assignments">Assignments</label>
                <ul class="listing">
@@ -50,10 +49,11 @@
               {{/each}}
           </li>
             <li class="studentslist">
+            <label for="students">Students</label>
             {{#each section.students as |student|}}
-            <ol class="c"> {{student.username}}
+            <ol class="b"> {{student.username}}
              {{#unless cantEdit}}
-             <button class="student_button" {{action 'removeStudent' student}} style="">Remove</button>
+             <button class="trash-button" {{action 'removeStudent' student}}><i class="fa fa-trash" aria-hidden="true"></i></button>
              {{/unless}}
             </ol>
             {{/each}}

@@ -2,116 +2,114 @@
 @import "mixins";
 @import "responsive-font-size";
 
-section.problemdetails {
-  #probleminfoform {
-    input[type=text],
-    select {
-      font-size: 1em;
-      color: $primary-font-color;
-      width: 70%;
-      padding: 12px 20px;
-      margin: 8px 0px;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      background: none;
-      &::placeholder {
-        color: $primary-font-color;
-      }
-    }
-    label {
-      width: 20%;
-      font-size: 1em;
-      padding: 12px 20px;
-      color: black;
-      margin: 8px 0px;
-    }
-    .radio-label {
-      padding: 0px 5px;
-      width: 200px;
-      padding: 12px 3px;
-      margin: 8px 0;
-      font-size: 1em;
-    }
-
-    input[type=radio] {
-      padding: 12px 20px;
-      margin: 24px 2px;
-    }
-    .edit-image-btn {
-      margin-bottom: 15px;
-      padding: 5px 15px;
-      font-size: .8em;
-      background-color: none;
-      border-radius: 3px;
-      border: .5px solid $primary-font-color;
-      color: $primary-font-color;
-    }
-  }
-  #probleminfo {
-    .problem-info {
-      font-size: 1em;
-      width: 70%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: none;
-      border-radius: 4px;
-      box-sizing: border-box;
-      background: none;
-      &::placeholder {
-        color: $primary-font-color;
-      }
-    }
-    label {
-      width: 20%;
-      margin: 8px 0;
-      font-size: 1em;
-      padding: 12px 20px;
-      color: black;
-    }
-    .action_button {
-      padding: 12px 20px;
-    }
-  }
-  button.action_button {
-    margin: 8px 15px 8px 5px;
-    padding: 10px 15px;
-    font-size: .8em;
-    border-radius: 3px;
-    font-weight: $bold-font-weight;
-  }
-}
-
 #problem-info {
-  img {
-    width: 60%;
-    position: relative;
-    z-index: 999;
+  section.problemdetails {
+    #probleminfoform {
+      input[type=text],
+      select {
+        font-size: 1em;
+        color: $primary-font-color;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+      label {
+        width: 20%;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+        margin: 8px 0px;
+      }
+      .radio-label {
+        padding: 0px 5px;
+        width: 200px;
+        padding: 12px 3px;
+        margin: 8px 0;
+        font-size: 1em;
+      }
+      input[type=radio] {
+        padding: 12px 20px;
+        margin: 24px 2px;
+      }
+      .edit-image-btn {
+        margin-bottom: 15px;
+        padding: 5px 15px;
+        font-size: .8em;
+        background-color: none;
+        border-radius: 3px;
+        border: .5px solid $primary-font-color;
+        color: $primary-font-color;
+      }
+    }
+    #probleminfo {
+      .problem-info {
+        font-size: 1em;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+      label {
+        width: 20%;
+        margin: 8px 0;
+        font-size: 1em;
+        padding: 12px 20px;
+        color: black;
+      }
+      .action_button {
+        padding: 12px 20px;
+      }
+    }
+    button.action_button {
+      margin: 8px 15px 8px 5px;
+      padding: 10px 15px;
+      font-size: .8em;
+      border-radius: 3px;
+      font-weight: $bold-font-weight;
+    }
   }
 
-  .wide img {
-    height: initial;
-    width: 100%;
-    margin-bottom: 30px;
+  #problem-info {
+    img {
+      width: 60%;
+      position: relative;
+      z-index: 999;
+    }
+    .wide img {
+      height: initial;
+      width: 100%;
+      margin-bottom: 30px;
+    }
   }
-}
 
+  #pdf-view {
+    height: 500px;
+  }
 
-#pdf-view {
-  height: 500px;
-}
-
-
-#image-upload {
-  width: 70%;
-  padding: 12px 0px;
-  margin: 8px 0;
-  font-size: 1em;
-  display: inline-block;
-  box-sizing: border-box;
-  input {
+  #image-upload {
+    width: 70%;
+    padding: 12px 0px;
+    margin: 8px 0;
     font-size: 1em;
+    display: inline-block;
+    box-sizing: border-box;
+    input {
+      font-size: 1em;
+    }
   }
 }

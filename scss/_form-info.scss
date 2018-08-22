@@ -1,0 +1,11 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+header.info-header {
+  h2 {
+    font-size: 2em;
+    color: $accent-color;
+    margin: 10px 0 10px 8px;
+  }
+}
