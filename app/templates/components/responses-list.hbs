@@ -11,7 +11,6 @@
       <thead>
         <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
           <th align="left" style="padding-left: 55px;">Text</th>
-          <th align="left">Recipient</th>
           <th align="left">Source</th>
           <th align="left">Created</th>
           <th align="left">By</th>
@@ -23,11 +22,6 @@
           <td style="padding-left: 55px;">
             {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
           </td>
-          {{#if response.recipient}}
-          <td>{{response.recipient.username}}</td>
-          {{else}}
-          <td>PoW User</td>
-          {{/if}}
           <td>{{response.source}}</td>
           <td>
             {{#link-to 'response' response}}
