@@ -28,16 +28,20 @@
 					<span class="al_sprite al_folder_ct"></span>
 					<span class="al_number">{{model._submissions.length}}</span>
 				</a>
-				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name' target="_blank"}}
+				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
 					<span class="al_sprite al_folder_ct"></span>
 					<span class="al_number">{{model._submissions.length}}</span>
 				{{/link-to}} --}}
 				</div>
 				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
-				{{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
+				<a {{action 'openLink'}}>
 					<span class="al_sprite al_selection_ct"></span>
 					<span class="al_number al_selection">{{model.childSelections.length}}</span>
-				{{/link-to}}
+				</a>
+				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
+					<span class="al_sprite al_selection_ct"></span>
+					<span class="al_number al_selection">{{model.childSelections.length}}</span>
+				{{/link-to}} --}}
 				</div>
 		  </aside>
 		{{/if}}
