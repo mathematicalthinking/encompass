@@ -181,7 +181,10 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
     this.set('editing', false);
     var response = this.get('model');
     var currentUser = this.get('currentUser');
+    var student = this.get('student');
+    console.log('student is save response is', student);
     response.set('original', this.get('response'));
+    response.set('recipient', student);
     response.set('createdBy', currentUser);
     response.save().then(function (saved) {
       if (callback instanceof Function) {
