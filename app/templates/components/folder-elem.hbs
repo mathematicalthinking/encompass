@@ -32,7 +32,7 @@
 				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
 				{{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
 					<span class="al_sprite al_selection_ct"></span>
-					<span class="al_number al_selection">{{model._selections.length}}</span>
+					<span class="al_number al_selection">{{model.childSelections.length}}</span>
 				{{/link-to}}
 				</div>
 		  </aside>
