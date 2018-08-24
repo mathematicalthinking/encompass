@@ -50,12 +50,28 @@ function getResponse(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
+
+function accessibleResponses(user) {
+  return {
+    $or: [
+      { createdBy: user },
+      { recipient: user },
+    ],
+    isTrashed: false
+  };
+}
+
+
 function getResponses(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+  console.log('get responses api called');
+  // var criteria = utils.buildCriteria(req);
 
   var user = userAuth.requireUser(req);
+  var criteria = accessibleResponses(user);
 
-  criteria.$and.push({createdBy: user});
+  criteria.$or.push({ workspace: { $in: req.mf.auth.workspaces } });
+
+  console.log('responses criteria is', criteria);
 
   models.Response.find(criteria).exec(function(err, docs) {
     if(err) {
