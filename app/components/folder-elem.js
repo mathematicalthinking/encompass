@@ -18,6 +18,7 @@
 Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, {
   tagName: 'li',
   classNames: ['folderItem'],
+  link: null,
   //editFolderMode: true, // (from folder controller)
 
   containsCurrentSubmission: function(){
@@ -173,6 +174,18 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       //we'll handle the event further up to dismiss it so it doesn't cause an
       //error
     },
+
+    openLink: function() {
+      console.log('clicked on open link button');
+      let model = this.get('model');
+      console.log('model id is', model.id);
+
+      let currentWorkspace = this.get('currentWorkspace');
+      console.log('currentWorkspace id is', currentWorkspace.id);
+
+      window.open(`http://localhost:8080/#/workspaces/${currentWorkspace.id}/folders/${model.id}`);
+    },
+
 
     confirmDelete: function(){
       this.sendAction( 'confirm', this.model );
