@@ -11,7 +11,7 @@
  *   - Test the hashtag stuff to see if that is still working.
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  myCommentsOnly: false,
+  myCommentsOnly: true,
   thisWorkspaceOnly: true,
   commentFilterText: '',
   filterComments: false,
@@ -54,7 +54,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return regexp.test( comment.get('text') );
       });
     }
-    return filtered;
+    return filtered.sortBy('createDate').reverse();
   }.property('comments.[]', 'comments.@each.isTrashed', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
 
   clearCommentParent: function() {
