@@ -176,14 +176,12 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     },
 
     openLink: function() {
-      console.log('clicked on open link button');
       let model = this.get('model');
-      console.log('model id is', model.id);
-
       let currentWorkspace = this.get('currentWorkspace');
-      console.log('currentWorkspace id is', currentWorkspace.id);
+      var getUrl = window.location;
+      var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 
-      window.open(`http://localhost:8080/#/workspaces/${currentWorkspace.id}/folders/${model.id}`);
+      window.open(`${baseUrl}#/workspaces/${currentWorkspace.id}/folders/${model.id}`, 'newwindow', 'width=1000, height=700');
     },
 
 
