@@ -1,9 +1,11 @@
 {{#if currentUser.isStudent}}
 <div class="al_wtf">
   <section class="response">
-    <h1>Saved Response</h1>
+    <h1>Response</h1>
     <p>To: <span id="responding-to">{{model.student}}</span></p>
+    <p>From: <span id="responding-to">{{model.createdBy.username}}</span></p>
     <pre class="message">{{model.text}}</pre>
+    <p>This response is referencing this {{#link-to 'answer' model.submission.answer}}Answer{{/link-to}}</p>
   </section>
 </div>
 {{else}}
