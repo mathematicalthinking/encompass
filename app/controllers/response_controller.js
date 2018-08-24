@@ -178,18 +178,25 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
   }.property('model.text'),
 
   _persistThen: function (callback) {
+    var controller = this;
     this.set('editing', false);
     var response = this.get('model');
     var currentUser = this.get('currentUser');
-    var student = this.get('student');
+    var student = controller.get('model.student');
     console.log('student is save response is', student);
-    response.set('original', this.get('response'));
-    response.set('recipient', student);
-    response.set('createdBy', currentUser);
-    response.save().then(function (saved) {
-      if (callback instanceof Function) {
-        callback(saved);
-      }
+    this.get('store').queryRecord('user', {
+      username: student,
+    }).then((student) => {
+      var response = this.get('model');
+      console.log('student id from query is', student.id);
+      response.set('recipient', student);
+      response.set('original', this.get('response'));
+      response.set('createdBy', currentUser);
+      response.save().then(function (saved) {
+        if (callback instanceof Function) {
+          callback(saved);
+        }
+      });
     });
   },
 
