@@ -33,6 +33,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       var user = this.get('user');
       var organization = user.get('organization');
       var teacher = this.get('teacher');
+      var currentUser = this.get('currentUser');
       //var leader = this.get('leader');
       var teachers = this.get('teachers');
       if (user.get('isAdmin')) {
@@ -49,7 +50,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
       var sectionData = this.store.createRecord('section', {
         name: newSectionName,
-        organization: organization
+        organization: organization,
+        createdBy: currentUser,
       });
 
       for (let teacher of teachers) {

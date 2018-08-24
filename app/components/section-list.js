@@ -17,7 +17,9 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var collabSections = sections.filterBy('teachers');
     var yourCollabSections= collabSections.filter((section) => {
       let content = section.get('createdBy.content');
-      return content.id !== currentUser.id;
+      if (content) {
+        return content.id !== currentUser.id;
+      }
     });
     return yourCollabSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
