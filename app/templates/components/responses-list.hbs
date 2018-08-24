@@ -6,7 +6,7 @@
     <div class="clear"></div>
   </header>
 
-  {{!-- {{#if yourResponses}} --}}
+  {{#if responsesStudent.length}}
     <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
       <thead>
         <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each responses as |response|}}
+        {{#each responsesStudent as |response|}}
         <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
           <td style="padding-left: 55px;">
             {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
@@ -39,11 +39,11 @@
         {{/each}}
       </tbody>
     </table>
-  {{!-- {{else}}
+  {{else}}
     <p class="notice">
-      Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
+      Looks like none of your teachers have sent any responses yet.
     </p>
-  {{/if}} --}}
+  {{/if}}
 
 {{else}}
   <header>
