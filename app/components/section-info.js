@@ -22,6 +22,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isStudent: false,
   studentList: null,
   studentUsername: "",
+  fieldType: 'password',
 
 
   didReceiveAttrs: function () {
