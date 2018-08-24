@@ -12,7 +12,8 @@
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   myCommentsOnly: true,
-  thisWorkspaceOnly: true,
+  // thisWorkspaceOnly: true,
+  thisSubmissionOnly: true,
   commentFilterText: '',
   filterComments: false,
   newComment: '',
@@ -47,6 +48,19 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       filtered = filtered.filterBy( 'createdBy.content', this.get('currentUser') );
     }
 
+    if (this.thisSubmissionOnly) {
+      let newComments = [];
+      filtered.forEach((comment) => {
+        let commentSubId = comment.get('submission').get('id');
+        let currentSubmissionId = this.get('currentSubmission').get('id');
+        if (commentSubId === currentSubmissionId) {
+          newComments.push(comment);
+        }
+      });
+      console.log('new comments are', newComments);
+      return newComments;
+    }
+
     if( this.filterComments ){
       var regexp = new RegExp(this.commentFilterText, "i");
       filtered = filtered.filter( function(comment){
@@ -55,7 +69,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
     }
     return filtered.sortBy('createDate').reverse();
-  }.property('comments.[]', 'comments.@each.isTrashed', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
+  }.property('comments.[]', 'comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {
