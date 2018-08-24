@@ -1,0 +1,11 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#responses-list {
+  header {
+    h2 {
+      margin-left: 10px;
+    }
+  }
+}
