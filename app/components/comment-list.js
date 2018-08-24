@@ -13,7 +13,7 @@
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
-  thisSubmissionOnly: true,
+  thisSubmissionOnly: false,
   commentFilterText: '',
   filterComments: false,
   newComment: '',
@@ -61,7 +61,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return newComments;
     }
 
-    if( this.filterComments ){
+    if(this.filterComments){
+      //change this to query the comments vs filter what is viewable?
       var regexp = new RegExp(this.commentFilterText, "i");
       filtered = filtered.filter( function(comment){
         //item.get('url').match(regExp);
