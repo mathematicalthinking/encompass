@@ -17,9 +17,9 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
 
   selections: function() {
     return this.get('taggings')
-            .filterBy('isTrashed', false)
-            .getEach('selection')
-            .filterBy('isTrashed', false);
+      .filterBy('isTrashed', false)
+      .getEach('selection')
+      .filterBy('isTrashed', false);
   }.property('taggings.[]', 'taggedSelections.@each.isTrashed'),
 
   childSelections: function(){
@@ -34,7 +34,7 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
     return selections.uniq();
   }.property('selections.[]', 'selections.@each.isTrashed'),
 
-  _selections: function() { 
+  _selections: function() {
     return this.get('childSelections');
     /*
     var selections = this.get('selections').toArray();
@@ -48,13 +48,13 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
     return selections.uniq();
     }.property('selections.[]', 'selections.@each.isTrashed', 'children.@each._selections.[]'),
     */
-  }.property('childSelections.[]', 'childSelections.@each.isTrashed'),
+  }.property('childSelections.[]', 'childrenSelections.@each._selections', 'childSelections.@each.isTrashed'),
 
   submissions: function() {
     return this.get('selections')
       .filterBy('isTrashed', false)
       .getEach('submission')
-      .uniq(); 
+      .uniq();
   }.property('selections.@each.isTrashed'),
 
   _submissions: function() {

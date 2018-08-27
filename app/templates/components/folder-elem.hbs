@@ -1,7 +1,7 @@
 {{! TODO: restore drag an drop, see original ../folder.hbs}}
 <div class="folder draggable">
 		{{#if this.editFolderMode}}
-		  {{#if model.parent}} 
+		  {{#if model.parent}}
         <span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
       {{/if}}
 		  <span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
@@ -10,7 +10,7 @@
 			<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
       {{input value=model.name focus-out='editFolderName' size=10}}
 		{{else}}
-                <span class="toggle-icon {{if model.filteredChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
+      <span class="toggle-icon {{if model.filteredChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
         {{#if model.isExpanded}}
 					<span class="folder_sprites icon expanded"></span>
         {{else}}
@@ -20,27 +20,28 @@
 					<span class="folder_sprites icon"></span>
 				  {{/if}}
         {{/if}}
+				{{model.name}}
 			</span>
-      {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
-		    {{model.name}}
-      {{/link-to}}
 		  <aside>
-                    <div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
-		  		<span class="al_sprite al_folder_ct"></span>
-		  		<span class="al_number">{{model._submissions.length}}</span>
-		  	</div>
-                        <div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}"  title="number of selections filed in this folder">
-		  		<span class="al_sprite al_selection_ct"></span>
-		  		<span class="al_number al_selection">{{model._selections.length}}</span>
-		  	</div>
+				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
+				{{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
+					<span class="al_sprite al_folder_ct"></span>
+					<span class="al_number">{{model._submissions.length}}</span>
+				{{/link-to}}
+				</div>
+				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
+				{{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
+					<span class="al_sprite al_selection_ct"></span>
+					<span class="al_number al_selection">{{model._selections.length}}</span>
+				{{/link-to}}
+				</div>
 		  </aside>
 		{{/if}}
 </div>
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode}}
+        {{folder-elem model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped}}
       {{/each}}
     </ul>
 {{/if}}
-

@@ -1,4 +1,4 @@
-<div style="position:fixed; width:100%; z-index:2;">
+<div style="position:fixed; top: 0; width:100%; z-index:2;">
 <div id="folder_header">
   <div id="menubar">
     <span class="al_sprite al_folder al_open"></span>
@@ -12,15 +12,14 @@
 
 
 <div id="controls"> Browse:
-  {{input type="radio" name="browser2" value="0" default="true" click=(action "radioSelect" 1)}} <label>By Student</label>
-  {{input type="radio" name="browser2" value="1" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
+  {{input type="radio" name="browser2" value="0" click=(action "radioSelect" 1)}} <label>By Student</label>
+  {{input type="radio" name="browser2" value="1" default="true" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
   <label id="showSubFolders">
     {{input type="checkbox" checked=includeSubfolders}}
     Include Sub-Folders
   </label>
 </div>
 </div>
-<div style="height:79px"></div>
 <div id="subcontrols">
   Show:
   {{#if bySubmission}}

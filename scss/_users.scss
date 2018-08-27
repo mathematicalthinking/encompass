@@ -74,9 +74,35 @@
     padding: 5px;
     font-size: .8em;
   }
-  .error-message {
+  .error-message, .success-message {
     text-align: center;
     padding: 10px 0;
+  }
+}
+
+.reset-user-box {
+  margin: 20px;
+  .auth-form-input {
+    width: 50%;
+    margin: 0 auto;
+    label {
+      margin-bottom: 10px;
+    }
+    input {
+      margin-bottom: 10px;
+    }
+  }
+  .button-row {
+    margin: 0 auto;
+    margin-top: 10px;
+    width: 200px;
+    display: flex;
+  }
+  #show-password-btn {
+    background: none;
+    float: right;
+    margin-left: 10px;
+    font-size: 1em;
   }
 }
 

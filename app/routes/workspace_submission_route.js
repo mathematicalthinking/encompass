@@ -6,7 +6,7 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
-Encompass.WorkspaceSubmissionRoute = Ember.Route.extend({
+Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
 
   /*
   model: function(params){
@@ -80,11 +80,11 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend({
 
     var user = this.modelFor('application');
 
-    Ember.run.schedule('afterRender', function() { 
+    Ember.run.schedule('afterRender', function() {
       if(!user.get('seenTour')) {
         //user.set('seenTour', new Date());
         //user.save();
-        console.info('starting the tour!'); 
+        console.info('starting the tour!');
         route.send('startTour', 'workspace');
       }
     });
@@ -122,6 +122,7 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend({
     fileSelectionInFolder: function(selectionId, folder){
       console.log('tagging selection: ' + selectionId);
       var store = this.get('store');
+      var currentUser = this.get('currentUser');
 
       folder.get('workspace')
         .then(function(workspace) {
@@ -131,7 +132,8 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend({
               var tagging = store.createRecord('tagging', {
                 workspace: workspace,
                 folder: folder,
-                selection: selection
+                selection: selection,
+                createdBy: currentUser,
               });
 
               tagging.save().then(function(obj) {

@@ -42,7 +42,9 @@ const getAnswers = async function(req, res, next) {
   // array of oids
   if (req.query.ids) {
     ids = req.query.ids;
+    console.log('querying answers with a bunch of ids', ids);
     criteria = await access.get.answers(user, ids);
+    console.log('criteria for getting answers is', criteria);
   } else if (req.query.problem) {
     criteria = req.query;
     const requestedAnswers = await models.Answer.find(criteria).exec();

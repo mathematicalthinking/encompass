@@ -11,7 +11,7 @@
  * - putInWorkspace (is this really used?)
  * - openModal action to add a new folder
  */
-Encompass.FolderListComponent = Ember.Component.extend({
+Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   hideNewFolderModal: true,
   hideDeleteFolderModal: true,
   weighting: 1,
@@ -50,14 +50,14 @@ Encompass.FolderListComponent = Ember.Component.extend({
     var workspaceFolders = this.folders
           .filterBy('parent.id', parentID)
           .sortBy('weight', 'name');
-    
+
     var pos = workspaceFolders.indexOf(folder);
     var siblingsAbove = workspaceFolders.slice(0, pos);
     var siblingsBelow = workspaceFolders.slice(pos+1, workspaceFolders.length);
 
-    return (above) ? siblingsAbove : siblingsBelow;  
-  }, 
-  
+    return (above) ? siblingsAbove : siblingsBelow;
+  },
+
   actions: {
     openModal: function( modalName ){
       console.log("Open Modal: " + modalName );
@@ -67,12 +67,14 @@ Encompass.FolderListComponent = Ember.Component.extend({
     createFolder: function( folderName ){
       console.log("Create folder named: " + folderName );
       var ws = this.workspace;
+      var currentUser = this.get('currentUser');
 
       if( folderName ) {
         var folder = this.store.createRecord('folder', {
           name: folderName,
           workspace: ws,
-          weight: 0
+          weight: 0,
+          createdBy: currentUser,
         });
 
         folder.save();
@@ -89,7 +91,7 @@ Encompass.FolderListComponent = Ember.Component.extend({
       folder.set('isTrashed', true);
       folder.save();
     },
-    
+
     fileSelectionInFolder: function(objId, folder){
       console.log("Folder List File Selection Action: " + objId +" in folder " + folder.get('name') );
       this.sendAction( 'fileSelection', objId, folder );
@@ -106,7 +108,7 @@ Encompass.FolderListComponent = Ember.Component.extend({
     cancelEditFolderMode: function() {
       this.set('editFolderMode', false);
     },
-    
+
     moveOut: function(folder) {
       console.log("Move Out folder List! " + folder.get('name') );
       var parent = folder.get('parent');
@@ -119,7 +121,7 @@ Encompass.FolderListComponent = Ember.Component.extend({
       //
       if(parent) { // move out only if this is a nested folder
         parent.get('children').removeObject(folder);
-        
+
         if( newParent.get("isTruthy") === false  ) {
           folder.set('isTopLevel', true);
         }
@@ -145,12 +147,12 @@ Encompass.FolderListComponent = Ember.Component.extend({
           folder.set('weight', min);
           siblings.get('lastObject').set('weight', weight);
           folder.save();
-          
+
           siblings.get('lastObject').save();
         } else {
           folder.set('weight', (weight - anchor));
           folder.save();
-          
+
           // need to also increment the siblings below the one
           // this folder is switching with, so they stay below it
           siblings.forEach( function(sibling, index){
