@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const _     = require('underscore');
 
 module.exports.get = {};
 
@@ -100,6 +101,19 @@ const accessibleWorkspacesQuery = async function(user, ids) {
     return filter;
   }
 };
+// currently used to check if users can select, comment, create taggings, or create responses in workspaces
+function canModify(user, ws) {
+  if (!user || !ws) {
+    return false;
+  }
+  var isAdmin = user.accountType === 'A';
+  var isOwner = user.id === ws._id.toString();
+  var editorIds = ws.editors.map(obj => obj._id.toString());
+
+  var isEditor = _.includes(editorIds, user.id);
+  return isAdmin || isOwner || isEditor;
+}
 
 module.exports.get.workspace = canLoadWorkspace;
 module.exports.get.workspaces = accessibleWorkspacesQuery;
+module.exports.canModify = canModify;
