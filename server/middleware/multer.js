@@ -23,11 +23,8 @@ const fs = require('fs');
     }
 
     const rootPath = process.cwd();
-    console.log('rootpath is', rootPath);
     const username = req.user.username || 'anonymous';
-    console.log('username is', username);
     let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
-    console.log('dest is', dest);
     fs.mkdir(dest, (err) => {
       if (err) {
         console.log(err);
