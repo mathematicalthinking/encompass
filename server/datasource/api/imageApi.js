@@ -141,7 +141,7 @@ const postImages = async function(req, res, next) {
     img.createdBy = user;
     img.createDate = Date.now();
     img.data = imgData;
-    img.isPdf = isPdf;
+    img.isPdf = isPDF;
     return img;
   });
 
