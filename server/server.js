@@ -143,7 +143,7 @@ const upload = multer({
   fileFilter: multerMw.fileFilter,
 });
 
-const PDFupload = multer({
+const PDFUpload = multer({
   storage: multer.diskStorage({
     destination: multerMw.buildDestination,
     filename: multerMw.filename
@@ -153,7 +153,7 @@ const PDFupload = multer({
 
 // // IMAGE UPLOAD
 // server.post('/image', upload.array('photo', 200), api.post.images);
-server.post('/image', PDFupload.array('photo', 200), api.post.images);
+server.post('/image', PDFUpload.array('photo', 50), api.post.images);
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
