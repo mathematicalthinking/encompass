@@ -17,6 +17,9 @@
           {{!-- {{#if isStudent}} --}}
             <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}</li>
           {{!-- {{/if}} --}}
+          {{#if currentUser.isStudent}}
+            <li>{{#link-to 'answers.home' classNames='menu answers'}}answers{{/link-to}}</li>
+          {{/if}}
           {{#if notStudent}}
           <li>
             <div class="dropdown">

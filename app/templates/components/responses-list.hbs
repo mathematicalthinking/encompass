@@ -1,42 +1,91 @@
-<header>
-  <h2>Select a response</h2>
+{{#if currentUser.isStudent}}
+  <header>
+    <h2>Responses from your teachers</h2>
+    <aside>
+    </aside>
+    <div class="clear"></div>
+  </header>
 
-  <aside>
-  </aside>
-  <div class="clear"></div>
-</header>
-
-{{#if responses.length}}
-
-<table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
-  <thead>
-    <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
-      <th align="left" style="padding-left: 55px;">Text</th>
-      <th align="left">Source</th>
-      <th align="left">Created</th>
-      <th align="left">By</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each responses as |response|}}
-    <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
-      <td style="padding-left: 55px;">
-        {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
-      </td>
-      <td>{{response.source}}</td>
-      <td>
-        {{#link-to 'response' response}}
-        <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
-        {{/link-to}}
-      </td>
-      <td>{{response.createdBy.displayName}}</td>
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
+  {{#if responsesStudent.length}}
+    <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
+      <thead>
+        <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
+          <th align="left" style="padding-left: 55px;">Text</th>
+          <th align="left">Source</th>
+          <th align="left">Created</th>
+          <th align="left">By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each responsesStudent as |response|}}
+        <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
+          <td style="padding-left: 55px;">
+            {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+          </td>
+          <td>{{response.source}}</td>
+          <td>
+            {{#link-to 'response' response}}
+            <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
+            {{/link-to}}
+          </td>
+          <td>{{response.createdBy.displayName}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p class="notice">
+      Looks like none of your teachers have sent any responses yet.
+    </p>
+  {{/if}}
 
 {{else}}
-<p class="notice">
-  Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
-</p>
+  <header>
+    <h2>Select a response</h2>
+    <aside>
+    </aside>
+    <div class="clear"></div>
+  </header>
+
+  {{#if yourResponses.length}}
+
+  <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
+    <thead>
+      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
+        <th align="left" style="padding-left: 55px;">Text</th>
+        <th align="left">Recipient</th>
+        <th align="left">Source</th>
+        <th align="left">Created</th>
+        <th align="left">By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each yourResponses as |response|}}
+      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
+        <td style="padding-left: 55px;">
+          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+        </td>
+        {{#if response.recipient}}
+          <td>{{response.recipient.username}}</td>
+        {{else}}
+          <td>PoW User</td>
+        {{/if}}
+        <td>{{response.source}}</td>
+        <td>
+          {{#link-to 'response' response}}
+          <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
+          {{/link-to}}
+        </td>
+        <td>{{response.createdBy.displayName}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{else}}
+  <p class="notice">
+    Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
+  </p>
+  {{/if}}
+
 {{/if}}
