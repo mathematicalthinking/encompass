@@ -16,7 +16,7 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
-const PDFImage = require('pdf-image').PDFImage;
+const pdf = require('pdf-poppler');
 
 
 module.exports.get = {};
@@ -84,44 +84,51 @@ const getImage = (req, res, next) => {
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   let docs;
-  let isPDF = req.mimeType === 'application/pdf';
   // who can create images - add permission here
   if (!req.files) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
+  console.log('running post Images!!');
 
-  if (isPDF) {
-    const files = req.files.map((f) => {
+
+
+  const files = req.files.map((f) => {
+    let data = f.buffer;
+    let mimeType = f.mimetype;
+    let isPDF = mimeType === 'application/pdf';
+    console.log('mimeType is', mimeType);
+    console.log('isPDF', isPDF);
+
+    if (isPDF) {
       console.log('inside isPdf for post Images');
       let img = new models.Image(f);
       img.createdBy = user;
       img.createdDate = Date.now();
       const ix = img.path.indexOf('image_uploads');
       img.relativePath = img.path.slice(ix);
-      let pdfImage = new PDFImage(img);
-      console.log('pdfImage is', pdfImage);
-      return img;
-      // pdfImage.convertPage(0).then(function (imagePath) {
-      //   console.log('inside pdf image convert page');
-      //   // 0-th page (first page) of the slide.pdf is available as slide-0.png
-      //   fs.existsSync("/tmp/slide-0.png"); // => true
-      });
-      try {
-        docs = await Promise.all(files.map((f) => {
-          return f.save();
-        }));
-        const data = {
-          'images': docs
-        };
-        return utils.sendResponse(res, data);
-      } catch (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-  }
 
-  const files = req.files.map((f) => {
-    let data = f.buffer;
-    let mimeType = f.mimetype;
+      let file = img.path;
+      console.log('file is', file);
+      pdf.info(file).then(pdfinfo => {
+        console.log('pdfinfo is', pdfinfo);
+      })
+
+      let options = {
+        format: 'jpeg',
+        out_dir: path.dirname(file),
+        out_prefix: path.extname(file),
+        page: null
+      }
+
+      pdf.convert(file, options)
+        .then(res => {
+          console.log('Successfully converted', res);
+        })
+        .catch(error => {
+          console.error(error);
+        })
+      return img;
+    }
 
     let str = data.toString('base64');
     let alt = '';
@@ -135,8 +142,6 @@ const postImages = async function(req, res, next) {
     img.createDate = Date.now();
     img.data = imgData;
     img.isPdf = isPdf;
-    // const ix = img.path.indexOf('image_uploads');
-    // img.relativePath = img.path.slice(ix);
     return img;
   });
 
