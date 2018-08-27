@@ -23,12 +23,22 @@ async function getTeacherAssignments(userId) {
   }
 }
 
-function getTeacherSections(user) {
+async function getTeacherSections(user) {
   const ownSections = user.sections.map((section) => {
     if (section.role === 'teacher') {
       return section.sectionId;
     }
    });
+   return ownSections;
+}
+
+async function getTeacherSectionsById(userId) {
+  try {
+    const sectionIds = await getModelIds('Section', {teachers: userId});
+    return sectionIds;
+  }catch(err) {
+    console.log('err', err);
+  }
 }
 
 const getStudentSections = function(user) {
@@ -157,4 +167,6 @@ module.exports.getPdAdminUsers = getPdAdminUsers;
 module.exports.getTeacherUsers = getTeacherUsers;
 module.exports.getAccessibleWorkspaceIds = getAccessibleWorkspaceIds;
 module.exports.getUsersFromWorkspaces = getUsersFromWorkspaces;
+module.exports.getTeacherAssignments = getTeacherAssignments;
+module.exports.getTeacherSectionsById = getTeacherSectionsById;
 /* jshint ignore:end */
