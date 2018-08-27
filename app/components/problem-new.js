@@ -53,6 +53,33 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       for(let f of uploadData) {
         formData.append('photo', f);
       }
+      let firstItem = uploadData[0];
+      let isPDF = firstItem.type === 'application/pdf';
+
+      if (isPDF) {
+        Ember.$.post({
+          url: '/pdf',
+          processData: false,
+          contentType: false,
+          data: formData,
+          createdBy: createdBy
+        }).then(function (res) {
+          that.set('uploadResults', res.images);
+          // currently allowing multiple images to be uploaded but only saving
+          // the first image url as the image in the problem doc
+          createProblemData.set('imageId', res.images[0]._id);
+          createProblemData.save()
+            .then((problem) => {
+              that.sendAction('toProblemInfo', problem);
+            })
+            .catch((err) => {
+              that.set('createProblemError', err);
+            });
+        }).catch(function (err) {
+          that.set('uploadError', err);
+        });
+      }
+
       Ember.$.post({
         url: '/image',
         processData: false,
@@ -74,6 +101,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       }).catch(function(err){
         that.set('uploadError', err);
       });
+
     } else {
       createProblemData.save()
         .then((problem) => {
