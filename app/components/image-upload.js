@@ -17,7 +17,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return;
       }
       var formData = new FormData();
-      console.log('formData is', formData);
       for(let f of uploadData) {
         formData.append('photo', f);
       }

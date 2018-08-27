@@ -17,6 +17,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const pdf = require('pdf-poppler');
+const fs = require('fs');
 
 
 module.exports.get = {};
@@ -120,9 +121,17 @@ const postImages = async function(req, res, next) {
         page: null
       }
 
+      function convertBase64(file) {
+        let bitmap = fs.readFileSync(file);
+        return new Buffer(bitmap).toString('base64');
+      }
+
       pdf.convert(file, options)
         .then(res => {
-          console.log('Successfully converted', res);
+          console.log('Successfully converted');
+          console.log('res is', res);
+          console.log('file is', file);
+          // convertBase64(file);
         })
         .catch(error => {
           console.error(error);
