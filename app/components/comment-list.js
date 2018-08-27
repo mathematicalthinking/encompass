@@ -11,8 +11,9 @@
  *   - Test the hashtag stuff to see if that is still working.
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  myCommentsOnly: false,
-  thisWorkspaceOnly: true,
+  myCommentsOnly: true,
+  // thisWorkspaceOnly: true,
+  thisSubmissionOnly: false,
   commentFilterText: '',
   filterComments: false,
   newComment: '',
@@ -47,15 +48,29 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       filtered = filtered.filterBy( 'createdBy.content', this.get('currentUser') );
     }
 
-    if( this.filterComments ){
+    if (this.thisSubmissionOnly) {
+      let newComments = [];
+      filtered.forEach((comment) => {
+        let commentSubId = comment.get('submission').get('id');
+        let currentSubmissionId = this.get('currentSubmission').get('id');
+        if (commentSubId === currentSubmissionId) {
+          newComments.push(comment);
+        }
+      });
+      console.log('new comments are', newComments);
+      return newComments;
+    }
+
+    if(this.filterComments){
+      //change this to query the comments vs filter what is viewable?
       var regexp = new RegExp(this.commentFilterText, "i");
       filtered = filtered.filter( function(comment){
         //item.get('url').match(regExp);
         return regexp.test( comment.get('text') );
       });
     }
-    return filtered;
-  }.property('comments.[]', 'comments.@each.isTrashed', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
+    return filtered.sortBy('createDate').reverse();
+  }.property('comments.[]', 'comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {
