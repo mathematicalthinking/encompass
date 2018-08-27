@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
 var ImageSchema = new Schema({
   // Currently only using encoding, mimetype, data, isPdf
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
