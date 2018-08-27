@@ -7,6 +7,7 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
+const _        = require('underscore');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -14,6 +15,8 @@ const auth     = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const models   = require('../schemas');
+const wsAccess   = require('../../middleware/access/workspaces');
+
 
 
 module.exports.get = {};
@@ -83,7 +86,7 @@ function postSelection(req, res, next) {
   var workspaceId = req.body.selection.workspace;
 
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(permissions.userCan(user, ws, "SELECTIONS")) {
+    if (wsAccess.canModify(user, ws)) {
       var selection = new models.Selection(req.body.selection);
       selection.createdBy = user;
       selection.createDate = Date.now();

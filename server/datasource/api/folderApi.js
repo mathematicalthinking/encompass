@@ -15,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const data     = require('./data');
 const models   = require('../schemas');
+const wsAccess   = require('../../middleware/access/workspaces');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -86,7 +87,7 @@ function postFolder(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(permissions.userCan(user, ws, "FOLDERS")) {
+    if(wsAccess.canModify(user, ws)) {
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
       folder.createDate = Date.now();
@@ -119,7 +120,7 @@ function putFolder(req, res, next) {
   var user = userAuth.requireUser(req);
   models.Workspace.findOne({owner: user._id, folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(permissions.userCan(user, ws, "FOLDERS")) {
+    if(wsAccess.canModify(user, ws)) {
       models.Folder.findById(req.params.id,
         function (err, doc) {
           if(err) {

@@ -180,7 +180,7 @@ function sendWorkspace(req, res, next) {
 function putWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').exec(function(err, ws){
-    if(!permissions.userCanModifyWorkspace(user, ws)) {
+    if(!access.canModify(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
     } else {
@@ -975,7 +975,7 @@ async function postWorkspaceEnc(req, res, next) {
     delete pruned.isTrashed;
     delete pruned.isEmptyAnswerSet;
     console.log('pruned', pruned);
-    
+
     const accessibleCriteria = await answerAccess.get.answers(user);
     console.log('accessible criteria is', accessibleCriteria);
 
