@@ -7,7 +7,7 @@ const originalCollections = [
   "Comment",
   "Error",
   "Folder",
-  // "Pdsubmission",
+  "PDSubmission",
   "Response",
   "Selection",
   "Submission",
@@ -232,6 +232,122 @@ async function cleanSubmissionWorkspaces() {
 }
 
 
+// ensure collection has required fields
+async function updateRequiredFields(collection) {
+  console.log(`Starting updateRequiredFields for collection: ${collection}`)
+  const coll = models[collection]
+  let allDocs = await coll.find({}).exec();
+  try {
+
+    const colDocs = await coll.find({}).exec();
+    const colDocIds = colDocs.map(d => d._id);
+    console.log(`There are ${colDocIds.length} colDocIds`)
+
+
+    for (let id of colDocIds) {
+      let doc = await coll.findById(id).exec();
+      if ([ "Comment", "Folder", "Response", "Selection", "Tagging", "Workspace" ].indexOf(collection) >= 0) {
+        // ensure createdBy, createDate, and lastModifiedDate is in all documents for these collections
+        if (doc.createdBy === null || doc.createdBy === undefined) {
+          doc.createdBy = "529518daba1cd3d8c4013344"; // Steve - (user doc #4)
+          console.log(`createdBy updated to Steve for ${doc._id}`)
+        }
+        if (doc.createDate === null || doc.createDate === undefined) {
+          doc.createDate = new Date();
+        }
+        if (doc.lastModifiedDate === null || doc.lastModifiedDate === undefined) {
+          doc.lastModifiedDate = new Date();
+        }
+        await coll.update(
+          { _id: id },
+          { $set : {
+            createdBy: doc.createdBy,
+            createDate: doc.createDate,
+            lastModifiedDate: doc.lastModifiedDate
+          }}
+        ).exec();
+      } else if ([ "PDSubmission", "Submission" ].indexOf(collection) >= 0) {
+        // ensure createDate, lastModifiedDate is in all documents for these collections
+        if (doc.createDate === null || doc.createDate === undefined) {
+          doc.createDate = new Date();
+        }
+        if (doc.lastModifiedDate === null || doc.lastModifiedDate === undefined) {
+          doc.lastModifiedDate = new Date();
+        }
+        await coll.update(
+          { _id: id },
+          { $set : {
+            createDate: doc.createDate,
+            lastModifiedDate: doc.lastModifiedDate
+          }}
+        ).exec();
+        await coll.update(
+          { _id: id },
+          { $set : {
+            lastModifiedDate: new Date()
+          }}
+        ).exec();
+      } else if ( "User" == collection ) {
+        // ensure createDate, lastModifiedDate is in all documents for these collections
+        if (doc.createDate === null || doc.createDate === undefined) {
+          doc.createDate = new Date();
+        }
+        if (doc.lastModifiedDate === null || doc.lastModifiedDate === undefined) {
+          doc.lastModifiedDate = new Date();
+        }
+
+        // if user is steve ("529518daba1cd3d8c4013344") set his password
+
+        // if user is annie ("52964653e4bad7087700014b") set her password
+
+        // Users if isAdmin AccountType A else T
+        if (doc.isAdmin) {
+          doc.accountType = 'A';
+        } else {
+          doc.accountType = 'T';
+        }
+        console.log(`username: ${doc.username} - isAdmin: ${doc.isAdmin} - accountType: ${doc.accountType}`)
+
+        await coll.update(
+          { _id: id },
+          { $set : {
+            createDate: doc.createDate,
+            lastModifiedDate: doc.lastModifiedDate,
+            accountType: doc.accountType
+          }}
+        ).exec();
+        await coll.update(
+          { _id: id },
+          { $set : {
+            lastModifiedDate: new Date()
+          }}
+        ).exec();
+      }
+    };
+
+    // // does not work: gets TypeError: doc.save is not a function
+    // await coll.find({  }, (err, doc) => {
+    //   if (err) {
+    //     console.log(`error finding doc - ${err}`);
+    //   } else {
+    //     doc.lastModifiedDate = new Date();
+    //     doc.save((err2, raw) => {
+    //       if (err) {
+    //         console.log(`save callback error: ${err2}`)
+    //       } else {
+    //         console.log(`raw response: ${raw}`)
+    //       }
+    //     });
+    //   }
+
+    // }).exec();
+  } catch(err) {
+    console.log(err);
+  }
+  console.log(`-------------------`)
+}
+
+
 async function update() {
   mongoose.connect('mongodb://localhost:27017/encompass_prod');
   // // remove warning open() is deprecated
@@ -240,27 +356,33 @@ async function update() {
   //   useMongoClient: true,
   // });
 
-  // remove trashed documents
-  await removeTrashedDocuments();
+  // // remove trashed documents
+  // await removeTrashedDocuments();
 
-  // remove selections, comments, responses, folders and taggings with no workspace
-  const workspaces = await models.Workspace.find({}).exec();
-  const workspaceIds = workspaces.map(ws => ws._id);
-  console.log(`There are ${workspaceIds.length} workspaces`)
-  for (let collection of ['Selection', 'Comment', 'Response', 'Folder', 'Tagging']) {
-    await removeOrphanedFromWs(collection, workspaceIds);
+  // // remove selections, comments, responses, folders and taggings with no workspace
+  // const workspaces = await models.Workspace.find({}).exec();
+  // const workspaceIds = workspaces.map(ws => ws._id);
+  // console.log(`There are ${workspaceIds.length} workspaces`)
+  // for (let collection of ['Selection', 'Comment', 'Response', 'Folder', 'Tagging']) {
+  //   await removeOrphanedFromWs(collection, workspaceIds);
+  // }
+
+  // // remove taggings without a matching folder and selection
+  // await removeOrphanedTaggings();
+
+  // // remove users who do not already have a workspace
+  // await removeIrrelevantUsers();
+
+  // // clean invalid workspaces from submissions, and delete any submissions with no workspaces.
+  // await checkSubmissionWorkspaces();
+  // await cleanSubmissionWorkspaces();
+  // await checkSubmissionWorkspaces();
+
+  // update required fields for all collections
+  // for (let collection of allCollections) {
+  for (let collection of ['User']) {
+    await updateRequiredFields(collection);
   }
-
-  // remove taggings without a matching folder and selection
-  await removeOrphanedTaggings();
-
-  // remove users who do not already have a workspace
-  await removeIrrelevantUsers();
-
-  // clean invalid workspaces from submissions, and delete any submissions with no workspaces.
-  await checkSubmissionWorkspaces();
-  await cleanSubmissionWorkspaces();
-  await checkSubmissionWorkspaces();
 
   mongoose.connection.close();
 }
