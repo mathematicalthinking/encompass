@@ -66,7 +66,7 @@ const getImage = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    const data = {'image': image};
+    const data = {'image': image };
     utils.sendResponse(res, data);
     next();
   });
@@ -84,26 +84,45 @@ const getImage = (req, res, next) => {
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   let docs;
+  let isPDF = req.mimeType === 'application/pdf';
   // who can create images - add permission here
   if (!req.files) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
 
+  if (isPDF) {
+    const files = req.files.map((f) => {
+      console.log('inside isPdf for post Images');
+      let img = new models.Image(f);
+      img.createdBy = user;
+      img.createdDate = Date.now();
+      const ix = img.path.indexOf('image_uploads');
+      img.relativePath = img.path.slice(ix);
+      let pdfImage = new PDFImage(img);
+      console.log('pdfImage is', pdfImage);
+      return img;
+      // pdfImage.convertPage(0).then(function (imagePath) {
+      //   console.log('inside pdf image convert page');
+      //   // 0-th page (first page) of the slide.pdf is available as slide-0.png
+      //   fs.existsSync("/tmp/slide-0.png"); // => true
+      });
+      try {
+        docs = await Promise.all(files.map((f) => {
+          return f.save();
+        }));
+        const data = {
+          'images': docs
+        };
+        return utils.sendResponse(res, data);
+      } catch (err) {
+        return utils.sendError.InternalError(err, res);
+      }
+  }
+
   const files = req.files.map((f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
-    let isPdf = mimeType === 'application/pdf';
 
-    if (isPdf) {
-      console.log('inside isPdf for post Images')
-      var pdfImage = new PDFImage("/tmp/slide.pdf");
-      console.log('pdfImage is', pdfImage);
-      pdfImage.convertPage(0).then(function (imagePath) {
-        console.log('inside pdf image convert page');
-        // 0-th page (first page) of the slide.pdf is available as slide-0.png
-        fs.existsSync("/tmp/slide-0.png"); // => true
-      });
-    }
     let str = data.toString('base64');
     let alt = '';
     let format = `data:${mimeType};base64,`;

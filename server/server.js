@@ -143,8 +143,17 @@ const upload = multer({
   fileFilter: multerMw.fileFilter,
 });
 
+const PDFupload = multer({
+  storage: multer.diskStorage({
+    destination: multerMw.buildDestination,
+    filename: multerMw.filename
+  }),
+    fileFilter: multerMw.fileFilter
+});
+
 // // IMAGE UPLOAD
-server.post('/image', upload.array('photo', 10), api.post.images);
+// server.post('/image', upload.array('photo', 200), api.post.images);
+server.post('/image', PDFupload.array('photo', 200), api.post.images);
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
