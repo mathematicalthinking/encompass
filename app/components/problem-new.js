@@ -57,7 +57,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         url: '/image',
         processData: false,
         contentType: false,
-        data: formData
+        data: formData,
+        createdBy: createdBy
       }).then(function(res){
         that.set('uploadResults', res.images);
         // currently allowing multiple images to be uploaded but only saving

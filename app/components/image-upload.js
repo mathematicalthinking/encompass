@@ -1,4 +1,4 @@
-Encompass.ImageUploadComponent = Ember.Component.extend({
+Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'image-upload',
   isHidden: false,
   //uploadedFiles: null,
@@ -10,12 +10,14 @@ Encompass.ImageUploadComponent = Ember.Component.extend({
   actions: {
     uploadImages: function() {
       var that = this;
+      var currentUser = that.get('currentUser');
       var uploadData = that.get('filesToBeUploaded');
       if (!uploadData) {
         this.set('missingFilesError', true);
         return;
       }
       var formData = new FormData();
+      console.log('formData is', formData);
       for(let f of uploadData) {
         formData.append('photo', f);
       }
@@ -23,6 +25,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend({
               url: '/image',
               processData: false,
               contentType: false,
+              createdBy: currentUser,
               data: formData
             }).then(function(res){
               that.set('uploadResults', res.images);
