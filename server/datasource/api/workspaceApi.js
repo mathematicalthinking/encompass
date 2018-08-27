@@ -20,6 +20,7 @@ const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
 const access = require('../../middleware/access/workspaces');
 const answerAccess = require('../../middleware/access/answers');
+const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 
 
@@ -180,7 +181,7 @@ function sendWorkspace(req, res, next) {
 function putWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').exec(function(err, ws){
-    if(!access.canModify(user, ws)) {
+    if(!permissions.userCanModifyWorkspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
     } else {
@@ -308,11 +309,11 @@ function newFolderStructure(user, ws, folderSetName) {
 
   if(!folderSetName) { folderSetName = 'none'; }
 
-  if(folderSetName === 'default' || folderSetName === 'mathforumFolders') {
+  if(folderSetName === 'default' || folderSetName === 'Math Forum Default Folders') {
     folders = data.mathforumFolders;
   }
 
-  if(folderSetName === 'simple') {
+  if(folderSetName === 'Simple Folder Set') {
     //yes, we could do data[folderSetName] but that requires a lot of sanitizing
     //since we are getting the param from the request
     folders = data.simple;
@@ -851,7 +852,9 @@ function pruneObj(obj) {
   return obj;
 }
 
-function buildCriteria(ids, criteria) {
+async function buildCriteria(ids, criteria, user) {
+  try {
+    const filterFields = ['assignment', 'problem', 'section'];
   let filter = {};
   if (!_.isEmpty(ids)) {
     filter._id = {$in: ids};
@@ -872,17 +875,33 @@ function buildCriteria(ids, criteria) {
 // TODO: teacher filter is not working properly
 // will always return empty results
   let teacher = criteria.teacher;
-  // if (!_.isEmpty(teacher)) {
-  //   // have to get teacher users and then filter the answers to be created by teacher
+  console.log('teacher', typeof teacher, teacher);
+  console.log('isequal', teacher === user.id);
+  if (!_.isEmpty(teacher && teacher !== user.id)) {
+    let assignments = await accessUtils.getTeacherAssignments(teacher)
+    console.log('assn teacher', assignments);
+    let sections = await accessUtils.getTeacherSectionsById(teacher);
+    console.log('sectiosn teacher', sections);
+    // have to get teacher users and then filter the answers to be created by teacher
+    filter.$or = [{
+      assignment: {$in: assignments}
+    },
+    {section: { $in: sections}}
+    ];
 
-  // }
-  for (let key of Object.keys(criteria)) {
-    if (key !== 'startDate' && key !== 'endDate') {
-      const val = criteria[key];
-      filter[key] = val;
+  }
+  for (let field of filterFields) {
+    console.log('filed', field);
+    const val = criteria[field];
+    if (val) {
+      filter[field] = val;
     }
   }
   return filter;
+  }catch(err) {
+    console.log('err building criteria', err);
+  }
+
 }
 
 async function getAnswerIds(criteria) {
@@ -967,6 +986,11 @@ async function postWorkspaceEnc(req, res, next) {
   const user = req.user;
   console.log('wsc', req.body.encWorkspaceRequest);
   const workspaceCriteria = req.body.encWorkspaceRequest;
+  // const requestedName = workspaceCriteria.requestedName;
+
+  // const folderSetName = workspaceCriteria.folderSetName;
+
+  const { requestedName, mode, folderSetName, owner } = workspaceCriteria;
 
   try {
     const pruned = pruneObj(workspaceCriteria);
@@ -980,11 +1004,11 @@ async function postWorkspaceEnc(req, res, next) {
     console.log('accessible criteria is', accessibleCriteria);
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
-    const wsCriteria = buildCriteria(allowedIds, pruned);
+    const wsCriteria = await buildCriteria(allowedIds, pruned, user);
 
     console.log('wsCriteria is', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
-    console.log('answers are', answers);
+    console.log('answers are', answers.length);
 
     if (_.isEmpty(answers)) {
       //let rec = req.body.encWorkspaceRequest;
@@ -1009,17 +1033,29 @@ const submissionIds = submissions.map((sub) => {
   return sub._id;
 });
 const submissionSet = await importApi.buildSubmissionSet(submissions, user);
-let name = nameWorkspace(submissionSet, user, false);
+let name;
+
+if (requestedName) {
+  name = requestedName;
+} else {
+  name = nameWorkspace(submissionSet, user, false);
+}
+
 let workspace = new models.Workspace({
-  mode: 'private',
-  name: name,
-  owner: user,
+  mode,
+  name,
+  owner,
   submissionSet: submissionSet,
-  submissions: submissionIds
+  submissions: submissionIds,
+  createdBy: user
 });
 let ws = await workspace.save();
 console.log('createdWs', ws._id);
 //const data = {'workspaceId': ws._id};
+
+let newFolderSet = await newFolderStructure(user, ws, folderSetName);
+console.log('nfs', newFolderSet);
+
 let rec = pruned;
 rec.createdWorkspace = ws._id;
 const encRequest = new models.EncWorkspaceRequest(rec);
