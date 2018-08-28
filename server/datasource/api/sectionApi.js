@@ -13,6 +13,7 @@ var mongoose = require('mongoose'),
   userAuth = require('../../middleware/userAuth'),
   permissions = require('../../../common/permissions'),
   utils = require('../../middleware/requestHandler');
+  const access = require('../../middleware/access/sections');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -42,7 +43,8 @@ function accessibleSections(user) {
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  const criteria = accessibleSections(user);
+  const criteria = access.get.sections(user);
+  console.log('section get criteria', criteria);
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {
