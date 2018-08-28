@@ -18,7 +18,7 @@ const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const pdf = require('pdf-poppler');
 const fs = require('fs');
-
+const PDF2Pic = require('pdf2pic').default
 
 module.exports.get = {};
 module.exports.post = {};
@@ -91,67 +91,60 @@ const postImages = async function(req, res, next) {
   }
   console.log('running post Images!!');
 
-
-
   const files = req.files.map((f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
     let isPDF = mimeType === 'application/pdf';
-    console.log('mimeType is', mimeType);
-    console.log('isPDF', isPDF);
+    let img = new models.Image(f);
 
     if (isPDF) {
       console.log('inside isPdf for post Images');
-      let img = new models.Image(f);
       img.createdBy = user;
       img.createdDate = Date.now();
-      const ix = img.path.indexOf('image_uploads');
-      img.relativePath = img.path.slice(ix);
+      img.isPdf = true;
 
-      let file = img.path;
-      console.log('file is', file);
-      pdf.info(file).then(pdfinfo => {
-        console.log('pdfinfo is', pdfinfo);
+      let converter = new PDF2Pic({
+        density: 100, // output pixels per inch
+        savename: "untitled", // output file name
+        savedir: './images', // output file location
+        format: "png", // output file format
+        size: 600 // output size in pixels
       })
 
-      let options = {
-        format: 'jpeg',
-        out_dir: path.dirname(file),
-        out_prefix: path.extname(file),
-        page: null
-      }
+      let file = img.path;
+      console.log('file path is', file);
 
-      function convertBase64(file) {
-        let bitmap = fs.readFileSync(file);
-        return new Buffer(bitmap).toString('base64');
-      }
+      converter.convertToBase64(file)
+        .then(resolve => {
+          if (resolve.base64) {
+            console.log('base64 image is');
+            let data = resolve.base64;
+            let str = data.toString('base64');
+            let format = `data:image/png;base64,`;
+            let imgData = `${format}${str}`;
+            img.data = imgData;
+            console.log('image data is', imgData);
+            console.log('img is after convert', img);
+            return img;
+          }
+        })
+        console.log('returned img is', img);
+    } else {
+      let str = data.toString('base64');
+      let alt = '';
+      let format = `data:${mimeType};base64,`;
 
-      pdf.convert(file, options)
-        .then(res => {
-          console.log('Successfully converted');
-          console.log('res is', res);
-          console.log('file is', file);
-          // convertBase64(file);
-        })
-        .catch(error => {
-          console.error(error);
-        })
+      let imgSrc = `<img alt="${alt}" src="data:${mimeType};base64,${str}`;
+      let imgData = `${format}${str}`;
+
+      img.createdBy = user;
+      img.createDate = Date.now();
+      img.data = imgData;
+      img.isPdf = isPDF;
       return img;
     }
 
-    let str = data.toString('base64');
-    let alt = '';
-    let format = `data:${mimeType};base64,`;
 
-    let imgSrc = `<img alt="${alt}" src="data:${mimeType};base64,${str}`;
-    let imgData = `${format}${str}`;
-
-    let img = new models.Image(f);
-    img.createdBy = user;
-    img.createDate = Date.now();
-    img.data = imgData;
-    img.isPdf = isPDF;
-    return img;
   });
 
   try {
@@ -160,7 +153,7 @@ const postImages = async function(req, res, next) {
     }));
     const data = {'images': docs};
     return utils.sendResponse(res, data);
-  }catch(err) {
+  } catch(err) {
     return utils.sendError.InternalError(err, res);
   }
 
