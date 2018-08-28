@@ -49,7 +49,7 @@
                   </a>
                 {{/if}}
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
-                  <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
+                  {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
               {{else}}
                   {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
               {{/if}}
