@@ -48,6 +48,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   }),
 
   init: function() {
+    this._super(...arguments);
     console.log('inserted element');
     let problems = this.model.problems;
     var currentUser = this.get('currentUser');
