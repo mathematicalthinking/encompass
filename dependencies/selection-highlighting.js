@@ -45,6 +45,9 @@ var SelectionHighlighting = function(args) {
      * Reference to the mouseup event for creating selections
      */
     selectableMouseup = function(event) {
+      if (event.target.id.includes('img-tag')) {
+        return;
+      }
       highlighting.createSelection(highlighting.getId(), event, true);
     },
 
