@@ -114,9 +114,7 @@ const postImages = async function(req, res, next) {
 
       return converter.convertToBase64(file)
         .then(resolve => {
-          //console.log('resolve', resolve);
           if (resolve.base64) {
-            console.log('base64 image is');
             let data = resolve.base64;
             let str = data.toString('base64');
             let format = `data:image/png;base64,`;
@@ -124,8 +122,6 @@ const postImages = async function(req, res, next) {
             img.data = imgData;
             img.createdBy = user;
             img.createDate = Date.now();
-            console.log('image data is', imgData.length);
-            //console.log('img is after convert', img;
             return img;
           }
         })
@@ -157,24 +153,9 @@ const postImages = async function(req, res, next) {
     const data = {'images': docs};
     return utils.sendResponse(res, data);
   } catch(err) {
-    console.log('ERRRRRRRRR', err);
     return utils.sendError.InternalError(err, res);
   }
 
-
-
-  // const images = new models.Image(req.body.image);
-  // image.createdBy = user;
-  // image.createDate = Date.now();
-  // image.save((err, doc) => {
-  //   if (err) {
-  //     logger.error(err);
-  //     return utils.sendError.InternalError(err, res);
-  //   }
-  //   const data = {'image': files};
-  //   utils.sendResponse(res, data);
-  //   next();
-  // });
 };
 
 /**

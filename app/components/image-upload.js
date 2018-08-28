@@ -31,7 +31,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
           processData: false,
           contentType: false,
           data: formData,
-          createdBy: createdBy
+          createdBy: currentUser
         }).then(function (res) {
           that.set('uploadResults', res.images);
         }).catch(function (err) {
