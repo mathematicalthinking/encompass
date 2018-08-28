@@ -59,11 +59,6 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     var isAdmin = currentUser.get('isAdmin');
     var isOwner = Ember.isEqual(owner, currentUser);
 
-    // var canComment = Permissions.userCan(
-    //   this.get('currentUser'),
-    //   this.get('currentWorkspace'),
-    //   "COMMENTS"
-    // );
     var canComment = isEditor || isAdmin || isOwner;
     console.log('canComment', canComment);
     return canComment;

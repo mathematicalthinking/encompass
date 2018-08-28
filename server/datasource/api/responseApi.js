@@ -15,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const data     = require('./data');
 const models   = require('../schemas');
+const wsAccess = require('../../middleware/access/workspaces');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -98,7 +99,7 @@ function postResponse(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.response.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(permissions.userCan(user, ws, "COMMENTS")) {
+    if(wsAccess.canModify(user, ws)) {
 
       var response = new models.Response(req.body.response);
       response.createdBy = user;

@@ -1,6 +1,6 @@
 Encompass.WorkspaceNewComponent = Ember.Component.extend({
   ElementId: 'workspace-new',
-  isPows: true,
+  isPows: false,
 
   actions: {
     toggleView: function(view) {

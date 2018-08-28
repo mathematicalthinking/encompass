@@ -31,7 +31,7 @@ function requireUser(req) {
     logger.error('user required but not found');
     throw new Error('user required but not found');
   }
-  return req.mf.auth.user;
+  return req.user.toObject();
 }
 
 

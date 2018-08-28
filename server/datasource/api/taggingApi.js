@@ -12,6 +12,7 @@ const auth     = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const models   = require('../schemas');
+const wsAccess = require('../../middleware/access/workspaces');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -79,7 +80,7 @@ function postTagging(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(permissions.userCan(user, ws, "SELECTIONS")) {
+    if(wsAccess.canModify(user, ws)) {
 
       var tagging = new models.Tagging(req.body.tagging);
       tagging.createdBy = user;
@@ -115,7 +116,7 @@ function putTagging(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
-    if(permissions.userCan(user, ws, "SELECTIONS")) {
+    if(wsAccess.canModify(user, ws)) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {
           if(err) {

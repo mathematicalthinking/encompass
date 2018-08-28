@@ -127,79 +127,89 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
       let subs;
       return Promise.all(answers.map((answer) => {
         answer.explanation = answer.explanation._id;
+        answer.createdBy = answer.student;
+        answer.answer = 'See image.';
         let ans = that.store.createRecord('answer', answer);
         ans.set('section', that.get('selectedSection'));
         ans.set('problem', that.get('selectedProblem'));
         return ans.save();
       }))
         .then((res) => {
-        that.set('uploadedAnswers',res);
-        subs = res.map((ans) => {
-          //const teachers = {};
-          const clazz = {};
-          const publication = {
-            publicationId: null,
-            puzzle: {}
+        // if doCreateWorkspace, convert to submissions and create workspace
+        // else just display details about # of answers uploaded
+          const uploadedAnswers = res;
+        if (that.doCreateWorkspace) {
+          subs = res.map((ans) => {
+            //const teachers = {};
+            const clazz = {};
+            const publication = {
+              publicationId: null,
+              puzzle: {}
+            };
+            const creator = {};
+            const teacher = {};
+
+
+            const student = ans.get('student');
+            const section = ans.get('section');
+            const problem = ans.get('problem');
+
+            publication.puzzle.title = problem.get('title');
+            publication.puzzle.problemId = problem.get('problemId');
+
+            creator.studentId = student.get('userId');
+            creator.username = student.get('username');
+
+            clazz.sectionId = section.get('sectionId');
+            clazz.name = section.get('name');
+
+            const teachers = section.get('teachers');
+            const primaryTeacher = teachers.get('firstObject');
+
+
+            teacher.id = primaryTeacher.get('userId');
+            let sub = {
+              longAnswer: ans.get('explanation'),
+              answer: ans.get('answerId'),
+              clazz: clazz,
+              creator: creator,
+              teacher: teacher,
+              publication: publication
+            };
+            return sub;
+          });
+
+          let postData = {
+            "subs": JSON.stringify(subs),
+            "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
+            "isPrivate": JSON.stringify(this.get('isPrivate'))
           };
-          const creator = {};
-          const teacher = {};
+          console.log('subs', subs);
+           Ember.$.post({
+            url: 'api/import',
+            data: postData
+          })
+          .then((res) => {
+            that.set('isReviewingSubmissions', false);
+            // if workspace created
+            if (res.workspaceId) {
+              that.set('createdWorkspace', res);
+            // should we redirect to workspaces list or workspace page?
+            console.log('sending Action');
+            that.sendAction('toWorkspaces');
+            }
+
+          })
+          .catch((err) => {
+            that.set('uploadError', err);
+            console.log(err);
+          });
+        } else { // don't create workspace
+        that.set('isReviewingSubmissions', false);
+        that.set('uploadedAnswers', uploadedAnswers);
+        }
 
 
-          const student = ans.get('student');
-          const section = ans.get('section');
-          const problem = ans.get('problem');
-
-          publication.puzzle.title = problem.get('title');
-          publication.puzzle.problemId = problem.get('problemId');
-
-          creator.studentId = student.get('userId');
-          creator.username = student.get('username');
-
-          clazz.sectionId = section.get('sectionId');
-          clazz.name = section.get('name');
-
-          const teachers = section.get('teachers');
-          const primaryTeacher = teachers.get('firstObject');
-
-
-          teacher.id = primaryTeacher.get('userId');
-          let sub = {
-            longAnswer: ans.get('explanation'),
-            answer: ans.get('answerId'),
-            clazz: clazz,
-            creator: creator,
-            teacher: teacher,
-            publication: publication
-          };
-          return sub;
-        });
-        let postData = {
-          "subs": JSON.stringify(subs),
-          "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
-          "isPrivate": JSON.stringify(this.get('isPrivate'))
-        };
-        console.log('subs', subs);
-         Ember.$.post({
-          url: 'api/import',
-          data: postData
-        })
-        .then((res) => {
-          that.set('isReviewingSubmissions', false);
-          // if workspace created
-          if (res.workspaceId) {
-            that.set('createdWorkspace', res);
-          // should we redirect to workspaces list or workspace page?
-          console.log('sending Action');
-          that.sendAction('toWorkspaces');
-          } else {
-            that.set('uploadedSubmissions', res.submissionIds);
-          }
-
-        })
-        .catch((err) => {
-          that.set('uploadError', err);
-          console.log(err);
-        });
       });
     }
 

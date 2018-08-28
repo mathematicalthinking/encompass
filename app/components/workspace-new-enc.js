@@ -2,13 +2,19 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   ElementId: 'workspace-new-enc',
 
   selectedPdSetId: null,
-  selectedFolderSetId: null,
+  selectedFolderSet: null,
   selectedAssignment: null,
   selectedSection: null,
   selectedProblem: null,
+  selectedOwner: null,
   teacher: null,
+  mode: 'private',
 
-  teacherPool: function() {
+  didReceiveAttrs: function() {
+    this.set('teacherPool', this.getTeacherPool());
+  },
+
+  getTeacherPool: function() {
     const currentUser = this.get('currentUser');
     const accountType = currentUser.get('accountType');
 
@@ -24,7 +30,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
     if (accountType === 'A') {
       return teachers;
     }
-  }.property('users', 'currentUser.accountType'),
+  },
 
   isDateRangeValid: function() {
     const htmlFormat = 'YYYY-MM-DD';
@@ -63,10 +69,15 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
 
   actions: {
-    radioSelect: function( value ){
-      console.log("Radio select: " + value );
-      this.set('importMode', value );
+    // radioSelect: function( value ){
+    //   console.log("Radio select: " + value );
+    //   this.set('importMode', value );
+    // },
+
+    radioSelect: function (value) {
+      this.set('mode', value);
     },
+
 
     buildCriteria: function() {
       if (!this.get('isFormValid')) {
@@ -74,19 +85,27 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         return;
       }
       if (!this.get('selectedTeacher')) {
-        this.set('teacher', this.get('currentUser'));
+        this.set('selectedTeacher', this.get('currentUser'));
       }
       const startDate = this.get('startDate');
       const endDate = this.get('endDate');
+      const requestedName = this.get('requestedName');
+      const mode = this.get('mode');
+      const owner = this.get('selectedOwner');
+
       console.log(startDate, endDate);
       const criteria = {
-        //teacher: this.get('selectedTeacher'),
+        teacher: this.get('selectedTeacher'),
         createdBy: this.get('currentUser'),
         assignment: this.get('selectedAssignment'),
         problem: this.get('selectedProblem'),
         section: this.get('selectedSection'),
         startDate: this.getMongoDate(this.get('startDate')),
         endDate: this.getMongoDate(this.get('endDate')),
+        folderSetName: this.get('selectedFolderSet.name'),
+        requestedName,
+        mode,
+        owner
       };
 
       const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);

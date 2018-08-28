@@ -13,7 +13,7 @@
 {{/if}}
 <nav class="import-nav">
   {{#unless isSelectingImportDetails}}
-    {{#unless uploadedSubmissions}}
+    {{#unless uploadedAnswers}}
     <div class="import-nav-back">
       <button class="import-nav-button" {{action "backToPrevStep" prevStep}}>
         <i class="fas fa-arrow-left"></i>
@@ -92,9 +92,9 @@
       {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
     {{/if}}
 
-    {{#if uploadedSubmissions}}
+    {{#if uploadedAnswers}}
       <div class="upload-results">
-        <p class="success-message">uploaded {{uploadedSubmissions.length}} submissions successfully</p>
+        <p class="success-message">uploaded {{uploadedAnswers.length}} submissions successfully</p>
       </div>
     {{/if}}
 

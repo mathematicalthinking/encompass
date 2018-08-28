@@ -2,8 +2,9 @@
 
 <h3>Create workspace from assignment</h3>
 
-<form id='powImportForm' class='properForm'>
+<form id='encImportForm' class='properForm'>
      <fieldset>
+       <h4>Filter Criteria</h4>
        <ol>
           <li>
             <label for="teacher">Teacher</label>
@@ -24,7 +25,7 @@
          </li>
          <li>
            <label for="section">Section</label>
-           {{my-select content=model.sections optionLabelPath="name" prompt="Please select an assignment" action=(action (mut selectedSection))}}
+           {{my-select content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
          </li>
          <li>
            <label for="startDate">From</label>
@@ -34,16 +35,33 @@
          <label for="endDate">To</label>
          {{input id="endDate" type="date" value=endDate}}
          </li>
-         {{!-- <li>
-          <label for="name">Name</label>
-          {{input id="workspace-name" type="text" value=requestedName}}
-         </li>
+         </ol>
+         <h4>Workspace Settings</h4>
+         <ol>
+           <li>
+          <label for="owner">Owner</label>
+            {{#if currentUser.isTeacher}}
+                <p>{{currentUser.username}}</p>
+              {{else}}
+              {{my-select selectedValue=selectedOwner content=teacherPool optionLabelPath="username" prompt="Please select an owner" action=(action (mut selectedOwner))}}
+              {{/if}}
+          </li>
           <li>
-            {{input id="workspace-name" type="radio" value=requestedName}}
-            <label for="name">Public</label>
-            {{input id="workspace-name" type="radio" value=requestedName}}
-            <label for="name">Private</label>
-          </li> --}}
+            <label for="name">Workspace Name</label>
+            {{input id="requestedName" type="text" value=requestedName}}
+          </li>
+          <li>
+            <label for="folders">Folders</label>
+            {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action (mut selectedFolderSet))}}
+          </li>
+
+            <li class="mode">
+              <label>Privacy Setting <span class="required-star">*</span></label>
+                <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
+                <label class="radio-label">Private</label>
+                <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
+                <label class="radio-label">Public</label>
+            </li>
          </ol>
      </fieldset>
 

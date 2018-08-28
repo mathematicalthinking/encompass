@@ -106,15 +106,15 @@ async function getSubmissions(req, res, next) {
   var user = userAuth.getUser(req);
   try {
     var criteria;
-  console.log('ids', req.query.ids);
+  //console.log('ids', req.query.ids);
   if (req.query.ids) {
     criteria = await access.get.submissions(user, req.query.ids);
   } else {
     criteria = await access.get.submissions(user, null);
   }
 
-  console.log('req params', req.query);
-  logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
+  //console.log('req params', req.query);
+  //logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
   models.Submission.find(criteria)
     .exec(function(err, submissions) {
       if(err) {

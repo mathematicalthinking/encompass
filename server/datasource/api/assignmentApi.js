@@ -30,13 +30,33 @@ module.exports.put = {};
 */
 
 function accessibleAssignments(user) {
-  return {
-    $or: [
-      { createdBy: user },
-      { students: user},
-    ],
+  if (!user) {
+    return;
+  }
+  const accountType = user.accountType;
+  const actingRole = user.actingRole;
+  let filter = {
     isTrashed: false
   };
+
+  if (accountType === 'S' || actingRole === 'student') {
+    filter.students = user;
+    return filter;
+  }
+
+  if (accountType === 'T') {
+    filter.createdBy = user;
+    return filter;
+  }
+
+  if (accountType === 'P') {
+    filter.createdBy = user;
+    return filter;
+  }
+
+  if (accountType === 'A') {
+    return filter;
+  }
 }
 
 const getAssignments = (req, res, next) => {
