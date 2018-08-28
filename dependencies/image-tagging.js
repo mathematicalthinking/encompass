@@ -197,7 +197,6 @@ NoteInput = function() {
   }
 
   function _handleMouseUp(event) {
-    console.log('handling mouse up for: ', event);
     if (!_currentlyMakingSelection) {
       return;
     }
@@ -273,7 +272,6 @@ NoteInput = function() {
     if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
 
       var diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
-      console.log('diff: ', diff);
       document.getElementById(scrollableContainer).scrollTop -= diff;
     }
 
@@ -327,7 +325,6 @@ NoteInput = function() {
     // }
 
     var visibleImage = _getVisibleImageBoundaries(event, _scrollableContainer, targetImage);
-    console.log('visImage in confirm inputs', visibleImage);
 
     var buttons = _confirmSelectionInputs(selectionBox, targetImage, visibleImage, _scrollableContainer);
 
@@ -349,11 +346,9 @@ NoteInput = function() {
 
   function _initiateSelection(event) {
     event.preventDefault();
-    console.log('initial click event for: ', event);
     if (_currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
       return;
     }
-    console.log('origin click', tagging.getCoordinates(event));
     _currentlyMakingSelection = true;
     window.addEventListener('mouseup', _handleMouseUp, false);
     window.addEventListener('mousemove', _handleMouseMove, false);
@@ -620,7 +615,6 @@ NoteInput = function() {
   }
 
   function _handleMouseMove(event) {
-    console.log('event mouse move', event);
     event.preventDefault();
     if (_currentlyMakingSelection) {
       tagging.createSelectionBox(event);
@@ -1341,8 +1335,6 @@ NoteInput = function() {
     imageCoords = _imageTrueCoords(_getImageFor(tag));
     tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
     tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
-    console.log(`imageCoords left: ${imageCoords.left}, top: ${imageCoords.top}`)
-    console.log(`coords for shown tag: left: ${tagLeft}, top: ${tagTop}`);
 
     styles = {
       position: 'absolute',
@@ -1389,6 +1381,7 @@ NoteInput = function() {
    */
   this.showAllTags = function() {
     var i;
+    console.log('_tags', _tags);
     for (i = 0; i < _tags.length; i++) {
       tagging.showTag(i);
     }
@@ -1475,7 +1468,12 @@ NoteInput = function() {
     tag = document.getElementById(_tagIdPrefix + id);
     if (tag) {
       _saveTag(tag);
-      tag.parentNode.removeChild(tag);
+      if (tag.parentNode) {
+        tag.parentNode.removeChild(tag);
+      } else {
+        tag.remove();
+      }
+
     }
 
     note = _notes[id];
