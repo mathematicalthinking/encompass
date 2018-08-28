@@ -16,7 +16,6 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
-const pdf = require('pdf-poppler');
 const fs = require('fs');
 const PDF2Pic = require('pdf2pic').default
 
@@ -99,41 +98,84 @@ const postImages = async function(req, res, next) {
 
     if (isPDF) {
       console.log('inside isPdf for post Images');
-      img.createdBy = user;
-      img.createdDate = Date.now();
+      // img.createdBy = user;
+      // img.createDate = Date.now();
 
       let converter = new PDF2Pic({
-        density: 100, // output pixels per inch
-        savename: "untitled", // output file name
-        savedir: './images', // output file location
+        density: 200, // output pixels per inch
+        savename: img.name, // output file name
+        savedir: './server/public/image_uploads', // output file location
         format: "png", // output file format
-        size: 600 // output size in pixels
+        size: 1000 // output size in pixels
       })
 
-      let file = img.path;
+      function convertBase64(file) {
+        let bitmap = fs.readFileSync(file);
+        return new Buffer(bitmap).toString('base64');
+      }
 
-      return converter.convertToBase64(file)
-        .then(resolve => {
-          if (resolve.base64) {
-            let data = resolve.base64;
-            let str = data.toString('base64');
-            let format = `data:image/png;base64,`;
-            let imgData = `${format}${str}`;
-            img.data = imgData;
-            img.createdBy = user;
-            img.createDate = Date.now();
-            return img;
-          }
+      let file = img.path;
+      return converter.convertBulk(file)
+        .then(results => {
+          let files = results.map((result) => {
+            return result.path;
+          })
+          let buffers = files.map((file) => {
+            let f = {
+              createdBy: user,
+              createDate: Date.now()
+            }
+            let newImage = new models.Image(f);
+            console.log('file is', file);
+            let bitmap = fs.readFileSync(file);
+            console.log('bitmap is', bitmap);
+            buffer = new Buffer(bitmap).toString('base64');
+            console.log('buffer is', buffer);
+
+             //let str = data.toString('base64');
+             //let alt = '';
+             let format = `data:image/png;base64,`;
+             let imgData = `${format}${buffer}`;
+             newImage.data = imgData;
+             return newImage;
+          });
+          let testbuffs = buffers.map(b => b.createdBy);
+          console.log('testbuffs', testbuffs);
+          return buffers;
+          // files.forEach((file) => {
+          //   console.log('file is', file);
+          //   let bitmap = fs.readFileSync(file);
+          //   console.log('bitmap is', bitmap);
+          //   buffer = new Buffer(bitmap).toString('base64');
+          //   console.log('buffer is', buffer);
+          // });
         })
         .catch((err) => {
-          console.log('error converting to base 64', err);
+          console.log('error converting batch', err);
         });
+
+      // return converter.convertToBase64(file)
+      //   .then(resolve => {
+      //     if (resolve.base64) {
+      //       let data = resolve.base64;
+      //       let str = data.toString('base64');
+      //       let format = `data:image/png;base64,`;
+      //       let imgData = `${format}${str}`;
+      //       img.data = imgData;
+      //       img.createdBy = user;
+      //       img.createDate = Date.now();
+      //       return img;
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log('error converting to base 64', err);
+      //   });
+
+
     } else {
       let str = data.toString('base64');
       let alt = '';
       let format = `data:${mimeType};base64,`;
-
-      let imgSrc = `<img alt="${alt}" src="data:${mimeType};base64,${str}`;
       let imgData = `${format}${str}`;
 
       img.createdBy = user;
@@ -145,9 +187,13 @@ const postImages = async function(req, res, next) {
 
 
   }));
-  console.log('files', files);
+  console.log('files', files.length);
+  let flattened = _.flatten(files);
+  //console.log('flattened')
+
+
   try {
-    docs = await Promise.all(files.map((f) => {
+    docs = await Promise.all(flattened.map((f) => {
       return f.save();
     }));
     const data = {'images': docs};
