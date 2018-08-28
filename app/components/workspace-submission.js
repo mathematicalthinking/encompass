@@ -47,6 +47,10 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return selectionsInWorkspace;
   }.property('currentSubmission.selections.[]'),
 
+  trashedSelections: function() {
+    return this.get('workspaceSelections').filterBy('isTrashed');
+  }.property('workspaceSelections.@each.isTrashed'),
+
   canSelect: true,
 
   /* TODO: fix this:
