@@ -16,21 +16,40 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('missingFilesError', true);
         return;
       }
+
       var formData = new FormData();
       for(let f of uploadData) {
         formData.append('photo', f);
       }
-      Ember.$.post({
-              url: '/image',
-              processData: false,
-              contentType: false,
-              createdBy: currentUser,
-              data: formData
-            }).then(function(res){
-              that.set('uploadResults', res.images);
-            }).catch(function(err){
-              that.set('uploadError', err);
-            });
+
+      let firstItem = uploadData[0];
+      let isPDF = firstItem.type === 'application/pdf';
+
+      if (isPDF) {
+        Ember.$.post({
+          url: '/pdf',
+          processData: false,
+          contentType: false,
+          data: formData,
+          createdBy: createdBy
+        }).then(function (res) {
+          that.set('uploadResults', res.images);
+        }).catch(function (err) {
+          that.set('uploadError', err);
+        });
+      } else {
+        Ember.$.post({
+          url: '/image',
+          processData: false,
+          contentType: false,
+          createdBy: currentUser,
+          data: formData
+        }).then(function (res) {
+          that.set('uploadResults', res.images);
+        }).catch(function (err) {
+          that.set('uploadError', err);
+        });
+      }
     },
 
     updateFiles: function(event) {
