@@ -5,6 +5,19 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   requiredInputIds: [],
   validator: Ember.inject.service('form-validator'),
   students: [],
+  editor: null,
+  // quill: new Quill('#editor', {
+  //   debug: 'info',
+  //   modules: {
+  //     toolbar: [
+  //       ['bold', 'italic', 'underline'],
+  //       ['image'],
+  //     ]
+  //   },
+  //   placeholder: 'Explain your ideas and how you figured them out...',
+  //   theme: 'snow'
+  // }),
+
 
   didInsertElement: function() {
 
@@ -32,6 +45,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     let isMissing = this.checkMissing.bind(this);
     this.get('validator').initialize(formId, isMissing);
   },
+
 
   handleImage: function() {
     const that = this;
@@ -82,7 +96,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     console.log('creating Answer');
     const createdBy = that.get('currentUser');
     const answer = that.get('answer');
-    const explanation = that.get('explanation');
+    const explanation = this.$('.ql-editor').html();
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
     const students = that.get('students');
 
@@ -216,6 +230,13 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.get('students').addObject(filtered.objectAt(0));
       this.set('student', '');
       this.set('addedStudent', true);
-    }
+    },
+
+    logHtmlContent: function() {
+      var editor = this.$('.ql-editor').html();
+      console.log('content is', editor);
+
+    },
   }
 });
+
