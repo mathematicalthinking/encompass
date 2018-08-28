@@ -91,7 +91,7 @@ const postImages = async function(req, res, next) {
   }
   console.log('running post Images!!');
 
-  const files = req.files.map((f) => {
+  const files = await Promise.all(req.files.map((f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
     let isPDF = mimeType === 'application/pdf';
@@ -101,7 +101,6 @@ const postImages = async function(req, res, next) {
       console.log('inside isPdf for post Images');
       img.createdBy = user;
       img.createdDate = Date.now();
-      img.isPdf = true;
 
       let converter = new PDF2Pic({
         density: 100, // output pixels per inch
@@ -112,10 +111,10 @@ const postImages = async function(req, res, next) {
       })
 
       let file = img.path;
-      console.log('file path is', file);
 
-      converter.convertToBase64(file)
+      return converter.convertToBase64(file)
         .then(resolve => {
+          //console.log('resolve', resolve);
           if (resolve.base64) {
             console.log('base64 image is');
             let data = resolve.base64;
@@ -123,12 +122,16 @@ const postImages = async function(req, res, next) {
             let format = `data:image/png;base64,`;
             let imgData = `${format}${str}`;
             img.data = imgData;
-            console.log('image data is', imgData);
-            console.log('img is after convert', img);
+            img.createdBy = user;
+            img.createDate = Date.now();
+            console.log('image data is', imgData.length);
+            //console.log('img is after convert', img;
             return img;
           }
         })
-        console.log('returned img is', img);
+        .catch((err) => {
+          console.log('error converting to base 64', err);
+        });
     } else {
       let str = data.toString('base64');
       let alt = '';
@@ -141,12 +144,12 @@ const postImages = async function(req, res, next) {
       img.createDate = Date.now();
       img.data = imgData;
       img.isPdf = isPDF;
-      return img;
+      return Promise.resolve(img);
     }
 
 
-  });
-
+  }));
+  console.log('files', files);
   try {
     docs = await Promise.all(files.map((f) => {
       return f.save();
@@ -154,6 +157,7 @@ const postImages = async function(req, res, next) {
     const data = {'images': docs};
     return utils.sendResponse(res, data);
   } catch(err) {
+    console.log('ERRRRRRRRR', err);
     return utils.sendError.InternalError(err, res);
   }
 
