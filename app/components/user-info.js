@@ -145,9 +145,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       createNewOrg: function () {
         let user = this.get('user');
+        let currentUser = this.get('currentUser');
         let reqOrg = user.get('organizationRequest');
         let newOrg = this.store.createRecord('organization', {
-          name: reqOrg
+          name: reqOrg,
+          createdBy: currentUser
         });
         newOrg.save()
           .then((org) => {
