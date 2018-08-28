@@ -38,7 +38,7 @@
             <label for="assignments">Assignments</label>
                <ul class="listing">
                 {{#each section.assignments as |assignment|}}
-                <li>{{assignment.title}}</li>
+                <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
                 {{/each}}
               </ul>
           </li>
