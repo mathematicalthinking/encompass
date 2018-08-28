@@ -53,6 +53,10 @@ function accessibleAssignments(user) {
     filter.createdBy = user;
     return filter;
   }
+
+  if (accountType === 'A') {
+    return filter;
+  }
 }
 
 const getAssignments = (req, res, next) => {
