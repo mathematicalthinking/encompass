@@ -11,51 +11,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this._super(...arguments);
     this.set('trashedSelections', this.trashed);
 
-    var selections = [];
-    var imgTags = [];
-
-    console.log(this.model); // This should never be null (ENC-479 possibility)
-    if (this.model) {
-      this.model.get('selections').forEach(function(selection) {
-        if (selection.get('isTrashed')) {
-          return; // don't include trashed selections
-        }
-
-        var coordinates = selection.get('coordinates'),
-            arrCoords = [];
-
-        if(coordinates) {
-          arrCoords = coordinates.split(' ');
-        }
-        if (arrCoords.length === 6) {
-          selections[selections.length] = {
-            id: selection.get('id'),
-            coords: coordinates,
-            text: selection.get('text'),
-            comments: selection.get('comments')
-          };
-        } else if (arrCoords.length === 5) {
-          imgTags[imgTags.length] = {
-            id: selection.get('id'),
-            parent: arrCoords[0],
-            coords: {
-              left: arrCoords[1],
-              top: arrCoords[2]
-            },
-            size: {
-              width: arrCoords[3],
-              height: arrCoords[4]
-            },
-            note: selection.get('text'),
-            comments: selection.get('comments')
-          };
-        }
-      });
-      this.set('selections', selections);
-      this.set('imgTags', imgTags);
-    }
-
-
+    this.setupTagging();
   },
   didInsertElement: function() {
     console.log('running didInsertEl');
