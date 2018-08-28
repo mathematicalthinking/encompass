@@ -34,7 +34,7 @@
           <div class="import-select">
             <p>Please select a problem</p>
             <br>
-            {{my-select selectedProblem = selectedProblem content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
+            {{my-select selectedProblem = selectedProblem content=problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
             <br>
           </div>
 

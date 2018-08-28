@@ -1,4 +1,4 @@
-Encompass.ImportWorkComponent = Ember.Component.extend({
+Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   selectedProblem: null,
   selectedSection: null,
   selectedFiles: null,
@@ -47,12 +47,15 @@ Encompass.ImportWorkComponent = Ember.Component.extend({
     return null;
   }),
 
-
   didInsertElement: function() {
     console.log('inserted element');
-    this.set('problems', this.model.problems);
+    let problems = this.model.problems;
+    var currentUser = this.get('currentUser');
+    let myProblems = problems.filterBy('createdBy.content', currentUser);
+    console.log('myProblems', myProblems);
+
+    this.set('problems', myProblems);
     this.set('sections', this.model.sections);
-    console.log('currentUser', this.get('currentUser'));
   },
 
   updateAnswer: function(e) {
