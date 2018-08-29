@@ -7,6 +7,35 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   uploadError: null,
   missingFilesError: false,
 
+
+  uploadImage: function (currentUser, formData) {
+    Ember.$.post({
+      url: '/image',
+      processData: false,
+      contentType: false,
+      createdBy: currentUser,
+      data: formData
+    }).then(function (res) {
+      this.set('uploadResults', res.images);
+    }).catch(function (err) {
+      this.set('uploadError', err);
+    });
+  },
+
+  uploadPdf: function (currentUser, formData) {
+    Ember.$.post({
+      url: '/pdf',
+      processData: false,
+      contentType: false,
+      data: formData,
+      createdBy: currentUser
+    }).then(function (res) {
+      this.set('uploadResults', res.images);
+    }).catch(function (err) {
+      this.set('uploadError', err);
+    });
+  },
+
   actions: {
     uploadImages: function() {
       var that = this;
@@ -18,38 +47,40 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       var formData = new FormData();
-      for(let f of uploadData) {
+      for (let f of uploadData) {
         formData.append('photo', f);
+        if (f.type === 'application/pdf') {
+          this.uploadPdf(currentUser, formData);
+        } else {
+          this.uploadImage(currentUser, formData);
+        }
       }
 
-      let firstItem = uploadData[0];
-      let isPDF = firstItem.type === 'application/pdf';
-
-      if (isPDF) {
-        Ember.$.post({
-          url: '/pdf',
-          processData: false,
-          contentType: false,
-          data: formData,
-          createdBy: currentUser
-        }).then(function (res) {
-          that.set('uploadResults', res.images);
-        }).catch(function (err) {
-          that.set('uploadError', err);
-        });
-      } else {
-        Ember.$.post({
-          url: '/image',
-          processData: false,
-          contentType: false,
-          createdBy: currentUser,
-          data: formData
-        }).then(function (res) {
-          that.set('uploadResults', res.images);
-        }).catch(function (err) {
-          that.set('uploadError', err);
-        });
-      }
+      // if (isPDF) {
+      //   Ember.$.post({
+      //     url: '/pdf',
+      //     processData: false,
+      //     contentType: false,
+      //     data: formData,
+      //     createdBy: currentUser
+      //   }).then(function (res) {
+      //     that.set('uploadResults', res.images);
+      //   }).catch(function (err) {
+      //     that.set('uploadError', err);
+      //   });
+      // } else {
+      //   Ember.$.post({
+      //     url: '/image',
+      //     processData: false,
+      //     contentType: false,
+      //     createdBy: currentUser,
+      //     data: formData
+      //   }).then(function (res) {
+      //     that.set('uploadResults', res.images);
+      //   }).catch(function (err) {
+      //     that.set('uploadError', err);
+      //   });
+      // }
     },
 
     updateFiles: function(event) {
