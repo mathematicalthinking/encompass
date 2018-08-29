@@ -23,6 +23,7 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   studentSections: DS.hasMany('section'),
   assignments: DS.hasMany('assignment', {async: true, inverse: null}),
   answers: DS.hasMany('answer', {async: true}),
+  actingRole: DS.attr('string'),
   isAdmin: function () {
     return this.get('accountType') === 'A';
   }.property('accountType'),
@@ -30,8 +31,8 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
     return this.get('accountType') === 'T';
   }.property('accountType'),
   isStudent: function () {
-    return this.get('accountType') === 'S';
-  }.property('accountType'),
+    return this.get('accountType') === 'S' || this.get('actingRole') === 'student';
+  }.property('accountType', 'actingRole'),
   isPdAdmin: function () {
     return this.get('accountType') === 'P';
   }.property('accountType'),
