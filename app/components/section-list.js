@@ -33,6 +33,12 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return yourSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
+  orgSections: function () {
+    var sections = this.sections;
+    var studentSections = sections.filterBy('organization');
+    return studentSections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed'),
+
   studentSections: function () {
     var sections = this.sections;
     var studentSections = sections.filterBy('students');
