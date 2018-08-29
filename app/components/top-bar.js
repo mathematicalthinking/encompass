@@ -49,7 +49,9 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
       } else {
         currentUser.set('actingRole', 'teacher');
       }
-      currentUser.save();
+      currentUser.save().then(() => {
+        this.sendAction('toHome');
+      });
     }
   }
 });
