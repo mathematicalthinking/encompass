@@ -6,6 +6,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   uploadResults: null,
   uploadError: null,
   missingFilesError: false,
+  acceptMultiple: false,
 
 
   uploadImage: function (currentUser, formData) {
@@ -23,7 +24,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   uploadPdf: function (currentUser, formData) {
-    Ember.$.post({
+    return Ember.$.post({
       url: '/pdf',
       processData: false,
       contentType: false,
