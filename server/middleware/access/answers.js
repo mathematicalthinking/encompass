@@ -38,10 +38,14 @@ const accessibleAnswersQuery = async function(user, ids) {
     const ownSections = await utils.getTeacherSections(user);
 
     const ownAssignmentIds = await utils.getModelIds('Assignment', {createdBy: user._id});
+    filter.$or = [
+      { assignment : { $in: ownAssignmentIds } },
+      { section: { $in: ownSections} }
+    ];
 
-    filter.assignment = { $in: ownAssignmentIds };
+    // filter.assignment = { $in: ownAssignmentIds };
 
-    filter.section = { $in: ownSections };
+    // filter.section = { $in: ownSections };
     return filter;
   }
   }catch(err) {
