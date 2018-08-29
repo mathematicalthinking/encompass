@@ -125,7 +125,7 @@ const postImages = async function(req, res, next) {
             }
             let newImage = new models.Image(f);
             let bitmap = fs.readFileSync(file);
-            buffer = new Buffer(bitmap).toString('base64');
+            let buffer = new Buffer(bitmap).toString('base64');
 
              let format = `data:image/png;base64,`;
              let imgData = `${format}${buffer}`;
