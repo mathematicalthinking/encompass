@@ -98,8 +98,6 @@ const postImages = async function(req, res, next) {
 
     if (isPDF) {
       console.log('inside isPdf for post Images');
-      // img.createdBy = user;
-      // img.createDate = Date.now();
 
       let converter = new PDF2Pic({
         density: 200, // output pixels per inch
@@ -126,50 +124,22 @@ const postImages = async function(req, res, next) {
               createDate: Date.now()
             }
             let newImage = new models.Image(f);
-            console.log('file is', file);
             let bitmap = fs.readFileSync(file);
-            console.log('bitmap is', bitmap);
             buffer = new Buffer(bitmap).toString('base64');
-            console.log('buffer is', buffer);
 
-             //let str = data.toString('base64');
-             //let alt = '';
              let format = `data:image/png;base64,`;
              let imgData = `${format}${buffer}`;
              newImage.data = imgData;
              return newImage;
           });
-          let testbuffs = buffers.map(b => b.createdBy);
-          console.log('testbuffs', testbuffs);
           return buffers;
-          // files.forEach((file) => {
-          //   console.log('file is', file);
-          //   let bitmap = fs.readFileSync(file);
-          //   console.log('bitmap is', bitmap);
-          //   buffer = new Buffer(bitmap).toString('base64');
-          //   console.log('buffer is', buffer);
-          // });
         })
         .catch((err) => {
+          console.error(`Pdf conversion error: ${err}`);
+          console.trace();
           console.log('error converting batch', err);
         });
 
-      // return converter.convertToBase64(file)
-      //   .then(resolve => {
-      //     if (resolve.base64) {
-      //       let data = resolve.base64;
-      //       let str = data.toString('base64');
-      //       let format = `data:image/png;base64,`;
-      //       let imgData = `${format}${str}`;
-      //       img.data = imgData;
-      //       img.createdBy = user;
-      //       img.createDate = Date.now();
-      //       return img;
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log('error converting to base 64', err);
-      //   });
 
 
     } else {
@@ -187,10 +157,7 @@ const postImages = async function(req, res, next) {
 
 
   }));
-  console.log('files', files.length);
   let flattened = _.flatten(files);
-  //console.log('flattened')
-
 
   try {
     docs = await Promise.all(flattened.map((f) => {
