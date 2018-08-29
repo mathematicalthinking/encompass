@@ -5,9 +5,10 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   requiredInputIds: [],
   validator: Ember.inject.service('form-validator'),
   students: [],
+  editor: null,
+
 
   didInsertElement: function() {
-
     //prefill form if revising
     if (this.priorAnswer) {
       const ans = this.priorAnswer;
@@ -32,6 +33,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     let isMissing = this.checkMissing.bind(this);
     this.get('validator').initialize(formId, isMissing);
   },
+
 
   handleImage: function() {
     const that = this;
@@ -80,9 +82,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   createAnswer: function() {
     const that = this;
     console.log('creating Answer');
-    const createdBy = that.get('currentUser');
     const answer = that.get('answer');
-    const explanation = that.get('explanation');
+    const quillContent = this.$('.ql-editor').html();
+    const explanation = quillContent.replace(/["]/g, "'");
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
     const students = that.get('students');
 
@@ -129,43 +131,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           });
 
     });
-
-    // if (that.get('existingImageId')) {
-    //  console.log('existingImageId', that.get('existingImageId'));
-    //   createAnswerData.set('uploadedFileId', that.get('existingImageId'));
-    // }
-
-    // if (that.filesToBeUploaded) {
-    //   console.log('filesToBeUploaded', that.filesToBeUploaded);
-    //   const uploadData = that.get('filesToBeUploaded');
-    //   const formData = new FormData();
-    //   for(let f of uploadData) {
-    //     formData.append('photo', f);
-    //   }
-    //   Ember.$.post({
-    //     url: '/image',
-    //     processData: false,
-    //     contentType: false,
-    //     data: formData
-    //   }).then(function(res){
-    //     that.set('uploadResults', res.images);
-    //     // currently allowing multiple images to be uploaded but only saving
-    //     // the first image url as the image in the answer doc
-    //     createAnswerData.set('uploadedFileId', res.images[0]._id);
-    //     createAnswerData.save()
-    //       .then((answer) => {
-    //         return that.get('handleCreatedAnswer')(answer);
-    //       })
-    //       .catch((err) => {
-    //         that.set('createAnswerError', err);
-    //       });
-    //   }).catch(function(err){
-    //     that.set('uploadError', err);
-    //   });
-    // } else {
-
-        // }
-      },
+  },
 
   actions: {
     validate: function() {
@@ -216,6 +182,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.get('students').addObject(filtered.objectAt(0));
       this.set('student', '');
       this.set('addedStudent', true);
-    }
+    },
   }
 });
+

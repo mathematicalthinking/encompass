@@ -3,7 +3,6 @@
   <div class="clear"></div>
 </header>
 
-
   <section class="third submissions">
     <form id='newanswerform' class='properForm'>
       <fieldset>
@@ -15,8 +14,8 @@
           </li>
           <li>
             <label for="explanation">Explain your ideas and how you figured them out</label>
-            {{textarea cols="80" rows="6" value=explanation placeholder="Explain your ideas..."}}
-            {{input id="explanation" required="true" type="hidden" value=explanation}}
+            <section id="editor">
+            </section>
           </li>
          <li>
               <label for="uploadedFile">Uploaded File:</label>
@@ -81,4 +80,20 @@
   {{#if createdAnswerError}}
     <p>{{createAnswerError}}</p>
   {{/if}}
+
+<script>
+  var options = {
+    debug: 'info',
+    modules: {
+      toolbar: [
+      ['bold', 'italic', 'underline'],
+      ['image'],
+      ]
+    },
+    placeholder: 'Explain your ideas and how you figured them out...',
+    theme: 'snow'
+  };
+  var quill = new Quill('#editor', options);
+</script>
+
 
