@@ -10,7 +10,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
-describe('Visiting Workspace Creation', function() {
+xdescribe('Visiting Workspace Creation', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {

@@ -190,7 +190,7 @@ describe('Visiting Workspaces', function() {
         // 'span.submission_index'.should.contain.text('256');
       });
 
-      it('should display a bunch of comments', async function() {
+      xit('should display a bunch of comments', async function() {
         let comments;
         let commentsText;
         try {
