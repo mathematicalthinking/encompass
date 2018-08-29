@@ -1,5 +1,5 @@
 {{#if currentUser.isStudent}}
-  <header>
+  <header class="list-header">
     <h2>Responses from your teachers</h2>
     <aside>
     </aside>
@@ -41,13 +41,18 @@
 
 {{else}}
   <header>
-    <h2>Select a response</h2>
-    <aside>
-    </aside>
+    <h2 class="list-header">Select a response</h2>
+    <div class="toggle-btn">
+      {{#if showingAllResponses}}
+        <button {{action 'toggleYourRespones'}} class="new-link-btn">Show Only My Responses</button>
+      {{else}}
+        <button {{action 'toggleYourRespones'}} class="new-link-btn">Show All Responses</button>
+      {{/if}}
+    </div>
     <div class="clear"></div>
   </header>
 
-  {{#if yourResponses.length}}
+  {{#if allResponses.length}}
 
   <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
     <thead>
@@ -59,8 +64,9 @@
         <th align="left">By</th>
       </tr>
     </thead>
+  {{#if showingAllResponses}}
     <tbody>
-      {{#each yourResponses as |response|}}
+      {{#each allResponses as |response|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
         <td style="padding-left: 55px;">
           {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
@@ -80,8 +86,31 @@
       </tr>
       {{/each}}
     </tbody>
+  {{/if}}
+  {{#if showingOnlyMine}}
+    <tbody>
+      {{#each yourResponses as |response|}}
+      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
+        <td style="padding-left: 55px;">
+          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+        </td>
+        {{#if response.recipient}}
+        <td>{{response.recipient.username}}</td>
+        {{else}}
+        <td>PoW User</td>
+        {{/if}}
+        <td>{{response.source}}</td>
+        <td>
+          {{#link-to 'response' response}}
+          <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
+          {{/link-to}}
+        </td>
+        <td>{{response.createdBy.displayName}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  {{/if}}
   </table>
-
   {{else}}
   <p class="notice">
     Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
