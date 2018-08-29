@@ -27,7 +27,7 @@
       &:hover {
         font-weight: $bold-font-weight;
         cursor: pointer;
-        background: darken($accent-yellow, 10%);
+        background: lighten($accent-yellow, 10%);
       }
     }
   }
