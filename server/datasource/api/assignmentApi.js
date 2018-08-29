@@ -3,7 +3,7 @@
   * @description This is the API for assignment based requests
   * @author Daniel Kelly
 */
-
+/* jshint ignore:start */
 var mongoose = require('mongoose'),
   express = require('express'),
   _ = require('underscore'),
@@ -13,6 +13,7 @@ var mongoose = require('mongoose'),
   userAuth = require('../../middleware/userAuth'),
   permissions = require('../../../common/permissions'),
   utils = require('../../middleware/requestHandler');
+  access = require('../../middleware/access/assignments');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -29,39 +30,10 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
 */
 
-function accessibleAssignments(user) {
-  if (!user) {
-    return;
-  }
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
-  let filter = {
-    isTrashed: false
-  };
 
-  if (accountType === 'S' || actingRole === 'student') {
-    filter.students = user;
-    return filter;
-  }
-
-  if (accountType === 'T') {
-    filter.createdBy = user;
-    return filter;
-  }
-
-  if (accountType === 'P') {
-    filter.createdBy = user;
-    return filter;
-  }
-
-  if (accountType === 'A') {
-    return filter;
-  }
-}
-
-const getAssignments = (req, res, next) => {
+const getAssignments = async function(req, res, next) {
   const user = userAuth.requireUser(req);
-  const criteria = accessibleAssignments(user);
+  const criteria = await access.get.assignments(user);
   models.Assignment.find(criteria)
   .exec((err, assignments) => {
     if (err) {
@@ -346,3 +318,4 @@ module.exports.put.assignment.addStudent = addStudent;
 module.exports.put.assignment.removeStudent = removeStudent;
 module.exports.put.assignment.addProblem = addProblem;
 module.exports.put.assignment.removeProblem = removeProblem;
+/* jshint ignore:end */
