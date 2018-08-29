@@ -10,20 +10,26 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
 
   uploadImage: function (currentUser, formData) {
-    Ember.$.post({
+    const that = this;
+    return Ember.$.post({
       url: '/image',
       processData: false,
       contentType: false,
       createdBy: currentUser,
       data: formData
     }).then(function (res) {
-      this.set('uploadResults', res.images);
+      console.log('res from image API', res);
+      that.set('uploadedImages', res.images);
+      return res.images;
     }).catch(function (err) {
-      this.set('uploadError', err);
+      that.set('uploadError', err);
+      return err;
     });
   },
 
   uploadPdf: function (currentUser, formData) {
+    console.log('in uploadPdf');
+    const that = this;
     return Ember.$.post({
       url: '/pdf',
       processData: false,
@@ -31,9 +37,12 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       data: formData,
       createdBy: currentUser
     }).then(function (res) {
-      this.set('uploadResults', res.images);
+      console.log('res from pdf api', res);
+      that.set('uploadedPdfs', res.images);
+      return res.images;
     }).catch(function (err) {
-      this.set('uploadError', err);
+      that.set('uploadError', err);
+      return err;
     });
   },
 
@@ -48,40 +57,37 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       var formData = new FormData();
+      var pdfFormData = new FormData();
+      var imageCount = 0;
+      var pdfCount = 0;
       for (let f of uploadData) {
-        formData.append('photo', f);
         if (f.type === 'application/pdf') {
-          this.uploadPdf(currentUser, formData);
+          pdfFormData.append('photo', f);
+          pdfCount++;
         } else {
-          this.uploadImage(currentUser, formData);
+          formData.append('photo', f);
+          imageCount++;
         }
       }
+      if (imageCount > 0) {
+        return this.uploadImage(currentUser, formData).then((res) => {
+          console.log('res image', res);
+          if (pdfCount > 0) {
+            return this.uploadPdf(currentUser, pdfFormData).then((res) => {
+              console.log('res pdf', res);
+              let results = this.get('uploadedPdfs').concat(this.get('uploadedImages'));
+              this.set('uploadResults', results);
+            })
+            .catch(console.log);
+          }
+        });
+      } else if (pdfCount > 0) {
+        return this.uploadPdf(currentUser, pdfFormData).then((res) => {
+          console.log('res', res);
+        })
+        .catch(console.log);
+      }
 
-      // if (isPDF) {
-      //   Ember.$.post({
-      //     url: '/pdf',
-      //     processData: false,
-      //     contentType: false,
-      //     data: formData,
-      //     createdBy: currentUser
-      //   }).then(function (res) {
-      //     that.set('uploadResults', res.images);
-      //   }).catch(function (err) {
-      //     that.set('uploadError', err);
-      //   });
-      // } else {
-      //   Ember.$.post({
-      //     url: '/image',
-      //     processData: false,
-      //     contentType: false,
-      //     createdBy: currentUser,
-      //     data: formData
-      //   }).then(function (res) {
-      //     that.set('uploadResults', res.images);
-      //   }).catch(function (err) {
-      //     that.set('uploadError', err);
-      //   });
-      // }
     },
 
     updateFiles: function(event) {
@@ -92,3 +98,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   }
 });
+
+
+
