@@ -145,14 +145,14 @@ function protect(options) {
     if ((openRequest && req.method === 'GET')) {
       return next();
     }
-    if (user.accountType === 'S' || user.actingRole === 'student') {
-      if (req.method !== 'GET') {
-        console.log('req.path student', req.path );
-        if (!_.contains(studentPostPaths, req.path)) {
-          return res.redirect('/');
-        }
-      }
-    }
+    // if (user.accountType === 'S' || user.actingRole === 'student') {
+    //   if (req.method !== 'GET') {
+    //     console.log('req.path student', req.path );
+    //     if (!_.contains(studentPostPaths, req.path)) {
+    //       return res.redirect('/');
+    //     }
+    //   }
+    // }
 
     var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
     console.log('is user authenticated in protect: ', userAuthenticated);
