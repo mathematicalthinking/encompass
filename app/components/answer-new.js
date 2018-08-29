@@ -48,22 +48,44 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         for(let f of uploadData) {
           formData.append('photo', f);
         }
-        return Ember.$.post({
-          url: '/image',
-          processData: false,
-          contentType: false,
-          data: formData
-        }).then(function(res){
-          that.set('uploadResults', res.images);
-          // currently allowing multiple images to be uploaded but only saving
-          // the first image url as the image in the answer doc
-          return resolve(res.images[0]._id);
-        })
-        .catch((err) => {
-          that.set('createAnswerError', err);
-          return reject(err);
-        });
-      }
+
+        let firstItem = uploadData[0];
+        let isPDF = firstItem.type === 'application/pdf';
+
+        if (isPDF) {
+          return Ember.$.post({
+            url: '/pdf',
+            processData: false,
+            contentType: false,
+            data: formData
+          }).then(function (res) {
+            that.set('uploadResults', res.images);
+            // currently allowing multiple images to be uploaded but only saving
+            // the first image url as the image in the answer doc
+            return resolve(res.images[0]._id);
+          })
+          .catch((err) => {
+            that.set('createAnswerError', err);
+            return reject(err);
+          });
+        } else {
+          return Ember.$.post({
+            url: '/image',
+            processData: false,
+            contentType: false,
+            data: formData
+          }).then(function(res){
+            that.set('uploadResults', res.images);
+            // currently allowing multiple images to be uploaded but only saving
+            // the first image url as the image in the answer doc
+            return resolve(res.images[0]._id);
+          })
+          .catch((err) => {
+            that.set('createAnswerError', err);
+            return reject(err);
+          });
+        }
+    }
 
       return resolve(null);
     });
@@ -119,7 +141,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         const userId = that.get('currentUser.id');
         console.log('userId', userId);
        let yourAnswer = answers.filter((answer) => {
-        return answer.get('createdBy.id') === userId;       }).objectAt(0);
+        return answer.get('createdBy.id') === userId;}).objectAt(0);
 
       return that.get('handleCreatedAnswer')(yourAnswer);
 

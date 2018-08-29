@@ -17,9 +17,11 @@ const fs = require('fs');
 
 
   const buildDestination = function(req, res, next) {
+    console.log('build destination is running');
     if (!req.user) {
       return utils.sendError.InvalidCredentialsError('Unauthenticated request', res);
     }
+
     const rootPath = process.cwd();
     const username = req.user.username || 'anonymous';
     let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
@@ -27,9 +29,9 @@ const fs = require('fs');
       if (err) {
         console.log(err);
       }
-        next(null, dest);
+      next(null, dest);
     });
-    };
+  };
 
     const filename = (req, file, next) => {
     const ext = file.mimetype.split('/')[1];

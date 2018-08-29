@@ -129,22 +129,22 @@ server.use(userAuth.protect());
 server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
-//MULTER CONFIG
-// const upload = multer({
-//   storage: multer.diskStorage({
-//     destination: multerMw.buildDestination,
-//     filename: multerMw.filename
-//   }),
-//     fileFilter: multerMw.fileFilter
-// });
-
 const upload = multer({
   storage: multer.memoryStorage(),
-  fileFilter: multerMw.fileFilter
+  fileFilter: multerMw.fileFilter,
+});
+
+const PDFUpload = multer({
+  storage: multer.diskStorage({
+    destination: multerMw.buildDestination,
+    filename: multerMw.filename
+  }),
+    fileFilter: multerMw.fileFilter
 });
 
 // // IMAGE UPLOAD
-server.post('/image', upload.array('photo', 10), api.post.images);
+server.post('/image', upload.array('photo', 200), api.post.images);
+server.post('/pdf', PDFUpload.array('photo', 50), api.post.images);
 
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);

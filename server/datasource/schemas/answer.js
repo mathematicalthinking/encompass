@@ -20,9 +20,9 @@ var AnswerSchema = new Schema({
   // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: { type: ObjectId, ref: 'Assignment' },
-  answer: { type: String, required: true },
+  answer: { type: String },
   explanation: { type: String }, //Change to text if we can save image ObjectId
-  explanationImage: { type: ObjectId, ref: 'Image' },
+  // explanationImage: { type: ObjectId, ref: 'Image' },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
   uploadedFileId: { type: String },

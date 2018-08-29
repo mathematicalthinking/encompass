@@ -15,13 +15,22 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var sections = this.sections;
     var currentUser = this.get('currentUser');
     var collabSections = sections.filterBy('teachers');
-    var yourCollabSections= collabSections.filter((section) => {
+    var yourCollabSections = collabSections.filter((section) => {
+      let teachers = section.get('teachers');
+      console.log('teachers are', teachers);
+      if (teachers.includes(currentUser)) {
+       return section;
+     }
+    });
+
+    var yourSections = yourCollabSections.filter((section) => {
       let content = section.get('createdBy.content');
       if (content) {
         return content.id !== currentUser.id;
       }
     });
-    return yourCollabSections.sortBy('createDate').reverse();
+
+    return yourSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
   studentSections: function () {

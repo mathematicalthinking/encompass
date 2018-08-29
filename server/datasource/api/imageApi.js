@@ -16,7 +16,8 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
-
+const fs = require('fs');
+const PDF2Pic = require('pdf2pic').default
 
 module.exports.get = {};
 module.exports.post = {};
@@ -65,7 +66,7 @@ const getImage = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    const data = {'image': image};
+    const data = {'image': image };
     utils.sendResponse(res, data);
     next();
   });
@@ -87,52 +88,87 @@ const postImages = async function(req, res, next) {
   if (!req.files) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
+  console.log('running post Images!!');
 
-  const files = req.files.map((f) => {
+  const files = await Promise.all(req.files.map((f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
-    let isPdf = mimeType === 'application/pdf';
-    let str = data.toString('base64');
-    let alt = '';
-    let format = `data:${mimeType};base64,`;
-
-    let imgSrc = `<img alt="${alt}" src="data:${mimeType};base64,${str}`;
-    let imgData = `${format}${str}`;
-
+    let isPDF = mimeType === 'application/pdf';
     let img = new models.Image(f);
-    img.createdBy = user;
-    img.createDate = Date.now();
-    img.data = imgData;
-    img.isPdf = isPdf;
-    // const ix = img.path.indexOf('image_uploads');
-    // img.relativePath = img.path.slice(ix);
-    return img;
-  });
+
+    if (isPDF) {
+      console.log('inside isPdf for post Images');
+
+      let converter = new PDF2Pic({
+        density: 200, // output pixels per inch
+        savename: img.name, // output file name
+        savedir: './server/public/image_uploads', // output file location
+        format: "png", // output file format
+        size: 1000 // output size in pixels
+      })
+
+      function convertBase64(file) {
+        let bitmap = fs.readFileSync(file);
+        return new Buffer(bitmap).toString('base64');
+      }
+
+      let file = img.path;
+      return converter.convertBulk(file)
+        .then(results => {
+          let files = results.map((result) => {
+            return result.path;
+          })
+          let buffers = files.map((file) => {
+            let f = {
+              createdBy: user,
+              createDate: Date.now()
+            }
+            let newImage = new models.Image(f);
+            let bitmap = fs.readFileSync(file);
+            let buffer = new Buffer(bitmap).toString('base64');
+
+             let format = `data:image/png;base64,`;
+             let imgData = `${format}${buffer}`;
+             newImage.data = imgData;
+             return newImage;
+          });
+          return buffers;
+        })
+        .catch((err) => {
+          console.error(`Pdf conversion error: ${err}`);
+          console.trace();
+          console.log('error converting batch', err);
+        });
+
+
+
+    } else {
+      let str = data.toString('base64');
+      let alt = '';
+      let format = `data:${mimeType};base64,`;
+      let imgData = `${format}${str}`;
+
+      img.createdBy = user;
+      img.createDate = Date.now();
+      img.data = imgData;
+      img.isPdf = isPDF;
+      return Promise.resolve(img);
+    }
+
+
+  }));
+  let flattened = _.flatten(files);
 
   try {
-    docs = await Promise.all(files.map((f) => {
+    docs = await Promise.all(flattened.map((f) => {
       return f.save();
     }));
     const data = {'images': docs};
     return utils.sendResponse(res, data);
-  }catch(err) {
+  } catch(err) {
     return utils.sendError.InternalError(err, res);
   }
 
-
-
-  // const images = new models.Image(req.body.image);
-  // image.createdBy = user;
-  // image.createDate = Date.now();
-  // image.save((err, doc) => {
-  //   if (err) {
-  //     logger.error(err);
-  //     return utils.sendError.InternalError(err, res);
-  //   }
-  //   const data = {'image': files};
-  //   utils.sendResponse(res, data);
-  //   next();
-  // });
 };
 
 /**
