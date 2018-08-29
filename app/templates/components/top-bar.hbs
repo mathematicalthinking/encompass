@@ -71,6 +71,9 @@
           {{/if}}
           <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
           </span>
+          {{#unless isStudentAccount}}
+          <li id="role-toggle"> <span {{action "toggleActingRole"}}>Acting as: {{user.actingRole}}</span></li>
+          {{/unless}}
           <li id="current-username"><span class="underline">{{user.displayName}}</span></li>
           <li id="user-image">
             {{input type="checkbox" id="menu-btn" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
