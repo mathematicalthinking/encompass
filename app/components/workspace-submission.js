@@ -100,7 +100,17 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
         console.log('setting is Trans false');
         this.set('isTransitioning', false);
       }
-    }
+    },
+    openProblem: function() {
+      let answer = this.currentSubmission.get('answer');
+      let problem = answer.get('problem');
+      let problemId = problem.get('id');
+
+      var getUrl = window.location;
+      var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+
+      window.open(`${baseUrl}#/problems/${problemId}`, 'newwindow', 'width=1200, height=700');
+    },
   }
 });
 
