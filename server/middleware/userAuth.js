@@ -137,12 +137,21 @@ function protect(options) {
 
     var user = getUser(req);
     var openPaths = ['/api/users', '/api/stats', '/api/organizations'];
+    var studentPostPaths = ['/api/answers', '/image'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
     //var newOrgRequest = req.path === 'api.organizations' && req.method === 'POST';
     if ((openRequest && req.method === 'GET')) {
       return next();
+    }
+    if (user.accountType === 'S' || user.actingRole === 'student') {
+      if (req.method !== 'GET') {
+        console.log('req.path student', req.path );
+        if (!_.contains(studentPostPaths, req.path)) {
+          return res.redirect('/');
+        }
+      }
     }
 
     var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
@@ -151,6 +160,7 @@ function protect(options) {
 
     var notAuthenticated = !userAuthenticated;
     var notAuthorized = !userAuthorized;
+
 
     if (notAuthenticated) {
       return utils.sendResponse(res, {"error": 'not auth'});
