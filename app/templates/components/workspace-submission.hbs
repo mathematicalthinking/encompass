@@ -21,6 +21,11 @@
           {{currentSubmission.puzzle.title}}
           <i class="fas fa-external-link-alt"></i>
         </a>
+        {{#link-to 'problem' problem.puzzleUrl}}{{currentSubmission.puzzle.title}}{{/link-to}}
+        <a class='puzzle' target="_blank" href="{{currentSubmission.puzzleUrl}}">
+          {{currentSubmission.puzzle.title}}
+          <i class="fas fa-external-link-alt"></i>
+        </a>
       </td>
       <td>
         {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
