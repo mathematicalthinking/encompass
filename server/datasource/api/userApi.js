@@ -207,7 +207,7 @@ function postUser(req, res, next) {
   * @throws {InternalError} Data save failed
   * @throws {RestError} Something? went wrong
   */
-  function putUser(req, res, next) {
+  async function putUser(req, res, next) {
     console.log('req.body in put user', req.body);
     /* These fields are uneditable */
     delete req.body.user.username;
@@ -216,35 +216,40 @@ function postUser(req, res, next) {
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
-    if (user.accountType === 'A' || user.accountType === 'T' || user.accountType === 'P') {
+    var modifiableUserCriteria = access.put.user(user);
+    var modifiableUsers = await models.User.find(modifiableUserCriteria, {_id: 1}).lean().exec();
+    var userIds = modifiableUsers.map(obj => obj._id.toString());
+
+    // Should we handle a nonexisting userid separately?
+    if (user.accountType === 'S' || !_.contains(userIds, req.params.id)) {
+      return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+    }
+    if (user.actingRole === 'student') {
+      models.User.findByIdAndUpdate(
+        req.params.id,
+        /* actingRole students can only update their actingRole */
+        { actingRole: req.body.user.actingRole },
+        { new: true }
+      ).exec((err, doc) => {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
+        var data = {'user': doc};
+        return utils.sendResponse(res, data);
+      });
+    } else if (user.accountType === 'A' || user.accountType === 'T' || user.accountType === 'P') {
       models.User.findByIdAndUpdate(
         req.params.id,
         req.body.user,
-        {new: true}
+        { new: true }
       ).exec((err, doc) => {
         if (err) {
           logger.error(err);
           return utils.sendError.InternalError(err, res);
         }
         var data = {'user': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
-      /* non-admins can only update themselves */
-      if (req.params.id !== user.id) {
-        return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-      }
-      models.User.findByIdAndUpdate(
-        req.params.id,
-        /* non-admins can only update their names, and seenTour fields */
-        {name: req.body.user.name, seenTour: req.body.user.seenTour}
-      ).exec((err, doc) => {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'user': doc};
-        utils.sendResponse(res, data);
+        return utils.sendResponse(res, data);
       });
     }
   }
@@ -340,4 +345,4 @@ function postUser(req, res, next) {
   module.exports.put.user.removeSection = removeSection;
   module.exports.put.user.addAssignment = addAssignment;
   module.exports.put.user.removeAssignment = removeAssignment;
-/* jshint ignore:start */
+/* jshint ignore:end */
