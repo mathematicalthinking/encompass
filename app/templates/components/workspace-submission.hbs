@@ -39,7 +39,7 @@
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
     <h3>Selectabe View!</h3>
-    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition"}}
+    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
       <div id="submission_container">
         <div class="submission short">
           {{{currentSubmission.shortAnswer}}}

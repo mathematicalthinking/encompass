@@ -101,7 +101,8 @@ let workspace = new models.Workspace({
   name: name,
   owner: user,
   submissionSet: submissionSet,
-  submissions: submissionIds
+  submissions: submissionIds,
+  createdBy: user
 });
 let ws = await workspace.save();
 const data = {'workspaceId': ws._id};

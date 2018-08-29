@@ -6,6 +6,13 @@
  */
 Encompass.SelectableAreaComponent = Ember.Component.extend({
   //classNameBindings: ['id'],
+
+  init: function() {
+    this._super(...arguments);
+    this.set('trashedSelections', this.trashed);
+
+    this.setupTagging();
+  },
   didInsertElement: function() {
     console.log('running didInsertEl');
     this.set('currSubId', this.model.id);
@@ -48,6 +55,79 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       comp.sendAction('addSelection', tag);
     });
 
+
+
+    comp.selectionHighlighting.loadSelections(comp.get('selections'));
+    comp.imageTagging.loadTags(comp.get('imgTags'));
+    //comp.myPropertyDidChange();
+    if (comp.showingSelections) {
+      comp.selectionHighlighting.highlightAllSelections();
+      comp.imageTagging.showAllTags();
+    }
+    if (!comp.makingSelection) {
+      comp.selectionHighlighting.disableSelection();
+      comp.imageTagging.disable();
+    }
+  },
+
+  didUpdateAttrs: function() {
+    var highlighting = this.selectionHighlighting;
+    var tagging = this.imageTagging;
+    var modelId = this.model.id;
+    console.log('model id', this.model.id);
+    console.log('trashed', this.trashed.get('length'));
+    console.log('comp trashed', this.get('trashedSelections.length'));
+
+    if (this.get('currSubId') !== this.model.id) {
+      console.log('diff!');
+      this.imageTagging.removeAllTags();
+    return this.sendAction('handleTransition', true);
+    }
+    if (this.trashed.get('length') > this.get('trashedSelections.length')) {
+      console.log('deleted!');
+      this.set('trashedSelections', this.trashed);
+      tagging.removeAllTags();
+      highlighting.removeAllHighlights();
+    }
+    //tagging.removeAllTags();
+    this.setupTagging();
+
+    highlighting.loadSelections(this.get('selections'));
+
+    //tagging.removeAllTags();
+    tagging.loadTags(this.get('imgTags'));
+
+    var isSelecting = this.makingSelection;
+    var isShowing = this.showingSelections;
+    console.log('isShowing');
+    if (isSelecting !== this.get('selecting')) {
+      if (isSelecting) {
+        this.set('selecting', true);
+      highlighting.enableSelection();
+      tagging.enable();
+      }
+    }
+
+    if (isShowing !== this.get('showing')) {
+      if (isShowing) {
+        this.set('showing', true);
+        highlighting.highlightAllSelections();
+        tagging.showAllTags();
+
+      } else {
+        this.set('showing', false);
+        highlighting.removeAllHighlights();
+        tagging.removeAllTags();
+
+      }
+    } else if(isShowing) {
+      highlighting.highlightAllSelections();
+      tagging.showAllTags();
+    }
+
+  },
+
+  setupTagging: function() {
     var selections = [];
     var imgTags = [];
 
@@ -64,7 +144,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
         if(coordinates) {
           arrCoords = coordinates.split(' ');
         }
-
         if (arrCoords.length === 6) {
           selections[selections.length] = {
             id: selection.get('id'),
@@ -89,54 +168,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
           };
         }
       });
-    }
-
-    comp.selectionHighlighting.loadSelections(selections);
-    comp.imageTagging.loadTags(imgTags);
-    //comp.myPropertyDidChange();
-    if (comp.showingSelections) {
-      comp.selectionHighlighting.highlightAllSelections();
-      comp.imageTagging.showAllTags();
-    }
-    if (!comp.makingSelection) {
-      comp.selectionHighlighting.disableSelection();
-      comp.imageTagging.disable();
-    }
-  },
-
-  didUpdateAttrs: function() {
-    var highlighting = this.selectionHighlighting;
-    var tagging = this.imageTagging;
-    var modelId = this.model.id;
-    console.log('model id', this.model.id);
-    if (this.get('currSubId') !== this.model.id) {
-      console.log('diff!');
-      this.imageTagging.removeAllTags();
-    this.sendAction('handleTransition', true);
-    }
-    var isSelecting = this.makingSelection;
-    var isShowing = this.showingSelections;
-    console.log('isShowing');
-    if (isSelecting !== this.get('selecting')) {
-      if (isSelecting) {
-        this.set('selecting', true);
-      highlighting.enableSelection();
-      tagging.enable();
-      }
-    }
-
-    if (isShowing !== this.get('showing')) {
-      if (isShowing) {
-        this.set('showing', true);
-        highlighting.highlightAllSelections();
-        tagging.showAllTags();
-
-      } else {
-        this.set('showing', false);
-        highlighting.removeAllHighlights();
-        tagging.removeAllTags();
-
-      }
+      this.set('selections', selections);
+      this.set('imgTags', imgTags);
     }
   },
 
@@ -146,47 +179,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this.sendAction('handleTransition', false);
     this.selectionHighlighting.destroy();
     this.imageTagging.destroy();
-    //this.imageTagging.removeAllTags();
 
   },
-  // myPropertyDidChange: function() {
-  //   var comp = this,
-  //     containerId = 'submission_container',
-  //     container = document.getElementById(containerId),
-  //     highlighting = comp.selectionHighlighting,
-  //     tagging = comp.imageTagging;
 
-  //   if (!container) {
-  //     return;
-  //   }
-
-  //   console.log("Prop changed, showingSelections: " + this.showingSelections );
-  //   if (this.showingSelections) {
-  //     //highlighting.removeAllHighlights();
-  //     highlighting.highlightAllSelections();
-  //     //highlighting.disableSelection();
-  //     //tagging.removeAllTags();
-  //     tagging.showAllTags();
-  //     //tagging.disable();
-  //   } else {
-  //     highlighting.removeAllHighlights();
-  //     tagging.removeAllTags();
-  //   }
-  //   if (this.makingSelection && !this.showingSelections) {
-  //     highlighting.enableSelection();
-  //     tagging.enable();
-  //   }
-  // }.observes('showingSelections', 'makingSelection'),
-
-  // modelChanged: function() {
-  //   //this.rerender();
-  //   console.log('changing model');
-  //   console.log('removing tags');
-  //   this.imageTagging.removeAllTags();
-  //   //record previous state
-  //   this.sendAction('handleTransition', true);
-  //   //this.selectionHighlighting.init(); //we want SelectionHighlighting.init() to be called again so that
-  //     //each of the DOM elements has an id ENC-450
-  // }.observes('model.id')
 
 });

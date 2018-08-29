@@ -45,6 +45,9 @@ var SelectionHighlighting = function(args) {
      * Reference to the mouseup event for creating selections
      */
     selectableMouseup = function(event) {
+      if (event.target.id.includes('img-tag')) {
+        return;
+      }
       highlighting.createSelection(highlighting.getId(), event, true);
     },
 
@@ -217,7 +220,7 @@ var SelectionHighlighting = function(args) {
            * or if it is a single space, which we probably want to keep
            */
           if (childNode.nodeValue.match(/[^\r\n\t\f\v ↵]/) || childNode.nodeValue === ' ') {
-            console.log('matched for node val: ', childNode.nodeValue, childNode.nodeValue.length);
+            // console.log('matched for node val: ', childNode.nodeValue, childNode.nodeValue.length);
             nodeCoords[nodeCoords.length] = (node.id + ' ' + i);
             textCoords[textCoords.length] = textCoord;
             textCoord += childNode.nodeValue.length;
