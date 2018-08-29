@@ -97,6 +97,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const createdBy = that.get('currentUser');
     const answer = that.get('answer');
     const explanation = this.$('.ql-editor').html();
+    var parsed = explanation.replace(/["]/g, "'");
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
     const students = that.get('students');
 
@@ -112,7 +113,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           createdBy: student,
           createDate: new Date(),
           answer: answer,
-          explanation: explanation,
+          explanation: parsed,
           assignment: that.assignment,
           isSubmitted: true,
           problem: that.problem,
@@ -234,7 +235,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
     logHtmlContent: function() {
       var editor = this.$('.ql-editor').html();
-      console.log('content is', editor);
+      var parsed = editor.replace(/["]/g, "'");
+
+      console.log('content is', parsed);
 
     },
   }
