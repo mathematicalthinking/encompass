@@ -226,7 +226,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     toAssignmentInfo: function (assignment) {
-      console.log('called to assignment info');
       this.sendAction('toAssignmentInfo', assignment);
     },
 
@@ -235,7 +234,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.get('problemList').pushObject(this.problem);
       // let sections = this.get('store').findAll('section');
       let sections = this.get('sectionList');
-      console.log('sections are', sections);
       var currentUser = this.get('currentUser');
       var yourSections = sections.filterBy('createdBy.content', currentUser);
       yourSections = yourSections.sortBy('createDate').reverse();
