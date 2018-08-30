@@ -38,8 +38,8 @@
               <label class="radio-label">Everyone</label>
           </li>
           <li>
-            <label for="legal-notic">Legal Notice <span class="required-star">*</span></label>
-            {{input type="checkbox" checked=approvedProblem required="true" click=(action "resetErrors")}}
+            <label for="legal-notice">Legal Notice <span class="required-star">*</span></label>
+            {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
             <span for="approvedProblem">This problem does not contain any unapproved copywritten material</span>
           </li>
         </ol>
