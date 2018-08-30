@@ -2,9 +2,13 @@
 	<h2>Select a workspace</h2>
 	<aside>
     <span class="meta pointer refresh" {{action 'reloadPage'}}>current as of {{currentAsOf}}</span>
-    {{link-to 'all' 'workspaces.index'}}
+    <span {{action "toggleFilter" "all"}} class="filter-all">all</span>
+    <span {{action "toggleFilter" "mine"}} class="filter-mine">mine</span>
+    <span {{action "toggleFilter" "public"}} class="filter-public">public</span>
+
+    {{!-- {{link-to 'all' 'workspaces.index'}}
     {{link-to 'mine' 'workspaces.mine'}}
-    {{link-to 'public' 'workspaces.public'}}
+    {{link-to 'public' 'workspaces.public'}} --}}
     {{#link-to 'workspaces.new'}}new{{/link-to}}
 	</aside>
 	<div class="clear"></div>
@@ -25,7 +29,7 @@
     </tr>
    </thead>
    <tbody>
-    {{#each model as |workspace|}}
+    {{#each displayList as |workspace|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
         <td style="background: url(images/sprite-workspace-icon.png) 0 0 no-repeat; padding-left: 55px;">
           {{#link-to 'workspace.work' workspace classNames='workspace'}}
@@ -38,6 +42,10 @@
           {{#link-to 'workspace.info' workspace.id}}
             <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
           {{/link-to}}
+          {{!-- <i {{action "showModal" workspace}} class="fas fa-archive"></i> --}}
+          {{#if (can-trash-ws currentUser workspace)}}
+          <i {{action "showModal" workspace}} class="fas fa-trash"></i>
+          {{/if}}
         </td>
         <!-- <td>{{!submissionDates}}</td> -->
         <td>{{workspace.submissionsLength}}</td>
@@ -49,6 +57,9 @@
         <td>{{#link-to 'workspace.info' workspace}}{{workspace.editorsLength}}{{/link-to}}</td>
       </tr>
     {{/each}}
+    {{#if workspaceToDelete}}
+    {{modal-delete itemToDelete=workspaceToDelete onConfirm="trashWorkspace" optionLabelPath = "name" warningMessage="This workspace will no longer be accessible to any Encompass user."}}
+    {{/if}}
       <p class="create-new-workspace">
         <i class="fas fa-plus"></i>
          {{#link-to 'workspaces.new' id="new-workspace-link"}}Create a New Workspace{{/link-to}}
