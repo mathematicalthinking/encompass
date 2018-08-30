@@ -68,7 +68,7 @@
 		<div id="al_feedback_display" class="al_vertical_stretch">
 			<ul>
 				{{#each this.filteredComments as |comment|}}
-          {{workspace-comment comment=comment currentWorspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
+          {{workspace-comment comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
           {{!partial "../comments/comment"}}
 				{{/each}}
 			</ul>
