@@ -4,9 +4,10 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
 
   },
   filterAssignments: function() {
-    const filtered = this.assignments.filter((assignment) => {
+    let filtered = this.assignments.filter((assignment) => {
       return assignment.id && !assignment.get('isTrashed');
     });
+    filtered = filtered.sortBy('createDate').reverse();
     this.set('assignmentList', filtered);
   }.observes('assignments.@each.isTrashed'),
 
