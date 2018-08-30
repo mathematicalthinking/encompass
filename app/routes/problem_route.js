@@ -12,6 +12,8 @@ Encompass.ProblemRoute = Encompass.AuthenticatedRoute.extend({
     toProblemList: function () {
       this.transitionTo('problems.home');
     },
+    toAssignmentInfo: function (assignment) {
+      this.transitionTo('assignment', assignment);
+    }
   }
 });
-
