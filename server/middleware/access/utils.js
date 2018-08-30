@@ -3,6 +3,7 @@ const models = require('../../datasource/schemas');
 const _ = require('underscore');
 
 const wsAuth =require('./workspaces');
+const assignmentAuth = require('./assignments');
 
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
@@ -11,6 +12,32 @@ const getModelIds = async function(model, filter={}) {
     return records.map(rec => rec._id);
   }catch(err) {
     return new Error(`Error retrieving modelIds: ${err}`);
+  }
+}
+
+async function getOrgSections(user) {
+  try {
+    const org = user.organization;
+    const filter = {
+      organization: org
+    }
+    const sectionIds = await getModelIds('Section', filter);
+    return sectionIds;
+  }catch(err) {
+    console.error(err);
+    console.trace();
+  }
+}
+
+
+async function getAssignmentProblems(user) {
+  try {
+    const criteria = await assignmentAuth.get.assignments(user);
+    const assignments = await models.Assignment.find(criteria).lean();
+    return assignments.map(assn => assn.problem.toString());
+  }catch(err) {
+    console.error(err);
+    console.trace();
   }
 }
 
@@ -169,4 +196,6 @@ module.exports.getAccessibleWorkspaceIds = getAccessibleWorkspaceIds;
 module.exports.getUsersFromWorkspaces = getUsersFromWorkspaces;
 module.exports.getTeacherAssignments = getTeacherAssignments;
 module.exports.getTeacherSectionsById = getTeacherSectionsById;
+module.exports.getOrgSections = getOrgSections;
+module.exports.getAssignmentProblems = getAssignmentProblems;
 /* jshint ignore:end */

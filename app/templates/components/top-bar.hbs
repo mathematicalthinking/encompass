@@ -71,7 +71,15 @@
           {{/if}}
           <li id="logout-btn">{{#link-to 'logout' classNames='menu logout'}}<i class="fas fa-power-off logout-icon"></i><span id="logout-text">log out</span>{{/link-to}}</li>
           </span>
-          <li id="current-username"><span class="underline">{{user.displayName}}</span></li>
+          {{#unless isStudentAccount}}
+          <li id="role-toggle">
+            <span class="acting-role">Role: {{user.actingRole}}</span>
+            <span class="toggle-role" {{action "toggleActingRole"}}>
+              <i class="fas fa-sync-alt"></i>
+            </span>
+          </li>
+          {{/unless}}
+          <li id="current-username"><span class="underline">{{user.displayName}} </span></li>
           <li id="user-image">
             {{input type="checkbox" id="menu-btn" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
             <img src="./images/profile.png" alt="profile">

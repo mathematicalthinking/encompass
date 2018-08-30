@@ -2,7 +2,7 @@
   * # Problem API
   * @description This is the API for problem based requests
 */
-
+/* jshint ignore:start */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
@@ -13,6 +13,7 @@ const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
+const access   = require('../../middleware/access/problems');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -59,9 +60,9 @@ function accessibleProblems(user) {
 
 }
 
-const getProblems = (req, res, next) => {
+const getProblems = async function(req, res, next) {
   const user = userAuth.requireUser(req);
-  return accessibleProblems(user).then((criteria) => {
+  const criteria = await access.get.problems(user);
     models.Problem.find(criteria)
   .exec((err, problems) => {
     if (err) {
@@ -72,10 +73,7 @@ const getProblems = (req, res, next) => {
     utils.sendResponse(res, data);
     next();
   });
-  }).catch((err) => {
-    logger.error(err);
-    return utils.sendError.InternalError(err, res);
-  });
+
   // add permissions here
 
 };
@@ -117,7 +115,7 @@ const getProblem = (req, res, next) => {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-/* jshint ignore:start */
+
 const postProblem = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here

@@ -4,6 +4,7 @@ const utils = require('./utils');
 const models = require('../../datasource/schemas');
 
 module.exports.get = {};
+module.exports.put = {};
 
 
 /**
@@ -149,5 +150,46 @@ const canGetUser = async function(user, id, username) {
   };
 }
 
+const modifiableUserCriteria = function(user) {
+  if (!user) {
+    return;
+  }
+  const accountType = user.accountType;
+  const actingRole = user.actingRole;
+
+  let filter = {
+    isTrashed: false
+  };
+  // students can only modify their own account
+  if (accountType === 'S' || actingRole === 'student') {
+    filter._id = user._id;
+    return filter;
+  }
+
+  if (accountType === 'A') {
+    return filter;
+  }
+
+  // pdAdmins can modify anyone in their organization
+  if (accountType === 'P') {
+    filter.organization = user.organization;
+    return filter;
+  }
+  // teachers can only modify themselves or students
+  // for now let teachers modify any students from their org
+  if (accountType === 'T') {
+    filter.$or = [
+      { _id: user._id },
+      { $and: [
+        { organization: user.organization },
+        { accountType: 'S' }
+      ]}
+
+    ];
+    return filter;
+  }
+};
+
 module.exports.get.users = accessibleUsersQuery;
 module.exports.get.user = canGetUser;
+module.exports.put.user = modifiableUserCriteria;

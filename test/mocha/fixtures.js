@@ -116,7 +116,8 @@ module.exports = {
       coordinates: 'node-1 2 596 node-1 2 746',
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       text: 'test selection text',
-      submission: '53e1156db48b12793f000430', // this should be switched to answer
+      submission: '53e1156db48b12793f000430', // this should be switched to answer,
+      workspace: '53e1156db48b12793f000442'
     }
   },
   tagging: {
