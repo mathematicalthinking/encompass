@@ -64,6 +64,16 @@ form#newproblemform {
     }
   }
 
+  #approved-problem {
+    color: black;
+    width: 70%;
+    padding: 12px 0px;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    box-sizing: border-box;
+  }
+
   .radio-label {
     // padding: 0px 5px;
     // margin-top: -10px;
