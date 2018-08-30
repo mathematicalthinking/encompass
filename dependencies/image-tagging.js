@@ -107,7 +107,7 @@ NoteInput = function() {
     charCode = parseInt(charCode, 10);
 
     if (charCode === ENTER) {
-      _stopEditing();
+      _stopEditing(event);
     }
 
     return false;
@@ -849,7 +849,9 @@ NoteInput = function() {
     var tmpId = _currentlyEditing,
       tagListItem,
       note;
-    event = event || window.event;
+      // window.event tends to be undefined in firefox
+      // is this line necessary if we are always passing in event?
+      event = event || window.event;
 
     if (event.target.id !== _tagIdPrefix + tmpId) {
       if (_currentlyResizingOrPlacing) {
