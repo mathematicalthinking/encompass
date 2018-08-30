@@ -132,14 +132,11 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           uploadedFileId: id
         });
       });
-      console.log('records', records);
       return Promise.all(records.map((rec) => {
         return rec.save();
       }))
       .then((answers) => {
-        console.log('answer', answers);
         const userId = that.get('currentUser.id');
-        console.log('userId', userId);
         let yourAnswer = answers.filter((answer) => {
         return answer.get('createdBy.id') === userId;}).objectAt(0);
         return that.get('handleCreatedAnswer')(yourAnswer);
@@ -150,57 +147,14 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     });
   },
 
-  // createAnswerTest: function () {
-  //   const that = this;
-  //   console.log('creating Answer');
-  //   const answer = that.get('answer');
-  //   const quillContent = this.$('.ql-editor').html();
-  //   const explanation = quillContent.replace(/["]/g, "'");
-  //   const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
-  //   // const students = that.get('students');
-  //   const currentUser = this.get('currentUser');
-
-  //   const answerObj = {
-  //     createdBy: currentUser.id,
-  //     createDate: new Date(),
-  //     answer: answer,
-  //     explanation: explanation,
-  //     assignment: that.assignment.id,
-  //     isSubmitted: true,
-  //     problem: that.problem.id,
-  //     // priorAnswer: priorAnswer.id,
-  //     section: that.section.id,
-  //     // students: students,
-  //   };
-
-  //   return Ember.$.post({
-  //     url: '/tryme',
-  //     data: answerObj
-  //   }).then(answer => {
-  //   console.log('answer', answer);
-  //   const userId = that.get('currentUser.id');
-  //   console.log('userId', userId);
-  //   let yourAnswer = answer.filter((answer) => {
-  //     return answer.get('createdBy.id') === userId;
-  //   }).objectAt(0);
-  //   return that.get('handleCreatedAnswer')(yourAnswer);
-  //   })
-  //   .catch((err) => {
-  //     that.set('createAnswerError', err);
-  //     return;
-  //   });
-  // },
-
   actions: {
     validate: function() {
-      console.log('validating');
       const that = this;
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
         console.log('res', res);
         if (1) {
           // proceed with answer creation
-          console.log('Form is Valid!');
           this.createAnswer();
         } else {
           if (res.invalidInputs) {
