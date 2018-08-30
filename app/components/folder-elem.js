@@ -23,24 +23,28 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   containsCurrentSubmission: function(){
     const submissions = this.model.get('submissions');
-    if (Ember.isEmpty(submissions)) {
-      return false;
-    }
     const currentSubmission = this.get('currentSubmission');
 
+    if (Ember.isEmpty(submissions) || Ember.isEmpty(currentSubmission)) {
+      return false;
+    }
+
     const filtered = submissions.filterBy('id', currentSubmission.id);
+
     return !Ember.isEmpty(filtered);
   }.property('model.submissions.[]', 'currentSubmission.id'),
 
   containsCurrentSelection: function() {
     const selections = this.model.get('taggings').mapBy('selection');
-    if (Ember.isEmpty(selections)) {
+    const currentSelection = this.get('currentSelection');
+
+    if (Ember.isEmpty(selections) || Ember.isEmpty(currentSelection)) {
       return false;
     }
-    const currentSelection = this.get('currentSelection');
-    const filtered = selections.filterBy('id', currentSelection.id);
-    return !Ember.isEmpty(filtered);
 
+    const filtered = selections.filterBy('id', currentSelection.id);
+
+    return !Ember.isEmpty(filtered);
   }.property('currentSelection.id', 'model.selections.@each.isTrashed'),
 
   /* Drag and drop stuff */
