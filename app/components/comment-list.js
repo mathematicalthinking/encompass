@@ -13,7 +13,7 @@
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
-  thisSubmissionOnly: false,
+  thisSubmissionOnly: true,
   commentFilterText: '',
   filterComments: false,
   newComment: '',

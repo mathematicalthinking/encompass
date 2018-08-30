@@ -14,5 +14,8 @@ Encompass.SectionRoute = Encompass.AuthenticatedRoute.extend({
       this.transitionTo('sections');
       console.log('running to sectionList');
     },
+    toAssignmentInfo: function (assignment) {
+      this.transitionTo('assignment', assignment);
+    }
   }
 });

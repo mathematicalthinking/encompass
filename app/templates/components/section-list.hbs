@@ -48,6 +48,19 @@
       </ul>
     {{/if}}
 
+    {{#if currentUser.isPdAdmin}}
+      <h2>{{currentUser.organization.name}}'s Sections</h2>
+      <ul class="listing">
+        {{#if orgSections}}
+          {{#each orgSections as |section|}}
+          <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
+          {{/each}}
+        {{else}}
+          <li>{{currentUser.organization.name}} does not have any sections yet</li>
+        {{/if}}
+      </ul>
+    {{/if}}
+
     </nav>
   </section>
 </section>

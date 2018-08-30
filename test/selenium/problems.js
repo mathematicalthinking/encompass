@@ -86,7 +86,7 @@ describe('Problems', function() {
         for (let detail of Object.keys(details)) {
           try {
             await helpers.findInputAndType(driver, inputs[detail], details[detail]);
-          }catch(err) {
+          } catch(err) {
             console.log(err);
           }
         }
@@ -95,6 +95,7 @@ describe('Problems', function() {
         } else {
           await helpers.findAndClickElement(driver, inputs.justMe);
         }
+        await helpers.findAndClickElement(driver, '#legal-notice');
         await helpers.findAndClickElement(driver, css.newProblem.submit);
       };
 
@@ -110,5 +111,6 @@ describe('Problems', function() {
     });
   });
 });
+
 
 

@@ -37,10 +37,18 @@
               {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
               <label class="radio-label">Everyone</label>
           </li>
+          <li>
+            <label for="legal-notice">Legal Notice <span class="required-star">*</span></label>
+            {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
+            <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
+          </li>
         </ol>
       </fieldset>
       {{#if isMissingRequiredFields}}
         <p class="error-message">Please provide all required fields.</p>
+      {{/if}}
+      {{#if noLegalNotice}}
+         <p class="error-message">Please verify that you have permission to post this problem.</p>
       {{/if}}
     </form>
   </section>

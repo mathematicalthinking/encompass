@@ -10,10 +10,14 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   checked: true,
   filesToBeUploaded: null,
   isProblemUsed: false,
+  showAssignment: false,
+  problemList: [],
+  sectionList: null,
 
 
   didReceiveAttrs: function () {
     this.set('isWide', false);
+    this.set('showAssignment', false);
     let problem = this.get('problem');
     let problemId = problem.get('id');
     // let problemUsed = this.get('problemUsed');
@@ -28,6 +32,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         console.log('answer does not exist and is', answer);
         this.set('isProblemUsed', false);
       }
+    });
+
+    this.get('store').findAll('section').then(sections => {
+    this.set('sectionList', sections);
     });
   },
 
@@ -215,6 +223,21 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('imageId', null);
       problem.set('imageData', null);
       problem.save();
+    },
+
+    toAssignmentInfo: function (assignment) {
+      this.sendAction('toAssignmentInfo', assignment);
+    },
+
+    showAssignment: function () {
+      this.set('showAssignment', true);
+      this.get('problemList').pushObject(this.problem);
+      // let sections = this.get('store').findAll('section');
+      let sections = this.get('sectionList');
+      var currentUser = this.get('currentUser');
+      var yourSections = sections.filterBy('createdBy.content', currentUser);
+      yourSections = yourSections.sortBy('createDate').reverse();
+      this.set('sectionList', yourSections);
     }
 
   }

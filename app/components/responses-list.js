@@ -2,6 +2,13 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   elementId: 'responses-list',
   sortProperties: ['createDate'],
   sortAscending: false,
+  showingAllResponses: true,
+  showingOnlyMine: false,
+
+  allResponses: Ember.computed(function () {
+    let responses = this.get('responses');
+    return responses.sortBy('createDate').reverse();
+  }),
 
   yourResponses: Ember.computed(function () {
     let currentUser = this.get('currentUser');
@@ -16,5 +23,17 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     let responsesStudent = responses.filterBy('recipient.content', currentUser);
     return responsesStudent.sortBy('createDate').reverse();
   }),
+
+  actions: {
+    showMyResponses: function () {
+      this.set('showingOnlyMine', true);
+      this.set('showingAllResponses', false);
+    },
+
+    showAllResponses: function () {
+      this.set('showingOnlyMine', false);
+      this.set('showingAllResponses', true);
+      }
+    },
 
 });

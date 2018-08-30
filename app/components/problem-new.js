@@ -6,6 +6,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   privacySetting: null,
   checked: true,
   validator: Ember.inject.service('form-validator'),
+  approvedProblem: false,
+  noLegalNotice: null,
 
   didInsertElement: function() {
     let formId = 'form#newproblemform';
@@ -33,6 +35,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var organization = currentUser.get('organization');
 
     //var imageUrl = null;
+
+    if (!this.get('approvedProblem')) {
+      this.set('noLegalNotice', true);
+      return;
+    }
 
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
@@ -140,6 +147,15 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         }
       })
       .catch(console.log);
+    },
+    resetErrors(e) {
+      const errors = ['noLegalNotice'];
+
+      for (let error of errors) {
+        if (this.get(error)) {
+          this.set(error, false);
+        }
+      }
     },
   }
 });

@@ -5,7 +5,30 @@
 #responses-list {
   header {
     h2 {
+      margin-left: 20px;
+      display: inline-block;
+      font-size: 1.2em;
+    }
+    .toggle-btn {
+      float: right;
+      margin-right: 20px;
+    }
+    .new-link-btn {
+      color: $primary-font-color;
+      background: $accent-yellow;
+      font-weight: $main-font-weight;
+      font-family: $primary-font;
+      border-radius: 3px;
+      font-size: .8em;
+      padding: 0px 15px;
       margin-left: 10px;
+      border: none;
+      line-height: 40px;
+      &:hover {
+        font-weight: $bold-font-weight;
+        cursor: pointer;
+        background: lighten($accent-yellow, 10%);
+      }
     }
   }
 }

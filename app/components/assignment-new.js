@@ -73,8 +73,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     createAssignmentData.save()
       .then((assignment) => {
-        console.log('assignment', assignment);
-        //this.set('createdAssignment', assignment);
         that.sendAction('toAssignmentInfo', assignment);
         //TODO: decide how to handle clearing form and whether to redirect to the created assignment
             //that.get('validator').clearForm();
