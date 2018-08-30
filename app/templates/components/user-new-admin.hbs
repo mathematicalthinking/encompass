@@ -6,13 +6,13 @@
       <th>Value</th>
     </tr>
     <tr>
-      <td>Username</td>
+      <td>Username <span class="required-star">*</span></td>
       <td>
         {{input type="text" value=username action="resetErrors" on="key-down" classNames='user-username'}}
       </td>
     </tr>
     <tr>
-      <td>Password</td>
+      <td>Password <span class="required-star">*</span></td>
       <td>
         {{input type="password" value=password action="resetErrors" on="key-down" classNames='user-password'}}
       </td>
@@ -30,7 +30,7 @@
       </td>
     </tr>
     <tr>
-      <td>Organization</td>
+      <td>Organization <span class="required-star">*</span></td>
       <td>
         {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
       </td>
@@ -42,13 +42,13 @@
       </td>
     </tr>
     <tr>
-      <td>Account Type</td>
+      <td>Account Type <span class="required-star">*</span></td>
       <td>
         {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType)) classNames='user-account-type'}}
       </td>
     </tr>
     <tr>
-      <td>Authorized</td>
+      <td>Authorized <span class="required-star">*</span></td>
       <td>
         {{input type="checkbox" checked=isAuthorized value=isAuthorized classNames='user-isAuth'}}
       </td>

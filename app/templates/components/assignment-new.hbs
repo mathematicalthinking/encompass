@@ -9,21 +9,21 @@
       <fieldset>
         <ol>
           <li>
-            <label for="section">Section</label>
+            <label for="section">Section <span class="required-star">*</span></label>
             {{my-select selectedSection=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
           </li>
           <li>
-            <label for="text">Problem</label>
+            <label for="text">Problem <span class="required-star">*</span></label>
             {{my-select isRequired=true selectedProblem=selectedProblem prompt="Select a problem." content=problemList optionLabelPath="title" action=(action (mut selectedProblem))}}
             {{input required=true type="hidden" value=selectedProblem}}
           </li>
           <li>
-            <label for="additionalInfo">Date Assigned</label>
+            <label for="additionalInfo">Date Assigned <span class="required-star">*</span></label>
             {{input id="assignedDate" type="date" value=assignedDate required=true}}
           </li>
           <li>
-            <label for="dueDate">Due Date</label>
+            <label for="dueDate">Due Date <span class="required-star">*</span></label>
             {{input id="dueDate" type="date" value=dueDate required=true}}
           </li>
         </ol>
