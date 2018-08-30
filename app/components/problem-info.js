@@ -225,6 +225,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.save();
     },
 
+    toAssignmentInfo: function (assignment) {
+      console.log('called to assignment info');
+      this.sendAction('toAssignmentInfo', assignment);
+    },
+
     showAssignment: function () {
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
