@@ -23,7 +23,15 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   studentList: null,
   studentUsername: "",
   fieldType: 'password',
+  showAssignment: false,
+  problemList: null,
+  sectionList: [],
 
+  init: function () {
+    this.get('store').findAll('problem').then(problems => {
+      this.set('problemList', problems);
+    });
+  },
 
   didReceiveAttrs: function () {
     return this.section.get('organization').then((org) => {
@@ -39,7 +47,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     .catch((err) => {
       console.log('error getting org', err);
     });
-  },
+},
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -264,6 +272,20 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       section.set('name', name);
       section.save();
       this.set('isEditing', false);
+    },
+
+    toAssignmentInfo: function (assignment) {
+      this.sendAction('toAssignmentInfo', assignment);
+    },
+
+    showAssignment: function () {
+      this.set('showAssignment', true);
+      this.get('sectionList').pushObject(this.section);
+      let problems = this.get('problemList');
+      var currentUser = this.get('currentUser');
+      var yourProblems = problems.filterBy('createdBy.content', currentUser);
+      yourProblems = yourProblems.sortBy('createDate').reverse();
+      this.set('problemList', yourProblems);
     },
 
     checkError: function () {
