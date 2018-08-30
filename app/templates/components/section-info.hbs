@@ -67,12 +67,15 @@
   {{else}}
   {{#unless cantEdit}}
   <section class="submit">
-    <button class="action_button" {{action 'addNewStudents'}} style="margin-right: 30px">
+    <button class="action_button" {{action 'addNewStudents'}}>
       Add New Students
     </button>
 
-    <button class="action_button" id="editSection" {{action 'editSection'}} style="margin-right: 30px">
+    <button class="action_button" id="editSection" {{action 'editSection'}}>
       Edit Section
+    </button>
+    <button class="action_button" {{action 'showAssignment'}}>
+      Create Assignment
     </button>
   </section>
   {{/unless}}
@@ -156,4 +159,8 @@
   </div>
   {{/if}} {{/if}}
 
+{{/if}}
+
+{{#if showAssignment}}
+  {{assignment-new problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}

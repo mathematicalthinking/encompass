@@ -28,6 +28,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   sectionList: [],
 
   init: function () {
+    this._super(...arguments);
     this.get('store').findAll('problem').then(problems => {
       this.set('problemList', problems);
     });
