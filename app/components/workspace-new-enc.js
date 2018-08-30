@@ -87,6 +87,10 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       if (!this.get('selectedTeacher')) {
         this.set('selectedTeacher', this.get('currentUser'));
       }
+
+      if (!this.get('selectedOwner')) {
+        this.set('selectedOwner', this.get('currentUser'));
+      }
       const startDate = this.get('startDate');
       const endDate = this.get('endDate');
       const requestedName = this.get('requestedName');
