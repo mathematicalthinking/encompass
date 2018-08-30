@@ -135,7 +135,7 @@ function putSelection(req, res, next) {
       logger.warn("Putting Selection 5 doc: " + JSON.stringify(doc) );
 
     doc.save(function (err, selection) {
-      logger.warn("Tried to save selectoin!");
+      logger.warn("Tried to save selection!");
       if(err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);

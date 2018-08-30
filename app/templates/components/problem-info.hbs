@@ -120,6 +120,9 @@
         {{else}}
           <button class="action_button" {{action 'deleteProblem'}}>Delete Problem</button>
           <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
+        {{#unless showAssignment}}
+          <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
+        {{/unless}}
         {{/if}}
       {{else}}
           <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
@@ -129,3 +132,6 @@
 
 </section>
 
+{{#if showAssignment}}
+  {{assignment-new problems=problemList selectedProblem=problem sections=sectionList store=store}}
+{{/if}}
