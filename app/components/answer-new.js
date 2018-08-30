@@ -140,20 +140,56 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         console.log('answer', answers);
         const userId = that.get('currentUser.id');
         console.log('userId', userId);
-       let yourAnswer = answers.filter((answer) => {
+        let yourAnswer = answers.filter((answer) => {
         return answer.get('createdBy.id') === userId;}).objectAt(0);
-
-      return that.get('handleCreatedAnswer')(yourAnswer);
-
-            //TODO: decide how to handle clearing form and whether to redirect to the created answer
-            //that.get('validator').clearForm();
-          })
-          .catch((err) => {
-            that.set('createAnswerError', err);
-          });
-
+        return that.get('handleCreatedAnswer')(yourAnswer);
+      })
+        .catch((err) => {
+          that.set('createAnswerError', err);
+        });
     });
   },
+
+  // createAnswerTest: function () {
+  //   const that = this;
+  //   console.log('creating Answer');
+  //   const answer = that.get('answer');
+  //   const quillContent = this.$('.ql-editor').html();
+  //   const explanation = quillContent.replace(/["]/g, "'");
+  //   const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
+  //   // const students = that.get('students');
+  //   const currentUser = this.get('currentUser');
+
+  //   const answerObj = {
+  //     createdBy: currentUser.id,
+  //     createDate: new Date(),
+  //     answer: answer,
+  //     explanation: explanation,
+  //     assignment: that.assignment.id,
+  //     isSubmitted: true,
+  //     problem: that.problem.id,
+  //     // priorAnswer: priorAnswer.id,
+  //     section: that.section.id,
+  //     // students: students,
+  //   };
+
+  //   return Ember.$.post({
+  //     url: '/tryme',
+  //     data: answerObj
+  //   }).then(answer => {
+  //   console.log('answer', answer);
+  //   const userId = that.get('currentUser.id');
+  //   console.log('userId', userId);
+  //   let yourAnswer = answer.filter((answer) => {
+  //     return answer.get('createdBy.id') === userId;
+  //   }).objectAt(0);
+  //   return that.get('handleCreatedAnswer')(yourAnswer);
+  //   })
+  //   .catch((err) => {
+  //     that.set('createAnswerError', err);
+  //     return;
+  //   });
+  // },
 
   actions: {
     validate: function() {
