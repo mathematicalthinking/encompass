@@ -25,18 +25,15 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   }),
 
   actions: {
-    toggleYourRespones: function () {
-      console.log('clicked on toggle');
-      let showing = this.get('showingAllResponses');
-      console.log('showing is', showing);
-      if (showing) {
-        this.set('showingOnlyMine', true);
-        this.set('showingAllResponses', false);
-      } else {
-        this.set('showingOnlyMine', false);
-        this.set('showingAllResponses', true);
+    showMyResponses: function () {
+      this.set('showingOnlyMine', true);
+      this.set('showingAllResponses', false);
+    },
+
+    showAllResponses: function () {
+      this.set('showingOnlyMine', false);
+      this.set('showingAllResponses', true);
       }
     },
-  }
 
 });

@@ -43,11 +43,8 @@
   <header>
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
-      {{#if showingAllResponses}}
-        <button {{action 'toggleYourRespones'}} class="new-link-btn">Show Only My Responses</button>
-      {{else}}
-        <button {{action 'toggleYourRespones'}} class="new-link-btn">Show All Responses</button>
-      {{/if}}
+        <button {{action 'showAllResponses'}} class="new-link-btn">All</button>
+        <button {{action 'showMyResponses'}} class="new-link-btn">Mine</button>
     </div>
     <div class="clear"></div>
   </header>
