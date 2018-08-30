@@ -15,7 +15,6 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
   listFilter: 'all',
 
   setDisplayList: function() {
-    console.log('running l');
     const key = {
       all: 'allWorkspaces',
       mine: 'ownWorkspaces',
@@ -43,11 +42,6 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
     this.set('allWorkspaces', this.get('model').rejectBy('isTrashed'));
   }.observes('model.@each.isTrashed'),
 
-  test: function() {
-    console.log('something was trashed');
-
-  }.observes('model.@each.isTrashed'),
-
   setPublicWorkspaces: function() {
     console.log('public');
     const workspaces = this.get('model').rejectBy('isTrashed');
@@ -62,13 +56,10 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
       const id = ws.id;
       const workspaces = this.get('model');
       const filtered = workspaces.filterBy('id', id);
-      console.log('filtered', filtered);
       if (!Ember.isEmpty(filtered)) {
         const ws = filtered.objectAt(0);
-        console.log('ws to trash', ws);
         ws.set('isTrashed', true);
         ws.save().then((rec) => {
-          console.log('rec', rec);
           this.set('workspaceToDelete', null);
         });
       }
