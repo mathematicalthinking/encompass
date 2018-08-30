@@ -79,7 +79,15 @@
             </span>
           </li>
           {{/unless}}
-          <li id="current-username"><span class="underline">{{user.displayName}} </span></li>
+          {{#if currentUser.isStudent}}
+            <li id="current-username">
+              <span class="underline">{{user.displayName}}</span>
+            </li>
+          {{else}}
+            <li id="current-username">
+              {{#link-to 'user' currentUser.username}}<span class="underline">{{user.displayName}}</span>{{/link-to}}
+            </li>
+          {{/if}}
           <li id="user-image">
             {{input type="checkbox" id="menu-btn" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
             <img src="./images/profile.png" alt="profile">
@@ -90,15 +98,25 @@
 
     <div class="sidemenu-style" id="{{unless openMenu 'sidemenu'}}">
       <ul>
-        <li>{{#link-to 'assignments.home'}}assignments{{/link-to}}</li>
         <li>{{#link-to 'index'}}home{{/link-to}}</li>
-        <li>{{#link-to 'import'}}import{{/link-to}}</li>
-        <li>{{#link-to 'problems.home'}}problems{{/link-to}}</li>
+        {{#unless currentUser.isStudent}}
+          <li>{{#link-to 'import'}}import{{/link-to}}</li>
+        {{/unless}}
+        <li>{{#link-to 'assignments.home'}}assignments{{/link-to}}</li>
+        {{#unless currentUser.isStudent}}
+          <li>{{#link-to 'problems.home'}}problems{{/link-to}}</li>
+        {{/unless}}
         <li>{{#link-to 'sections.home'}}sections{{/link-to}}</li>
-        <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
+        {{#unless currentUser.isStudent}}
+          <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
+          {{/unless}}
         <li>{{#link-to 'responses'}}responses{{/link-to}}</li>
-        <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
-        <li>{{#link-to 'index'}}my account{{/link-to}}</li>
+        {{#unless currentUser.isStudent}}
+          <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
+        {{/unless}}
+        {{#unless currentUser.isStudent}}
+          <li>{{#link-to 'user' currentUser.username}}my account{{/link-to}}</li>
+        {{/unless}}
         <li id="logout-btn-side">{{#link-to 'logout'}}logout{{/link-to}}</li>
       </ul>
     </div>

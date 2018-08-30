@@ -32,7 +32,6 @@ const dbMigration = require('./db_migration/base');
 const fixed = require('./datasource/fixed');
 const nconf = config.nconf;
 
-
 //CREATE EXPRESS APP
 const server = express();
 
@@ -116,7 +115,7 @@ server.use(passport.session());
 
 //MIDDLEWARE
 server.use(logger('dev'));
-server.use(express.json());
+server.use(express.json({limit: '100000kb'}));
 server.use(express.urlencoded({
   extended: false
 }));
@@ -126,7 +125,7 @@ server.use(path.prep());
 server.use(path.processPath());
 server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
-server.use(userAuth.loadAccessibleWorkspaces());
+//server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 const upload = multer({

@@ -132,39 +132,29 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           uploadedFileId: id
         });
       });
-      console.log('records', records);
       return Promise.all(records.map((rec) => {
         return rec.save();
       }))
       .then((answers) => {
-        console.log('answer', answers);
         const userId = that.get('currentUser.id');
-        console.log('userId', userId);
-       let yourAnswer = answers.filter((answer) => {
+        let yourAnswer = answers.filter((answer) => {
         return answer.get('createdBy.id') === userId;}).objectAt(0);
-
-      return that.get('handleCreatedAnswer')(yourAnswer);
-
-            //TODO: decide how to handle clearing form and whether to redirect to the created answer
-            //that.get('validator').clearForm();
-          })
-          .catch((err) => {
-            that.set('createAnswerError', err);
-          });
-
+        return that.get('handleCreatedAnswer')(yourAnswer);
+      })
+        .catch((err) => {
+          that.set('createAnswerError', err);
+        });
     });
   },
 
   actions: {
     validate: function() {
-      console.log('validating');
       const that = this;
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
         console.log('res', res);
         if (1) {
           // proceed with answer creation
-          console.log('Form is Valid!');
           this.createAnswer();
         } else {
           if (res.invalidInputs) {
