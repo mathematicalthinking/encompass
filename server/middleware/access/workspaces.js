@@ -40,8 +40,9 @@ const canLoadWorkspace = function(user, ws) {
 
   const wsId = ws._id.toString();
   const userId = user._id.toString();
+  const ownerId = ws.owner._id.toString();
 
-  const isOwner = userId === wsId;
+  const isOwner = userId === ownerId;
 
 
   const wsEditors = ws.editors.map(ws => ws._id.toString());
