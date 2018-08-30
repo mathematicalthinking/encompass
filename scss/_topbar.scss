@@ -2,7 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 940px) {
   #al_header {
     #al_nav {
       #menu-items {
@@ -21,7 +21,7 @@
   }
 }
 
-@media screen and (min-width: 860px) and (max-width: 1319px) {
+@media screen and (min-width: 941px) and (max-width: 1500px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
@@ -63,7 +63,7 @@
   }
 }
 
-@media screen and (min-width: 1320px) and (max-width: 10000px) {
+@media screen and (min-width: 1499px) and (max-width: 10000px) {
   #al_header {
     #menu-toggle {
       // background-color: yellow;
@@ -322,6 +322,11 @@ nav.actions>ul {
   color: $accent-color;
   font-weight: $bolder-font-weight;
   margin-right:10px;
+  a {
+    color: $accent-color;
+    font-weight: $bolder-font-weight;
+    margin-right:10px;
+  }
 }
 
 .underline {
