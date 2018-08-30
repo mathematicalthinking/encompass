@@ -41,7 +41,15 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   studentSections: function () {
     var sections = this.sections;
     var studentSections = sections.filterBy('students');
-    return studentSections.sortBy('createDate').reverse();
+    var currentUser = this.get('currentUser');
+
+    var yourSections = studentSections.filter((section) => {
+      let students = section.get('students');
+      if (students.includes(currentUser)) {
+        return section;
+      }
+    });
+    return yourSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
 });
