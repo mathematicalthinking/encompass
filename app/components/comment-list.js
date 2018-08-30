@@ -49,16 +49,17 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
 
     if (this.thisSubmissionOnly) {
-      let newComments = [];
-      filtered.forEach((comment) => {
-        let commentSubId = comment.get('submission').get('id');
-        let currentSubmissionId = this.get('currentSubmission').get('id');
-        if (commentSubId === currentSubmissionId) {
-          newComments.push(comment);
-        }
-      });
-      console.log('new comments are', newComments);
-      return newComments;
+      // let newComments = [];
+      // filtered.forEach((comment) => {
+      //   let commentSubId = comment.get('submission').get('id');
+      //   let currentSubmissionId = this.get('currentSubmission').get('id');
+      //   if (commentSubId === currentSubmissionId) {
+      //     newComments.push(comment);
+      //   }
+      // });
+      // console.log('new comments are', newComments);
+      // return newComments;
+      filtered = filtered.filterBy('submission.id', this.get('currentSubmission.id'));
     }
 
     if(this.filterComments){
@@ -70,7 +71,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
     }
     return filtered.sortBy('createDate').reverse();
-  }.property('comments.[]', 'comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
+  }.property('comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText', 'currentSubmission.id'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {

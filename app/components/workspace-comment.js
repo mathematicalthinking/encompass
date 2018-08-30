@@ -9,7 +9,7 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
 
   isForCurrentWorkspace: function() {
     return Ember.isEqual(this.get('currentWorkspace.id'), this.comment.get('workspace.id'));
-  }.property('currentWorkspace', 'comment.workspace'),
+  }.property('currentWorkspace.id', 'comment.workspace.id'),
 
   relevanceClass: function(){
     return 'relevance-' + this.get('comment.relevance');
