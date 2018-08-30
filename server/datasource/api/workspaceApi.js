@@ -154,7 +154,7 @@ function getWorkspaceWithDependencies(id, callback) {
   */
 function sendWorkspace(req, res, next) {
   console.log('in send WS');
-  var user = userAuth.getUser(req);
+  var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
@@ -189,6 +189,13 @@ function putWorkspace(req, res, next) {
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
         ws.name    = req.body.workspace.name;
+
+        // only admins or ws owner should be able to trash ws
+        if (user.accountType === 'A' || user.id === ws.owner.toString()) {
+          console.log('can trash!');
+          ws.isTrashed = req.body.workspace.isTrashed;
+        }
+
         ws.save(function(err, workspace) {
           utils.sendResponse(res, {workspace: workspace});
         });
