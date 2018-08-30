@@ -179,6 +179,7 @@ module.exports = (passport) => {
                     createdBy,
                     authorizedBy,
                     isEmailConfirmed,
+                    actingRole: 'teacher'
                   });
                   console.log('newUSer', newUser);
 
