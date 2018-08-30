@@ -69,7 +69,7 @@ FolderSchema.pre('save', function (next) {
         ') changing from ' + dbFolder.parent + ' to ' + folder.parent);
       if(dbFolder.parent) {
         mongoose.models.Folder.findByIdAndUpdate(dbFolder.parent,
-          {$pull: { children: folder } },
+          {$pull: { children: folder._id } },
           function (err) {
             console.log('dropped folder ' + folder.name + ' from children of ' + dbFolder.parent);
             if(err) { throw new Error(err); }

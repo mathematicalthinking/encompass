@@ -17,7 +17,6 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var collabSections = sections.filterBy('teachers');
     var yourCollabSections = collabSections.filter((section) => {
       let teachers = section.get('teachers');
-      console.log('teachers are', teachers);
       if (teachers.includes(currentUser)) {
        return section;
      }
