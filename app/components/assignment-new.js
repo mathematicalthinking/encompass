@@ -7,6 +7,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   sectionList: null,
   problemList: null,
   formId: null,
+  fromProblem: null,
 
   init: function() {
     console.log('running Init problem-new');
