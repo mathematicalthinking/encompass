@@ -25,6 +25,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   fieldType: 'password',
   showAssignment: false,
   problemList: null,
+  isAddingTeacher: false,
   sectionList: [],
 
   init: function () {
@@ -85,6 +86,10 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   actions: {
     addNewStudents: function () {
       this.set('isAddingStudents', true);
+    },
+
+    addTeachers: function () {
+      this.set('isAddingTeachers', true);
     },
 
     doYouWantToAddExistingUser: function () {

@@ -48,6 +48,21 @@
               <ol class="b">{{teacher.username}}</ol>
               {{/each}}
           </li>
+            <li>
+              <button {{action 'addTeachers'}}>Add Teachers</button>
+              {{#if isAddingTeachers}}
+                {{input id="teachers" type="text" value=teacherUsername placeholder="Username" classNames="user search" action="checkError"
+                on="key-down"}}
+                <ul>
+                  {{#each searchResults as |result|}}
+                  <li>
+                    <button class="addTeacher" {{action 'addTeacher' result}}>{{result.username}}</button>
+                  </li>
+                  {{/each}}
+                </ul>
+                </div>
+              {{/if}}
+            </li>
             <li class="studentslist">
             <label for="students">Students</label>
             {{#each section.students as |student|}}
