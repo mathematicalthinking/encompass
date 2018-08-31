@@ -33,6 +33,17 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
 
+  init: function() {
+    this._super(...arguments);
+    const htmlFormat = 'YYYY-MM-DD';
+
+    let oneYearAgo = moment().subtract(365, 'days').calendar();
+    let oneYearAgoDate = new Date(oneYearAgo);
+    let htmlDate = moment(oneYearAgoDate).format(htmlFormat);
+
+    this.set('sinceDate', htmlDate);
+  },
+
   newCommentPlaceholder: function() {
     var placeholder = this.labels[this.get('newCommentLabel')].placeholder;
     if(_.isArray(placeholder)) {
@@ -60,17 +71,19 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return;
     }
     let searchText = this.get('commentFilterText');
-    if (searchText.length < 1) {
+    if (searchText.length < 5) {
       return [];
     }
     this.set('isLoadingSearchResults', true);
     return this.get('store').query('comment', {
-      text: searchText
+      text: searchText,
+      myCommentsOnly: this.get('myCommentsOnly'),
+      since: this.get('sinceDate')
     }).then((comments) => {
       this.set('searchResults', comments);
       this.set('isLoadingSearchResults', false);
     });
-  }.observes('commentFilterText'),
+  }.observes('commentFilterText', 'myCommentsOnly', 'sinceDate'),
 
   displayList: function() {
     if (this.get('isSearching')) {
@@ -206,6 +219,17 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     toggleFilter: function() {
       this.toggleProperty('showFilter');
+      if (this.get('showFilter') && this.get('isSearching')) {
+        this.set('isSearching', false);
+      }
+    },
+
+    toggleSearch: function() {
+      this.toggleProperty('isSearching');
+
+      if (this.get('isSearching') && this.get('showFilter')) {
+        this.set('showFilter', false);
+      }
     }
   }
 });

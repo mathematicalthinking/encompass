@@ -40,17 +40,19 @@ async function getComments(req, res, next) {
 
   // Determine what comments can be searched
   if(textSearch) {
-    console.log('textSearch', textSearch);
     var regExp = new RegExp(textSearch, 'i');
-    console.log('regExp', regExp);
     criteria.text = regExp;
-    //criteria.createdBy = user._id
   }
 
-  // Are these ever being used?
   var myCommentsOnly = (req.query.myCommentsOnly === 'true');
   if(myCommentsOnly) {
-    criteria.$and.push({createdBy: user});
+    criteria.createdBy = user._id;
+  }
+
+  var sinceDate = req.query.since;
+  if (sinceDate) {
+    let isoDate = new Date(sinceDate);
+    criteria.createDate = {$gte: isoDate};
   }
 
   var workspaces = req.query.workspaces;
