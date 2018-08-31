@@ -1,5 +1,5 @@
 Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  ElementId: 'workspace-new-enc',
+  elementId: 'workspace-new-enc',
 
   selectedPdSetId: null,
   selectedFolderSet: null,
@@ -11,7 +11,12 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   mode: 'private',
 
   didReceiveAttrs: function() {
+    const currentUser = this.get('currentUser');
+    if (currentUser.get('accountType') !== 'A') {
+      this.set('selectedTeacher', currentUser);
+    }
     this.set('teacherPool', this.getTeacherPool());
+
   },
 
   getTeacherPool: function() {
@@ -56,16 +61,29 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   },
 
   isAnswerCriteriaValid: function() {
-    const params = ['teacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
+    const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
     for (let param of params) {
       console.log(param);
       if (this.get(param)) {
         return true;
       }
     }
-  }.property('teacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'),
+    return false;
+  }.property('selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'),
 
-  isFormValid: Ember.computed.or('isDateRangeValid', 'isAnswerCriteriaValid'),
+  isFormValid: Ember.computed('isDateRangeValid', 'isAnswerCriteriaValid', 'isWorkspaceSettingsValid', function() {
+    return this.get('isDateRangeValid') || this.get('isAnswerCriteriaValid') || this.get('isWorkspaceSettingsValid');
+  }),
+
+  isWorkspaceSettingsValid: function() {
+    const params = ['selectedOwner', 'mode'];
+    for (let param of params) {
+      if (!this.get(param)) {
+        return false;
+      }
+    }
+    return true;
+  }.property('selectedOwner', 'mode'),
 
 
   actions: {
@@ -84,9 +102,9 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         this.set('missingRequiredFields', true);
         return;
       }
-      if (!this.get('selectedTeacher')) {
-        this.set('selectedTeacher', this.get('currentUser'));
-      }
+      // if (!this.get('selectedTeacher')) {
+      //   this.set('selectedTeacher', this.get('currentUser'));
+      // }
 
       if (!this.get('selectedOwner')) {
         this.set('selectedOwner', this.get('currentUser'));
@@ -127,6 +145,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         // currently redirecting to workspaces list if successful
         // should we try to redirect to the individual workspace page?
         this.sendAction('toWorkspaces');
+        //this.sendAction('toWorkspace', res.id);
       })
       .catch((err) => {
         this.set('createWorkspaceError', err);
