@@ -22,6 +22,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isStudent: false,
   studentList: null,
   studentUsername: "",
+  teacherUsername: "",
   fieldType: 'password',
   showAssignment: false,
   problemList: null,
@@ -77,6 +78,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
     return people;
   }.property('studentUsername'),
+
+  teacherSearchResults: function () {
+    var searchText = this.get('teacherUsername');
+    searchText = searchText.replace(/\W+/g, "");
+    if (searchText.length < 2) {
+      return;
+    }
+    // console.log('search text is', searchText);
+    let people = this.get('store').query('user', {
+      username: searchText,
+    });
+    return people;
+  }.property('teacherUsername'),
 
   isShowingPassword: Ember.computed(function () {
     var showing = this.get('showingPassword');

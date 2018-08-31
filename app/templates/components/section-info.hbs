@@ -54,13 +54,12 @@
                 {{input id="teachers" type="text" value=teacherUsername placeholder="Username" classNames="user search" action="checkError"
                 on="key-down"}}
                 <ul>
-                  {{#each searchResults as |result|}}
+                  {{#each teacherSearchResults as |result|}}
                   <li>
                     <button class="addTeacher" {{action 'addTeacher' result}}>{{result.username}}</button>
                   </li>
                   {{/each}}
                 </ul>
-                </div>
               {{/if}}
             </li>
             <li class="studentslist">
