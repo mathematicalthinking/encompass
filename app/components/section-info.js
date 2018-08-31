@@ -37,6 +37,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   didReceiveAttrs: function () {
+    this.set('isAddingTeacher', false);
     return this.section.get('organization').then((org) => {
       console.log(('organization', org));
       this.set('organization', org);
@@ -50,7 +51,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     .catch((err) => {
       console.log('error getting org', err);
     });
-},
+  },
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -210,7 +211,18 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     removeTeacher: function (user) {
       let section = this.get('section');
       let teachers = section.get('teachers');
-      teachers.removeObject(user);
+      let currentUser = this.get('currentUser');
+
+      if (currentUser.isAdmin) {
+        teachers.removeObject(user);
+      } else {
+        if (teachers.length > 1) {
+          teachers.removeObject(user);
+        } else {
+          console.log('you must have teacher for the section');
+          return;
+        }
+      }
 
       // Save to Database
       section.save().then((section) => {
