@@ -8,10 +8,18 @@
   <p class="error-message">Please select files to upload.</p>
 {{/if}}
 
-  {{#if uploadResults}}
-  <ul>
-    {{#each uploadResults as |file|}}
-      <li>Uploaded <a href={{file.relativePath}} target="_blank">{{file.filename}}</a> successfully!</li>
-    {{/each}}
-  </ul>
-  {{/if}}
+{{#if showLoadingMessage}}
+<p class="loading-message">Uploading images... Thank you for your patience.</p>
+{{/if}}
+
+{{#if uploadError}}
+  <p class="error-message">{{uploadError}}</p>
+{{/if}}
+
+{{#if uploadResults}}
+<ul>
+  {{#each uploadResults as |file|}}
+    <li>Uploaded <a href={{file.relativePath}} target="_blank">{{file.filename}}</a> successfully!</li>
+  {{/each}}
+</ul>
+{{/if}}
