@@ -30,6 +30,9 @@ async function removeTrashedDocuments() {
   console.log(`Starting removeTrashedDocuments `)
   for (let collection of originalCollections) {
     let model = models[collection];
+    // let allDocs = await model.find({}).exec();
+    // let allDocsIds = allDocs.map(ws => ws._id);
+    // console.log(`There are ${allDocsIds.length} documents for ${collection}`)
     try {
       trashed = await model.deleteMany({isTrashed: true});
     } catch(e) {
@@ -296,10 +299,6 @@ async function updateRequiredFields(collection) {
           doc.lastModifiedDate = new Date();
         }
 
-        // if user is steve ("529518daba1cd3d8c4013344") set his password
-
-        // if user is annie ("52964653e4bad7087700014b") set her password
-
         // Users if isAdmin AccountType A else T
         if (doc.isAdmin) {
           doc.accountType = 'A';
@@ -349,38 +348,37 @@ async function updateRequiredFields(collection) {
 
 
 async function update() {
-  mongoose.connect('mongodb://localhost:27017/encompass_prod');
-  // // remove warning open() is deprecated
-  // // https://mongoosejs.com/docs/4.x/docs/connections.html#use-mongo-client
-  // var promise = mongoose.connect('mongodb://localhost:27017/encompass_prodp', {
+  mongoose.connect('mongodb://localhost:27017/encompass');
+  // attempt to remove warning open() (which is deprecated) major failure needs revamp
+  // https://mongoosejs.com/docs/4.x/docs/connections.html#use-mongo-client
+  // var promise = mongoose.connect('mongodb://localhost:27017/encompass_prod', {
   //   useMongoClient: true,
   // });
 
-  // // remove trashed documents
-  // await removeTrashedDocuments();
+  // remove trashed documents
+  await removeTrashedDocuments();
 
-  // // remove selections, comments, responses, folders and taggings with no workspace
-  // const workspaces = await models.Workspace.find({}).exec();
-  // const workspaceIds = workspaces.map(ws => ws._id);
-  // console.log(`There are ${workspaceIds.length} workspaces`)
-  // for (let collection of ['Selection', 'Comment', 'Response', 'Folder', 'Tagging']) {
-  //   await removeOrphanedFromWs(collection, workspaceIds);
-  // }
+  // remove selections, comments, responses, folders and taggings with no workspace
+  const workspaces = await models.Workspace.find({}).exec();
+  const workspaceIds = workspaces.map(ws => ws._id);
+  console.log(`There are ${workspaceIds.length} workspaces`)
+  for (let collection of ['Selection', 'Comment', 'Response', 'Folder', 'Tagging']) {
+    await removeOrphanedFromWs(collection, workspaceIds);
+  }
 
-  // // remove taggings without a matching folder and selection
-  // await removeOrphanedTaggings();
+  // remove taggings without a matching folder and selection
+  await removeOrphanedTaggings();
 
-  // // remove users who do not already have a workspace
-  // await removeIrrelevantUsers();
+  // remove users who do not already have a workspace
+  await removeIrrelevantUsers();
 
-  // // clean invalid workspaces from submissions, and delete any submissions with no workspaces.
-  // await checkSubmissionWorkspaces();
-  // await cleanSubmissionWorkspaces();
-  // await checkSubmissionWorkspaces();
+  // clean invalid workspaces from submissions, and delete any submissions with no workspaces.
+  await checkSubmissionWorkspaces();
+  await cleanSubmissionWorkspaces();
+  await checkSubmissionWorkspaces();
 
   // update required fields for all collections
-  // for (let collection of allCollections) {
-  for (let collection of ['User']) {
+  for (let collection of allCollections) {
     await updateRequiredFields(collection);
   }
 

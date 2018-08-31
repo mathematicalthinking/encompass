@@ -49,7 +49,8 @@ const localSignup = (req, res, next) => {
   function (err, user, info) {
     console.log('info', info);
     if (err) {
-      console.log('err: ', err);
+      console.error('localSignup error: ', err);
+      console.trace();
       return next(err);
     }
 
@@ -111,8 +112,8 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
   const smtpTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.TEST_GMAIL_USERNAME,
-      pass: process.env.TEST_GMAIL_PASSWORD
+      user: process.env.GMAIL_USERNAME,
+      pass: process.env.GMAIL_PASSWORD
     }
   });
 

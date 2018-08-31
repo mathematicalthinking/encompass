@@ -247,7 +247,7 @@ server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 
-server.get(/.*/, express.static('build'));
+server.get(/.*/, express.static('dist'));
 
 server.post({
   name: 'newWorkspaces',

@@ -10,6 +10,7 @@ build/.test/*.*
 build/application-prod.js
 build/application.js
 build/common_bundle.js
+dist/**/*
 dependencies/compiled/*.*
 .grunt
 _SpecRunner.html
