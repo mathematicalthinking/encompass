@@ -118,7 +118,7 @@ function postFolder(req, res, next) {
 function putFolder(req, res, next) {
 
   var user = userAuth.requireUser(req);
-  models.Workspace.findOne({owner: user._id, folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
     if(wsAccess.canModify(user, ws)) {
       models.Folder.findById(req.params.id,

@@ -60,7 +60,7 @@ describe('Comments', function() {
       let text;
       let newComment;
       try{
-        let paragraphs = await helpers.getWebElements(driver, 'li.notice>p>a.newWindow');
+        let paragraphs = await helpers.getWebElements(driver, 'li.notice>p>a');
         if (!_.isEmpty(paragraphs)) {
           newComment = paragraphs[paragraphs.length - 1];
           text = await newComment.getText();

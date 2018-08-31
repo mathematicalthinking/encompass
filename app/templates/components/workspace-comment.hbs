@@ -1,7 +1,7 @@
     {{#if permittedToComment}}
-      <a 
-          {{! action (action reuseComment comment)}} 
-          {{action reuseComment comment}} 
+      <a
+          {{! action (action reuseComment comment)}}
+          {{action reuseComment comment}}
           title="reuse ths comment">
         {{#if comment.children.length}}
           {{comment.children.length}}
@@ -15,11 +15,11 @@
     {{/if}}
   	<p>
       {{#if isForCurrentWorkspace}}
-        {{#link-to 'workspace.submission.selection' selection.submission selection classNames="comment"}}
+        {{#link-to 'workspace.submission.selection' comment.selection.submission comment.selection classNames="comment"}}
           {{comment.text}}
         {{/link-to}}
       {{else}}
-      <a class="newWindow" target="_blank" href="{{selection.link}}">{{comment.text}}</a>
+      <a class="newWindow" target="_blank" href="{{comment.selection.link}}">{{comment.text}}</a>
       {{/if}}
     </p>
       <p class="meta">

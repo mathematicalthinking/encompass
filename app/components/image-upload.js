@@ -75,15 +75,22 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
           if (pdfCount > 0) {
             return this.uploadPdf(currentUser, pdfFormData).then((res) => {
               console.log('res pdf', res);
-              let results = this.get('uploadedPdfs').concat(this.get('uploadedImages'));
-              this.set('uploadResults', results);
+              let results;
+              if (this.get('uploadedPdfs') && this.get('uploadedImages')) {
+                results = this.get('uploadedPdfs').concat(this.get('uploadedImages'));
+                this.set('uploadResults', results);
+              }
+
             })
             .catch(console.log);
+          } else {
+            this.set('uploadResults', this.get('uploadedImages'));
           }
         });
       } else if (pdfCount > 0) {
         return this.uploadPdf(currentUser, pdfFormData).then((res) => {
           console.log('res', res);
+          this.set('uploadResults', this.get('uploadedPdfs'));
         })
         .catch(console.log);
       }

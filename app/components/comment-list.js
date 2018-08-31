@@ -33,6 +33,17 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
 
+  init: function() {
+    this._super(...arguments);
+    const htmlFormat = 'YYYY-MM-DD';
+
+    let oneYearAgo = moment().subtract(365, 'days').calendar();
+    let oneYearAgoDate = new Date(oneYearAgo);
+    let htmlDate = moment(oneYearAgoDate).format(htmlFormat);
+
+    this.set('sinceDate', htmlDate);
+  },
+
   newCommentPlaceholder: function() {
     var placeholder = this.labels[this.get('newCommentLabel')].placeholder;
     if(_.isArray(placeholder)) {
@@ -49,28 +60,38 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
 
     if (this.thisSubmissionOnly) {
-      let newComments = [];
-      filtered.forEach((comment) => {
-        let commentSubId = comment.get('submission').get('id');
-        let currentSubmissionId = this.get('currentSubmission').get('id');
-        if (commentSubId === currentSubmissionId) {
-          newComments.push(comment);
-        }
-      });
-      console.log('new comments are', newComments);
-      return newComments;
+      filtered = filtered.filterBy('submission.id', this.get('currentSubmission.id'));
     }
 
-    if(this.filterComments){
-      //change this to query the comments vs filter what is viewable?
-      var regexp = new RegExp(this.commentFilterText, "i");
-      filtered = filtered.filter( function(comment){
-        //item.get('url').match(regExp);
-        return regexp.test( comment.get('text') );
-      });
-    }
     return filtered.sortBy('createDate').reverse();
-  }.property('comments.[]', 'comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText'),
+  }.property('comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText', 'currentSubmission.id'),
+
+  commentSearchResults: function() {
+    if (!this.get('isSearching')) {
+      return;
+    }
+    let searchText = this.get('commentFilterText');
+    if (searchText.length < 5) {
+      return [];
+    }
+    this.set('isLoadingSearchResults', true);
+    return this.get('store').query('comment', {
+      text: searchText,
+      myCommentsOnly: this.get('myCommentsOnly'),
+      since: this.get('sinceDate')
+    }).then((comments) => {
+      this.set('searchResults', comments);
+      this.set('isLoadingSearchResults', false);
+    });
+  }.observes('commentFilterText', 'myCommentsOnly', 'sinceDate'),
+
+  displayList: function() {
+    if (this.get('isSearching')) {
+      return this.get('searchResults');
+    }
+
+    return this.get('filteredComments');
+  }.property('isSearching', 'searchResults.[]', 'filteredComments.[]'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {
@@ -198,6 +219,17 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     toggleFilter: function() {
       this.toggleProperty('showFilter');
+      if (this.get('showFilter') && this.get('isSearching')) {
+        this.set('isSearching', false);
+      }
+    },
+
+    toggleSearch: function() {
+      this.toggleProperty('isSearching');
+
+      if (this.get('isSearching') && this.get('showFilter')) {
+        this.set('showFilter', false);
+      }
     }
   }
 });

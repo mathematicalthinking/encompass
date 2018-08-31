@@ -108,7 +108,7 @@ function canModify(user, ws) {
     return false;
   }
   var isAdmin = user.accountType === 'A';
-  var isOwner = user.id === ws._id.toString();
+  var isOwner = user.id === ws.owner._id.toString();
   var editorIds = ws.editors.map(obj => obj._id.toString());
 
   var isEditor = _.includes(editorIds, user.id);
