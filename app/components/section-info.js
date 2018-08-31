@@ -81,17 +81,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return people;
   }.property('studentUsername'),
 
-  teacherSearchResults: function () {
+  setTeacherSearchResults: function () {
     var searchText = this.get('teacherUsername');
     searchText = searchText.replace(/\W+/g, "");
     if (searchText.length < 2) {
       return;
     }
-    let people = this.get('store').query('user', {
+    this.get('store').query('user', {
       username: searchText,
+    }).then((people) => {
+      this.set('teacherSearchResults', people.rejectBy('accountType', 'S'));
     });
-    return people;
-  }.property('teacherUsername'),
+  }.observes('teacherUsername'),
+
 
   isShowingPassword: Ember.computed(function () {
     var showing = this.get('showingPassword');
