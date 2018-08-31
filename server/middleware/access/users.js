@@ -182,7 +182,7 @@ const modifiableUserCriteria = function(user) {
       { _id: user._id },
       { $and: [
         { organization: user.organization },
-        { accountType: 'S' }
+        // { accountType: 'S' }
       ]}
 
     ];

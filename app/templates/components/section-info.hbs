@@ -37,17 +37,52 @@
           <li>
             <label for="assignments">Assignments</label>
                <ul class="listing">
-                {{#each section.assignments as |assignment|}}
-                <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
-                {{/each}}
+                {{#if section.assignments}}
+                  {{#each section.assignments as |assignment|}}
+                  <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
+                  {{/each}}
+                {{else}}
+                  <li>No Assignments yet</li>
+                {{/if}}
               </ul>
+              {{#unless cantEdit}}
+              <button class="action_button" {{action 'showAssignment'}}>
+                New Assignment
+              </button>
+              {{/unless}}
           </li>
           <li class="teacherslist">
             <label for="teachers">Teachers</label>
              {{#each section.teachers as |teacher| }}
-              <ol class="b">{{teacher.username}}</ol>
+              <ol class="b">
+                {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
+                {{#unless cantEdit}}
+                <button class="trash-button" {{action 'removeTeacher' teacher}}>
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              {{/unless}}
+              </ol>
               {{/each}}
+              {{#if removeTeacherError}}
+                <p class="error-message">You must have at least one teacher</p>
+              {{/if}}
           </li>
+          {{#unless cantEdit}}
+            <li>
+              <button {{action 'addTeachers'}}>Add Teachers</button>
+              {{#if isAddingTeachers}}
+                {{input id="teachers" type="text" value=teacherUsername placeholder="Username" classNames="user search" action="checkError"
+                on="key-down"}}
+                <ul>
+                  {{#each teacherSearchResults as |result|}}
+                  <li>
+                    <button class="addTeacher" {{action 'addTeacher' result}}>{{result.username}}</button>
+                  </li>
+                  {{/each}}
+                </ul>
+              {{/if}}
+            </li>
+            {{/unless}}
             <li class="studentslist">
             <label for="students">Students</label>
             {{#each section.students as |student|}}
@@ -73,9 +108,6 @@
 
     <button class="action_button" id="editSection" {{action 'editSection'}}>
       Edit Section
-    </button>
-    <button class="action_button" {{action 'showAssignment'}}>
-      Create Assignment
     </button>
   </section>
   {{/unless}}

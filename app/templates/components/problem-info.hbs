@@ -37,17 +37,9 @@
             <li>
               <label for="imagedata">Problem Image:</label>
               {{#if problem.imageData}}
-                {{#if problem.isPdf}}
-                  <div id="pdf-view">
-                    <object data="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-                      <embed src="{{problem.imageData}}" type="application/pdf">
-                    </object>
-                  </div>
-                {{else}}
-                  <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
-                    <img src="{{problem.imageData}}" alt="{{problem.title}}">
+                  <a {{action 'toggleImageSize'}} >
+                    <img src="{{problem.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
                   </a>
-                {{/if}}
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
                   {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
               {{else}}
@@ -91,17 +83,9 @@
           <li>
           {{#if problem.imageData}}
             <label for="imagedata">Problem Image:</label>
-            {{#if problem.isPdf}}
-            <div id="pdf-view">
-              <object data="{{problem.imageData}}" type="application/pdf" height="100%" width="100%">
-                <embed src="{{problem.imageData}}" type="application/pdf">
-              </object>
-            </div>
-            {{else}}
-              <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
-                <img src="{{problem.imageData}}" alt="Image Error">
+              <a {{action 'toggleImageSize'}}>
+                <img src="{{problem.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
               </a>
-            {{/if}}
           {{/if}}
           </li>
         </ol>

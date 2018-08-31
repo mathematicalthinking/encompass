@@ -52,6 +52,17 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return yourSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
+  allSections: function () {
+    var sections = this.sections;
+    var currentUser = this.get('currentUser');
+    var allSections = sections.filter((section) => {
+      let content = section.get('createdBy.content');
+      if (content) {
+        return content.id !== currentUser.id;
+      }
+    });
+    return allSections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed'),
 });
 
 // we want to get all the sections that you are in the teachers array but not createdBy

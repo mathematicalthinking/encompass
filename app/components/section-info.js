@@ -15,6 +15,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
+  removeTeacherError: null,
   showingPassword: false,
   isEditingStudents: false,
   removeObject: null,
@@ -22,9 +23,11 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isStudent: false,
   studentList: null,
   studentUsername: "",
+  teacherUsername: "",
   fieldType: 'password',
   showAssignment: false,
   problemList: null,
+  isAddingTeacher: false,
   sectionList: [],
 
   init: function () {
@@ -35,6 +38,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   didReceiveAttrs: function () {
+    this.set('isAddingTeacher', false);
     return this.section.get('organization').then((org) => {
       console.log(('organization', org));
       this.set('organization', org);
@@ -48,7 +52,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     .catch((err) => {
       console.log('error getting org', err);
     });
-},
+  },
 
   willDestroyElement: function () {
     this.set('createdStudents', null);
@@ -77,6 +81,20 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return people;
   }.property('studentUsername'),
 
+  setTeacherSearchResults: function () {
+    var searchText = this.get('teacherUsername');
+    searchText = searchText.replace(/\W+/g, "");
+    if (searchText.length < 2) {
+      return;
+    }
+    this.get('store').query('user', {
+      username: searchText,
+    }).then((people) => {
+      this.set('teacherSearchResults', people.rejectBy('accountType', 'S'));
+    });
+  }.observes('teacherUsername'),
+
+
   isShowingPassword: Ember.computed(function () {
     var showing = this.get('showingPassword');
     return showing;
@@ -85,6 +103,10 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   actions: {
     addNewStudents: function () {
       this.set('isAddingStudents', true);
+    },
+
+    addTeachers: function () {
+      this.set('isAddingTeachers', true);
     },
 
     doYouWantToAddExistingUser: function () {
@@ -146,13 +168,99 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     removeStudent: function (user) {
       let section = this.get('section');
       let students = section.get('students');
-      students.removeObject(user);
+      let selectedUser = user;
+      let selectedUserId = selectedUser.get('id');
+      students.removeObject(selectedUser);
 
-      // Save to Database
       section.save().then((section) => {
+        return this.store.findRecord('user', selectedUserId)
+          .then((user) => {
+            let userSections = user.get('sections');
+            let removedSectionId = section.get('id');
+            let newSections = [];
+            userSections.map((section) => {
+              if (section.sectionId !== removedSectionId) {
+                newSections.push(section);
+              }
+            });
+            user.set('sections', newSections);
+            user.save();
+          });
+        });
         this.set('removedStudent', true);
+    },
+
+
+    addTeacher: function (teacher) {
+      let section = this.get('section');
+      let username = this.get('teacherUsername');
+      let teachers = section.get('teachers');
+
+      var checkRegisteredTeacher = teachers.filterBy('username', username);
+      if (!Ember.isEmpty(checkRegisteredTeacher)) {
+        this.set('userAlreadyInSection', true);
+        console.log('user not in this section');
+      } else if (!section.get('teachers').contains(teacher)) {
+        section.get('teachers').pushObject(teacher);
+        section.save();
+      }
+
+      let sectionObj = {
+        sectionId: section.id,
+        role: 'teacher'
+      };
+
+      return this.store.findRecord('user', teacher.id).then((teacher) => {
+        console.log('teacher rec', teacher);
+        teachers.pushObject(teacher); //add student into students list
+        this.set('doYouWantToAddExistingUser', false);
+        //save section in student
+        section.save().then((section) => {
+          console.log('saved section', section);
+          teacher.get('sections').addObject(sectionObj);
+          teacher.save().then((rec) => {
+            console.log('saved teacher', rec);
+            this.set('teacherUsername', '');
+          });
+        });
       });
     },
+
+    removeTeacher: function (user) {
+      let section = this.get('section');
+      let teachers = section.get('teachers');
+      let teachersLength = teachers.get('length');
+      let selectedUser = user;
+      let selectedUserId = selectedUser.get('id');
+
+      if (teachersLength > 1) {
+        teachers.removeObject(user);
+      } else {
+        this.set('removeTeacherError', true);
+        Ember.run.later((() => {
+          this.set('removeTeacherError', false);
+        }), 3000);
+        return;
+      }
+
+      section.save().then((section) => {
+        return this.store.findRecord('user', selectedUserId)
+          .then((user) => {
+            let userSections = user.get('sections');
+            let removedSectionId =section.get('id');
+            let newSections = [];
+            userSections.map((section) => {
+              if (section.sectionId !== removedSectionId) {
+                newSections.push(section);
+              }
+            });
+            user.set('sections', newSections);
+            user.save();
+          });
+      });
+      this.set('removedTeacher', true);
+    },
+
 
     showPassword: function () {
       var isShowingPassword = this.get('showingPassword');
@@ -215,7 +323,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         data: createUserData
       })
         .then((res) => {
-          console.log('res', res);
           if (res.message === 'Username already exists') {
             that.set('usernameAlreadyExists', true);
           } else if (res.message === 'Can add existing user') {

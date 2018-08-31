@@ -19,8 +19,6 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   key: DS.attr('string'),
   history: DS.attr(),
   sections: DS.attr(),
-  teacherSections: DS.hasMany('section'),
-  studentSections: DS.hasMany('section'),
   assignments: DS.hasMany('assignment', {async: true, inverse: null}),
   answers: DS.hasMany('answer', {async: true}),
   actingRole: DS.attr('string'),
