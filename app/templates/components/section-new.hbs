@@ -32,10 +32,13 @@
               <p class="error-message">Sorry, there is no teacher with that username.</p>
               {{/if}}
             </li>
-
-            <li>
+              <li>
               <label for="organization">Organization</label>
-              {{input id="organization" type="text" value=organization disabled=true placeholder=user.organization.name action="checkError" on="key-down"}}
+              {{#if currentUser.isAdmin}}
+                {{input id="organization" type="text" value=organization disabled=true placeholder="Organization is automatically set to match the provided teachers organization"}}
+              {{else}}
+                {{input id="organization" type="text" value=organization disabled=true placeholder=user.organization.name}}
+              {{/if}}
             </li>
           </ol>
         </fieldset>
