@@ -4,7 +4,7 @@
   * @author Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.0
   */
-
+/* jshint ignore:start */
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
@@ -16,6 +16,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const wsAccess   = require('../../middleware/access/workspaces');
+const access   = require('../../middleware/access/comments');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -30,15 +31,23 @@ module.exports.put = {};
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getComments(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+async function getComments(req, res, next) {
+
   var user = userAuth.requireUser(req);
+  var criteria = await access.get.comments(user);
+
   var textSearch = req.query.text;
+
+  // for now only letting users search within comments they created
+  // since admins can technically access any comment, they would be
+  // getting way too many comments back if we just used the accessible comments
   if(textSearch) {
     var regExp = new RegExp(textSearch, 'i');
-    criteria.$and.push({text: regExp});
+    criteria.text = regExp;
+    criteria.createdBy = user._id
   }
 
+  // Are these ever being used?
   var myCommentsOnly = (req.query.myCommentsOnly === 'true');
   if(myCommentsOnly) {
     criteria.$and.push({createdBy: user});
@@ -206,3 +215,4 @@ module.exports.get.comments = getComments;
 module.exports.get.comment = getComment;
 module.exports.post.comment = postComment;
 module.exports.put.comment = putComment;
+/* jshint ignore:end */
