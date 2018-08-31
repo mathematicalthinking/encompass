@@ -41,7 +41,6 @@ const postImport = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const subData = JSON.parse(req.body.subs);
-  console.log('subData import', subData);
   const doCreateWorkspace = JSON.parse(req.body.doCreateWorkspace);
   const isPrivate = JSON.parse(req.body.isPrivate);
   let workspaceMode;

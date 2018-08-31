@@ -102,9 +102,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         this.set('missingRequiredFields', true);
         return;
       }
-      // if (!this.get('selectedTeacher')) {
-      //   this.set('selectedTeacher', this.get('currentUser'));
-      // }
 
       if (!this.get('selectedOwner')) {
         this.set('selectedOwner', this.get('currentUser'));
