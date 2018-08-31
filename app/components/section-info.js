@@ -168,11 +168,31 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     removeStudent: function (user) {
       let section = this.get('section');
       let students = section.get('students');
-      students.removeObject(user);
+      let selectedUser = user;
+      let selectedUserId = selectedUser.get('id');
+      console.log('selectedUserId is', selectedUserId);
+      students.removeObject(selectedUser);
 
       section.save().then((section) => {
+        return this.store.findRecord('user', selectedUserId)
+          .then((user) => {
+            let userSections = user.get('sections');
+            let removedSectionId = section.get('id');
+            let sectionObj = {
+              sectionId: section.get('id'),
+              role: 'student'
+            };
+            let newSections = [];
+            userSections.map((section) => {
+              if (section.sectionId !== removedSectionId) {
+                newSections.push(section);
+              }
+            });
+            user.set('sections', newSections);
+            user.save();
+          });
+        });
         this.set('removedStudent', true);
-      });
     },
 
 
@@ -293,7 +313,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         data: createUserData
       })
         .then((res) => {
-          console.log('res', res);
           if (res.message === 'Username already exists') {
             that.set('usernameAlreadyExists', true);
           } else if (res.message === 'Can add existing user') {
