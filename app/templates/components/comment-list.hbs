@@ -50,8 +50,8 @@
 {{#if showFilter}}
   <div class="filter">
     <p>
-    <label>{{input type="checkbox" checked=filterComments}} filter comments</label>
-    {{#if filterComments}}
+    <label>{{input type="checkbox" checked=isSearching}} Search all comments</label>
+    {{#if isSearching}}
       {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
     {{/if}}
     </p>
@@ -66,12 +66,18 @@
 <div>
 	<form>
 		<div id="al_feedback_display" class="al_vertical_stretch">
-			<ul>
-				{{#each this.filteredComments as |comment|}}
+			{{#if isLoadingSearchResults}}
+        Searching for comments. Thank you for your patience.
+      {{else}}
+      <ul>
+				{{#each displayList as |comment|}}
           {{workspace-comment comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
           {{!partial "../comments/comment"}}
+          {{else}}
+          <p>No comments made yet.</p>
 				{{/each}}
 			</ul>
+      {{/if}}
 		</div>
 	</form>
 	<!--div class="al_general" title="Enable to add feedback unassociated with a selection">

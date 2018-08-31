@@ -4,6 +4,8 @@
   * @authors Damola Mabogunje <damola@mathforum.org>, Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.0
   */
+
+  /*jshint ignore:start*/
 //REQUIRE MODULES
 const mongoose = require('mongoose');
 const logger = require('log4js').getLogger('server');
@@ -826,12 +828,13 @@ function newWorkspaceRequest(req, res, next) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
- function getWorkspaces(req, res, next) {
+ async function getWorkspaces(req, res, next) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
-  let criteria = utils.buildCriteria(req);
-    models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+  let criteria = await access.get.workspaces(user);
+  console.log('criteria for get wses', criteria);
+    models.Workspace.find(criteria).exec(function(err, workspaces) {
       var response = {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
@@ -846,7 +849,6 @@ function newWorkspaceRequest(req, res, next) {
     });
 
 }
-/*jshint ignore:start*/
 
 function pruneObj(obj) {
 
@@ -1077,7 +1079,7 @@ return utils.sendResponse(res,  data );
 }
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
-/*jshint ignore:end*/
+
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
@@ -1085,3 +1087,4 @@ module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
 module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
+/*jshint ignore:end*/

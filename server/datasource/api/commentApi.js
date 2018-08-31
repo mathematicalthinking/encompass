@@ -38,13 +38,13 @@ async function getComments(req, res, next) {
 
   var textSearch = req.query.text;
 
-  // for now only letting users search within comments they created
-  // since admins can technically access any comment, they would be
-  // getting way too many comments back if we just used the accessible comments
+  // Determine what comments can be searched
   if(textSearch) {
+    console.log('textSearch', textSearch);
     var regExp = new RegExp(textSearch, 'i');
+    console.log('regExp', regExp);
     criteria.text = regExp;
-    criteria.createdBy = user._id
+    //criteria.createdBy = user._id
   }
 
   // Are these ever being used?
