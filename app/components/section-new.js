@@ -9,6 +9,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   invalidTeacherUsername: null,
   selectedOrganization: null,
   missingFieldsError: null,
+  userOrg: null,
 
   //Non admin User creating section
   //set user as teacher
@@ -32,6 +33,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       //var organization = this.get('selectedOrganization');
       var user = this.get('user');
       var organization = user.get('organization');
+      this.set('userOrg', organization);
       var teacher = this.get('teacher');
       var currentUser = this.get('currentUser');
       //var leader = this.get('leader');
@@ -42,6 +44,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         if (!Ember.isEmpty(users)) {
           let user = users.get('firstObject');
           teachers.pushObject(user);
+          let userOrg = user.get('organization');
+          this.set('userOrg', userOrg);
         } else {
           this.set('invalidTeacherUsername', true);
           return;
@@ -50,9 +54,10 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
       var sectionData = this.store.createRecord('section', {
         name: newSectionName,
-        organization: organization,
+        organization: this.get('userOrg'),
         createdBy: currentUser,
       });
+
 
       for (let teacher of teachers) {
         sectionData.get('teachers').addObject(teacher);
