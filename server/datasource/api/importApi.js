@@ -41,6 +41,7 @@ const postImport = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const subData = JSON.parse(req.body.subs);
+  console.log('subData import', subData);
   const doCreateWorkspace = JSON.parse(req.body.doCreateWorkspace);
   const isPrivate = JSON.parse(req.body.isPrivate);
   let workspaceMode;
@@ -53,20 +54,25 @@ const postImport = async function(req, res, next) {
 
   // subData is array of objects containing submission data
   // longAnswer property is the objectId of the image
+  // answer property is the objectId of the answer record from our DB
   // need to get the image data and set it as the longAnswer
+
+  //need to look up answer and modify with imageData
   for (let sub of subData) {
     let imageId = sub.longAnswer;
     let imageAlt = `${sub.creator.username}'s submission`;
 
     try {
       let image = await models.Image.findById(imageId);
-      if (image.mimetype === 'application/pdf') {
-        sub.longAnswer = image.data;
-        sub.isPdf = true;
-      } else {
-        sub.longAnswer = `<img src="${image.data}" alt="${imageAlt}">`;
-        sub.isPdf = false;
-      }
+
+      let imageData = `<img src="${image.data}" alt="${imageAlt}">`;
+
+      let answer = await models.Answer.findById(sub.answer);
+      answer.explanation = imageData;
+      await answer.save();
+      sub.longAnswer = undefined;
+      sub.shortAnswer = undefined;
+
     }catch(err) {
       console.log(err);
     }
