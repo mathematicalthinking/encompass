@@ -170,7 +170,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let students = section.get('students');
       let selectedUser = user;
       let selectedUserId = selectedUser.get('id');
-      console.log('selectedUserId is', selectedUserId);
       students.removeObject(selectedUser);
 
       section.save().then((section) => {
@@ -178,10 +177,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           .then((user) => {
             let userSections = user.get('sections');
             let removedSectionId = section.get('id');
-            let sectionObj = {
-              sectionId: section.get('id'),
-              role: 'student'
-            };
             let newSections = [];
             userSections.map((section) => {
               if (section.sectionId !== removedSectionId) {
@@ -235,6 +230,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let section = this.get('section');
       let teachers = section.get('teachers');
       let teachersLength = teachers.get('length');
+      let selectedUser = user;
+      let selectedUserId = selectedUser.get('id');
 
       if (teachersLength > 1) {
         teachers.removeObject(user);
@@ -246,11 +243,24 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return;
       }
 
-      // Save to Database
       section.save().then((section) => {
-        this.set('removedStudent', true);
+        return this.store.findRecord('user', selectedUserId)
+          .then((user) => {
+            let userSections = user.get('sections');
+            let removedSectionId =section.get('id');
+            let newSections = [];
+            userSections.map((section) => {
+              if (section.sectionId !== removedSectionId) {
+                newSections.push(section);
+              }
+            });
+            user.set('sections', newSections);
+            user.save();
+          });
       });
+      this.set('removedTeacher', true);
     },
+
 
     showPassword: function () {
       var isShowingPassword = this.get('showingPassword');
