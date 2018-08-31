@@ -85,7 +85,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (searchText.length < 2) {
       return;
     }
-    // console.log('search text is', searchText);
     let people = this.get('store').query('user', {
       username: searchText,
     });
@@ -166,6 +165,52 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let section = this.get('section');
       let students = section.get('students');
       students.removeObject(user);
+
+      section.save().then((section) => {
+        this.set('removedStudent', true);
+      });
+    },
+
+
+    addTeacher: function (teacher) {
+      let section = this.get('section');
+      let username = this.get('teacherUsername');
+      let teachers = section.get('teachers');
+
+      var checkRegisteredTeacher = teachers.filterBy('username', username);
+      if (!Ember.isEmpty(checkRegisteredTeacher)) {
+        this.set('userAlreadyInSection', true);
+        console.log('user not in this section');
+      } else if (!section.get('teachers').contains(teacher)) {
+        section.get('teachers').pushObject(teacher);
+        section.save();
+      }
+
+      let sectionObj = {
+        sectionId: section.id,
+        role: 'teacher'
+      };
+
+      return this.store.findRecord('user', teacher.id).then((teacher) => {
+        console.log('teacher rec', teacher);
+        teachers.pushObject(teacher); //add student into students list
+        this.set('doYouWantToAddExistingUser', false);
+        //save section in student
+        section.save().then((section) => {
+          console.log('saved section', section);
+          teacher.get('sections').addObject(sectionObj);
+          teacher.save().then((rec) => {
+            console.log('saved teacher', rec);
+            this.set('teacherUsername', '');
+          });
+        });
+      });
+    },
+
+    removeTeacher: function (user) {
+      let section = this.get('section');
+      let teachers = section.get('teachers');
+      teachers.removeObject(user);
 
       // Save to Database
       section.save().then((section) => {
