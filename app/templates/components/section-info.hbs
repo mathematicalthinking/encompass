@@ -63,6 +63,9 @@
               {{/unless}}
               </ol>
               {{/each}}
+              {{#if removeTeacherError}}
+                <p class="error-message">You must have at least one teacher</p>
+              {{/if}}
           </li>
           {{#unless cantEdit}}
             <li>

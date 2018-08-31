@@ -15,6 +15,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingPassword: null,
   isMissingUsername: null,
   missingFieldsError: null,
+  removeTeacherError: null,
   showingPassword: false,
   isEditingStudents: false,
   removeObject: null,
@@ -211,17 +212,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     removeTeacher: function (user) {
       let section = this.get('section');
       let teachers = section.get('teachers');
-      let currentUser = this.get('currentUser');
+      let teachersLength = teachers.get('length');
 
-      if (currentUser.isAdmin) {
+      if (teachersLength > 1) {
         teachers.removeObject(user);
       } else {
-        if (teachers.length > 1) {
-          teachers.removeObject(user);
-        } else {
-          console.log('you must have teacher for the section');
-          return;
-        }
+        this.set('removeTeacherError', true);
+        Ember.run.later((() => {
+          this.set('removeTeacherError', false);
+        }), 3000);
+        return;
       }
 
       // Save to Database
