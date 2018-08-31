@@ -972,8 +972,8 @@ async function answersToSubmissions(answers) {
 
       teacher.id = primaryTeacher;
       let sub = {
-        longAnswer: ans.explanation,
-        shortAnswer: ans.answer,
+        //longAnswer: ans.explanation,
+        //shortAnswer: ans.answer,
         clazz: clazz,
         creator: creator,
         teacher: teacher,
