@@ -30,15 +30,7 @@
       <p>Author: {{answer.student.username}}</p>
     </div>
 
-        <p>Submission: {{#if answer.explanation.isPdf}}
-      <object data="{{answer.explanation.data}}" type="application/pdf">
-        <embed src="{{answer.explanation.data}}" type="application/pdf" height="100%" width="100%">
-      </object>
-    {{else}}
-      <img src={{answer.explanation.data}} style="width:128px;height:128px">
-    {{/if}}</p>
-
-
+    <p>Submission: {{{answer.explanation}}}</p>
   {{/each}}
 </div>
 

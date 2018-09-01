@@ -83,12 +83,14 @@ const getImage = (req, res, next) => {
 
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.NotAuthorizedError('No user logged in!', res);
+  }
   let docs;
   // who can create images - add permission here
   if (!req.files) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
-  console.log('running post Images!!');
 
   const files = await Promise.all(req.files.map((f) => {
     let data = f.buffer;
@@ -107,10 +109,10 @@ const postImages = async function(req, res, next) {
         size: 1000 // output size in pixels
       })
 
-      function convertBase64(file) {
-        let bitmap = fs.readFileSync(file);
-        return new Buffer(bitmap).toString('base64');
-      }
+      // function convertBase64(file) {
+      //   let bitmap = fs.readFileSync(file);
+      //   return new Buffer(bitmap).toString('base64');
+      // }
 
       let file = img.path;
       return converter.convertBulk(file)
@@ -137,7 +139,7 @@ const postImages = async function(req, res, next) {
         .catch((err) => {
           console.error(`Pdf conversion error: ${err}`);
           console.trace();
-          console.log('error converting batch', err);
+          return utils.sendError.InternalError(err, res);
         });
 
 
@@ -151,7 +153,7 @@ const postImages = async function(req, res, next) {
       img.createdBy = user;
       img.createDate = Date.now();
       img.data = imgData;
-      img.isPdf = isPDF;
+      //img.isPdf = isPDF; deprecated
       return Promise.resolve(img);
     }
 

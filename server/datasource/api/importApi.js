@@ -57,31 +57,40 @@ const postImport = async function(req, res, next) {
   // need to get the image data and set it as the longAnswer
 
   //need to look up answer and modify with imageData
-  for (let sub of subData) {
-    let imageId = sub.longAnswer;
-    let imageAlt = `${sub.creator.username}'s submission`;
+  // for (let sub of subData) {
+  //   console.log('sub', sub);
 
-    try {
-      let image = await models.Image.findById(imageId);
+  // //   let imageId = sub.longAnswer;
+  // //   let imageAlt = `${sub.creator.username}'s submission`;
 
-      let imageData = `<img src="${image.data}" alt="${imageAlt}">`;
+  // //   try {
+  // //     let image = await models.Image.findById(imageId);
 
-      let answer = await models.Answer.findById(sub.answer);
-      answer.explanation = imageData;
-      await answer.save();
-      sub.longAnswer = undefined;
-      sub.shortAnswer = undefined;
+  // //     let imageData = `<img src="${image.data}" alt="${imageAlt}">`;
 
-    }catch(err) {
-      console.log(err);
-    }
-  }
+  // //     let answer = await models.Answer.findById(sub.answer);
+  // //     answer.explanation = imageData;
+
+  // //     await answer.save();
+
+  // //     sub.answer = answer;
+  // //     sub.longAnswer = undefined;
+  // //     sub.shortAnswer = undefined;
+
+  // //   }catch(err) {
+  // //     console.log(err);
+  // //   }
+  // }
 
   try {
     submissions = await Promise.all(subData.map((obj) => {
+      console.log('obj', obj);
+
       let sub = new models.Submission(obj);
       sub.createdBy = user;
       sub.createDate = Date.now();
+
+
       return sub.save();
 }));
 const submissionIds = submissions.map((sub) => {
