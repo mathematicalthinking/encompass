@@ -43,7 +43,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   uploadPdf: function (currentUser, formData) {
-    console.log('in uploadPdf');
     const that = this;
     return Ember.$.post({
       url: '/pdf',
@@ -64,19 +63,20 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   actions: {
     uploadImages: function() {
       this.set('isUploading', true);
-      var that = this;
-      var currentUser = that.get('currentUser');
-      var uploadData = that.get('filesToBeUploaded');
+      const that = this;
+      const currentUser = that.get('currentUser');
+      const uploadData = that.get('filesToBeUploaded');
       if (!uploadData) {
         this.set('isUploading', false);
         this.set('missingFilesError', true);
         return;
       }
 
-      var formData = new FormData();
-      var pdfFormData = new FormData();
-      var imageCount = 0;
-      var pdfCount = 0;
+      let formData = new FormData();
+      let pdfFormData = new FormData();
+      let imageCount = 0;
+      let pdfCount = 0;
+
       for (let f of uploadData) {
         if (f.type === 'application/pdf') {
           pdfFormData.append('photo', f);
