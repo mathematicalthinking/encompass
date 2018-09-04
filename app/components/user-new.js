@@ -4,7 +4,10 @@ Encompass.UserNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, 
   actions: {
     toUserInfo: function(user) {
       this.sendAction('toUserInfo', user);
+    },
+    toUserHome: function () {
+      this.sendAction('toUserHome');
     }
-  }
+  },
 });
 

@@ -160,6 +160,11 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       }
     },
 
+    cancelNew: function () {
+      console.log('cancelNew btn clicked');
+      this.sendAction('toUserHome');
+    },
+
     resetErrors(e) {
       const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];
 
