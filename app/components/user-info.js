@@ -10,6 +10,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
   // your account does not have a createdBy
   // should teachers who sign up through the site themselves have createdBy be set to their own id?
 
+  didReceiveAttrs: function () {
+    this.set('isEditing', false);
+  },
+
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
     let creator = user.get('createdBy.content.id');
