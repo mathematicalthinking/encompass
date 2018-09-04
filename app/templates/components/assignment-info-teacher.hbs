@@ -5,7 +5,7 @@
         <ol>
           <li>
             <label for="problem">Problem</label>
-            {{my-select selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
+            {{my-select cannotBeNull=true selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
             {{input required=true type="hidden" value=problem}}
           </li>
           <li>
