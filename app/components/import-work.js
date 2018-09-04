@@ -22,12 +22,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   selectedFolderSet: null,
   isPrivate: Ember.computed.equal('mode', 'private'),
 
-  readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
+  readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', 'isAddingMoreFiles', function() {
     const problem = this.get('selectedProblem');
     const section = this.get('selectedSection');
     const files = this.get('uploadedFiles');
+    const isAdding = this.get('isAddingMoreFiles');
 
-    const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files);
+    const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files) && !isAdding;
     return isReady;
   }),
 
@@ -62,6 +63,24 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     this.set('sections', this.model.sections);
   },
 
+  handleAdditionalFiles: function() {
+    const additionalFiles = this.get('additionalFiles');
+    if (Ember.isEmpty(additionalFiles) || !Array.isArray(additionalFiles)) {
+      return;
+    }
+
+    let uploadedFiles = this.get('uploadedFiles');
+
+    if (!uploadedFiles || !Array.isArray(uploadedFiles)) {
+      uploadedFiles = [];
+    }
+
+    let combinedFiles = uploadedFiles.concat(additionalFiles);
+    this.set('uploadedFiles', combinedFiles);
+    this.set('additionalFiles', null);
+    this.set('isAddingMoreFiles', false);
+  }.observes('additionalFiles.[]'),
+
   actions: {
     toggleNewProblem: function() {
       if (this.get('isCreatingNewProblem') !== true) {
@@ -73,6 +92,11 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     editImportDetail: function(detailName) {
       if (!detailName || typeof detailName !== 'string') {
+        return;
+      }
+      if (detailName === 'additionalFiles') {
+        this.set('isAddingMoreFiles', true);
+        this.set('selectedFiles', null);
         return;
       }
       this.set(detailName, null);

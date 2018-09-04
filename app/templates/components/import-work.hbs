@@ -64,6 +64,12 @@
     {{/if}}
 
     {{#if selectedSection}}
+      {{#if isAddingMoreFiles}}
+        <div class="import-prep-files">
+            <p>Please choose files to upload</p>
+            {{image-upload class="form-file" filesToBeUploaded = selectedFiles uploadResults = additionalFiles acceptMultiple = true}}
+          </div>
+      {{/if}}
       {{#unless uploadedFiles}}
         {{#unless readyToMatchStudents}}
           <div class="import-prep-files">
