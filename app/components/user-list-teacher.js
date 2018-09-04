@@ -7,29 +7,24 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
   yourStudents: function () {
     let yourSections = this.get('currentUser').get('sections');
     let yourTeacherSections = yourSections.filterBy('role', 'teacher');
-    console.log('yourTeacher Sections is', yourTeacherSections);
-    let yourSectionIds = [];
-    yourTeacherSections.forEach((section) => {
-      yourSectionIds.push(section.sectionId);
-    });
+    let yourSectionIds = yourTeacherSections.map(section => { return section.sectionId; });
     console.log('your sections ids', yourSectionIds);
 
-    let firstId = yourTeacherSections[0].sectionId;
-    console.log('first sectionid is', firstId);
+    let studentUsers = this.users.filterBy('accountType', 'S');
 
-    let studentListing = [];
-    return this.store.findRecord('section', firstId)
-      .then((section) => {
-        let sectionStudents = section.get('students');
-        sectionStudents.forEach((student) => {
-          console.log('student name is', student.get('username'));
-          studentListing.push(student);
-        });
-        console.log('studentListing is', studentListing);
-      });
+    let studentListing = studentUsers.map((student) => {
+      console.log('student', student);
+      for (let section of student.get('sections')) {
+        if (section.role === 'student') {
+          if (yourSectionIds.includes(section.sectionId)) {
+            return student;
+          }
+        }
+      }
+    });
 
+    return studentListing.without(undefined);
 
-    // return studentListing.sortBy('createDate').reverse();
   }.property('users.@each.accountType'),
 
 
