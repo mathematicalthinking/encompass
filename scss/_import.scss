@@ -137,6 +137,13 @@
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 10px;
+
+    img {
+      margin: 5px;
+      border: 1px solid black;
+      width: 250px;
+      height: 250px;
+    }
   }
 
   .workspace-options {
@@ -147,5 +154,6 @@
     box-shadow: $box-shadow;
     padding: 5px;
   }
+
 }
 
