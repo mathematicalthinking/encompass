@@ -22,20 +22,12 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
  init: function() {
    this._super(...arguments);
-   if (this.get('currentSubmission.answer')) {
-     return this.get('currentSubmission.answer');
-   }
  },
 
   didRender: function() {
     console.log('rendering ws-sub');
     if(this.get('switching')) {
       this.set('switching', false);
-    }
-    if (this.get('currentSubmission').get('answer')) {
-      this.get('currentSubmission').get('answer').then((ans) => {
-        this.set('ansExplanation', ans.get('explanation'));
-      });
     }
 
  },
