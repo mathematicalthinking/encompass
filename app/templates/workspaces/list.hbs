@@ -2,15 +2,20 @@
 	<h2>Select a workspace</h2>
 	<aside>
     <span class="meta pointer refresh" {{action 'reloadPage'}}>current as of {{currentAsOf}}</span>
-    <span {{action "toggleFilter" "all"}} class="filter-all action_button">all</span>
+    {{!-- <span {{action "toggleFilter" "all"}} class="filter-all action_button">all</span>
     <span {{action "toggleFilter" "mine"}} class="filter-mine action_button">mine</span>
-    <span {{action "toggleFilter" "public"}} class="filter-public action_button">public</span>
+    <span {{action "toggleFilter" "public"}} class="filter-public action_button">public</span> --}}
 
     {{!-- {{link-to 'all' 'workspaces.index'}}
     {{link-to 'mine' 'workspaces.mine'}}
     {{link-to 'public' 'workspaces.public'}} --}}
     {{!-- {{#link-to 'workspaces.new'}}new{{/link-to}} --}}
 	</aside>
+  <div class="toggle-btn">
+        <button {{action "toggleFilter" "all"}} class="filter-btn {{if (is-equal listFilter 'all') "active-filter"}}" >All</button>
+        <button {{action "toggleFilter" "mine"}} class="filter-btn {{if (is-equal listFilter 'mine') "active-filter"}}">Mine</button>
+        <button {{action "toggleFilter" "public"}} class="filter-btn {{if (is-equal listFilter 'public') "active-filter"}}">Public</button>
+  </div>
 	<div class="clear"></div>
 </header>
 

@@ -42,3 +42,103 @@
   top: 2px;
   left: 5px;
 }
+// new workspace enc component
+#workspace-new {
+  header {
+    padding: 15px 10px;
+    background: #e3e3e3;
+    span {
+      display: inline-block;
+    }
+    h2 {
+      display: inline-block;
+      font-size: 1.2em;
+      margin-top: 5px;
+      margin-left: 10px;
+    }
+  }
+}
+#workspace-new-enc {
+  #encImportForm {
+    .required-error {
+      border: 2px solid red;
+    }
+    margin-left: 25px;
+    margin-top: 25px;
+    width: 50%;
+
+    div.mySelect {
+      display: inline-block;
+      padding: 12px 0px;
+      margin: 8px 0;
+      font-size: 1em;
+      width: 50%;
+
+      select {
+        width: 100%;
+        font-size: 1em;
+        margin-left: 0px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
+
+    }
+
+    input[type=date], input[type=text] {
+      width: 50%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      font-size: 1em;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input:required {
+      box-shadow: none;
+    }
+    // input:invalid {
+    //   box-shadow: 0 0 3px red;
+    // }
+    label {
+      width: 10%;
+      padding: 12px 10px;
+      font-size: 1em;
+      color:black;
+    }
+  }
+}
+
+.toggle-btn {
+  float: right;
+  margin-right: 20px;
+}
+.filter-btn {
+  color: $primary-font-color;
+  background: $accent-yellow;
+  font-weight: $main-font-weight;
+  font-family: $primary-font;
+  border-radius: 3px;
+  font-size: .8em;
+  padding: 0px 15px;
+  margin-left: 10px;
+  border: none;
+  line-height: 40px;
+  &.active-filter {
+    font-weight: $bolder-font-weight;
+    background: darken($accent-yellow, 5%)
+  }
+  &:hover {
+    font-weight: $bold-font-weight;
+    cursor: pointer;
+    background: lighten($accent-yellow, 10%);
+  }
+
+}
+
+

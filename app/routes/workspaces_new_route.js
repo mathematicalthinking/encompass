@@ -18,6 +18,10 @@ Encompass.WorkspacesNewRoute = Ember.Route.extend({
     toWorkspaces: function() {
       console.log('in toWorkspaces wsroute');
       this.transitionTo('workspaces');
+    },
+
+    toWorkspace: function(id) {
+      this.transitionTo('workspace/work', id);
     }
   }
 });

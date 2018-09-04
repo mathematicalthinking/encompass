@@ -20,11 +20,16 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('makingSelection');
   }),
 
+ init: function() {
+   this._super(...arguments);
+ },
+
   didRender: function() {
     console.log('rendering ws-sub');
     if(this.get('switching')) {
       this.set('switching', false);
     }
+
  },
 
   /* Next: get selections to show up */

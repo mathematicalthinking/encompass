@@ -1,5 +1,5 @@
 Encompass.WorkspaceNewComponent = Ember.Component.extend({
-  ElementId: 'workspace-new',
+  elementId: 'workspace-new',
   isPows: false,
 
   actions: {
@@ -15,6 +15,10 @@ Encompass.WorkspaceNewComponent = Ember.Component.extend({
     toWorkspaces: function() {
       console.log('in toWs ws-new comp');
       this.sendAction('toWorkspaces');
+    },
+
+    toWorkspace: function(id) {
+      this.sendAction('toWorkspace', id);
     }
   }
 });

@@ -8,6 +8,21 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   missingFilesError: false,
   acceptMultiple: false,
 
+  handleLoadingMessage: function() {
+    const that = this;
+    if (!this.get('isUploading')) {
+      this.set('showLoadingMessage', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying) {
+        return;
+      }
+      that.set('showLoadingMessage', true);
+    }, 500);
+
+  }.observes('isUploading'),
+
 
   uploadImage: function (currentUser, formData) {
     const that = this;
@@ -28,7 +43,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   uploadPdf: function (currentUser, formData) {
-    console.log('in uploadPdf');
     const that = this;
     return Ember.$.post({
       url: '/pdf',
@@ -48,18 +62,21 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   actions: {
     uploadImages: function() {
-      var that = this;
-      var currentUser = that.get('currentUser');
-      var uploadData = that.get('filesToBeUploaded');
+      const that = this;
+      const currentUser = that.get('currentUser');
+      const uploadData = that.get('filesToBeUploaded');
       if (!uploadData) {
+        this.set('isUploading', false);
         this.set('missingFilesError', true);
         return;
       }
+      this.set('isUploading', true);
 
-      var formData = new FormData();
-      var pdfFormData = new FormData();
-      var imageCount = 0;
-      var pdfCount = 0;
+      let formData = new FormData();
+      let pdfFormData = new FormData();
+      let imageCount = 0;
+      let pdfCount = 0;
+
       for (let f of uploadData) {
         if (f.type === 'application/pdf') {
           pdfFormData.append('photo', f);
@@ -71,28 +88,34 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
       if (imageCount > 0) {
         return this.uploadImage(currentUser, formData).then((res) => {
-          console.log('res image', res);
           if (pdfCount > 0) {
             return this.uploadPdf(currentUser, pdfFormData).then((res) => {
-              console.log('res pdf', res);
               let results;
               if (this.get('uploadedPdfs') && this.get('uploadedImages')) {
                 results = this.get('uploadedPdfs').concat(this.get('uploadedImages'));
+                this.set('isUploading', false);
                 this.set('uploadResults', results);
               }
 
             })
-            .catch(console.log);
+            .catch((err) => {
+              this.set('isUploading', false);
+              this.set('uploadError', err);
+            });
           } else {
+            this.set('isUploading', false);
             this.set('uploadResults', this.get('uploadedImages'));
           }
         });
       } else if (pdfCount > 0) {
         return this.uploadPdf(currentUser, pdfFormData).then((res) => {
-          console.log('res', res);
+          this.set('isUploading', false);
           this.set('uploadResults', this.get('uploadedPdfs'));
         })
-        .catch(console.log);
+        .catch((err) => {
+          this.set('isUploading', false);
+          this.set('uploadError', err);
+        });
       }
 
     },

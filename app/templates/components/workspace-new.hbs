@@ -1,15 +1,16 @@
 
 <header>
-	<h2>Create New Workspaces</h2>
+	<h2>Create New Workspace</h2>
 	<div class="clear"></div>
 </header>
-<nav>
+{{!-- <nav>
 <span id="pows-toggle" {{action "toggleView" "pows" }}>PoWs</span>
 <span id="enc-toggle" {{action "toggleView" "enc"}}>EnCoMPASS</span>
-</nav>
+</nav> --}}
 
 {{#if isPows}}
   {{workspace-new-pows model=model store=store}}
   {{else}}
-  {{workspace-new-enc model=model store=store toWorkspaces="toWorkspaces"}}
+  {{workspace-new-enc model=model store=store toWorkspaces="toWorkspaces"
+  toWorkspace="toWorkspace"}}
 {{/if}}

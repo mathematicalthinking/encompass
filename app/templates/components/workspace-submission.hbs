@@ -50,28 +50,33 @@
     {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
       <div id="submission_container">
         <div class="submission short">
-          {{{currentSubmission.shortAnswer}}}
+          {{#if currentSubmission.answer.answer}}
+            {{{currentSubmission.answer.answer}}}
+          {{else}}
+            {{{currentSubmission.shortAnswer}}}
+          {{/if}}
         </div>
         <div class="submission long">
-          {{#if currentSubmission.isPdf}}
-            <object data="{{currentSubmission.longAnswer}}" type="application/pdf">
-              <embed src="{{currentSubmission.longAnswer}}" type="application/pdf" height="100%" width="100%">
-            </object>
+          {{#if currentSubmission.answer.explanation}}
+            {{{currentSubmission.answer.explanation}}}
           {{else}}
             {{{currentSubmission.longAnswer}}}
           {{/if}}
+
         </div>
       </div>
     {{/selectable-area}}
   {{else}}
     <div class="submission short">
-      {{{currentSubmission.shortAnswer}}}
+      {{#if currentSubmission.answer.answer}}
+        {{{currentSubmission.answer.answer}}}
+      {{else}}
+        {{{currentSubmission.shortAnswer}}}
+      {{/if}}
     </div>
     <div class="submission long">
-      {{#if currentSubmission.isPdf}}
-        <object data="{{currentSubmission.longAnswer}}"type="application/pdf">
-           <embed src="{{currentSubmission.longAnswer}}" type="application/pdf" height="100%" width="100%">
-          </object>
+     {{#if currentSubmission.answer.explanation}}
+        {{{currentSubmission.answer.explanation}}}
       {{else}}
         {{{currentSubmission.longAnswer}}}
       {{/if}}

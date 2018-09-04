@@ -972,8 +972,8 @@ async function answersToSubmissions(answers) {
 
       teacher.id = primaryTeacher;
       let sub = {
-        longAnswer: ans.explanation,
-        shortAnswer: ans.answer,
+        //longAnswer: ans.explanation,
+        //shortAnswer: ans.answer,
         clazz: clazz,
         creator: creator,
         teacher: teacher,
@@ -1056,7 +1056,8 @@ let workspace = new models.Workspace({
   owner,
   submissionSet: submissionSet,
   submissions: submissionIds,
-  createdBy: user
+  createdBy: user,
+  lastModifiedBy: user
 });
 let ws = await workspace.save();
 console.log('createdWs', ws._id);
@@ -1087,4 +1088,5 @@ module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
 module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
+module.exports.newFolderStructure = newFolderStructure;
 /*jshint ignore:end*/

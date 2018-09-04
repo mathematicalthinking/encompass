@@ -1,17 +1,11 @@
 <div class="student-matching-answer">
-  {{#if isPdf}}
-    <div class="answer-pdf">
-      <object data="{{answer.explanation.data}}" type="application/pdf">
-        <embed src="{{answer.explanation.data}}" type="application/pdf" height="100%" width="100%">
-      </object>
-    </div>
-    {{else}}
-    <div class="answer-img">
-      <img src={{answer.explanation.data}}>
-    </div>
-  {{/if}}
+  <div class="answer-img">
+    {{{answer.explanation}}}
+  </div>
 
-    {{my-select assignedAnswer=answer content=selectedSection.students optionLabelPath="username" prompt="Please assign the correct student" action=(action "updateAnswer") }}
-    <p>selected student: {{assignedStudent.username}}</p>
+  {{my-select assignedAnswer=answer content=selectedSection.students optionLabelPath="username" prompt="Please assign the correct student" action=(action "updateAnswer") }}
 
+  <p>selected student: {{assignedStudent.username}}</p>
 </div>
+
+

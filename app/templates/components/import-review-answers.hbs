@@ -2,22 +2,37 @@
   <p class="info">Please review your submissions to ensure everything is accurate. You can either defer creating a workspace until a later date, or we can automatically create a workspace for you from your uploaded submissions</p>
 
   <div class="workspace-options">
-  <h3>Workspace Creation Options</h3>
-  <label for="createWorkspace">Automatically create workspace</label>
-  {{input type="checkbox" name="createWorkspace" checked=doCreateWorkspace}}
 
-  <label for="workspaceMode">Make workspace private</label>
-  {{input type="checkbox" name="workspaceMode" checked=isPrivate}}
+  <h3>Workspace Creation Options</h3>
+  <label for="createWorkspace">Do not create workspace</label>
+  {{input type="checkbox" name="createWorkspace" checked=doNotCreateWorkspace}}
+
+  {{#unless doNotCreateWorkspace}}
+  <li>
+    <label for="name">Workspace Name</label>
+    {{input id="requestedName" type="text" value=requestedName}}
+  </li>
+  <li>
+    <label for="folders">Folders</label>
+    {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action (mut selectedFolderSet))}}
+  </li>
+
+  <li class="mode">
+    <label>Privacy Setting <span class="required-star">*</span></label>
+      <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
+      <label class="radio-label">Private</label>
+      <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
+      <label class="radio-label">Public</label>
+  </li>
+  {{/unless}}
 
   <div class="proceed">
-    {{#if doCreateWorkspace}}
-      {{#if isPrivate}}
-        <p>Click submit to create your private workspace.</p>
-    {{else}}
-        <p>Click submit to create your public workspace.</p>
-      {{/if}}
-    {{else}}
+    {{#if doNotCreateWorkspace}}
       <p>Click submit to upload your submissions.</p>
+    {{else}}
+
+        <p>Click submit to create your {{mode}} workspace.</p>
+
     {{/if}}
 
     <button {{action "formatAnswers"}}>Submit</button>
@@ -30,15 +45,7 @@
       <p>Author: {{answer.student.username}}</p>
     </div>
 
-        <p>Submission: {{#if answer.explanation.isPdf}}
-      <object data="{{answer.explanation.data}}" type="application/pdf">
-        <embed src="{{answer.explanation.data}}" type="application/pdf" height="100%" width="100%">
-      </object>
-    {{else}}
-      <img src={{answer.explanation.data}} style="width:128px;height:128px">
-    {{/if}}</p>
-
-
+    <p>Submission: {{{answer.explanation}}}</p>
   {{/each}}
 </div>
 

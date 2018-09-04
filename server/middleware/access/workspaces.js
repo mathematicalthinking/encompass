@@ -4,7 +4,9 @@ const _     = require('underscore');
 module.exports.get = {};
 
 const canLoadWorkspace = function(user, ws) {
-  console.log('ws.editors', ws.editors);
+  if (!user || !ws) {
+    return false;
+  }
   const accountType = user.accountType;
 
   // As of now, students cannot get any workspaces
@@ -44,11 +46,11 @@ const canLoadWorkspace = function(user, ws) {
 
   const isOwner = userId === ownerId;
 
+    const wsEditors = ws.editors.map(ws => ws._id.toString());
+    const isEditor = wsEditors.includes(userId);
+    console.log('isEditor canLoadWorkspace? ', isEditor);
 
-  const wsEditors = ws.editors.map(ws => ws._id.toString());
-  const isEditor = wsEditors.includes(userId);
-  console.log('isEditor canLoadWorkspace? ', isEditor);
-  const isPublic = ws.mode === 'public';
+    const isPublic = ws.mode === 'public';
 
   // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
   // Should we allow students be added as an editor to a WS? Or view as read-only public workspaces?
@@ -73,15 +75,17 @@ const accessibleWorkspacesQuery = async function(user, ids) {
     filter.createdBy = user.id;
     return filter;
   }
+  filter.$or = [];
+  filter.$or.push({ mode: 'public' });
+  filter.$or.push({ editors: user._id });
+  filter.$or.push({ owner: user._id });
+
   // will only reach here if admins/pdadmins are in actingRole teacher
   if (accountType === 'A') {
     return filter;
   }
   // Teachers and PdAdmins
-  filter.$or = [];
-  filter.$or.push({ mode: 'public' });
-  filter.$or.push({ editors: user._id });
-  filter.$or.push({ owner: user._id });
+
 
   if (accountType === 'P') {
 

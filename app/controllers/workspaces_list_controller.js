@@ -14,8 +14,19 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
 
   listFilter: 'all',
 
+  sortDisplayList: function(list) {
+    if (!list) {
+      return;
+    }
+    // TODO: robust sorting options
+
+    // for now just show most recently created at top
+    return list.sortBy('lastModifiedDate').reverse();
+
+  },
+
   setDisplayList: function() {
-    const key = {
+    const filterKey = {
       all: 'allWorkspaces',
       mine: 'ownWorkspaces',
       public: 'publicWorkspaces'
@@ -23,12 +34,20 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
 
     const filter = this.get('listFilter');
 
-    if (Ember.isEmpty(filter) || Ember.isEmpty(key[filter])) {
+    if (Ember.isEmpty(filter) || Ember.isEmpty(filterKey[filter])) {
       return this.get('model').rejectBy('isTrashed');
     }
 
-    const listName = key[filter];
-    this.set('displayList', this.get(listName));
+    const listName = filterKey[filter];
+    let displayList = this.get(listName);
+    let sorted = this.sortDisplayList(displayList);
+
+    if (sorted) {
+      this.set('displayList', sorted);
+    } else {
+      this.set('displayList', this.get(listName));
+    }
+
   }.observes('listFilter', 'model.@each.isTrashed'),
 
   setOwnWorkspaces: function() {

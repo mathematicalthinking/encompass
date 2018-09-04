@@ -65,7 +65,7 @@
           <th>Mode</th>
           <td>
             {{#if isEditing}}
-              {{my-select selectedValue = selectedMode content=modes action=(action (mut selectedMode))}}
+              {{my-select cannotBeNull=true selectedValue = selectedMode content=modes action=(action (mut selectedMode))}}
             {{else}}
               {{workspace.mode}}
             {{/if}}

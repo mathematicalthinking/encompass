@@ -12,24 +12,29 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   uploadedSubmissions: null,
   createdWorkspace: null,
   isReviewingSubmissions: null,
-  doCreateWorkspace: true,
-  isPrivate: true,
+  doNotCreateWorkspace: false,
+  doCreateWorkspace: Ember.computed.not('doNotCreateWorkspace'),
+
   uploadError: null,
   isSelectingImportDetails: true,
+  mode: 'private',
+  requestedName: null,
+  selectedFolderSet: null,
+  isPrivate: Ember.computed.equal('mode', 'private'),
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
-    var problem = this.get('selectedProblem');
-    var section = this.get('selectedSection');
-    var files = this.get('uploadedFiles');
+    const problem = this.get('selectedProblem');
+    const section = this.get('selectedSection');
+    const files = this.get('uploadedFiles');
 
-    var isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files);
+    const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files);
     return isReady;
   }),
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
-    var isMatchingStudents = this.get('isMatchingStudents');
-    var isReviewingSubmissions = this.get('isReviewingSubmissions');
-    var uploadedSubmissions = this.get('uploadedSubmissions');
+    const isMatchingStudents = this.get('isMatchingStudents');
+    const isReviewingSubmissions = this.get('isReviewingSubmissions');
+    const uploadedSubmissions = this.get('uploadedSubmissions');
 
     return !isMatchingStudents && !isReviewingSubmissions && !uploadedSubmissions;
   }),
@@ -49,18 +54,12 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   init: function() {
     this._super(...arguments);
-    console.log('inserted element');
     let problems = this.model.problems;
     var currentUser = this.get('currentUser');
     let myProblems = problems.filterBy('createdBy.content', currentUser);
-    console.log('myProblems', myProblems);
 
     this.set('problems', myProblems);
     this.set('sections', this.model.sections);
-  },
-
-  updateAnswer: function(e) {
-    console.log('ee', e);
   },
 
   actions: {
@@ -73,11 +72,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     editImportDetail: function(detailName) {
-      console.log('detailName', detailName);
       if (!detailName || typeof detailName !== 'string') {
         return;
       }
-      //var prop = this.get(detailName);
       this.set(detailName, null);
       if (detailName === 'uploadedFiles') {
         this.set('selectedFiles', null);
@@ -104,11 +101,12 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     loadStudentMatching: function() {
       this.set('isSelectingImportDetails', false);
       this.set('isMatchingStudents', true);
-      var images = this.get('uploadedFiles');
-      var answers = [];
+      let images = this.get('uploadedFiles');
+      let answers = [];
+
       images.forEach((image) => {
         let ans = {};
-        ans.explanation = image;
+        ans.explanation = `<img src="${image.data}">`;
         ans.problem = this.get('selectedProblem');
         ans.section = this.get('selectedSection');
         ans.isSubmitted = true;
@@ -126,13 +124,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     uploadAnswers: function() {
       console.log('uploading Answers');
-      var answers = this.get('answers');
-      var that = this;
+      let answers = this.get('answers');
+      const that = this;
       let subs;
       return Promise.all(answers.map((answer) => {
-        answer.explanation = answer.explanation._id;
         answer.createdBy = answer.student;
         answer.answer = 'See image.';
+
         let ans = that.store.createRecord('answer', answer);
         ans.set('section', that.get('selectedSection'));
         ans.set('problem', that.get('selectedProblem'));
@@ -142,7 +140,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         // if doCreateWorkspace, convert to submissions and create workspace
         // else just display details about # of answers uploaded
           const uploadedAnswers = res;
-        if (that.doCreateWorkspace) {
+
+          if (that.doCreateWorkspace) {
           subs = res.map((ans) => {
             //const teachers = {};
             const clazz = {};
@@ -172,9 +171,10 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
 
             teacher.id = primaryTeacher.get('userId');
+            console.log('ans.id', ans.id);
             let sub = {
-              longAnswer: ans.get('explanation'),
-              answer: ans.get('answerId'),
+              // longAnswer: ans.get('explanation'),
+              answer: ans.id,
               clazz: clazz,
               creator: creator,
               teacher: teacher,
@@ -186,7 +186,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           let postData = {
             "subs": JSON.stringify(subs),
             "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
-            "isPrivate": JSON.stringify(this.get('isPrivate'))
+            "isPrivate": JSON.stringify(this.get('isPrivate')),
+            "requestedName": JSON.stringify(this.get('requestedName')),
+            "folderSet": JSON.stringify(this.get('selectedFolderSet.name'))
           };
           console.log('subs', subs);
            Ember.$.post({
