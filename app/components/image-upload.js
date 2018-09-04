@@ -62,7 +62,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   actions: {
     uploadImages: function() {
-      this.set('isUploading', true);
       const that = this;
       const currentUser = that.get('currentUser');
       const uploadData = that.get('filesToBeUploaded');
@@ -71,6 +70,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('missingFilesError', true);
         return;
       }
+      this.set('isUploading', true);
 
       let formData = new FormData();
       let pdfFormData = new FormData();
