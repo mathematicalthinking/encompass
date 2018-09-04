@@ -4,11 +4,11 @@
       <span class="al_sprite al_folder"></span> &rarr; <span class="al_sprite al_folder al_remove"></span><br>
       <p class="confirmation-request">Are you sure you want to delete {{get itemToDelete optionLabelPath}}?</p>
       {{#if warningMessage}}
-      <p class="warning">{{warningMessage}}</p>
+      <p class="warning-message">{{warningMessage}}</p>
       {{/if}}
       <div class="al_controller">
-        <button class="cancel" {{action "cancel"}}>Cancel</button>
-        <button class="delete" {{action "delete" itemToDelete}}>Delete</button>
+        <button class="cancel action_button" {{action "cancel"}}>Cancel</button>
+        <button class="delete action_button" {{action "delete" itemToDelete}}>Delete</button>
       </div>
     </form>
   </div>
