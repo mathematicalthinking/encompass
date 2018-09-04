@@ -7,11 +7,10 @@ Encompass.AssignmentRoute = Encompass.AuthenticatedRoute.extend({
 
   actions: {
     toAnswerInfo: function(answer) {
-      console.log('in toAnswerInfo');
       this.transitionTo('answer', answer);
     },
     toAssignments: function() {
-      this.transitionTo ('assignments');
+      this.transitionTo('assignments.home');
     }
   },
 
