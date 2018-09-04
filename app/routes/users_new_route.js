@@ -10,7 +10,6 @@ Encompass.UsersNewRoute = Encompass.AuthenticatedRoute.extend({
       this.transitionTo('user', user);
     },
     toUserHome: function () {
-      console.log('toUserHome called in route');
       this.transitionTo('users.home');
     },
   }

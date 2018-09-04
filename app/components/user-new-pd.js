@@ -123,6 +123,10 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         });
     },
 
+    cancelNew: function () {
+      this.sendAction('toUserHome');
+    },
+
     resetErrors(e) {
       const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];
 
