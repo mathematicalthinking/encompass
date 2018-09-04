@@ -90,6 +90,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('privacySetting', problem.get('privacySetting'));
     },
 
+    cancelEdit: function () {
+      this.set('isEditing', false);
+    },
+
     radioSelect: function (value) {
       this.set('privacySetting', value);
     },
