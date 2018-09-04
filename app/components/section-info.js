@@ -29,6 +29,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemList: null,
   isAddingTeacher: false,
   sectionList: [],
+  sectionToDelete: null,
 
   init: function () {
     this._super(...arguments);
@@ -128,8 +129,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     addStudent: function (student) {
       let section = this.get('section');
       let username = this.get('studentUsername');
-      console.log('editor', student);
-      console.log('username', username);
       //check if username already exists in section
       let students = section.get('students');
 
@@ -150,7 +149,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       };
 
       return this.store.findRecord('user', student.id).then((student) => {
-        console.log('student rec', student);
         students.pushObject(student);  //add student into students list
         this.set('doYouWantToAddExistingUser', false);
         //save section in student
@@ -158,7 +156,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           console.log('saved section', section);
           student.get('sections').addObject(sectionObj);
           student.save().then((rec) => {
-            console.log('saved student', rec);
             this.set('studentUsername', '');
           });
         });
@@ -380,6 +377,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       section.set('name', name);
       section.save();
       this.set('isEditing', false);
+    },
+
+    deleteSection: function() {
+      const section = this.get('section');
+      section.set('isTrashed', true);
+      return section.save().then((section) => {
+        this.set('sectionToDelete', null);
+        this.sendAction('toSectionList');
+      })
+      .catch((err) => {
+        this.set('sectionToDelete', null);
+        this.set('deleteSectionError', err);
+      });
     },
 
     toAssignmentInfo: function (assignment) {

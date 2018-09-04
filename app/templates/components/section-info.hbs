@@ -21,9 +21,13 @@
       </fieldset>
     </form>
   <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Section</button>
-  <button class="action_button" id="deleteSection" {{action 'deleteSection'}} style="margin-right: 30px">
+  <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
     Delete Section
   </button>
+
+  {{#if sectionToDelete}}
+    {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
+  {{/if}}
 
 {{else}}
 
