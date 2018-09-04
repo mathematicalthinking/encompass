@@ -59,3 +59,8 @@
   color: $success-color;
   font-weight: $light-font-weight;
 }
+
+@mixin warning-message {
+  color: $warning-color;
+  font-weight: $light-font-weight;
+ }
