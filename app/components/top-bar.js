@@ -17,13 +17,6 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
     let currentUser = this.get('currentUser');
     let isStudent = this.get('isStudent');
     this.set('isStudentAccount', currentUser.get('accountType') === 'S');
-    // if (isStudent) {
-    //   this.set('isStudent', true);
-    //   this.set('notStudent', false);
-    // } else {
-    //   this.set('isStudent', false);
-    //   this.set('notStudent', true);
-    // }
   },
 
   actions: {
@@ -50,6 +43,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
         currentUser.set('actingRole', 'teacher');
       }
       currentUser.save().then(() => {
+        this.set('actionToConfirm', null);
         this.sendAction('toHome');
       });
     }
