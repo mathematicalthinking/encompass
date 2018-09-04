@@ -51,10 +51,14 @@
       </fieldset>
     </section>
     <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
-    <button class="action_button" {{action 'deleteAssignment'}}>Delete Assignment</button>
+    <button class="action_button" {{action (mut assignmentToDelete) assignment}}>Delete Assignment</button>
+  {{/if}}
+  </section>
+
+  {{#if assignmentToDelete}}
+    {{modal-delete itemToDelete=assignmentToDelete onConfirm="deleteAssignment" optionLabelPath = "problem.title"}}
   {{/if}}
 
-  </section>
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
   {{/if}}

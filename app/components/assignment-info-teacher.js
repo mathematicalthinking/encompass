@@ -6,6 +6,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   showReport: false,
   htmlDateFormat: 'YYYY-MM-DD',
   displayDateFormat: "MMM Do YYYY",
+  assignmentToDelete: null,
 
   init: function() {
     this._super(...arguments);
@@ -124,14 +125,15 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     },
 
     deleteAssignment: function() {
-      console.log('deleting assignment');
       const assignment = this.get('assignment');
       assignment.set('isTrashed', true);
       return assignment.save().then((assignment) => {
-        this.set('deleteAssignmentSuccess', true);
+        this.set('assignmentToDelete', null);
+
         this.sendAction('toAssignments');
       })
       .catch((err) => {
+        this.set('assignmentToDelete', null);
         this.set('deleteAssignmentError', err);
       });
     },
