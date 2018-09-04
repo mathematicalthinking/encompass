@@ -1087,4 +1087,5 @@ module.exports.post.workspace = postWorkspace;
 module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
 module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
+module.exports.newFolderStructure = newFolderStructure;
 /*jshint ignore:end*/
