@@ -55,10 +55,10 @@
             <br>
             {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
           </div>
-          <p>Or create a new section <button {{action "toggleNewSection"}}>+</button></p>
+          {{!-- <p>Or create a new section <button {{action "toggleNewSection"}}>+</button></p>
           {{#if isCreatingNewSection}}
             {{section-new class="form-section" store=store selectedSection = selectedSection}}
-          {{/if}}
+          {{/if}} --}}
         </div>
       {{/unless}}
     {{/if}}
@@ -89,7 +89,8 @@
   {{/if}}
 
     {{#if isReviewingSubmissions}}
-      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate}}
+      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate mode=mode
+      folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
     {{/if}}
 
     {{#if uploadedAnswers}}

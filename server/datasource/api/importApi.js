@@ -43,75 +43,52 @@ const postImport = async function(req, res, next) {
   const subData = JSON.parse(req.body.subs);
   const doCreateWorkspace = JSON.parse(req.body.doCreateWorkspace);
   const isPrivate = JSON.parse(req.body.isPrivate);
+  const folderSetName = JSON.parse(req.body.folderSet);
+  const requestedName = JSON.parse(req.body.requestedName);
+
   let workspaceMode;
   if (doCreateWorkspace) {
     workspaceMode = isPrivate ? 'private' : 'public';
   }
-  console.log('dcw', doCreateWorkspace);
-  console.log('workspaceMode', workspaceMode);
- let submissions;
 
-  // subData is array of objects containing submission data
-  // longAnswer property is the objectId of the image
-  // answer property is the objectId of the answer record from our DB
-  // need to get the image data and set it as the longAnswer
-
-  //need to look up answer and modify with imageData
-  // for (let sub of subData) {
-  //   console.log('sub', sub);
-
-  // //   let imageId = sub.longAnswer;
-  // //   let imageAlt = `${sub.creator.username}'s submission`;
-
-  // //   try {
-  // //     let image = await models.Image.findById(imageId);
-
-  // //     let imageData = `<img src="${image.data}" alt="${imageAlt}">`;
-
-  // //     let answer = await models.Answer.findById(sub.answer);
-  // //     answer.explanation = imageData;
-
-  // //     await answer.save();
-
-  // //     sub.answer = answer;
-  // //     sub.longAnswer = undefined;
-  // //     sub.shortAnswer = undefined;
-
-  // //   }catch(err) {
-  // //     console.log(err);
-  // //   }
-  // }
+  let submissions;
 
   try {
     submissions = await Promise.all(subData.map((obj) => {
-      console.log('obj', obj);
-
       let sub = new models.Submission(obj);
       sub.createdBy = user;
       sub.createDate = Date.now();
 
-
       return sub.save();
-}));
-const submissionIds = submissions.map((sub) => {
-  return sub._id;
-});
+    }));
 
-// if user does not want to automatically create workspace
-if (!doCreateWorkspace) {
-  const data = {'submissionIds': submissionIds};
-  return utils.sendResponse(res, data);
-}
+    const submissionIds = submissions.map((sub) => {
+      return sub._id;
+    });
 
+    // if user does not want to automatically create workspace
+    if (!doCreateWorkspace) {
+      const data = {'submissionIds': submissionIds};
+      return utils.sendResponse(res, data);
+    }
 // else create workspace from newly created submissions
 
 // submissionSet is used to determine if a workspace already exists for
 // a given set of submissions
 submissionSet = await buildSubmissionSet(submissions, user);
 
-let name = workspaceApi.nameWorkspace(submissionSet, user, false);
+let name;
+
+if (requestedName) {
+  name = requestedName;
+} else {
+  name = workspaceApi.nameWorkspace(submissionSet, user, false);
+}
+
+
+
 let workspace = new models.Workspace({
-  mode: 'private',
+  mode: workspaceMode || 'private',
   name: name,
   owner: user,
   submissionSet: submissionSet,
@@ -119,6 +96,7 @@ let workspace = new models.Workspace({
   createdBy: user
 });
 let ws = await workspace.save();
+let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);
 const data = {'workspaceId': ws._id};
 return utils.sendResponse(res, data);
 

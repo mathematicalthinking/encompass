@@ -12,10 +12,15 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   uploadedSubmissions: null,
   createdWorkspace: null,
   isReviewingSubmissions: null,
-  doCreateWorkspace: true,
-  isPrivate: true,
+  doNotCreateWorkspace: false,
+  doCreateWorkspace: Ember.computed.not('doNotCreateWorkspace'),
+
   uploadError: null,
   isSelectingImportDetails: true,
+  mode: 'private',
+  requestedName: null,
+  selectedFolderSet: null,
+  isPrivate: Ember.computed.equal('mode', 'private'),
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
     const problem = this.get('selectedProblem');
@@ -181,7 +186,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           let postData = {
             "subs": JSON.stringify(subs),
             "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
-            "isPrivate": JSON.stringify(this.get('isPrivate'))
+            "isPrivate": JSON.stringify(this.get('isPrivate')),
+            "requestedName": JSON.stringify(this.get('requestedName')),
+            "folderSet": JSON.stringify(this.get('selectedFolderSet.name'))
           };
           console.log('subs', subs);
            Ember.$.post({
