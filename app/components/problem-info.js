@@ -18,6 +18,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   didReceiveAttrs: function () {
     this.set('isWide', false);
     this.set('showAssignment', false);
+    this.set('isEditing', false);
     let problem = this.get('problem');
     let problemId = problem.get('id');
     // let problemUsed = this.get('problemUsed');
