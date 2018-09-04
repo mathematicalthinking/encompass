@@ -13,6 +13,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   isAuthorized: null,
   authorizedBy: '',
   newUserData: {},
+  actingRole: null,
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -53,6 +54,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       }
 
       if (accountTypeLetter !== "S") {
+        this.set('actingRole', 'teacher');
         if (!email) {
           this.set('errorMessage', true);
           return;
@@ -74,6 +76,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           authorizedBy: currentUserId,
           createdBy: currentUserId,
           createDate: new Date(),
+          actingRole: this.get('actingRole'),
         };
         this.set('authorizedBy', currentUserId);
         this.set('newUserData', userData);
@@ -89,6 +92,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           isAuthorized: false,
           createdBy: currentUserId,
           createDate: new Date(),
+          actingRole: this.get('actingRole'),
         };
         this.set('newUserData', userData);
       }
