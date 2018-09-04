@@ -80,6 +80,10 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
         ws.set('isTrashed', true);
         ws.save().then((rec) => {
           this.set('workspaceToDelete', null);
+        })
+        .catch((err) => {
+          this.set('workspaceToDelete', null);
+          this.set('workspaceDeleteError', err);
         });
       }
     },
