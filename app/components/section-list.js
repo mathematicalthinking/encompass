@@ -3,7 +3,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   // This sorts all the sections in the database and returns only the ones you created
   yourSections: function () {
-    var sections = this.sections;
+    var sections = this.sections.rejectBy('isTrashed');
     var currentUser = this.get('currentUser');
     var yourSections = sections.filterBy('createdBy.content', currentUser);
     return yourSections.sortBy('createDate').reverse();
@@ -12,7 +12,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // This displays the sections if you are inside the teachers array
   // This works but by default if you create it you are in the teacher's array
   collabSections: function () {
-    var sections = this.sections;
+    var sections = this.sections.rejectBy('isTrashed');
     var currentUser = this.get('currentUser');
     var collabSections = sections.filterBy('teachers');
     var yourCollabSections = collabSections.filter((section) => {
@@ -33,13 +33,13 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('sections.@each.isTrashed'),
 
   orgSections: function () {
-    var sections = this.sections;
+    var sections = this.sections.rejectBy('isTrashed');
     var studentSections = sections.filterBy('organization');
     return studentSections.sortBy('createDate').reverse();
   }.property('sections.@each.isTrashed'),
 
   studentSections: function () {
-    var sections = this.sections;
+    var sections = this.sections.rejectBy('isTrashed');
     var studentSections = sections.filterBy('students');
     var currentUser = this.get('currentUser');
 
@@ -53,7 +53,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('sections.@each.isTrashed'),
 
   allSections: function () {
-    var sections = this.sections;
+    var sections = this.sections.rejectBy('isTrashed');
     var currentUser = this.get('currentUser');
     var allSections = sections.filter((section) => {
       let content = section.get('createdBy.content');
