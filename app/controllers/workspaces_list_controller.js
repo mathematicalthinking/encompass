@@ -21,7 +21,7 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
     // TODO: robust sorting options
 
     // for now just show most recently created at top
-    return list.sortBy('createDate').reverse();
+    return list.sortBy('lastModifiedDate').reverse();
 
   },
 
