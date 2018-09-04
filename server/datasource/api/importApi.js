@@ -93,7 +93,8 @@ let workspace = new models.Workspace({
   owner: user,
   submissionSet: submissionSet,
   submissions: submissionIds,
-  createdBy: user
+  createdBy: user,
+  lastModifiedBy: user
 });
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);

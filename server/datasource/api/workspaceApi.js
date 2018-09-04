@@ -1056,7 +1056,8 @@ let workspace = new models.Workspace({
   owner,
   submissionSet: submissionSet,
   submissions: submissionIds,
-  createdBy: user
+  createdBy: user,
+  lastModifiedBy: user
 });
 let ws = await workspace.save();
 console.log('createdWs', ws._id);
