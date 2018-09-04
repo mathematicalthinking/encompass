@@ -131,6 +131,7 @@
   line-height: 40px;
   &.active-filter {
     font-weight: $bolder-font-weight;
+    background: darken($accent-yellow, 5%)
   }
   &:hover {
     font-weight: $bold-font-weight;
