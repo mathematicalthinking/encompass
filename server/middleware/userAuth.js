@@ -221,6 +221,24 @@ function test(options) {
   return (_test);
 }
 
+function getEmailAuth() {
+  let emailUsername = process.env.GMAIL_USERNAME;
+  if (!emailUsername) {
+    emailUsername = process.env.TEST_GMAIL_USERNAME;
+    if (!emailUsername) {
+      console.error(`Missing TEST_GMAIL_USERNAME .env variable`);
+    }
+  }
+  let emailPassword = process.env.GMAIL_PASSWORD;
+  if (!emailPassword) {
+    emailPassword = process.env.TEST_GMAIL_PASSWORD;
+    if (!emailPassword) {
+      console.error(`Missing TEST_GMAIL_PASSWORD .env variable`);
+    }
+  }
+  return ({"username": emailUsername, "password": emailPassword});
+}
+
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;
 module.exports.protect = protect;
@@ -229,3 +247,4 @@ module.exports.getUser = getUser;
 module.exports.requireUser = requireUser;
 module.exports.loadAccessibleWorkspaces = loadAccessibleWorkspaces;
 module.exports.accessibleWorkspacesQuery = accessibleWorkspacesQuery;
+module.exports.getEmailAuth = getEmailAuth;

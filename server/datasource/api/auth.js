@@ -109,11 +109,12 @@ const getResetToken = function(size) {
 };
 
 const sendEmailSMTP = function(recipient, host, template, token=null) {
+  console.log(`getEmailAuth() return: ${userAuth.getEmailAuth().username}`);
   const smtpTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD
+      user: userAuth.getEmailAuth().username,
+      pass: userAuth.getEmailAuth().password
     }
   });
 

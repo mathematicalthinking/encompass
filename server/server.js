@@ -247,7 +247,12 @@ server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 
-server.get(/.*/, express.static('dist'));
+let buildDir = 'build';
+if (process.env.BUILD_DIR) {
+  buildDir = process.env.BUILD_DIR;
+}
+console.log(`buildDir: ${buildDir}`);
+server.get(/.*/, express.static(buildDir));
 
 server.post({
   name: 'newWorkspaces',

@@ -146,7 +146,7 @@ describe('Home Page', function () {
   xdescribe('Logging in with google', async function () {
     let emailInput = 'input[type="email"]';
     // let emailAddress = 'encompassmath@gmail.com';
-    let emailAddress = process.env.GMAIL_USERNAME;
+    let emailAddress = getEmailAuth().username;
     //let password = process.env.GMAIL_PASSWORD;
     before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.login);
