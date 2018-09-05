@@ -32,14 +32,17 @@
       {{#unless selectedProblem}}
         <div class="import-prep-problem">
           <div class="import-select">
-            <p>Please select a problem</p>
-            <br>
-            {{my-select selectedProblem = selectedProblem content=problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
-            <br>
-          </div>
+            {{#if problems.length}}
+              <p>Please select a problem</p>
+              <br>
+              {{my-select selectedProblem = selectedProblem content=problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
+              <br>
+            {{else}}
+              <p class="info">It looks like you do not have any problems. Create one {{#link-to 'problems.new'}}<span>here.</span>{{/link-to}}</p>
 
-          <p>Or create a new problem <button {{action "toggleNewProblem" }} disabled={{selectedProblem}}>+</button> </p>
-          <br>
+            {{/if}}
+
+          </div>
           {{#if isCreatingNewProblem}}
             {{problem-new class="form-problem" store=store createdProblem= selectedProblem}}
           {{/if}}
@@ -51,19 +54,30 @@
       {{#unless selectedSection}}
         <div class="import-prep-section">
           <div class="import-select">
-            <p>Please select a section</p>
-            <br>
-            {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+            {{#if model.sections.length}}
+              <p class="info">Please select a section</p>
+              <br>
+              {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+            {{else}}
+              <p class="info">It looks like you do not have any sections. Create one {{#link-to 'sections.new'}}here.{{/link-to}}</p>
+
+            {{/if}}
+
           </div>
-          {{!-- <p>Or create a new section <button {{action "toggleNewSection"}}>+</button></p>
-          {{#if isCreatingNewSection}}
-            {{section-new class="form-section" store=store selectedSection = selectedSection}}
-          {{/if}} --}}
+
         </div>
       {{/unless}}
     {{/if}}
 
     {{#if selectedSection}}
+      {{#if isAddingMoreFiles}}
+        <div class="import-prep-files">
+            <p>Please choose additional files to upload</p>
+            {{image-upload class="form-file" filesToBeUploaded = selectedFiles uploadResults = additionalFiles acceptMultiple = true}}
+            <br>
+            <button  {{action (mut isAddingMoreFiles) null}}>Cancel</button>
+          </div>
+      {{/if}}
       {{#unless uploadedFiles}}
         {{#unless readyToMatchStudents}}
           <div class="import-prep-files">
@@ -89,7 +103,7 @@
   {{/if}}
 
     {{#if isReviewingSubmissions}}
-      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doCreateWorkspace=doCreateWorkspace isPrivate=isPrivate mode=mode
+      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doNotCreateWorkspace=doNotCreateWorkspace isPrivate=isPrivate mode=mode
       folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
     {{/if}}
 

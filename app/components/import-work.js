@@ -22,14 +22,25 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   selectedFolderSet: null,
   isPrivate: Ember.computed.equal('mode', 'private'),
 
-  readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', function() {
+  readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', 'isAddingMoreFiles', function() {
+    const problem = this.get('selectedProblem');
+    const section = this.get('selectedSection');
+    const files = this.get('uploadedFiles');
+    const isAdding = this.get('isAddingMoreFiles');
+
+    const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files) && !isAdding;
+    return isReady;
+  }),
+
+  setIsCompDirty: function() {
     const problem = this.get('selectedProblem');
     const section = this.get('selectedSection');
     const files = this.get('uploadedFiles');
 
-    const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files);
-    return isReady;
-  }),
+    const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
+
+    this.set('isCompDirty', ret);
+  }.observes('selectedProblem', 'selectedSection', 'uploadedFiles'),
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
     const isMatchingStudents = this.get('isMatchingStudents');
@@ -62,6 +73,42 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     this.set('sections', this.model.sections);
   },
 
+  didReceiveAttrs: function() {
+    this.setIsCompDirty();
+  },
+
+  resetImportDetails: function() {
+    const opts = ['selectedProblem', 'selectedSection', 'uploadedFiles'];
+
+    for (let opt of opts) {
+      if (!Ember.isEmpty(this.get(opt))) {
+        this.set(opt, null);
+      }
+    }
+  },
+
+  willDestroyElement: function() {
+    this.resetImportDetails();
+  },
+
+  handleAdditionalFiles: function() {
+    const additionalFiles = this.get('additionalFiles');
+    if (Ember.isEmpty(additionalFiles) || !Array.isArray(additionalFiles)) {
+      return;
+    }
+
+    let uploadedFiles = this.get('uploadedFiles');
+
+    if (!uploadedFiles || !Array.isArray(uploadedFiles)) {
+      uploadedFiles = [];
+    }
+
+    let combinedFiles = uploadedFiles.concat(additionalFiles);
+    this.set('uploadedFiles', combinedFiles);
+    this.set('additionalFiles', null);
+    this.set('isAddingMoreFiles', false);
+  }.observes('additionalFiles.[]'),
+
   actions: {
     toggleNewProblem: function() {
       if (this.get('isCreatingNewProblem') !== true) {
@@ -73,6 +120,11 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     editImportDetail: function(detailName) {
       if (!detailName || typeof detailName !== 'string') {
+        return;
+      }
+      if (detailName === 'additionalFiles') {
+        this.set('isAddingMoreFiles', true);
+        this.set('selectedFiles', null);
         return;
       }
       this.set(detailName, null);
@@ -141,7 +193,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         // else just display details about # of answers uploaded
           const uploadedAnswers = res;
 
-          if (that.doCreateWorkspace) {
+          if (that.get('doCreateWorkspace')) {
           subs = res.map((ans) => {
             //const teachers = {};
             const clazz = {};

@@ -39,7 +39,7 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       { content: filteredContent, sortProperties: this.sortProperties });
       */
     //return filteredFolders;
-  }.property('folders.[]', 'folders.@each.{isTrashed,parent}'),
+  }.property('folders.@each.{isTrashed,parent}'),
 
   sortedFolders: Ember.computed.sort('filteredFolders', 'sortProperties'),
 

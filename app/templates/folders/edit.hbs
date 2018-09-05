@@ -102,7 +102,7 @@
     {{#each selectedSubmissions as |sub|}}
     <tr>
       <td>
-        <a class="highlight" {{action 'changeSubmission' sub}}>
+        <a class="change-submission" {{action 'changeSubmission' sub}}>
           {{sub.student}}
         </a>
       </td>
@@ -147,7 +147,10 @@
               {{#each sub.selections as |sel|}}
               <tr>
                 <td>
-                  {{draggable-selection selection=sel}}
+                  {{!-- {{draggable-selection selection=sel}} --}}
+                  <a class="selection-text" {{action 'changeSelection' sel}}>
+                    {{sel.text}}
+                  </a>
                   <br/>
                 </td>
 
@@ -212,12 +215,15 @@
       {{#each evidence as |sel|}}
       <tr>
         <td>
-          {{draggable-selection selection=sel}}
+          {{!-- {{draggable-selection selection=sel}} --}}
+          <a class="selection-text" {{action 'changeSelection' sel}}>
+            {{sel.text}}
+          </a>
         </td>
 
         {{#if showSelectionSubmission}}
           <td>
-            <a class="highlight" {{action 'changeSubmission' sel.submission}}>
+            <a class="change-submission" {{action 'changeSubmission' sel.submission}}>
               {{sel.submission.student}}
             </a>
           </td>

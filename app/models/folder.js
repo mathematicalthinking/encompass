@@ -13,14 +13,14 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
     return this.get('taggings').map( function(tagging){
       return tagging.get('selection');
     });
-  }.property('taggings.[]', 'taggings.@each.isTrashed'),
+  }.property('taggings.@each.isTrashed'),
 
   selections: function() {
     return this.get('taggings')
       .filterBy('isTrashed', false)
       .getEach('selection')
       .filterBy('isTrashed', false);
-  }.property('taggings.[]', 'taggings.@each.isTrashed','taggedSelections.@each.isTrashed'),
+  }.property('taggings.@each.isTrashed','taggedSelections.@each.isTrashed'),
 
   childSelections: function(){
     var selections = this.get('selections').toArray();
@@ -32,7 +32,7 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
       });
 
     return selections.uniq();
-  }.property('children.@each._submissions', 'selections.[]', 'selections.@each.isTrashed'),
+  }.property('children.@each._submissions', 'selections.@each.isTrashed'),
 
   _selections: function() {
     return this.get('childSelections');
@@ -48,7 +48,7 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
     return selections.uniq();
     }.property('selections.[]', 'selections.@each.isTrashed', 'children.@each._selections.[]'),
     */
-  }.property('childSelections.[]', 'childrenSelections.@each._selections', 'childSelections.@each.isTrashed'),
+  }.property('childrenSelections.@each._selections', 'childSelections.@each.isTrashed'),
 
   submissions: function() {
     return this.get('selections')
