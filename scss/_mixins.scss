@@ -11,6 +11,15 @@
   }
 }
 
+@mixin action-button {
+  margin: 10px;
+  border-radius: 3px;
+  font-size: .8em;
+  padding: 10px 15px;
+  font-weight: $bold-font-weight;
+}
+
+
 // BUTTON USED FOR AUTH FORMS
 @mixin auth-button {
   display: block;
@@ -48,6 +57,7 @@
     font-weight: $bolder-font-weight;
   }
 }
+
 
 // ERROR MESSAGE
 @mixin error-message {
