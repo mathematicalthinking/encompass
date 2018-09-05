@@ -32,6 +32,16 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     return isReady;
   }),
 
+  setIsCompDirty: function() {
+    const problem = this.get('selectedProblem');
+    const section = this.get('selectedSection');
+    const files = this.get('uploadedFiles');
+
+    const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
+
+    this.set('isCompDirty', ret);
+  }.observes('selectedProblem', 'selectedSection', 'uploadedFiles'),
+
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
     const isMatchingStudents = this.get('isMatchingStudents');
     const isReviewingSubmissions = this.get('isReviewingSubmissions');
@@ -61,6 +71,24 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     this.set('problems', myProblems);
     this.set('sections', this.model.sections);
+  },
+
+  didReceiveAttrs: function() {
+    this.setIsCompDirty();
+  },
+
+  resetImportDetails: function() {
+    const opts = ['selectedProblem', 'selectedSection', 'uploadedFiles'];
+
+    for (let opt of opts) {
+      if (!Ember.isEmpty(this.get(opt))) {
+        this.set(opt, null);
+      }
+    }
+  },
+
+  willDestroyElement: function() {
+    this.resetImportDetails();
   },
 
   handleAdditionalFiles: function() {
