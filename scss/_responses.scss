@@ -4,6 +4,8 @@
 
 #responses-list {
   header {
+    background: $header-background;
+    padding: 7px 0px;
     h2 {
       margin-left: 20px;
       display: inline-block;
@@ -23,11 +25,15 @@
       padding: 0px 15px;
       margin-left: 10px;
       border: none;
-      line-height: 40px;
+      line-height: 35px;
       &:hover {
         font-weight: $bold-font-weight;
         cursor: pointer;
         background: lighten($accent-yellow, 10%);
+      }
+      &.active-filter {
+        font-weight: $bolder-font-weight;
+        background: darken($accent-yellow, 5%)
       }
     }
   }

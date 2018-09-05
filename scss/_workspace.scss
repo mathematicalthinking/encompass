@@ -22,8 +22,8 @@
 
 #workspace-info {
   header {
-    padding: 15px 10px;
-    background: #e3e3e3;
+    padding: 0px 10px;
+    background: $header-background;
     span {
       display: inline-block;
     }
@@ -45,8 +45,8 @@
 // new workspace enc component
 #workspace-new {
   header {
-    padding: 15px 10px;
-    background: #e3e3e3;
+    padding: 0px 10px;
+    background: $header-background;
     span {
       display: inline-block;
     }
@@ -61,7 +61,7 @@
 #workspace-new-enc {
   #encImportForm {
     .required-error {
-      border: 2px solid red;
+      border: 2px solid $error-color;
     }
     margin-left: 25px;
     margin-top: 25px;
@@ -114,6 +114,17 @@
   }
 }
 
+.workspace-listing-header {
+  h2 {
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+  .refresh {
+    display: inline-block;
+    padding: 10px 20px;
+  }
+}
+
 .toggle-btn {
   float: right;
   margin-right: 20px;
@@ -128,7 +139,7 @@
   padding: 0px 15px;
   margin-left: 10px;
   border: none;
-  line-height: 40px;
+  line-height: 35px;
   &.active-filter {
     font-weight: $bolder-font-weight;
     background: darken($accent-yellow, 5%)
