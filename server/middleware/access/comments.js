@@ -29,7 +29,6 @@ const accessibleCommentsQuery = async function(user, ids) {
     }
 
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
-    console.log('accessible ws ids in get comments', accessibleWorkspaceIds);
 
 
     // everyone should have access to all comments that belong to a workspace that they have access to

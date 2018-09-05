@@ -90,8 +90,6 @@ async function sendUsers(req, res, next) {
     criteria = await access.get.users(user, null, null);
   }
 
-  console.log('criteria users', criteria);
-
   models.User.find(criteria)
     .lean()
     .exec(function(err, docs) {
@@ -208,7 +206,6 @@ function postUser(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
   async function putUser(req, res, next) {
-    console.log('req.body in put user', req.body);
     /* These fields are uneditable */
     delete req.body.user.username;
     delete req.body.user.createDate;
