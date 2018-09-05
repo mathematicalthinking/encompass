@@ -49,7 +49,8 @@ const localSignup = (req, res, next) => {
   function (err, user, info) {
     console.log('info', info);
     if (err) {
-      console.log('err: ', err);
+      console.error('localSignup error: ', err);
+      console.trace();
       return next(err);
     }
 
@@ -108,11 +109,12 @@ const getResetToken = function(size) {
 };
 
 const sendEmailSMTP = function(recipient, host, template, token=null) {
+  console.log(`getEmailAuth() return: ${userAuth.getEmailAuth().username}`);
   const smtpTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.TEST_GMAIL_USERNAME,
-      pass: process.env.TEST_GMAIL_PASSWORD
+      user: userAuth.getEmailAuth().username,
+      pass: userAuth.getEmailAuth().password
     }
   });
 

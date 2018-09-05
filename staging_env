@@ -1,6 +1,17 @@
-PORT=1338
+
+# to set environment, IP Port and Database name for staging
 NODE_ENV="staging"
+PORT=1338
 DB_NAME="encompass_stage"
+
+# to send emails through gmail for staging
+# note: this overrides the TEST_GMAIL_USERNAME and TEST_GMAIL_PASSWORD
+# note: if staging is used for user testing, a new username should be created for staging
+GMAIL_USERNAME="encompassmath@gmail.com"
+GMAIL_PASSWORD="stemdev21"
 
 # url for seeding database
 MONGO_URL="mongodb://localhost:27017/encompass_stage"
+
+# directory where final version of build files end up
+BUILD_DIR='dist'

@@ -9,7 +9,8 @@
 /*
  * MAIN GRUNT COMMANDS:
  * grunt - this builds the app and runs in 8080
- * grunt serve-test - this builds and runs the test server env in 8082
+ * // deprecated grunt serve-test - this builds and runs the test server env in 8082
+ * grunt serve-seed - this builds and runs the test server env in 8082
  * grunt tests - this runs all tests (run this in another tab after grunt serve-test)
  * grunt testEndToEnd - this runs the e2e (selenium) tests
  * grunt testApi - runs only the api (backend) tests
@@ -25,20 +26,26 @@ module.exports = function (grunt) {
    */
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    revision: process.env.SVN_REVISION || '??',
-    build: process.env.BUILD_NUMBER || '??',
-    uglify: {
-      application: {
-        options: {
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-            '<%= grunt.template.today("yyyy-mm-dd") %> - ' +
-            'r<%= revision %> - build:<%= build %> */'
-        },
-        files: {
-          'dist/application-<%= pkg.version %>-min.js': 'build/application-prod.js'
-        }
-      }
-    },
+    //revision: process.env.SVN_REVISION || '??',
+    //build: process.env.BUILD_NUMBER || '??',
+    //
+    // // Error: Unexpected token: operator (>).
+    // // Line 265 in build/application-prod.js
+    // // in _removeElsFromDom(els)
+    // // at Line 265: els.forEach((el) => {
+    // uglify: {
+    //   application: {
+    //     options: {
+    //       banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+    //         '<%= grunt.template.today("yyyy-mm-dd") %>'
+    //     },
+    //     files: {
+    //       // 'dist/application-<%= pkg.version %>-min.js': 'build/application-prod.js'
+    //       'dist/application-min.js': 'build/application-prod.js'
+    //     }
+    //   }
+    // },
+
     /*
      * Set Node environment using grunt-env
      *  https://www.npmjs.com/package/grunt-env
@@ -384,7 +391,7 @@ module.exports = function (grunt) {
           archive: 'staging.zip'
         },
         files: [
-          {src: [ 'build/**', 'common/**', 'dependencies/**', 'server/**', 'seeders/**', 'package.json', 'package-lock.json', '.env_staging', 'md-seed-config.js', 'md-seed-generator.json'], dest: './staging/', expand: true, cwd: '.'}
+          {src: [ 'dist/**', 'common/**', 'dependencies/**', 'server/**', 'seeders/**', 'package.json', 'package-lock.json', '.env_staging', 'md-seed-config.js', 'md-seed-generator.json'], dest: './staging/', expand: true, cwd: '.'}
         ]
       },
       prod: {
@@ -392,7 +399,7 @@ module.exports = function (grunt) {
           archive: 'prod.zip'
         },
         files: [
-          {src: [ 'build/**', 'common/**', 'dependencies/**', 'server/**', 'package.json', 'package-lock.json', '.env_prod'], dest: './prod/', expand: true, cwd: '.'}
+          {src: [ 'dist/**', 'common/**', 'dependencies/**', 'server/**', 'package.json', 'package-lock.json', '.env_prod'], dest: './prod/', expand: true, cwd: '.'}
         ]
       }
     },
@@ -404,6 +411,82 @@ module.exports = function (grunt) {
       prod_env: {
         src: ['.env', 'prod_env'],
         dest: './.env_prod'
+      }
+    },
+    // // bump up version number (package and git) - not working
+    // bump: {
+    //   options: {
+    //     files: ['package.json'],
+    //     updateConfigs: [],
+    //     commit: false,
+    //     commitMessage: 'Release v%VERSION%',
+    //     commitFiles: ['package.json'],
+    //     createTag: false,
+    //     tagName: 'v%VERSION%',
+    //     tagMessage: 'Version %VERSION%',
+    //     push: false,
+    //     pushTo: 'upstream',
+    //     gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+    //     globalReplace: false,
+    //     prereleaseName: false,
+    //     metadata: '',
+    //     regExp: false
+    //   }
+    // },
+    clean: {
+      dist: {
+        src: ['dist/', 'build/assets.json']
+      }
+    },
+    // create versioned files in dist directory (from build directory)
+    assets_versioning: {
+      dist: {
+        options: {
+          versionsMapTrimPath: 'dist/',
+          versionsMapFile: 'assets.json',
+          tag: 'date'
+        },
+        files: {
+          'dist/base.css': [ 'build/base.css'],
+          'dist/guiders.css': [ 'build/guiders.css'],
+          'dist/main.css': [ 'build/main.css'],
+          'dist/application.js': [ 'build/application.js'],
+          'dist/common_bundle.js': [ 'build/common_bundle.js'],
+          'dist/guiders.js': [ 'build/guiders.js'],
+          'dist/jquery.sticky.js': [ 'build/jquery.sticky.js']
+        }
+      }
+    },
+    // copy unversioned files to dist directory (from build directory)
+    copy: {
+      dist: {
+        files: [
+          // copy images folder in build to dist
+          {cwd: 'build/images', expand: true, src: ['**'], dest: 'dist/images', flatten: true},
+          // copy all html files in build root to dist
+          {cwd: 'build', expand: true, src: ['license.html'], dest: 'dist'},
+          // copy all png files in build root (bg.png). is this needed ???
+          {cwd: 'build', expand: true, src: ['*.png'], dest: 'dist'},
+        ],
+      },
+    },
+    // replace asset filenames in index.html using mapping
+    'string-replace': {
+      dist: {
+        files:
+          [{
+            expand: true,
+            cwd: 'build/',
+            src: 'index.html',
+            dest: 'dist/'
+          }],
+        options: {
+          // replacements: [{
+          //   pattern: '<%= mapping.originalPath.var1 %>',
+          //   replacement: '<%= mapping.versionedPath.var2 %>'
+          // }]
+          replacements: [] // <-- Intentionally empty and will be dynamically configured via `configAndRunStringReplace`.
+        }
       }
     }
   });
@@ -477,10 +560,47 @@ module.exports = function (grunt) {
   grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
-  grunt.registerTask('dist', ['concat', 'compress']);
+  // grunt.registerTask('bump', ['bump']);
+  grunt.registerTask('dist', ['concat', 'compress', 'clean', 'assets_versioning:dist', 'configAndRunStringReplace', 'copy:dist']);
+  // grunt.registerTask('map', ['clean:dist', 'assets_versioning:dist', 'configAndRunStringReplace']);
 
+  /**
+   *  Helper task to dynamically configure the Array of Objects for the
+   * `options.replacements` property in the `dist` target of the `string-replace`
+   *  task. Each property name of the `variableToReplace` Object (found in
+   * `package.json`) is set as the search string, and it's respective value
+   *  is set as the replacement value.
+   */
+  grunt.registerTask('configAndRunStringReplace', function () {
 
-  // CURRENTLY NOT USED TASKS
-  // grunt.registerTask('sleep3', ['shell:sleep3']);
-  // grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
+    // 1. Read the `originalPath` mapping object from `assets.json` (Created by assets-versioning versionsMapFile option.
+    var replacements = grunt.file.readJSON('assets.json'),
+      config = [];
+
+    // 2. Dynamically build the `options.replacements` array.
+    for (var key in replacements) {
+      if (replacements[key] && replacements[key].originalPath) {
+        console.log(`replacement pair= ${key}: ${replacements[key].versionedPath}`);
+        // console.log(`pattern: ${new RegExp(key, 'g')}`)
+        console.log(`pattern: ${replacements[key].originalPath}`);
+        config.push({
+          // pattern: new RegExp(key, 'g'),
+          pattern: replacements[key].originalPath,
+          // replacement: replacements[key]
+          replacement: replacements[key].versionedPath
+        });
+      }
+    }
+
+    // 3. Configure the option.replacements values.
+    grunt.config.set('string-replace.dist.options.replacements', config);
+
+    // 4. Run the task.
+    grunt.task.run('string-replace:dist');
+  });
+
+  // Note: In the `default` Task we add the `configAndRunStringReplace`
+  // task to the taskList array instead of `string-replace`.
+  // grunt.registerTask('map2', ['configAndRunStringReplace']);
+
 };

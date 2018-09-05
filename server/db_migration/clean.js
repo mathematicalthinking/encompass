@@ -173,16 +173,16 @@ async function removeOrphanedSubs() {
       if (wsIds) {
         for (let id of wsIds) {
           let ws = await models.Workspace.findById(id);
-        if (ws !== null) {
-          shouldDelete = false;
+          if (ws !== null) {
+            shouldDelete = false;
           }
         }
       }
-       if (shouldDelete) {
-          await model.deleteOne({_id: sub._id});
-          deleted++;
-       }
+      if (shouldDelete) {
+        await model.deleteOne({_id: sub._id});
+        deleted++;
       }
+    }
   }catch(err) {
     console.log(err);
   }
