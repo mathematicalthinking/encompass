@@ -11,7 +11,7 @@
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
-    border: 1px solid #ccc;
+    border: 1px solid $input-border;
     border-radius: 4px;
     box-sizing: border-box;
     background: none;
@@ -20,10 +20,9 @@
     }
   }
   label {
-    color: black;
+    color:$dark-font-color;
     font-size: 1em;
     width: 20%;
-    color: black;
     padding: 12px 20px;
     margin: 8px 0px;
   }
@@ -49,7 +48,7 @@
     margin: 8px 0;
     font-size: 1em;
     padding: 12px 20px;
-    color: black;
+    color: $dark-font-color;
   }
   li {
     padding: 12px;
@@ -59,7 +58,7 @@
     padding: 12px 100px;
     margin: 2px 0px;
     display: inline-block;
-    border: 1px solid #ccc;
+    border: 1px solid $input-border;
     border-radius: 4px;
     box-sizing: border-box;
   }
@@ -73,7 +72,7 @@
 }
 
 .action_button {
-  margin: 10px;
+  @include action-button;
 }
 
 #show-password-btn {

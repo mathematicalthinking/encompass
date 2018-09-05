@@ -5,7 +5,7 @@
 
 body {
   font-family: $primary-font;
-  background: #fefefe;
+  background: $background-body;
   color: $primary-font-color;
 }
 
@@ -24,7 +24,7 @@ textarea {
 }
 
 .required-star {
-  color: red;
+  color: $error-color;
 }
 
 #al_body {
@@ -33,41 +33,20 @@ textarea {
 
 
 #al_body {
-  @if $topbar-small==true {
-    position: absolute;
-    margin-top: 1px;
-    top: 40px;
-    left: 0;
-    width: 100%;
-    font: $primary-font;
-  } @else {
-    position: absolute;
-    margin-top: 1px;
-    top: 90px;
-    left: 0;
-    width: 100%;
-    font: $primary-font;
-  }
+  position: absolute;
+  margin-top: 1px;
+  top: 90px;
+  left: 0;
+  width: 100%;
+  font: $primary-font;
 }
-
-
-
-// $time: morning;
-// a {
-//   @if $time == morning {
-//     color: red;
-//   } @else if $time == afternoon {
-//     color: blue;
-//   } @else {
-//     color: grey;
-//   }
-// }
 
 
 #al_body .active {
   background: #e7e7e7;
   opacity: 1;
   filter: alpha(opacity=100);
+  font-weight:$bold-font-weight;
 }
 
 #al_body>header {
@@ -90,7 +69,7 @@ textarea {
 #al_body>header aside a {
   padding: 7px;
   margin-left: 5px;
-  background-color: #ffcc00;
+  background-color: $accent-yellow;
   font-size: 12px;
   font-weight: bold;
 }

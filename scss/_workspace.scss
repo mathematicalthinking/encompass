@@ -95,7 +95,7 @@
       margin: 8px 0;
       font-size: 1em;
       display: inline-block;
-      border: 1px solid #ccc;
+      border: 1px solid $input-border;
       border-radius: 4px;
       box-sizing: border-box;
     }
@@ -109,7 +109,7 @@
       width: 10%;
       padding: 12px 10px;
       font-size: 1em;
-      color:black;
+      color:$dark-font-color;
     }
   }
 }

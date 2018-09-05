@@ -8,18 +8,18 @@
 #assignmentlistheader {
   h2 {
     color: $accent-color;
-    font-weight: bold;
+    font-weight: $bold-font-weight;
   }
 }
 
 section.assignmentlist {
   h2 {
     color: $accent-color;
-    font-weight: bold;
+    font-weight: $bold-font-weight;
   }
   #assignment-new-link {
     color: $accent-color;
-    font-weight: bold;
+    font-weight: $bold-font-weight;
   }
 }
 
@@ -35,7 +35,7 @@ section.assignment-info-student {
     width: 20%;
     font-size: 1em;
     padding: 12px 20px;
-    color: black;
+    color: $dark-font-color;
   }
   .action_button {
     padding: 12px 20px;
@@ -93,12 +93,11 @@ section.assignment-info-teacher {
         margin: 8px 0;
         font-size: 1em;
         width: 70%;
-
         select {
           width: 100%;
           font-size: 1em;
           margin-left: 0px;
-          border: 1px solid #ccc;
+          border: 1px solid $input-border;
           border-radius: 4px;
           box-sizing: border-box;
           background: none;
@@ -115,7 +114,7 @@ section.assignment-info-teacher {
         padding: 12px 20px;
         margin: 8px 0px;
         display: inline-block;
-        border: 1px solid #ccc;
+        border: 1px solid $input-border;
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
@@ -127,11 +126,11 @@ section.assignment-info-teacher {
         width: 20%;
         font-size: 1em;
         padding: 12px 20px;
-        color: black;
+        color: $dark-font-color;
       }
       p.assignment-info {
         input[type=text], input[type=date] {
-          border:none;
+          border: none;
         }
       }
     }
@@ -155,7 +154,7 @@ section.assignment-info-teacher {
         width: 20%;
         font-size: 1em;
         padding: 12px 20px;
-        color: black;
+        color: $dark-font-color;
       }
       .action_button {
         padding: 12px 20px;
