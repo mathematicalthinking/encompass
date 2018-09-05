@@ -27,12 +27,12 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
   actions: {
     willTransition: function(transition) {
       var controller = this.get('controller');
-      if (controller.get('confirmLeaving') &&
-          !window.confirm(this.get('confirmText'))) {
-        transition.abort();
+      if (controller.get('confirmLeaving') && !window.confirm(this.get('confirmText'))) {
         if (window.history) {
           window.history.forward();
         }
+        transition.abort();
+
       } else {
         // Bubble the `willTransition` action so that
         // parent routes can decide whether or not to abort.
