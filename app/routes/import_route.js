@@ -1,4 +1,6 @@
-Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend({
+Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLeavingRoute, {
+  controllerName: 'import',
+
   model: function() {
     return Ember.RSVP.hash({
       problems: this.get('store').findAll('problem'),
@@ -6,14 +8,15 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend({
       folderSets: this.get('store').findAll('folderSet'),
     });
   },
+
   actions: {
     toWorkspaces: function() {
       console.log('in toWorkspaces');
       this.transitionTo('workspaces');
     }
   },
+
   renderTemplate: function () {
     this.render('import/import');
   },
-
 });
