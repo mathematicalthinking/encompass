@@ -74,7 +74,7 @@
           {{#unless isStudentAccount}}
           <li id="role-toggle">
             <span class="acting-role">Role: {{user.actingRole}}</span>
-            <span class="toggle-role" {{action "toggleActingRole"}}>
+            <span class="toggle-role" {{action (mut actionToConfirm) "switch roles"}}>
               <i class="fas fa-sync-alt"></i>
             </span>
           </li>
@@ -145,3 +145,7 @@
   </span> --}}
   {{!-- <span id="loading" style="display:none">loading</span> --}}
 </div>
+
+{{#if actionToConfirm}}
+    {{modal-confirm actionToConfirm=actionToConfirm onConfirm="toggleActingRole" warningMessage="If you are currently modifying or creating a new record, you will lose all unsaved progress."}}
+{{/if}}
