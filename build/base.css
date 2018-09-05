@@ -64,7 +64,6 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_left header .al_sprite { margin-right:6px; }
 #al_left .al_vertical_stretch { margin-bottom:50px; position:relative; }
 
-#al_folders { }
 #al_folders>li { border-bottom:1px solid #d3d3d3; }
 #al_folders li { line-height:50px; font-size:13px; padding-left:5px; }
 #al_folders li>div { cursor:pointer; padding-right:98px; position:relative; white-space:nowrap; display:block; zoom:1; text-overflow:ellipsis; overflow:hidden; }
@@ -107,9 +106,9 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 
 
 #al_right { line-height:16px; font-size:13px; float:right; background:#f3f3f3; width:31%; min-width:320px; display:block; position:relative; height:100%; border-left:1px solid #d3d3d3; }
-//#al_right .al_vertical_stretch { margin-bottom:50px; }
+#al_right .al_vertical_stretch { margin-bottom:50px; }
 #al_right header table { width:100%; }
-#al_right header table td { opacity:.5; filter:alpha(opactiy=50); cursor:default; border-right: 1px solid #d3d3d3; width:33%; text-align:center; font-size:11px; font-weight:bold; }
+#al_right header table td { opacity:1; filter:alpha(opactiy=100); cursor:default; border-right: 1px solid #d3d3d3; width:33%; text-align:center; font-size:11px; font-weight:bold; }
 #al_right header.can-comment table td { cursor:pointer; opacity:1; filter:alpha(opacity=100); }
 #al_right header.can-comment.notice table td.notice { background:#e3e3e3; }
 #al_right header.can-comment.wonder table td.wonder { background:#e3e3e3; }
@@ -137,7 +136,7 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
 #al_right .al_general { position:absolute; bottom:130px; float:left; padding-left:5px; width:45%; }
 #al_right .al_controller { float:right; padding-right:5px; width:45%; text-align:right; }
 /* */
-#al_comments { solid #d3d3d3; padding-bottom: 2px; }
+#al_comments { padding-bottom: 2px; }
 .al_enabled #al_comments { display:block; }
 #al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
 #al_comments textarea.has-text { height:75px; }
@@ -354,9 +353,7 @@ article>h2,section>h2 {
 #subcontrols label { display: block; }
 
 #folder_contents {
-//  position:relative;
   border: solid 1px;
-//  font-size: 13px;
   width: 80%;
   margin-top: .75em;
 }
@@ -723,7 +720,7 @@ div.centered {
 div.folder.draggable {
   overflow: hidden;
   text-overflow: ellipsis;
-  -o-text-overflow: ellipsis; // For Opera and mobile browsers
+  -o-text-overflow: ellipsis;
 }
 
 /**
@@ -736,7 +733,6 @@ div.selectBox {
   width: 10em;
   line-height: 2em;
   display:inline-block;
-  //font: menu;
 }
 
 div.selectBox .selected {
