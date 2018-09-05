@@ -73,7 +73,7 @@ switch(process.env.NODE_ENV) {
     break;
 }
 
-console.log(`database name: '${dbConf.name}'`)
+console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
