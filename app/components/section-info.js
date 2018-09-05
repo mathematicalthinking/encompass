@@ -39,6 +39,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   didReceiveAttrs: function () {
+    this.set('isEditing', false);
     this.set('isAddingTeacher', false);
     return this.section.get('organization').then((org) => {
       console.log(('organization', org));

@@ -27,6 +27,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   didReceiveAttrs: function() {
+    this.set('isEditing', false);
     if (this.get('showReport')) {
       this.set('showReport', false);
     }
@@ -61,8 +62,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         .catch((err) => {
           console.log(err);
         });
-      }
-  },
+      }  },
 
   isYourOwn: function() {
     const currentUserId = this.get('currentUser.id');
