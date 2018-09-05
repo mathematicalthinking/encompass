@@ -43,9 +43,10 @@
   <header>
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
-        <button {{action 'showAllResponses'}} class="new-link-btn">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn">Mine</button>
+        <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
+        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Mine</button>
     </div>
+
     <div class="clear"></div>
   </header>
 

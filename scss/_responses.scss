@@ -31,10 +31,10 @@
         cursor: pointer;
         background: lighten($accent-yellow, 10%);
       }
-      &.active-filter {
-        font-weight: $bolder-font-weight;
-        background: darken($accent-yellow, 5%)
-      }
+    }
+    .active-filter {
+      font-weight: $bolder-font-weight;
+      background: darken($accent-yellow, 5%)
     }
   }
 }
