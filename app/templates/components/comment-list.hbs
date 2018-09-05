@@ -98,7 +98,7 @@
           {{workspace-comment comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
           {{!partial "../comments/comment"}}
           {{else}}
-          <p>No comments made yet.</p>
+          <p class="placeholder">No comments made yet.</p>
 				{{/each}}
 			</ul>
       {{/if}}
