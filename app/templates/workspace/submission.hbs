@@ -1,7 +1,7 @@
 <header class="{{makingSelection}}">
   <h2>{{currentWorkspace.name}}</h2>
-  <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}"> by {{currentWorkspace.owner.displayName}} |</span>
-  <span class="info">{{#link-to 'workspace.info' workspace}}info <i class="fa fa-info-circle" aria-hidden="true"></i>
+  <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}"> by {{currentWorkspace.owner.displayName}} </span>
+  <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
 {{/link-to}}</span>
   <aside>
     <!-- <a id="takeTour" {{action 'tour'}}>Take Tour</a> -->

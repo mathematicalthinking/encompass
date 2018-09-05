@@ -28,13 +28,10 @@ const accessibleSubmissionsQuery = async function(user, ids) {
     // will only reach here if admins/pdadmins are in actingRole teacher
 
     if (accountType === 'A') {
-      console.log('admin filter get subs', filter);
       return filter;
     }
 
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
-    console.log('accessible ws ids in get subs', accessibleWorkspaceIds);
-
 
     // everyone should have access to all submissions that belong to a workspace that they have access to
     filter.$or = [];

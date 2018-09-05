@@ -79,6 +79,21 @@ const getStudentSections = function(user) {
   });
 }
 
+const getStudentResponses = async function (user) {
+  if (!user) {
+    return;
+  }
+
+ let userId = user._id;
+
+ let respones = await models.Response.find({recipient: userId}).lean().exec();
+
+  return respones.map((response) => {
+    return response.createdBy;
+  });
+}
+
+
 async function getStudentUsers(user) {
   if (!user) {
     return;
@@ -96,6 +111,10 @@ async function getStudentUsers(user) {
     const teacherIds = sections.map(section => section.teachers);
 
     ids.push(teacherIds);
+
+    const responseUsers = await getStudentResponses(user);
+
+    ids.push(responseUsers);
 
   const flattened =  _.flatten(ids);
   return flattened.map(id => id.toString());

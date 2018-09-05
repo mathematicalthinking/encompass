@@ -22,8 +22,8 @@
 
 #workspace-info {
   header {
-    padding: 15px 10px;
-    background: #e3e3e3;
+    padding: 0px 10px;
+    background: $header-background;
     span {
       display: inline-block;
     }
@@ -37,7 +37,8 @@
 }
 
 .info {
-  font-size: .8em;
+  font-size: 1em;
+  font-weight: 100;
   position: relative;
   top: 2px;
   left: 5px;
@@ -45,8 +46,8 @@
 // new workspace enc component
 #workspace-new {
   header {
-    padding: 15px 10px;
-    background: #e3e3e3;
+    padding: 0px 10px;
+    background: $header-background;
     span {
       display: inline-block;
     }
@@ -61,7 +62,7 @@
 #workspace-new-enc {
   #encImportForm {
     .required-error {
-      border: 2px solid red;
+      border: 2px solid $error-color;
     }
     margin-left: 25px;
     margin-top: 25px;
@@ -95,7 +96,7 @@
       margin: 8px 0;
       font-size: 1em;
       display: inline-block;
-      border: 1px solid #ccc;
+      border: 1px solid $input-border;
       border-radius: 4px;
       box-sizing: border-box;
     }
@@ -109,9 +110,30 @@
       width: 10%;
       padding: 12px 10px;
       font-size: 1em;
-      color:black;
+      color:$dark-font-color;
     }
   }
+}
+
+.workspace-listing-header {
+  background: $header-background;
+  padding: 7px 0px;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  h2 {
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+  .refresh {
+    display: inline-block;
+    padding: 12px 20px;
+  }
+}
+
+#workspace_listing {
+  position: relative;
+  top: 65px;
 }
 
 .toggle-btn {
@@ -128,7 +150,7 @@
   padding: 0px 15px;
   margin-left: 10px;
   border: none;
-  line-height: 40px;
+  line-height: 35px;
   &.active-filter {
     font-weight: $bolder-font-weight;
     background: darken($accent-yellow, 5%)
@@ -141,4 +163,28 @@
 
 }
 
+.workspaceOwner.isMine {
+  display: none;
+}
+
+.workspaceOwner.notMine {
+  color: $accent-color;
+  font-weight: $main-font-weight;
+}
+
+.fa-trash, .fa-plus {
+  cursor: pointer;
+}
+
+#folder-add {
+  width: 30px;
+}
+
+#al_feedback_display {
+  .placeholder {
+    position: relative;
+    top: 15px;
+    left: -25px;
+  }
+}
 

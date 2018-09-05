@@ -24,6 +24,11 @@
   margin: 20px 0 20px 0;
 }
 
+.warning-message {
+  @include warning-message;
+  margin: 20px 0 20px 0;
+}
+
 .import-prep {
   width: 500px;
   margin-top: 20px;

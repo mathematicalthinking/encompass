@@ -46,7 +46,6 @@ const accessibleProblemsQuery = async function(user, ids) {
 
   if (accountType === 'P') {
     const problems = await utils.getAssignmentProblems(user);
-    console.log('problems', problems);
     filter.$or = [
       { privacySetting: "E" },
       { createdBy: user },
@@ -59,7 +58,6 @@ const accessibleProblemsQuery = async function(user, ids) {
 
   if (accountType === 'T') {
     const problems = await utils.getAssignmentProblems(user);
-    console.log('problems', problems);
     filter.$or = [
       { privacySetting: "E" },
       { createdBy: user },

@@ -32,7 +32,6 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   }
 
   if (usernames) {
-    console.log('usernames', usernames);
     filter.username = { $in: usernames }
   }
 

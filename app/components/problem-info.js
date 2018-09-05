@@ -18,6 +18,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   didReceiveAttrs: function () {
     this.set('isWide', false);
     this.set('showAssignment', false);
+    this.set('isEditing', false);
     let problem = this.get('problem');
     let problemId = problem.get('id');
     // let problemUsed = this.get('problemUsed');
@@ -87,6 +88,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
       this.set('privacySetting', problem.get('privacySetting'));
+    },
+
+    cancelEdit: function () {
+      this.set('isEditing', false);
     },
 
     radioSelect: function (value) {

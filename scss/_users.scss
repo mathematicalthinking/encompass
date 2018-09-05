@@ -2,6 +2,8 @@
 @import "mixins";
 @import "responsive-font-size";
 
+//LOOK AT SIDE LIST PARTIAL FOR STYLING FOR USER LISTING
+
 #user-list {
   .list-heading {
     padding: 0px;
@@ -56,7 +58,7 @@
   }
   .button-row {
     margin: 0 auto;
-    width: 200px;
+    width: 250px;
     display: flex;
   }
   button.action_button {
@@ -74,7 +76,7 @@
     padding: 5px;
     font-size: .8em;
   }
-  .error-message, .success-message {
+  .error-message, .success-message, .warning-message {
     text-align: center;
     padding: 10px 0;
   }

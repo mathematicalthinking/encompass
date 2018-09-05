@@ -1,10 +1,23 @@
-<header class="info-header">
+<section class="answer-info">
+  <header class="info-header" id="answer-info-header">
     <h2>Answer Details</h2>
-  <div class="clear"></div>
-</header>
+    <div class="clear"></div>
+  </header>
 
-<section class="problemdetails">
-  <p> Answer: {{answer.answer}}</p>
-  <p> Answer Explanation:  {{{answer.explanation}}}</p>
+  <section class="problemdetails">
+    <div>
+      <p>Brief Summary:</p>
+      <p>{{answer.answer}}</p>
+    </div>
+    <div>
+      <p>Explanation:</p>
+      {{{answer.explanation}}}
+    </div>
+  </section>
+
+  {{#if answer.imageData}}
+  <div class="assignmentImage">
+    <img src="{{{answer.imageData}}}" alt={{{format-date answer.createDate 'MMMM Do YYYY'}}} />
+  </div>
+  {{/if}}
 </section>
-

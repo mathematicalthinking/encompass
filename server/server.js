@@ -73,7 +73,7 @@ switch(process.env.NODE_ENV) {
     break;
 }
 
-console.log(`database name: '${dbConf.name}'`)
+console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
@@ -127,7 +127,7 @@ server.use(path.prep());
 server.use(path.processPath());
 server.use(userAuth.fetchUser());
 server.use(userAuth.protect());
-//server.use(userAuth.loadAccessibleWorkspaces());
+server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 const upload = multer({

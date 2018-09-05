@@ -7,9 +7,9 @@
   </header>
 
   {{#if responsesStudent.length}}
-    <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
+    <table border="1" width="100%">
       <thead>
-        <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
+        <tr class="top-row">
           <th align="left" style="padding-left: 55px;">Text</th>
           <th align="left">Source</th>
           <th align="left">Created</th>
@@ -43,17 +43,18 @@
   <header>
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
-        <button {{action 'showAllResponses'}} class="new-link-btn">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn">Mine</button>
+        <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
+        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Mine</button>
     </div>
+
     <div class="clear"></div>
   </header>
 
   {{#if allResponses.length}}
 
-  <table border="1" width="100%" style="background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px">
+  <table border="1" width="100%">
     <thead>
-      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px">
+      <tr class="top-row">
         <th align="left" style="padding-left: 55px;">Text</th>
         <th align="left">Recipient</th>
         <th align="left">Source</th>

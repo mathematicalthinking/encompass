@@ -4,6 +4,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   sortAscending: false,
   showingAllResponses: true,
   showingOnlyMine: false,
+  isShowAll: true,
+  isShowMine: false,
 
   allResponses: Ember.computed(function () {
     let responses = this.get('responses');
@@ -28,11 +30,15 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     showMyResponses: function () {
       this.set('showingOnlyMine', true);
       this.set('showingAllResponses', false);
+      this.set('isShowAll', false);
+      this.set('isShowMine', true);
     },
 
     showAllResponses: function () {
       this.set('showingOnlyMine', false);
       this.set('showingAllResponses', true);
+      this.set('isShowAll', true);
+      this.set('isShowMine', false);
       }
     },
 

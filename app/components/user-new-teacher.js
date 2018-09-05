@@ -76,6 +76,10 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
+    cancelNew: function () {
+      this.sendAction('toUserHome');
+    },
+
     resetErrors(e) {
       const errors = ['usernameExists', 'errorMessage'];
 

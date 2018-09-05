@@ -33,5 +33,9 @@
     <p class="error-message">Username & Password are required</p>
   {{/if}}
 
-  <button class='action_button user-new' {{action 'newUser'}}>Create New Student</button>
+    <div class="button-row">
+      <button class='action_button new-user' id="new-user-btn" {{action 'newUser'}}>Create New Student</button>
+      <button class='action_button new-user' {{action 'cancelNew'}}>Cancel</button>
+    </div>
+
 </article>

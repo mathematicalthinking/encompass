@@ -27,7 +27,6 @@ const accessibleAnswersQuery = async function(user, ids) {
   if (accountType === 'P') {
     const userOrg = user.organization;
     const userIds = await utils.getModelIds('User', {organization: userOrg});
-    console.log(`List of users from org ${userOrg} in auq: ${userIds}`);
     filter.createdBy = {$in : userIds};
     return filter;
   }
