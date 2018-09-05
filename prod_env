@@ -1,7 +1,8 @@
 
-NODE_ENV="production" # to set environment to production
-PORT=1339 # to set IP port for production
-DB_NAME="encompass_prod" # to set the database for production
+# to set environment, IP Port and Database name for prod
+NODE_ENV="production"
+PORT=1339
+DB_NAME="encompass_prod"
 
 # to send emails through gmail for production
 # note: this overrides the TEST_GMAIL_USERNAME and TEST_GMAIL_PASSWORD

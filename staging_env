@@ -1,7 +1,8 @@
 
-NODE_ENV="staging" # to set environment to staging
-PORT=1338 # to set IP port for staging
-DB_NAME="encompass_stage" # to set the database for staging
+# to set environment, IP Port and Database name for staging
+NODE_ENV="staging"
+PORT=1338
+DB_NAME="encompass_stage"
 
 # to send emails through gmail for staging
 # note: this overrides the TEST_GMAIL_USERNAME and TEST_GMAIL_PASSWORD

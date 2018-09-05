@@ -9,7 +9,8 @@
 /*
  * MAIN GRUNT COMMANDS:
  * grunt - this builds the app and runs in 8080
- * grunt serve-test - this builds and runs the test server env in 8082
+ * // deprecated grunt serve-test - this builds and runs the test server env in 8082
+ * grunt serve-seed - this builds and runs the test server env in 8082
  * grunt tests - this runs all tests (run this in another tab after grunt serve-test)
  * grunt testEndToEnd - this runs the e2e (selenium) tests
  * grunt testApi - runs only the api (backend) tests
