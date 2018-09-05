@@ -12,15 +12,16 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
 
   activate: function() {
     var route = this;
-    $(window).on('beforeunload.' + this.get('controllerName') + '.confirm', function() {
+    $(window).on('beforeunload.' + route.get('controllerName') + '.confirm', function() {
       if(route.controller.get('confirmLeaving')) {
-        return this.get('confirmText');
+        return route.get('confirmText');
       }
     });
   },
-  
+
   deactivate: function() {
-    $(window).off('beforeunload.' + this.get('controllerName') + '.confirm');
+    var route = this;
+    $(window).off('beforeunload.' + route.get('controllerName') + '.confirm');
   },
 
   actions: {
@@ -29,6 +30,9 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
       if (controller.get('confirmLeaving') &&
           !window.confirm(this.get('confirmText'))) {
         transition.abort();
+        if (window.history) {
+          window.history.forward();
+        }
       } else {
         // Bubble the `willTransition` action so that
         // parent routes can decide whether or not to abort.
