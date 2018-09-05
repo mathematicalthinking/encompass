@@ -8,7 +8,7 @@
           <span class="problem title ">{{selectedProblem.title}}</span>
           {{#if selectedProblem}}
             {{#if isSelectingImportDetails}}
-              <i {{action "editProblem" 'selectedProblem'}} class="fa fa-times" aria-hidden="true"></i>
+              <i {{action "editProblem" 'selectedProblem'}} class="fa fa-times" aria-hidden="true" title="Clear problem"></i>
             {{/if}}
           {{/if}}
         </td>
@@ -19,7 +19,7 @@
           <span class="section name">{{selectedSection.name}}</span>
           {{#if selectedSection}}
             {{#if isSelectingImportDetails}}
-              <i {{action "editProblem" 'selectedSection'}} class="fa fa-times" aria-hidden="true"></i>
+              <i {{action "editProblem" 'selectedSection'}} class="fa fa-times" aria-hidden="true" title="Clear section"></i>
             {{/if}}
           {{/if}}
         </td>
@@ -30,8 +30,8 @@
           <span class="files number">{{uploadedFiles.length}}</span>
           {{#if uploadedFiles.length}}
             {{#if isSelectingImportDetails}}
-              <i {{action "editProblem" 'uploadedFiles'}} class="fa fa-times" aria-hidden="true"></i>
-              <i {{action "editProblem" 'additionalFiles'}} class="fas fa-plus" aria-hidden="true"></i>
+              <i {{action "editProblem" 'uploadedFiles'}} class="fa fa-times" aria-hidden="true" title="Clear files"></i>
+              <i {{action "editProblem" 'additionalFiles'}} class="fas fa-plus" aria-hidden="true" title="Add more files"></i>
             {{/if}}
           {{/if}}
         </td>
