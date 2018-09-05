@@ -292,13 +292,6 @@ article>h2,section>h2 {
   font-weight: bold;
 }
 
-.workspaceOwner.isMine {
-  display: none;
-}
-
-.workspaceOwner.notMine {
-  color: #bb0000;
-}
 
 .al_sprite { position:relative; background:url(images/sprites.png) 0 0 no-repeat; display:inline-block; zoom:1; }
 .al_sprite.al_folder { top:-3px; width:31px; height:31px; background-position:-7px -3px; vertical-align:middle; }
@@ -525,7 +518,6 @@ table.cols td {
 #workspace_listing td { text-align: center; }
 #workspace_listing tr>td:first-child { text-align: justify; }
 .workspace_name.public { font-weight: bold; }
-.workspace_info { display: inline-block; width: 16px; height: 16px; background: url('http://mathforum.org/img/glyphish/xtras/xtras-gray/42-info-16.png') no-repeat center center; }
 
 #submission_images { height:200px; width:100%; display:block; }
 #submission_images img { width: 99%; padding: 2px; }
