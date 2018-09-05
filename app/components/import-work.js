@@ -193,7 +193,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         // else just display details about # of answers uploaded
           const uploadedAnswers = res;
 
-          if (that.doCreateWorkspace) {
+          if (that.get('doCreateWorkspace')) {
           subs = res.map((ans) => {
             //const teachers = {};
             const clazz = {};
