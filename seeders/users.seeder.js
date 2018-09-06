@@ -311,8 +311,209 @@ var data = [{
     "lastModifiedDate": "2018-08-14T18:20:51.382Z",
     "isTrashed": false,
     "createDate": "2018-08-14T18:20:51.382Z",
-    "lastSeen": "2018-08-16T20:19:26.457Z"
-  }
+    "lastSeen": "2018-08-16T20:19:26.457Z",
+    "actingRole": "teacher"
+  },
+  {
+    "_id" : "5b913ebe3add43b868ae9807",
+    "organization" : "5b4a64a028e4b75919c28512",
+    "username" : "jamie4",
+    "password" : "$2a$12$9yHQw56mEBj/3RdMj/1ohuF1pjxk9s.Jq6fBGAYqBs/wPwVyAvYR2",
+    "accountType" : "S",
+    "createdBy" : "5b245841ac75842be3189526",
+    "history" : [],
+    "assignments" : ["5b9146a83add43b868ae9809"],
+    "answers" : [],
+    "sections" : [
+        {
+            "sectionId" : "5b913e723add43b868ae9804",
+            "role" : "student"
+        }
+    ],
+    "isEmailConfirmed" : false,
+    "isAuthorized" : true,
+    "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+    "isTrashed" : false,
+    "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+  "_id" : "5b913eaf3add43b868ae9806",
+  "organization" : "5b4a64a028e4b75919c28512",
+  "username" : "sam3",
+  "password" : "$2a$12$BncFqBAu92VeyuKX7WUQjuDREWncoR6BgG0.3aZOulruEs5iwb7qS",
+  "accountType" : "S",
+  "createdBy" : "5b245841ac75842be3189526",
+  "history" : [],
+  "assignments" : ["5b9146a83add43b868ae9809"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b913e723add43b868ae9804",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+  "_id" : "5b913ea33add43b868ae9805",
+  "organization" : "5b4a64a028e4b75919c28512",
+  "username" : "alex8",
+  "password" : "$2a$12$VJaCSw8ISla5ntkNL07qjuF.rU/ZV3xgmbnAyEbyUEN.acBOnavym",
+  "accountType" : "S",
+  "createdBy" : "5b245841ac75842be3189526",
+  "history" : [],
+  "assignments" : ["5b9146a83add43b868ae9809"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b913e723add43b868ae9804",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+    "_id" : "5b9149f52ecaf7c30dd47491",
+    "organization" : "5b4e4d5f808c7eebc9f9e82c",
+    "username" : "morganf",
+    "password" : "$2a$12$bJ6SE4Y7KTAt1VtatrwSku2Y.wqto0JQKUjJvkvwGHkoelr2tOKX.",
+    "accountType" : "S",
+    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "history" : [],
+    "assignments" : ["5b91743a3da5efca74705773"],
+    "answers" : [],
+    "sections" : [
+        {
+            "sectionId" : "5b9149a32ecaf7c30dd4748f",
+            "role" : "student"
+        }
+    ],
+    "isEmailConfirmed" : false,
+    "isAuthorized" : true,
+    "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+    "isTrashed" : false,
+    "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b9149c22ecaf7c30dd47490",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "username" : "ashleyc",
+  "password" : "$2a$12$X7PKqTfa/ydePAKPNGGd4ObP9W6NSE34Cdwf3dYpT2BJh3oA2mSda",
+  "accountType" : "S",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b9149a32ecaf7c30dd4748f",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b914a102ecaf7c30dd47492",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "username" : "tracyc",
+  "password" : "$2a$12$svhAmCvhB2Q0iSJlwMyH6.2q4nJKLBvnGAVfXRVqkXDJKotpWd4Wq",
+  "accountType" : "S",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b9149a32ecaf7c30dd4748f",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b914a802ecaf7c30dd47493",
+  "confirmEmailExpires" : "2018-09-07T15:40:48.142Z",
+  "confirmEmailToken" : "329ff40a5d27344c6681d2d93bc1f628d71501fe",
+  "name" : "Taylor Taylorson",
+  "email" : "taylor@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "teachertaylor",
+  "password" : "$2a$12$p.4iz7z06yQdV4kyUAmq6.jG2Z0CHCCoyQppY21x8j5WhmcyDLxPG",
+  "accountType" : "T",
+  "createdBy" : "5b245760ac75842be3189525",
+  "authorizedBy" : "5b245760ac75842be3189525",
+  "actingRole" : "teacher",
+  "history" : [],
+  "assignments" : [],
+  "answers" : [],
+  "sections" : [
+      {
+          "role" : "teacher",
+          "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "lastModifiedBy" : null,
+  "lastSeen" : null,
+  "organizationRequest" : null,
+  "requestReason" : null,
+  "seenTour" : null
+},
+{
+  "_id" : "5b9149552ecaf7c30dd4748e",
+  "confirmEmailExpires" : "2018-09-07T15:35:49.970Z",
+  "confirmEmailToken" : "a6c5506af49b5d17775740e99aa82c9e2a32a7ec",
+  "name" : "Summer Smith",
+  "email" : "ssmith@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "ssmith",
+  "password" : "$2a$12$rAJwBMeVR5RXPhKGGgMRdOM/OaOREMrsIPE2HZcBI0PCW2cME4IFi",
+  "requestReason" : "Professional Development",
+  "accountType" : "T",
+  "actingRole" : "teacher",
+  "history" : [],
+  "assignments" : [],
+  "answers" : [],
+  "sections" : [
+      {
+          "role" : "teacher",
+          "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      }
+  ],
+  "isEmailConfirmed" : true,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:36:31.451Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "lastSeen" : "2018-09-06T15:41:14.918Z",
+  "authorizedBy" : null,
+  "createdBy" : null,
+  "lastModifiedBy" : "5b245760ac75842be3189525",
+  "organizationRequest" : null,
+  "seenTour" : null
+}
 ];
 
 var UsersSeeder = Seeder.extend({

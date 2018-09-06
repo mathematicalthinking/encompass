@@ -50,7 +50,49 @@ var data = [
     "isPublic": false,
     "privacySetting": 'M',
     "isTrashed": false
-  }
+  },
+  {
+    "_id" : "5b91463c3add43b868ae9808",
+    "title" : "DrexelU Org Problem",
+    "puzzleId" : null,
+    "text" : "This problem is only for members of Drexel University",
+    "imageUrl" : null,
+    "sourceUrl" : null,
+    "imageData" : null,
+    "imageId" : null,
+    "additionalInfo" : null,
+    "privacySetting" : "O",
+    "createdBy" : "5b245841ac75842be3189526",
+    "lastModifiedBy" : null,
+    "origin" : null,
+    "modifiedBy" : null,
+    "organization" : "5b4a64a028e4b75919c28512",
+    "categories" : [],
+    "lastModifiedDate" : null,
+    "isTrashed" : false,
+    "createDate" : "2018-09-06T15:22:36.371Z"
+},
+{
+  "_id" : "5b9173e23da5efca74705772",
+  "title" : "Summer's Org Problem",
+  "puzzleId" : null,
+  "text" : "This is Summer's problem",
+  "imageUrl" : null,
+  "sourceUrl" : null,
+  "imageData" : null,
+  "imageId" : null,
+  "additionalInfo" : "",
+  "privacySetting" : "O",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "origin" : null,
+  "modifiedBy" : null,
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "categories" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T18:37:22.437Z"
+}
 ];
 
 var ProblemsSeeder = Seeder.extend({
