@@ -25,7 +25,6 @@ var ImageSchema = new Schema({
   imageData: { type: String },
   path: { type: String }, //Not used yet
   relativePath: { type: String }, //Not used yet
-  isPdf: { type: Boolean },
 }, { versionKey: false });
 
 /**
