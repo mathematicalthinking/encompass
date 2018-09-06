@@ -51,35 +51,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return canEdit;
   }),
 
-  // problemUsed: Ember.computed('problem.id', function () {
-  //   let problem = this.get('problem');
-  //   let problemId = problem.get('id');
-  //   // let problemUsed = this.get('problemUsed');
-
-  //   this.get('store').queryRecord('answer', {
-  //       problem: problemId
-  //   }).then((answer) => {
-  //     if (answer !== null) {
-  //       console.log('answer exists and is', answer);
-  //       this.set('isProblemUsed', true);
-  //     } else {
-  //       console.log('answer does not exist and is', answer);
-  //       this.set('isProblemUsed', false);
-  //     }
-  //   });
-  // }),
-
 
   actions: {
     deleteProblem: function () {
       let problem = this.get('problem');
         problem.set('isTrashed', true);
-        problem.set('imageData', null);
         problem.save()
           .then(() => {
               this.sendAction('toProblemList');
           });
-        problem.set('imageData', problem.get('imageData'));
     },
 
     editProblem: function () {
@@ -122,9 +102,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             data: formData
           }).then((res) => {
             this.set('uploadResults', res.images);
-            problem.set('imageId', res.images[0]._id);
-            problem.set('imageData', res.images[0].data);
-            problem.save();
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
+              problem.set('image', image);
+              problem.save();
+            });
           });
         } else {
           Ember.$.post({
@@ -134,9 +115,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             data: formData
           }).then((res) => {
             this.set('uploadResults', res.images);
-            problem.set('imageId', res.images[0]._id);
-            problem.set('imageData', res.images[0].data);
-            problem.save();
+            this.store.findRecord('image', res.images[0]._id).then((image) => {
+              problem.set('image', image);
+              problem.save();
+            });
           });
         }
       }
@@ -158,6 +140,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let text = problem.get('text');
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
+      let image = problem.get('image');
       let imageUrl = problem.get('imageUrl');
       let createdBy = this.get('currentUser');
 
@@ -169,6 +152,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isPublic: isPublic,
         origin: problem,
         createdBy: createdBy,
+        image: image,
         privacySetting: "M",
         createDate: new Date()
       });
@@ -187,6 +171,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
       let imageUrl = problem.get('imageUrl');
+      let image = problem.get('image');
       let createdBy = this.get('currentUser');
 
       let newProblem = this.store.createRecord('problem', {
@@ -195,6 +180,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
+        image: image,
         origin: problem,
         privacySetting: "M",
         createdBy: createdBy,
@@ -212,21 +198,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
 
-    addImage: function () {
-
-    },
-
-    changeImage: function () {
-      console.log('update image clicked');
-      let problem = this.get('problem');
-      let imageData = this.get('imageData');
-      let imageId = this.get('imageId');
-    },
-
     deleteImage: function () {
       let problem = this.get('problem');
-      problem.set('imageId', null);
-      problem.set('imageData', null);
+      problem.set('image', null);
       problem.save();
     },
 
