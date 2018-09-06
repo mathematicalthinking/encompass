@@ -22,9 +22,19 @@ const regUser = {
   password: 'smith'
 };
 
+const pdAdmin = {
+  username: 'pdadmin',
+  password: 'pdadmin'
+};
+
+const student = {
+  username: 'alex8',
+  password: 'alex'
+};
+
 const loginUrl = '/auth/login';
 
-const setup = async function(agent, url=loginUrl, user=admin.username, pass=admin.password) {
+const setup = async function(agent, user=admin.username, pass=admin.password, url=loginUrl) {
   try {
     await dbSetup.prepTestDb();
     await agent.post(url)
@@ -38,3 +48,5 @@ module.exports.setup = setup;
 module.exports.admin = admin;
 module.exports.regUser = regUser;
 module.exports.host = host;
+module.exports.pdAdmin = pdAdmin;
+module.exports.loginUrl = loginUrl;
