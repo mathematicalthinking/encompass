@@ -120,8 +120,7 @@ async function sendUsers(req, res, next) {
 async function sendUser(req, res, next) {
   console.log('params.id', req.params.id);
   try {
-    var user = userAuth.getUser(req);
-
+    var user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.NotAuthorizedError(null, res);
     }
