@@ -2,7 +2,6 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
   assignedStudent: null,
   section: null,
   submission: null,
-  isPdf: null,
 
   didInsertElement: function() {
     var section = this.get('selectedSection');

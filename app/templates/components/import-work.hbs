@@ -104,7 +104,7 @@
 
     {{#if isReviewingSubmissions}}
       {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doNotCreateWorkspace=doNotCreateWorkspace isPrivate=isPrivate mode=mode
-      folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName isCompDirty=isCompDirty}}
+      folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
     {{/if}}
 
     {{#if uploadedAnswers}}

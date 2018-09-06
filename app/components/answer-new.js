@@ -15,9 +15,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.set('answer', ans.get('answer'));
       this.set('explanation', ans.get('explanation'));
       if (ans.additionalImage) {
-        // this.set('imageData', ans.get('imageData'));
-        // this.set('isPdf', ans.get('isPdf'));
-        // this.set('existingImageId', ans.get('uploadedFileId'));
         this.set('students', ans.get('students'));
       }
     } else {
@@ -65,7 +62,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
-            // return resolve(res.images[0]);
           })
           .catch((err) => {
             that.set('createAnswerError', err);
@@ -84,7 +80,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
-            // return resolve(res.images[0]);
           })
           .catch((err) => {
             that.set('createAnswerError', err);
@@ -128,7 +123,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
-          // uploadedFileId: id,
           additionalImage: image
         });
       });
