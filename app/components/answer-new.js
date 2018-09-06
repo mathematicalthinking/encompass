@@ -14,10 +14,10 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       const ans = this.priorAnswer;
       this.set('answer', ans.get('answer'));
       this.set('explanation', ans.get('explanation'));
-      if (ans.imageData) {
-        this.set('imageData', ans.get('imageData'));
-        this.set('isPdf', ans.get('isPdf'));
-        this.set('existingImageId', ans.get('uploadedFileId'));
+      if (ans.additionalImage) {
+        // this.set('imageData', ans.get('imageData'));
+        // this.set('isPdf', ans.get('isPdf'));
+        // this.set('existingImageId', ans.get('uploadedFileId'));
         this.set('students', ans.get('students'));
       }
     } else {
@@ -60,9 +60,12 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             data: formData
           }).then(function (res) {
             that.set('uploadResults', res.images);
+            that.store.findRecord('image', res.images[0]._id).then((image) => {
+              return resolve(image);
+            });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
-            return resolve(res.images[0]._id);
+            // return resolve(res.images[0]);
           })
           .catch((err) => {
             that.set('createAnswerError', err);
@@ -76,9 +79,12 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             data: formData
           }).then(function(res){
             that.set('uploadResults', res.images);
+            that.store.findRecord('image', res.images[0]._id).then((image) => {
+              return resolve(image);
+            });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
-            return resolve(res.images[0]._id);
+            // return resolve(res.images[0]);
           })
           .catch((err) => {
             that.set('createAnswerError', err);
@@ -103,21 +109,14 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   },
   createAnswer: function() {
     const that = this;
-    console.log('creating Answer');
     const answer = that.get('answer');
     const quillContent = this.$('.ql-editor').html();
     const explanation = quillContent.replace(/["]/g, "'");
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
     const students = that.get('students');
 
-    return this.handleImage().then((imageId) => {
-      console.log('imageId', imageId);
-      return imageId;
-    }).then((id) => {
-      console.log('id', id);
-
+    return this.handleImage().then((image) => {
       const records = students.map((student) => {
-        console.log('stud', student);
         return that.store.createRecord('answer', {
           createdBy: student,
           createDate: new Date(),
@@ -129,7 +128,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
-          uploadedFileId: id
+          // uploadedFileId: id,
+          additionalImage: image
         });
       });
       return Promise.all(records.map((rec) => {
