@@ -69,7 +69,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await driver.sleep('500');
-        await helpers.findAndClickElement(driver, 'button.new-user');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
       });
@@ -308,7 +308,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await driver.sleep('500');
-        await helpers.findAndClickElement(driver, 'button.user-new');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
       });
@@ -323,7 +323,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.user-location', location);
-        await helpers.findAndClickElement(driver, 'button.user-new');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         await driver.sleep('1000');
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('bunny');
@@ -494,7 +494,7 @@ describe('Users', function() {
       it('should not let you submit form with missing fields', async function () {
         let username = `mystudent`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
-        await helpers.findAndClickElement(driver, 'button.user-new');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username & Password are required');
       });
@@ -504,7 +504,7 @@ describe('Users', function() {
         let name = `mystudent`;
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
-        await helpers.findAndClickElement(driver, 'button.user-new');
+        await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('mystudent');
       });

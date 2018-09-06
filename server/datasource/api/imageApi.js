@@ -8,7 +8,6 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
-const path = require('path');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -81,6 +80,19 @@ const getImage = (req, res, next) => {
   * @throws {RestError} Something? went wrong
   */
 
+
+const readFilePromise = function(file) {
+  return new Promise((resolve, reject) => {
+    if (!file)
+      return reject(new Error('failure extreme failure'));
+    fs.readFile(file, (err, data) => {
+        if (err)
+          return reject(err);
+        return resolve(data);
+    });
+  });
+};
+
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   if (!user) {
@@ -99,8 +111,6 @@ const postImages = async function(req, res, next) {
     let img = new models.Image(f);
 
     if (isPDF) {
-      console.log('inside isPdf for post Images');
-
       let converter = new PDF2Pic({
         density: 200, // output pixels per inch
         savename: img.name, // output file name
@@ -108,33 +118,30 @@ const postImages = async function(req, res, next) {
         format: "png", // output file format
         size: 1000 // output size in pixels
       })
-
-      // function convertBase64(file) {
-      //   let bitmap = fs.readFileSync(file);
-      //   return new Buffer(bitmap).toString('base64');
-      // }
-
       let file = img.path;
       return converter.convertBulk(file)
         .then(results => {
           let files = results.map((result) => {
             return result.path;
           })
-          let buffers = files.map((file) => {
+          return Promise.all(files.map((file) => {
             let f = {
               createdBy: user,
               createDate: Date.now()
             }
-            let newImage = new models.Image(f);
-            let bitmap = fs.readFileSync(file);
-            let buffer = new Buffer(bitmap).toString('base64');
+            return readFilePromise(file).then((data) => {
+              let newImage = new models.Image(f);
+              let buffer = new Buffer(data).toString('base64');
+              let format = `data:image/png;base64,`;
+              let imgData = `${format}${buffer}`;
 
-             let format = `data:image/png;base64,`;
-             let imgData = `${format}${buffer}`;
-             newImage.data = imgData;
-             return newImage;
-          });
-          return buffers;
+                newImage.imageData = imgData;
+                return newImage;
+            })
+            .catch((err) => {
+              console.log('error converting', err);
+            });
+          }));
         })
         .catch((err) => {
           console.error(`Pdf conversion error: ${err}`);
@@ -152,8 +159,7 @@ const postImages = async function(req, res, next) {
 
       img.createdBy = user;
       img.createDate = Date.now();
-      img.data = imgData;
-      //img.isPdf = isPDF; deprecated
+      img.imageData = imgData;
       return Promise.resolve(img);
     }
 

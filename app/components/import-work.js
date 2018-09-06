@@ -36,11 +36,17 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     const problem = this.get('selectedProblem');
     const section = this.get('selectedSection');
     const files = this.get('uploadedFiles');
+    const uploading = this.get('isUploadingAnswer');
 
     const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
 
+    if (ret && uploading) {
+      this.set('isCompDirty', false);
+      return;
+    }
+
     this.set('isCompDirty', ret);
-  }.observes('selectedProblem', 'selectedSection', 'uploadedFiles'),
+  }.observes('selectedProblem', 'selectedSection', 'uploadedFiles', 'isUploadingAnswer'),
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
     const isMatchingStudents = this.get('isMatchingStudents');
@@ -158,14 +164,16 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
       images.forEach((image) => {
         let ans = {};
-        ans.explanation = `<img src="${image.data}">`;
-        ans.problem = this.get('selectedProblem');
-        ans.section = this.get('selectedSection');
-        ans.isSubmitted = true;
-        answers.push(ans);
+        let imageId = image._id;
+        this.store.findRecord('image', imageId).then((image) => {
+          ans.explanationImage = image;
+          ans.problem = this.get('selectedProblem');
+          ans.section = this.get('selectedSection');
+          ans.isSubmitted = true;
+          answers.push(ans);
+          this.set('answers', answers);
+        });
       });
-
-      this.set('answers', answers);
     },
 
     reviewSubmissions: function() {
@@ -176,6 +184,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     uploadAnswers: function() {
       console.log('uploading Answers');
+      this.set('isUploadingAnswer', true);
       let answers = this.get('answers');
       const that = this;
       let subs;
@@ -234,13 +243,20 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             };
             return sub;
           });
+          let folderSetName;
+          let folderSet = this.get('selectedFolderSet');
+          if (folderSet) {
+            folderSetName = folderSet.get('name');
+          } else {
+            folderSetName = '';
+          }
 
           let postData = {
             "subs": JSON.stringify(subs),
             "doCreateWorkspace": JSON.stringify(this.get('doCreateWorkspace')),
             "isPrivate": JSON.stringify(this.get('isPrivate')),
             "requestedName": JSON.stringify(this.get('requestedName')),
-            "folderSet": JSON.stringify(this.get('selectedFolderSet.name'))
+            "folderSet": JSON.stringify(folderSetName)
           };
           console.log('subs', subs);
            Ember.$.post({

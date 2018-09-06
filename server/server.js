@@ -198,6 +198,10 @@ server.get('/api/organizations/:id', path.validateId(), api.get.organization);
 server.get('/api/assignments', api.get.assignments);
 server.get('/api/assignments/:id', path.validateId(), api.get.assignment);
 
+server.get('/api/images', api.get.images);
+server.get('/api/images/:id', path.validateId(), api.get.image);
+
+
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);

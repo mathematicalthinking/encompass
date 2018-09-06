@@ -81,6 +81,32 @@ module.exports = function (grunt) {
         },
         src: ['test/selenium/**/*.js']
       },
+      travis: {
+        options: {
+            reporter: 'spec',
+            //captureFile: 'results.txt',
+            quiet: false,
+            clearRequireCache: false,
+            clearCacheFilter: (key) => true,
+            noFail: false
+          },
+          src: ['test/selenium/fixtures/*.js',
+                'test/selenium/base.js',
+                'test/selenium/comments.js',
+                'test/selenium/confirm_email.js',
+                'test/selenium/folders.js',
+                'test/selenium/forgot_password.js',
+                'test/selenium/helpers.js',
+                'test/selenium/problems.js',
+                'test/selenium/reset_password.js',
+                'test/selenium/responses.js',
+                'test/selenium/sections.js',
+                'test/selenium/selectors.js',
+                'test/selenium/signup.js',
+                'test/selenium/workspaces_new.js',
+                'test/selenium/worksapces.js',
+              ]
+      },
       api: {
         options: {
           reporter: 'spec',
@@ -536,6 +562,7 @@ module.exports = function (grunt) {
   grunt.registerTask('MochaTests', ['endToEndTests', 'apiTests']);
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
+  grunt.registerTask('travis', ['mochaTest:travis', 'apiTests']);
   grunt.registerTask('apiTests', ['mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
 
@@ -554,10 +581,13 @@ module.exports = function (grunt) {
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
   grunt.registerTask('resetSeedDb', ['shell:restoreSeedDb']);
 
+
+
   // Tasks for creating test server, running all tests, or running indiviudal tests
   grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build-test', 'nodemon:dev']);
   grunt.registerTask('serve-seed', ['env:seed', 'resetSeedDb', 'build-test', 'nodemon:dev']);
   grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
+  grunt.registerTask('travisTests', ['env:test', 'build-test', 'travis']);
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
   // grunt.registerTask('bump', ['bump']);

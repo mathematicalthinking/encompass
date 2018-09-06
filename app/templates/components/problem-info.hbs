@@ -36,9 +36,9 @@
             </li>
             <li>
               <label for="imagedata">Problem Image:</label>
-              {{#if problem.imageData}}
+              {{#if problem.image}}
                   <a {{action 'toggleImageSize'}} >
-                    <img src="{{problem.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
+                    <img src="{{problem.image.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
                   </a>
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
                   {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
@@ -82,14 +82,14 @@
             <label for="createDate">Creation Date</label>
             <p class="problem-info">{{format-date problem.createDate 'MMM Do YYYY'}}</p>
           </li>
+          {{#if problem.image}}
           <li>
-          {{#if problem.imageData}}
             <label for="imagedata">Problem Image:</label>
               <a {{action 'toggleImageSize'}}>
-                <img src="{{problem.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
+                <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
               </a>
-          {{/if}}
           </li>
+          {{/if}}
         </ol>
       </fieldset>
     </section>

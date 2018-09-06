@@ -42,9 +42,7 @@ const getAnswers = async function(req, res, next) {
   // array of oids
   if (req.query.ids) {
     ids = req.query.ids;
-    console.log('querying answers with a bunch of ids', ids);
     criteria = await access.get.answers(user, ids);
-    console.log('criteria for getting answers is', criteria);
   } else if (req.query.problem) {
     criteria = req.query;
     const requestedAnswers = await models.Answer.find(criteria).exec();
@@ -106,21 +104,6 @@ const getAnswer = (req, res, next) => {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const answer = new models.Answer(req.body.answer);
-  const uploadedFileId = answer.uploadedFileId;
-  console.log('uploadedFileId', uploadedFileId);
-  // use uploadedFileId to get image data and set on record
-  try {
-    if (uploadedFileId) {
-      console.log('uploadedFileId', uploadedFileId);
-      const image = await models.Image.findById(uploadedFileId);
-      console.log('image', image);
-      //answer.imageSrc = `<img src="${image.data}" alt="${imageAlt}">`
-      answer.imageData = image.data;
-    }
-  }catch(err) {
-    logger.error(err);
-    return utils.sendError.InternalError(err, res);
-  }
 
   answer.createDate = Date.now();
   answer.save((err, doc) => {

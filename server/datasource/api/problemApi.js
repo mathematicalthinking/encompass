@@ -120,26 +120,7 @@ const postProblem = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
-  const imageId = problem.imageId;
-  console.log('imageId', imageId);
-  // use imageId to get image data and set on record
 
-  // if (user.isStudent) {
-  //   console.log('student tried to create a problem');
-  // }
-
-  try {
-    if (imageId) {
-      console.log('imageId', imageId);
-      const image = await models.Image.findById(imageId);
-      console.log('image', image);
-      //problem.imageSrc = `<img src="${image.data}" alt="${imageAlt}">`
-      problem.imageData = image.data;
-    }
-  } catch(err) {
-    logger.error(err);
-    return utils.sendError.InternalError(err, res);
-  }
   problem.createdBy = user;
   problem.createDate = Date.now();
   problem.save((err, doc) => {

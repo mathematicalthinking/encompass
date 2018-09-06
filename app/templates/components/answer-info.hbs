@@ -15,9 +15,9 @@
     </div>
   </section>
 
-  {{#if answer.imageData}}
+  {{#if answer.additionalImage}}
   <div class="assignmentImage">
-    <img src="{{{answer.imageData}}}" alt={{{format-date answer.createDate 'MMMM Do YYYY'}}} />
+    <img src="{{{answer.additionalImage.imageData}}}" alt={{{format-date answer.createDate 'MMMM Do YYYY'}}} />
   </div>
   {{/if}}
 </section>

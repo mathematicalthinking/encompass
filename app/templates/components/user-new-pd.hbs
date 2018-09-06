@@ -44,7 +44,7 @@
     <tr>
       <td>Account Type <span class="required-star">*</span></td>
       <td>
-        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes action=(action (mut selectedType))}}
+        {{my-select selectedValue=selectedType prompt="Select Account Type" content=accountTypes cannotBeNull=true action=(action (mut selectedType))}}
       </td>
     </tr>
     <tr>

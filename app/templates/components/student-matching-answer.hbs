@@ -1,6 +1,6 @@
 <div class="student-matching-answer">
   <div class="answer-img">
-    {{{answer.explanation}}}
+    <img src="{{{answer.explanationImage.imageData}}}" alt="">
   </div>
 
   {{my-select assignedAnswer=answer content=selectedSection.students optionLabelPath="username" prompt="Please assign the correct student" action=(action "updateAnswer") }}
