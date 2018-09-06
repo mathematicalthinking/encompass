@@ -80,6 +80,19 @@ const getImage = (req, res, next) => {
   * @throws {RestError} Something? went wrong
   */
 
+
+const readFilePromise = function(file) {
+  return new Promise((resolve, reject) => {
+    if (!file)
+      return reject(new Error('failure extreme failure'));
+    fs.readFile(file, (err, data) => {
+        if (err)
+          return reject(err);
+        return resolve(data);
+    });
+  });
+};
+
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   if (!user) {
@@ -111,21 +124,24 @@ const postImages = async function(req, res, next) {
           let files = results.map((result) => {
             return result.path;
           })
-          let buffers = files.map((file) => {
+          return Promise.all(files.map((file) => {
             let f = {
               createdBy: user,
               createDate: Date.now()
             }
-            let newImage = new models.Image(f);
-            let bitmap = fs.readFileSync(file);
-            let buffer = new Buffer(bitmap).toString('base64');
+            return readFilePromise(file).then((data) => {
+              let newImage = new models.Image(f);
+              let buffer = new Buffer(data).toString('base64');
+              let format = `data:image/png;base64,`;
+              let imgData = `${format}${buffer}`;
 
-             let format = `data:image/png;base64,`;
-             let imgData = `${format}${buffer}`;
-             newImage.imageData = imgData;
-             return newImage;
-          });
-          return buffers;
+                newImage.imageData = imgData;
+                return newImage;
+            })
+            .catch((err) => {
+              console.log('error converting', err);
+            });
+          }));
         })
         .catch((err) => {
           console.error(`Pdf conversion error: ${err}`);
