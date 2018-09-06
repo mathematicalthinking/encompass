@@ -25,8 +25,9 @@ var AnswerSchema = new Schema({
   // explanationImage: { type: ObjectId, ref: 'Image' },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
-  uploadedFileId: { type: String },
-  imageData: { type: String }, // Remove this is we only save imageId
+  additionalImage: { type: ObjectId, ref: 'Image' },
+  // uploadedFileId: { type: String },
+  // imageData: { type: String }, // Remove this is we only save imageId
   priorAnswer: { type: ObjectId, ref: 'Answer' },
   isSubmitted: { type: Boolean, default: true }
 }, { versionKey: false });

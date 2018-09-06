@@ -7,17 +7,18 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   explanation: DS.attr('string'),
   section: DS.belongsTo('section'),
   isSubmitted: DS.attr('boolean'),
-  students: DS.hasMany('users', {inverse: null}),
-  uploadedFileId: DS.attr('string'),
+  students: DS.hasMany('users', { inverse: null }),
+  // uploadedFileId: DS.attr('string'),
   priorAnswer: DS.belongsTo('answer'),
-  assignment: DS.belongsTo('assignment', {async: true}),
-  imageData: DS.attr('string'),
-  isPdf: function() {
-    var imageData = this.get('imageData');
-    if (imageData) {
-      var ix = imageData.indexOf('base64');
-      var str = imageData.slice(0, ix);
-      return str.includes('pdf');
-    }
-  }.property('imageData'),
+  assignment: DS.belongsTo('assignment', { async: true }),
+  additionalImage: DS.belongsTo('image', { inverse: null }),
+  // imageData: DS.attr('string'),
+  // isPdf: function() {
+  //   var imageData = this.get('imageData');
+  //   if (imageData) {
+  //     var ix = imageData.indexOf('base64');
+  //     var str = imageData.slice(0, ix);
+  //     return str.includes('pdf');
+  //   }
+  // }.property('imageData'),
 });
