@@ -16,18 +16,14 @@ var AnswerSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  //student: { type: ObjectId, ref: 'User' },
-  // studentName: { type: String },
   problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: { type: ObjectId, ref: 'Assignment' },
   answer: { type: String },
   explanation: { type: String }, //Change to text if we can save image ObjectId
-  // explanationImage: { type: ObjectId, ref: 'Image' },
+  explanationImage: { type: ObjectId, ref: 'Image' },
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
   additionalImage: { type: ObjectId, ref: 'Image' },
-  // uploadedFileId: { type: String },
-  // imageData: { type: String }, // Remove this is we only save imageId
   priorAnswer: { type: ObjectId, ref: 'Answer' },
   isSubmitted: { type: Boolean, default: true }
 }, { versionKey: false });
