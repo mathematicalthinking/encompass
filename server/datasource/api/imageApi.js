@@ -8,7 +8,6 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
-const path = require('path');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -131,7 +130,7 @@ const postImages = async function(req, res, next) {
 
              let format = `data:image/png;base64,`;
              let imgData = `${format}${buffer}`;
-             newImage.data = imgData;
+             newImage.imageData = imgData;
              return newImage;
           });
           return buffers;
@@ -152,7 +151,7 @@ const postImages = async function(req, res, next) {
 
       img.createdBy = user;
       img.createDate = Date.now();
-      img.data = imgData;
+      img.imageData = imgData;
       //img.isPdf = isPDF; deprecated
       return Promise.resolve(img);
     }
