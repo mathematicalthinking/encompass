@@ -20,17 +20,9 @@
          <li>
               <label for="uploadedFile">Uploaded File:</label>
               {{#if imageData}}
-                {{#if isPdf}}
-                  <div id="pdf-view">
-                    <object data="{{imageData}}" type="application/pdf" height="100%" width="100%">
-                      <embed src="{{imageData}}" type="application/pdf">
-                    </object>
-                  </div>
-                {{else}}
-                  <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
-                    <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
-                  </a>
-                {{/if}}
+                <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
+                  <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
+                </a>
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
                   <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
               {{else}}

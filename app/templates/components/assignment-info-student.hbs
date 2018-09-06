@@ -15,19 +15,10 @@
       <label>Problem Statement:</label>
       <p>{{assignment.problem.text}}</p>
       {{#if assignment.problem.imageData}}
-
-        {{#if problem.isPdf}}
-          <div class="assignmentPdf">
-            <object data="{{assignment.problem.imageData}}" type="application/pdf">
-            <embed src="{{assignment.problem.imageData}}" type="application/pdf" height="100%" width="100%">
-            </object>
+        <div class="assignmentImage">
+          <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
         </div>
-        {{else}}
-          <div class="assignmentImage">
-            <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
-          </div>
-        {{/if}}
-    {{/if}}
+      {{/if}}
     </div>
   </section>
 
