@@ -28,14 +28,17 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   };
 
   if (ids) {
+    //filter.$or.push({_id: { $in: ids }});
     filter._id = {$in : ids};
   }
 
   if (usernames) {
+    //filter.$or.push({username: { $in: usernames }});
     filter.username = { $in: usernames }
   }
 
   if (regex) {
+    //filter.$or.push({username: regex});
     filter.username = regex;
   }
 
@@ -44,13 +47,16 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   if (actingRole === 'student' || accountType === 'S') {
    const users = await utils.getStudentUsers(user);
 
-  if (ids) {
-    const intersection = _.intersection(ids, users);
-    filter._id = {$in: intersection};
-  } else {
-    filter._id = { $in: users };
-  }
-    return filter;
+  // if (ids) {
+  //   const intersection = _.intersection(ids, users);
+  //   filter._id = {$in: intersection};
+  // } else {
+  //   filter._id = { $in: users };
+  // }
+  filter.$or = [];
+  filter.$or.push({ _id: {$in: users } });
+
+  return filter;
   }
 
   // will only reach here if admins/pdadmins are in actingRole teacher
@@ -61,6 +67,8 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
   const usersFromWs = await utils.getUsersFromWorkspaces(accessibleWorkspaceIds);
+  filter.$or = [];
+  filter.$or.push({ _id: {$in: usersFromWs } });
 
     let intersection;
     let union;
@@ -71,31 +79,36 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
     // can access all users who they created
     const users = await utils.getPdAdminUsers(user);
     // get unique user list from workspace users and users from org
-    union = _.union(users, usersFromWs);
+    // union = _.union(users, usersFromWs);
 
-   if (ids) {
-    // user_id needs to be in both the query ids and the union list
-    intersection = _.intersection(ids, union);
-    filter._id = {$in: intersection};
-   } else {
-    filter._id = {$in: union}
-   }
-    return filter;
+  //  if (ids) {
+  //   // user_id needs to be in both the query ids and the union list
+  //   intersection = _.intersection(ids, union);
+  //   filter._id = {$in: intersection};
+  //  } else {
+  //   filter._id = {$in: union}
+  //  }
+  filter.$or = [];
+  filter.$or.push({ _id: {$in: users } });
+
+  return filter;
   }
 
   if (accountType === 'T') {
     // only answers from either a teacher's assignments or from a section where they are in the teachers array
 
     const users = await utils.getTeacherUsers(user);
+    filter.$or = [];
+    filter.$or.push({ _id: {$in: users } });
 
-    union = _.union(users, usersFromWs);
+    // union = _.union(users, usersFromWs);
 
-    if (ids) {
-    intersection = _.intersection(ids, union);
-    filter._id = {$in: intersection};
-     } else {
-      filter._id = {$in: union}
-     }
+    // if (ids) {
+    // intersection = _.intersection(ids, union);
+    // filter._id = {$in: intersection};
+    //  } else {
+    //   filter._id = {$in: union}
+    //  }
     return filter;
   }
   }catch(err) {
@@ -115,27 +128,27 @@ const canGetUser = async function(user, id, username) {
 
   if (id) {
     requestedUser = await models.User.findById(id).lean().exec();
-
   } else {
     requestedUser = await models.User.findOne({username: username}).lean().exec();
   }
 
-  if (!requestedUser) {
+  if (!requestedUser || !requestedUser._id) {
     return {
       doesExist: false,
       hasPermission: null
     };
   }
-
   if (id) {
     criteria = await accessibleUsersQuery(user, [id], null);
+    console.log('crit', JSON.stringify(criteria));
   } else {
     criteria = await accessibleUsersQuery(user, null, [username]);
   }
-
   accessibleUserIds = await utils.getModelIds('User', criteria);
+  accessibleUserIds = accessibleUserIds.map(obj => obj.toString());
 
-  if (_.isEqual(requestedUser._id, accessibleUserIds[0])) {
+  console.log('accessibleUserIds', accessibleUserIds);
+  if (_.contains(accessibleUserIds, requestedUser._id.toString())) {
     return({
       doesExist: true,
       hasPermission: true,
