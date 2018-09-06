@@ -5,22 +5,13 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   text: DS.attr('string'),
   imageUrl: DS.attr('string'),
   sourceUrl: DS.attr('string'),
-  imageData: DS.attr('string'),
-  imageId: DS.attr('string'),
+  image: DS.belongsTo('image', { inverse: null} ),
   origin: DS.belongsTo('problem', { inverse: null }),
   modifiedBy: DS.belongsTo('user', { inverse: null }),
   organization: DS.belongsTo('organization', { inverse: null }),
   additionalInfo: DS.attr('string'),
   privacySetting: DS.attr('string'),
   // isPublic: DS.attr('boolean'),
-  isPdf: function() {
-    var imageData = this.get('imageData');
-    if (imageData) {
-      var ix = imageData.indexOf('base64');
-      var str = imageData.slice(0, ix);
-      return str.includes('pdf');
-    }
-  }.property('imageData'),
 // categories: DS.hasMany('category', {
 //     async: true
   // }),
