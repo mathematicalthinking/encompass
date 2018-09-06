@@ -98,8 +98,6 @@ const postImages = async function(req, res, next) {
     let img = new models.Image(f);
 
     if (isPDF) {
-      console.log('inside isPdf for post Images');
-
       let converter = new PDF2Pic({
         density: 200, // output pixels per inch
         savename: img.name, // output file name
@@ -107,12 +105,6 @@ const postImages = async function(req, res, next) {
         format: "png", // output file format
         size: 1000 // output size in pixels
       })
-
-      // function convertBase64(file) {
-      //   let bitmap = fs.readFileSync(file);
-      //   return new Buffer(bitmap).toString('base64');
-      // }
-
       let file = img.path;
       return converter.convertBulk(file)
         .then(results => {
