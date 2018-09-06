@@ -33,8 +33,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var privacySetting = that.get('privacySetting');
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
-
-    //var imageUrl = null;
+    //var imageUrl = ;
 
     if (!this.get('approvedProblem')) {
       this.set('noLegalNotice', true);
@@ -72,16 +71,17 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           createdBy: createdBy
         }).then(function (res) {
           that.set('uploadResults', res.images);
-          // currently allowing multiple images to be uploaded but only saving
-          // the first image url as the image in the problem doc
-          createProblemData.set('imageId', res.images[0]._id);
-          createProblemData.save()
-            .then((problem) => {
-              that.sendAction('toProblemInfo', problem);
-            })
-            .catch((err) => {
-              that.set('createProblemError', err);
-            });
+          that.store.findRecord('image', res.images[0]._id).then((image) => {
+            createProblemData.set('image', image);
+            createProblemData.set('imageData', res.images[0].data);
+            createProblemData.save()
+              .then((problem) => {
+                that.sendAction('toProblemInfo', problem);
+              })
+              .catch((err) => {
+                that.set('createProblemError', err);
+              });
+          });
         }).catch(function (err) {
           that.set('uploadError', err);
         });
@@ -94,16 +94,17 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           createdBy: createdBy
         }).then(function (res) {
           that.set('uploadResults', res.images);
-          // currently allowing multiple images to be uploaded but only saving
-          // the first image url as the image in the problem doc
-          createProblemData.set('imageId', res.images[0]._id);
-          createProblemData.save()
-            .then((problem) => {
-              that.sendAction('toProblemInfo', problem);
-            })
-            .catch((err) => {
-              that.set('createProblemError', err);
-            });
+          that.store.findRecord('image', res.images[0]._id).then((image) => {
+            createProblemData.set('image', image);
+            createProblemData.save()
+              .then((problem) => {
+                console.log('problem', problem);
+                that.sendAction('toProblemInfo', problem);
+              })
+              .catch((err) => {
+                that.set('createProblemError', err);
+              });
+          });
         }).catch(function (err) {
           that.set('uploadError', err);
         });
@@ -127,17 +128,14 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   actions: {
     radioSelect: function (value) {
       this.set('privacySetting', value);
-      console.log('privacy setting now is ', this.get('privacySetting'));
     },
 
     validate: function() {
       var that = this;
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
-        console.log('res', res);
         if (res.isValid) {
           // proceed with problem creation
-          console.log('Form is Valid!');
           this.createProblem();
         } else {
           if (res.invalidInputs) {
