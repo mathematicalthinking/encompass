@@ -144,7 +144,6 @@ const postImages = async function(req, res, next) {
       img.createdBy = user;
       img.createDate = Date.now();
       img.imageData = imgData;
-      //img.isPdf = isPDF; deprecated
       return Promise.resolve(img);
     }
 

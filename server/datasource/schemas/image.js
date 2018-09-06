@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
   * @description Images are uploaded and saved in public/image_uploads using multer
   */
 var ImageSchema = new Schema({
-  // Currently only using encoding, mimetype, data, isPdf
+  // Currently only using encoding, mimetype, data
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
   createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
