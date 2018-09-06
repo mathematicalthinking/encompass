@@ -73,7 +73,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           that.set('uploadResults', res.images);
           that.store.findRecord('image', res.images[0]._id).then((image) => {
             createProblemData.set('image', image);
-            createProblemData.set('imageData', res.images[0].data);
             createProblemData.save()
               .then((problem) => {
                 that.sendAction('toProblemInfo', problem);
