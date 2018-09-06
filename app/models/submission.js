@@ -20,7 +20,6 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   comments: DS.hasMany('comment', { async: true }),
   workspaces: DS.hasMany('workspace', { async: true }),
   responses: DS.hasMany('response', { async: true }),
-  isPdf: DS.attr('boolean'),
 
   folders: function () {
     var folders = [];
