@@ -1010,12 +1010,10 @@ async function postWorkspaceEnc(req, res, next) {
     console.log('pruned', pruned);
 
     const accessibleCriteria = await answerAccess.get.answers(user);
-    console.log('accessible criteria is', accessibleCriteria);
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
 
-    console.log('wsCriteria is', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
     console.log('answers are', answers.length);
 
@@ -1025,7 +1023,6 @@ async function postWorkspaceEnc(req, res, next) {
       rec.isEmptyAnswerSet = true;
       let enc = new models.EncWorkspaceRequest(rec);
       let saved = await enc.save();
-      console.log('inside the if is empty for postENC');
 
       const data = { encWorkspaceRequest: saved };
         return utils.sendResponse(res, data);
@@ -1076,7 +1073,6 @@ const saved = await encRequest.save();
 
 const data = { encWorkspaceRequest: saved };
 
-console.log('data is from workspace ENC', data);
 return utils.sendResponse(res,  data);
 
   } catch(err) {
