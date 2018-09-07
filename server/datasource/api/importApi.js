@@ -98,7 +98,9 @@ let workspace = new models.Workspace({
 });
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);
-const data = {'workspaceId': ws._id};
+const data = { 'workspaceId': ws._id,
+               'submissionId': ws.submissions[0]
+             };
 return utils.sendResponse(res, data);
 
 }catch(err) {
