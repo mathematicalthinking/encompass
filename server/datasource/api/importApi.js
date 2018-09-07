@@ -98,6 +98,7 @@ let workspace = new models.Workspace({
 });
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);
+//sending back workspace and submissionID for redirect
 const data = { 'workspaceId': ws._id,
                'submissionId': ws.submissions[0]
              };
