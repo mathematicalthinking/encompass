@@ -268,11 +268,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             // if workspace created
             if (res.workspaceId) {
               that.set('createdWorkspace', res);
-            // should we redirect to workspaces list or workspace page?
-            console.log('sending Action');
-            that.sendAction('toWorkspaces');
+              that.sendAction('toWorkspaces', res);
             }
-
           })
           .catch((err) => {
             that.set('uploadError', err);
