@@ -1,6 +1,5 @@
 Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'workspace-new-enc',
-
   selectedPdSetId: null,
   selectedFolderSet: null,
   selectedAssignment: null,
@@ -9,6 +8,13 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   selectedOwner: null,
   teacher: null,
   mode: 'private',
+  userList: null,
+
+
+  init: function() {
+    this._super(...arguments);
+    this.set('userList', this.model.users);
+  },
 
   didReceiveAttrs: function() {
     const currentUser = this.get('currentUser');
@@ -27,10 +33,30 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       return [currentUser];
     }
 
-    const teachers = this.model.users.rejectBy('accountType', 'S');
+    const teachers = this.userList.rejectBy('accountType', 'S');
 
     if (accountType === 'P') {
-      return teachers.filterBy('organization', currentUser.organization);
+      let yourUsers = this.userList;
+      let yourUserList = [];
+
+      yourUsers.forEach((user) => {
+        let yourOrg = currentUser.get('organization').get('id');
+        let userType = user.get('accountType');
+        let userOrg = user.get('organization').get('id');
+        let isAuth = user.get('isAuthorized');
+
+        if (yourOrg === userOrg && userType !== 'S' && isAuth) {
+          yourUserList.push(user);
+        }
+      });
+      return yourUserList;
+
+      //This needs to be fixed because i dont think its getting the users!
+
+      // let teacher = orgUsers.filterBy('organization', currentUser.get('organization'));
+      // console.log('orgUsers', orgUsers);
+      // console.log('teachers', teacher);
+      // return orgUsers;
     }
     if (accountType === 'A') {
       return teachers;
