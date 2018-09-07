@@ -1025,8 +1025,9 @@ async function postWorkspaceEnc(req, res, next) {
       rec.isEmptyAnswerSet = true;
       let enc = new models.EncWorkspaceRequest(rec);
       let saved = await enc.save();
+      console.log('inside the if is empty for postENC');
 
-      const data = {encWorkspaceRequest: saved };
+      const data = { encWorkspaceRequest: saved };
         return utils.sendResponse(res, data);
       }
 
@@ -1070,9 +1071,13 @@ let rec = pruned;
 rec.createdWorkspace = ws._id;
 const encRequest = new models.EncWorkspaceRequest(rec);
 const saved = await encRequest.save();
+// saved.workspaceId = ws._id;
+// saved.submissionId = ws.submissions[0];
 
-const data = {encWorkspaceRequest: saved };
-return utils.sendResponse(res,  data );
+const data = { encWorkspaceRequest: saved };
+
+console.log('data is from workspace ENC', data);
+return utils.sendResponse(res,  data);
 
   } catch(err) {
     return utils.sendError.InternalError(err, res);

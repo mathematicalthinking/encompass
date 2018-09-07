@@ -63,7 +63,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   isAnswerCriteriaValid: function() {
     const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
     for (let param of params) {
-      console.log(param);
       if (this.get(param)) {
         return true;
       }
@@ -87,11 +86,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
 
   actions: {
-    // radioSelect: function( value ){
-    //   console.log("Radio select: " + value );
-    //   this.set('importMode', value );
-    // },
-
     radioSelect: function (value) {
       this.set('mode', value);
     },
@@ -129,7 +123,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
       const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);
       encWorkspaceRequest.save().then((res) => {
-        console.log('res ws', res);
         if (res.get('isEmptyAnswerSet')) {
           this.set('isEmptyAnswerSet', true);
           return;
@@ -138,11 +131,15 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
           this.set('createWorkspaceError', res.get('createWorkspaceError'));
           return;
         }
+        let workspaceId = res.get('createdWorkspace').get('id');
+        console.log('workspaceId', workspaceId);
+        this.store.findRecord('workspace', workspaceId).then((workspace) => {
+          let submission = workspace.get('submissions').get('firstObject');
+          let submissionId = submission.get('id');
+          console.log('submissionid is', submissionId);
+          this.sendAction('toWorkspaces', workspaceId, submissionId);
+        });
 
-        // currently redirecting to workspaces list if successful
-        // should we try to redirect to the individual workspace page?
-        this.sendAction('toWorkspaces');
-        //this.sendAction('toWorkspace', res.id);
       })
       .catch((err) => {
         this.set('createWorkspaceError', err);
@@ -151,5 +148,4 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
     },
   }
 });
-
 

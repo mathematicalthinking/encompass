@@ -15,9 +15,12 @@ Encompass.WorkspacesNewRoute = Ember.Route.extend({
     // willTransition: function() {
     //   this.send('reload');
     // }
-    toWorkspaces: function() {
+    toWorkspaces: function (workspaceId, submissionId) {
       console.log('in toWorkspaces wsroute');
-      this.transitionTo('workspaces');
+      console.log('workspace is', workspaceId);
+      console.log('workspace is', submissionId);
+      // this.transitionTo('workspaces');
+      window.location.href = `#/workspaces/${workspaceId}/submissions/${submissionId}`;
     },
 
     toWorkspace: function(id) {
