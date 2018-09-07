@@ -106,7 +106,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       const mode = this.get('mode');
       const owner = this.get('selectedOwner');
 
-      console.log(startDate, endDate);
       const criteria = {
         teacher: this.get('selectedTeacher'),
         createdBy: this.get('currentUser'),
@@ -131,12 +130,12 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
           this.set('createWorkspaceError', res.get('createWorkspaceError'));
           return;
         }
+        //Get the created workspaceId from the res
         let workspaceId = res.get('createdWorkspace').get('id');
-        console.log('workspaceId', workspaceId);
+        //Then find the first SubmissionID, this is sent to route in order to redirect
         this.store.findRecord('workspace', workspaceId).then((workspace) => {
           let submission = workspace.get('submissions').get('firstObject');
           let submissionId = submission.get('id');
-          console.log('submissionid is', submissionId);
           this.sendAction('toWorkspaces', workspaceId, submissionId);
         });
 
