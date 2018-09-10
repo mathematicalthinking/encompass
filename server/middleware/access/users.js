@@ -23,9 +23,22 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
     const accountType = user.accountType;
     const actingRole = user.actingRole;
 
-  let filter = {
-    isTrashed: false
-  };
+    let filter;
+
+    if (user.createdBy) {
+      filter = {
+        isTrashed: false,
+        $or: [
+          { _id: user.createdBy }
+        ]
+      };
+    } else {
+      filter = {
+        isTrashed: false,
+      };
+    }
+
+
 
   if (ids) {
     //filter.$or.push({_id: { $in: ids }});
@@ -45,6 +58,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   // students can only retrieve their own user record or
   // students from a section // or teachers?
   if (actingRole === 'student' || accountType === 'S') {
+
    const users = await utils.getStudentUsers(user);
 
   // if (ids) {
@@ -53,7 +67,9 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   // } else {
   //   filter._id = { $in: users };
   // }
-  filter.$or = [];
+  if (!filter.$or) {
+    filter.$or = [];
+  }
   filter.$or.push({ _id: {$in: users } });
 
   return filter;
@@ -67,7 +83,11 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
   const usersFromWs = await utils.getUsersFromWorkspaces(accessibleWorkspaceIds);
-  filter.$or = [];
+
+  if (!filter.$or) {
+    filter.$or = [];
+  }
+
   filter.$or.push({ _id: {$in: usersFromWs } });
 
     let intersection;
@@ -88,7 +108,6 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   //  } else {
   //   filter._id = {$in: union}
   //  }
-  filter.$or = [];
   filter.$or.push({ _id: {$in: users } });
 
   return filter;
@@ -98,7 +117,6 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
     // only answers from either a teacher's assignments or from a section where they are in the teachers array
 
     const users = await utils.getTeacherUsers(user);
-    filter.$or = [];
     filter.$or.push({ _id: {$in: users } });
 
     // union = _.union(users, usersFromWs);
