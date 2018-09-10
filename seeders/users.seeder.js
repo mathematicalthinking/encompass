@@ -184,6 +184,8 @@ var data = [{
     "isTrashed": false,
     "isEmailConfirmed": true,
     "createDate": "2018-08-17T10:20:51.382Z",
+    "actingRole": "teacher",
+    "createdBy": "5b245841ac75842be3189526"
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
@@ -233,6 +235,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72273c5b50ea3fe3d01a0b"
   },
   {
     "_id": "5b72278b5b50ea3fe3d01a34",
@@ -248,6 +251,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72278b5b50ea3fe3d01a34"
   },
   {
     "_id": "5b72e05ba459749f7d9c1709",
@@ -264,6 +268,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72e05ba459749f7d9c1709"
   },
   {
     "_id": "5b72e6465b50ea3fe3d1623c",
@@ -280,6 +285,7 @@ var data = [{
     "createDate": "2018-08-14T18:20:51.382Z",
     "isAuthorized": true,
     "isTrashed": false,
+    "createdBy": "5b72e6465b50ea3fe3d1623c"
   },
   {
     "_id": "5b7321ee59a672806ec903d5",
@@ -312,7 +318,8 @@ var data = [{
     "isTrashed": false,
     "createDate": "2018-08-14T18:20:51.382Z",
     "lastSeen": "2018-08-16T20:19:26.457Z",
-    "actingRole": "teacher"
+    "actingRole": "teacher",
+    "createdBy": "5b7321ee59a672806ec903d5"
   },
   {
     "_id" : "5b913ebe3add43b868ae9807",
@@ -482,8 +489,6 @@ var data = [{
 },
 {
   "_id" : "5b9149552ecaf7c30dd4748e",
-  "confirmEmailExpires" : "2018-09-07T15:35:49.970Z",
-  "confirmEmailToken" : "a6c5506af49b5d17775740e99aa82c9e2a32a7ec",
   "name" : "Summer Smith",
   "email" : "ssmith@fakeemail.com",
   "organization" : "5b4e4d5f808c7eebc9f9e82c",
@@ -509,10 +514,10 @@ var data = [{
   "createDate" : "2018-09-06T15:30:21.278Z",
   "lastSeen" : "2018-09-06T15:41:14.918Z",
   "authorizedBy" : null,
-  "createdBy" : null,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
   "lastModifiedBy" : "5b245760ac75842be3189525",
-  "organizationRequest" : null,
-  "seenTour" : null
+  "seenTour" : null,
+  "actingRole": "teacher"
 }
 ];
 
