@@ -31,8 +31,9 @@
       <ul class="listing waiting-auth">
         {{#if unauthUsers}}
           {{#each unauthUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <span class="tooltiptext">Email: {{user.email}}</span>
           </li>
           {{/each}}
         {{else}}
@@ -43,8 +44,9 @@
       <h2>Administrators</h2>
       <ul class="listing admin-users">
         {{#each adminUsers as |user|}}
-        <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+        <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
           {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+          <span class="tooltiptext">Email: {{user.email}}</span>
         </li>
         {{/each}}
       </ul>
@@ -53,8 +55,9 @@
       <ul class="listing pd-users">
         {{#if pdUsers}}
           {{#each pdUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <span class="tooltiptext">Email: {{user.email}}</span>
           </li>
           {{/each}}
         {{else}}
@@ -66,8 +69,9 @@
       <ul class="listing teacher-users">
         {{#if teacherUsers}}
           {{#each teacherUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <span class="tooltiptext">Email: {{user.email}}</span>
           </li>
           {{/each}}
         {{else}}
@@ -79,8 +83,9 @@
       <ul class="listing student-users">
         {{#if studentUsers}}
           {{#each studentUsers as |user|}}
-          <li class="{{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
+            <span class="tooltiptext">Name: {{user.name}}</span>
           </li>
           {{/each}}
         {{else}}
