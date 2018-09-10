@@ -186,17 +186,25 @@ function putWorkspace(req, res, next) {
     if(!permissions.userCanModifyWorkspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
+      if (err) {
+        console.log('error is', err);
+      }
     } else {
       models.Workspace.findById(req.params.id).exec(function(err, ws){
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
         ws.name    = req.body.workspace.name;
         ws.lastModifiedDate = new Date();
+        ws.lastModifiedBy = user;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
           console.log('can trash!');
           ws.isTrashed = req.body.workspace.isTrashed;
+        }
+
+        if (err) {
+          console.log('error', err);
         }
 
         ws.save(function(err, workspace) {

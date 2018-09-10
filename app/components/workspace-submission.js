@@ -8,6 +8,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   makingSelection: true,
   showingSelections: false,
   isTransitioning: false,
+  isDirty: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     var making = this.get('makingSelection');
@@ -20,22 +21,38 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('makingSelection');
   }),
 
- init: function() {
-   this._super(...arguments);
- },
+
+
+  init: function() {
+    this._super(...arguments);
+  },
 
   didRender: function() {
-    console.log('rendering ws-sub');
     if(this.get('switching')) {
       this.set('switching', false);
     }
+  },
 
- },
+  willDestroyElement: function() {
+    let workspace = this.get('currentWorkspace');
+
+    if (this.get('isDirty')) {
+      workspace.save();
+    }
+
+
+    //Need a way to get the current worksapce?
+    // Do this on the backend?
+    // if (this.get('isDirty')) {
+    //   let workspace = this.get('workspace');
+    //   workspace.save();
+    // }
+    this._super(...arguments);
+  },
 
   /* Next: get selections to show up */
 
   workspaceSelections: function() {
-    console.log('curr sub',this.currentSubmission);
     var selections = this.currentSubmission.get('selections');
     var comp = this;
     var selectionsInWorkspace = null;
@@ -71,11 +88,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   actions: {
     addSelection: function( selection ){
       console.log("workspace-submission sending action up to controller...");
+      this.set('isDirty', true);
       this.sendAction( 'addSelection', selection );
     },
 
     deleteSelection: function( selection ){
       console.log("workspace-submission sending DELETE action up to controller...");
+      this.set('isDirty', true);
       this.sendAction( 'deleteSelection', selection );
     },
 
