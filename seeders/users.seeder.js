@@ -296,6 +296,22 @@ var data = [{
     "isTrashed": false,
     "createDate": "2018-08-14T18:20:51.382Z",
     "lastSeen": "2018-08-16T20:19:26.457Z"
+  },
+  {
+    "_id": "52964653e4bad7087700014b",
+    "name": "testfix",
+    "email": "testfix@test.com",
+    "organization": "5b4a64a028e4b75919c28512",
+    "location": "Philadelphia, PA",
+    "username": "testfix",
+    "password": "$2a$12$nQafJwfxx19P2vyBhDLXUeDFNdZU81t1eosZEvs.plyCP1HNSZFtW",
+    "isAuthorized": true,
+    "accountType": "T",
+    "isEmailConfirmed": true,
+    "lastModifiedDate": "2018-08-14T18:20:51.382Z",
+    "isTrashed": false,
+    "createDate": "2018-08-14T18:20:51.382Z",
+    "lastSeen": "2018-08-16T20:19:26.457Z"
   }
 ];
 
