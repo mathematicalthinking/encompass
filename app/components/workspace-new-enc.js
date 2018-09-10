@@ -33,10 +33,10 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       return [currentUser];
     }
 
-    const teachers = this.userList.rejectBy('accountType', 'S');
+    const users = this.get('userList').rejectBy('accountType', 'S');
 
     if (accountType === 'P') {
-      let yourUsers = this.userList;
+      let yourUsers = this.get('userList');
       let yourUserList = [];
 
       yourUsers.forEach((user) => {
@@ -45,21 +45,14 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         let userOrg = user.get('organization').get('id');
         let isAuth = user.get('isAuthorized');
 
-        if (yourOrg === userOrg && userType !== 'S' && isAuth) {
+        if (yourOrg === userOrg && userType === 'T' && isAuth) {
           yourUserList.push(user);
         }
       });
       return yourUserList;
-
-      //This needs to be fixed because i dont think its getting the users!
-
-      // let teacher = orgUsers.filterBy('organization', currentUser.get('organization'));
-      // console.log('orgUsers', orgUsers);
-      // console.log('teachers', teacher);
-      // return orgUsers;
     }
     if (accountType === 'A') {
-      return teachers;
+      return users.filterBy('isAuthorized', true);
     }
   },
 
