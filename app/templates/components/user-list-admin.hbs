@@ -71,7 +71,6 @@
           {{#each teacherUsers as |user|}}
           <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
               <span class="tooltiptext">Email: {{user.email}}</span>
           </li>
           {{/each}}
