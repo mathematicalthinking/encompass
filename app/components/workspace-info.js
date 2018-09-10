@@ -4,7 +4,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   isEditing: false,
   selectedMode: null,
   searchText: "",
-  isDirty: false,
 
   setSearchResults: function () {
     var searchText = this.get('searchText');
@@ -58,7 +57,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
       this.set('isEditing', false);
-      this.set('isDirty', true);
       var mode = this.get('selectedMode');
       console.log('selected mode is', mode);
       var workspace = this.get('workspace');
