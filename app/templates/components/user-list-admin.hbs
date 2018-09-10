@@ -71,7 +71,8 @@
           {{#each teacherUsers as |user|}}
           <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-            <span class="tooltiptext">Email: {{user.email}}</span>
+              {{#if user.name}}
+              <span class="tooltiptext">Email: {{user.email}}</span>
           </li>
           {{/each}}
         {{else}}
@@ -85,7 +86,9 @@
           {{#each studentUsers as |user|}}
           <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-            <span class="tooltiptext">Name: {{user.name}}</span>
+              {{#if user.name}}
+              <span class="tooltiptext">Name: {{user.name}}</span>
+              {{/if}}
           </li>
           {{/each}}
         {{else}}

@@ -3,14 +3,14 @@
 @import "responsive-font-size";
 
 /* Tooltip text */
-.tooltip .tooltiptext {
+.tooltiptext {
   visibility: hidden;
-  width: 120px;
+  overflow: hidden;
   background-color: lighten($background-color, 5%);
   color: $primary-font-color;
-  text-align: center;
   padding: 5px 10px;
   border-radius: 3px;
+  font-weight: $main-font-weight;
 
   /* Position the tooltip text - see examples below! */
   position: relative;
