@@ -35,16 +35,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
+    workspace.save();
 
-    if (this.get('isDirty')) {
-      workspace.save();
-    }
-
-
-    //Need a way to get the current worksapce?
-    // Do this on the backend?
     // if (this.get('isDirty')) {
-    //   let workspace = this.get('workspace');
     //   workspace.save();
     // }
     this._super(...arguments);
