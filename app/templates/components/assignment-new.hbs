@@ -10,12 +10,12 @@
         <ol>
           <li>
             <label for="section">Section <span class="required-star">*</span></label>
-            {{my-select selectedValue=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
+            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
           </li>
           <li>
             <label for="text">Problem <span class="required-star">*</span></label>
-            {{my-select isRequired=true selectedValue=selectedProblem prompt="Select a problem." content=problemList optionLabelPath="title" action=(action (mut selectedProblem))}}
+            {{my-select isRequired=true cannotBeNull=fromProblemInfo selectedValue=selectedProblem prompt="Select a problem." content=problemList optionLabelPath="title" action=(action (mut selectedProblem))}}
             {{input required=true type="hidden" value=selectedProblem}}
           </li>
           <li>
