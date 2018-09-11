@@ -5,7 +5,7 @@
 /* Tooltip text */
 .tooltiptext {
   display: none;
-  overflow: hidden;
+  // visibility: hidden;
   background-color: lighten($background-color, 5%);
   color: $primary-font-color;
   padding: 5px 10px;
@@ -16,9 +16,12 @@
   position: relative;
   left: 20px;
   z-index: 1;
+  // transition: 0s visibility;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   display: inline;
+  // visibility: visible;
+  // transition-delay: .5s;
 }
