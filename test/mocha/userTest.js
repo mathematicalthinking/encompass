@@ -17,7 +17,7 @@ chai.use(chaiHttp);
 describe('User CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
-  function runTests(user) {
+  async function runTests(user) {
     describe(`User CRUD operations as accountType: ${user.accountType}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
@@ -43,13 +43,6 @@ describe('User CRUD operations by account type', async function() {
             expect(res).to.have.status(200);
             expect(res.body).to.have.all.keys('user');
             expect(res.body.user).to.be.a('array');
-
-            const users = res.body.user;
-            // const orgUsers = users.filter(user => user.organization === organization);
-
-            // // checking that all users returned are from teachers org
-            // expect(users.length).to.eql(orgUsers.length);
-
             expect(res.body.user.length).to.eql(accessibleUserCount);
             done();
           });
@@ -58,7 +51,7 @@ describe('User CRUD operations by account type', async function() {
       if (user.accountType !== 'A') {
         /** GET **/
         describe('/GET unaccessible user by username', () => {
-          it('should return 403 error', done => {
+          it('should return an empty array', done => {
             agent
             .get(baseUrl)
             .query(`username=${unaccessibleUser.username}`)
@@ -108,7 +101,7 @@ describe('User CRUD operations by account type', async function() {
       }
 
         describe('/GET accessible user by username', () => {
-          it('should return user with the username "rick"', done => {
+          it(`should return user with the username "${accessibleUser.username}"`, done => {
             agent
             .get(baseUrl)
             .query(`username=${accessibleUser.username}`)
@@ -139,8 +132,8 @@ describe('User CRUD operations by account type', async function() {
           });
         });
 
-        xdescribe('/GET createdBy from an accessible user', () => {
-          it('should return the user "rick"', done => {
+        describe('/GET createdBy from an accessible user', () => {
+          it(`should return the user "${accessibleUser.creatorUsername}"`, done => {
             const url = baseUrl + accessibleUser.createdBy;
             agent
             .get(url)
@@ -148,14 +141,14 @@ describe('User CRUD operations by account type', async function() {
               expect(res).to.have.status(200);
               expect(res.body).to.have.all.keys('user');
               expect(res.body.user).to.be.a('object');
-              expect(res.body.user.username).to.eql('rick');
+              expect(res.body.user.username).to.eql(accessibleUser.creatorUsername);
               done();
             });
           });
         });
 
         describe('/PUT update user name', () => {
-          it('should change steves name from null to test name', done => {
+          it(`should change ${modifiableUser.username}'s name from null to test name`, done => {
             const url = baseUrl + modifiableUser._id;
             agent
             .put(url)
