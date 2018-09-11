@@ -12,7 +12,9 @@ const pdAdminDrexel = {
   accessibleUser: {
     _id: '5b913eaf3add43b868ae9806',
     username: 'sam3',
-    accountType: 'S'
+    accountType: 'S',
+    createdBy: '5b245841ac75842be3189526',
+    creatorUsername: 'morty'
   },
 
   modifiableUser: {
@@ -39,7 +41,8 @@ const teacherMT = {
     username: 'teachertaylor',
     organization: '5b4e4d5f808c7eebc9f9e82c',
     accountType: 'T',
-    createdBy: '5b245760ac75842be3189525'
+    createdBy: '5b245760ac75842be3189525',
+    creatorUsername: 'rick'
 
   },
 
@@ -61,7 +64,8 @@ const admin = {
     username: 'teachertaylor',
     organization: '5b4e4d5f808c7eebc9f9e82c',
     accountType: 'T',
-    createdBy: '5b245760ac75842be3189525'
+    createdBy: '5b245760ac75842be3189525',
+    creatorUsername: 'rick'
   },
   modifiableUser: {
     _id: '5b914a102ecaf7c30dd47492',
@@ -82,7 +86,8 @@ const studentMT = {
     username: 'teachertaylor',
     organization: '5b4e4d5f808c7eebc9f9e82c',
     accountType: 'T',
-    createdBy: '5b245760ac75842be3189525'
+    createdBy: '5b245760ac75842be3189525',
+    creatorUsername: 'rick'
   },
   unaccessibleUser: {
     _id: '5b913ebe3add43b868ae9807',

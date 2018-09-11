@@ -172,6 +172,7 @@ var data = [{
     "sections": [],
     "isTrashed": false,
     "isEmailConfirmed": true,
+    "actingRole": "teacher"
   }, {
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
