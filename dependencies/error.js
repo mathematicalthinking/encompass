@@ -24,12 +24,11 @@ function errorHandler(error) {
 
   if (Array.isArray(errorMsg)) {
     errorMsg.forEach((err) => {
-      window.alert(err);
+      window.alert(JSON.stringify(err));
     });
   } else {
-    window.alert(errorMsg);
+    window.alert(JSON.stringify(errorMsg));
   }
-
 };
 
 if(Ember) {
