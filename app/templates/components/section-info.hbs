@@ -59,7 +59,12 @@
             <label for="teachers">Teachers</label>
              {{#each section.teachers as |teacher| }}
               <ol class="b">
-                {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
+                {{#if currentUser.isStudent}}
+                  {{teacher.username}}
+                {{else}}
+                  {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
+                {{/if}}
+
                 {{#unless cantEdit}}
                 <button class="trash-button" {{action 'removeTeacher' teacher}}>
                   <i class="fa fa-trash" aria-hidden="true"></i>
@@ -90,7 +95,12 @@
             <li class="studentslist">
             <label for="students">Students</label>
             {{#each section.students as |student|}}
-            <ol class="b"> {{#link-to 'user' student}} {{student.username}} {{/link-to}}
+            <ol class="b">
+              {{#if currentUser.isStudent}}
+                {{student.username}}
+              {{else}}
+                {{#link-to 'user' student}} {{student.username}} {{/link-to}}
+              {{/if}}
              {{#unless cantEdit}}
              {{#link-to 'user' student}} <i class="fas fa-pencil-alt"></i> {{/link-to}}
              <button class="trash-button" {{action 'removeStudent' student}}><i class="fa fa-trash" aria-hidden="true"></i></button>
