@@ -32,9 +32,25 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 async function getComments(req, res, next) {
-
   var user = userAuth.requireUser(req);
-  var criteria = await access.get.comments(user);
+  var criteria;
+
+  var ids = req.query.ids;
+  try {
+    if (ids) {
+      criteria = await access.get.comments(user, ids);
+    } else {
+      criteria = await access.get.comments(user, null);
+    }
+  }catch(err) {
+    console.error('error getComments', err);
+    console.trace();
+  }
+
+
+
+
+  console.log('req.query getComments', req.query);
 
   var textSearch = req.query.text;
 
@@ -56,8 +72,11 @@ async function getComments(req, res, next) {
   }
 
   var workspaces = req.query.workspaces;
+  console.log('workspaces query', workspaces);
+
+
   if(workspaces) {
-    criteria.$and.push({workspace: {$in: req.query.workspaces} });
+    criteria.workspace = {$in: req.query.workspaces};
   }
 
   //see comment on ENC-488 this isn't gonna work (need JOIN/multiple queries or denormalization)
