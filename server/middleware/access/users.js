@@ -156,6 +156,8 @@ const canGetUser = async function(user, id, username) {
       hasPermission: null
     };
   }
+
+
   if (id) {
     criteria = await accessibleUsersQuery(user, [id], null);
     console.log('crit', JSON.stringify(criteria));
@@ -163,10 +165,27 @@ const canGetUser = async function(user, id, username) {
     criteria = await accessibleUsersQuery(user, null, [username]);
   }
   accessibleUserIds = await utils.getModelIds('User', criteria);
-  accessibleUserIds = accessibleUserIds.map(obj => obj.toString());
+
+  if (!_.isEmpty(accessibleUserIds)) {
+    accessibleUserIds = accessibleUserIds.map(obj => obj.toString());
+  }
+  let isAccessibleCreator;
+  let creators = [];
+
+  if (id && _.isEmpty(accessibleUserIds)) {
+    // check if requested user is creator
+    let crit = await accessibleUsersQuery(user);
+
+    creators = await utils.getCreatorIds(crit);
+    isAccessibleCreator = _.contains(creators, id);
+  }
+
+
+  let hasPermission = _.contains(accessibleUserIds, requestedUser._id.toString()) || isAccessibleCreator;
 
   console.log('accessibleUserIds', accessibleUserIds);
-  if (_.contains(accessibleUserIds, requestedUser._id.toString())) {
+  console.log('hasPermission', hasPermission);
+  if (hasPermission) {
     return({
       doesExist: true,
       hasPermission: true,
