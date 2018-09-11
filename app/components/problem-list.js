@@ -11,7 +11,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var yourProblems = problems.filterBy('createdBy.content', currentUser);
     this.set('yourProblemList', yourProblems);
     return yourProblems.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed'),
+  }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
 
   // This displays only the problems beloging to the current user's organizaton
   orgProblems: function () {
@@ -23,7 +23,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return content.id !== currentUser.id;
     });
     return yourOrg.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed'),
+  }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
 
   // This sorts all the problems that are visible to everyone
   publicProblems: function () {
@@ -35,7 +35,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return content.id !== currentUser.id;
     });
     return yourPublic.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed'),
+  }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
 
 });
 
