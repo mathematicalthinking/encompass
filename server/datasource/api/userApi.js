@@ -152,6 +152,9 @@ async function sendUser(req, res, next) {
       delete data.user.key; //hide key
       delete data.user.history; // hide history
       // delete data.user.password;
+      if (user.accountType === 'S') {
+        delete data.user.createdBy;
+      }
 
       return utils.sendResponse(res, data);
     }
