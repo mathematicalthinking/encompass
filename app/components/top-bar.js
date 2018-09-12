@@ -44,6 +44,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
       }
       currentUser.save().then(() => {
         this.set('actionToConfirm', null);
+        this.store.unloadAll('assignment');
         this.sendAction('toHome');
       });
     }
