@@ -15,6 +15,7 @@
   "nonew": true,
   "undef": true,
   "browser": true,
+  "node": true,
   "globals": {
     "$": true,
     "_": true,
