@@ -163,7 +163,7 @@ function protect(options) {
 
 
     if (notAuthenticated) {
-      return utils.sendResponse(res, {"error": 'not auth'});
+      return utils.sendResponse(res, {"error": 'You are not Authenticated'});
     }
 
     if (notAuthorized) {

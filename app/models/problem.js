@@ -12,12 +12,5 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   additionalInfo: DS.attr('string'),
   privacySetting: DS.attr('string'),
   // isPublic: DS.attr('boolean'),
-// categories: DS.hasMany('category', {
-//     async: true
-  // }),
+  categories: DS.hasMany('category', { async: true }),
 });
-
-/*
-  Categories is commented out because the backend model is currently
-  expecting an array of category ids which we do not have yet
-*/

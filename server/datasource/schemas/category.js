@@ -11,13 +11,16 @@ var mongoose = require('mongoose'),
   */
 var CategorySchema = new Schema({
   //== Shared properties (Because Mongoose doesn't support schema inheritance)
-  createdBy: { type: ObjectId, ref: 'User', required: true },
+  createdBy: { type: ObjectId, ref: 'User' },
   createDate: { type: Date, 'default': Date.now() },
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String, required: true }
+  identifier: { type: String, required: true },
+  description: { type: String },
+  url: { type: String },
+
 }, { versionKey: false });
 
 /**
