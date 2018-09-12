@@ -186,16 +186,25 @@ function putWorkspace(req, res, next) {
     if(!permissions.userCanModifyWorkspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
+      if (err) {
+        console.log('error is', err);
+      }
     } else {
       models.Workspace.findById(req.params.id).exec(function(err, ws){
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
         ws.name    = req.body.workspace.name;
+        ws.lastModifiedDate = new Date();
+        ws.lastModifiedBy = user;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
           console.log('can trash!');
           ws.isTrashed = req.body.workspace.isTrashed;
+        }
+
+        if (err) {
+          console.log('error', err);
         }
 
         ws.save(function(err, workspace) {
@@ -1010,12 +1019,10 @@ async function postWorkspaceEnc(req, res, next) {
     console.log('pruned', pruned);
 
     const accessibleCriteria = await answerAccess.get.answers(user);
-    console.log('accessible criteria is', accessibleCriteria);
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
 
-    console.log('wsCriteria is', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
     console.log('answers are', answers.length);
 
@@ -1026,7 +1033,7 @@ async function postWorkspaceEnc(req, res, next) {
       let enc = new models.EncWorkspaceRequest(rec);
       let saved = await enc.save();
 
-      const data = {encWorkspaceRequest: saved };
+      const data = { encWorkspaceRequest: saved };
         return utils.sendResponse(res, data);
       }
 
@@ -1070,9 +1077,12 @@ let rec = pruned;
 rec.createdWorkspace = ws._id;
 const encRequest = new models.EncWorkspaceRequest(rec);
 const saved = await encRequest.save();
+// saved.workspaceId = ws._id;
+// saved.submissionId = ws.submissions[0];
 
-const data = {encWorkspaceRequest: saved };
-return utils.sendResponse(res,  data );
+const data = { encWorkspaceRequest: saved };
+
+return utils.sendResponse(res,  data);
 
   } catch(err) {
     return utils.sendError.InternalError(err, res);

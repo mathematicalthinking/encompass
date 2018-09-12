@@ -5,8 +5,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedMode: null,
   searchText: "",
 
-
-  searchResults: function () {
+  setSearchResults: function () {
     var searchText = this.get('searchText');
     console.log('search text is', searchText);
     searchText = searchText.replace(/\W+/g, "");
@@ -14,11 +13,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       return;
     }
 
-    let people = this.get('store').query('user', {
+    this.get('store').query('user', {
       username: searchText,
+    }).then((people) => {
+      this.set('editorSearchResults', people.rejectBy('accountType', 'S'));
     });
-    return people;
-  }.property('searchText'),
+  }.observes('searchText'),
+
 
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');
@@ -55,12 +56,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
+      this.set('isEditing', false);
       var mode = this.get('selectedMode');
       console.log('selected mode is', mode);
       var workspace = this.get('workspace');
       workspace.set('mode', mode);
       workspace.save();
-      this.set('isEditing', false);
+
     }
   }
 

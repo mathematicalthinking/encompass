@@ -148,9 +148,6 @@ const postImages = async function(req, res, next) {
           console.trace();
           return utils.sendError.InternalError(err, res);
         });
-
-
-
     } else {
       let str = data.toString('base64');
       let alt = '';

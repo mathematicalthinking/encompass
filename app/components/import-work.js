@@ -177,13 +177,11 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     reviewSubmissions: function() {
-      console.log('reviewing submissions');
       this.set('isMatchingStudents', false);
       this.set('isReviewingSubmissions', true);
     },
 
     uploadAnswers: function() {
-      console.log('uploading Answers');
       this.set('isUploadingAnswer', true);
       let answers = this.get('answers');
       const that = this;
@@ -232,7 +230,6 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
 
             teacher.id = primaryTeacher.get('userId');
-            console.log('ans.id', ans.id);
             let sub = {
               // longAnswer: ans.get('explanation'),
               answer: ans.id,
@@ -258,7 +255,6 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             "requestedName": JSON.stringify(this.get('requestedName')),
             "folderSet": JSON.stringify(folderSetName)
           };
-          console.log('subs', subs);
            Ember.$.post({
             url: 'api/import',
             data: postData
@@ -268,11 +264,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             // if workspace created
             if (res.workspaceId) {
               that.set('createdWorkspace', res);
-            // should we redirect to workspaces list or workspace page?
-            console.log('sending Action');
-            that.sendAction('toWorkspaces');
+              that.sendAction('toWorkspaces', res);
             }
-
           })
           .catch((err) => {
             that.set('uploadError', err);

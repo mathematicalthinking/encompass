@@ -71,7 +71,7 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
       hi = tmp;
     }
     if(lo && hi){
-      loFmt = moment(lo).zone('us').format('l'); 
+      loFmt = moment(lo).zone('us').format('l');
       hiFmt = moment(hi).zone('us').format('l');
       if(loFmt === hiFmt) {
         return loFmt;

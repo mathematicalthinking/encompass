@@ -95,7 +95,7 @@
       <label>Add Editor</label>
       {{input type="text" value=searchText placeholder="Search..." classNames="editor search"}}
       <ul>
-        {{#each searchResults as |result|}}
+        {{#each editorSearchResults as |result|}}
         <li>
           <button class="addEditor" {{action 'addEditor' result}}>{{result.username}}</button>
         </li>

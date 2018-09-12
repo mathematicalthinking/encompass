@@ -10,9 +10,8 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
   },
 
   actions: {
-    toWorkspaces: function() {
-      console.log('in toWorkspaces');
-      this.transitionTo('workspaces');
+    toWorkspaces: function(workspace) {
+      window.location.href = `#/workspaces/${workspace.workspaceId}/submissions/${workspace.submissionId}`;
     }
   },
 
@@ -20,3 +19,5 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
     this.render('import/import');
   },
 });
+
+

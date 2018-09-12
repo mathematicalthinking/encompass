@@ -12,12 +12,9 @@ Encompass.WorkspacesNewRoute = Ember.Route.extend({
   },
 
   actions: {
-    // willTransition: function() {
-    //   this.send('reload');
-    // }
-    toWorkspaces: function() {
-      console.log('in toWorkspaces wsroute');
-      this.transitionTo('workspaces');
+    // Created workspaceId and the firstSubmission are passed from component to redirect
+    toWorkspaces: function (workspaceId, submissionId) {
+      window.location.href = `#/workspaces/${workspaceId}/submissions/${submissionId}`;
     },
 
     toWorkspace: function(id) {
