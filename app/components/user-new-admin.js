@@ -15,10 +15,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   newUserData: {},
   actingRole: null,
 
-  incorrectEmail: false,
-  incorrectUsername: false,
-  incorrectPassword: false,
-
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
       if (!data) {
@@ -75,6 +71,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var accountTypeLetter = accountType.charAt(0).toUpperCase();
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
+
 
       if (!username || !password || !organization || !accountType) {
         this.set('errorMessage', true);
@@ -153,15 +150,63 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         });
     },
 
-    checkUsername: function (keysPressed) {
-      var errorMsg = 'Please enter usernames in lower case only';
-      var caseSensitive = /[A-Z]/;
-      var username = this.get('newUserUsername');
+    usernameValidate() {
+      var username = this.get('username');
+      if (username) {
+        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernameTest = usernamePattern.test(username);
 
-      if (caseSensitive.test(username)) {
-        window.alert(errorMsg);
-        this.set('newUserUsername', keysPressed.toLowerCase());
+        if (usernameTest === false) {
+          this.set('incorrectUsername', true);
+          return;
+        }
+
+        if (usernameTest === true) {
+          this.set('incorrectUsername', false);
+          this.set('missingCredentials', false);
+          return;
+        }
       }
+    },
+
+    emailValidate: function () {
+      var email = this.get('email');
+      if (!email) {
+        return false;
+      }
+      var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
+      var emailTest = emailPattern.test(email);
+
+      if (emailTest === false) {
+        this.set('incorrectEmail', true);
+        return false;
+      }
+
+      if (emailTest === true) {
+        this.set('incorrectEmail', false);
+        return true;
+      }
+    },
+
+    passwordValidate: function () {
+      var password = this.get('password');
+
+      function hasWhiteSpace(string) {
+        return /\s/g.test(string);
+      }
+
+      if (password.length < 3) {
+        this.set('invalidPassword', true);
+      } else {
+        this.set('invalidPassword', false);
+      }
+
+      if (hasWhiteSpace(password)) {
+        this.set('noSpacesError', true);
+      } else {
+        this.set('noSpacesError', false);
+      }
+
     },
 
     cancelNew: function () {
