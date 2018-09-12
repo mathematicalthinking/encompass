@@ -1443,16 +1443,613 @@ var grade5 = [
   },
 ];
 
-// var grade6 = [];
+var grade6 = [
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.5d',
+    description: 'Relating the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/5/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.5c',
+    description: 'Giving quantitative measures of center (median and/or mean) and variability (interquartile range and/or mean absolute deviation), as well as describing any overall pattern and any striking deviations from the overall pattern with reference to the context in which the data were gathered.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/5/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.5b',
+    description: 'Describing the nature of the attribute under investigation, including how it was measured and its units of measurement.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/5/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.5a',
+    description: 'Reporting the number of observations.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/5/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.5',
+    description: 'Summarize numerical data sets in relation to their context, such as by:',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B.4',
+    description: 'Display numerical data in plots on a number line, including dot plots, histograms, and box plots.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.B',
+    description: 'Summarize and describe distributions.',
+    url: 'http://corestandards.org/Math/Content/6/SP/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.A.3',
+    description: 'Recognize that a measure of center for a numerical data set summarizes all of its values with a single number, while a measure of variation describes how its values vary with a single number.',
+    url: 'http://corestandards.org/Math/Content/6/SP/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.A.2',
+    description: 'Understand that a set of data collected to answer a statistical question has a distribution which can be described by its center, spread, and overall shape.',
+    url: 'http://corestandards.org/Math/Content/6/SP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.A.1',
+    description: 'Recognize a statistical question as one that anticipates variability in the data related to the question and accounts for it in the answers.',
+    url: 'http://corestandards.org/Math/Content/6/SP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP.A',
+    description: 'Develop understanding of statistical variability.',
+    url: 'http://corestandards.org/Math/Content/6/SP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.SP',
+    description: 'Statistics and Probability',
+    url: 'http://corestandards.org/Math/Content/6/SP'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.C.9',
+    description: 'Use variables to represent two quantities in a real-world problem that change in relationship to one another; write an equation to express one quantity, thought of as the dependent variable, in terms of the other quantity, thought of as the independent variable. Analyze the relationship between the dependent and independent variables using graphs and tables, and relate these to the equation.',
+    url: 'http://corestandards.org/Math/Content/6/EE/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.C',
+    description: 'Represent and analyze quantitative relationships between dependent and independent variables.',
+    url: 'http://corestandards.org/Math/Content/6/EE/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.B.8',
+    description: 'Write an inequality of the form x > c or x < c to represent a constraint or condition in a real-world or mathematical problem. Recognize that inequalities of the form x > c or x < c have infinitely many solutions; represent solutions of such inequalities on number line diagrams.',
+    url: 'http://corestandards.org/Math/Content/6/EE/B/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.B.7',
+    description: 'Solve real-world and mathematical problems by writing and solving equations of the form x + p = q and px = q for cases in which p, q and x are all nonnegative rational numbers.',
+    url: 'http://corestandards.org/Math/Content/6/EE/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.B.6',
+    description: 'Use variables to represent numbers and write expressions when solving a real-world or mathematical problem; understand that a variable can represent an unknown number, or, depending on the purpose at hand, any number in a specified set.',
+    url: 'http://corestandards.org/Math/Content/6/EE/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.B.5',
+    description: 'Understand solving an equation or inequality as a process of answering a question: which values from a specified set, if any, make the equation or inequality true? Use substitution to determine whether a given number in a specified set makes an equation or inequality true.',
+    url: 'http://corestandards.org/Math/Content/6/EE/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.B',
+    description: 'Reason about and solve one-variable equations and inequalities.',
+    url: 'http://corestandards.org/Math/Content/6/EE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.4',
+    description: 'Identify when two expressions are equivalent (i.e., when the two expressions name the same number regardless of which value is substituted into them).',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.3',
+    description: 'Apply the properties of operations to generate equivalent expressions.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.2c',
+    description: 'Evaluate expressions at specific values of their variables. Include expressions that arise from formulas used in real-world problems. Perform arithmetic operations, including those involving whole-number exponents, in the conventional order when there are no parentheses to specify a particular order (Order of Operations).',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/2/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.2b',
+    description: 'Identify parts of an expression using mathematical terms (sum, term, product, factor, quotient, coefficient); view one or more parts of an expression as a single entity.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/2/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.2a',
+    description: 'Write expressions that record operations with numbers and with letters standing for numbers.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/2/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.2',
+    description: 'Write, read, and evaluate expressions in which letters stand for numbers.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A.1',
+    description: 'Write and evaluate numerical expressions involving whole-number exponents.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE.A',
+    description: 'Apply and extend previous understandings of arithmetic to algebraic expressions.',
+    url: 'http://corestandards.org/Math/Content/6/EE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.EE',
+    description: 'Expressions and Equations',
+    url: 'http://corestandards.org/Math/Content/6/EE'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.8',
+    description: 'Solve real-world and mathematical problems by graphing points in all four quadrants of the coordinate plane. Include use of coordinates and absolute value to find distances between points with the same first coordinate or the same second coordinate.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.7d',
+    description: 'Distinguish comparisons of absolute value from statements about order.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/7/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.7c',
+    description: 'Understand the absolute value of a rational number as its distance from 0 on the number line; interpret absolute value as magnitude for a positive or negative quantity in a real-world situation.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/7/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.7b',
+    description: 'Write, interpret, and explain statements of order for rational numbers in real-world contexts.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/7/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.7a',
+    description: 'Interpret statements of inequality as statements about the relative position of two numbers on a number line diagram.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/7/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.7',
+    description: 'Understand ordering and absolute value of rational numbers.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.6c',
+    description: 'Find and position integers and other rational numbers on a horizontal or vertical number line diagram; find and position pairs of integers and other rational numbers on a coordinate plane.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/6/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.6b',
+    description: 'Understand signs of numbers in ordered pairs as indicating locations in quadrants of the coordinate plane; recognize that when two ordered pairs differ only by signs, the locations of the points are related by reflections across one or both axes.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/6/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.6a',
+    description: 'Recognize opposite signs of numbers as indicating locations on opposite sides of 0 on the number line; recognize that the opposite of the opposite of a number is the number itself, e.g., -(-3) = 3, and that 0 is its own opposite.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/6/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.6',
+    description: 'Understand a rational number as a point on the number line. Extend number line diagrams and coordinate axes familiar from previous grades to represent points on the line and in the plane with negative number coordinates.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C.5',
+    description: 'Understand that positive and negative numbers are used together to describe quantities having opposite directions or values (e.g., temperature above/below zero, elevation above/below sea level, credits/debits, positive/negative electric charge); use positive and negative numbers to represent quantities in real-world contexts, explaining the meaning of 0 in each situation.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.C',
+    description: 'Apply and extend previous understandings of numbers to the system of rational numbers.',
+    url: 'http://corestandards.org/Math/Content/6/NS/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.B.4',
+    description: 'Find the greatest common factor of two whole numbers less than or equal to 100 and the least common multiple of two whole numbers less than or equal to 12. Use the distributive property to express a sum of two whole numbers 1—100 with a common factor as a multiple of a sum of two whole numbers with no common factor.',
+    url: 'http://corestandards.org/Math/Content/6/NS/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.B.3',
+    description: 'Fluently add, subtract, multiply, and divide multi-digit decimals using the standard algorithm for each operation.',
+    url: 'http://corestandards.org/Math/Content/6/NS/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.B.2',
+    description: 'Fluently divide multi-digit numbers using the standard algorithm.',
+    url: 'http://corestandards.org/Math/Content/6/NS/B/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.B',
+    description: 'Compute fluently with multi-digit numbers and find common factors and multiples.',
+    url: 'http://corestandards.org/Math/Content/6/NS/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.A.1',
+    description: 'Interpret and compute quotients of fractions, and solve word problems involving division of fractions by fractions, e.g., by using visual fraction models and equations to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/6/NS/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS.A',
+    description: 'Apply and extend previous understandings of multiplication and division to divide fractions by fractions.',
+    url: 'http://corestandards.org/Math/Content/6/NS/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.NS',
+    description: 'The Number System',
+    url: 'http://corestandards.org/Math/Content/6/NS/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.3d',
+    description: 'Use ratio reasoning to convert measurement units; manipulate and transform units appropriately when multiplying or dividing quantities.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/3/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.3c',
+    description: 'Find a percent of a quantity as a rate per 100 (e.g., 30% of a quantity means 30/100 times the quantity); solve problems involving finding the whole, given a part and the percent.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/3/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.3b',
+    description: 'Solve unit rate problems including those involving unit pricing and constant speed.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/3/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.3a',
+    description: 'Make tables of equivalent ratios relating quantities with whole number measurements, find missing values in the tables, and plot the pairs of values on the coordinate plane. Use tables to compare ratios.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/3/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.3',
+    description: 'Use ratio and rate reasoning to solve real-world and mathematical problems, e.g., by reasoning about tables of equivalent ratios, tape diagrams, double number line diagrams, or equations.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.2',
+    description: 'Understand the concept of a unit rate a/b associated with a ratio a:b with b ≠ 0, and use rate language in the context of a ratio relationship.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A.1',
+    description: 'Understand the concept of a ratio and use ratio language to describe a ratio relationship between two quantities.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP.A',
+    description: 'Understand ratio concepts and use ratio reasoning to solve problems.',
+    url: 'http://corestandards.org/Math/Content/6/RP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.RP',
+    description: 'Ratios and Proportional Relationships',
+    url: 'http://corestandards.org/Math/Content/6/RP'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G.A.4',
+    description: 'Represent three-dimensional figures using nets made up of rectangles and triangles, and use the nets to find the surface area of these figures. Apply these techniques in the context of solving real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/6/G/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G.A.3',
+    description: 'Draw polygons in the coordinate plane given coordinates for the vertices; use coordinates to find the length of a side joining points with the same first coordinate or the same second coordinate. Apply these techniques in the context of solving real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/6/G/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G.A.2',
+    description: 'Find the volume of a right rectangular prism with fractional edge lengths by packing it with unit cubes of the appropriate unit fraction edge lengths, and show that the volume is the same as would be found by multiplying the edge lengths of the prism. Apply the formulas V = l w h and V = b h to find volumes of right rectangular prisms with fractional edge lengths in the context of solving real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/6/G/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G.A.1',
+    description: 'Find the area of right triangles, other triangles, special quadrilaterals, and polygons by composing into rectangles or decomposing into triangles and other shapes; apply these techniques in the context of solving real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/6/G/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G.A',
+    description: 'Solve real-world and mathematical problems involving area, surface area, and volume.',
+    url: 'http://corestandards.org/Math/Content/6/G/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.6.G',
+    description: 'Geometry',
+    url: 'http://corestandards.org/Math/Content/6/G'
+  },
+];
 
-// var grade7 = [];
+var grade7 = [
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.8c',
+    description: 'Design and use a simulation to generate frequencies for compound events.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/8/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.8b',
+    description: 'Represent sample spaces for compound events using methods such as organized lists, tables and tree diagrams. For an event described in everyday language (e.g., "rolling double sixes"), identify the outcomes in the sample space which compose the event.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/8/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.8a',
+    description: 'Understand that, just as with simple events, the probability of a compound event is the fraction of outcomes in the sample space for which the compound event occurs.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/8/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.8',
+    description: 'Find probabilities of compound events using organized lists, tables, tree diagrams, and simulation.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.7b',
+    description: 'Develop a probability model (which may not be uniform) by observing frequencies in data generated from a chance process.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/7/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.7a',
+    description: 'Develop a uniform probability model by assigning equal probability to all outcomes, and use the model to determine probabilities of events.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/7/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.7',
+    description: 'Develop a probability model and use it to find probabilities of events. Compare probabilities from a model to observed frequencies; if the agreement is not good, explain possible sources of the discrepancy.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.6',
+    description: 'Approximate the probability of a chance event by collecting data on the chance process that produces it and observing its long-run relative frequency, and predict the approximate relative frequency given the probability.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C.5',
+    description: 'Understand that the probability of a chance event is a number between 0 and 1 that expresses the likelihood of the event occurring. Larger numbers indicate greater likelihood. A probability near 0 indicates an unlikely event, a probability around 1/2 indicates an event that is neither unlikely nor likely, and a probability near 1 indicates a likely event.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.C',
+    description: 'Investigate chance processes and develop, use, and evaluate probability models.',
+    url: 'http://corestandards.org/Math/Content/7/SP/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.B.4',
+    description: 'Use measures of center and measures of variability for numerical data from random samples to draw informal comparative inferences about two populations.',
+    url: 'http://corestandards.org/Math/Content/7/SP/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.B.3',
+    description: 'Informally assess the degree of visual overlap of two numerical data distributions with similar variabilities, measuring the difference between the centers by expressing it as a multiple of a measure of variability.',
+    url: 'http://corestandards.org/Math/Content/7/SP/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.B',
+    description: 'Draw informal comparative inferences about two populations.',
+    url: 'http://corestandards.org/Math/Content/7/SP/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.A.2',
+    description: 'Use data from a random sample to draw inferences about a population with an unknown characteristic of interest. Generate multiple samples (or simulated samples) of the same size to gauge the variation in estimates or predictions.',
+    url: 'http://corestandards.org/Math/Content/7/SP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.A.1',
+    description: 'Understand that statistics can be used to gain information about a population by examining a sample of the population; generalizations about a population from a sample are valid only if the sample is representative of that population. Understand that random sampling tends to produce representative samples and support valid inferences.',
+    url: 'http://corestandards.org/Math/Content/7/SP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP.A',
+    description: 'Use random sampling to draw inferences about a population.',
+    url: 'http://corestandards.org/Math/Content/7/SP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.SP',
+    description: 'Statistics and Probability',
+    url: 'http://corestandards.org/Math/Content/7/SP/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.B.4b',
+    description: 'Solve word problems leading to inequalities of the form px + q > r or px + q < r, where p, q, and r are specific rational numbers. Graph the solution set of the inequality and interpret it in the context of the problem.',
+    url: 'http://corestandards.org/Math/Content/7/EE/B/4/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.B.4a',
+    description: 'Solve word problems leading to equations of the form px + q = r and p(x + q) = r, where p, q, and r are specific rational numbers. Solve equations of these forms fluently. Compare an algebraic solution to an arithmetic solution, identifying the sequence of the operations used in each approach.',
+    url: 'http://corestandards.org/Math/Content/7/EE/B/4/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.B.4',
+    description: 'Use variables to represent quantities in a real-world or mathematical problem, and construct simple equations and inequalities to solve problems by reasoning about the quantities.',
+    url: 'http://corestandards.org/Math/Content/7/EE/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.B.3',
+    description: 'Solve multi-step real-life and mathematical problems posed with positive and negative rational numbers in any form (whole numbers, fractions, and decimals), using tools strategically. Apply properties of operations to calculate with numbers in any form; convert between forms as appropriate; and assess the reasonableness of answers using mental computation and estimation strategies.',
+    url: 'http://corestandards.org/Math/Content/7/EE/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.B',
+    description: 'Solve real-life and mathematical problems using numerical and algebraic expressions and equations.',
+    url: 'http://corestandards.org/Math/Content/7/EE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.A.2',
+    description: 'Understand that rewriting an expression in different forms in a problem context can shed light on the problem and how the quantities in it are related.',
+    url: 'http://corestandards.org/Math/Content/7/EE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.A.1',
+    description: 'Apply properties of operations as strategies to add, subtract, factor, and expand linear expressions with rational coefficients.',
+    url: 'http://corestandards.org/Math/Content/7/EE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE.A',
+    description: 'Use properties of operations to generate equivalent expressions.',
+    url: 'http://corestandards.org/Math/Content/7/EE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.EE',
+    description: 'Expressions and Equations',
+    url: 'http://corestandards.org/Math/Content/7/EE/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.3',
+    description: 'Solve real-world and mathematical problems involving the four operations with rational numbers.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.2d',
+    description: 'Convert a rational number to a decimal using long division; know that the decimal form of a rational number terminates in 0s or eventually repeats.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/2/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.2c',
+    description: 'Apply properties of operations as strategies to multiply and divide rational numbers.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/2/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.2b',
+    description: 'Understand that integers can be divided, provided that the divisor is not zero, and every quotient of integers (with non-zero divisor) is a rational number. If p and q are integers, then -(p/q) = (-p)/q = p/(-q). Interpret quotients of rational numbers by describing real-world contexts.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/2/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.2a',
+    description: 'Understand that multiplication is extended from fractions to rational numbers by requiring that operations continue to satisfy the properties of operations, particularly the distributive property, leading to products such as (-1)(-1) = 1 and the rules for multiplying signed numbers. Interpret products of rational numbers by describing real-world contexts.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/2/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.2',
+    description: 'Apply and extend previous understandings of multiplication and division and of fractions to multiply and divide rational numbers.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.1d',
+    description: 'Apply properties of operations as strategies to add and subtract rational numbers.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/1/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.1c',
+    description: 'Understand subtraction of rational numbers as adding the additive inverse, p - q = p + (-q). Show that the distance between two rational numbers on the number line is the absolute value of their difference, and apply this principle in real-world contexts.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/1/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.1b',
+    description: 'Understand p + q as the number located a distance |q| from p, in the positive or negative direction depending on whether q is positive or negative. Show that a number and its opposite have a sum of 0 (are additive inverses). Interpret sums of rational numbers by describing real-world contexts.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.1a',
+    description: 'Describe situations in which opposite quantities combine to make 0.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A.1',
+    description: 'Apply and extend previous understandings of addition and subtraction to add and subtract rational numbers; represent addition and subtraction on a horizontal or vertical number line diagram.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A',
+    description: 'Apply and extend previous understandings of operations with fractions to add, subtract, multiply, and divide rational numbers.',
+    url: 'http://corestandards.org/Math/Content/7/NS/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.NS.A',
+    description: 'The Number System',
+    url: 'http://corestandards.org/Math/Content/7/NS'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.3',
+    description: 'Use proportional relationships to solve multistep ratio and percent problems.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.2d',
+    description: 'Explain what a point (x, y) on the graph of a proportional relationship means in terms of the situation, with special attention to the points (0, 0) and (1, r) where r is the unit rate.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/2/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.2c',
+    description: 'Represent proportional relationships by equations.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/2/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.2b',
+    description: 'Identify the constant of proportionality (unit rate) in tables, graphs, equations, diagrams, and verbal descriptions of proportional relationships.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/2/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.2a',
+    description: 'Decide whether two quantities are in a proportional relationship, e.g., by testing for equivalent ratios in a table or graphing on a coordinate plane and observing whether the graph is a straight line through the origin.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/2/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.2',
+    description: 'Recognize and represent proportional relationships between quantities.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A.1',
+    description: 'Compute unit rates associated with ratios of fractions, including ratios of lengths, areas and other quantities measured in like or different units.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP.A',
+    description: 'Analyze proportional relationships and use them to solve real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/7/RP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.RP',
+    description: 'Ratios and Proportional Relationships',
+    url: 'http://corestandards.org/Math/Content/7/RP/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.B.6',
+    description: 'Solve real-world and mathematical problems involving area, volume and surface area of two- and three-dimensional objects composed of triangles, quadrilaterals, polygons, cubes, and right prisms.',
+    url: 'http://corestandards.org/Math/Content/7/G/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.B.5',
+    description: 'Use facts about supplementary, complementary, vertical, and adjacent angles in a multi-step problem to write and solve simple equations for an unknown angle in a figure.',
+    url: 'http://corestandards.org/Math/Content/7/G/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.B.4',
+    description: 'Know the formulas for the area and circumference of a circle and use them to solve problems; give an informal derivation of the relationship between the circumference and area of a circle.',
+    url: 'http://corestandards.org/Math/Content/7/G/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.B',
+    description: 'Solve real-life and mathematical problems involving angle measure, area, surface area, and volume.',
+    url: 'http://corestandards.org/Math/Content/7/G/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.A.3',
+    description: 'Describe the two-dimensional figures that result from slicing three-dimensional figures, as in plane sections of right rectangular prisms and right rectangular pyramids.',
+    url: 'http://corestandards.org/Math/Content/7/G/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.A.2',
+    description: 'Draw (freehand, with ruler and protractor, and with technology) geometric shapes with given conditions. Focus on constructing triangles from three measures of angles or sides, noticing when the conditions determine a unique triangle, more than one triangle, or no triangle.',
+    url: 'http://corestandards.org/Math/Content/7/G/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.A.1',
+    description: 'Solve problems involving scale drawings of geometric figures, including computing actual lengths and areas from a scale drawing and reproducing a scale drawing at a different scale.',
+    url: 'http://corestandards.org/Math/Content/7/G/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G.A',
+    description: 'Draw, construct, and describe geometrical figures and describe the relationships between them.',
+    url: 'http://corestandards.org/Math/Content/7/G/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.7.G',
+    description: 'Geometry',
+    url: 'http://corestandards.org/Math/Content/7/G/'
+  },
+];
 
 // var grade8 = [];
 
 // var grade9 = [];
 
 
-var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, grade9);
+var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7);
 
 var CategoriesSeeder = Seeder.extend({
   shouldRun: function () {
