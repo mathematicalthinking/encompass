@@ -2303,7 +2303,1195 @@ var grade8 = [
 ];
 
 var gradeHSS = [
-
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B.7',
+    description: '(+) Analyze decisions and strategies using probability concepts (e.g., product testing, medical testing, pulling a hockey goalie at the end of a game).',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B.6',
+    description: '(+) Use probabilities to make fair decisions (e.g., drawing by lots, using a random number generator).',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B.5b',
+    description: 'Evaluate and compare strategies on the basis of expected values.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B.5a',
+    description: 'Find the expected payoff for a game of chance.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B.5',
+    description: '(+) Weigh the possible outcomes of a decision by assigning probabilities to payoff values and finding expected values.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.B',
+    description: 'Use probability to evaluate outcomes of decisions',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.A.4',
+    description: '(+) Develop a probability distribution for a random variable defined for a sample space in which probabilities are assigned empirically; find the expected value.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.A.3',
+    description: '(+) Develop a probability distribution for a random variable defined for a sample space in which theoretical probabilities can be calculated; find the expected value.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.A.2',
+    description: '(+) Calculate the expected value of a random variable; interpret it as the mean of the probability distribution.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.A.1',
+    description: '(+) Define a random variable for a quantity of interest by assigning a numerical value to each event in a sample space; graph the corresponding probability distribution using the same graphical displays as for data distributions.',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-MD.A',
+    description: 'Calculate expected values and use them to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/A'
+  },
+  {
+    identifier: 'CSS.Math.Content.HSS-MD',
+    description: 'Using Probability to Make Decisions',
+    url: 'http://corestandards.org/Math/Content/HSS/MD/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.B.9',
+    description: '(+) Use permutations and combinations to compute probabilities of compound events and solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/B/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.B.8',
+    description: '(+) Apply the general Multiplication Rule in a uniform probability model, P(A and B) = P(A)P(B|A) = P(B)P(A|B), and interpret the answer in terms of the model.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/B/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.B.7',
+    description: 'Apply the Addition Rule, P(A or B) = P(A) + P(B) - P(A and B), and interpret the answer in terms of the model.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.B.6',
+    description: 'Find the conditional probability of A given B as the fraction of B\'s outcomes that also belong to A, and interpret the answer in terms of the model.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.B',
+    description: 'Use the rules of probability to compute probabilities of compound events in a uniform probability model',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A.5',
+    description: 'Recognize and explain the concepts of conditional probability and independence in everyday language and everyday situations.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A.4',
+    description: 'Construct and interpret two-way frequency tables of data when two categories are associated with each object being classified. Use the two-way table as a sample space to decide if events are independent and to approximate conditional probabilities.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A.3',
+    description: 'Understand the conditional probability of A given B as P(A and B)/P(B), and interpret independence of A and B as saying that the conditional probability of A given B is the same as the probability of A, and the conditional probability of B given A is the same as the probability of B.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A.2',
+    description: 'Understand that two events A and B are independent if the probability of A and B occurring together is the product of their probabilities, and use this characterization to determine if they are independent.',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A.1',
+    description: 'Describe events as subsets of a sample space (the set of outcomes) using characteristics (or categories) of the outcomes, or as unions, intersections, or complements of other events ("or," "and," "not").',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP.A',
+    description: 'Understand independence and conditional probability and use them to interpret data',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-CP',
+    description: 'Conditional Probability and the Rules of Probability',
+    url: 'http://corestandards.org/Math/Content/HSS/CP/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.B.6',
+    description: 'Evaluate reports based on data.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.B.5',
+    description: 'Use data from a randomized experiment to compare two treatments; use simulations to decide if differences between parameters are significant.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.B.4',
+    description: 'Use data from a sample survey to estimate a population mean or proportion; develop a margin of error through the use of simulation models for random sampling.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.B.3',
+    description: 'Recognize the purposes of and differences among sample surveys, experiments, and observational studies; explain how randomization relates to each.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.B',
+    description: 'Make inferences and justify conclusions from sample surveys, experiments, and observational studies',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.A.2',
+    description: 'Decide if a specified model is consistent with results from a given data-generating process, e.g., using simulation.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.A.1',
+    description: 'Understand statistics as a process for making inferences about population parameters based on a random sample from that population.',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC.A',
+    description: 'Understand and evaluate random processes underlying statistical experiments',
+    url: 'http://corestandards.org/Math/Content/HSS/IC/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-IC',
+    description: 'Making Inferences and Justifying Conclusions',
+    url: 'phil add url!'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.C.9',
+    description: 'Distinguish between correlation and causation.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.C.8',
+    description: 'Compute (using technology) and interpret the correlation coefficient of a linear fit.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.C.7',
+    description: 'Interpret the slope (rate of change) and the intercept (constant term) of a linear model in the context of the data.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.C',
+    description: 'Interpret linear models',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B.6c',
+    description: 'Fit a linear function for a scatter plot that suggests a linear association.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B.6b',
+    description: 'Informally assess the fit of a function by plotting and analyzing residuals.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B.6a',
+    description: 'Fit a function to the data; use functions fitted to data to solve problems in the context of the data.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B.6',
+    description: 'Represent data on two quantitative variables on a scatter plot, and describe how the variables are related.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B.5',
+    description: 'Summarize categorical data for two categories in two-way frequency tables. Interpret relative frequencies in the context of the data (including joint, marginal, and conditional relative frequencies). Recognize possible associations and trends in the data.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.B',
+    description: 'Summarize, represent, and interpret data on two categorical and quantitative variables',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.A.4',
+    description: 'Use the mean and standard deviation of a data set to fit it to a normal distribution and to estimate population percentages. Recognize that there are data sets for which such a procedure is not appropriate. Use calculators, spreadsheets, and tables to estimate areas under the normal curve.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.A.3',
+    description: 'Interpret differences in shape, center, and spread in the context of the data sets, accounting for possible effects of extreme data points (outliers).',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.A.2',
+    description: 'Use statistics appropriate to the shape of the data distribution to compare center (median, mean) and spread (interquartile range, standard deviation) of two or more different data sets.',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.A.1',
+    description: 'Represent data with plots on the real number line (dot plots, histograms, and box plots).',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID.A',
+    description: 'Summarize, represent, and interpret data on a single count or measurement variable',
+    url: 'http://corestandards.org/Math/Content/HSS/ID/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSS-ID',
+    description: 'High School — Statistics and Probability',
+    url: 'http://corestandards.org/Math/Content/HSS/ID!'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.3',
+    description: 'Apply geometric methods to solve design problems (e.g., designing an object or structure to satisfy physical constraints or minimize cost; working with typographic grid systems based on ratios).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.2',
+    description: 'Apply concepts of density based on area and volume in modeling situations (e.g., persons per square mile, BTUs per cubic foot).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.1',
+    description: 'Use geometric shapes, their measures, and their properties to describe objects (e.g., modeling a tree trunk or a human torso as a cylinder).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A',
+    description: 'Apply geometric concepts in modeling situations',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG',
+    description: 'Modeling with Geometry',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.B.4',
+    description: 'Identify the shapes of two-dimensional cross-sections of three-dimensional objects, and identify three-dimensional objects generated by rotations of two-dimensional objects.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.B',
+    description: 'Visualize relationships between two-dimensional and three-dimensional objects',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.3',
+    description: 'Use volume formulas for cylinders, pyramids, cones, and spheres to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.2',
+    description: '(+) Give an informal argument using Cavalieri\'s principle for the formulas for the volume of a sphere and other solid figures.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.1',
+    description: 'Give an informal argument for the formulas for the circumference of a circle, area of a circle, volume of a cylinder, pyramid, and cone.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A',
+    description: 'Explain volume formulas and use them to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD',
+    description: 'Geometric Measurement and Dimension',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.7',
+    description: 'Use coordinates to compute perimeters of polygons and areas of triangles and rectangles, e.g., using the distance formula.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.6',
+    description: 'Find the point on a directed line segment between two given points that partitions the segment in a given ratio.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.5',
+    description: 'Prove the slope criteria for parallel and perpendicular lines and use them to solve geometric problems (e.g., find the equation of a line parallel or perpendicular to a given line that passes through a given point).',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.4',
+    description: 'Use coordinates to prove simple geometric theorems algebraically.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B',
+    description: 'Use coordinates to prove simple geometric theorems algebraically',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.3',
+    description: '(+) Derive the equations of ellipses and hyperbolas given the foci, using the fact that the sum or difference of distances from the foci is constant.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.2',
+    description: 'Derive the equation of a parabola given a focus and directrix.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.1',
+    description: 'Derive the equation of a circle of given center and radius using the Pythagorean Theorem; complete the square to find the center and radius of a circle given by an equation.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A',
+    description: 'Translate between the geometric description and the equation for a conic section',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE',
+    description: 'Expressing Geometric Properties with Equations',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.B.5',
+    description: 'Derive using similarity the fact that the length of the arc intercepted by an angle is proportional to the radius, and define the radian measure of the angle as the constant of proportionality; derive the formula for the area of a sector.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.B',
+    description: 'Find arc lengths and areas of sectors of circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.4',
+    description: '(+) Construct a tangent line from a point outside a given circle to the circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.3',
+    description: 'Construct the inscribed and circumscribed circles of a triangle, and prove properties of angles for a quadrilateral inscribed in a circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.2',
+    description: 'Identify and describe relationships among inscribed angles, radii, and chords.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.1',
+    description: 'Prove that all circles are similar.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A',
+    description: 'Understand and apply theorems about circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C',
+    description: 'Circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.11',
+    description: '(+) Understand and apply the Law of Sines and the Law of Cosines to find unknown measurements in right and non-right triangles (e.g., surveying problems, resultant forces).',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/11'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.10',
+    description: '(+) Prove the Laws of Sines and Cosines and use them to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/10'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.9',
+    description: '(+) Derive the formula A = 1/2 ab sin(C) for the area of a triangle by drawing an auxiliary line from a vertex perpendicular to the opposite side.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D',
+    description: 'Apply trigonometry to general triangles',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.8',
+    description: 'Use trigonometric ratios and the Pythagorean Theorem to solve right triangles in applied problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.7',
+    description: 'Explain and use the relationship between the sine and cosine of complementary angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.6',
+    description: 'Understand that by similarity, side ratios in right triangles are properties of the angles in the triangle, leading to definitions of trigonometric ratios for acute angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C',
+    description: 'Define trigonometric ratios and solve problems involving right triangles',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B.5',
+    description: 'Use congruence and similarity criteria for triangles to solve problems and to prove relationships in geometric figures.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B.4',
+    description: 'Prove theorems about triangles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B',
+    description: 'Prove theorems involving similarity',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.3',
+    description: 'Use the properties of similarity transformations to establish the AA criterion for two triangles to be similar.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.2',
+    description: 'Given two figures, use the definition of similarity in terms of similarity transformations to decide if they are similar; explain using similarity transformations the meaning of similarity for triangles as the equality of all corresponding pairs of angles and the proportionality of all corresponding pairs of sides.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1b',
+    description: 'The dilation of a line segment is longer or shorter in the ratio given by the scale factor.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1a',
+    description: 'A dilation takes a line not passing through the center of the dilation to a parallel line, and leaves a line passing through the center unchanged.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1',
+    description: 'Verify experimentally the properties of dilations given by a center and a scale factor:',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A',
+    description: 'Understand similarity in terms of similarity transformations',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT',
+    description: 'Similarity, Right Triangles, and Trigonometry',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D.13',
+    description: 'Construct an equilateral triangle, a square, and a regular hexagon inscribed in a circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D/13'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D.12',
+    description: 'Make formal geometric constructions with a variety of tools and methods (compass and straightedge, string, reflective devices, paper folding, dynamic geometric software, etc.). Copying a segment; copying an angle; bisecting a segment; bisecting an angle; constructing perpendicular lines, including the perpendicular bisector of a line segment; and constructing a line parallel to a given line through a point not on the line.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D/12'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D',
+    description: 'Make geometric constructions',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.11',
+    description: 'Prove theorems about parallelograms.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/11'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.10',
+    description: 'Prove theorems about triangles.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/10'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.9',
+    description: 'Prove theorems about lines and angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.C',
+    description: 'Prove geometric theorems',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.8',
+    description: 'Explain how the criteria for triangle congruence (ASA, SAS, and SSS) follow from the definition of congruence in terms of rigid motions.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.7',
+    description: 'Use the definition of congruence in terms of rigid motions to show that two triangles are congruent if and only if corresponding pairs of sides and corresponding pairs of angles are congruent.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.6',
+    description: 'Use geometric descriptions of rigid motions to transform figures and to predict the effect of a given rigid motion on a given figure; given two figures, use the definition of congruence in terms of rigid motions to decide if they are congruent.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.B',
+    description: 'Understand congruence in terms of rigid motions',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.5',
+    description: 'Given a geometric figure and a rotation, reflection, or translation, draw the transformed figure using, e.g., graph paper, tracing paper, or geometry software. Specify a sequence of transformations that will carry a given figure onto another.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.4',
+    description: 'Develop definitions of rotations, reflections, and translations in terms of angles, circles, perpendicular lines, parallel lines, and line segments.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.3',
+    description: 'Given a rectangle, parallelogram, trapezoid, or regular polygon, describe the rotations and reflections that carry it onto itself.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.2',
+    description: 'Represent transformations in the plane using, e.g., transparencies and geometry software; describe transformations as functions that take points in the plane as inputs and give other points as outputs. Compare transformations that preserve distance and angle to those that do not (e.g., translation versus horizontal stretch).',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.1',
+    description: 'Know precise definitions of angle, circle, perpendicular line, parallel line, and line segment, based on the undefined notions of point, line, distance along a line, and distance around a circular arc.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO.A',
+    description: 'Experiment with transformations in the plane',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG-CO',
+    description: 'Congruence',
+    url: 'http://corestandards.org/Math/Content/HSG/CO'
+  }, {
+    identifier: 'CCSS.Math.Content.HSG',
+    description: 'High School — Geometry',
+    url: 'http://corestandards.org/Math/Content/HSG'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.C.9',
+    description: '(+) Prove the addition and subtraction formulas for sine, cosine, and tangent and use them to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.C.8',
+    description: 'Prove the Pythagorean identity sin²(θ) + cos²(θ) = 1 and use it to find sin(θ), cos(θ), or tan(θ) given sin(θ), cos(θ), or tan(θ) and the quadrant of the angle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.C',
+    description: 'Prove and apply trigonometric identities',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.7',
+    description: '(+) Use inverse functions to solve trigonometric equations that arise in modeling contexts; evaluate the solutions using technology, and interpret them in terms of the context.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.6',
+    description: '(+) Understand that restricting a trigonometric function to a domain on which it is always increasing or always decreasing allows its inverse to be constructed.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.5',
+    description: 'Choose trigonometric functions to model periodic phenomena with specified amplitude, frequency, and midline.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.B',
+    description: 'Model periodic phenomena with trigonometric functions',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.4',
+    description: '(+) Use the unit circle to explain symmetry (odd and even) and periodicity of trigonometric functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.3',
+    description: '(+) Use special triangles to determine geometrically the values of sine, cosine, tangent for π/3, π/4 and π/6, and use the unit circle to express the values of sine, cosine, and tangent for π-x, π+x, and 2π-x in terms of their values for x, where x is any real number.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.2',
+    description: 'Explain how the unit circle in the coordinate plane enables the extension of trigonometric functions to all real numbers, interpreted as radian measures of angles traversed counterclockwise around the unit circle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.1',
+    description: 'Understand radian measure of an angle as the length of the arc on the unit circle subtended by the angle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF.A',
+    description: 'Extend the domain of trigonometric functions using the unit circle',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-TF',
+    description: 'Trigonometric Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/TF'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.B.5',
+    description: 'Interpret the parameters in a linear or exponential function in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.B',
+    description: 'Interpret expressions for functions in terms of the situation they model',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.4',
+    description: 'For exponential models, express as a logarithm the solution to ab<sup>ct</sup> = d where a, c, and d are numbers and the base b is 2, 10, or e; evaluate the logarithm using technology.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.3',
+    description: 'Observe using graphs and tables that a quantity increasing exponentially eventually exceeds a quantity increasing linearly, quadratically, or (more generally) as a polynomial function.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.2',
+    description: 'Construct linear and exponential functions, including arithmetic and geometric sequences, given a graph, a description of a relationship, or two input-output pairs (include reading these from a table).',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1c',
+    description: 'Recognize situations in which a quantity grows or decays by a constant percent rate per unit interval relative to another.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1b',
+    description: 'Recognize situations in which one quantity changes at a constant rate per unit interval relative to another.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1a',
+    description: 'Prove that linear functions grow by equal differences over equal intervals, and that exponential functions grow by equal factors over equal intervals.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1',
+    description: 'Distinguish between situations that can be modeled with linear functions and with exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE.A',
+    description: 'Construct and compare linear, quadratic, and exponential models and solve problems',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-LE',
+    description: 'Linear, Quadratic, and Exponential Models',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.5',
+    description: '(+) Understand the inverse relationship between exponents and logarithms and use this relationship to solve problems involving logarithms and exponents.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4d',
+    description: '(+) Produce an invertible function from a non-invertible function by restricting the domain.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/d'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4c',
+    description: '(+) Read values of an inverse function from a graph or a table, given that the function has an inverse.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4b',
+    description: '(+) Verify by composition that one function is the inverse of another.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4a',
+    description: 'Solve an equation of the form f(x) = c for a simple function f that has an inverse and write an expression for the inverse.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4',
+    description: 'Find inverse functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.3',
+    description: 'Identify the effect on the graph of replacing f(x) by f(x) + k, k f(x), f(kx), and f(x + k) for specific values of k (both positive and negative); find the value of k given the graphs. Experiment with cases and illustrate an explanation of the effects on the graph using technology. Include recognizing even and odd functions from their graphs and algebraic expressions for them.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.B',
+    description: 'Build new functions from existing functions',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.2',
+    description: 'Write arithmetic and geometric sequences both recursively and with an explicit formula, use them to model situations, and translate between the two forms.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1c',
+    description: '(+) Compose functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1b',
+    description: 'Combine standard function types using arithmetic operations.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1a',
+    description: 'Determine an explicit expression, a recursive process, or steps for calculation from a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1',
+    description: 'Write a function that describes a relationship between two quantities',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF.A',
+    description: 'Build a function that models a relationship between two quantities',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-BF',
+    description: 'Building Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.9',
+    description: 'Compare properties of two functions each represented in a different way (algebraically, graphically, numerically in tables, or by verbal descriptions).',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8b',
+    description: 'Use the properties of exponents to interpret expressions for exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8a',
+    description: 'Use the process of factoring and completing the square in a quadratic function to show zeros, extreme values, and symmetry of the graph, and interpret these in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8',
+    description: 'Write a function defined by an expression in different but equivalent forms to reveal and explain different properties of the function.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7e',
+    description: 'Graph exponential and logarithmic functions, showing intercepts and end behavior, and trigonometric functions, showing period, midline, and amplitude.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/e'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7d',
+    description: '(+) Graph rational functions, identifying zeros and asymptotes when suitable factorizations are available, and showing end behavior.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/d'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7c',
+    description: 'Graph polynomial functions, identifying zeros when suitable factorizations are available, and showing end behavior.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7b',
+    description: 'Graph square root, cube root, and piecewise-defined functions, including step functions and absolute value functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7a',
+    description: 'Graph linear and quadratic functions and show intercepts, maxima, and minima.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7',
+    description: 'Graph functions expressed symbolically and show key features of the graph, by hand in simple cases and using technology for more complicated cases.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.C',
+    description: 'Analyze functions using different representations',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.6',
+    description: 'Calculate and interpret the average rate of change of a function (presented symbolically or as a table) over a specified interval. Estimate the rate of change from a graph.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.5',
+    description: 'Relate the domain of a function to its graph and, where applicable, to the quantitative relationship it describes.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.4',
+    description: 'For a function that models a relationship between two quantities, interpret key features of graphs and tables in terms of the quantities, and sketch graphs showing key features given a verbal description of the relationship.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.B',
+    description: 'Interpret functions that arise in applications in terms of the context',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.3',
+    description: 'Recognize that sequences are functions, sometimes defined recursively, whose domain is a subset of the integers.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.2',
+    description: 'Use function notation, evaluate functions for inputs in their domains, and interpret statements that use function notation in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.1',
+    description: 'Understand that a function from one set (called the domain) to another set (called the range) assigns to each element of the domain exactly one element of the range. If f is a function and x is an element of its domain, then f(x) denotes the output of f corresponding to the input x. The graph of f is the graph of the equation y = f(x).',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF.A',
+    description: 'Understand the concept of a function and use function notation',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF-IF',
+    description: 'Interpreting Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSF',
+    description: 'High School — Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.12',
+    description: 'Graph the solutions to a linear inequality in two variables as a half-plane (excluding the boundary in the case of a strict inequality), and graph the solution set to a system of linear inequalities in two variables as the intersection of the corresponding half-planes.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/12'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.11',
+    description: 'Explain why the x-coordinates of the points where the graphs of the equations y = f(x) and y = g(x) intersect are the solutions of the equation f(x) = g(x); find the solutions approximately, e.g., using technology to graph the functions, make tables of values, or find successive approximations. Include cases where f(x) and/or g(x) are linear, polynomial, rational, absolute value, exponential, and logarithmic functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/11'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.10',
+    description: 'Understand that the graph of an equation in two variables is the set of all its solutions plotted in the coordinate plane, often forming a curve (which could be a line).',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/10'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.D',
+    description: 'Represent and solve equations and inequalities graphically',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.9',
+    description: '(+) Find the inverse of a matrix if it exists and use it to solve systems of linear equations (using technology for matrices of dimension 3 × 3 or greater).',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.8',
+    description: '(+) Represent a system of linear equations as a single matrix equation in a vector variable.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.7',
+    description: 'Solve a simple system consisting of a linear equation and a quadratic equation in two variables algebraically and graphically.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.6',
+    description: 'Solve systems of linear equations exactly and approximately (e.g., with graphs), focusing on pairs of linear equations in two variables.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.5',
+    description: 'Prove that, given a system of two equations in two variables, replacing one equation by the sum of that equation and a multiple of the other produces a system with the same solutions.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.C',
+    description: 'Solve systems of equations',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4b',
+    description: 'Solve quadratic equations by inspection (e.g., for x² = 49), taking square roots, completing the square, the quadratic formula and factoring, as appropriate to the initial form of the equation. Recognize when the quadratic formula gives complex solutions and write them as a ± bi for real numbers a and b.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4a',
+    description: 'Use the method of completing the square to transform any quadratic equation in x into an equation of the form (x - p)² = q that has the same solutions. Derive the quadratic formula from this form.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4',
+    description: 'Solve quadratic equations in one variable.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.3',
+    description: 'Solve linear equations and inequalities in one variable, including equations with coefficients represented by letters.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.B',
+    description: 'Solve equations and inequalities in one variable',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.A.2',
+    description: 'Solve simple rational and radical equations in one variable, and give examples showing how extraneous solutions may arise.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.A.1',
+    description: 'Explain each step in solving a simple equation as following from the equality of numbers asserted at the previous step, starting from the assumption that the original equation has a solution. Construct a viable argument to justify a solution method.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI.A',
+    description: 'Understand solving equations as a process of reasoning and explain the reasoning',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-REI',
+    description: 'Reasoning with Equations and Inequalities',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.4',
+    description: 'Rearrange formulas to highlight a quantity of interest, using the same reasoning as in solving equations.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.3',
+    description: 'Represent constraints by equations or inequalities, and by systems of equations and/or inequalities, and interpret solutions as viable or nonviable options in a modeling context.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.2',
+    description: 'Create equations in two or more variables to represent relationships between quantities; graph equations on coordinate axes with labels and scales.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.1',
+    description: 'Create equations and inequalities in one variable and use them to solve problems. Include equations arising from linear and quadratic functions, and simple rational and exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-CED.A',
+    description: 'Create equations that describe numbers or relationships',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-CED',
+    description: 'Creating Equations',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.D.7',
+    description: '(+) Understand that rational expressions form a system analogous to the rational numbers, closed under addition, subtraction, multiplication, and division by a nonzero rational expression; add, subtract, multiply, and divide rational expressions.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.D.6',
+    description: 'Rewrite simple rational expressions in different forms; write <sup>a(x </sup>/<sub>b(x)</sub> in the form q(x) + <sup>r(x)</sup>/<sub>b(x)</sub>, where a(x), b(x), q(x), and r(x) are polynomials with the degree of r(x) less than the degree of b(x), using inspection, long division, or, for the more complicated examples, a computer algebra system.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.D',
+    description: 'Rewrite rational expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.C.5',
+    description: '(+) Know and apply the Binomial Theorem for the expansion of (x + y)<sup>n</sup> in powers of x and y for a positive integer n, where x and y are any numbers, with coefficients determined for example by Pascal\'s Triangle.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.C.4',
+    description: 'Prove polynomial identities and use them to describe numerical relationships.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.C',
+    description: 'Use polynomial identities to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.B.3',
+    description: 'Identify zeros of polynomials when suitable factorizations are available, and use the zeros to construct a rough graph of the function defined by the polynomial.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.B.2',
+    description: 'Know and apply the Remainder Theorem: For a polynomial p(x) and a number a, the remainder on division by x - a is p(a), so p(a) = 0 if and only if (x - a) is a factor of p(x).',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.B',
+    description: 'Understand the relationship between zeros and factors of polynomials',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.A.1',
+    description: 'Understand that polynomials form a system analogous to the integers, namely, they are closed under the operations of addition, subtraction, and multiplication; add, subtract, and multiply polynomials.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR.A',
+    description: 'Perform arithmetic operations on polynomials',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-APR',
+    description: 'Arithmetic with Polynomials and Rational Expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/APR'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.4',
+    description: 'Derive the formula for the sum of a finite geometric series (when the common ratio is not 1), and use the formula to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3c',
+    description: 'Use the properties of exponents to transform expressions for exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3b',
+    description: 'Complete the square in a quadratic expression to reveal the maximum or minimum value of the function it defines.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3a',
+    description: 'Factor a quadratic expression to reveal the zeros of the function it defines.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3',
+    description: 'Choose and produce an equivalent form of an expression to reveal and explain properties of the quantity represented by the expression.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B',
+    description: 'Write expressions in equivalent forms to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.2',
+    description: 'Use the structure of an expression to identify ways to rewrite it.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1b',
+    description: 'Interpret complicated expressions by viewing one or more of their parts as a single entity.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1a',
+    description: 'Interpret parts of an expression, such as terms, factors, and coefficients.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1',
+    description: 'Interpret expressions that represent a quantity in terms of its context',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A',
+    description: 'Interpret the structure of expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA-SSE',
+    description: 'Seeing Structure in Expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE'
+  }, {
+    identifier: 'CCSS.Math.Content.HSA',
+    description: 'High School — Algebra',
+    url: 'http://corestandards.org/Math/Content/HSA'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.12',
+    description: '(+) Work with 2 × 2 matrices as transformations of the plane, and interpret the absolute value of the determinant in terms of area.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/12'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.11',
+    description: '(+) Multiply a vector (regarded as a matrix with one column) by a matrix of suitable dimensions to produce another vector. Work with matrices as transformations of vectors.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/11'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.10',
+    description: '(+) Understand that the zero and identity matrices play a role in matrix addition and multiplication similar to the role of 0 and 1 in the real numbers. The determinant of a square matrix is nonzero if and only if the matrix has a multiplicative inverse.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/10'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.9',
+    description: '(+) Understand that, unlike multiplication of numbers, matrix multiplication for square matrices is not a commutative operation, but still satisfies the associative and distributive properties.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.8',
+    description: '(+) Add, subtract, and multiply matrices of appropriate dimensions.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.7',
+    description: '(+) Multiply matrices by scalars to produce new matrices, e.g., as when all of the payoffs in a game are doubled.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C.6',
+    description: '(+) Use matrices to represent and manipulate data, e.g., to represent payoffs or incidence relationships in a network.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.C',
+    description: 'Perform operations on matrices and use matrices in applications.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.5b',
+    description: 'Compute the magnitude of a scalar multiple cv using ||cv|| = |c|v. Compute the direction of cv knowing that when |c|v ? 0, the direction of cv is either along v (for c > 0) or against v (for c < 0).',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.5a',
+    description: 'Represent scalar multiplication graphically by scaling vectors and possibly reversing their direction; perform scalar multiplication component-wise, e.g., as c(v<sub>x</sub>, v<sub>y</sub>) = (cv<sub>x</sub>, cv<sub>y</sub>).',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.5',
+    description: '(+) Multiply a vector by a scalar.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.4c',
+    description: 'Understand vector subtraction v - w as v + (-w), where -w is the additive inverse of w, with the same magnitude as w and pointing in the opposite direction. Represent vector subtraction graphically by connecting the tips in the appropriate order, and perform vector subtraction component-wise.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/c'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.4b',
+    description: 'Given two vectors in magnitude and direction form, determine the magnitude and direction of their sum.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/b'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.4a',
+    description: 'Add vectors end-to-end, component-wise, and by the parallelogram rule. Understand that the magnitude of a sum of two vectors is typically not the sum of the magnitudes.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/a'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B.4',
+    description: '(+) Add and subtract vectors.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.B',
+    description: 'Perform operations on vectors.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.A.3',
+    description: '(+) Solve problems involving velocity and other quantities that can be represented by vectors.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.A.2',
+    description: '(+) Find the components of a vector by subtracting the coordinates of an initial point from the coordinates of a terminal point.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.A.1',
+    description: '(+) Recognize vector quantities as having both magnitude and direction. Represent vector quantities by directed line segments, and use appropriate symbols for vectors and their magnitudes (e.g., v, |v|, ||v||, v).',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM.A',
+    description: 'Represent and model with vector quantities.',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-VM',
+    description: 'Vector and Matrix Quantities',
+    url: 'http://corestandards.org/Math/Content/HSN/VM/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.C.9',
+    description: '(+) Know the Fundamental Theorem of Algebra; show that it is true for quadratic polynomials.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/C/9'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.C.8',
+    description: '(+) Extend polynomial identities to the complex numbers.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.C.7',
+    description: 'Solve quadratic equations with real coefficients that have complex solutions.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/C/7'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.C',
+    description: 'Use complex numbers in polynomial identities and equations.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/C'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.B.6',
+    description: '(+) Calculate the distance between numbers in the complex plane as the modulus of the difference, and the midpoint of a segment as the average of the numbers at its endpoints.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.B.5',
+    description: '(+) Represent addition, subtraction, multiplication, and conjugation of complex numbers geometrically on the complex plane; use properties of this representation for computation.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.B.4',
+    description: '(+) Represent complex numbers on the complex plane in rectangular and polar form (including real and imaginary numbers), and explain why the rectangular and polar forms of a given complex number represent the same number.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/B/4'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.B',
+    description: 'Represent complex numbers and their operations on the complex plane.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.A.3',
+    description: '(+) Find the conjugate of a complex number; use conjugates to find moduli and quotients of complex numbers.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.A.2',
+    description: 'Use the relation i² = -1 and the commutative, associative, and distributive properties to add, subtract, and multiply complex numbers.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.A.1',
+    description: 'Know there is a complex number i such that i² = -1, and every complex number has the form a + bi with a and b real.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN.A',
+    description: 'Perform arithmetic operations with complex numbers.',
+    url: 'http://corestandards.org/Math/Content/HSN/CN/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-CN',
+    description: 'The Complex Number System',
+    url: 'http://corestandards.org/Math/Content/HSN/CN!'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-Q.A.3',
+    description: 'Choose a level of accuracy appropriate to limitations on measurement when reporting quantities.',
+    url: 'http://corestandards.org/Math/Content/HSN/Q/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-Q.A.2',
+    description: 'Define appropriate quantities for the purpose of descriptive modeling.',
+    url: 'http://corestandards.org/Math/Content/HSN/Q/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-Q.A.1',
+    description: 'Use units as a way to understand problems and to guide the solution of multi-step problems; choose and interpret units consistently in formulas; choose and interpret the scale and the origin in graphs and data displays.',
+    url: 'http://corestandards.org/Math/Content/HSN/Q/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-Q.A',
+    description: 'Reason quantitatively and use units to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSN/Q/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-Q',
+    description: 'Quantities',
+    url: 'http://corestandards.org/Math/Content/HSN/Q/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN.B.3',
+    description: 'Explain why the sum or product of two rational numbers is rational; that the sum of a rational number and an irrational number is irrational; and that the product of a nonzero rational number and an irrational number is irrational.',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/B/3'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN.B',
+    description: 'Use properties of rational and irrational numbers.',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/B'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN.A.2',
+    description: 'Rewrite expressions involving radicals and rational exponents using the properties of exponents.',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN.A.1',
+    description: 'Explain how the definition of the meaning of rational exponents follows from extending the properties of integer exponents to those values, allowing for a notation for radicals in terms of rational exponents.',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN.A',
+    description: 'Extend the properties of exponents to rational exponents.',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/A'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN-RN',
+    description: 'The Real Number System',
+    url: 'http://corestandards.org/Math/Content/HSN/RN/'
+  }, {
+    identifier: 'CCSS.Math.Content.HSN',
+    description: 'High School — Number and Quantity',
+    url: 'http://corestandards.org/Math/Content/HSN/'
+  },
 ];
 
 var gradeHSAlgebra = [
@@ -3413,7 +4601,8 @@ var gradeHSNumber = [
   },
 ];
 
-var gradeHSProbability = [{
+var gradeHSProbability = [
+  {
     identifier: 'CCSS.Math.Content.HSS-MD.B.7',
     description: '(+) Analyze decisions and strategies using probability concepts (e.g., product testing, medical testing, pulling a hockey goalie at the end of a game).',
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/7'
