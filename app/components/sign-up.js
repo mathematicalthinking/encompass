@@ -20,16 +20,13 @@ Encompass.SignUpComponent = Ember.Component.extend({
     }
     var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
     var emailTest = emailPattern.test(email);
-    console.log(emailTest);
 
     if (emailTest === false) {
-      console.log('false email');
       this.set('incorrectEmail', true);
       return false;
     }
 
     if (emailTest === true) {
-      console.log('true email');
       this.set('incorrectEmail', false);
       return true;
     }
@@ -96,7 +93,6 @@ Encompass.SignUpComponent = Ember.Component.extend({
       var email = that.get('email');
       var confirmEmail = that.get('confirmEmail');
       var organization = that.get('org');
-      console.log('org', organization);
       var location = that.get('location');
       var username = that.get('username');
       var usernameTrim;
