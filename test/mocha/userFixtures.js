@@ -23,7 +23,7 @@ const pdAdminDrexel = {
     username: 'sam3',
     accountType: 'S'
   },
-  accessibleUserCount: 23
+  accessibleUserCount: 24
 }
 
 const teacherMT = {
@@ -53,7 +53,7 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 17
+  accessibleUserCount: 18
 };
 
 const admin = {
@@ -75,7 +75,7 @@ const admin = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 35
+  accessibleUserCount: 36
 
 };
 
