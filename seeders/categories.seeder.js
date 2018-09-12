@@ -2554,11 +2554,638 @@ var gradeHSAlgebra = [
   },
 ];
 
+var gradeHSFunctions = [
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.C.9',
+    description: '(+) Prove the addition and subtraction formulas for sine, cosine, and tangent and use them to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.C.8',
+    description: 'Prove the Pythagorean identity sin²(θ) + cos²(θ) = 1 and use it to find sin(θ), cos(θ), or tan(θ) given sin(θ), cos(θ), or tan(θ) and the quadrant of the angle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.C',
+    description: 'Prove and apply trigonometric identities',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.7',
+    description: '(+) Use inverse functions to solve trigonometric equations that arise in modeling contexts; evaluate the solutions using technology, and interpret them in terms of the context.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.6',
+    description: '(+) Understand that restricting a trigonometric function to a domain on which it is always increasing or always decreasing allows its inverse to be constructed.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.B.5',
+    description: 'Choose trigonometric functions to model periodic phenomena with specified amplitude, frequency, and midline.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.B',
+    description: 'Model periodic phenomena with trigonometric functions',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.4',
+    description: '(+) Use the unit circle to explain symmetry (odd and even) and periodicity of trigonometric functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.3',
+    description: '(+) Use special triangles to determine geometrically the values of sine, cosine, tangent for π/3, π/4 and π/6, and use the unit circle to express the values of sine, cosine, and tangent for π-x, π+x, and 2π-x in terms of their values for x, where x is any real number.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.2',
+    description: 'Explain how the unit circle in the coordinate plane enables the extension of trigonometric functions to all real numbers, interpreted as radian measures of angles traversed counterclockwise around the unit circle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.A.1',
+    description: 'Understand radian measure of an angle as the length of the arc on the unit circle subtended by the angle.',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF.A',
+    description: 'Extend the domain of trigonometric functions using the unit circle',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-TF',
+    description: 'Trigonometric Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/TF/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.B.5',
+    description: 'Interpret the parameters in a linear or exponential function in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.B',
+    description: 'Interpret expressions for functions in terms of the situation they model',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.4',
+    description: 'For exponential models, express as a logarithm the solution to ab<sup>ct</sup> = d where a, c, and d are numbers and the base b is 2, 10, or e; evaluate the logarithm using technology.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.3',
+    description: 'Observe using graphs and tables that a quantity increasing exponentially eventually exceeds a quantity increasing linearly, quadratically, or (more generally) as a polynomial function.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.2',
+    description: 'Construct linear and exponential functions, including arithmetic and geometric sequences, given a graph, a description of a relationship, or two input-output pairs (include reading these from a table).',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1c',
+    description: 'Recognize situations in which a quantity grows or decays by a constant percent rate per unit interval relative to another.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1b',
+    description: 'Recognize situations in which one quantity changes at a constant rate per unit interval relative to another.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1a',
+    description: 'Prove that linear functions grow by equal differences over equal intervals, and that exponential functions grow by equal factors over equal intervals.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A.1',
+    description: 'Distinguish between situations that can be modeled with linear functions and with exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE.A',
+    description: 'Construct and compare linear, quadratic, and exponential models and solve problems',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-LE',
+    description: 'Linear, Quadratic, and Exponential Models',
+    url: 'http://corestandards.org/Math/Content/HSF/LE/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.5',
+    description: '(+) Understand the inverse relationship between exponents and logarithms and use this relationship to solve problems involving logarithms and exponents.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4d',
+    description: '(+) Produce an invertible function from a non-invertible function by restricting the domain.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4c',
+    description: '(+) Read values of an inverse function from a graph or a table, given that the function has an inverse.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4b',
+    description: '(+) Verify by composition that one function is the inverse of another.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4a',
+    description: 'Solve an equation of the form f(x) = c for a simple function f that has an inverse and write an expression for the inverse.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.4',
+    description: 'Find inverse functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B.3',
+    description: 'Identify the effect on the graph of replacing f(x) by f(x) + k, k f(x), f(kx), and f(x + k) for specific values of k (both positive and negative); find the value of k given the graphs. Experiment with cases and illustrate an explanation of the effects on the graph using technology. Include recognizing even and odd functions from their graphs and algebraic expressions for them.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.B',
+    description: 'Build new functions from existing functions',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.2',
+    description: 'Write arithmetic and geometric sequences both recursively and with an explicit formula, use them to model situations, and translate between the two forms.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1c',
+    description: '(+) Compose functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1b',
+    description: 'Combine standard function types using arithmetic operations.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1a',
+    description: 'Determine an explicit expression, a recursive process, or steps for calculation from a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A.1',
+    description: 'Write a function that describes a relationship between two quantities',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF.A',
+    description: 'Build a function that models a relationship between two quantities',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-BF',
+    description: 'Building Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/BF/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.9',
+    description: 'Compare properties of two functions each represented in a different way (algebraically, graphically, numerically in tables, or by verbal descriptions).',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8b',
+    description: 'Use the properties of exponents to interpret expressions for exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8a',
+    description: 'Use the process of factoring and completing the square in a quadratic function to show zeros, extreme values, and symmetry of the graph, and interpret these in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.8',
+    description: 'Write a function defined by an expression in different but equivalent forms to reveal and explain different properties of the function.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7e',
+    description: 'Graph exponential and logarithmic functions, showing intercepts and end behavior, and trigonometric functions, showing period, midline, and amplitude.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/e'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7d',
+    description: '(+) Graph rational functions, identifying zeros and asymptotes when suitable factorizations are available, and showing end behavior.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/d'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7c',
+    description: 'Graph polynomial functions, identifying zeros when suitable factorizations are available, and showing end behavior.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7b',
+    description: 'Graph square root, cube root, and piecewise-defined functions, including step functions and absolute value functions.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7a',
+    description: 'Graph linear and quadratic functions and show intercepts, maxima, and minima.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C.7',
+    description: 'Graph functions expressed symbolically and show key features of the graph, by hand in simple cases and using technology for more complicated cases.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.C',
+    description: 'Analyze functions using different representations',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.6',
+    description: 'Calculate and interpret the average rate of change of a function (presented symbolically or as a table) over a specified interval. Estimate the rate of change from a graph.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.5',
+    description: 'Relate the domain of a function to its graph and, where applicable, to the quantitative relationship it describes.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.B.4',
+    description: 'For a function that models a relationship between two quantities, interpret key features of graphs and tables in terms of the quantities, and sketch graphs showing key features given a verbal description of the relationship.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.B',
+    description: 'Interpret functions that arise in applications in terms of the context',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.3',
+    description: 'Recognize that sequences are functions, sometimes defined recursively, whose domain is a subset of the integers.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.2',
+    description: 'Use function notation, evaluate functions for inputs in their domains, and interpret statements that use function notation in terms of a context.',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.A.1',
+    description: 'Understand that a function from one set (called the domain) to another set (called the range) assigns to each element of the domain exactly one element of the range. If f is a function and x is an element of its domain, then f(x) denotes the output of f corresponding to the input x. The graph of f is the graph of the equation y = f(x).',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF.A',
+    description: 'Understand the concept of a function and use function notation',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSF-IF',
+    description: 'Interpreting Functions',
+    url: 'http://corestandards.org/Math/Content/HSF/IF/'
+  },
+];
 
+var gradeHsGeometry = [
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.3',
+    description: 'Apply geometric methods to solve design problems (e.g., designing an object or structure to satisfy physical constraints or minimize cost; working with typographic grid systems based on ratios).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.2',
+    description: 'Apply concepts of density based on area and volume in modeling situations (e.g., persons per square mile, BTUs per cubic foot).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A.1',
+    description: 'Use geometric shapes, their measures, and their properties to describe objects (e.g., modeling a tree trunk or a human torso as a cylinder).',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG.A',
+    description: 'Apply geometric concepts in modeling situations',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-MG',
+    description: 'Modeling with Geometry',
+    url: 'http://corestandards.org/Math/Content/HSG/MG/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.B.4',
+    description: 'Identify the shapes of two-dimensional cross-sections of three-dimensional objects, and identify three-dimensional objects generated by rotations of two-dimensional objects.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.B',
+    description: 'Visualize relationships between two-dimensional and three-dimensional objects',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.3',
+    description: 'Use volume formulas for cylinders, pyramids, cones, and spheres to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.2',
+    description: '(+) Give an informal argument using Cavalieri\'s principle for the formulas for the volume of a sphere and other solid figures.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A.1',
+    description: 'Give an informal argument for the formulas for the circumference of a circle, area of a circle, volume of a cylinder, pyramid, and cone.',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD.A',
+    description: 'Explain volume formulas and use them to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GMD',
+    description: 'Geometric Measurement and Dimension',
+    url: 'http://corestandards.org/Math/Content/HSG/GMD/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.7',
+    description: 'Use coordinates to compute perimeters of polygons and areas of triangles and rectangles, e.g., using the distance formula.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.6',
+    description: 'Find the point on a directed line segment between two given points that partitions the segment in a given ratio.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.5',
+    description: 'Prove the slope criteria for parallel and perpendicular lines and use them to solve geometric problems (e.g., find the equation of a line parallel or perpendicular to a given line that passes through a given point).',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B.4',
+    description: 'Use coordinates to prove simple geometric theorems algebraically.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.B',
+    description: 'Use coordinates to prove simple geometric theorems algebraically',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.3',
+    description: '(+) Derive the equations of ellipses and hyperbolas given the foci, using the fact that the sum or difference of distances from the foci is constant.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.2',
+    description: 'Derive the equation of a parabola given a focus and directrix.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A.1',
+    description: 'Derive the equation of a circle of given center and radius using the Pythagorean Theorem; complete the square to find the center and radius of a circle given by an equation.',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE.A',
+    description: 'Translate between the geometric description and the equation for a conic section',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-GPE',
+    description: 'Expressing Geometric Properties with Equations',
+    url: 'http://corestandards.org/Math/Content/HSG/GPE/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.B.5',
+    description: 'Derive using similarity the fact that the length of the arc intercepted by an angle is proportional to the radius, and define the radian measure of the angle as the constant of proportionality; derive the formula for the area of a sector.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.B',
+    description: 'Find arc lengths and areas of sectors of circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.4',
+    description: '(+) Construct a tangent line from a point outside a given circle to the circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.3',
+    description: 'Construct the inscribed and circumscribed circles of a triangle, and prove properties of angles for a quadrilateral inscribed in a circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.2',
+    description: 'Identify and describe relationships among inscribed angles, radii, and chords.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A.1',
+    description: 'Prove that all circles are similar.',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C.A',
+    description: 'Understand and apply theorems about circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-C',
+    description: 'Circles',
+    url: 'http://corestandards.org/Math/Content/HSG/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.11',
+    description: '(+) Understand and apply the Law of Sines and the Law of Cosines to find unknown measurements in right and non-right triangles (e.g., surveying problems, resultant forces).',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/11'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.10',
+    description: '(+) Prove the Laws of Sines and Cosines and use them to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/10'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D.9',
+    description: '(+) Derive the formula A = 1/2 ab sin(C) for the area of a triangle by drawing an auxiliary line from a vertex perpendicular to the opposite side.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.D',
+    description: 'Apply trigonometry to general triangles',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/D'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.8',
+    description: 'Use trigonometric ratios and the Pythagorean Theorem to solve right triangles in applied problems.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.7',
+    description: 'Explain and use the relationship between the sine and cosine of complementary angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C.6',
+    description: 'Understand that by similarity, side ratios in right triangles are properties of the angles in the triangle, leading to definitions of trigonometric ratios for acute angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.C',
+    description: 'Define trigonometric ratios and solve problems involving right triangles',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B.5',
+    description: 'Use congruence and similarity criteria for triangles to solve problems and to prove relationships in geometric figures.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B.4',
+    description: 'Prove theorems about triangles.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.B',
+    description: 'Prove theorems involving similarity',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.3',
+    description: 'Use the properties of similarity transformations to establish the AA criterion for two triangles to be similar.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.2',
+    description: 'Given two figures, use the definition of similarity in terms of similarity transformations to decide if they are similar; explain using similarity transformations the meaning of similarity for triangles as the equality of all corresponding pairs of angles and the proportionality of all corresponding pairs of sides.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1b',
+    description: 'The dilation of a line segment is longer or shorter in the ratio given by the scale factor.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1a',
+    description: 'A dilation takes a line not passing through the center of the dilation to a parallel line, and leaves a line passing through the center unchanged.',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A.1',
+    description: 'Verify experimentally the properties of dilations given by a center and a scale factor:',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT.A',
+    description: 'Understand similarity in terms of similarity transformations',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-SRT',
+    description: 'Similarity, Right Triangles, and Trigonometry',
+    url: 'http://corestandards.org/Math/Content/HSG/SRT/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D.13',
+    description: 'Construct an equilateral triangle, a square, and a regular hexagon inscribed in a circle.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D/13'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D.12',
+    description: 'Make formal geometric constructions with a variety of tools and methods (compass and straightedge, string, reflective devices, paper folding, dynamic geometric software, etc.). Copying a segment; copying an angle; bisecting a segment; bisecting an angle; constructing perpendicular lines, including the perpendicular bisector of a line segment; and constructing a line parallel to a given line through a point not on the line.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D/12'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.D',
+    description: 'Make geometric constructions',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/D'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.11',
+    description: 'Prove theorems about parallelograms.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/11'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.10',
+    description: 'Prove theorems about triangles.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/10'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.C.9',
+    description: 'Prove theorems about lines and angles.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.C',
+    description: 'Prove geometric theorems',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.8',
+    description: 'Explain how the criteria for triangle congruence (ASA, SAS, and SSS) follow from the definition of congruence in terms of rigid motions.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.7',
+    description: 'Use the definition of congruence in terms of rigid motions to show that two triangles are congruent if and only if corresponding pairs of sides and corresponding pairs of angles are congruent.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.B.6',
+    description: 'Use geometric descriptions of rigid motions to transform figures and to predict the effect of a given rigid motion on a given figure; given two figures, use the definition of congruence in terms of rigid motions to decide if they are congruent.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.B',
+    description: 'Understand congruence in terms of rigid motions',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.5',
+    description: 'Given a geometric figure and a rotation, reflection, or translation, draw the transformed figure using, e.g., graph paper, tracing paper, or geometry software. Specify a sequence of transformations that will carry a given figure onto another.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.4',
+    description: 'Develop definitions of rotations, reflections, and translations in terms of angles, circles, perpendicular lines, parallel lines, and line segments.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.3',
+    description: 'Given a rectangle, parallelogram, trapezoid, or regular polygon, describe the rotations and reflections that carry it onto itself.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.2',
+    description: 'Represent transformations in the plane using, e.g., transparencies and geometry software; describe transformations as functions that take points in the plane as inputs and give other points as outputs. Compare transformations that preserve distance and angle to those that do not (e.g., translation versus horizontal stretch).',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A.1',
+    description: 'Know precise definitions of angle, circle, perpendicular line, parallel line, and line segment, based on the undefined notions of point, line, distance along a line, and distance around a circular arc.',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO.A',
+    description: 'Experiment with transformations in the plane',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSG-CO',
+    description: 'Congruence',
+    url: 'http://corestandards.org/Math/Content/HSG/CO/'
+  },
+]
 
-
-
-var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra);
+var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra, gradeHSFunctions, gradeHsGeometry);
 
 var CategoriesSeeder = Seeder.extend({
   shouldRun: function () {
