@@ -24,13 +24,16 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
 
   childSelections: function(){
     var selections = this.get('selections').toArray();
-    this.get('children')
+    var children = this.get('children');
+
+    if (!Ember.isEmpty(children)) {
+      children
       .filterBy('isTrashed', false)
       .getEach('_selections')
       .forEach(function(childSelections) {
         selections.pushObjects(childSelections);
       });
-
+    }
     return selections.uniq();
   }.property('children.@each._submissions', 'selections.@each.isTrashed'),
 

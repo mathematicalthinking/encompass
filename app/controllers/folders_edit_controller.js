@@ -13,9 +13,9 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   workspace: Ember.inject.controller(),
   currentWorkspace: Ember.computed.alias('workspace.model'),
   browseOption: 1,
-  bySelection: Ember.computed.equal('browseOption', 0),
-  bySubmission: Ember.computed.equal('browseOption', 1),
-  includeSubfolders: true,
+  bySelection: Ember.computed.equal('browseOption', 1),
+  bySubmission: Ember.computed.equal('browseOption', 0),
+  includeSubfolders: false,
   submissionsCol: true,
   selectionsCol: true,
   commentsCol: false,
@@ -39,11 +39,12 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   }.property('currentUser', 'currentWorkspace'),
 
   evidence: function() {
+    console.log('calculating evidence!');
     if(this.get('includeSubfolders')){
       return this.model.get('_selections');
     }
     return this.model.get('selections');
-  }.property('model', 'selections', '_selections', 'includeSubfolders'),
+  }.property('model.id', 'selections.[]', '_selections.[]', 'includeSubfolders'),
 
   selectedSubmissions: function() {
     if(this.get('includeSubfolders')){

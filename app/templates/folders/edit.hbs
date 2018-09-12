@@ -224,7 +224,6 @@
             {{sel.text}}
           </a>
         </td>
-
         {{#if showSelectionSubmission}}
           <td>
             <a class="change-submission" {{action 'changeSubmission' sel.submission}}>
@@ -259,6 +258,8 @@
           </td>
         {{/if}}
       </tr>
+      {{else}}
+        <p>Sorry, no selections were found in this folder.</p>
       {{/each}}
     </tbody>
   </table>
