@@ -86,10 +86,6 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   }.property('parent'),
 */
   actions: {
-    radioSelect: function( value ){
-      this.set('browseOption', value );
-    },
-
     changeSubmission: function(submission) {
       var selector = '.submissionLink.' + submission.get('id');
       if(window.opener) {
