@@ -77,7 +77,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
 
     let people = this.get('store').query('user', {
-      username: searchText,
+      usernameSearch: searchText,
     });
     return people;
   }.property('studentUsername'),
@@ -89,7 +89,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return;
     }
     this.get('store').query('user', {
-      username: searchText,
+      usernameSearch: searchText,
     }).then((people) => {
       this.set('teacherSearchResults', people.rejectBy('accountType', 'S'));
     });
@@ -154,6 +154,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         //save section in student
         section.save().then((section) => {
           console.log('saved section', section);
+          if (!student.get('sections')) {
+            student.set('sections', []);
+          }
           student.get('sections').addObject(sectionObj);
           student.save().then((rec) => {
             this.set('studentUsername', '');
@@ -173,6 +176,10 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return this.store.findRecord('user', selectedUserId)
           .then((user) => {
             let userSections = user.get('sections');
+            if (!userSections) {
+              this.set('removedStudent', true);
+              return;
+            }
             let removedSectionId = section.get('id');
             let newSections = [];
             userSections.map((section) => {
@@ -212,7 +219,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('doYouWantToAddExistingUser', false);
         //save section in student
         section.save().then((section) => {
-          teacher.get('sections').addObject(sectionObj);
+          if (!teacher.get('sections')) {
+            teacher.set('sections', []);
+          }
+          let sections = teacher.get('sections');
+          sections.addObject(sectionObj);
+
           teacher.save().then((rec) => {
             this.set('teacherUsername', '');
             this.set('teacherSearchResults', null);
@@ -242,6 +254,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return this.store.findRecord('user', selectedUserId)
           .then((user) => {
             let userSections = user.get('sections');
+            if (!userSections) {
+              return;
+            }
             let removedSectionId =section.get('id');
             let newSections = [];
             userSections.map((section) => {
