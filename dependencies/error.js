@@ -9,7 +9,14 @@ function errorHandler(error) {
 
   // var errorMsg = 'There was an error.  We recommend reloading the page to ensure your data has been saved and to prevent further errors';
   var errorMsg = error;
-
+  var errors = error.errors;
+  var is404;
+  if (Array.isArray(errors) && errors[0]) {
+    is404 = errors[0].status === '404';
+  }
+  if (is404) {
+    return;
+  }
   window.alert(errorMsg);
 };
 
