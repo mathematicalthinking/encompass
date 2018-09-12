@@ -15,6 +15,10 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   newUserData: {},
   actingRole: null,
 
+  incorrectEmail: false,
+  incorrectUsername: false,
+  incorrectPassword: false,
+
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
       if (!data) {
