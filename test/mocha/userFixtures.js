@@ -1,4 +1,5 @@
 const pdAdminDrexel = {
+  testDescriptionTitle: 'PD Admin',
   username: 'pdadmin',
   password: 'pdadmin',
   organization: '5b4a64a028e4b75919c28512',
@@ -26,6 +27,7 @@ const pdAdminDrexel = {
 }
 
 const teacherMT = {
+  testDescriptionTitle: 'Teacher',
   username: 'ssmith',
   password: 'ssmith',
   organization: '5b4e4d5f808c7eebc9f9e82c',
@@ -51,10 +53,11 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 16
+  accessibleUserCount: 17
 };
 
 const admin = {
+  testDescriptionTitle: 'Admin',
   username: 'rick',
   password: 'sanchez',
   organization: '5b4a64a028e4b75919c28512',
@@ -72,11 +75,12 @@ const admin = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 33
+  accessibleUserCount: 35
 
 };
 
 const studentMT = {
+  testDescriptionTitle: 'Student',
   username: 'tracyc',
   password: 'tracyc',
   organization: '5b4e4d5f808c7eebc9f9e82c',
@@ -95,7 +99,7 @@ const studentMT = {
     organization: '5b4a64a028e4b75919c28512',
     accountType: 'S'
   },
-  accessibleUserCount: 5,
+  accessibleUserCount: 6,
   modifiableUser: {
     _id: '5b914a102ecaf7c30dd47492',
     username: 'tracyc',
@@ -103,13 +107,42 @@ const studentMT = {
   },
 };
 
+const teacherActingStudent = {
+  testDescriptionTitle: 'Teacher acting as Student',
+  username: 'actingstudent',
+  password: 'allison',
+  organization: '5b4e4d5f808c7eebc9f9e82c',
+  accountType: 'T',
+  actingRole: 'student',
+  accessibleUser: {
+    _id: '5b914a102ecaf7c30dd47492',
+    username: 'tracyc',
+    organization: '5b4e4d5f808c7eebc9f9e82c',
+    accountType: 'S',
+    createdBy: '5b9149552ecaf7c30dd4748e',
+    creatorUsername: 'ssmith'
+  },
+  unaccessibleUser: {
+    _id: '5b913ebe3add43b868ae9807',
+    username: 'jamie4',
+    organization: '5b4a64a028e4b75919c28512',
+    accountType: 'S'
+  },
+  accessibleUserCount: 6,
+  modifiableUser: {
+    _id: '5b4e4d5f808c7eebc9f9e82c',
+    username: 'actingStudent',
+    accountType: 'T'
+  },
+}
+
 const users = {
   admin,
   pdAdminDrexel,
   teacherMT,
-  studentMT
-}
+  studentMT,
+  teacherActingStudent
+};
 
-module.exports.pdAdminDrexel = pdAdminDrexel;
-module.exports.teacherMT = teacherMT;
+
 module.exports.users = users;
