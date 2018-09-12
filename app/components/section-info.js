@@ -62,8 +62,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   cantEdit: Ember.computed('section.id', function () {
     let currentUser = this.get('currentUser');
-    let userType = currentUser.get('accountType');
-    let isStudent = userType === 'S';
+    let isStudent = currentUser.get('isStudent');
 
     let cantEdit = isStudent;
     return cantEdit;
