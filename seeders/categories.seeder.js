@@ -974,9 +974,9 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/NF/A'
   },
   {
-    identifier: undefined,
+    identifier: 'CCSS.Math.Content.4.NF',
     description: 'Number and Operations—Fractions',
-    url: 'phil add url!'
+    url: 'http://corestandards.org/Math/Content/4/NF/'
   },
   {
     identifier: 'CCSS.Math.Content.4.G.A.3',
@@ -999,9 +999,9 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/G/A'
   },
   {
-    identifier: undefined,
+    identifier: 'CCSS.Math.Content.4.G',
     description: 'Geometry',
-    url: 'phil add url!'
+    url: 'http://corestandards.org/Math/Content/4/G/'
   },
   {
     identifier: 'CCSS.Math.Content.4.MD.C.7',
@@ -1064,9 +1064,9 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/MD/A'
   },
   {
-    identifier: undefined,
+    identifier: 'CCSS.Math.Content.4.MD',
     description: 'Measurement and Data',
-    url: 'phil add url!'
+    url: 'http://corestandards.org/Math/Content/4/MD/'
   },
   {
     identifier: 'CCSS.Math.Content.4.NBT.B.6',
@@ -1109,9 +1109,9 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/NBT/A'
   },
   {
-    identifier: undefined,
+    identifier: 'CCSS.Math.Content.4.NBT',
     description: 'Number and Operations in Base Ten',
-    url: 'phil add url!'
+    url: 'http://corestandards.org/Math/Content/4/NBT/'
   },
   {
     identifier: 'CCSS.Math.Content.4.OA.C.5',
@@ -1154,58 +1154,294 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/OA/A'
   },
   {
-    identifier: undefined,
+    identifier: 'CCSS.Math.Content.4.OA',
     description: 'Operations and Algebraic Thinking',
-    url: 'phil add url!'
+    url: 'http://corestandards.org/Math/Content/4/OA/'
   },
-  {
-    identifier: 'CCSS.Math.Practice.MP8',
-    description: 'Look for and express regularity in repeated reasoning.',
-    url: 'http://corestandards.org/Math/Practice/MP8'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP7',
-    description: 'Look for and make use of structure.',
-    url: 'http://corestandards.org/Math/Practice/MP7'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP6',
-    description: 'Attend to precision.',
-    url: 'http://corestandards.org/Math/Practice/MP6'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP5',
-    description: 'Use appropriate tools strategically.',
-    url: 'http://corestandards.org/Math/Practice/MP5'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP4',
-    description: 'Model with mathematics.',
-    url: 'http://corestandards.org/Math/Practice/MP4'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP3',
-    description: 'Construct viable arguments and critique the reasoning of others.',
-    url: 'http://corestandards.org/Math/Practice/MP3'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP2',
-    description: 'Reason abstractly and quantitatively.',
-    url: 'http://corestandards.org/Math/Practice/MP2'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP1',
-    description: 'Make sense of problems and persevere in solving them.',
-    url: 'http://corestandards.org/Math/Practice/MP1'
-  },
-  {
-    identifier: undefined,
-    description: 'Standards for Mathematical Practice',
-    url: 'phil add url!'
-  }
 ];
 
-// var grade5 = [];
+var grade5 = [
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.7c',
+    description: 'Solve real world problems involving division of unit fractions by non-zero whole numbers and division of whole numbers by unit fractions, e.g., by using visual fraction models and equations to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/7/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.7b',
+    description: 'Interpret division of a whole number by a unit fraction, and compute such quotients.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/7/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.7a',
+    description: 'Interpret division of a unit fraction by a non-zero whole number, and compute such quotients.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/7/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.7',
+    description: 'Apply and extend previous understandings of division to divide unit fractions by whole numbers and whole numbers by unit fractions.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.6',
+    description: 'Solve real world problems involving multiplication of fractions and mixed numbers, e.g., by using visual fraction models or equations to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.5b',
+    description: 'Explaining why multiplying a given number by a fraction greater than 1 results in a product greater than the given number (recognizing multiplication by whole numbers greater than 1 as a familiar case); explaining why multiplying a given number by a fraction less than 1 results in a product smaller than the given number; and relating the principle of fraction equivalence a/b = (n×a)/(n×b) to the effect of multiplying a/b by 1.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/5/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.5a',
+    description: 'Comparing the size of a product to the size of one factor on the basis of the size of the other factor, without performing the indicated multiplication.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/5/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.5',
+    description: 'Interpret multiplication as scaling (resizing), by:',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.4b',
+    description: 'Find the area of a rectangle with fractional side lengths by tiling it with unit squares of the appropriate unit fraction side lengths, and show that the area is the same as would be found by multiplying the side lengths. Multiply fractional side lengths to find areas of rectangles, and represent fraction products as rectangular areas.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/4/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.4a',
+    description: 'Interpret the product (a/b) × q as a parts of a partition of q into b equal parts; equivalently, as the result of a sequence of operations a × q ÷ b.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/4/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.4',
+    description: 'Apply and extend previous understandings of multiplication to multiply a fraction or whole number by a fraction.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B.3',
+    description: 'Interpret a fraction as division of the numerator by the denominator (a/b = a ÷ b). Solve word problems involving division of whole numbers leading to answers in the form of fractions or mixed numbers, e.g., by using visual fraction models or equations to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.B',
+    description: 'Apply and extend previous understandings of multiplication and division to multiply and divide fractions.',
+    url: 'http://corestandards.org/Math/Content/5/NF/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.A.2',
+    description: 'Solve word problems involving addition and subtraction of fractions referring to the same whole, including cases of unlike denominators, e.g., by using visual fraction models or equations to represent the problem. Use benchmark fractions and number sense of fractions to estimate mentally and assess the reasonableness of answers.',
+    url: 'http://corestandards.org/Math/Content/5/NF/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.A.1',
+    description: 'Add and subtract fractions with unlike denominators (including mixed numbers) by replacing given fractions with equivalent fractions in such a way as to produce an equivalent sum or difference of fractions with like denominators.',
+    url: 'http://corestandards.org/Math/Content/5/NF/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF.A',
+    description: 'Use equivalent fractions as a strategy to add and subtract fractions.',
+    url: 'http://corestandards.org/Math/Content/5/NF/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NF',
+    description: 'Number and Operations—Fractions',
+    url: 'http://corestandards.org/Math/Content/5/NF/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.B.4',
+    description: 'Classify two-dimensional figures in a hierarchy based on properties.',
+    url: 'http://corestandards.org/Math/Content/5/G/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.B.3',
+    description: 'Understand that attributes belonging to a category of two-dimensional figures also belong to all subcategories of that category.',
+    url: 'http://corestandards.org/Math/Content/5/G/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.B',
+    description: 'Classify two-dimensional figures into categories based on their properties.',
+    url: 'http://corestandards.org/Math/Content/5/G/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.A.2',
+    description: 'Represent real world and mathematical problems by graphing points in the first quadrant of the coordinate plane, and interpret coordinate values of points in the context of the situation.',
+    url: 'http://corestandards.org/Math/Content/5/G/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.A.1',
+    description: 'Use a pair of perpendicular number lines, called axes, to define a coordinate system, with the intersection of the lines (the origin) arranged to coincide with the 0 on each line and a given point in the plane located by using an ordered pair of numbers, called its coordinates. Understand that the first number indicates how far to travel from the origin in the direction of one axis, and the second number indicates how far to travel in the direction of the second axis, with the convention that the names of the two axes and the coordinates correspond (e.g., x-axis and x-coordinate, y-axis and y-coordinate).',
+    url: 'http://corestandards.org/Math/Content/5/G/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G.A',
+    description: 'Graph points on the coordinate plane to solve real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/5/G/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.G',
+    description: 'Geometry',
+    url: 'http://corestandards.org/Math/Content/5/G/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.5c',
+    description: 'Recognize volume as additive. Find volumes of solid figures composed of two non-overlapping right rectangular prisms by adding the volumes of the non-overlapping parts, applying this technique to solve real world problems.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/5/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.5b',
+    description: 'Apply the formulas V = l × w × h and V = b × h for rectangular prisms to find volumes of right rectangular prisms with whole-number edge lengths in the context of solving real world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/5/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.5a',
+    description: 'Find the volume of a right rectangular prism with whole-number side lengths by packing it with unit cubes, and show that the volume is the same as would be found by multiplying the edge lengths, equivalently by multiplying the height by the area of the base. Represent threefold whole-number products as volumes, e.g., to represent the associative property of multiplication.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/5/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.5',
+    description: 'Relate volume to the operations of multiplication and addition and solve real world and mathematical problems involving volume.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.4',
+    description: 'Measure volumes by counting unit cubes, using cubic cm, cubic in, cubic ft, and improvised units.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.3b',
+    description: 'A solid figure which can be packed without gaps or overlaps using n unit cubes is said to have a volume of n cubic units.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/3/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.3a',
+    description: 'A cube with side length 1 unit, called a "unit cube," is said to have "one cubic unit" of volume, and can be used to measure volume.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/3/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C.3',
+    description: 'Recognize volume as an attribute of solid figures and understand concepts of volume measurement.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.C',
+    description: 'Geometric measurement: understand concepts of volume and relate volume to multiplication and to addition.',
+    url: 'http://corestandards.org/Math/Content/5/MD/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.B.2',
+    description: 'Make a line plot to display a data set of measurements in fractions of a unit (1/2, 1/4, 1/8). Use operations on fractions for this grade to solve problems involving information presented in line plots.',
+    url: 'http://corestandards.org/Math/Content/5/MD/B/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.B',
+    description: 'Represent and interpret data.',
+    url: 'http://corestandards.org/Math/Content/5/MD/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.A.1',
+    description: 'Convert among different-sized standard measurement units within a given measurement system (e.g., convert 5 cm to 0.05 m), and use these conversions in solving multi-step, real world problems.',
+    url: 'http://corestandards.org/Math/Content/5/MD/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD.A',
+    description: 'Convert like measurement units within a given measurement system.',
+    url: 'http://corestandards.org/Math/Content/5/MD/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.MD',
+    description: 'Measurement and Data',
+    url: 'http://corestandards.org/Math/Content/5/MD'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.B.7',
+    description: 'Add, subtract, multiply, and divide decimals to hundredths, using concrete models or drawings and strategies based on place value, properties of operations, and/or the relationship between addition and subtraction; relate the strategy to a written method and explain the reasoning used.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.B.6',
+    description: 'Find whole-number quotients of whole numbers with up to four-digit dividends and two-digit divisors, using strategies based on place value, the properties of operations, and/or the relationship between multiplication and division. Illustrate and explain the calculation by using equations, rectangular arrays, and/or area models.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.B.5',
+    description: 'Fluently multiply multi-digit whole numbers using the standard algorithm.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.B',
+    description: 'Perform operations with multi-digit whole numbers and with decimals to hundredths.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.4',
+    description: 'Use place value understanding to round decimals to any place.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.3b',
+    description: 'Compare two decimals to thousandths based on meanings of the digits in each place, using >, =, and < symbols to record the results of comparisons.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/3/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.3a',
+    description: 'Read and write decimals to thousandths using base-ten numerals, number names, and expanded form, e.g., 347.392 = 3 × 100 + 4 × 10 + 7 × 1 + 3 × (1/10) + 9 × (1/100) + 2 × (1/1000).',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/3/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.3',
+    description: 'Read, write, and compare decimals to thousandths.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.2',
+    description: 'Explain patterns in the number of zeros of the product when multiplying a number by powers of 10, and explain patterns in the placement of the decimal point when a decimal is multiplied or divided by a power of 10. Use whole-number exponents to denote powers of 10.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A.1',
+    description: 'Recognize that in a multi-digit number, a digit in one place represents 10 times as much as it represents in the place to its right and 1/10 of what it represents in the place to its left.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT.A',
+    description: 'Understand the place value system.',
+    url: 'http://corestandards.org/Math/Content/5/NBT/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.NBT',
+    description: 'Number and Operations in Base Ten',
+    url: 'http://corestandards.org/Math/Content/5/NBT/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA.B.3',
+    description: 'Generate two numerical patterns using two given rules. Identify apparent relationships between corresponding terms. Form ordered pairs consisting of corresponding terms from the two patterns, and graph the ordered pairs on a coordinate plane.',
+    url: 'http://corestandards.org/Math/Content/5/OA/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA.B',
+    description: 'Analyze patterns and relationships.',
+    url: 'http://corestandards.org/Math/Content/5/OA/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA.A.2',
+    description: 'Write simple expressions that record calculations with numbers, and interpret numerical expressions without evaluating them.',
+    url: 'http://corestandards.org/Math/Content/5/OA/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA.A.1',
+    description: 'Use parentheses, brackets, or braces in numerical expressions, and evaluate expressions with these symbols.',
+    url: 'http://corestandards.org/Math/Content/5/OA/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA.A',
+    description: 'Write and interpret numerical expressions.',
+    url: 'http://corestandards.org/Math/Content/5/OA/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.5.OA',
+    description: 'Operations and Algebraic Thinking',
+    url: 'http://corestandards.org/Math/Content/5/OA/'
+  },
+];
 
 // var grade6 = [];
 
