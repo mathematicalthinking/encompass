@@ -2044,12 +2044,521 @@ var grade7 = [
   },
 ];
 
-// var grade8 = [];
+var grade8 = [
+  {
+    identifier: 'CCSS.Math.Content.8.F.B.5',
+    description: 'Describe qualitatively the functional relationship between two quantities by analyzing a graph (e.g., where the function is increasing or decreasing, linear or nonlinear). Sketch a graph that exhibits the qualitative features of a function that has been described verbally.',
+    url: 'http://corestandards.org/Math/Content/8/F/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.B.4',
+    description: 'Construct a function to model a linear relationship between two quantities. Determine the rate of change and initial value of the function from a description of a relationship or from two (x, y) values, including reading these from a table or from a graph. Interpret the rate of change and initial value of a linear function in terms of the situation it models, and in terms of its graph or a table of values.',
+    url: 'http://corestandards.org/Math/Content/8/F/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.B',
+    description: 'Use functions to model relationships between quantities.',
+    url: 'http://corestandards.org/Math/Content/8/F/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.A.3',
+    description: 'Interpret the equation y = mx + b as defining a linear function, whose graph is a straight line; give examples of functions that are not linear.',
+    url: 'http://corestandards.org/Math/Content/8/F/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.A.2',
+    description: 'Compare properties of two functions each represented in a different way (algebraically, graphically, numerically in tables, or by verbal descriptions).',
+    url: 'http://corestandards.org/Math/Content/8/F/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.A.1',
+    description: 'Understand that a function is a rule that assigns to each input exactly one output. The graph of a function is the set of ordered pairs consisting of an input and the corresponding output.',
+    url: 'http://corestandards.org/Math/Content/8/F/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F.A',
+    description: 'Define, evaluate, and compare functions.',
+    url: 'http://corestandards.org/Math/Content/8/F/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.F',
+    description: 'Functions',
+    url: 'http://corestandards.org/Math/Content/8/F'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP.A.4',
+    description: 'Understand that patterns of association can also be seen in bivariate categorical data by displaying frequencies and relative frequencies in a two-way table. Construct and interpret a two-way table summarizing data on two categorical variables collected from the same subjects. Use relative frequencies calculated for rows or columns to describe possible association between the two variables.',
+    url: 'http://corestandards.org/Math/Content/8/SP/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP.A.3',
+    description: 'Use the equation of a linear model to solve problems in the context of bivariate measurement data, interpreting the slope and intercept.',
+    url: 'http://corestandards.org/Math/Content/8/SP/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP.A.2',
+    description: 'Know that straight lines are widely used to model relationships between two quantitative variables. For scatter plots that suggest a linear association, informally fit a straight line, and informally assess the model fit by judging the closeness of the data points to the line.',
+    url: 'http://corestandards.org/Math/Content/8/SP/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP.A.1',
+    description: 'Construct and interpret scatter plots for bivariate measurement data to investigate patterns of association between two quantities. Describe patterns such as clustering, outliers, positive or negative association, linear association, and nonlinear association.',
+    url: 'http://corestandards.org/Math/Content/8/SP/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP.A',
+    description: 'Investigate patterns of association in bivariate data.',
+    url: 'http://corestandards.org/Math/Content/8/SP/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.SP',
+    description: 'Statistics and Probability',
+    url: 'http://corestandards.org/Math/Content/8/SP'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.8c',
+    description: 'Solve real-world and mathematical problems leading to two linear equations in two variables.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/8/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.8b',
+    description: 'Solve systems of two linear equations in two variables algebraically, and estimate solutions by graphing the equations. Solve simple cases by inspection.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/8/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.8a',
+    description: 'Understand that solutions to a system of two linear equations in two variables correspond to points of intersection of their graphs, because points of intersection satisfy both equations simultaneously.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/8/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.8',
+    description: 'Analyze and solve pairs of simultaneous linear equations.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.7b',
+    description: 'Solve linear equations with rational number coefficients, including equations whose solutions require expanding expressions using the distributive property and collecting like terms.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/7/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.7a',
+    description: 'Give examples of linear equations in one variable with one solution, infinitely many solutions, or no solutions. Show which of these possibilities is the case by successively transforming the given equation into simpler forms, until an equivalent equation of the form x = a, a = a, or a = b results (where a and b are different numbers).',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/7/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C.7',
+    description: 'Solve linear equations in one variable.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.C',
+    description: 'Analyze and solve linear equations and pairs of simultaneous linear equations.',
+    url: 'http://corestandards.org/Math/Content/8/EE/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.B.6',
+    description: 'Use similar triangles to explain why the slope m is the same between any two distinct points on a non-vertical line in the coordinate plane; derive the equation y = mx for a line through the origin and the equation y = mx + b for a line intercepting the vertical axis at b.',
+    url: 'http://corestandards.org/Math/Content/8/EE/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.B.5',
+    description: 'Graph proportional relationships, interpreting the unit rate as the slope of the graph. Compare two different proportional relationships represented in different ways.',
+    url: 'http://corestandards.org/Math/Content/8/EE/B/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.B',
+    description: 'Understand the connections between proportional relationships, lines, and linear equations.',
+    url: 'http://corestandards.org/Math/Content/8/EE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.A.4',
+    description: 'Perform operations with numbers expressed in scientific notation, including problems where both decimal and scientific notation are used. Use scientific notation and choose units of appropriate size for measurements of very large or very small quantities (e.g., use millimeters per year for seafloor spreading). Interpret scientific notation that has been generated by technology.',
+    url: 'http://corestandards.org/Math/Content/8/EE/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.A.3',
+    description: 'Use numbers expressed in the form of a single digit times an integer power of 10 to estimate very large or very small quantities, and to express how many times as much one is than the other.',
+    url: 'http://corestandards.org/Math/Content/8/EE/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.A.2',
+    description: 'Use square root and cube root symbols to represent solutions to equations of the form x² = p and x³ = p, where p is a positive rational number. Evaluate square roots of small perfect squares and cube roots of small perfect cubes. Know that √2 is irrational.',
+    url: 'http://corestandards.org/Math/Content/8/EE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.A.1',
+    description: 'Know and apply the properties of integer exponents to generate equivalent numerical expressions.',
+    url: 'http://corestandards.org/Math/Content/8/EE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE.A',
+    description: 'Work with radicals and integer exponents.',
+    url: 'http://corestandards.org/Math/Content/8/EE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.EE',
+    description: 'Expressions and Equations',
+    url: 'http://corestandards.org/Math/Content/8/EE'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.NS.A.2',
+    description: 'Use rational approximations of irrational numbers to compare the size of irrational numbers, locate them approximately on a number line diagram, and estimate the value of expressions (e.g., π²).',
+    url: 'http://corestandards.org/Math/Content/8/NS/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.NS.A.1',
+    description: 'Know that numbers that are not rational are called irrational. Understand informally that every number has a decimal expansion; for rational numbers show that the decimal expansion repeats eventually, and convert a decimal expansion which repeats eventually into a rational number.',
+    url: 'http://corestandards.org/Math/Content/8/NS/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.NS.A',
+    description: 'Know that there are numbers that are not rational, and approximate them by rational numbers.',
+    url: 'http://corestandards.org/Math/Content/8/NS/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.NS',
+    description: 'The Number System',
+    url: 'http://corestandards.org/Math/Content/8/NS'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.C.9',
+    description: 'Know the formulas for the volumes of cones, cylinders, and spheres and use them to solve real-world and mathematical problems.',
+    url: 'http://corestandards.org/Math/Content/8/G/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.C',
+    description: 'Solve real-world and mathematical problems involving volume of cylinders, cones, and spheres.',
+    url: 'http://corestandards.org/Math/Content/8/G/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.B.8',
+    description: 'Apply the Pythagorean Theorem to find the distance between two points in a coordinate system.',
+    url: 'http://corestandards.org/Math/Content/8/G/B/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.B.7',
+    description: 'Apply the Pythagorean Theorem to determine unknown side lengths in right triangles in real-world and mathematical problems in two and three dimensions.',
+    url: 'http://corestandards.org/Math/Content/8/G/B/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.B.6',
+    description: 'Explain a proof of the Pythagorean Theorem and its converse.',
+    url: 'http://corestandards.org/Math/Content/8/G/B/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.B',
+    description: 'Understand and apply the Pythagorean Theorem.',
+    url: 'http://corestandards.org/Math/Content/8/G/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.5',
+    description: 'Use informal arguments to establish facts about the angle sum and exterior angle of triangles, about the angles created when parallel lines are cut by a transversal, and the angle-angle criterion for similarity of triangles.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.4',
+    description: 'Understand that a two-dimensional figure is similar to another if the second can be obtained from the first by a sequence of rotations, reflections, translations, and dilations; given two similar two-dimensional figures, describe a sequence that exhibits the similarity between them.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.3',
+    description: 'Describe the effect of dilations, translations, rotations, and reflections on two-dimensional figures using coordinates.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.2',
+    description: 'Understand that a two-dimensional figure is congruent to another if the second can be obtained from the first by a sequence of rotations, reflections, and translations; given two congruent figures, describe a sequence that exhibits the congruence between them.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.1c',
+    description: 'Parallel lines are taken to parallel lines.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/1/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.1b',
+    description: 'Angles are taken to angles of the same measure.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.1a',
+    description: 'Lines are taken to lines, and line segments to line segments of the same length.',
+    url: 'http://corestandards.org/Math/Content/8/G/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A.1',
+    description: 'Verify experimentally the properties of rotations, reflections, and translations:',
+    url: 'http://corestandards.org/Math/Content/8/G/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G.A',
+    description: 'Understand congruence and similarity using physical models, transparencies, or geometry software.',
+    url: 'http://corestandards.org/Math/Content/8/G/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.8.G',
+    description: 'Geometry',
+    url: 'http://corestandards.org/Math/Content/8/G/'
+  },
+];
 
-// var grade9 = [];
+var gradeHSS = [
+
+];
+
+var gradeHSAlgebra = [
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.12',
+    description: 'Graph the solutions to a linear inequality in two variables as a half-plane (excluding the boundary in the case of a strict inequality), and graph the solution set to a system of linear inequalities in two variables as the intersection of the corresponding half-planes.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/12'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.11',
+    description: 'Explain why the x-coordinates of the points where the graphs of the equations y = f(x) and y = g(x) intersect are the solutions of the equation f(x) = g(x); find the solutions approximately, e.g., using technology to graph the functions, make tables of values, or find successive approximations. Include cases where f(x) and/or g(x) are linear, polynomial, rational, absolute value, exponential, and logarithmic functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/11'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.D.10',
+    description: 'Understand that the graph of an equation in two variables is the set of all its solutions plotted in the coordinate plane, often forming a curve (which could be a line).',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D/10'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.D',
+    description: 'Represent and solve equations and inequalities graphically',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/D'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.9',
+    description: '(+) Find the inverse of a matrix if it exists and use it to solve systems of linear equations (using technology for matrices of dimension 3 × 3 or greater).',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/9'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.8',
+    description: '(+) Represent a system of linear equations as a single matrix equation in a vector variable.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/8'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.7',
+    description: 'Solve a simple system consisting of a linear equation and a quadratic equation in two variables algebraically and graphically.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.6',
+    description: 'Solve systems of linear equations exactly and approximately (e.g., with graphs), focusing on pairs of linear equations in two variables.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C.5',
+    description: 'Prove that, given a system of two equations in two variables, replacing one equation by the sum of that equation and a multiple of the other produces a system with the same solutions.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.C',
+    description: 'Solve systems of equations',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4b',
+    description: 'Solve quadratic equations by inspection (e.g., for x² = 49), taking square roots, completing the square, the quadratic formula and factoring, as appropriate to the initial form of the equation. Recognize when the quadratic formula gives complex solutions and write them as a ± bi for real numbers a and b.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4a',
+    description: 'Use the method of completing the square to transform any quadratic equation in x into an equation of the form (x - p)² = q that has the same solutions. Derive the quadratic formula from this form.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.4',
+    description: 'Solve quadratic equations in one variable.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.B.3',
+    description: 'Solve linear equations and inequalities in one variable, including equations with coefficients represented by letters.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.B',
+    description: 'Solve equations and inequalities in one variable',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.A.2',
+    description: 'Solve simple rational and radical equations in one variable, and give examples showing how extraneous solutions may arise.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.A.1',
+    description: 'Explain each step in solving a simple equation as following from the equality of numbers asserted at the previous step, starting from the assumption that the original equation has a solution. Construct a viable argument to justify a solution method.',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI.A',
+    description: 'Understand solving equations as a process of reasoning and explain the reasoning',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-REI',
+    description: 'Reasoning with Equations and Inequalities',
+    url: 'http://corestandards.org/Math/Content/HSA/REI/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.4',
+    description: 'Rearrange formulas to highlight a quantity of interest, using the same reasoning as in solving equations.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.3',
+    description: 'Represent constraints by equations or inequalities, and by systems of equations and/or inequalities, and interpret solutions as viable or nonviable options in a modeling context.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.2',
+    description: 'Create equations in two or more variables to represent relationships between quantities; graph equations on coordinate axes with labels and scales.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A.1',
+    description: 'Create equations and inequalities in one variable and use them to solve problems. Include equations arising from linear and quadratic functions, and simple rational and exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED.A',
+    description: 'Create equations that describe numbers or relationships',
+    url: 'http://corestandards.org/Math/Content/HSA/CED/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-CED',
+    description: 'Creating Equations',
+    url: 'http://corestandards.org/Math/Content/HSA/CED'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.D.7',
+    description: '(+) Understand that rational expressions form a system analogous to the rational numbers, closed under addition, subtraction, multiplication, and division by a nonzero rational expression; add, subtract, multiply, and divide rational expressions.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D/7'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.D.6',
+    description: 'Rewrite simple rational expressions in different forms; write <sup>a(x </sup>/<sub>b(x)</sub> in the form q(x) + <sup>r(x)</sup>/<sub>b(x)</sub>, where a(x), b(x), q(x), and r(x) are polynomials with the degree of r(x) less than the degree of b(x), using inspection, long division, or, for the more complicated examples, a computer algebra system.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D/6'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.D',
+    description: 'Rewrite rational expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/D'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.C.5',
+    description: '(+) Know and apply the Binomial Theorem for the expansion of (x + y)<sup>n</sup> in powers of x and y for a positive integer n, where x and y are any numbers, with coefficients determined for example by Pascal\'s Triangle.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C/5'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.C.4',
+    description: 'Prove polynomial identities and use them to describe numerical relationships.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.C',
+    description: 'Use polynomial identities to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/C'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.B.3',
+    description: 'Identify zeros of polynomials when suitable factorizations are available, and use the zeros to construct a rough graph of the function defined by the polynomial.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.B.2',
+    description: 'Know and apply the Remainder Theorem: For a polynomial p(x) and a number a, the remainder on division by x - a is p(a), so p(a) = 0 if and only if (x - a) is a factor of p(x).',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.B',
+    description: 'Understand the relationship between zeros and factors of polynomials',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.A.1',
+    description: 'Understand that polynomials form a system analogous to the integers, namely, they are closed under the operations of addition, subtraction, and multiplication; add, subtract, and multiply polynomials.',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR.A',
+    description: 'Perform arithmetic operations on polynomials',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-APR',
+    description: 'Arithmetic with Polynomials and Rational Expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/APR/'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.4',
+    description: 'Derive the formula for the sum of a finite geometric series (when the common ratio is not 1), and use the formula to solve problems.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/4'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3c',
+    description: 'Use the properties of exponents to transform expressions for exponential functions.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/c'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3b',
+    description: 'Complete the square in a quadratic expression to reveal the maximum or minimum value of the function it defines.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3a',
+    description: 'Factor a quadratic expression to reveal the zeros of the function it defines.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B.3',
+    description: 'Choose and produce an equivalent form of an expression to reveal and explain properties of the quantity represented by the expression.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.B',
+    description: 'Write expressions in equivalent forms to solve problems',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/B'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.2',
+    description: 'Use the structure of an expression to identify ways to rewrite it.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/2'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1b',
+    description: 'Interpret complicated expressions by viewing one or more of their parts as a single entity.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/b'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1a',
+    description: 'Interpret parts of an expression, such as terms, factors, and coefficients.',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/a'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A.1',
+    description: 'Interpret expressions that represent a quantity in terms of its context',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE.A',
+    description: 'Interpret the structure of expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/A'
+  },
+  {
+    identifier: 'CCSS.Math.Content.HSA-SSE',
+    description: 'Seeing Structure in Expressions',
+    url: 'http://corestandards.org/Math/Content/HSA/SSE/'
+  },
+];
 
 
-var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7);
+
+
+
+var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra);
 
 var CategoriesSeeder = Seeder.extend({
   shouldRun: function () {
@@ -2061,3 +2570,5 @@ var CategoriesSeeder = Seeder.extend({
 });
 
 module.exports = CategoriesSeeder;
+
+
