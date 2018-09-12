@@ -13,21 +13,20 @@ function errorHandler(error) {
   var errors = error.errors;
   var is404;
 
-
-  if (Array.isArray(errors) && errors[0]) {
-    is404 = errors[0].status === '404';
-  }
-
-  if (is404) {
-    return;
-  }
-
-  if (Array.isArray(errorMsg)) {
+  if (Array.isArray(error)) {
     errorMsg.forEach((err) => {
       window.alert(JSON.stringify(err));
     });
   } else {
     window.alert(JSON.stringify(errorMsg));
+
+    if (Array.isArray(errors) && errors[0]) {
+      is404 = errors[0].status === '404';
+    }
+
+    if (is404) {
+      return;
+    }
   }
 };
 

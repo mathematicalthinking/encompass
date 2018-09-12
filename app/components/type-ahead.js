@@ -14,10 +14,8 @@ Encompass.TypeAheadComponent = Ember.Component.extend({
   },
 
   getValue: function(optionalText) {
-    console.log('running getVal');
     let text;
     if (typeof optionalText === 'string') {
-      console.log('running get with arg', optionalText);
       text = optionalText;
     } else {
       text = this.get('textValue');
@@ -58,7 +56,6 @@ Encompass.TypeAheadComponent = Ember.Component.extend({
 
   actions: {
     toggleFocus: function(type) {
-      console.log('toggling focus', type);
       if (type === 'out') {
         let $org = document.getElementById('organization');
 
