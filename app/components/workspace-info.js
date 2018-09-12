@@ -14,7 +14,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
 
     this.get('store').query('user', {
-      username: searchText,
+      usernameSearch: searchText,
     }).then((people) => {
       this.set('editorSearchResults', people.rejectBy('accountType', 'S'));
     });

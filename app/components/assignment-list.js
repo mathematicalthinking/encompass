@@ -9,7 +9,7 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     });
     filtered = filtered.sortBy('createDate').reverse();
     this.set('assignmentList', filtered);
-  }.observes('assignments.@each.isTrashed'),
+  }.observes('assignments.@each.isTrashed', 'currentUser.isStudent'),
 
 
 });

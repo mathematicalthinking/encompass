@@ -7,7 +7,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var currentUser = this.get('currentUser');
     var yourSections = sections.filterBy('createdBy.content', currentUser);
     return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed'),
+  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
 
   // This displays the sections if you are inside the teachers array
   // This works but by default if you create it you are in the teacher's array
@@ -30,13 +30,13 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
 
     return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed'),
+  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
 
   orgSections: function () {
     var sections = this.sections.rejectBy('isTrashed');
     var studentSections = sections.filterBy('organization');
     return studentSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed'),
+  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
 
   studentSections: function () {
     var sections = this.sections.rejectBy('isTrashed');
@@ -50,7 +50,7 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     });
     return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed'),
+  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
 
   allSections: function () {
     var sections = this.sections.rejectBy('isTrashed');
@@ -62,7 +62,8 @@ Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     });
     return allSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed'),
+  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
+
 });
 
 // we want to get all the sections that you are in the teachers array but not createdBy

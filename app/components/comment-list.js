@@ -125,6 +125,21 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return (this.get('onSelection') && this.get('allowedToComment'));
   }.property('onSelection', 'allowedToComment'),
 
+  handleLoadingMessage: function() {
+    const that = this;
+    if (!this.get('isLoadingSearchResults')) {
+      this.set('showLoadingMessage', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying || !that.get('isLoadingSearchResults')) {
+        return;
+      }
+      that.set('showLoadingMessage', true);
+    }, 500);
+
+  }.observes('isLoadingSearchResults'),
+
   actions: {
     cancelComment: function() {
       this.clearCommentParent();

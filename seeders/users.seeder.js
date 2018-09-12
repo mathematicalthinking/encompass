@@ -172,6 +172,7 @@ var data = [{
     "sections": [],
     "isTrashed": false,
     "isEmailConfirmed": true,
+    "actingRole": "teacher"
   }, {
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
@@ -184,6 +185,8 @@ var data = [{
     "isTrashed": false,
     "isEmailConfirmed": true,
     "createDate": "2018-08-17T10:20:51.382Z",
+    "actingRole": "teacher",
+    "createdBy": "5b245841ac75842be3189526"
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
@@ -233,6 +236,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72273c5b50ea3fe3d01a0b"
   },
   {
     "_id": "5b72278b5b50ea3fe3d01a34",
@@ -248,6 +252,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72278b5b50ea3fe3d01a34"
   },
   {
     "_id": "5b72e05ba459749f7d9c1709",
@@ -264,6 +269,7 @@ var data = [{
     "isAuthorized": true,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
+    "createdBy": "5b72e05ba459749f7d9c1709"
   },
   {
     "_id": "5b72e6465b50ea3fe3d1623c",
@@ -280,6 +286,7 @@ var data = [{
     "createDate": "2018-08-14T18:20:51.382Z",
     "isAuthorized": true,
     "isTrashed": false,
+    "createdBy": "5b72e6465b50ea3fe3d1623c"
   },
   {
     "_id": "5b7321ee59a672806ec903d5",
@@ -311,8 +318,254 @@ var data = [{
     "lastModifiedDate": "2018-08-14T18:20:51.382Z",
     "isTrashed": false,
     "createDate": "2018-08-14T18:20:51.382Z",
-    "lastSeen": "2018-08-16T20:19:26.457Z"
-  }
+    "lastSeen": "2018-08-16T20:19:26.457Z",
+    "actingRole": "teacher",
+    "createdBy": "5b7321ee59a672806ec903d5"
+  },
+  {
+    "_id" : "5b913ebe3add43b868ae9807",
+    "organization" : "5b4a64a028e4b75919c28512",
+    "username" : "jamie4",
+    "password" : "$2a$12$9yHQw56mEBj/3RdMj/1ohuF1pjxk9s.Jq6fBGAYqBs/wPwVyAvYR2",
+    "accountType" : "S",
+    "createdBy" : "5b245841ac75842be3189526",
+    "history" : [],
+    "assignments" : ["5b9146a83add43b868ae9809"],
+    "answers" : [],
+    "sections" : [
+        {
+            "sectionId" : "5b913e723add43b868ae9804",
+            "role" : "student"
+        }
+    ],
+    "isEmailConfirmed" : false,
+    "isAuthorized" : true,
+    "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+    "isTrashed" : false,
+    "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+  "_id" : "5b913eaf3add43b868ae9806",
+  "organization" : "5b4a64a028e4b75919c28512",
+  "username" : "sam3",
+  "password" : "$2a$12$BncFqBAu92VeyuKX7WUQjuDREWncoR6BgG0.3aZOulruEs5iwb7qS",
+  "accountType" : "S",
+  "createdBy" : "5b245841ac75842be3189526",
+  "history" : [],
+  "assignments" : ["5b9146a83add43b868ae9809"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b913e723add43b868ae9804",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+  "_id" : "5b913ea33add43b868ae9805",
+  "organization" : "5b4a64a028e4b75919c28512",
+  "username" : "alex8",
+  "password" : "$2a$12$VJaCSw8ISla5ntkNL07qjuF.rU/ZV3xgmbnAyEbyUEN.acBOnavym",
+  "accountType" : "S",
+  "createdBy" : "5b245841ac75842be3189526",
+  "history" : [],
+  "assignments" : ["5b9146a83add43b868ae9809"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b913e723add43b868ae9804",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-05T20:57:31.730Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-05T20:57:31.730Z"
+},
+{
+    "_id" : "5b9149f52ecaf7c30dd47491",
+    "organization" : "5b4e4d5f808c7eebc9f9e82c",
+    "username" : "morganf",
+    "password" : "$2a$12$bJ6SE4Y7KTAt1VtatrwSku2Y.wqto0JQKUjJvkvwGHkoelr2tOKX.",
+    "accountType" : "S",
+    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "history" : [],
+    "assignments" : ["5b91743a3da5efca74705773"],
+    "answers" : [],
+    "sections" : [
+        {
+            "sectionId" : "5b9149a32ecaf7c30dd4748f",
+            "role" : "student"
+        }
+    ],
+    "isEmailConfirmed" : false,
+    "isAuthorized" : true,
+    "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+    "isTrashed" : false,
+    "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b9149c22ecaf7c30dd47490",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "username" : "ashleyc",
+  "password" : "$2a$12$X7PKqTfa/ydePAKPNGGd4ObP9W6NSE34Cdwf3dYpT2BJh3oA2mSda",
+  "accountType" : "S",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b9149a32ecaf7c30dd4748f",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b914a102ecaf7c30dd47492",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "username" : "tracyc",
+  "password" : "$2a$12$svhAmCvhB2Q0iSJlwMyH6.2q4nJKLBvnGAVfXRVqkXDJKotpWd4Wq",
+  "accountType" : "S",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [
+      {
+          "sectionId" : "5b9149a32ecaf7c30dd4748f",
+          "role" : "student"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z"
+},
+{
+  "_id" : "5b914a802ecaf7c30dd47493",
+  "confirmEmailExpires" : "2018-09-07T15:40:48.142Z",
+  "confirmEmailToken" : "329ff40a5d27344c6681d2d93bc1f628d71501fe",
+  "name" : "Taylor Taylorson",
+  "email" : "taylor@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "teachertaylor",
+  "password" : "$2a$12$p.4iz7z06yQdV4kyUAmq6.jG2Z0CHCCoyQppY21x8j5WhmcyDLxPG",
+  "accountType" : "T",
+  "createdBy" : "5b245760ac75842be3189525",
+  "authorizedBy" : "5b245760ac75842be3189525",
+  "actingRole" : "teacher",
+  "history" : [],
+  "assignments" : [],
+  "answers" : [],
+  "sections" : [
+      {
+          "role" : "teacher",
+          "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "lastModifiedBy" : null,
+  "lastSeen" : null,
+  "organizationRequest" : null,
+  "requestReason" : null,
+  "seenTour" : null
+},
+{
+  "_id" : "5b9149552ecaf7c30dd4748e",
+  "name" : "Summer Smith",
+  "email" : "ssmith@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "ssmith",
+  "password" : "$2a$12$rAJwBMeVR5RXPhKGGgMRdOM/OaOREMrsIPE2HZcBI0PCW2cME4IFi",
+  "requestReason" : "Professional Development",
+  "accountType" : "T",
+  "actingRole" : "teacher",
+  "history" : [],
+  "assignments" : [],
+  "answers" : [],
+  "sections" : [
+      {
+          "role" : "teacher",
+          "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      }
+  ],
+  "isEmailConfirmed" : true,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-06T15:36:31.451Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "lastSeen" : "2018-09-06T15:41:14.918Z",
+  "authorizedBy" : null,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : "5b245760ac75842be3189525",
+  "seenTour" : null,
+  "actingRole": "teacher"
+},
+{
+  "_id" : "5b99146e25b620610ceead75",
+  "confirmEmailExpires" : "2018-09-13T13:28:14.336Z",
+  "confirmEmailToken" : "877b58517e38015753f98d0e7f6594b31c3cc162",
+  "name" : "Al Allison",
+  "email" : "al@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "actingstudent",
+  "password" : "$2a$12$gPUKBtiXwchWW5Y/aBApcei3J69hV23pZDBQOFf4phK98uFdIzcwW",
+  "requestReason" : "PD",
+  "accountType" : "T",
+  "actingRole" : "student",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [{
+    "role" : "student",
+    "sectionId" : "5b9149a32ecaf7c30dd4748f"
+}],
+  "isEmailConfirmed" : true,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-12T13:29:14.361Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-12T02:41:40.407Z",
+  "lastSeen" : "2018-09-12T13:28:36.769Z",
+  "authorizedBy" : null,
+  "createdBy" : null,
+  "lastModifiedBy" : "5b245760ac75842be3189525",
+  "seenTour" : null
+},
+{
+  "_id" : "52a695c2cc319831440007d0",
+  "createDate" : "2014-08-04T15:55:20.985Z",
+  "isAdmin" : false,
+  "isAuthorized" : true,
+  "isTrashed" : false,
+  "key" : "66036721-6f3f-4adf-90d9-d4192ff5f9ff",
+  "lastSeen" : "2015-03-22T12:38:55.745Z",
+  "name" : "",
+  "seenTour" : null,
+  "username" : "mr_stadel",
+  "lastModifiedDate" : "2018-08-27T19:17:23.796Z",
+  "accountType" : "T",
+  "createdBy": "52a695c2cc319831440007d0"
+}
 ];
 
 var UsersSeeder = Seeder.extend({

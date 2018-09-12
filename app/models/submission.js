@@ -48,7 +48,7 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   */
 
   imageUrl: function () {
-    return 'http://mathforum.org/encpows/uploaded-images/' + this.get('attachment.savedFileName');
+    return 'http://mathforum.org/encpows/uploaded-images/' + this.get('uploadedFile.savedFileName');
   }.property(),
 
   student: function () {

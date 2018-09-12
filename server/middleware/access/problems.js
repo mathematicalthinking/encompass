@@ -1,4 +1,6 @@
 const utils = require('./utils');
+const models = require('../../datasource/schemas');
+
 module.exports.get = {};
 
 async function getStudentProblems(user) {

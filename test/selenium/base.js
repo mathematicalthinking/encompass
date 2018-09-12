@@ -12,6 +12,7 @@ const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
+const userAuth = require('../../server/middleware/userAuth');
 
 const host = helpers.host;
 
@@ -146,7 +147,7 @@ describe('Home Page', function () {
   xdescribe('Logging in with google', async function () {
     let emailInput = 'input[type="email"]';
     // let emailAddress = 'encompassmath@gmail.com';
-    let emailAddress = getEmailAuth().username;
+    let emailAddress = userAuth.getEmailAuth().username;
     //let password = process.env.GMAIL_PASSWORD;
     before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.login);

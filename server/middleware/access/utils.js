@@ -205,6 +205,25 @@ async function getUsersFromWorkspaces(workspaceIds) {
 
 }
 
+const getCreatorIds = async function(crit={}) {
+  try {
+    let users = await models.User.find(crit, {createdBy: 1}).lean().exec();
+    let creators = users.map((user) => {
+      let createdBy = user.createdBy;
+      if (!createdBy) {
+        return null;
+      }
+      return createdBy.toString();
+    });
+
+    creators = _.without(creators, null);
+    return _.uniq(creators);
+  }catch(err) {
+    console.error('error getAccessibleUsersCreators', err);
+    console.trace();
+  }
+}
+
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
 module.exports.getStudentSections = getStudentSections;
@@ -217,4 +236,5 @@ module.exports.getTeacherAssignments = getTeacherAssignments;
 module.exports.getTeacherSectionsById = getTeacherSectionsById;
 module.exports.getOrgSections = getOrgSections;
 module.exports.getAssignmentProblems = getAssignmentProblems;
+module.exports.getCreatorIds = getCreatorIds;
 /* jshint ignore:end */

@@ -113,7 +113,7 @@ describe('Responses', function() {
         }
       });
 
-      it('should let us save and take us to a new URL', async function() {
+      xit('should let us save and take us to a new URL', async function() {
         try {
           await driver.findElement(By.css('button.save:enabled')).click();
           await driver.wait(until.urlMatches(/#\/responses\/[0-9a-f]{24}$/),3000);

@@ -59,8 +59,8 @@ async function sendUsers(req, res, next) {
 
   var criteria;
 
-  if (req.query.username) {
-    var username = req.query.username;
+  if (req.query.usernameSearch) {
+    var username = req.query.usernameSearch;
     var regex;
     // we currently allow emails as usernames so had to fix this to just replace whitespace
     username = username.replace(/\s+/g, "");
@@ -84,6 +84,8 @@ async function sendUsers(req, res, next) {
         data = {'user': requestedUsers};
       return utils.sendResponse(res, data);
 
+  } else if (req.query.username) {
+    criteria = await access.get.users(user, null, req.query.username)
   } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids, null);
   } else {
@@ -96,7 +98,9 @@ async function sendUsers(req, res, next) {
       if (err) {
         return utils.sendError.InternalError(err, res);
       }
-
+      if (_.isEmpty(docs)) {
+        return utils.sendResponse(res, null);
+      }
       docs.forEach(function(doc){
         delete doc.key; //don't send the users keys out
         delete doc.history; //don't send user history out
@@ -120,8 +124,7 @@ async function sendUsers(req, res, next) {
 async function sendUser(req, res, next) {
   console.log('params.id', req.params.id);
   try {
-    var user = userAuth.getUser(req);
-
+    var user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.NotAuthorizedError(null, res);
     }
@@ -153,6 +156,9 @@ async function sendUser(req, res, next) {
       delete data.user.key; //hide key
       delete data.user.history; // hide history
       // delete data.user.password;
+      if (user.accountType === 'S') {
+        delete data.user.createdBy;
+      }
 
       return utils.sendResponse(res, data);
     }

@@ -57,7 +57,6 @@ var SectionSchema = new Schema({
 //   * After saving we must ensure (synchonously) that:
 //   */
 SectionSchema.post('save', function (Section) {
-  console.log('section post', Section);
   var update = { $addToSet: { 'sections': { sectionId: Section, role: 'teacher'} } };
   if (Section.isTrashed) {
     var SectionIdObj = mongoose.Types.ObjectId(Section._id);
