@@ -16,6 +16,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
+    if (Ember.isEmpty(user)) {
+      return;
+    }
     let creator = user.get('createdBy.content.id');
     let currentUserId = this.get('currentUser').get('id');
     let accountType = this.get('currentUser').get('accountType');
