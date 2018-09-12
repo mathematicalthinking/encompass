@@ -218,12 +218,12 @@ describe('Users', function() {
 
       it('should have a list of teachers', async function () {
         expect(await helpers.getWebElements(driver, 'ul.teacher-users>li')).to.have.lengthOf.at.least(11);
-        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('morty');
+        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('actingstudent');
       });
 
       it('should have a list of students', async function () {
         expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf.at.least(1);
-        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('student1');
+        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('tracyc');
       });
 
       describe('clicking on your own account', function () {
@@ -540,7 +540,7 @@ describe('Users', function() {
 
       it('should have a list of users you have created', async function () {
         expect(await helpers.getWebElements(driver, 'ul.your-users>li')).to.have.lengthOf.at.least(1);
-        expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('student1');
+        expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('jamie4');
       });
 
       it('should have a list of users in your org', async function () {

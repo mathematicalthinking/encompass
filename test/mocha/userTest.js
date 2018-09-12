@@ -18,7 +18,7 @@ describe('User CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
   async function runTests(user) {
-    describe(`User CRUD operations as accountType: ${user.accountType}` , function() {
+    describe(`User CRUD operations as ${user.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
@@ -51,15 +51,12 @@ describe('User CRUD operations by account type', async function() {
       if (user.accountType !== 'A') {
         /** GET **/
         describe('/GET unaccessible user by username', () => {
-          it('should return an empty array', done => {
+          it('should return 404 error', done => {
             agent
             .get(baseUrl)
             .query(`username=${unaccessibleUser.username}`)
             .end((err, res) => {
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.all.keys('user');
-              expect(res.body.user).to.be.a('array');
-              expect(res.body.user.length).to.eql(0);
+              expect(res).to.have.status(404);
               done();
             });
           });
@@ -160,7 +157,7 @@ describe('User CRUD operations by account type', async function() {
               }
             })
             .end((err, res) => {
-              if (user.accountType === 'S') {
+              if (user.accountType === 'S' || user.actingRole === 'student') {
                 expect(res).to.have.status(403);
                 done();
                 return;
