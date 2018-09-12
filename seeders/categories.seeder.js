@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Seeder = require('mongoose-data-seed').Seeder;
 var Category = require('../server/datasource/schemas').Category;
 
@@ -4852,12 +4853,14 @@ var gradeHSProbability = [
 
 var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra, gradeHSFunctions, gradeHsGeometry, gradeHSNumber, gradeHSProbability);
 
+var nonDuplicated = _.uniq(data, 'identifier');
+
 var CategoriesSeeder = Seeder.extend({
   shouldRun: function () {
     return Category.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Category.create(data);
+    return Category.create(nonDuplicated);
   }
 });
 
