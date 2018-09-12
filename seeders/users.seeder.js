@@ -519,6 +519,52 @@ var data = [{
   "lastModifiedBy" : "5b245760ac75842be3189525",
   "seenTour" : null,
   "actingRole": "teacher"
+},
+{
+  "_id" : "5b99146e25b620610ceead75",
+  "confirmEmailExpires" : "2018-09-13T13:28:14.336Z",
+  "confirmEmailToken" : "877b58517e38015753f98d0e7f6594b31c3cc162",
+  "name" : "Al Allison",
+  "email" : "al@fakeemail.com",
+  "organization" : "5b4e4d5f808c7eebc9f9e82c",
+  "location" : "Conshohocken, PA",
+  "username" : "actingstudent",
+  "password" : "$2a$12$gPUKBtiXwchWW5Y/aBApcei3J69hV23pZDBQOFf4phK98uFdIzcwW",
+  "requestReason" : "PD",
+  "accountType" : "T",
+  "actingRole" : "student",
+  "history" : [],
+  "assignments" : ["5b91743a3da5efca74705773"],
+  "answers" : [],
+  "sections" : [{
+    "role" : "student",
+    "sectionId" : "5b9149a32ecaf7c30dd4748f"
+}],
+  "isEmailConfirmed" : true,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2018-09-12T13:29:14.361Z",
+  "isTrashed" : false,
+  "createDate" : "2018-09-12T02:41:40.407Z",
+  "lastSeen" : "2018-09-12T13:28:36.769Z",
+  "authorizedBy" : null,
+  "createdBy" : null,
+  "lastModifiedBy" : "5b245760ac75842be3189525",
+  "seenTour" : null
+},
+{
+  "_id" : "52a695c2cc319831440007d0",
+  "createDate" : "2014-08-04T15:55:20.985Z",
+  "isAdmin" : false,
+  "isAuthorized" : true,
+  "isTrashed" : false,
+  "key" : "66036721-6f3f-4adf-90d9-d4192ff5f9ff",
+  "lastSeen" : "2015-03-22T12:38:55.745Z",
+  "name" : "",
+  "seenTour" : null,
+  "username" : "mr_stadel",
+  "lastModifiedDate" : "2018-08-27T19:17:23.796Z",
+  "accountType" : "T",
+  "createdBy": "52a695c2cc319831440007d0"
 }
 ];
 
