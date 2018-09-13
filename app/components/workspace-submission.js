@@ -31,8 +31,8 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     submissions.forEach((submission) => {
       let answer = submission.get('answer').get('data');
       console.log('answer is', answer);
-      let assignment = answer.get('assignement');
-      console.log('assignment is', assignment);
+      // let assignment = answer.get('assignement');
+      // console.log('assignment is', assignment);
       // this.store.findRecord('answer', answerId).then((answer) => {
       //   console.log('answer is', answer);
       //   let assignment = answer.get('assignement');
@@ -51,11 +51,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
+
+    if (this.get('isDirty')) {
+      console.log('inside isDirty workspace leaving');
+      workspace.set('lastModifiedDate', new Date());
+      workspace.set('lastModifiedBy', this.get('currentUser'));
+    }
+
     workspace.save();
 
-    // if (this.get('isDirty')) {
-    //   workspace.save();
-    // }
     this._super(...arguments);
   },
 
