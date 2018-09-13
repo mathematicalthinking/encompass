@@ -213,6 +213,19 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
     showFolder: function() {
       console.log("Show folder!");
+    },
+
+    updateTaggings: function() {
+      console.log('updating taggings for: ', this.model.name);
+      let tags = this.model.get('taggings');
+      let tagIds = tags.mapBy('id');
+
+      this.store.query('tagging', {
+        ids: tagIds
+      }).then((tags) => {
+        console.log('queried tags', tags);
+        this.model.set('taggings', tags);
+      });
     }
   }
 });

@@ -133,7 +133,10 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
           tagging.save();
         }
       });
-
+      if (window.opener) {
+        var selector = `#updateTaggings${folder.get('id')}`;
+        window.opener.$(selector).click();
+      }
       //just don't reload per max's request it takes too much time
       //if(window.opener) { //if we are a popup
       //  // Refresh the workspace (opener) so the folder counts update...
