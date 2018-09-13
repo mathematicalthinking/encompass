@@ -21,6 +21,15 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   link: null,
   //editFolderMode: true, // (from folder controller)
 
+  didInsertElement: function() {
+    console.log(`didInsertElement for folder ${this.model.get('name')}`);
+    this.sendAction('loadedFolder');
+  },
+
+  init: function() {
+    this._super(...arguments);
+  },
+
   containsCurrentSubmission: function(){
     const submissions = this.model.get('submissions');
     const currentSubmission = this.get('currentSubmission');
