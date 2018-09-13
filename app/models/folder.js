@@ -69,8 +69,8 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
       .forEach(function(childSubmissions) {
         submissions.pushObjects(childSubmissions);
       });
-
-    return submissions.uniq();
+    // seems like you cannot use.uniq on objects after using.toArray()
+    return submissions.uniqBy('id');
   }.property('submissions.[]', 'children.@each._submissions', 'children.@each.isTrashed'),
 
   hasSelection: function(selectionId) {
