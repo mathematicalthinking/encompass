@@ -25,6 +25,22 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   init: function() {
     this._super(...arguments);
+    let workspace = this.get('currentWorkspace');
+    let submissions = workspace.get('submissions').get('content');
+    console.log('submissions are', submissions);
+    submissions.forEach((submission) => {
+      let answer = submission.get('answer').get('data');
+      console.log('answer is', answer);
+      let assignment = answer.get('assignement');
+      console.log('assignment is', assignment);
+      // this.store.findRecord('answer', answerId).then((answer) => {
+      //   console.log('answer is', answer);
+      //   let assignment = answer.get('assignement');
+      //   console.log('assignment is', assignment);
+      //   let answers = assignment.get('answers');
+      // });
+
+    });
   },
 
   didRender: function() {
