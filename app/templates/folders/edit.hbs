@@ -175,7 +175,7 @@
                         <li>
                           {{folder.name}}
                           {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                            <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                            <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
                           {{/if}}
                         </li>
                       {{/each}}
@@ -250,7 +250,7 @@
                 <li>
                   {{folder.name}}
                   {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                    <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                    <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
                   {{/if}}
                 </li>
               {{/each}}
