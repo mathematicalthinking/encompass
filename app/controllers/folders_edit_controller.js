@@ -15,7 +15,7 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   browseOption: 1,
   bySelection: Ember.computed.equal('browseOption', 1),
   bySubmission: Ember.computed.equal('browseOption', 0),
-  includeSubfolders: false,
+  includeSubfolders: true,
   submissionsCol: true,
   selectionsCol: true,
   commentsCol: false,
