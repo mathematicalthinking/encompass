@@ -169,7 +169,6 @@ function sendWorkspace(req, res, next) {
         if(!data) {
           return utils.sendCustomError(404, 'no such workspace', res);
         }
-        console.log('sendWorkspace is running and data is', data);
         utils.sendResponse(res, data);
       });
     }
