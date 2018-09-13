@@ -182,8 +182,8 @@ function sendWorkspace(req, res, next) {
   */
 function putWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').exec(function(err, ws){
-    if(!permissions.userCanModifyWorkspace(user, ws)) {
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
       if (err) {
@@ -193,9 +193,10 @@ function putWorkspace(req, res, next) {
       models.Workspace.findById(req.params.id).exec(function(err, ws){
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
-        ws.name    = req.body.workspace.name;
-        ws.lastModifiedDate = new Date();
-        ws.lastModifiedBy = user;
+        ws.name = req.body.workspace.name;
+        ws.lastViewed = new Date();
+        ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
+        ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
@@ -1064,7 +1065,9 @@ let workspace = new models.Workspace({
   submissionSet: submissionSet,
   submissions: submissionIds,
   createdBy: user,
-  lastModifiedBy: user
+  lastModifiedBy: user,
+  lastModifiedDate: new Date(),
+  lastViewed: new Date(),
 });
 let ws = await workspace.save();
 console.log('createdWs', ws._id);
