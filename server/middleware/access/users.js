@@ -160,7 +160,6 @@ const canGetUser = async function(user, id, username) {
 
   if (id) {
     criteria = await accessibleUsersQuery(user, [id], null);
-    console.log('crit', JSON.stringify(criteria));
   } else {
     criteria = await accessibleUsersQuery(user, null, [username]);
   }
