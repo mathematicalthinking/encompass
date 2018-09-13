@@ -34,7 +34,7 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
         selections.pushObjects(childSelections);
       });
     }
-    return selections.uniq();
+    return selections.uniqBy('id');
   }.property('children.@each._submissions', 'selections.@each.isTrashed'),
 
   _selections: function() {
