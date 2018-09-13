@@ -33,8 +33,11 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     let owner = workspace.get('owner');
     let creator = owner.get('content');
     let currentUser = this.get('currentUser');
+    let accountType = currentUser.get('accountType');
+    let isAdmin = accountType === "A" ? true : false;
+    let isOwner = creator.id === currentUser.id ? true : false;
 
-    let canEdit = creator.id === currentUser.id ? true : false;
+    let canEdit = isAdmin || isOwner;
     return canEdit;
   }),
 
