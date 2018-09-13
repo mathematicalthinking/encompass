@@ -124,7 +124,10 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       var store = this.get('store');
       var currentUser = this.get('currentUser');
 
-      folder.get('workspace')
+      // find folder from store to ensure data is updated
+
+      store.findRecord('folder', folder.get('id')).then((folder) => {
+        folder.get('workspace')
         .then(function(workspace) {
           workspace.get('selections')
             .then(function(selections) {
@@ -147,6 +150,9 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
               });
             });
         });
+      });
+
+
     }
   }
 });
