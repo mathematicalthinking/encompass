@@ -35,7 +35,7 @@ function getTaggings(req, res, next) {
   criteria = utils.buildCriteria(req);
 
   if (req.query.ids) {
-    criteria._id = { $in: req.query.id };
+    criteria._id = { $in: req.query.ids };
   }
 
   models.Tagging.find(criteria)
