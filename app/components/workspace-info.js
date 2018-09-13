@@ -5,6 +5,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedMode: null,
   searchText: "",
 
+
+  willDestroyElement: function () {
+    let workspace = this.get('workspace');
+    workspace.save();
+    this._super(...arguments);
+  },
+
   setSearchResults: function () {
     var searchText = this.get('searchText');
     console.log('search text is', searchText);
