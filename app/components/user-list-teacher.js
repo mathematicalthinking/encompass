@@ -8,12 +8,10 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
     let yourSections = this.get('currentUser').get('sections');
     let yourTeacherSections = yourSections.filterBy('role', 'teacher');
     let yourSectionIds = yourTeacherSections.map(section => { return section.sectionId; });
-    console.log('your sections ids', yourSectionIds);
 
     let studentUsers = this.users.filterBy('accountType', 'S');
 
     let studentListing = studentUsers.map((student) => {
-      console.log('student', student);
       for (let section of student.get('sections')) {
         if (section.role === 'student') {
           if (yourSectionIds.includes(section.sectionId)) {
