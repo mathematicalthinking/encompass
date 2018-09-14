@@ -70,7 +70,8 @@
           {{#if problem.origin}}
           <li>
             <label for="origin">Problem Origin</label>
-            <p class="problem-info">{{problem.origin.title}}</p>
+            <p class="problem-info">{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
+            {{!-- <p class="problem-info">{{problem.origin.title}}</p> --}}
           </li>
           {{/if}}
 
