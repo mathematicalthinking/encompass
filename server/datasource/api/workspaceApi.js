@@ -196,6 +196,7 @@ function putWorkspace(req, res, next) {
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
         ws.name = req.body.workspace.name;
+        ws.owner = req.body.workspace.owner;
         ws.lastViewed = new Date();
         ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
         ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
