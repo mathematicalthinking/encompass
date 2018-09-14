@@ -48,7 +48,24 @@
         <tr>
           <th>Owner</th>
           <td>
-            <span class="owner username">{{workspace.owner.username}}</span>
+            {{#if isEditing}}
+              {{#unless isChangingOwner}}
+                {{workspace.owner.username}}
+                <button {{action 'editOwner' workspace.owner}}> Change owner</button>
+              {{/unless}}
+              {{#if isChangingOwner}}
+                {{input type="text" id="edit-owner-input" placeholder=workspace.owner.username value=owner}}
+                <ul>
+                  {{#each ownerSearchResults as |result|}}
+                  <li>
+                    <button {{action 'changeOwner' result}}>{{result.username}}</button>
+                  </li>
+                  {{/each}}
+                </ul>
+              {{/if}}
+            {{else}}
+              <span class="owner username">{{workspace.owner.username}}</span>
+            {{/if}}
           </td>
         </tr>
         <tr>
