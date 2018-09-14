@@ -34,7 +34,7 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend({
   }),
 
   clearFields: function() {
-    const fields = ['email'];
+    const fields = ['email', 'username'];
     for (let field of fields) {
       this.set(field, null);
     }
@@ -43,9 +43,22 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend({
   actions: {
     handleRequest: function() {
       const email = this.get('email');
+      const username = this.get('username');
+
+      if (!email && !username) {
+        this.set('missingRequiredFields', true);
+        return;
+      }
+
+      if (email && username) {
+        this.set('tooMuchData', true);
+        return;
+      }
+
       const that = this;
       const forgotPasswordData = {
-        email
+        email,
+        username
       };
 
       return Ember.$.post({
@@ -64,12 +77,12 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend({
           this.set(('forgotPasswordErr', err));
         });
     },
-    resetErrors: function() {
-      const errors = ['forgotPasswordErr', 'missingRequiredFields'];
+    resetMessages: function() {
+      const messages = ['forgotPasswordErr', 'missingRequiredFields', 'tooMuchData', 'resetEmailSent'];
 
-      for (let error of errors) {
-        if (this.get(error)) {
-          this.set(error, false);
+      for (let message of messages) {
+        if (this.get(message)) {
+          this.set(message, false);
         }
       }
     },
