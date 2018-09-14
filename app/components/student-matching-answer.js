@@ -3,13 +3,16 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
   section: null,
   submission: null,
 
-  didInsertElement: function() {
-    var section = this.get('selectedSection');
-    var answer = this.get('answer');
+  didReceiveAttrs: function() {
+    const section = this.get('selectedSection');
+    const answer = this.get('answer');
+    const image = answer.explanationImage;
+    this.set('image', image);
+
     this.set('section', section);
     this.set('submission', answer);
-
   },
+
   actions: {
     updateAnswer: function(student) {
       this.set('assignedStudent', student);

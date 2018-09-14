@@ -4,4 +4,5 @@ Encompass.Image = DS.Model.extend(Encompass.Auditable, {
   mimetype: DS.attr('string'),
   imageData: DS.attr('string'),
   sourceUrl: DS.attr('string'),
+  originalname: DS.attr('string')
 });
