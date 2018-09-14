@@ -18,8 +18,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   editFolderMode: false,
   canManageFolders: true,
   sortProperties: ['weight', 'name'],
-  loadedFolders: 0,
-  isLoadingFolders: Ember.computed.not('areFoldersLoaded'),
   /*
   canManageFolders: function() {
     return Permissions.userCan(
@@ -32,18 +30,10 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   init: function() {
     this._super(...arguments);
     console.log('init folder-list');
-
-    let parentFolders = this.folders.filterBy('parent.content', null);
-    this.set('numFoldersToLoad', parentFolders.get('length'));
-
   },
   didInsertElement: function() {
     console.log('inserted element folder-list');
   },
-
-  areFoldersLoaded: function() {
-   return this.get('loadedFolders') === this.get('numFoldersToLoad');
-  }.property('loadedFolders'),
 
   filteredFolders: function() {
     return this.folders
@@ -212,10 +202,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         }
       }
     },
-
-    loadedFolder: function() {
-      this.set('loadedFolders', this.get('loadedFolders') + 1);
-    }
   }
 });
 
