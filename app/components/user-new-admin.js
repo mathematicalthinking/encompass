@@ -150,8 +150,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         });
     },
 
-    usernameValidate() {
-      var username = this.get('username');
+    usernameValidate(username) {
       if (username) {
         var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
         var usernameTest = usernamePattern.test(username);
@@ -169,8 +168,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       }
     },
 
-    emailValidate: function () {
-      var email = this.get('email');
+    emailValidate: function (email) {
       if (!email) {
         return false;
       }
@@ -188,8 +186,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       }
     },
 
-    passwordValidate: function () {
-      var password = this.get('password');
+    passwordValidate: function (password) {
 
       function hasWhiteSpace(string) {
         return /\s/g.test(string);
