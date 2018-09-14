@@ -71,7 +71,6 @@
           <li>
             <label for="origin">Problem Origin</label>
             <p class="problem-info">{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
-            {{!-- <p class="problem-info">{{problem.origin.title}}</p> --}}
           </li>
           {{/if}}
 
@@ -113,6 +112,7 @@
         {{/unless}}
         {{/if}}
       {{else}}
+          <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
           <button class="action_button" {{action 'addToMyProblems'}}>Add to My Problems</button>
       {{/if}}
 

@@ -14,6 +14,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemList: [],
   sectionList: null,
 
+  init: function () {
+    this._super(...arguments);
+    this.get('store').findAll('section').then(sections => {
+      this.set('sectionList', sections);
+    });
+  },
 
   didReceiveAttrs: function () {
     this.set('isWide', false);
@@ -27,10 +33,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem: problemId
     }).then((answer) => {
       if (answer !== null) {
-        console.log('answer exists and is', answer);
         this.set('isProblemUsed', true);
       } else {
-        console.log('answer does not exist and is', answer);
         this.set('isProblemUsed', false);
       }
     });

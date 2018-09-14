@@ -3,6 +3,7 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
     return Ember.RSVP.hash({
       problems: this.get('store').findAll('problem'),
       organizations: this.get('store').findAll('organization'),
+      sections: this.get('store').findAll('section'),
     });
   },
 
