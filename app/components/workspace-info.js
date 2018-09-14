@@ -13,8 +13,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   setSearchResults: function () {
-    var searchText = this.get('searchText');
-    console.log('search text is', searchText);
+    let searchText = this.get('searchText');
     searchText = searchText.replace(/\W+/g, "");
     if (searchText.length < 2) {
       return;
@@ -26,6 +25,20 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('editorSearchResults', people.rejectBy('accountType', 'S'));
     });
   }.observes('searchText'),
+
+  setOwnerResults: function () {
+    let owner = this.get('owner');
+    owner = owner.replace(/\W+/g, "");
+    if (owner.length < 2) {
+      return;
+    }
+
+    this.get('store').query('user', {
+      usernameSearch: owner,
+    }).then((people) => {
+      this.set('ownerSearchResults', people.rejectBy('accountType', 'S'));
+    });
+  }.observes('owner'),
 
 
   canEdit: Ember.computed('workspace.id', function () {
@@ -47,15 +60,27 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   actions: {
     removeEditor: function (editor) {
-        var workspace = this.get('workspace');
-        workspace.get('editors').removeObject(editor);
+      let workspace = this.get('workspace');
+      workspace.get('editors').removeObject(editor);
     },
 
     addEditor: function (editor) {
-      var workspace = this.get('workspace');
+      let workspace = this.get('workspace');
       if (!workspace.get('editors').contains(editor)) {
         workspace.get('editors').pushObject(editor);
       }
+    },
+
+    editOwner: function () {
+      this.set('isChangingOwner', true);
+    },
+
+    changeOwner: function (owner) {
+      let workspace = this.get('workspace');
+      console.log('owner is in changeOwner', owner);
+      workspace.set('owner', owner);
+      workspace.save();
+      this.set('isChangingOwner', false);
     },
 
     editWorkspace: function () {
@@ -67,9 +92,9 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     saveWorkspace: function () {
       // this.actions.changeMode.call(this);
       this.set('isEditing', false);
-      var mode = this.get('selectedMode');
+      let mode = this.get('selectedMode');
       console.log('selected mode is', mode);
-      var workspace = this.get('workspace');
+      let workspace = this.get('workspace');
       workspace.set('mode', mode);
       workspace.save();
 
