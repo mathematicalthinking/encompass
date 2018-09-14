@@ -41,13 +41,11 @@ function(err, user, info) {
 };
 
 const localSignup = (req, res, next) => {
- console.log('in localsignup :', req.body);
   passport.authenticate('local-signup', {
       // successRedirect: '/',
       // failureRedirect: '/#/auth/signup',
   },
   function (err, user, info) {
-    console.log('info', info);
     if (err) {
       console.error('localSignup error: ', err);
       console.trace();
@@ -61,8 +59,6 @@ const localSignup = (req, res, next) => {
       return utils.sendResponse(res, info);
     }
 
-    console.log('logging in user', user);
-    console.log('req user', req.user);
     if(!req.user) {
       req.logIn(user, function(err) {
         if (err) { return next(err); }
@@ -90,7 +86,6 @@ const googleReturn = (req, res, next) => {
 };
 
 const logout = (req, res, next) => {
-  console.log('LOGGING OUT!');
   req.logout();
   res.redirect('/');
 };
@@ -304,7 +299,6 @@ resendConfirmationEmail = async function(req, res, next) {
 
   try {
     let userRec = await models.User.findById(user._id);
-    const recipient = user.email;
     const token = await getResetToken(20);
 
     userRec.confirmEmailToken = token;
