@@ -38,6 +38,7 @@ describe('Sections', function () {
   describe('Visiting sections page', function () {
     before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.sections);
+      await helpers.waitForSelector(driver, 'ul.your-sections');
     });
     it('should display list of sections', async function () {
       expect(await helpers.getWebElements(driver, 'ul.your-sections')).to.have.lengthOf.at.least(1);
