@@ -76,8 +76,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
-    usernameValidate() {
-      var username = this.get('username');
+    usernameValidate(username) {
       if (username) {
         var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
         var usernameTest = usernamePattern.test(username);
@@ -95,8 +94,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
       }
     },
 
-    passwordValidate: function () {
-      var password = this.get('password');
+    passwordValidate: function (password) {
 
       function hasWhiteSpace(string) {
         return /\s/g.test(string);
