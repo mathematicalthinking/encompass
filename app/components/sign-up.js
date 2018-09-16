@@ -201,5 +201,22 @@ Encompass.SignUpComponent = Ember.Component.extend({
         }
       }
     },
+
+    setOrg(name) {
+      if (!name || typeof name !== "string") {
+        return;
+      }
+
+      const orgs = this.get('organizations');
+
+      let org = orgs.findBy('name', name);
+
+      if (!org) {
+        this.set('org', name);
+      } else {
+        this.set('org', org);
+      }
+
+    }
   }
 });
