@@ -18,7 +18,9 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     let sourceFunction = this.get('sourceFunction');
 
     if (!sourceFunction) {
-      sourceFunction = this.substringMatcher;
+      sourceFunction = this.substringMatcher.bind(this);
+    } else {
+      sourceFunction = sourceFunction.bind(this);
     }
 
     this.$('.typeahead').typeahead({
