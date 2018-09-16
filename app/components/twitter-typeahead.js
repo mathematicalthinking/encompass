@@ -14,11 +14,9 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     this._super(...arguments);
     const that = this;
     let dataList = this.get('dataList');
-
     const name = this.get('listName');
-    const containerId = this.get('containerId');
 
-    $(`#${containerId} .typeahead-${containerId}`).typeahead({
+    this.$('.typeahead').typeahead({
       hint: false,
       highlight: true,
       minLength: 1
@@ -28,12 +26,12 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       source: that.substringMatcher(dataList),
     });
 
-    $(`.typeahead-${containerId}`).on('typeahead:select', function(ev, suggestion) {
+    this.$('.typeahead').on('typeahead:select', function(ev, suggestion) {
       console.log('Selection: ' + suggestion);
 
       that.set('selectedValue', suggestion);
       that.sendAction('onSelect', suggestion);
-      $(`.typeahead-${containerId}`).typeahead('val', '');
+      that.$('.typeahead').typeahead('val', '');
     });
   },
 

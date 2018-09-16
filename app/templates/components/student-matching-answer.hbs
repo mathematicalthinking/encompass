@@ -17,6 +17,6 @@
 </div>
 
 {{#if students}}
-  {{twitter-typeahead containerId=image.id dataList=students creators=creators optionLabelPath="username" placeholder="Assign students" listName="studentPool" onSelect="updateAnswer"}}
+  {{twitter-typeahead dataList=students creators=creators optionLabelPath="username" placeholder="Assign students" listName="studentPool" onSelect="updateAnswer"}}
 {{/if}}
 
