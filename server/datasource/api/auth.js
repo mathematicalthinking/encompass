@@ -58,11 +58,11 @@ const localSignup = (req, res, next) => {
       }
       return utils.sendResponse(res, info);
     }
-
     if(!req.user) {
       req.logIn(user, function(err) {
         if (err) { return next(err); }
-        return utils.sendResponse(res, user);
+        //return utils.sendResponse(res, user);
+        return next(null, user);
       });
     }
     return utils.sendResponse(res, user);
@@ -117,6 +117,8 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
         if (err) {
+          console.error(`sendEmailSMTP error: ${err}`);
+          console.trace();
           return reject(err);
         }
       return resolve('email sent!');
