@@ -1,0 +1,14 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#unconfirmed-page {
+  .info-container{
+    margin: 60px 0 0 30px;
+
+    p {
+      padding: 5px;
+      font-size: 1.4em;
+    }
+  }
+}

@@ -1,5 +1,5 @@
-Encompass.UnconfirmedEmailComponent = Ember.Component.extend({
-  classNames: ['unconfirmed-page'],
+Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: ['unconfirmed-page'],
   didReceiveAttrs: function() {
 
   },
