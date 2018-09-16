@@ -5,25 +5,20 @@ Encompass.StudentMatchingComponent = Ember.Component.extend({
   actions: {
     reviewAnswers: function() {
       console.log('reviewingAnswers');
-      // let studentDropdowns = this.$('.student-matching select');
-      // for (let select of studentDropdowns) {
-      //   if (Ember.isEmpty(select.value)) {
-      //     this.set('matchingStudentsError', true);
-      //     return;
-      //   }
-      // }
       this.get('reviewSubmissions')();
     },
     checkStatus: function() {
       console.log('checking status');
-      let studentDropdowns = this.$('.student-matching select');
-      for (let select of studentDropdowns) {
-        if (Ember.isEmpty(select.value)) {
+      let answers = this.get('answers');
+
+      answers.forEach((ans) => {
+        let students = ans.students;
+        if (!students || Ember.isEmpty(students)) {
           this.set('isReadyToReviewAnswers', false);
           return;
         }
-      }
-      this.set('isReadyToReviewAnswers', true);
+        this.set('isReadyToReviewAnswers', true);
+      });
     }
   },
 
