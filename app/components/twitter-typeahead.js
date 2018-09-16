@@ -1,6 +1,5 @@
 Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
   classNames: ['twitter-typeahead'],
-  alreadySelected: Ember.A(),
 
   init() {
     this._super(...arguments);
@@ -12,9 +11,15 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    const that = this;
+
+
     let dataList = this.get('dataList');
     const name = this.get('listName');
+    let sourceFunction = this.get('sourceFunction');
+
+    if (!sourceFunction) {
+      sourceFunction = this.substringMatcher;
+    }
 
     this.$('.typeahead').typeahead({
       hint: false,
@@ -23,8 +28,10 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     },
     {
       name: name,
-      source: that.substringMatcher(dataList),
+      source: sourceFunction(dataList),
     });
+
+    const that = this;
 
     this.$('.typeahead').on('typeahead:select', function(ev, suggestion) {
       console.log('Selection: ' + suggestion);
@@ -37,7 +44,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
   substringMatcher: function(data) {
     // data should be array of ember objects
-    const that = this;
+
     let path = this.get('optionLabelPath');
     if (!path) {
       path = 'id';
@@ -46,9 +53,12 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     if (!data) {
       data = [];
     }
+
     let suggestions = data.map((obj) => {
       return obj.get(path);
     });
+
+    const that = this;
 
     return function findMatches(q, cb) {
       var matches, substrRegex;
