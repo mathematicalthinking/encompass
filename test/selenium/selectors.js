@@ -32,7 +32,7 @@ module.exports = {
       name: 'input[name=name]',
       email: 'input[name=email]',
       confirmEmail: 'input[name=confirmEmail]',
-      organization: 'input[name=organization]',
+      organization: 'input.typeahead.tt-input',
       location: 'input[name=location]',
       username: 'input[name=username]',
       password: 'input[name=password]',
