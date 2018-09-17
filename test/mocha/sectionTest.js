@@ -40,7 +40,7 @@ describe('Section CRUD operations', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('sections');
         expect(res.body.sections).to.be.a('array');
-        expect(res.body.sections[0].name).to.eql('Drexel University');
+        expect(res.body.sections).to.have.lengthOf(3);
         done();
       });
     });
