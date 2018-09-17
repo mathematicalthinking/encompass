@@ -10,7 +10,7 @@
         <ol>
           <li>
             <label for="title" id="problemName">Problem Name <span class="required-star">*</span></label>
-            {{input id="title" required="true" type="text" value=title placeholder="enter problem name"}}
+            {{input id="title" required="true" type="text" value=title placeholder="enter problem name" ction="resetErrors" on="key-down"}}
           </li>
           <li>
             <label for="text">Problem Statement <span class="required-star">*</span></label>
@@ -46,6 +46,9 @@
       </fieldset>
       {{#if isMissingRequiredFields}}
         <p class="error-message">Please provide all required fields.</p>
+      {{/if}}
+      {{#if problemNameExists}}
+        <p class="error-message">Problem name already exists, please use a different name.</p>
       {{/if}}
       {{#if noLegalNotice}}
          <p class="error-message">Please verify that you have permission to post this problem.</p>
