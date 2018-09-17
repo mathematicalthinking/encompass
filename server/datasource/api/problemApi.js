@@ -62,8 +62,26 @@ function accessibleProblems(user) {
 
 const getProblems = async function(req, res, next) {
   const user = userAuth.requireUser(req);
+
+  // if (req.query.problemTitle) {
+  //   let title = req.query.problemTitle;
+  //   title = title.replace(/\s+/g, "");
+  //   regex = new RegExp(title, 'i');
+  //   console.log('req title is', title);
+
+  //   let criteria = await access.get.problems(user, null, regex);
+  //   console.log('criteria is', criteria);
+
+  //   const requestedProblems = await models.Problem.find(criteria).lean().exec();
+  //   let data;
+  //   data = {
+  //     'problem': requestedProblems
+  //   }
+  //   return utils.sendResponse(res, data);
+  // }
+
   const criteria = await access.get.problems(user);
-    models.Problem.find(criteria)
+  models.Problem.find(criteria)
   .exec((err, problems) => {
     if (err) {
       logger.error(err);
@@ -77,10 +95,6 @@ const getProblems = async function(req, res, next) {
   // add permissions here
 
 };
-
-
-
-
 
 /**
   * @public
@@ -121,6 +135,17 @@ const postProblem = async function(req, res, next) {
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
 
+  if (req.body.problem.privacySetting === "E") {
+    console.log('creating public problem');
+    let title = req.body.problem.title;
+    // title = title.replace(/\s+/g, "");
+    // regex = new RegExp(title, 'i');
+    const exists = await models.Problem.find({ title: { $eq: title } }).lean().exec();
+
+    if (exists.length >= 1) {
+      return utils.sendResponse(res, { problem: { error: 'Problem Name Exists' }});
+    }
+  }
   problem.createdBy = user;
   problem.createDate = Date.now();
   problem.save((err, doc) => {
