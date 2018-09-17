@@ -5,15 +5,19 @@
     <h1> {{model.name}} </h1>
   </div>
   <div id="statusbar">
-    <span>{{selectionGroups.length}} submission(s), </span>
+    <span>{{model._submissions.length}} submission(s), </span>
     <span>{{evidence.length}} selection(s)</span>
   </div>
 </div>
 
 
 <div id="controls"> Browse:
-  {{input type="radio" name="browser2" value="0" click=(action "radioSelect" 1)}} <label>By Student</label>
-  {{input type="radio" name="browser2" value="1" default="true" click=(action "radioSelect" 0)}} <label>By Evidence (selection)</label>
+
+  <label><input type="radio" name="browser2" value="0" onclick={{action (mut browseOption) 0}} checked={{is-equal browseOption 0}}>By Student</label>
+
+
+  <label id="showEvidence"> <input type="radio" name="browser2" value="1" onclick={{action (mut browseOption) 1}} checked={{is-equal browseOption 1}}>By Evidence (selection)</label>
+
   <label id="showSubFolders">
     {{input type="checkbox" checked=includeSubfolders}}
     Include Sub-Folders
@@ -171,7 +175,7 @@
                         <li>
                           {{folder.name}}
                           {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                            <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                            <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
                           {{/if}}
                         </li>
                       {{/each}}
@@ -220,7 +224,6 @@
             {{sel.text}}
           </a>
         </td>
-
         {{#if showSelectionSubmission}}
           <td>
             <a class="change-submission" {{action 'changeSubmission' sel.submission}}>
@@ -247,7 +250,7 @@
                 <li>
                   {{folder.name}}
                   {{#if canEdit}} {{!ENC-574 Add a delete button per folder}}
-                    <span {{action 'removeSelection' sel folder}} class="al_sprite delete_button"></span>
+                    <span class="remove-sel" {{action 'removeSelection' sel folder}}><i class="far fa-times-circle"></i></span>
                   {{/if}}
                 </li>
               {{/each}}
@@ -255,6 +258,8 @@
           </td>
         {{/if}}
       </tr>
+      {{else}}
+        <p>Sorry, no selections were found in this folder.</p>
       {{/each}}
     </tbody>
   </table>

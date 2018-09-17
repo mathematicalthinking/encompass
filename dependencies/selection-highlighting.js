@@ -472,14 +472,16 @@ var SelectionHighlighting = function(args) {
    */
   function getAllCoords() {
     var counter = 0, coords = [], selectionsLength, i;
-
-    selectionsLength = selections.length;
+    if (selections) {
+      selectionsLength = selections.length;
     for (i = 0; i < selectionsLength; i += 1) {
       if (selections[i]) {
         coords[counter] = selections[i].coords;
         counter = counter + 1;
       }
     }
+    }
+
 
     return coords;
   }
@@ -851,10 +853,13 @@ var SelectionHighlighting = function(args) {
     highlighting.removeAllHighlights();
 
     // remove all listeners from the selections list
-    selectionsLength = selections.length;
+    if (selections) {
+      selectionsLength = selections.length;
     for (i = 0; i < selectionsLength; i += 1) {
       selections[i] = null;
     }
+    }
+
 
     // remove the container's mouseup listener
     if (automaticallyRegisterEvent) {

@@ -40,7 +40,7 @@ describe('Folders', function() {
 
     it('should announce that it has a bunch of submissions and selections', async function() {
       let text = await helpers.findAndGetText(driver, 'div#statusbar');
-      expect(text).to.contain('9 submission(s)');
+      expect(text).to.contain('6 submission(s)');
       expect(text).to.contain('9 selection(s)');
      });
 
@@ -49,30 +49,37 @@ describe('Folders', function() {
       expect(await helpers.isElementVisible(driver, '#subcontrols')).to.eql(true);
       expect(await helpers.getWebElements(driver, 'input[name="browser2"]')).to.have.lengthOf(2);
       expect(await helpers.isElementVisible(driver, 'label#showEvidence>input')).to.eql(true);
-      expect(await helpers.isElementVisible(driver, 'label#showSubmComments>input')).to.eql(true);
+      // expect(await helpers.isElementVisible(driver, 'label#showSubmComments>input')).to.eql(true);
       expect(await helpers.isElementVisible(driver, 'label#showSubFolders>input')).to.eql(true);
-      expect(await helpers.isElementVisible(driver, 'label#showSubmFolders>input')).to.eql(true);
+      // expect(await helpers.isElementVisible(driver, 'label#showSubmFolders>input')).to.eql(true);
     });
 
     it('should have default view options selected', async function() {
       // Should discuss which view options we want pre-selected
+      // currently should only be showing label#showSubFolders>input
       let isShowSubFoldersChecked;
       let isShowSubmFoldersChecked;
       try {
         let showSubFolders = await helpers.getWebElements(driver, 'label#showSubFolders>input');
         if (!_.isEmpty(showSubFolders)) {
-          isShowSubFoldersChecked = await showSubFolders[0].getAttribute('checked');
+          let checked = await showSubFolders[0].getAttribute('checked');
+          isShowSubFoldersChecked = checked === 'true';
+        } else {
+          isShowSubFoldersChecked = false;
         }
         let showSubmFolders = await helpers.getWebElements(driver, 'label#showSubmFolders>input');
         if(!_.isEmpty(showSubmFolders)) {
-          isShowSubmFoldersChecked = await showSubFolders[0].getAttribute('checked');
+          let checked = await showSubFolders[0].getAttribute('checked');
+          isShowSubmFoldersChecked = checked === 'true';
+        } else {
+          isShowSubmFoldersChecked = false;
         }
       }catch(err) {
         console.log(err);
       }
 
-      expect(isShowSubFoldersChecked).to.eql('true');
-      expect(isShowSubmFoldersChecked).to.eql('true');
+      expect(isShowSubFoldersChecked).to.eql(true);
+      expect(isShowSubmFoldersChecked).to.eql(false);
 
       // TODO?: Currently these inputs do not have ids
       // 'label#browseByStudent>input'.should.have.attribute('checked').and.contain('checked');

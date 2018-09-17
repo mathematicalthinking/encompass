@@ -13,8 +13,8 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   workspace: Ember.inject.controller(),
   currentWorkspace: Ember.computed.alias('workspace.model'),
   browseOption: 1,
-  bySelection: Ember.computed.equal('browseOption', 0),
-  bySubmission: Ember.computed.equal('browseOption', 1),
+  bySelection: Ember.computed.equal('browseOption', 1),
+  bySubmission: Ember.computed.equal('browseOption', 0),
   includeSubfolders: true,
   submissionsCol: true,
   selectionsCol: true,
@@ -39,18 +39,19 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   }.property('currentUser', 'currentWorkspace'),
 
   evidence: function() {
+    console.log('calculating evidence!');
     if(this.get('includeSubfolders')){
       return this.model.get('_selections');
     }
     return this.model.get('selections');
-  }.property('model', 'selections', '_selections', 'includeSubfolders'),
+  }.property('model.id', 'model.selections.[]', 'model._selections.[]', 'includeSubfolders', 'model.selections.taggings.@each.isTrashed', 'model.childSelections.[]'),
 
   selectedSubmissions: function() {
     if(this.get('includeSubfolders')){
       return this.model.get('_submissions');
     }
     return this.model.get('submissions');
-  }.property('model', 'submissions', '_submissions', 'includeSubfolders'),
+  }.property('model', 'model.submissions.[]', 'model._submissions.[]', 'includeSubfolders'),
 
   // This is just groupBy i.e selections.groupBy(submission)
   selectionGroups: function () {
@@ -70,7 +71,7 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
     });
 
     return result;
-  }.property('_selections.@each.submission'),
+  }.property('model._selections.@each.submission'),
 /*
   path: function() {
     var path = [this.get('model')];
@@ -86,10 +87,6 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   }.property('parent'),
 */
   actions: {
-    radioSelect: function( value ){
-      this.set('browseOption', value );
-    },
-
     changeSubmission: function(submission) {
       var selector = '.submissionLink.' + submission.get('id');
       if(window.opener) {
@@ -128,12 +125,19 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
        * Find the unique tagging of both this selection and the passed folder
        * Note: This approach is performance intensive, leading to many requests
        * TODO: Optimize
+       *
        */
+
       selection.get('taggings').then( function(taggings) {
         var tagging = taggings.findBy('folder', folder);
         if(tagging) { // This should always be true
           tagging.set('isTrashed', true);
-          tagging.save();
+          tagging.save().then((res) => {
+            if (window.opener) {
+              var selector = `#updateTaggings${folder.get('id')}`;
+              window.opener.$(selector).click();
+            }
+          });
         }
       });
 

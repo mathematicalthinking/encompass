@@ -23,6 +23,7 @@
 				{{model.name}}
 			</span>
 		  <aside>
+				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
 				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
 				<a {{action 'openLink'}}>
 					<span class="al_sprite al_folder_ct"></span>
@@ -49,7 +50,7 @@
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped}}
+        {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped}}
       {{/each}}
     </ul>
 {{/if}}

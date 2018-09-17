@@ -24,14 +24,17 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
 
   childSelections: function(){
     var selections = this.get('selections').toArray();
-    this.get('children')
+    var children = this.get('children');
+
+    if (!Ember.isEmpty(children)) {
+      children
       .filterBy('isTrashed', false)
       .getEach('_selections')
       .forEach(function(childSelections) {
         selections.pushObjects(childSelections);
       });
-
-    return selections.uniq();
+    }
+    return selections.uniqBy('id');
   }.property('children.@each._submissions', 'selections.@each.isTrashed'),
 
   _selections: function() {
@@ -66,8 +69,8 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
       .forEach(function(childSubmissions) {
         submissions.pushObjects(childSubmissions);
       });
-
-    return submissions.uniq();
+    // seems like you cannot use.uniq on objects after using.toArray()
+    return submissions.uniqBy('id');
   }.property('submissions.[]', 'children.@each._submissions', 'children.@each.isTrashed'),
 
   hasSelection: function(selectionId) {

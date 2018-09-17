@@ -27,6 +27,13 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     );
   }.property('currentUser', 'workspace.owner', 'workspace.editors.[].username'),
   */
+  init: function() {
+    this._super(...arguments);
+    console.log('init folder-list');
+  },
+  didInsertElement: function() {
+    console.log('inserted element folder-list');
+  },
 
   filteredFolders: function() {
     return this.folders

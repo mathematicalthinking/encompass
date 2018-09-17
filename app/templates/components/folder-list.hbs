@@ -4,29 +4,29 @@
   <div class="dropZone" style="height:10px;"></div>
   <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
-      {{folder-elem model=folder currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection }}
+      {{folder-elem model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection }}
     {{/each}}
   </ul>
   <div class="dropZone" style="height:10px;"></div>
 </div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
-<div id="al_folders_modify">
-  <table>
-    <tr>
-      <td>
-        <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
-      </td>
-      <td style="border-left:1px solid #d3d3d3;">
-        {{#if editFolderMode}}
-          <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
-        {{else}}
-          <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
-        {{/if}}
-      </td>
-    </tr>
-  </table>
-</div>
+    <div id="al_folders_modify">
+      <table>
+        <tr>
+          <td>
+            <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
+          </td>
+          <td style="border-left:1px solid #d3d3d3;">
+            {{#if editFolderMode}}
+              <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
+            {{else}}
+              <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
+            {{/if}}
+          </td>
+        </tr>
+      </table>
+    </div>
 {{/if}}
 
 {{modal-folder-new hide=hideNewFolderModal newFolder="createFolder"}}

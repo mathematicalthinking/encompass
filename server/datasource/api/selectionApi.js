@@ -34,7 +34,12 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 function getSelections(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+  var criteria;
+  criteria = utils.buildCriteria(req);
+
+  if (req.query.ids) {
+    criteria._id = {$in: req.query.ids};
+  }
 
   var user = userAuth.requireUser(req);
   models.Selection.find(criteria)

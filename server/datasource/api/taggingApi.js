@@ -30,7 +30,13 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 function getTaggings(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+  var criteria;
+
+  criteria = utils.buildCriteria(req);
+
+  if (req.query.ids) {
+    criteria._id = { $in: req.query.ids };
+  }
 
   models.Tagging.find(criteria)
     .exec(function(err, tags) {
