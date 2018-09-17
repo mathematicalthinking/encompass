@@ -30,7 +30,22 @@ const confirmEmailAddress = function(recipient, host, token) {
   };
 };
 
+const newlyAuthorized = function(recipient, host, token) {
+  if (!recipient) {
+    return;
+  }
+  return {
+    to: recipient,
+    from: 'encompassmath@gmail.com',
+    subject: 'You have been authorized as an EnCoMPASS user!',
+    text: `Congratulations! Your EnCoMPASS account has been authorized. Please visit http://${host}/ to login and begin exploring the software.
+
+    If you did not sign up for an EnCOMPASS account, please contact an administrator at admin@mathematicalthinking.org.`,
+  };
+};
+
 
 
 module.exports.resetTokenEmail = resetTokenEmail;
 module.exports.confirmEmailAddress = confirmEmailAddress;
+module.exports.newlyAuthorized = newlyAuthorized;
