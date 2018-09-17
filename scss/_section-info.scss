@@ -50,6 +50,22 @@
     padding: 12px 20px;
     color: $dark-font-color;
   }
+  input[type=text] {
+    font-size: 1em;
+    color: $primary-font-color;
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: none;
+
+    &::placeholder {
+      color: $primary-font-color;
+    }
+  }
   li {
     padding: 12px;
   }

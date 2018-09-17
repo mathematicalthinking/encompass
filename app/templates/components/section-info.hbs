@@ -40,15 +40,15 @@
           </li>
           <li>
             <label for="assignments">Assignments</label>
-               <ul class="listing">
+               {{!-- <ul class="listing"> --}}
                 {{#if section.assignments}}
                   {{#each section.assignments as |assignment|}}
-                  <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
+                  {{#link-to 'assignment' assignment}}<p class="section-info">{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>{{/link-to}}
                   {{/each}}
                 {{else}}
-                  <li>No Assignments yet</li>
+                  <p class="section-info">No Assignments yet</p>
                 {{/if}}
-              </ul>
+              {{!-- </ul> --}}
               {{#unless cantEdit}}
               <button class="action_button" {{action 'showAssignment'}}>
                 New Assignment
@@ -78,9 +78,13 @@
           </li>
           {{#unless cantEdit}}
             <li>
-              <button {{action 'addTeachers'}}>Add Teachers</button>
               {{#if isAddingTeachers}}
-                {{input id="teachers" type="text" value=teacherUsername placeholder="Username" classNames="user search" action="checkError"
+                <button class="action_button" {{action 'doneAddTeachers'}}>Done</button>
+                {{else}}
+                <button class="action_button" {{action 'addTeachers'}}>Add Teachers</button>
+              {{/if}}
+              {{#if isAddingTeachers}}
+                {{input id="teachers" type="text" value=teacherUsername placeholder="Type a teacher's username" classNames="user search" action="checkError"
                 on="key-down"}}
                 <ul>
                   {{#each teacherSearchResults as |result|}}
@@ -109,6 +113,13 @@
             {{/each}}
           </li>
         </ul>
+          {{#unless cantEdit}}
+          {{#unless isAddingStudents}}
+            <button class="action_button" {{action 'addNewStudents'}}>
+              Add Students
+            </button>
+          {{/unless}}
+          {{/unless}}
       </fieldset>
     </form>
 
@@ -116,10 +127,6 @@
   {{else}}
   {{#unless cantEdit}}
   <section class="submit">
-    <button class="action_button" {{action 'addNewStudents'}}>
-      Add New Students
-    </button>
-
     <button class="action_button" id="editSection" {{action 'editSection'}}>
       Edit Section
     </button>
