@@ -36,7 +36,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
 
     this.get('store').findAll('section').then(sections => {
-    this.set('sectionList', sections);
+      this.set('sectionList', sections);
     });
   },
 
@@ -211,12 +211,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     showAssignment: function () {
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
-      // let sections = this.get('store').findAll('section');
-      let sections = this.get('sectionList');
-      var currentUser = this.get('currentUser');
-      var yourSections = sections.filterBy('createdBy.content', currentUser);
-      yourSections = yourSections.sortBy('createDate').reverse();
-      this.set('sectionList', yourSections);
     }
 
   }
