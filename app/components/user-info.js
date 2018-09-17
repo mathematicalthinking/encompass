@@ -98,10 +98,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
     authorizedBy: function () {
       let isAuth = this.get('user.isAuthorized');
-      let authBy = this.get('user.authorizedBy');
+      let authBy = this.get('user.authorizedBy.content');
       if (isAuth && !authBy) {
         let user = this.get('user');
         user.set('authorizedBy', this.get('currentUser'));
+        user.set('shouldSendAuthEmail', true);
       }
     }.observes('user.isAuthorized'),
 
