@@ -120,6 +120,13 @@
     color: lighten($primary-font-color, 25);
     border-bottom: 1px solid $primary-font-color;
     margin-bottom: 15px;
+
+    &.typeahead.tt-input {
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid $primary-font-color;
+
+    }
   }
   #checkbox {
     margin: 0 auto;

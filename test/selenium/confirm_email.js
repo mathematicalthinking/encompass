@@ -95,7 +95,7 @@ describe('Confirm Email', async function () {
     });
 
     it('should display info message', async function() {
-      const msg = 'It looks like the email address associated with your EnCoMPASS account has not been confirmed yet.'
+      const msg = 'In order to start using the EnCoMPASS software, we need to confirm your email address.'
       expect(await helpers.isTextInDom(driver, msg)).to.be.true;
     });
 

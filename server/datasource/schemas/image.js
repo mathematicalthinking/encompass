@@ -17,7 +17,7 @@ var ImageSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  originalName: { type: String }, //Not used yet, should implement
+  originalname: { type: String }, // field from multer is all lowercase
   encoding: { type: String },
   mimetype: { type: String },
   destination:  { type: String }, //This should only be used if we aren't saving the data

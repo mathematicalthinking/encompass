@@ -32,7 +32,7 @@
         </li>
         {{/unless}}
       </ol>
-    </fieldset>
+      </fieldset>
     </form>
 
 
@@ -41,24 +41,33 @@
     {{#if doNotCreateWorkspace}}
       <p>Click submit to upload your submissions.</p>
     {{else}}
-
-        <p>Click submit to create your {{mode}} workspace.</p>
-
+      <p>Click submit to create your {{mode}} workspace.</p>
     {{/if}}
-
     <button {{action "formatAnswers"}}>Submit</button>
   </div>
 </div>
 
-  <div class="review-answers">
-  {{#each answers as |answer|}}
-    <div class="answer-info">
-      <p>Author: {{answer.student.username}}</p>
-    </div>
 
-    <p>Submission: <img src="{{answer.explanationImage.imageData}}" alt=""></p>
-  {{/each}}
-</div>
+
+  <div class="review-answers">
+    {{#each answers as |answer|}}
+      <div class="answer-info">
+        <div class="answer-img">
+          <p>{{answer.explanationImage.originalname}}</p>
+          <img src="{{{answer.explanationImage.imageData}}}" alt="">
+        </div>
+
+        <div class="creators">
+          <label>Assigned Students</label>
+          <ul>
+            {{#each answer.students as |student|}}
+              <li>{{student.username}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/each}}
+  </div>
 
 
 </div>

@@ -127,7 +127,8 @@ const postImages = async function(req, res, next) {
           return Promise.all(files.map((file) => {
             let f = {
               createdBy: user,
-              createDate: Date.now()
+              createDate: Date.now(),
+              originalname: img.originalname
             }
             return readFilePromise(file).then((data) => {
               let newImage = new models.Image(f);

@@ -187,7 +187,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       const that = this;
       let subs;
       return Promise.all(answers.map((answer) => {
-        answer.createdBy = answer.student;
+        // TODO: Determine how to handle groups
+        answer.createdBy = answer.students[0];
         answer.answer = 'See image.';
 
         let ans = that.store.createRecord('answer', answer);
@@ -212,7 +213,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             const teacher = {};
 
 
-            const student = ans.get('student');
+            const student = ans.get('createdBy');
             const section = ans.get('section');
             const problem = ans.get('problem');
 

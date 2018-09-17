@@ -43,14 +43,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isEditing', false);
     this.set('isAddingTeacher', false);
     return this.section.get('organization').then((org) => {
-      console.log(('organization', org));
       this.set('organization', org);
-    })
-    .then(() => {
-      // get users and set result on component
-      this.store.findAll('user').then((users) => {
-        this.set('userList', users);
-      });
     })
     .catch((err) => {
       console.log('error getting org', err);

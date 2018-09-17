@@ -100,6 +100,7 @@
 }
 
 .submissions-container {
+  display: flex;
   flex: 1;
   width: 500px;
   margin-top: 20px;
@@ -109,6 +110,7 @@
   padding: 5px;
 
   .submissions-list {
+
     overflow: auto;
     .student-matching {
       .proceed {
@@ -119,19 +121,32 @@
       p {
         padding: 5px;
       }
-      li {
-        padding: 5px;
-        margin-bottom: 10px;
+      .student-matching-answer{
+        display: flex;
+        .answer-img {
+          img {
+            margin: 5px;
+            border: 1px solid black;
+            width: 250px;
+            height: 250px;
+          }
+        }
+
+        .assigned-students {
+          li {
+            padding: 5px;
+            margin-bottom: 10px;
+          }
+        }
       }
-      img {
-        margin: 5px;
-        border: 1px solid black;
-        width: 250px;
-        height: 250px;
-      }
+
+
+
     }
   }
 }
+
+
 
 .import-review-answers-page {
   p {
@@ -142,13 +157,17 @@
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 10px;
-
-    img {
-      margin: 5px;
-      border: 1px solid black;
-      width: 250px;
-      height: 250px;
+    .answer-info{
+      display: flex;
+      img {
+        margin: 5px;
+        border: 1px solid black;
+        width: 250px;
+        height: 250px;
+      }
     }
+
+
   }
 
   .workspace-options {
