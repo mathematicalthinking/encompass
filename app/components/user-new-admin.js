@@ -72,7 +72,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
 
-
       if (!username || !password || !organization || !accountType) {
         this.set('errorMessage', true);
         return;
@@ -162,7 +161,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
         if (usernameTest === true) {
           this.set('incorrectUsername', false);
-          this.set('missingCredentials', false);
+          this.set('username', username);
           return;
         }
       }
@@ -182,12 +181,12 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
       if (emailTest === true) {
         this.set('incorrectEmail', false);
+        this.set('email', email);
         return true;
       }
     },
 
     passwordValidate: function (password) {
-
       function hasWhiteSpace(string) {
         return /\s/g.test(string);
       }
@@ -196,14 +195,15 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         this.set('invalidPassword', true);
       } else {
         this.set('invalidPassword', false);
+        this.set('password', password);
       }
 
       if (hasWhiteSpace(password)) {
         this.set('noSpacesError', true);
       } else {
         this.set('noSpacesError', false);
+        this.set('password', password);
       }
-
     },
 
     cancelNew: function () {
