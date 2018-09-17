@@ -85,6 +85,9 @@
   }
 
   #probleminfo {
+    a {
+      color: $accent-color;
+    }
     img {
       width: 40%;
       position: relative;
