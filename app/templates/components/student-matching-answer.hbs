@@ -8,7 +8,7 @@
     <label>Assigned Students</label>
     <ul>
       {{#each creators as |student|}}
-      <li>{{student.username}}</li>
+      <li>{{student.username}} <i class="far fa-times-circle" {{action "removeStudent" student}}></i></li>
     {{else}}
     <li class="empty-assignment">No students assigned yet.</li>
     {{/each}}

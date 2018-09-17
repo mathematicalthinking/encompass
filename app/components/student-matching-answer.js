@@ -33,6 +33,7 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
     this.set('studentToAdd', null);
   }.observes('studentToAdd'),
 
+
   actions: {
     updateAnswer: function(student) {
       // arg is string username of student
@@ -41,5 +42,18 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
       this.set('studentToAdd', user);
       this.get('checkStatus')();
     },
+
+    removeStudent: function(student) {
+      if (!student) {
+        return;
+      }
+      const creators = this.get('creators');
+
+      if (!creators) {
+        return;
+      }
+
+      creators.removeObject(student);
+    }
   }
 });
