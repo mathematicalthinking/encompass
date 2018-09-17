@@ -121,25 +121,25 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         .catch((err) => {
           console.log(err);
         });
-  },
+    },
 
-  usernameValidate(username) {
-    if (username) {
-      var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
-      var usernameTest = usernamePattern.test(username);
+    usernameValidate(username) {
+      if (username) {
+        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernameTest = usernamePattern.test(username);
 
-      if (usernameTest === false) {
-        this.set('incorrectUsername', true);
-        return;
+        if (usernameTest === false) {
+          this.set('incorrectUsername', true);
+          return;
+        }
+
+        if (usernameTest === true) {
+          this.set('incorrectUsername', false);
+          this.set('username', username);
+          return;
+        }
       }
-
-      if (usernameTest === true) {
-        this.set('incorrectUsername', false);
-        this.set('missingCredentials', false);
-        return;
-      }
-    }
-  },
+    },
 
     emailValidate: function (email) {
       if (!email) {
@@ -155,6 +155,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
       if (emailTest === true) {
         this.set('incorrectEmail', false);
+        this.set('email', email);
         return true;
       }
     },
@@ -168,14 +169,15 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         this.set('invalidPassword', true);
       } else {
         this.set('invalidPassword', false);
+        this.set('password', password);
       }
 
       if (hasWhiteSpace(password)) {
         this.set('noSpacesError', true);
       } else {
         this.set('noSpacesError', false);
+        this.set('password', password);
       }
-
     },
 
     cancelNew: function () {
