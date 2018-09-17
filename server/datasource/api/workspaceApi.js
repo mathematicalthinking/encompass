@@ -48,7 +48,9 @@ function getWorkspace(id, callback) {
     .populate('folders')
     .populate('taggings')
     .exec(function(err, ws){
-    if(err) {throw err;}
+    if(err) {
+      throw err;
+    }
     if(!ws) {
       return callback();
     }
@@ -182,8 +184,8 @@ function sendWorkspace(req, res, next) {
   */
 function putWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').exec(function(err, ws){
-    if(!permissions.userCanModifyWorkspace(user, ws)) {
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission to modify this workspace");
       if (err) {
@@ -193,9 +195,11 @@ function putWorkspace(req, res, next) {
       models.Workspace.findById(req.params.id).exec(function(err, ws){
         ws.editors = req.body.workspace.editors;
         ws.mode    = req.body.workspace.mode;
-        ws.name    = req.body.workspace.name;
-        ws.lastModifiedDate = new Date();
-        ws.lastModifiedBy = user;
+        ws.name = req.body.workspace.name;
+        ws.owner = req.body.workspace.owner;
+        ws.lastViewed = new Date();
+        ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
+        ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
@@ -842,8 +846,15 @@ function newWorkspaceRequest(req, res, next) {
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
   let criteria = await access.get.workspaces(user);
-  console.log('criteria for get wses', criteria);
     models.Workspace.find(criteria).exec(function(err, workspaces) {
+      workspaces.forEach((workspace) => {
+        if (workspace.lastViewed) {
+          console.log('workspace name is', workspace.name);
+          console.log('workspace lastviewed is', workspace.lastViewed);
+        } else {
+          console.log('no last viewed');
+        }
+      });
       var response = {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
@@ -893,13 +904,9 @@ async function buildCriteria(ids, criteria, user) {
 // TODO: teacher filter is not working properly
 // will always return empty results
   let teacher = criteria.teacher;
-  console.log('teacher', typeof teacher, teacher);
-  console.log('isequal', teacher === user.id);
   if (!_.isEmpty(teacher && teacher !== user.id)) {
     let assignments = await accessUtils.getTeacherAssignments(teacher)
-    console.log('assn teacher', assignments);
     let sections = await accessUtils.getTeacherSectionsById(teacher);
-    console.log('sectiosn teacher', sections);
     // have to get teacher users and then filter the answers to be created by teacher
     filter.$or = [{
       assignment: {$in: assignments}
@@ -909,7 +916,6 @@ async function buildCriteria(ids, criteria, user) {
 
   }
   for (let field of filterFields) {
-    console.log('filed', field);
     const val = criteria[field];
     if (val) {
       filter[field] = val;
@@ -1002,7 +1008,6 @@ async function answersToSubmissions(answers) {
 
 async function postWorkspaceEnc(req, res, next) {
   const user = req.user;
-  console.log('wsc', req.body.encWorkspaceRequest);
   const workspaceCriteria = req.body.encWorkspaceRequest;
   // const requestedName = workspaceCriteria.requestedName;
 
@@ -1016,7 +1021,6 @@ async function postWorkspaceEnc(req, res, next) {
     // accessibleAnswersQuery will take care of isTrashed
     delete pruned.isTrashed;
     delete pruned.isEmptyAnswerSet;
-    console.log('pruned', pruned);
 
     const accessibleCriteria = await answerAccess.get.answers(user);
 
@@ -1064,7 +1068,9 @@ let workspace = new models.Workspace({
   submissionSet: submissionSet,
   submissions: submissionIds,
   createdBy: user,
-  lastModifiedBy: user
+  lastModifiedBy: user,
+  lastModifiedDate: new Date(),
+  lastViewed: new Date(),
 });
 let ws = await workspace.save();
 console.log('createdWs', ws._id);

@@ -23,7 +23,7 @@
    <thead>
     <tr class="theader">
       <th align="left">Workspace Name</th>
-      <th align="left">Last Modified</th>
+      <th align="left">Last Viewed</th>
       <th align="left">Submissions</th>
       <th align="left">Selections</th>
       <th align="left">Folders</th>
@@ -52,7 +52,7 @@
           <i {{action "showModal" workspace}} class="fas fa-trash"></i>
           {{/if}}
         </td>
-        <td>{{format-date workspace.lastModifiedDate 'L'}}</td>
+        <td>{{format-date workspace.lastViewed 'L'}}</td>
         <td>{{workspace.submissionsLength}}</td>
         <td>{{workspace.selectionsLength}}</td>
         <td>{{workspace.foldersLength}}</td>

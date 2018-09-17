@@ -76,6 +76,44 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
 
     },
 
+    usernameValidate(username) {
+      if (username) {
+        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernameTest = usernamePattern.test(username);
+
+        if (usernameTest === false) {
+          this.set('incorrectUsername', true);
+          return;
+        }
+
+        if (usernameTest === true) {
+          this.set('incorrectUsername', false);
+          this.set('username', username);
+          return;
+        }
+      }
+    },
+
+    passwordValidate: function (password) {
+      function hasWhiteSpace(string) {
+        return /\s/g.test(string);
+      }
+
+      if (password.length < 3) {
+        this.set('invalidPassword', true);
+      } else {
+        this.set('invalidPassword', false);
+        this.set('password', password);
+      }
+
+      if (hasWhiteSpace(password)) {
+        this.set('noSpacesError', true);
+      } else {
+        this.set('noSpacesError', false);
+        this.set('password', password);
+      }
+    },
+
     cancelNew: function () {
       this.sendAction('toUserHome');
     },

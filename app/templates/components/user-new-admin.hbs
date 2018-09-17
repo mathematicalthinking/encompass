@@ -8,13 +8,13 @@
     <tr>
       <td>Username <span class="required-star">*</span></td>
       <td>
-        {{input type="text" value=username action="resetErrors" on="key-down" classNames='user-username'}}
+        <input type="text" class="user-username" value={{username}} onblur={{action 'usernameValidate' value="target.value"}} onfocus={{action 'resetErrors'}} />
       </td>
     </tr>
     <tr>
       <td>Password <span class="required-star">*</span></td>
       <td>
-        {{input type="password" value=password action="resetErrors" on="key-down" classNames='user-password'}}
+        <input type="password" class="user-password" value={{password}} onblur={{action 'passwordValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
@@ -26,7 +26,7 @@
     <tr>
       <td>Email</td>
       <td>
-        {{input type="text" value=email action="resetErrors" on="key-down" classNames='user-email'}}
+        <input type="text" class="user-email" value={{email}} onblur={{action 'emailValidate' value="target.value"}} onfocus={{action 'resetErrors'}}/>
       </td>
     </tr>
     <tr>
@@ -61,6 +61,22 @@
 
   {{#if emailExistsError}}
     <p class="error-message">Email address has already been used</p>
+  {{/if}}
+
+  {{#if incorrectEmail}}
+    <p class="error-message">Invalid email address</p>
+  {{/if}}
+
+  {{#if incorrectUsername}}
+    <p class="error-message">Invalid username</p>
+  {{/if}}
+
+  {{#if invalidPassword}}
+    <p class="error-message">Password is too short</p>
+  {{/if}}
+
+  {{#if noSpacesError}}
+  <p class="error-message">Passwords cannot contain spaces</p>
   {{/if}}
 
   {{#if errorMessage}}

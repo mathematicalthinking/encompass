@@ -7,6 +7,17 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   selections: DS.hasMany('selection', {async: true}),
   comments: DS.hasMany('comment', {async: true}),
   taggings: DS.hasMany('tagging', {async: false}),
+  lastViewed: DS.attr('date'),
+  lastViewedDate: Ember.computed(function() {
+    if (!this.get('lastViewed')) {
+      return this.get('lastModifiedDate');
+    } else if (!this.get('lastModifiedDate')) {
+      return this.get('createDate');
+    } else {
+      return this.get('lastViewed');
+    }
+  }),
+
   _collectionLength: function(collection) {
     // https://stackoverflow.com/questions/35405360/ember-data-show-length-of-a-hasmany-relationship-in-a-template-without-downloadi
     /*

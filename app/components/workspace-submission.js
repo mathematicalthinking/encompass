@@ -25,6 +25,22 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   init: function() {
     this._super(...arguments);
+    let workspace = this.get('currentWorkspace');
+    let submissions = workspace.get('submissions').get('content');
+    console.log('submissions are', submissions);
+    submissions.forEach((submission) => {
+      let answer = submission.get('answer').get('data');
+      console.log('answer is', answer);
+      // let assignment = answer.get('assignement');
+      // console.log('assignment is', assignment);
+      // this.store.findRecord('answer', answerId).then((answer) => {
+      //   console.log('answer is', answer);
+      //   let assignment = answer.get('assignement');
+      //   console.log('assignment is', assignment);
+      //   let answers = assignment.get('answers');
+      // });
+
+    });
   },
 
   didRender: function() {
@@ -35,11 +51,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
+
+    if (this.get('isDirty')) {
+      console.log('inside isDirty workspace leaving');
+      workspace.set('lastModifiedDate', new Date());
+      workspace.set('lastModifiedBy', this.get('currentUser'));
+    }
+
     workspace.save();
 
-    // if (this.get('isDirty')) {
-    //   workspace.save();
-    // }
     this._super(...arguments);
   },
 
