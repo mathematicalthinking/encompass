@@ -86,7 +86,7 @@ describe('Signup form', async function () {
     });
 
     // We are not going to automatically login users, they need to be approved, change to approval page
-    xit('should redirect to unconfirmed after successful signup', async function () {
+    it('should redirect to unconfirmed after successful signup', async function () {
       await helpers.findAndClickElement(driver, css.signup.submit);
       await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 7000);
       await helpers.waitForSelector(driver, css.topBar.logout);

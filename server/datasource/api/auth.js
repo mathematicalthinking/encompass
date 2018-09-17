@@ -41,13 +41,11 @@ function(err, user, info) {
 };
 
 const localSignup = (req, res, next) => {
- console.log('in localsignup :', req.body);
   passport.authenticate('local-signup', {
       // successRedirect: '/',
       // failureRedirect: '/#/auth/signup',
   },
   function (err, user, info) {
-    console.log('info', info);
     if (err) {
       console.error('localSignup error: ', err);
       console.trace();
@@ -61,8 +59,6 @@ const localSignup = (req, res, next) => {
       return utils.sendResponse(res, info);
     }
 
-    console.log('logging in user', user);
-    console.log('req user', req.user);
     if(!req.user) {
       req.logIn(user, function(err) {
         if (err) { return next(err); }
@@ -90,7 +86,6 @@ const googleReturn = (req, res, next) => {
 };
 
 const logout = (req, res, next) => {
-  console.log('LOGGING OUT!');
   req.logout();
   res.redirect('/');
 };
@@ -135,23 +130,50 @@ const forgot = async function(req, res, next) {
 
   try {
     token = await getResetToken(20);
-    user = await User.findOne({ email: req.body.email });
+    let { email, username } = req.body;
+
+    if (email) {
+      user = await User.findOne({ email });
       if (!user) {
         const msg = {
           info: 'There is no account associated with that email address',
           isSuccess: false};
         return utils.sendResponse(res, msg);
       }
+    } else if (username) {
+      user = await User.findOne({ username });
+      if (!user) {
+        const msg = {
+          info: 'There is no account associated with that username',
+          isSuccess: false};
+        return utils.sendResponse(res, msg);
+      }
+    }
+
 
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 3600000;
 
       await user.save();
+      // should we assume all users have emails?
+      if (!email) {
+        if (user.email) {
+          email = user.email;
+        } else {
+          const msg = {
+            info: 'You must have an email address associated with your EnCoMPASS account in order to reset your password',
+            isSuccess: false};
+          return utils.sendResponse(res, msg);
+        }
 
-      await sendEmailSMTP(req.body.email, req.headers.host, 'resetTokenEmail', token);
+      }
 
-      return utils.sendResponse(res, {'info': `Password reset email sent to ${req.body.email}`, isSuccess: true});
+      await sendEmailSMTP(email, req.headers.host, 'resetTokenEmail', token);
+
+      return utils.sendResponse(res, {'info': `Password reset email sent to ${email}`, isSuccess: true});
   }catch(err) {
+    console.error(`Error auth/forgot: ${err}`);
+    console.trace();
     return utils.sendError.InternalError(err, res);
   }
 };
@@ -277,7 +299,6 @@ resendConfirmationEmail = async function(req, res, next) {
 
   try {
     let userRec = await models.User.findById(user._id);
-    const recipient = user.email;
     const token = await getResetToken(20);
 
     userRec.confirmEmailToken = token;

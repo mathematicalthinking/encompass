@@ -16,6 +16,7 @@ const fixtures = require('./fixtures/forgot_password');
 
 const host = helpers.host;
 const url = `${host}/#/auth/forgot`;
+const messages = fixtures.messages;
 
 describe('Forgot Password', async function () {
   this.timeout(helpers.timeoutTestMsStr);
@@ -52,20 +53,70 @@ describe('Forgot Password', async function () {
 
     describe('Submitting Form', async function() {
       const user = fixtures.user;
+
+      describe('Submitting Empty Form', async function() {
+        before(async function() {
+          await helpers.findAndClickElement(driver, css.forgotPassword.submit);
+        await helpers.waitForSelector(driver, css.general.errorMessage);
+        });
+
+        it('should display error message', async function() {
+          const msg = messages.errors.missing;
+          expect(await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+          expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        });
+      });
+
+      describe('Providing both email and username', async function() {
+        before(async function() {
+          await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.email);
+          await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.username);
+
+          await helpers.findAndClickElement(driver, css.forgotPassword.submit);
+          await helpers.waitForSelector(driver, css.general.errorMessage);
+        });
+
+        it('should display error message', async function() {
+          const msg = messages.errors.tooMuch;
+          expect(await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+          expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        });
+      });
+
+      describe('Providing valid username that does not have an associated email address', async function() {
+        before(async function() {
+          await helpers.clearElement(driver, css.forgotPassword.inputs.email);
+          await helpers.clearElement(driver, css.forgotPassword.inputs.username);
+
+          await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, fixtures.student.username);
+          await helpers.findAndClickElement(driver, css.forgotPassword.submit);
+          await helpers.waitForSelector(driver, css.general.errorMessage);
+        });
+
+        it('should display error message', async function() {
+          const msg = messages.errors.noAssociatedEmail;
+          expect(await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+          expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        });
+      });
+
       describe('Using nonexistant email address', async function() {
         before(async function() {
+          await helpers.clearElement(driver, css.forgotPassword.inputs.email);
+          await helpers.clearElement(driver, css.forgotPassword.inputs.username);
+
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.badEmail);
           await helpers.findAndClickElement(driver, css.forgotPassword.submit);
           await helpers.waitForSelector(driver, css.general.errorMessage);
         });
 
         it('should display error message', async function() {
-          const msg = "There is no account associated with that email address";
+          const msg = messages.errors.noEmail;
           expect(await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
           expect(await helpers.isTextInDom(driver, msg)).to.be.true;
         });
       });
-      xdescribe('Using existing email address', async function() {
+      describe('Using existing email address', async function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.email);
@@ -74,15 +125,41 @@ describe('Forgot Password', async function () {
         });
 
         it('should display success message', async function() {
-          const msg = "An email with further instructions has been sent to the email address on file."
+          const msg = messages.success.completed;
           expect(await helpers.isElementVisible(driver, css.general.successMessage)).to.be.true;
           expect(await helpers.isTextInDom(driver, msg)).to.be.true;
         });
       });
 
+      describe('Using nonexistant username', async function() {
+        before(async function() {
+          await helpers.clearElement(driver, css.forgotPassword.inputs.email);
+          await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.badUsername);
+          await helpers.findAndClickElement(driver, css.forgotPassword.submit);
+          await helpers.waitForSelector(driver, css.general.errorMessage);
+        });
 
+        it('should display error message', async function() {
+          const msg = messages.errors.noUsername;
+          expect(await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+          expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        });
+      });
 
+      describe('Using existing username', async function() {
+        before(async function() {
+          await helpers.clearElement(driver, css.forgotPassword.inputs.username);
+          await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.username);
+          await helpers.findAndClickElement(driver, css.forgotPassword.submit);
+          await helpers.waitForSelector(driver, css.general.successMessage);
+        });
+
+        it('should display success message', async function() {
+          const msg = messages.success.completed;
+          expect(await helpers.isElementVisible(driver, css.general.successMessage)).to.be.true;
+          expect(await helpers.isTextInDom(driver, msg)).to.be.true;
+        });
+      });
     });
   });
-
 });
