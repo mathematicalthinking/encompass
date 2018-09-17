@@ -29,7 +29,8 @@ var ProblemSchema = new Schema({
   privacySetting: { type: String, enum: ['M', 'O', 'E'] },
   organization: { type: ObjectId, ref: 'Organization' },
   // isPublic: { type: Boolean },
-  categories: [{ type: ObjectId, ref: 'Category' }]
+  categories: [{ type: ObjectId, ref: 'Category' }],
+  error: { type: String },
 }, { versionKey: false });
 
 /**
