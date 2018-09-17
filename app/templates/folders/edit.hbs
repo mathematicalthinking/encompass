@@ -12,11 +12,11 @@
 
 
 <div id="controls"> Browse:
-  <label>By Student</label>
-  <input type="radio" name="browser2" value="0" onclick={{action (mut browseOption) 0}} checked={{is-equal browseOption 0}}>
 
-  <label>By Evidence (selection)</label>
-  <input type="radio" name="browser2" value="1" onclick={{action (mut browseOption) 1}} checked={{is-equal browseOption 1}}>
+  <label><input type="radio" name="browser2" value="0" onclick={{action (mut browseOption) 0}} checked={{is-equal browseOption 0}}>By Student</label>
+
+
+  <label id="showEvidence"> <input type="radio" name="browser2" value="1" onclick={{action (mut browseOption) 1}} checked={{is-equal browseOption 1}}>By Evidence (selection)</label>
 
   <label id="showSubFolders">
     {{input type="checkbox" checked=includeSubfolders}}
