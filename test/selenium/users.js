@@ -123,7 +123,7 @@ describe('Users', function() {
 
       it('should let you create a new student without an email', async function () {
         let oldUsername = `student1`;
-        let newUsername = `newStudent`;
+        let newUsername = `newstudent`;
         let password = `test`;
         let name = `Student Doe`;
         let organization = `Drexel University`;
@@ -145,7 +145,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.new-user');
         await driver.sleep('1000');
         await helpers.waitForSelector(driver, '#user-info');
-        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newStudent');
+        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
 
     }
@@ -415,7 +415,7 @@ describe('Users', function() {
 
       it('should have a list of students', async function () {
         expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf.at.least(3);
-        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newStudent');
+        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
 
       describe('clicking on your own account', function () {
