@@ -27,7 +27,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isEditing', false);
     let problem = this.get('problem');
     let problemId = problem.get('id');
-    // let problemUsed = this.get('problemUsed');
 
     this.get('store').queryRecord('answer', {
       problem: problemId

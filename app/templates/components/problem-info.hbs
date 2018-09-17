@@ -25,14 +25,16 @@
               <label>Privacy Settings
                 <span class="required-star">*</span>
               </label>
+            {{#if problem.origin}}
+              <label class="radio-label">Just Me</label>
+            {{else}}
               <input type="radio" checked={{is-equal privacySetting "M"}} required="true" name="privacy" value="M" onclick={{action "radioSelect" "M"}}>
               <label class="radio-label">Just Me</label>
               <input type="radio" checked={{is-equal privacySetting "O"}} required="true" name="privacy" value="O" onclick={{action "radioSelect" "O"}}>
               <label class="radio-label">My Organization</label>
               <input type="radio" checked={{is-equal privacySetting "E"}} required="true" name="privacy" value="E" onclick={{action "radioSelect" "E"}}>
               <label class="radio-label">Everyone</label>
-
-
+            {{/if}}
             </li>
             <li>
               <label for="imagedata">Problem Image:</label>
