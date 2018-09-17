@@ -23,7 +23,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   didInsertElement: function() {
     console.log(`didInsertElement for folder ${this.model.get('name')}`);
-    this.sendAction('loadedFolder');
   },
 
   init: function() {

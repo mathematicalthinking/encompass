@@ -2,19 +2,15 @@
 {{#workspace-folder-drop folders=folders}}
 <div class="al_vertical_stretch">
   <div class="dropZone" style="height:10px;"></div>
-  {{#if isLoadingFolders}}
-    Loading folders...
-  {{/if}}
-  <ul class={{if isLoadingFolders "hidden"}} id="al_folders">
+  <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
-      {{folder-elem loadedFolder="loadedFolder" model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection }}
+      {{folder-elem model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection }}
     {{/each}}
   </ul>
   <div class="dropZone" style="height:10px;"></div>
 </div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
-  {{#unless isLoadingFolders}}
     <div id="al_folders_modify">
       <table>
         <tr>
@@ -31,7 +27,6 @@
         </tr>
       </table>
     </div>
-  {{/unless}}
 {{/if}}
 
 {{modal-folder-new hide=hideNewFolderModal newFolder="createFolder"}}
