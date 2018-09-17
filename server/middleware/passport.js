@@ -307,6 +307,7 @@ module.exports = (passport) => {
         email: profile.emails[0].value,
         isAuthorized: false,
         accountType: 'T',
+        actingRole: 'teacher',
         isEmailConfirmed: true
       });
       newUser.save((err) => {
