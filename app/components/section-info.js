@@ -104,6 +104,10 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('isAddingTeachers', true);
     },
 
+    doneAddTeachers: function() {
+      this.set('isAddingTeachers', false);
+    },
+
     doYouWantToAddExistingUser: function () {
       this.set('doYouWantToAddExistingUser', false);
       this.set('userAlreadyInSection', false);
