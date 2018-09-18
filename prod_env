@@ -4,10 +4,11 @@ NODE_ENV="production"
 PORT=1339
 DB_NAME="encompass_prod"
 
-# to send emails through gmail for production
-# note: this overrides the TEST_GMAIL_USERNAME and TEST_GMAIL_PASSWORD
-GMAIL_USERNAME="encompassmath@gmail.com"
-GMAIL_PASSWORD="stemdev21"
+# The gmail configurations need to be set in the .env file
+#GMAIL_USERNAME="yourGmailUsername"
+#GMAIL_PASSWORD="yourGmailPassword"
+#GOOGLE_CALLBACK_URL_PROD="yourCallbackUrl"
+
 
 # directory where final version of build files end up
 BUILD_DIR='dist'

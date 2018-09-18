@@ -287,8 +287,10 @@ module.exports = (passport) => {
   */
   let callbackURL;
 
-  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+  if (process.env.NODE_ENV === 'production') {
     callbackURL = process.env.GOOGLE_CALLBACK_URL_PROD;
+  } else if (process.env.NODE_ENV === 'staging') {
+      callbackURL = process.env.GOOGLE_CALLBACK_URL_STAGING;
   } else {
     callbackURL = "/auth/google/callback";
   }
