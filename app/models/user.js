@@ -7,6 +7,7 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   location: DS.attr('string'),
   username: DS.attr('string'),
   password: DS.attr('string'),
+  googleId: DS.attr('string'),
   requestReason: DS.attr('string'),
   isGuest: DS.attr('boolean'),
   accountType: DS.attr('string'),
@@ -47,5 +48,25 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
     }
     return display;
   }.property('name', 'username', 'isLoaded'),
-  lastSeen: DS.attr('date')
+  lastSeen: DS.attr('date'),
+  needAdditionalInfo: function() {
+    const authorized = this.get('isAuthz');
+    if (authorized) {
+      return false;
+    }
+
+    const googleId = this.get('googleId');
+
+    if (!googleId) {
+      return false;
+    }
+    const requestReason = this.get('requestReason');
+
+    if (!requestReason) {
+      return true;
+    }
+    return false;
+  }.property('googleId', 'requestReason', 'isAuthz'),
+
+  shouldSendAuthEmail: DS.attr('boolean')
 });

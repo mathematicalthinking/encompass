@@ -160,13 +160,14 @@ function protect(options) {
 
     var notAuthenticated = !userAuthenticated;
     var notAuthorized = !userAuthorized;
+    var isGoogleUser = !!user.googleId;
 
 
     if (notAuthenticated) {
       return utils.sendResponse(res, {"error": 'You are not Authenticated'});
     }
-
-    if (notAuthorized) {
+    // users who sign up with google need to be able to update their user info with org, requestReason, and location
+    if (notAuthorized && !isGoogleUser) {
       res.redirect('/#/');
       return;
     }

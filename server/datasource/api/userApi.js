@@ -15,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
 const accessUtils = require('../../middleware/access/utils');
+const auth = require('../../datasource/api/auth');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -212,7 +213,9 @@ function postUser(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
   async function putUser(req, res, next) {
-    /* These fields are uneditable */
+    try {
+       /* These fields are uneditable */
+    console.log('put body user', req.body.user);
     delete req.body.user.username;
     delete req.body.user.createDate;
     delete req.body.user.key;
@@ -222,6 +225,7 @@ function postUser(req, res, next) {
     var modifiableUserCriteria = access.put.user(user);
     var modifiableUsers = await models.User.find(modifiableUserCriteria, {_id: 1}).lean().exec();
     var userIds = modifiableUsers.map(obj => obj._id.toString());
+    var shouldSendAuthEmail = req.body.user.shouldSendAuthEmail;
 
     // Should we handle a nonexisting userid separately?
     if (user.accountType === 'S' || !_.contains(userIds, req.params.id)) {
@@ -252,9 +256,32 @@ function postUser(req, res, next) {
           return utils.sendError.InternalError(err, res);
         }
         var data = {'user': doc};
-        return utils.sendResponse(res, data);
+
+        // if shouldSendAuthEmail send email to user confirming that they have been authorized
+        if (shouldSendAuthEmail) {
+          let recipient = doc.email;
+          if (recipient) {
+            return auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized').then(() => {
+              return utils.sendResponse(res, data);
+            })
+            .catch((err) => {
+              console.error('Error sending newlyAuthorized email', err);
+              console.trace();
+              return utils.sendError.InternalError(err, res);
+            });
+          }
+
+        } else {
+          return utils.sendResponse(res, data);
+        }
       });
     }
+    }catch(err) {
+      console.error(`Error userApi putUser: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(err, res);
+    }
+
   }
   /**
     * @public
