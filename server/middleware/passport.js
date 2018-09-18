@@ -285,10 +285,18 @@ module.exports = (passport) => {
   * This allows you to signup with google and then when you return
   *   we already have you in our database
   */
+  let callbackURL;
+
+  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+    callbackURL = process.env.GOOGLE_CALLBACK_URL_PROD;
+  } else {
+    callbackURL = "/auth/google/callback";
+  }
+
   passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: callbackURL
   }, (accessToken, refreshToken, profile, done) => {
     User.findOne({
       googleId: profile.id
