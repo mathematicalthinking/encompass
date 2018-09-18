@@ -4,11 +4,10 @@ NODE_ENV="staging"
 PORT=1338
 DB_NAME="encompass_stage"
 
-# to send emails through gmail for staging
-# note: this overrides the TEST_GMAIL_USERNAME and TEST_GMAIL_PASSWORD
-# note: if staging is used for user testing, a new username should be created for staging
-GMAIL_USERNAME="encompassmath@gmail.com"
-GMAIL_PASSWORD="stemdev21"
+# The gmail configurations need to be set in the .env file
+#GMAIL_USERNAME="yourGmailUsername"
+#GMAIL_PASSWORD="yourGmailPassword"
+#GOOGLE_CALLBACK_URL_STAGING="yourCallbackUrl"
 
 # url for seeding database
 MONGO_URL="mongodb://localhost:27017/encompass_stage"
