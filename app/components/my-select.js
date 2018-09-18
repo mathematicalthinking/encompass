@@ -3,6 +3,7 @@ Encompass.MySelectComponent = Ember.Component.extend({
   selectedValue: null,
   optionLabelPath: '',
   classNames: ['mySelect'],
+  elementId: 'my-select',
 
   // didInitAttrs is deprecated according to Ember docs
   didInitAttrs: function(attrs) {
