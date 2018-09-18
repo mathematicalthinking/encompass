@@ -587,7 +587,7 @@ module.exports = function (grunt) {
   grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
   grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
   // grunt.registerTask('bump', ['bump']);
-  grunt.registerTask('dist', ['build', 'concat', 'compress', 'clean', 'assets_versioning:dist', 'configAndRunStringReplace', 'copy:dist']);
+  grunt.registerTask('dist', ['build', 'concat', 'clean', 'assets_versioning:dist', 'configAndRunStringReplace', 'copy:dist', 'compress']);
   // grunt.registerTask('map', ['clean:dist', 'assets_versioning:dist', 'configAndRunStringReplace']);
 
   /**
