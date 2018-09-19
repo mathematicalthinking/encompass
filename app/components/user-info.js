@@ -12,6 +12,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   didReceiveAttrs: function () {
     this.set('isEditing', false);
+    this.store.findAll('organization').then((orgs) => {
+      this.set('orgList', orgs);
+    });
   },
 
   canEdit: Ember.computed('user.id', function () {
@@ -130,6 +133,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let currentUser = this.get('currentUser');
         let newDate = new Date();
         let user = this.get('user');
+        let org = this.get('org');
+        let orgReq = this.get('orgReq');
 
         // should we check to see if any information was actually updated before updating modified by/date?
         let accountType = this.get('selectedType');
@@ -137,11 +142,29 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
         user.set('accountType', accountTypeLetter);
+        user.set('organization', org);
+        user.set('organizationRequest', orgReq);
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save();
         this.set('isEditing', false);
       },
+
+     setOrg(name) {
+       if (!name || typeof name !== "string") {
+         return;
+       }
+       const orgs = this.get('orgList');
+
+       let org = orgs.findBy('name', name);
+
+       if (!org) {
+         this.set('orgReq', name);
+       } else {
+         this.set('org', org);
+       }
+
+     },
 
       resetPassword: function() {
         this.set('isResettingPassword', true);
@@ -163,8 +186,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           .then((org) => {
             let user = this.get('user');
             user.set('organization', org);
-            user.save();
-            user.set('organizationRequest', null);
+            this.set('org', org);
+            this.set('orgReq', null);
+            user.save().then((user) => {
+              user.set('orgReq', null);
+            });
           });
       },
 
