@@ -51,7 +51,8 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const section = that.get('selectedSection');
     const problem = that.get('selectedProblem');
     const assignedDate = that.getMongoDate(that.get('assignedDate'));
-    const dueDate = that.getMongoDate(that.get('dueDate'));
+    const dueDate = that.getEndDate((that.get('dueDate')));
+    console.log('due date is', dueDate);
 
     // need to get all students from section
     const students = section.get('students');
@@ -89,6 +90,18 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       let dateMoment = moment(htmlDateString, htmlFormat);
       return new Date(dateMoment);
     },
+
+    getEndDate: function (htmlDateString) {
+      const htmlFormat = 'YYYY-MM-DD HH:mm';
+      if (typeof htmlDateString !== 'string') {
+        return;
+      }
+      let dateMoment = moment(htmlDateString, htmlFormat);
+      let date = new Date(dateMoment);
+      date.setHours(23, 59, 59);
+      return date;
+    },
+
 
   actions: {
     validate: function() {
