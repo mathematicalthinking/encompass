@@ -17,6 +17,6 @@
 </div>
 
 {{#if students}}
-  {{twitter-typeahead dataList=students selectedItems=creators optionLabelPath="username" placeholder="Assign students" listName="studentPool" onSelect="updateAnswer" allowMultiple=true}}
+  {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username" placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}}
 {{/if}}
 
