@@ -1,26 +1,29 @@
 <section class="assignment-info-student">
-    <div>
-      <label>Problem Name:</label>
-      <p>{{assignment.problem.title}}</p>
-    </div>
-    <div>
-    <div>
-      <label>Assigned Date:</label>
-      <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
-    </div>
-    <div>
-      <label>Due Date:</label>
-      <p>{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
-    </div>
-      <label>Problem Statement:</label>
-      <p>{{assignment.problem.text}}</p>
-      {{#if assignment.problem.imageData}}
-        <div class="assignmentImage">
-          <img src="{{{assignment.problem.imageData}}}" alt={{{problem.title}}} />
-        </div>
-      {{/if}}
-    </div>
-  </section>
+  <div>
+    <label>Problem Name:</label>
+    <p>{{assignment.problem.title}}</p>
+  </div>
+
+  <div>
+    <label>Assigned Date:</label>
+    <p>{{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>
+  </div>
+
+  <div>
+    <label>Due Date:</label>
+    <p>{{format-date assignment.dueDate 'MMM Do YYYY'}}</p>
+  </div>
+  <div>
+    <label>Problem Statement:</label>
+    <p>{{assignment.problem.text}}</p>
+  </div>
+  {{#if assignment.problem.image}}
+  <div class="assignmentImage">
+    <label>Problem Image:</label>
+    <img src="{{{assignment.problem.image.imageData}}}" alt={{problem.title}}/>
+  </div>
+  {{/if}}
+</section>
 
 
 
