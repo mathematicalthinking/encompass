@@ -79,6 +79,17 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
     return new Date(dateMoment);
   },
 
+  getEndDate: function (htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    let date = new Date(dateMoment);
+    date.setHours(23, 59, 59);
+    return date;
+  },
+
   isAnswerCriteriaValid: function() {
     const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
     for (let param of params) {
@@ -119,8 +130,8 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       if (!this.get('selectedOwner')) {
         this.set('selectedOwner', this.get('currentUser'));
       }
-      const startDate = this.get('startDate');
-      const endDate = this.get('endDate');
+      const startDate = this.getMongoDate(this.get('startDate'));
+      const endDate = this.getEndDate(this.get('endDate'));
       const requestedName = this.get('requestedName');
       const mode = this.get('mode');
       const owner = this.get('selectedOwner');
@@ -131,8 +142,8 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         assignment: this.get('selectedAssignment'),
         problem: this.get('selectedProblem'),
         section: this.get('selectedSection'),
-        startDate: this.getMongoDate(this.get('startDate')),
-        endDate: this.getMongoDate(this.get('endDate')),
+        startDate: startDate,
+        endDate: endDate,
         folderSetName: this.get('selectedFolderSet.name'),
         requestedName,
         mode,
