@@ -142,7 +142,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('lastModifiedBy', currentUser);
         user.set('lastModifiedDate', newDate);
         user.set('accountType', accountTypeLetter);
-        user.set('organization', org);
+
+        if (org) {
+          user.set('organization', org);
+        }
         user.set('organizationRequest', orgReq);
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
