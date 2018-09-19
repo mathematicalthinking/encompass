@@ -19,7 +19,7 @@
       <td>
         {{#if currentSubmission.answer}}
           {{!-- {{#link-to 'problem' currentSubmission.answer.problem.id}}{{currentSubmission.puzzle.title}} <i class="fas fa-external-link-alt"></i>{{/link-to}} --}}
-          <a {{action 'openProblem'}}>
+          <a {{action 'openProblem'}} class="problem-link">
             {{currentSubmission.puzzle.title}}
             <i class="fas fa-external-link-alt"></i>
           </a>

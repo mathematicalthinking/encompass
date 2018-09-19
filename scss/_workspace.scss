@@ -131,6 +131,10 @@
   }
 }
 
+.workspace-name {
+  margin-right: 0;
+}
+
 #workspace_listing {
   position: relative;
   top: 65px;
@@ -161,6 +165,10 @@
     background: lighten($accent-yellow, 10%);
   }
 
+}
+
+.problem-link {
+  cursor: pointer;
 }
 
 .workspaceOwner.isMine {
