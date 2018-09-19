@@ -127,5 +127,5 @@
 </section>
 
 {{#if showAssignment}}
-  {{assignment-new fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
+  {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}
