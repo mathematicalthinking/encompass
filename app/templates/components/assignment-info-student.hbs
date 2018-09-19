@@ -3,6 +3,10 @@
     <label>Problem Name:</label>
     <p>{{assignment.problem.title}}</p>
   </div>
+  <div>
+    <label>Class:</label>
+    <p>{{#link-to 'section' assignment.section.id}} {{assignment.section.name}}{{/link-to}}</p>
+  </div>
 
   <div>
     <label>Assigned Date:</label>

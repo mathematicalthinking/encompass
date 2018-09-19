@@ -5,7 +5,7 @@
 <form id='encImportForm' class='properForm'>
      <fieldset>
        <h4>Filter Criteria <span class="required-star">*</span></h4>
-       <p class="info">We either need a date range or at least one of teacher, assignment, problem, or section in order to create a workspace.</p>
+       <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to create a workspace.</p>
        <ol>
           <li>
             <label for="teacher">Teacher</label>
@@ -25,8 +25,8 @@
            {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedproblem))}}
          </li>
          <li>
-           <label for="section">Section</label>
-           {{my-select content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+           <label for="section">Class</label>
+           {{my-select content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut selectedSection))}}
          </li>
          <li>
            <label for="startDate">From Date</label>

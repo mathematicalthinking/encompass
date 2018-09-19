@@ -1,5 +1,5 @@
 <header class="info-header">
-  <h2>Section Details</h2>
+  <h2>Class Details</h2>
   <div class="clear"></div>
 </header>
 
@@ -8,7 +8,7 @@
       <fieldset>
         <ol>
           <li>
-            <label for="name">Section Name</label>
+            <label for="name">Class Name</label>
             {{input name="name" id="name" type="text" value=sectionName placeholder=section.name}}
           </li>
           {{#each section.teachers as |teacher|}}
@@ -20,9 +20,9 @@
         </ol>
       </fieldset>
     </form>
-  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Section</button>
+  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Class</button>
   <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
-    Delete Section
+    Delete Class
   </button>
 
   {{#if sectionToDelete}}
@@ -35,7 +35,7 @@
     <fieldset>
       <ul>
         <li>
-            <label for="name">Section Name</label>
+            <label for="name">Class Name</label>
             <p class="section-info">{{section.name}}</p>
           </li>
           <li>
@@ -128,7 +128,7 @@
   {{#unless cantEdit}}
   <section class="submit">
     <button class="action_button" id="editSection" {{action 'editSection'}}>
-      Edit Section
+      Edit Class
     </button>
   </section>
   {{/unless}}
@@ -181,7 +181,7 @@
 
 
        {{#if userAlreadyInSection}}
-        <p class="error-message"> Username: {{studentUsername}} already registered in this section.</p>
+        <p class="error-message"> Username: {{studentUsername}} already registered in this class.</p>
         <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> Close </button>
       {{/if}}
 
@@ -197,7 +197,7 @@
   </form>
 
     {{#if usernameAlreadyExists}}
-      <p class="error-message"> Can not add username:{{studentUsername}} to this section.</p>
+      <p class="error-message"> Can not add username:{{studentUsername}} to this class.</p>
       {{/if}}
 
   {{#if studentsNotEmpty}}

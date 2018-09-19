@@ -9,8 +9,8 @@
       <fieldset>
         <ol>
           <li>
-            <label for="section">Section <span class="required-star">*</span></label>
-            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
+            <label for="section">Class <span class="required-star">*</span></label>
+            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
           </li>
           <li>
