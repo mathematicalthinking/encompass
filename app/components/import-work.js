@@ -72,8 +72,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   init: function() {
     this._super(...arguments);
     let problems = this.model.problems;
-    var currentUser = this.get('currentUser');
-    let myProblems = problems.filterBy('createdBy.content', currentUser);
+    // var currentUser = this.get('currentUser');
+    let myProblems = problems.sortBy('createDate').reverse();
 
     this.set('problems', myProblems);
     this.set('sections', this.model.sections);
