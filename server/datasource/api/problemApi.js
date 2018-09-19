@@ -63,25 +63,25 @@ function accessibleProblems(user) {
 const getProblems = async function(req, res, next) {
   const user = userAuth.requireUser(req);
 
-  // if (req.query.problemTitle) {
-  //   let title = req.query.problemTitle;
-  //   title = title.replace(/\s+/g, "");
-  //   regex = new RegExp(title, 'i');
-  //   console.log('req title is', title);
+// if (req.query.problemTitle) {
+//   let title = req.query.problemTitle;
+//   title = title.replace(/\s+/g, "");
+//   regex = new RegExp(title, 'i');
+//   console.log('req title is', title);
 
-  //   let criteria = await access.get.problems(user, null, regex);
-  //   console.log('criteria is', criteria);
+//   let criteria = await access.get.problems(user, null, regex);
+//   console.log('criteria is', criteria);
 
-  //   const requestedProblems = await models.Problem.find(criteria).lean().exec();
-  //   let data;
-  //   data = {
-  //     'problem': requestedProblems
-  //   }
-  //   return utils.sendResponse(res, data);
-  // }
+//   const requestedProblems = await models.Problem.find(criteria).lean().exec();
+//   let data;
+//   data = {
+//     'problem': requestedProblems
+//   }
+//   return utils.sendResponse(res, data);
+// }
 
-  const criteria = await access.get.problems(user);
-  models.Problem.find(criteria)
+const criteria = await access.get.problems(user);
+    models.Problem.find(criteria)
   .exec((err, problems) => {
     if (err) {
       logger.error(err);
