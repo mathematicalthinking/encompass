@@ -8,17 +8,17 @@
       <fieldset>
         <ol>
           <li>
-            <label for="answer">Brief Summary</label>
+            <label for="answer">Brief Summary <span class="required-star">*</span></label>
             {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
             {{input id="answer" required="true" type="hidden" value=answer}}
           </li>
           <li>
-            <label for="explanation">Explain your ideas and how you figured them out</label>
+            <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
             <section id="editor">
             </section>
           </li>
          <li>
-              <label for="uploadedFile">Uploaded File:</label>
+              <label for="uploadedFile">Upload PDF</label>
               {{#if imageData}}
                 <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
                   <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
