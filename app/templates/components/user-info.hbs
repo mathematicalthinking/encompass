@@ -68,7 +68,7 @@
       <tr>
         <td>Organization</td>
       {{#if isEditing}}
-        <td>{{twitter-typeahead dataList=orgList onSelect="setOrg" optionLabelPath='name'}}</td>
+        <td>{{twitter-typeahead dataList=orgList onSelect="setOrg" optionLabelPath='name' placeholder=user.organization.name}}</td>
         {{else}}
         <td>{{user.organization.name}}</td>
       {{/if}}
