@@ -20,11 +20,11 @@
           </li>
           <li>
             <label for="additionalInfo">Date Assigned <span class="required-star">*</span></label>
-            {{input id="assignedDate" type="date" value=assignedDate required=true}}
+            {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
           </li>
           <li>
             <label for="dueDate">Due Date <span class="required-star">*</span></label>
-            {{input id="dueDate" type="date" value=dueDate required=true}}
+            {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
           </li>
         </ol>
       </fieldset>
@@ -43,4 +43,13 @@
   {{#if createdAssignmentError}}
     <p>{{createAssignmentError}}</p>
   {{/if}}
+
+<script>
+  $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      singleDatePicker: true,
+      showDropdowns: true,
+    });
+  });
+</script>
 
