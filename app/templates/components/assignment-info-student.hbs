@@ -1,4 +1,10 @@
 <section class="assignment-info-student">
+  {{#if assignment.name}}
+  <div>
+    <label for="assignment">Assignment Name:</label>
+    <p>{{assignment.name}}</p>
+  </div>
+  {{/if}}
   <div>
     <label>Problem Name:</label>
     <p>{{assignment.problem.title}}</p>
