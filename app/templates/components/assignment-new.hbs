@@ -26,6 +26,10 @@
             <label for="dueDate">Due Date <span class="required-star">*</span></label>
             {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
           </li>
+          <li>
+            <label for="name">Assignment Name</label>
+            {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
+          </li>
         </ol>
       </fieldset>
       {{#if isMissingRequiredFields}}

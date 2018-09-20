@@ -54,6 +54,13 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const assignedDate = that.getMongoDate(startDate);
     const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
     const dueDate = that.getEndDate(endDate);
+    let name = that.get('name');
+
+    if (!name) {
+      let assignedDate = $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
+      let problemTitle = problem.get('title');
+      name = problemTitle + ' / ' + assignedDate;
+    }
 
     // need to get all students from section
     const students = section.get('students');
@@ -66,6 +73,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       problem: problem,
       assignedDate: assignedDate,
       dueDate: dueDate,
+      name: name,
     });
 
     students.forEach((student) => {
