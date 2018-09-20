@@ -17,11 +17,22 @@ const fs = require('fs');
 require('dotenv').config();
 
 
-  const buildDestination = function(req, res, next) {
-    console.log('build destination is running');
-    if (!req.user) {
-      return utils.sendError.InvalidCredentialsError('Unauthenticated request', res);
+const buildDestination = function (req, res, next) {
+  console.log('build destination is running');
+  if (!req.user) {
+    return utils.sendError.InvalidCredentialsError('Unauthenticated request', res);
+  }
+
+  const rootPath = process.cwd();
+  const username = req.user.username || 'anonymous';
+  let dest = path.resolve(rootPath, `server/public/image_uploads/${username}`);
+  fs.mkdir(dest, (err) => {
+    if (err) {
+      console.log(err);
     }
+    next(null, dest);
+  });
+};
 
     // Generate error if the destination folder does not exist.
     let buildDir = 'build';
@@ -61,10 +72,10 @@ require('dotenv').config();
       }else{
         console.log("file not supported");
 
-        //TODO:  A better message response to user on failure.
-        return next();
-      }
-    };
+    //TODO:  A better message response to user on failure.
+    return next();
+  }
+};
 
 // const config = multer({
 //   storage: multer.diskStorage({
@@ -99,7 +110,14 @@ require('dotenv').config();
 //       }
 //     });
 
+<<<<<<< HEAD
     //module.exports.config = config;
     // module.exports.buildDestination = buildDestination;
     module.exports.fileFilter = fileFilter;
     module.exports.filename = filename;
+=======
+//module.exports.config = config;
+module.exports.buildDestination = buildDestination;
+module.exports.fileFilter = fileFilter;
+module.exports.filename = filename;
+>>>>>>> formatting
