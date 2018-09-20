@@ -1,0 +1,82 @@
+    <div class="student-search">
+     <h3>Search for existing users to add</h3>
+      {{twitter-typeahead minLength=2 selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+      {{#if userAlreadyInSection}}
+        <p class="error-message"> User already registered in this section.</p>
+        <button class="action_button" {{action 'exitAddExistingUsername'}}> Close </button>
+      {{/if}}
+    </div>
+
+    <div class="student-create">
+      <h3>Create new student account</h3>
+      <form id="create-student">
+        <fieldset>
+          <div class="create-student-input">
+            <label for="usingDefaultPassword">Use default password for all students?</label>
+            {{input type="checkbox" checked=isUsingDefaultPassword name="usingDefaultPassword"}}
+          </div>
+          {{#if isUsingDefaultPassword}}
+            <div class="create-student-input">
+              <label for="defaulPassword">Default Password</label>
+              {{input id="defaultPassword" type=fieldType value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
+              <button id="show-password-btn" {{action "showPassword"}}>
+                  {{#if showingPassword}}
+                    <i class="fas fa-eye-slash"></i>
+                  {{else}}
+                    <i class="fas fa-eye"></i>
+                  {{/if}}
+              </button>
+            </div>
+          {{/if}}
+          <div class="student-info">
+            <div class="create-student-input">
+            <label for="username">Username</label>
+            {{input id="username" type="text" value=username placeholder="username" action="checkError" on="key-down"}}
+          </div>
+
+          <div class="create-student-input">
+            <label for="name">Name (Optional)</label>
+            {{input id="name" type="text" value=name placeholder="name" action="checkError" on="key-down"}}
+          </div>
+
+          {{#unless isUsingDefaultPassword}}
+            <div class="create-student-input">
+
+                <label for="addpassword">Password</label>
+                {{input id="password" type=fieldType value=password placeholder="password" action="checkError" on="key-down"}}
+                  <button id="show-password-btn" {{action "showPassword"}}>
+                    {{#if showingPassword}}
+                      <i class="fas fa-eye-slash"></i>
+                    {{else}}
+                      <i class="fas fa-eye"></i>
+                    {{/if}}
+                </button>
+
+            </div>
+          {{/unless}}
+          <div class="submit">
+          <button class="action_button" {{action 'validateCreateStudent'}}>Create and Add </button>
+        </div>
+          </div>
+
+        </fieldset>
+        {{#if usernameAlreadyExists}}
+          <p class="error-message"> Username is unavailable.</p>
+        {{/if}}
+        {{#if canAddExistingUser}}
+          <p class="error-message"> {{studentUsername}} is an existing member of your organization. Do you want to add {{studentUsername}} to this section?
+          <button class="action_button" {{action 'addExistingStudent'}} > yes </button>
+          <button class="action_button" {{action 'exitAddExistingUsername'}}> no </button>
+          </p>
+        {{/if}}
+
+
+      </form>
+    </div>
+
+
+
+
+
+
+
