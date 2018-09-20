@@ -4,6 +4,10 @@
       <fieldset>
         <ol>
           <li>
+            <label for="assignment">Assignment Name</label>
+            {{input type="text" value=assignment.name}}
+          </li>
+          <li>
             <label for="problem">Problem</label>
             {{my-select cannotBeNull=true selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
             {{input required=true type="hidden" value=problem}}
@@ -31,6 +35,12 @@
     <section id='assignment-info' class='properForm'>
       <fieldset>
         <ol>
+          {{#if assignment.name}}
+          <li>
+            <label for="assignment">Assignment Name</label>
+            <p class="assignment-info">{{assignment.name}}</p>
+          </li>
+          {{/if}}
           <li>
             <label for="problem">Problem Title</label>
             <p class="assignment-info">{{problem.title}}</p>
