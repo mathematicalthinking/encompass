@@ -60,25 +60,31 @@
   }
 }
 #workspace-new-enc {
+  h2 {
+    font-size: 1.5em;
+    margin: 20px 0 10px 25px;
+  }
+  .action_button {
+    margin: 20px 0 50px 25px; ;
+  }
   #encImportForm {
-    .required-error {
-      border: 2px solid $error-color;
-    }
     margin-left: 25px;
     margin-top: 25px;
     width: 50%;
-
+    .required-error {
+      border: 2px solid $error-color;
+    }
     div.mySelect {
       display: inline-block;
       padding: 12px 0px;
-      margin: 8px 0;
       font-size: 1em;
       width: 50%;
-
       select {
         width: 100%;
         font-size: 1em;
+        height: 45px;
         margin-left: 0px;
+        text-indent: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
@@ -87,10 +93,21 @@
           color: $primary-font-color;
         }
       }
-
     }
-
-    input[type=date], input[type=text] {
+    h4 {
+      font-size: 1.3em;
+      margin-bottom: 20px;
+    }
+    .info {
+      margin-left: -5px;
+    }
+    .heading {
+      margin: 10px 0 20px 10px;
+    }
+    .spacing {
+      margin-top: 40px;
+    }
+    input[type=date], input[type=text], .workspace-info {
       width: 50%;
       padding: 12px 20px;
       margin: 8px 0;
@@ -100,6 +117,10 @@
       border-radius: 4px;
       box-sizing: border-box;
     }
+    input[type=radio] {
+      padding: 12px 20px;
+      margin: 16px 2px;
+    }
     input:required {
       box-shadow: none;
     }
@@ -107,8 +128,8 @@
     //   box-shadow: 0 0 3px red;
     // }
     label {
-      width: 10%;
-      padding: 12px 10px;
+      width: 20%;
+      padding: 12px 10px 20px 10px;
       font-size: 1em;
       color:$dark-font-color;
     }

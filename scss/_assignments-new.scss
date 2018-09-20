@@ -14,11 +14,12 @@ form#newassignmentform {
   div.mySelect {
     display: inline-block;
     padding: 12px 0px;
-    margin: 8px 0;
     font-size: 1em;
     width: 70%;
     select {
       width: 100%;
+      height: 45px;
+      text-indent: 10px;
       font-size: 1em;
       margin-left: 0px;
       border: 1px solid $input-border;
@@ -50,7 +51,7 @@ form#newassignmentform {
   // }
   label {
     width: 20%;
-    padding: 12px 20px;
+    padding: 12px 10px 20px 10px;
     font-size: 1em;
     color: $dark-font-color;
   }
