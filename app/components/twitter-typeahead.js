@@ -36,53 +36,15 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    let dataList = this.get('dataList');
-    let name = this.get('listName');
-    let sourceFunction = this.get('sourceFunction');
+    let options = this.getOptions();
+    let dataSetOptions = this.getDataSetOptions();
+
     let path = this.get('optionLabelPath');
-    let minLength = this.get('minLength');
-    let limit = this.get('limit');
-    let display = this.get('display');
     let selectedValue = this.get('selectedValue');
-    let templates = this.get('templates');
 
+    const that = this;
 
-    if (minLength === undefined || minLength === null || typeof minLength !== 'number') {
-      minLength = 1;
-    }
-
-    if (minLength === undefined || minLength === null || typeof limit !== 'number') {
-      limit = 5;
-    }
-
-    if (!path || typeof path !== 'string') {
-      path = 'id';
-    }
-
-    if (!sourceFunction || typeof sourceFunction !== 'function') {
-      sourceFunction = this.substringMatcher.bind(this);
-    } else {
-      sourceFunction = sourceFunction.bind(this);
-    }
-
-    if (!display) {
-      display = function(suggestion) {
-        return suggestion.get(path);
-      };
-    }
-
-    this.$('.typeahead').typeahead({
-      hint: false,
-      highlight: true,
-      minLength: minLength,
-      limit: limit
-    },
-    {
-      name: name,
-      source: sourceFunction(dataList),
-      display: display,
-      templates: templates
-    });
+    this.$('.typeahead').typeahead(options, dataSetOptions);
 
     let startingValue;
 
@@ -101,8 +63,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
     this.$('.typeahead').typeahead('val', startingValue);
 
-    const that = this;
-
     this.$('.typeahead').on('typeahead:select', function(ev, suggestion) {
 
       that.set('selectedValue', suggestion);
@@ -115,6 +75,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     });
 
     this.$('.typeahead').on('typeahead:change', function(ev, val) {
+      console.log('typeahead ev change', val);
       let selectedValue = that.get('selectedValue');
       let inputValue = that.$('.typeahead').typeahead('val');
 
@@ -141,6 +102,75 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     });
   },
 
+  getOptions: function() {
+    let minLength = this.get('minLength');
+    let limit = this.get('limit');
+    let async = this.get('isAsync');
+    let hint = false;
+    let highlight = true;
+
+    if (minLength === undefined || minLength === null || typeof minLength !== 'number') {
+      minLength = 1;
+    }
+
+    if (minLength === undefined || minLength === null || typeof limit !== 'number') {
+      limit = 5;
+    }
+
+    let ret = {
+      minLength,
+      limit,
+      async,
+      hint,
+      highlight
+    };
+
+    // name will default to random number if not provided
+    return ret;
+  },
+
+  getDataSetOptions: function() {
+    let name = this.get('listName');
+    let dataList = this.get('dataList');
+    let sourceFunction = this.get('sourceFunction');
+    let path = this.get('optionLabelPath');
+    let display = this.get('display');
+    let templates = this.get('templates');
+    let isAsync = this.get('isAsync');
+
+    let source;
+
+    if (!sourceFunction || typeof sourceFunction !== 'function') {
+     source = this.substringMatcher.call(this, dataList);
+    } else if (!isAsync) {
+      source = sourceFunction.call(this, dataList);
+    } else {
+      source = sourceFunction;
+    }
+
+    if (!path || typeof path !== 'string') {
+      path = 'id';
+    }
+
+    if (!display) {
+      display = function(suggestion) {
+        return suggestion.get(path);
+      };
+    }
+
+    let ret = {
+      source,
+      display,
+      templates
+    };
+
+    if (name) {
+      ret.name = name;
+    }
+
+    return ret;
+  },
+
   substringMatcher: function(data) {
     // data should be array of ember objects
 
@@ -162,7 +192,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
     const that = this;
 
-    return function findMatches(q, cb) {
+    return function findMatches(q, cb, async) {
       var matches, substrRegex, filtered, pool;
 
 
@@ -199,6 +229,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
 
       cb(matches);
     };
-  }
+  },
 
 });
