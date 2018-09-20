@@ -130,8 +130,12 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       if (!this.get('selectedOwner')) {
         this.set('selectedOwner', this.get('currentUser'));
       }
-      const startDate = this.getMongoDate(this.get('startDate'));
-      const endDate = this.getEndDate(this.get('endDate'));
+
+      const start = $('#dateRange').data('daterangepicker').startDate.format('YYYY-MM-DD');
+      const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
+      const startDate = this.getMongoDate(start);
+      const endDate = this.getEndDate(end);
+
       const requestedName = this.get('requestedName');
       const mode = this.get('mode');
       const owner = this.get('selectedOwner');

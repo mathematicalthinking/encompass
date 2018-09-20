@@ -89,6 +89,7 @@
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
+        // -webkit-appearance:none;
         &::placeholder {
           color: $primary-font-color;
         }
@@ -119,7 +120,7 @@
     }
     input[type=radio] {
       padding: 12px 20px;
-      margin: 16px 2px;
+      margin: 22px 2px;
     }
     input:required {
       box-shadow: none;
