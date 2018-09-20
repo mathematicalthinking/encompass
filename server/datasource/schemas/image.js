@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 /**
   * @public
   * @class Image
-  * @description Images are uploaded and saved in public/image_uploads using multer
+  * @description Images are stored as base-64 strings. Note: they are uploaded and saved temporarily in ${buildDir}/image_uploads using multer.
   */
 var ImageSchema = new Schema({
   // Currently only using encoding, mimetype, data

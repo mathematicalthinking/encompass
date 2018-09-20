@@ -17,6 +17,8 @@ const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
 const PDF2Pic = require('pdf2pic').default
+require('dotenv').config();
+
 
 module.exports.get = {};
 module.exports.post = {};
@@ -110,11 +112,22 @@ const postImages = async function(req, res, next) {
     let isPDF = mimeType === 'application/pdf';
     let img = new models.Image(f);
 
+    let buildDir = 'build';
+    if (process.env.BUILD_DIR) {
+      buildDir = process.env.BUILD_DIR;
+    }
+    const saveDir = `./${buildDir}/image_uploads/tmp_pngs`
+    fs.access(saveDir, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error(`ERROR - PNG Images directory ${saveDir} does not exist`);
+      }
+    });
+
     if (isPDF) {
       let converter = new PDF2Pic({
         density: 200, // output pixels per inch
         savename: img.name, // output file name
-        savedir: './server/public/image_uploads', // output file location
+        savedir: saveDir, // output file location
         format: "png", // output file format
         size: 1000 // output size in pixels
       })

@@ -289,11 +289,16 @@ module.exports = (passport) => {
 
   if (process.env.NODE_ENV === 'production') {
     callbackURL = process.env.GOOGLE_CALLBACK_URL_PROD;
+    console.log(`production`);
   } else if (process.env.NODE_ENV === 'staging') {
       callbackURL = process.env.GOOGLE_CALLBACK_URL_STAGING;
-  } else {
+      console.log(`staging`);
+    } else {
     callbackURL = "/auth/google/callback";
+    console.log(`other environment`);
   }
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`callbackURL: ${callbackURL}`);
 
   passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
