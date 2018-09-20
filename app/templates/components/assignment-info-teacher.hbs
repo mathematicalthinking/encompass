@@ -10,16 +10,16 @@
           </li>
           <li>
             <label for="section">Section</label>
-            {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
+            {{my-select cannotBeNull=true selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
             {{input required=true type="hidden" value=selectedsection}}
         </li>
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
-            {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDateLocked}}
+            {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=isDateLocked}}
         </li>
         <li class="assignment-info">
           <label for="dueDate">Due Date</label>
-          {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate}}
+          {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
         </li>
         </ol>
       </fieldset>
@@ -62,3 +62,14 @@
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
   {{/if}}
+
+{{#if isEditing}}
+<script>
+  $(function () {
+    $('input[name="daterange"]').daterangepicker({
+      singleDatePicker: true,
+      showDropdowns: true,
+    });
+  });
+</script>
+{{/if}}
