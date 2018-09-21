@@ -1,5 +1,5 @@
     <div class="student-search">
-     <h3>Add Existing User</h3>
+     <h3>Add Existing User<i title="Start typing an existing username to see suggestions" class="fas fa-info-circle fa-sm"></i></h3>
       {{twitter-typeahead minLength=2 selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
     </div>
 
@@ -8,16 +8,16 @@
         <h3>Create new student account</h3>
         <fieldset>
           <div class="create-student-input">
-            <label for="usingDefaultPassword">Use default password for all students?</label>
+            <label for="usingDefaultPassword">Use class password for all students?</label>
             {{input type="checkbox" checked=isUsingDefaultPassword name="usingDefaultPassword"}}
           </div>
           {{#if isUsingDefaultPassword}}
             <div class="create-student-input">
-              <label for="defaulPassword">Default Password<span class="required-star">*</span>
+              <label for="defaulPassword">Class Password<span class="required-star">*</span>
                 {{#if isEditingSectionPassword}}
-                  <button {{action "updateSectionPassword"}}>done</button>
+                  <button class="done action_button" {{action "updateSectionPassword"}}>done</button>
                 {{else}}
-                  <button {{action (mut isEditingSectionPassword) true}}>edit</button>
+                  <button class="edit action_button" {{action (mut isEditingSectionPassword) true}}>edit</button>
                 {{/if}}
               </label>
               {{#if isEditingSectionPassword}}
@@ -30,15 +30,25 @@
                   {{/if}}
                 </button>
               {{else}}
-                {{#if section.sectionPassword}}
-                  <p class="section-info">{{section.sectionPassword}}</p>
+                {{#if sectionPassword}}
+                  {{#if isShowingClassPassword}}
+                    <p class="section-info">{{sectionPassword}}
+                      <button id="show-password-btn" {{action (mut isShowingClassPassword) false}}><i class="fas fa-eye-slash"></i></button>
+                    </p>
+                  {{else}}
+                    {{input class="hidden-class-pass" disabled=true value=sectionPassword type="password"}}
+                    <button id="show-password-btn" {{action (mut isShowingClassPassword) true}}><i class="fas fa-eye"></i></button>
+
+                  {{/if}}
+
                 {{else}}
                   <p class="section-info">Class password has not been set yet.</p>
                 {{/if}}
-              {{/if}}
-
+            {{/if}}
             </div>
           {{/if}}
+
+
           <div class="student-info">
             <div class="create-student-input">
             <label for="username">Username<span class="required-star">*</span></label>

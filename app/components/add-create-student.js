@@ -2,6 +2,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend({
   elementId: 'add-create-student',
   isUsingDefaultPassword: false,
   fieldType: 'password',
+  isShowingClassPassword: true,
 
   clearCreateInputs: function() {
     let fields = ['username', 'name', 'password'];
