@@ -12,7 +12,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend({
     }
   },
   clearAddExistingUser: function() {
-  let fields = ['canAddExistingUser', 'canAddExistingUser', 'canAddExistingUser'];
+  let fields = ['canAddExistingUser', 'existingUser'];
 
     for (let field of fields) {
       this.set(field, null);
