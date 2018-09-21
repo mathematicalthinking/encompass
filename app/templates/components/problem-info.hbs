@@ -101,11 +101,15 @@
           {{#if currentUser.isAdmin}}
             <p class="warning-message">Warning, this problem has an answer. Be sure any changes do not change the intent or difficulty of the problem.</p>
             <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
-            <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
+            {{#unless showAssignment}}
+              <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
+            {{/unless}}
           {{else}}
             <p class="warning-message">You can't edit this problem because an answer has already been submitted.</p>
             <button class="action_button" {{action 'duplicateProblem'}}>Duplicate this Problem</button>
-            <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
+            {{#unless showAssignment}}
+              <button class="action_button" {{action 'showAssignment'}}>Create Assignment</button>
+            {{/unless}}
           {{/if}}
         {{else}}
           <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
