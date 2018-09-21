@@ -39,6 +39,9 @@
   }
 
 #sectioninfo {
+  i {
+    padding: 2px;
+  }
   .section-info {
     font-size: 1em;
     width: 70%;
@@ -53,10 +56,11 @@
       color: $primary-font-color;
     }
   }
-  .teacherslist, .studentslist {
+  .teacherslist, .studentslist, .assignmentslist {
     border: 1px solid $primary-font-color;
     margin: 10px 5px;
   }
+
   label {
     width: 20%;
     margin: 8px 0;
@@ -137,22 +141,12 @@
 }
 
 #add-create-student{
-
-  .student-create {
+  label {
+    display: inline-block;
+    line-height: 1em;
+    vertical-align: middle;
     padding: 5px 20px;
-  }
-
-  #create-student {
-    h3 {
-      margin: 8px 0;
-    }
-    // label {
-    //   display: inline-block;
-    // line-height: 1.2em;
-    // vertical-align: bottom;
-    // width: 100px;
-    // }
-
+    margin: 8px;
   }
 
   .student-search {
@@ -177,12 +171,24 @@
     }
   }
 
-  .student-info {
-    .create-student-input {
-      display: inline-block;
+  .student-create {
+    padding: 5px 20px;
+
+    #create-student {
+      h3 {
+        margin: 8px 0;
+      }
+
+      .student-info {
+        .create-student-input {
+          display: inline-block;
+        }
+      }
     }
   }
   .submit {
     display: inline-block;
   }
 }
+
+
