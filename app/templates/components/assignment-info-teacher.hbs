@@ -19,7 +19,7 @@
         </li>
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
-            {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=isDateLocked}}
+            {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=true}}
         </li>
         <li class="assignment-info">
           <label for="dueDate">Due Date</label>
@@ -30,6 +30,7 @@
     </form>
     <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
     <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
+    <button class="action_button" {{action (mut assignmentToDelete) assignment}}>Delete Assignment</button>
   {{/if}}
   {{#if isDisplaying}}
     <section id='assignment-info' class='properForm'>
@@ -61,7 +62,6 @@
       </fieldset>
     </section>
     <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
-    <button class="action_button" {{action (mut assignmentToDelete) assignment}}>Delete Assignment</button>
   {{/if}}
   </section>
 
