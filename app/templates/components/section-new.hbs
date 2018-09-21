@@ -17,8 +17,8 @@
         <fieldset>
           <ol>
             <li>
-              <label for="title">Class/Group Name <span class="required-star">*</span></label>
-              {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class/group name" action="checkError" on="key-down"}}
+              <label for="title">Class Name <span class="required-star">*</span></label>
+              {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
               {{#if missingFieldsError}}
               <p class="error-message">Please provide a Class or Group Name.</p>
               {{/if}}

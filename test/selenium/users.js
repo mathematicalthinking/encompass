@@ -267,10 +267,11 @@ describe('Users', function() {
   });
 
   describe('Logged in as a pd admin user', function () {
-    before(async function () {
+    before(async function (done) {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
       await helpers.findAndClickElement(driver, css.topBar.users);
+      done(new Error('failed'));
     });
 
     function validateUsersPage() {
