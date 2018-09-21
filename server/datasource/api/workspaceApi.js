@@ -852,11 +852,12 @@ function newWorkspaceRequest(req, res, next) {
   let criteria = await access.get.workspaces(user);
     models.Workspace.find(criteria).exec(function(err, workspaces) {
       workspaces.forEach((workspace) => {
-        if (workspace.lastViewed) {
-          console.log('workspace name is', workspace.name);
-          console.log('workspace lastviewed is', workspace.lastViewed);
-        } else {
-          console.log('no last viewed');
+        if (!workspace.lastViewed) {
+          workspace.lastViewed = workspace.lastModifiedDate;
+          if (!workspace.lastModifiedDate) {
+            workspace.lastViewed = workspace.createDate;
+          }
+           workspace.save();
         }
       });
       var response = {
