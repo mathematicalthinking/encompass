@@ -35,6 +35,9 @@
       {{#if isMissingRequiredFields}}
         <p class="error-message">Please provide all required fields.</p>
       {{/if}}
+      {{#if invalidDateRange}}
+        <p class="error-message">Invalid Date Range</p>
+      {{/if}}
     </form>
   </section>
   <div style="clear: left"></div>
@@ -42,10 +45,13 @@
     <button class="action_button" {{action 'validate'}}>
       Create Assignment
     </button>
+    <button class="action_button" {{action 'cancel'}}>
+      Cancel
+    </button>
   </section>
 
   {{#if createdAssignmentError}}
-    <p>{{createAssignmentError}}</p>
+    <p class="error-message">{{createAssignmentError}}</p>
   {{/if}}
 
 <script>

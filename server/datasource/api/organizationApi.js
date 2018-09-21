@@ -3,6 +3,7 @@
   * @description This is the API for organization based requests
   * @author Daniel Kelly
 */
+/* jshint ignore:start */
 
 var mongoose = require('mongoose'),
   express = require('express'),
@@ -28,18 +29,37 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
 */
 
-const getOrganizations = (req, res, next) => {
+const getOrganizations = async function(req, res, next) {
   //const criteria = utils.buildCriteria(req);
   //const user = userAuth.requireUser(req);
-  models.Organization.find({})
-  .exec((err, organizations) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+  try {
+    const sortBy = req.query.sortBy;
+    let organizations = await models.Organization.find({});
+
+
+    if (sortBy === 'members') {
+      // return orgs sorted by member count descending
+      let tuples = await Promise.all(organizations.map((org) => {
+        return org.getMemberCount(org._id).then((count) => {
+          return [org, count];
+        });
+      }));
+
+      let sorted = tuples.sort((a, b) => {
+        return b[1] - a[1];
+      });
+      organizations = sorted.map(t => t[0]);
     }
+
     const data = {'organizations': organizations};
     return utils.sendResponse(res, data);
-  });
+  }catch(err) {
+      console.error(`Error getOrgMembers: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(err, res);
+  }
+
+
 };
 
 /**
@@ -140,3 +160,4 @@ module.exports.get.organizations = getOrganizations;
 module.exports.get.organization = getOrganization;
 module.exports.post.organization = postOrganization;
 module.exports.put.organization = putOrganization;
+/* jshint ignore:end */

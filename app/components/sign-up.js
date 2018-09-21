@@ -10,6 +10,10 @@ Encompass.SignUpComponent = Ember.Component.extend({
   emailExistsError: null,
   org: null,
 
+  init: function() {
+    this._super(...arguments);
+    this.set('typeaheadHeader', '<label class="tt-header">Popular Organizations:</label>');
+  },
 
   emailRegEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 
@@ -201,22 +205,5 @@ Encompass.SignUpComponent = Ember.Component.extend({
         }
       }
     },
-
-    setOrg(name) {
-      if (!name || typeof name !== "string") {
-        return;
-      }
-
-      const orgs = this.get('organizations');
-
-      let org = orgs.findBy('name', name);
-
-      if (!org) {
-        this.set('org', name);
-      } else {
-        this.set('org', org);
-      }
-
-    }
   }
 });

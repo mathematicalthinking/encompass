@@ -1,6 +1,10 @@
 Encompass.AuthSignupRoute = Ember.Route.extend({
   model: function() {
-    return this.store.findAll('organization');
+    return this.store.query('organization', {
+      sortBy: 'members'
+    }).then((orgs) => {
+      return orgs;
+    });
   },
 
   actions: {

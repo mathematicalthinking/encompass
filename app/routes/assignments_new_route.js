@@ -11,6 +11,9 @@ Encompass.AssignmentsNewRoute = Encompass.AuthenticatedRoute.extend({
   actions: {
     toAssignmentInfo: function(assignment) {
       this.transitionTo('assignment', assignment);
+    },
+    toAssignmentsHome: function() {
+      this.transitionTo('assignments.home');
     }
   }
 });

@@ -40,9 +40,12 @@
   .import-select{
     margin-bottom: 10px;
 
-    select {
+    #my-select {
+      select {
+      width:50%;
       margin-bottom: 5px;
       margin-left: 10px;
+      }
     }
   }
 

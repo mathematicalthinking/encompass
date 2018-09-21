@@ -1,7 +1,8 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema,
   _ = require('underscore'),
-  ObjectId = Schema.ObjectId;
+  ObjectId = Schema.ObjectId,
+  User = require('../schemas/user').User;
 
 /**
   * @public
@@ -19,6 +20,17 @@ var OrganizationSchema = new Schema({
   //====
   name: { type: String, required: true }
 }, { versionKey: false });
+
+OrganizationSchema.methods.getMemberCount = function(id) {
+  return User.find({isTrashed: false, organization: id}).lean().exec().then((users) => {
+    return users.length;
+  })
+  .catch((err) => {
+    console.error('err org member count', err);
+    console.trace();
+    return new Error(err);
+  });
+};
 
 /**
   * ## Pre-Validation

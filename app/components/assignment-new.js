@@ -62,6 +62,10 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       name = problemTitle + ' / ' + assignedDate;
     }
 
+    if (assignedDate > dueDate) {
+      this.set('invalidDateRange', true);
+      return;
+    }
     // need to get all students from section
     const students = section.get('students');
 
@@ -131,6 +135,15 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       })
       .catch(console.log);
     },
+
+    cancel: function() {
+      if (this.cancel) {
+        this.cancel();
+      } else {
+        this.sendAction('toAssignmentsHome');
+      }
+
+    }
   }
 });
 

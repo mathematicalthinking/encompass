@@ -3,6 +3,12 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
   section: null,
   submission: null,
   assignedStudents: [],
+  defaultStudentList: null,
+
+  init: function() {
+    this._super(...arguments);
+    this.set('notFoundTemplate', `<p class="tt-notfound">No matches found.</p>`);
+  },
 
   didReceiveAttrs: function() {
     const section = this.get('selectedSection');
@@ -27,22 +33,21 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
     if (!this.get('creators')) {
       this.set('creators', []);
     }
+
+  if (this.get('creators').includes(s)) {
+    this.set('studentToAdd', null);
+    return;
+  }
+
     this.get('creators').pushObject(s);
 
     ans.students = this.get('creators');
     this.set('studentToAdd', null);
+    this.get('checkStatus')();
   }.observes('studentToAdd'),
 
 
   actions: {
-    updateAnswer: function(student) {
-      // arg is string username of student
-      let user = this.get('students').findBy('username', student);
-
-      this.set('studentToAdd', user);
-      this.get('checkStatus')();
-    },
-
     removeStudent: function(student) {
       if (!student) {
         return;

@@ -3,62 +3,55 @@
   <div class="clear"></div>
 </header>
 
-{{#if isEditing}}
-    <form id='sectionupdateform' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="name">Class Name</label>
-            {{input name="name" id="name" type="text" value=sectionName placeholder=section.name}}
-          </li>
-          {{#each section.teachers as |teacher|}}
-            <li>
-              <label for="teacher">Teacher</label>
-              {{input name="teacher" id="teacher" type="text" value=teacherName placeholder=teacher.username}}
-            </li>
-          {{/each}}
-        </ol>
-      </fieldset>
-    </form>
-  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Class</button>
-  <button class="right" id="deleteSection" {{action (mut sectionToDelete) section}}>
-    <i class="fa fa-trash" aria-hidden="true"></i>
-  </button>
 
-  {{#if sectionToDelete}}
-    {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
-  {{/if}}
+<form id="sectioninfo" class="properForm">
+  <fieldset>
+    <ul>
+      <li>
+        <label for="name">Class Name
+          {{#unless cantEdit}}
+            {{#if isEditingName}}
+            <button class="done action_button" {{action "updateSectionName"}}>done</button>
+          {{else}}
+            <button class="edit action_button" {{action (mut isEditingName) true}}>edit</button>
+            {{/if}}
+          {{/unless}}
+        </label>
 
-{{else}}
-
-  <form id="sectioninfo" class="properForm">
-    <fieldset>
-      <ul>
-        <li>
-            <label for="name">Class Name</label>
-            <p class="section-info">{{section.name}}</p>
-          </li>
-          <li>
-            <label for="assignments">Assignments</label>
-               {{!-- <ul class="listing"> --}}
-                {{#if section.assignments}}
-                  {{#each section.assignments as |assignment|}}
-                  {{#link-to 'assignment' assignment}}<p class="section-info">{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>{{/link-to}}
-                  {{/each}}
-                {{else}}
-                  <p class="section-info">No Assignments yet</p>
-                {{/if}}
-              {{!-- </ul> --}}
-              {{#unless cantEdit}}
-              <button class="action_button" {{action 'showAssignment'}}>
-                New Assignment
-              </button>
-              {{/unless}}
-          </li>
-          <li class="teacherslist">
-            <label for="teachers">Teachers</label>
-             {{#each section.teachers as |teacher| }}
-              <ol class="b">
+        {{#if isEditingName}}
+          {{input name="name" id="name" type="text" value=currentSection.name}}
+        {{else}}
+          <p class="section-info">{{section.name}}</p>
+        {{/if}}
+      </li>
+      <li class="assignmentslist">
+        <label for="assignments">Assignments</label>
+        <ul class="listing">
+          {{#if section.assignments}}
+            {{#each section.assignments as |assignment|}}
+            <li>{{#link-to 'assignment' assignment.id}}{{assignment.name}}{{/link-to}}</li>
+            {{/each}}
+          {{else}}
+            <li>No Assignments yet</li>
+          {{/if}}
+        </ul>
+        {{#unless cantEdit}}
+          <button class="action_button" {{action 'showAssignment'}}>New Assignment</button>
+        {{/unless}}
+      </li>
+        <li class="teacherslist">
+          <label for="teachers">Teachers
+            {{#unless cantEdit}}
+              {{#if isEditingTeachers}}
+                <button class= "done action_button" {{action (mut isEditingTeachers) false}}>done</button>
+              {{else}}
+                <button class= "edit action_button" {{action (mut isEditingTeachers) true}}>edit</button>
+              {{/if}}
+            {{/unless}}
+          </label>
+          <ul class="listing">
+            {{#each section.teachers as |teacher| }}
+              <li>
                 {{#if currentUser.isStudent}}
                   {{teacher.username}}
                 {{else}}
@@ -66,154 +59,75 @@
                 {{/if}}
 
                 {{#unless cantEdit}}
-                <button class="trash-button" {{action 'removeTeacher' teacher}}>
-                  <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-              {{/unless}}
-              </ol>
-              {{/each}}
-              {{#if removeTeacherError}}
-                <p class="error-message">You must have at least one teacher</p>
-              {{/if}}
-          </li>
-          {{#unless cantEdit}}
-            <li>
-              {{#if isAddingTeachers}}
-                <button class="action_button" {{action 'doneAddTeachers'}}>Done</button>
-                {{else}}
-                <button class="action_button" {{action 'addTeachers'}}>Add Teachers</button>
-              {{/if}}
-              {{#if isAddingTeachers}}
-                {{input id="teachers" type="text" value=teacherUsername placeholder="Type a teacher's username" classNames="user search" action="checkError"
-                on="key-down"}}
-                <ul>
-                  {{#each teacherSearchResults as |result|}}
-                  <li>
-                    <button class="addTeacher" {{action 'addTeacher' result}}>{{result.username}}</button>
-                  </li>
-                  {{/each}}
-                </ul>
-              {{/if}}
-            </li>
-            {{/unless}}
-            <li class="studentslist">
-            <label for="students">Students</label>
-            {{#each section.students as |student|}}
-            <ol class="b">
-              {{#if currentUser.isStudent}}
-                {{student.username}}
-              {{else}}
-                {{#link-to 'user' student}} {{student.username}} {{/link-to}}
-              {{/if}}
-             {{#unless cantEdit}}
-             {{#link-to 'user' student}} <i class="fas fa-pencil-alt"></i> {{/link-to}}
-             <button class="trash-button" {{action 'removeStudent' student}}><i class="fa fa-trash" aria-hidden="true"></i></button>
-             {{/unless}}
-            </ol>
+                  {{#if isEditingTeachers}}
+                    <button class="trash-button" {{action 'removeTeacher' teacher}}>
+                      <i title="remove" class="far fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                  {{/if}}
+                {{/unless}}
+              </li>
             {{/each}}
-          </li>
-        </ul>
-          {{#unless cantEdit}}
-          {{#unless isAddingStudents}}
-            <button class="action_button" {{action 'addNewStudents'}}>
-              Add Students
-            </button>
-          {{/unless}}
-          {{/unless}}
-      </fieldset>
-    </form>
+          </ul>
+          {{#if removeTeacherError}}
+            <p class="error-message">You must have at least one teacher</p>
+          {{/if}}
+          {{#if isEditingTeachers}}
+            <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle fa-sm"></i></label>
+            {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+          {{/if}}
+        </li>
+        {{#unless cantEdit}}
 
-  {{#if isAddingStudents}}
-  {{else}}
+        {{/unless}}
+        <li class="studentslist">
+        <label for="students">Students
+          {{#unless cantEdit}}
+            {{#if isEditingStudents}}
+              <button class= "done action_button" {{action (mut isEditingStudents) false}}>done</button>
+            {{else}}
+              <button class= "edit action_button" {{action (mut isEditingStudents) true}}>edit</button>
+            {{/if}}
+          {{/unless}}
+        </label>
+          <ul class="listing">
+            {{#each section.students as |student|}}
+              <li>
+                {{#if currentUser.isStudent}}
+                  {{student.username}}
+                {{else}}
+                  {{#link-to 'user' student}} {{student.username}} {{/link-to}}
+                {{/if}}
+                {{#unless cantEdit}}
+                  {{#link-to 'user' student}} {{/link-to}}
+                  {{#if isEditingStudents}}
+                    <button class="trash-button" {{action 'removeStudent' student}}>
+                      <i class="far fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                {{/if}}
+                {{/unless}}
+              </li>
+            {{else}}
+              <p class="info">No students yet.</p>
+            {{/each}}
+          </ul>
+          {{#if isEditingStudents}}
+            {{add-create-student store=store currentUser=currentUser section=currentSection students=studentList addStudentTypeahead=addStudentTypeahead sectionPassword=section.sectionPassword}}
+          {{/if}}
+        </li>
+      </ul>
+    </fieldset>
+
+  </form>
   {{#unless cantEdit}}
-  <section class="submit">
-    <button class="action_button" id="editSection" {{action 'editSection'}}>
-      Edit Class
+    <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
+      Delete Section
     </button>
-  </section>
   {{/unless}}
+
+    {{#if sectionToDelete}}
+    {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
   {{/if}}
 
-  {{#if isAddingStudents}}
-  <form id='createSectionForm' class='properForm'>
-    <fieldset>
-
-    <h2>Use default password for all new students?
-    {{input type="checkbox" checked=usingDefaultPassword name="usingDefaultPassword"}} </h2>
-
-      {{!-- <label for="name">Name</label>
-      {{input id="studentName" type="text" value=studentName placeholder="name" action="checkError" on="key-down"}} --}}
-
-     <div class="half">
-
-      <label>Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="Username" classNames="user search" action="checkError" on="key-down"}}
-        <ul>
-        {{#each searchResults as |result|}}
-          <li>
-            <button class="addStudent" id="addStudent" {{action 'addStudent' result}}>{{result.username}}</button>
-          </li>
-          {{/each}}
-        </ul>
-      </div>
-
-     {{!-- <label for="addusername">Username</label>
-      {{input id="students" type="text" value=studentUsername placeholder="" action="checkError" on="key-down"}} --}}
-
-      {{#unless usingDefaultPassword}}
-      <label for="addpassword">Password</label>
-      {{input id="studentPassword" type="password" value=studentPassword placeholder="password" action="checkError" on="key-down"}}
-      {{/unless}}
-
-    {{#if usingDefaultPassword}}
-    <label>Password </label>
-    {{input type=fieldType value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
-    {{/if}}
-    <button id="show-password-btn" {{action "showPassword"}}>
-        {{#if showingPassword}}
-        <i class="fas fa-eye-slash"></i>
-        {{else}}
-        <i class="fas fa-eye"></i>
-        {{/if}}
-      </button>
-
-    <button class="action_button" {{action 'createStudent'}} style="margin-right: 30px"> + </button>
-
-
-       {{#if userAlreadyInSection}}
-        <p class="error-message"> Username: {{studentUsername}} already registered in this class.</p>
-        <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> Close </button>
-      {{/if}}
-
-         {{#if doYouWantToAddExistingUser}}
-      <p class="error-message"> {{studentUsername}} belongs to the same organization. Do you want to add {{studentUsername}} to this section?
-      <button class="action_button" {{action 'addExistingStudent'}} style="margin-right: 30px"> yes </button>
-      <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> no </button>
-      </p>
-    {{/if}}
-
-    </fieldset>
-        <button class="action_button" {{action 'doneAdding'}}>Done</button>
-  </form>
-
-    {{#if usernameAlreadyExists}}
-      <p class="error-message"> Can not add username:{{studentUsername}} to this class.</p>
-      {{/if}}
-
-  {{#if studentsNotEmpty}}
-  <div class="studentList">
-    <h2>Created Student Accounts</h2>
-    <ul>
-      {{#each createdStudents as |student|}}
-      <li>{{student.username}}</li>
-      {{/each}}
-    </ul>
-    <ul></ul>
-  </div>
-  {{/if}} {{/if}}
-
-{{/if}}
-
 {{#if showAssignment}}
-  {{assignment-new fromSectionInfo=true problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
+  {{assignment-new cancel=(action (mut showAssignment) null) fromSectionInfo=true problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}

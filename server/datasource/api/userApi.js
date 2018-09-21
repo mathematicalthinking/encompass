@@ -221,7 +221,7 @@ function postUser(req, res, next) {
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     var user = userAuth.requireUser(req);
-    var modifiableUserCriteria = access.put.user(user);
+    var modifiableUserCriteria = await access.get.users(user);
     var modifiableUsers = await models.User.find(modifiableUserCriteria, {_id: 1}).lean().exec();
     var userIds = modifiableUsers.map(obj => obj._id.toString());
     var shouldSendAuthEmail = req.body.user.shouldSendAuthEmail;

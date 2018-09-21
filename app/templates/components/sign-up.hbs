@@ -29,7 +29,7 @@
     {{/if}}
     <div class="auth-form-input">
       <label for="organization">Institution, Organization, School or District Name:</label>
-      {{twitter-typeahead dataList=organizations optionLabelPath="name" onSelect="setOrg"}}
+      {{twitter-typeahead minLength=0 header=typeaheadHeader listName="orgs" dataList=organizations optionLabelPath="name" selectedValue=org setSelectedValueOnChange=true}}
     </div>
     <div class="auth-form-input">
       <label for="location">City and State:</label>
