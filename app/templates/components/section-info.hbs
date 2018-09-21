@@ -3,142 +3,130 @@
   <div class="clear"></div>
 </header>
 
-{{#if isEditing}}
-    <form id='sectionupdateform' class='properForm'>
-      <fieldset>
-        <ol>
-          <li>
-            <label for="name">Class Name</label>
-            {{input name="name" id="name" type="text" value=sectionName placeholder=section.name}}
-          </li>
-          {{#each section.teachers as |teacher|}}
-            <li>
-              <label for="teacher">Teacher</label>
-              {{input name="teacher" id="teacher" type="text" value=teacherName placeholder=teacher.username}}
-            </li>
-          {{/each}}
-        </ol>
-      </fieldset>
-    </form>
-  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Class</button>
-  <button class="right" id="deleteSection" {{action (mut sectionToDelete) section}}>
-    <i class="fa fa-trash" aria-hidden="true"></i>
-  </button>
 
-  {{#if sectionToDelete}}
+<form id="sectioninfo" class="properForm">
+  <fieldset>
+    <ul>
+      <li>
+        <label for="name">Section Name
+          {{#unless cantEdit}}
+            {{#if isEditingName}}
+            <button class="done action_button" {{action "updateSectionName"}}>done</button>
+          {{else}}
+            <button class="edit action_button" {{action (mut isEditingName) true}}>edit</button>
+            {{/if}}
+          {{/unless}}
+        </label>
+
+        {{#if isEditingName}}
+          {{input name="name" id="name" type="text" value=currentSection.name}}
+        {{else}}
+          <p class="section-info">{{section.name}}</p>
+        {{/if}}
+      </li>
+      <li class="assignmentslist">
+        <label for="assignments">Assignments</label>
+        <ul class="listing">
+          {{#if section.assignments}}
+            {{#each section.assignments as |assignment|}}
+            <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
+            {{/each}}
+          {{else}}
+            <li>No Assignments yet</li>
+          {{/if}}
+        </ul>
+        {{#unless cantEdit}}
+          <button class="action_button" {{action 'showAssignment'}}>New Assignment</button>
+        {{/unless}}
+      </li>
+        <li class="teacherslist">
+          <label for="teachers">Teachers
+            {{#unless cantEdit}}
+              {{#if isEditingTeachers}}
+                <button class= "done action_button" {{action (mut isEditingTeachers) false}}>done</button>
+              {{else}}
+                <button class= "edit action_button" {{action (mut isEditingTeachers) true}}>edit</button>
+              {{/if}}
+            {{/unless}}
+          </label>
+          <ul class="listing">
+            {{#each section.teachers as |teacher| }}
+              <li>
+                {{#if currentUser.isStudent}}
+                  {{teacher.username}}
+                {{else}}
+                  {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
+                {{/if}}
+
+                {{#unless cantEdit}}
+                  {{#if isEditingTeachers}}
+                    <button class="trash-button" {{action 'removeTeacher' teacher}}>
+                      <i title="remove" class="far fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                  {{/if}}
+                {{/unless}}
+              </li>
+            {{/each}}
+          </ul>
+          {{#if removeTeacherError}}
+            <p class="error-message">You must have at least one teacher</p>
+          {{/if}}
+          {{#if isEditingTeachers}}
+            <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle fa-sm"></i></label>
+            {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+          {{/if}}
+        </li>
+        {{#unless cantEdit}}
+
+        {{/unless}}
+        <li class="studentslist">
+        <label for="students">Students
+          {{#unless cantEdit}}
+            {{#if isEditingStudents}}
+              <button class= "done action_button" {{action (mut isEditingStudents) false}}>done</button>
+            {{else}}
+              <button class= "edit action_button" {{action (mut isEditingStudents) true}}>edit</button>
+            {{/if}}
+          {{/unless}}
+        </label>
+          <ul class="listing">
+            {{#each section.students as |student|}}
+              <li>
+                {{#if currentUser.isStudent}}
+                  {{student.username}}
+                {{else}}
+                  {{#link-to 'user' student}} {{student.username}} {{/link-to}}
+                {{/if}}
+                {{#unless cantEdit}}
+                  {{#link-to 'user' student}} {{/link-to}}
+                  {{#if isEditingStudents}}
+                    <button class="trash-button" {{action 'removeStudent' student}}>
+                      <i class="far fa-times-circle" aria-hidden="true"></i>
+                    </button>
+                {{/if}}
+                {{/unless}}
+              </li>
+            {{else}}
+              <p class="info">No students yet.</p>
+            {{/each}}
+          </ul>
+          {{#if isEditingStudents}}
+            {{add-create-student store=store currentUser=currentUser section=currentSection students=studentList addStudentTypeahead=addStudentTypeahead sectionPassword=section.sectionPassword}}
+          {{/if}}
+        </li>
+      </ul>
+    </fieldset>
+
+  </form>
+  {{#unless cantEdit}}
+    <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
+      Delete Section
+    </button>
+  {{/unless}}
+
+    {{#if sectionToDelete}}
     {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
   {{/if}}
-
-{{else}}
-
-  <form id="sectioninfo" class="properForm">
-    <fieldset>
-      <ul>
-        <li>
-          <label for="name">Section Name</label>
-          <p class="section-info">{{section.name}}</p>
-        </li>
-        <li>
-          <label for="assignments">Assignments</label>
-          <ul class="listing">
-            {{#if section.assignments}}
-              {{#each section.assignments as |assignment|}}
-              <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
-              {{/each}}
-            {{else}}
-              <li>No Assignments yet</li>
-            {{/if}}
-          </ul>
-          {{#unless cantEdit}}
-            <button class="action_button" {{action 'showAssignment'}}>New Assignment</button>
-          {{/unless}}
-        </li>
-          <li class="teacherslist">
-            <label for="teachers">Teachers
-              {{#if isEditingTeachers}}
-                <button {{action (mut isEditingTeachers) false}}>done</button>
-              {{else}}
-                <button {{action (mut isEditingTeachers) true}}>edit</button>
-              {{/if}}
-            </label>
-            <ul class="listing">
-              {{#each section.teachers as |teacher| }}
-                <li>
-                  {{#if currentUser.isStudent}}
-                    {{teacher.username}}
-                  {{else}}
-                    {{#link-to 'user' teacher}} {{teacher.username}} {{/link-to}}
-                  {{/if}}
-
-                  {{#unless cantEdit}}
-                    {{#if isEditingTeachers}}
-                      <button class="trash-button" {{action 'removeTeacher' teacher}}>
-                        <i title="remove" class="far fa-times-circle" aria-hidden="true"></i>
-                      </button>
-                    {{/if}}
-                  {{/unless}}
-                </li>
-              {{/each}}
-            </ul>
-            {{#if removeTeacherError}}
-              <p class="error-message">You must have at least one teacher</p>
-            {{/if}}
-            {{#if isEditingTeachers}}
-              <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle"></i></label>
-              {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
-            {{/if}}
-          </li>
-          {{#unless cantEdit}}
-
-          {{/unless}}
-          <li class="studentslist">
-          <label for="students">Students
-            {{#if isEditingStudents}}
-              <button {{action (mut isEditingStudents) false}}>done</button>
-            {{else}}
-              <button {{action (mut isEditingStudents) true}}>edit</button>
-            {{/if}}
-          </label>
-            <ul class="listing">
-              {{#each section.students as |student|}}
-                <li>
-                  {{#if currentUser.isStudent}}
-                    {{student.username}}
-                  {{else}}
-                    {{#link-to 'user' student}} {{student.username}} {{/link-to}}
-                  {{/if}}
-                  {{#unless cantEdit}}
-                    {{#link-to 'user' student}} {{/link-to}}
-                    {{#if isEditingStudents}}
-                      <button class="trash-button" {{action 'removeStudent' student}}>
-                        <i class="far fa-times-circle" aria-hidden="true"></i>
-                      </button>
-                  {{/if}}
-                  {{/unless}}
-                </li>
-              {{else}}
-                <p class="info">No students yet.</p>
-              {{/each}}
-            </ul>
-            {{#if isEditingStudents}}
-
-    {{add-create-student store=store currentUser=currentUser section=currentSection students=studentList addStudentTypeahead=addStudentTypeahead}}
-{{/if}}
-          </li>
-        </ul>
-          {{#unless cantEdit}}
-          {{#unless isAddingStudents}}
-            <button class="action_button" {{action 'addNewStudents'}}>
-              Add Students
-            </button>
-          {{/unless}}
-          {{/unless}}
-      </fieldset>
-    </form>
-
-
-
-{{/if}}
 
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromSectionInfo=true problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
