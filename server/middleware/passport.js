@@ -80,7 +80,6 @@ module.exports = (passport) => {
     },
     (req, username, password, next) => {
       process.nextTick(() => {
-        console.log('req.user?', req.user);
         const isFromSignupForm = !req.user;
         let newUserType;
         let creatorType;
@@ -181,7 +180,6 @@ module.exports = (passport) => {
                     isEmailConfirmed,
                     actingRole: 'teacher'
                   });
-                  console.log('newUSer', newUser);
 
                   // generate confirmEmailToken && confirmEmailExpires
                   // send email upon successfull save
@@ -252,7 +250,6 @@ module.exports = (passport) => {
                     authorizedBy,
                     isEmailConfirmed,
                   });
-                  console.log('newUSer', newUser);
             newUser.save((err) => {
               if (err) {
                 next(err);

@@ -215,7 +215,6 @@ function postUser(req, res, next) {
   async function putUser(req, res, next) {
     try {
        /* These fields are uneditable */
-    console.log('put body user', req.body.user);
     delete req.body.user.username;
     delete req.body.user.createDate;
     delete req.body.user.key;
