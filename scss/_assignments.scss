@@ -174,4 +174,13 @@ section.assignment-info-teacher {
       border-radius: 3px;
       font-weight: $bold-font-weight;
     }
+    .right {
+      float: right;
+      font-size: 1.5em;
+      color: $primary-font-color;
+      border: none;
+      &:hover {
+        color: lighten($primary-font-color, 10);
+      }
+    }
 }

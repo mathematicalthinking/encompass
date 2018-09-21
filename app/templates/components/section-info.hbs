@@ -21,8 +21,8 @@
       </fieldset>
     </form>
   <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Class</button>
-  <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
-    Delete Class
+  <button class="right" id="deleteSection" {{action (mut sectionToDelete) section}}>
+    <i class="fa fa-trash" aria-hidden="true"></i>
   </button>
 
   {{#if sectionToDelete}}

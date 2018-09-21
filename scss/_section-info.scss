@@ -27,6 +27,16 @@
     margin: 8px 0px;
   }
 }
+  .right {
+    float: right;
+    border: none;
+    color: $primary-font-color;
+    background: none;
+    font-size: 1.5em;
+    &:hover {
+      color: lighten($primary-font-color, 10);
+    }
+  }
 
 #sectioninfo {
   .section-info {

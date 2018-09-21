@@ -30,7 +30,7 @@
     </form>
     <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
     <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
-    <button class="action_button" {{action (mut assignmentToDelete) assignment}}>Delete Assignment</button>
+    <button class="right" {{action (mut assignmentToDelete) assignment}}><i class="fa fa-trash" aria-hidden="true"></i></button>
   {{/if}}
   {{#if isDisplaying}}
     <section id='assignment-info' class='properForm'>
