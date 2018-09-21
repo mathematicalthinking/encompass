@@ -20,7 +20,7 @@ var WorkspaceSchema = new Schema({
   isTrashed: { type: Boolean, 'default': false },
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
-  lastViewed: { type: Date, default: Date.now() },
+  lastViewed: { type: Date },
 //====
   name: { type: String, required: true },
   owner: { type: ObjectId, ref: 'User' },
