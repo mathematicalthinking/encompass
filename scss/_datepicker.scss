@@ -219,7 +219,7 @@
 
 .daterangepicker td.active,
 .daterangepicker td.active:hover {
-  background-color: #357ebd;
+  background-color: $accent-color;
   border-color: transparent;
   color: #fff;
 }
@@ -299,6 +299,16 @@
   font-size: 12px;
   font-weight: bold;
   padding: 4px 8px;
+  background: $background-color;
+  cursor: pointer;
+  border-radius: 3px;
+  border: none;
+  padding: 5px 10px;
+}
+
+.daterangepicker .drp-buttons .applyBtn {
+  background-color: $accent-color;
+  color: white;
 }
 
 .daterangepicker.show-ranges .drp-calendar.left {
@@ -333,7 +343,7 @@
 }
 
 .daterangepicker .ranges li.active {
-  background-color: #08c;
+  background-color: $accent-color;
   color: #fff;
 }
 
