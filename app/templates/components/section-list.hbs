@@ -1,9 +1,9 @@
 <section class="list-side">
   <header class="list-header">
-    <h1>Sections</h1>
+    <h1>Classes</h1>
     {{#if currentUser.isStudent}}
     {{else}}
-      {{#link-to 'sections.new' id='new-section-link' class="new-link-btn"}}<span>Create New Section</span><i class="fas fa-plus"></i>{{/link-to}}
+      {{#link-to 'sections.new' id='new-section-link' class="new-link-btn"}}<span>Create New Class</span><i class="fas fa-plus"></i>{{/link-to}}
     {{/if}}
     <div class="clear"></div>
   </header>
@@ -12,57 +12,57 @@
   <section>
     <nav class="list-box">
       {{#unless currentUser.isStudent}}
-      <h2>{{currentUser.username}}'s sections</h2>
+      <h2>{{currentUser.username}}'s Classes</h2>
       <ul class="your-sections">
         {{#if yourSections}}
           {{#each yourSections as |section|}}
             <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
-          <li>You have no sections</li>
+          <li>You have no classes</li>
         {{/if}}
       </ul>
 
-      <h2>Sections you belong to</h2>
+      <h2>Classes you belong to</h2>
       <ul class="listing">
         {{#if collabSections}}
           {{#each collabSections as |section|}}
             <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
-            <li>You don't belong to any sections yet</li>
+            <li>You don't belong to any classes yet</li>
         {{/if}}
       </ul>
       {{/unless}}
 
    {{#if currentUser.isStudent}}
-      <h2>Your Sections</h2>
+      <h2>Your Classes</h2>
       <ul class="listing">
         {{#if studentSections}}
           {{#each studentSections as |section|}}
             <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
-            <li>You don't belong to any sections yet</li>
+            <li>You don't belong to any classes yet</li>
         {{/if}}
       </ul>
     {{/if}}
 
     {{#if currentUser.isPdAdmin}}
-      <h2>{{currentUser.organization.name}}'s Sections</h2>
+      <h2>{{currentUser.organization.name}}'s Classes</h2>
       <ul class="listing">
         {{#if orgSections}}
           {{#each orgSections as |section|}}
           <li>{{#link-to 'section' section classNames='section'}}{{section.name}}{{/link-to}}</li>
           {{/each}}
         {{else}}
-          <li>{{currentUser.organization.name}} does not have any sections yet</li>
+          <li>{{currentUser.organization.name}} does not have any classes yet</li>
         {{/if}}
       </ul>
     {{/if}}
 
     {{#if currentUser.isAdmin}}
-      <h2>All Sections</h2>
+      <h2>All Classes</h2>
       <ul class="listing">
         {{#if allSections}}
           {{#each allSections as |section|}}

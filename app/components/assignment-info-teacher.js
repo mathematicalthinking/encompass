@@ -4,7 +4,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
   showReport: false,
-  htmlDateFormat: 'YYYY-MM-DD',
+  htmlDateFormat: 'MM/DD/YYYY',
   displayDateFormat: "MMM Do YYYY",
   assignmentToDelete: null,
 
@@ -119,6 +119,17 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return new Date(dateMoment);
   },
 
+  getEndDate: function (htmlDateString) {
+    const htmlFormat = 'YYYY-MM-DD HH:mm';
+    if (typeof htmlDateString !== 'string') {
+      return;
+    }
+    let dateMoment = moment(htmlDateString, htmlFormat);
+    let date = new Date(dateMoment);
+    date.setHours(23, 59, 59);
+    return date;
+  },
+
   actions: {
     editAssignment: function() {
       this.set('isEditing', true);
@@ -137,16 +148,15 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         this.set('deleteAssignmentError', err);
       });
     },
+
     updateAssignment: function() {
-      console.log('updating assignment');
       const assignment = this.get('assignment');
-      const values = ['section', 'problem', 'assignedDate', 'dueDate'];
+      const values = ['section', 'problem', 'dueDate'];
 
-      const htmlDueDate = this.get('formattedDueDate');
-      const htmlAssignedDate = this.get('formattedAssignedDate');
+      const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+      const dueDate = this.getEndDate(endDate);
 
-      this.set('dueDate', this.getMongoDate(htmlDueDate));
-      this.set('assignedDate', this.getMongoDate(htmlAssignedDate));
+      this.set('dueDate', dueDate);
 
       for (let value of values) {
         assignment.set(value, this.get(value));

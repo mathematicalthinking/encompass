@@ -1,84 +1,114 @@
-
-  <h2>Create a workspace from EnCOMPASS submissions</h2>
-
+<h2>Create a Workspace from EnCoMPASS Submissions</h2>
 
 <form id='encImportForm' class='properForm'>
-     <fieldset>
-       <h4>Filter Criteria <span class="required-star">*</span></h4>
-       <p class="info">We either need a date range or at least one of teacher, assignment, problem, or section in order to create a workspace.</p>
-       <ol>
-          <li>
-            <label for="teacher">Teacher</label>
-            {{#if currentUser.isTeacher}}
-              <p>{{currentUser.username}}</p>
-            {{else}}
-            {{my-select selectedValue=selectedTeacher content=teacherPool optionLabelPath="username" prompt="Please select a username" action=(action (mut selectedTeacher))}}
-            {{/if}}
-          </li>
+  <fieldset>
+    <div class="heading">
+      <h4>Filter Criteria <span class="required-star">*</span></h4>
+      <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to
+        create a workspace.</p>
+    </div>
+    <ol>
+      <li>
+        <label for="teacher">Teacher</label>
+        {{#if currentUser.isTeacher}}
+        <p class="workspace-info">{{currentUser.username}}</p>
+        {{else}}
+        {{my-select selectedValue=selectedTeacher content=teacherPool optionLabelPath="username" prompt="Please select
+        a username" action=(action (mut selectedTeacher))}}
+        {{/if}}
+      </li>
+      <li>
+        <label for="assignment">Assignment</label>
+        {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment"
+        action=(action (mut selectedAssignment))}}
+      </li>
+      <li>
+        <label for="problem">Problem</label>
+        {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut
+        selectedproblem))}}
+      </li>
+      <li>
+        <label for="section">Class</label>
+        {{my-select content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut
+        selectedSection))}}
+      </li>
+      <li>
+        <label for="startDate">Date Range</label>
+        {{input id="dateRange" name="daterange" type="text" value=dateRange}}
+      </li>
+      {{!-- <li>
+        <label for="endDate">End Date</label>
+        {{input id="endDate" name="daterange" type="text" value=endDate}}
+      </li> --}}
+    </ol>
+    <div class="heading spacing">
+      <h4>Workspace Settings</h4>
+      <p class="info">All workspace settings, except for Owner, can always be changed after creation from the workspace
+        info page.</p>
+    </div>
+    <ol>
+      <li>
+        <label for="owner">Owner <span class="required-star">*</span></label>
+        {{#if currentUser.isTeacher}}
+        <p class="workspace-info">{{currentUser.username}}</p>
+        {{else}}
+        {{my-select selectedValue=selectedOwner content=teacherPool optionLabelPath="username" prompt="Please select an
+        owner" action=(action (mut selectedOwner))}}
+        {{/if}}
+      </li>
+      <li>
+        <label for="name">Workspace Name</label>
+        {{input id="requestedName" type="text" value=requestedName}}
+      </li>
+      <li>
+        <label for="folders">Folders</label>
+        {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
+        (mut selectedFolderSet))}}
+      </li>
 
-         <li>
-           <label for="assignment">Assignment</label>
-           {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment" action=(action (mut selectedAssignment))}}
-         </li>
-         <li>
-           <label for="problem">Problem</label>
-           {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedproblem))}}
-         </li>
-         <li>
-           <label for="section">Section</label>
-           {{my-select content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
-         </li>
-         <li>
-           <label for="startDate">From Date</label>
-           {{input id="startDate" type="date" value=startDate}}
-         </li>
-         <li>
-         <label for="endDate">End Date</label>
-         {{input id="endDate" type="date" value=endDate}}
-         </li>
-         </ol>
-         <h4>Workspace Settings</h4>
-         <p class="info">All workspace settings, except for Owner, can always be changed after creation from the workspace info page.</p>
-         <ol>
-           <li>
-          <label for="owner">Owner <span class="required-star">*</span></label>
-            {{#if currentUser.isTeacher}}
-                <p>{{currentUser.username}}</p>
-              {{else}}
-              {{my-select selectedValue=selectedOwner content=teacherPool optionLabelPath="username" prompt="Please select an owner" action=(action (mut selectedOwner))}}
-              {{/if}}
-          </li>
-          <li>
-            <label for="name">Workspace Name</label>
-            {{input id="requestedName" type="text" value=requestedName}}
-          </li>
-          <li>
-            <label for="folders">Folders</label>
-            {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action (mut selectedFolderSet))}}
-          </li>
-
-            <li class="mode">
-              <label>Privacy Setting <span class="required-star">*</span></label>
-                <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
-                <label class="radio-label">Private</label>
-                <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
-                <label class="radio-label">Public</label>
-            </li>
-         </ol>
-     </fieldset>
+      <li class="mode">
+        <label>Privacy Setting <span class="required-star">*</span></label>
+        <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
+        <label class="radio-label">Private</label>
+        <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
+        <label class="radio-label">Public</label>
+      </li>
+    </ol>
+  </fieldset>
 
 
-     </form>
+</form>
 
-     {{#if missingRequiredFields}}
-     <p class="error-message">Please fill in all required fields.</p>
-     {{/if}}
+{{#if missingRequiredFields}}
+<p class="error-message">Please fill in all required fields.</p>
+{{/if}}
 
-     {{#if createdWorkspace}}
-     <p class="success-message">Success!</p>
-     {{/if}}
+{{#if createdWorkspace}}
+<p class="success-message">Success!</p>
+{{/if}}
 
-     {{#if isEmptyAnswerSet}}
-     <p class="error-message">Sorry, no answers were found matching your criteria.</p>
-     {{/if}}
-     <button class="action_button" {{action "buildCriteria"}}>Create</button>
+{{#if isEmptyAnswerSet}}
+<p class="error-message">Sorry, no answers were found matching your criteria.</p>
+{{/if}}
+<button class="action_button" {{action "buildCriteria"}}>Create</button>
+
+
+<script type="text/javascript">
+  $(function () {
+    $('input[name="daterange"]').daterangepicker({
+      autoUpdateInput: false,
+      showDropdowns: true,
+      locale: {
+        cancelLabel: 'Clear'
+      }
+    });
+    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    });
+
+    $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
+      $(this).val('');
+    });
+
+  });
+</script>

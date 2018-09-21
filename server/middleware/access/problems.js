@@ -11,7 +11,7 @@ async function getStudentProblems(user) {
 }
 
 
-const accessibleProblemsQuery = async function(user, ids) {
+const accessibleProblemsQuery = async function(user, ids, regex) {
   try {
     if (!user) {
       return [];
@@ -22,6 +22,10 @@ const accessibleProblemsQuery = async function(user, ids) {
   let filter = {
     isTrashed: false
   };
+
+  if (regex) {
+    filter.title = regex;
+  }
 
   if (ids) {
     filter._id = {$in : ids};

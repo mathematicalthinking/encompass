@@ -110,8 +110,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       }
     } else {
       createProblemData.save()
-        .then((problem) => {
-          that.sendAction('toProblemInfo', problem);
+        .then((res) => {
+          let error = res.get('error');
+          if (error) {
+            this.set('problemNameExists', true);
+            return;
+          }
+          that.sendAction('toProblemInfo', res);
           //TODO: decide how to handle clearing form and whether to redirect to the created problem
           //that.get('validator').clearForm();
         })
@@ -146,7 +151,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       .catch(console.log);
     },
     resetErrors(e) {
-      const errors = ['noLegalNotice'];
+      const errors = ['noLegalNotice', 'problemNameExists'];
 
       for (let error of errors) {
         if (this.get(error)) {

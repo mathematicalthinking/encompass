@@ -9,8 +9,8 @@
       <fieldset>
         <ol>
           <li>
-            <label for="section">Section <span class="required-star">*</span></label>
-            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a section." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
+            <label for="section">Class <span class="required-star">*</span></label>
+            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
           </li>
           <li>
@@ -20,11 +20,15 @@
           </li>
           <li>
             <label for="additionalInfo">Date Assigned <span class="required-star">*</span></label>
-            {{input id="assignedDate" type="date" value=assignedDate required=true}}
+            {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
           </li>
           <li>
             <label for="dueDate">Due Date <span class="required-star">*</span></label>
-            {{input id="dueDate" type="date" value=dueDate required=true}}
+            {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
+          </li>
+          <li>
+            <label for="name">Assignment Name</label>
+            {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
           </li>
         </ol>
       </fieldset>
@@ -43,4 +47,13 @@
   {{#if createdAssignmentError}}
     <p>{{createAssignmentError}}</p>
   {{/if}}
+
+<script>
+  $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      singleDatePicker: true,
+      showDropdowns: true,
+    });
+  });
+</script>
 

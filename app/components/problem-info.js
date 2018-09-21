@@ -14,6 +14,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemList: [],
   sectionList: null,
 
+  init: function () {
+    this._super(...arguments);
+    this.get('store').findAll('section').then(sections => {
+      this.set('sectionList', sections);
+    });
+  },
 
   didReceiveAttrs: function () {
     this.set('isWide', false);
@@ -21,16 +27,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isEditing', false);
     let problem = this.get('problem');
     let problemId = problem.get('id');
-    // let problemUsed = this.get('problemUsed');
 
     this.get('store').queryRecord('answer', {
       problem: problemId
     }).then((answer) => {
       if (answer !== null) {
-        console.log('answer exists and is', answer);
         this.set('isProblemUsed', true);
       } else {
-        console.log('answer does not exist and is', answer);
         this.set('isProblemUsed', false);
       }
     });

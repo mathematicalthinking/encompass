@@ -1,5 +1,5 @@
 <header class="info-header">
-  <h2>Section Details</h2>
+  <h2>Class Details</h2>
   <div class="clear"></div>
 </header>
 
@@ -8,7 +8,7 @@
       <fieldset>
         <ol>
           <li>
-            <label for="name">Section Name</label>
+            <label for="name">Class Name</label>
             {{input name="name" id="name" type="text" value=sectionName placeholder=section.name}}
           </li>
           {{#each section.teachers as |teacher|}}
@@ -20,9 +20,9 @@
         </ol>
       </fieldset>
     </form>
-  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Section</button>
-  <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
-    Delete Section
+  <button class="action_button" {{action 'updateSection'}} style="margin-right: 30px">Update Class</button>
+  <button class="right" id="deleteSection" {{action (mut sectionToDelete) section}}>
+    <i class="fa fa-trash" aria-hidden="true"></i>
   </button>
 
   {{#if sectionToDelete}}
@@ -35,20 +35,20 @@
     <fieldset>
       <ul>
         <li>
-            <label for="name">Section Name</label>
+            <label for="name">Class Name</label>
             <p class="section-info">{{section.name}}</p>
           </li>
           <li>
             <label for="assignments">Assignments</label>
-               <ul class="listing">
+               {{!-- <ul class="listing"> --}}
                 {{#if section.assignments}}
                   {{#each section.assignments as |assignment|}}
-                  <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
+                  {{#link-to 'assignment' assignment}}<p class="section-info">{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</p>{{/link-to}}
                   {{/each}}
                 {{else}}
-                  <li>No Assignments yet</li>
+                  <p class="section-info">No Assignments yet</p>
                 {{/if}}
-              </ul>
+              {{!-- </ul> --}}
               {{#unless cantEdit}}
               <button class="action_button" {{action 'showAssignment'}}>
                 New Assignment
@@ -78,9 +78,13 @@
           </li>
           {{#unless cantEdit}}
             <li>
-              <button {{action 'addTeachers'}}>Add Teachers</button>
               {{#if isAddingTeachers}}
-                {{input id="teachers" type="text" value=teacherUsername placeholder="Username" classNames="user search" action="checkError"
+                <button class="action_button" {{action 'doneAddTeachers'}}>Done</button>
+                {{else}}
+                <button class="action_button" {{action 'addTeachers'}}>Add Teachers</button>
+              {{/if}}
+              {{#if isAddingTeachers}}
+                {{input id="teachers" type="text" value=teacherUsername placeholder="Type a teacher's username" classNames="user search" action="checkError"
                 on="key-down"}}
                 <ul>
                   {{#each teacherSearchResults as |result|}}
@@ -109,6 +113,13 @@
             {{/each}}
           </li>
         </ul>
+          {{#unless cantEdit}}
+          {{#unless isAddingStudents}}
+            <button class="action_button" {{action 'addNewStudents'}}>
+              Add Students
+            </button>
+          {{/unless}}
+          {{/unless}}
       </fieldset>
     </form>
 
@@ -116,12 +127,8 @@
   {{else}}
   {{#unless cantEdit}}
   <section class="submit">
-    <button class="action_button" {{action 'addNewStudents'}}>
-      Add New Students
-    </button>
-
     <button class="action_button" id="editSection" {{action 'editSection'}}>
-      Edit Section
+      Edit Class
     </button>
   </section>
   {{/unless}}
@@ -174,7 +181,7 @@
 
 
        {{#if userAlreadyInSection}}
-        <p class="error-message"> Username: {{studentUsername}} already registered in this section.</p>
+        <p class="error-message"> Username: {{studentUsername}} already registered in this class.</p>
         <button class="action_button" {{action 'exitAddExistingUsername'}} style="margin-right: 10px"> Close </button>
       {{/if}}
 
@@ -190,7 +197,7 @@
   </form>
 
     {{#if usernameAlreadyExists}}
-      <p class="error-message"> Can not add username:{{studentUsername}} to this section.</p>
+      <p class="error-message"> Can not add username:{{studentUsername}} to this class.</p>
       {{/if}}
 
   {{#if studentsNotEmpty}}

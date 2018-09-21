@@ -10,7 +10,7 @@ const canLoadWorkspace = function(user, ws) {
   const accountType = user.accountType;
 
   // As of now, students cannot get any workspaces
-  if (accountType === 'S' || user.actingRole === 'student') {
+  if (accountType === 'S') {
     return false;
   }
 

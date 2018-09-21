@@ -48,6 +48,15 @@
         border: .5px solid $primary-font-color;
         color: $primary-font-color;
       }
+      .right {
+        float: right;
+        font-size: 1.5em;
+        color: $primary-font-color;
+        border: none;
+        &:hover {
+          color: lighten($primary-font-color, 10);
+        }
+      }
     }
     #probleminfo {
       .problem-info {
@@ -85,6 +94,9 @@
   }
 
   #probleminfo {
+    a {
+      color: $accent-color;
+    }
     img {
       width: 40%;
       position: relative;

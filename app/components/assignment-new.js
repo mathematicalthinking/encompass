@@ -16,9 +16,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didReceiveAttrs: function() {
-    const currentUser = this.get('currentUser');
     if (this.sections) {
-      // let sections = this.sections.filterBy('isTrashed', false);
       const sections = this.sections.filter((section) => {
         return !section.get('isTrashed') && section.id;
       });
@@ -27,8 +25,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     if (this.problems) {
       const problems = this.problems.filterBy('isTrashed', false);
-      const myProblems = problems.filterBy('createdBy.content', currentUser);
-      this.set('problemList', myProblems);
+      this.set('problemList', problems);
     }
   },
 
@@ -53,8 +50,17 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const createdBy = that.get('currentUser');
     const section = that.get('selectedSection');
     const problem = that.get('selectedProblem');
-    const assignedDate = that.getMongoDate(that.get('assignedDate'));
-    const dueDate = that.getMongoDate(that.get('dueDate'));
+    const startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+    const assignedDate = that.getMongoDate(startDate);
+    const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+    const dueDate = that.getEndDate(endDate);
+    let name = that.get('name');
+
+    if (!name) {
+      let assignedDate = $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
+      let problemTitle = problem.get('title');
+      name = problemTitle + ' / ' + assignedDate;
+    }
 
     // need to get all students from section
     const students = section.get('students');
@@ -67,6 +73,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       problem: problem,
       assignedDate: assignedDate,
       dueDate: dueDate,
+      name: name,
     });
 
     students.forEach((student) => {
@@ -92,6 +99,18 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       let dateMoment = moment(htmlDateString, htmlFormat);
       return new Date(dateMoment);
     },
+
+    getEndDate: function (htmlDateString) {
+      const htmlFormat = 'YYYY-MM-DD HH:mm';
+      if (typeof htmlDateString !== 'string') {
+        return;
+      }
+      let dateMoment = moment(htmlDateString, htmlFormat);
+      let date = new Date(dateMoment);
+      date.setHours(23, 59, 59);
+      return date;
+    },
+
 
   actions: {
     validate: function() {

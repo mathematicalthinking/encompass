@@ -50,10 +50,12 @@ require('dependencies/ember2_14_1');
 //require('dependencies/ember-data2_2_1');
 require('dependencies/ember-data2_12_2');
 
-require('dependencies/moment.min');
+require('dependencies/moment-with-locales.min');
+require('dependencies/daterangepicker');
 
 require('dependencies/error');
 require('dependencies/ajax');
+
 
 /*
   this file is generated as part of the build process.

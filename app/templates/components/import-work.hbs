@@ -7,7 +7,7 @@
 {{!-- Show help message only if on problem/ section selection phase --}}
 {{#if isSelectingImportDetails}}
   <div>
-    <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and section that this set of student work belongs to. If you have not already created the problem or section on Encompass, you can create it here.</p>
+    <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and class that this set of student work belongs to. If you have not already created the problem or class on Encompass, you can create it here.</p>
     <br>
   </div>
 {{/if}}
@@ -55,11 +55,11 @@
         <div class="import-prep-section">
           <div class="import-select">
             {{#if model.sections.length}}
-              <p class="info">Please select a section</p>
+              <p class="info">Please select a class</p>
               <br>
-              {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a section" action=(action (mut selectedSection))}}
+              {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut selectedSection))}}
             {{else}}
-              <p class="info">It looks like you do not have any sections. Create one {{#link-to 'sections.new'}}here.{{/link-to}}</p>
+              <p class="info">It looks like you do not have any classes. Create one {{#link-to 'sections.new'}}here.{{/link-to}}</p>
 
             {{/if}}
 

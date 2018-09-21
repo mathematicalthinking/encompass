@@ -4,6 +4,7 @@ var Assignment = require('../server/datasource/schemas').Assignment;
 var data = [
   {
     "_id" : "5b9146a83add43b868ae9809",
+    "name": "DrexelU Org Problem / Sep 6th 2018",
     "assignedDate" : "2018-09-06T04:00:00.000Z",
     "dueDate" : "2018-09-30T04:00:00.000Z",
     "createdBy" : "5b245841ac75842be3189526",
@@ -22,6 +23,7 @@ var data = [
 },
 {
   "_id" : "5b91743a3da5efca74705773",
+  "name": "Summer's Org Problem / Sep 6th 2018",
   "assignedDate" : "2018-09-06T04:00:00.000Z",
   "dueDate" : "2018-11-30T05:00:00.000Z",
   "createdBy" : "5b9149552ecaf7c30dd4748e",

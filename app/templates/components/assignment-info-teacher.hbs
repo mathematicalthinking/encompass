@@ -4,39 +4,50 @@
       <fieldset>
         <ol>
           <li>
+            <label for="assignment">Assignment Name</label>
+            {{input type="text" value=assignment.name}}
+          </li>
+          <li>
             <label for="problem">Problem</label>
             {{my-select cannotBeNull=true selectedValue=problem prompt="Select a problem." content=problems optionLabelPath="title" action=(action (mut problem)) isDisabled=isReadOnly}}
             {{input required=true type="hidden" value=problem}}
           </li>
           <li>
             <label for="section">Section</label>
-            {{my-select selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
+            {{my-select cannotBeNull=true selectedValue=section prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut selectedsection)) isDisabled=isReadOnly}}
             {{input required=true type="hidden" value=selectedsection}}
         </li>
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
-            {{input name="assignedDate" id="assignedDate" type="date" value=formattedAssignedDate disabled=isDateLocked}}
+            {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=true}}
         </li>
         <li class="assignment-info">
           <label for="dueDate">Due Date</label>
-          {{input name="dueDate" id="dueDate" type="date" value=formattedDueDate}}
+          {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
         </li>
         </ol>
       </fieldset>
     </form>
     <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
     <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
+    <button class="right" {{action (mut assignmentToDelete) assignment}}><i class="fa fa-trash" aria-hidden="true"></i></button>
   {{/if}}
   {{#if isDisplaying}}
     <section id='assignment-info' class='properForm'>
       <fieldset>
         <ol>
+          {{#if assignment.name}}
+          <li>
+            <label for="assignment">Assignment Name</label>
+            <p class="assignment-info">{{assignment.name}}</p>
+          </li>
+          {{/if}}
           <li>
             <label for="problem">Problem Title</label>
             <p class="assignment-info">{{problem.title}}</p>
           </li>
           <li>
-            <label for="section">Section Name</label>
+            <label for="section">Class Name</label>
             <p class="assignment-info">{{assignment.section.name}}</p>
           </li>
           <li>
@@ -51,7 +62,6 @@
       </fieldset>
     </section>
     <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
-    <button class="action_button" {{action (mut assignmentToDelete) assignment}}>Delete Assignment</button>
   {{/if}}
   </section>
 
@@ -62,3 +72,14 @@
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
   {{/if}}
+
+{{#if isEditing}}
+<script>
+  $(function () {
+    $('input[name="daterange"]').daterangepicker({
+      singleDatePicker: true,
+      showDropdowns: true,
+    });
+  });
+</script>
+{{/if}}

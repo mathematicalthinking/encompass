@@ -64,14 +64,16 @@
       <td><button class='reset-password' {{action 'resetPassword'}}>Reset Password</button></td>
     </tr>
     {{/if}}
-    {{#if user.organization.name}}
-    <tr>
-      <td>Organization</td>
-      <td>
-        {{user.organization.name}}
-      </td>
-    </tr>
-    {{/if}}
+    {{#unless user.organizationRequest}}
+      <tr>
+        <td>Organization</td>
+      {{#if isEditing}}
+        <td>{{twitter-typeahead dataList=orgList onSelect="setOrg" optionLabelPath='name' placeholder=user.organization.name}}</td>
+        {{else}}
+        <td>{{user.organization.name}}</td>
+      {{/if}}
+      </tr>
+    {{/unless}}
     {{#if user.organizationRequest}}
       <tr>
         <td>Requested Organization</td>
@@ -92,7 +94,7 @@
       <td>Location</td>
       <td>
         {{#if isEditing}}
-          {{input value=user.locaiton classNames='user-location'}}
+          {{input value=user.location classNames='user-location'}}
         {{else}}
           {{user.location}}
         {{/if}}

@@ -35,14 +35,14 @@
           {{#if notStudent}}
           <li>
             <div class="dropdown">
-              {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}sections <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
               </div>
             </div>
           </li>
           {{else}}
-            <li>{{#link-to 'sections.home' classNames='menu sections'}}sections{{/link-to}}</li>
+            <li>{{#link-to 'sections.home' classNames='menu sections'}}classes{{/link-to}}</li>
           {{/if}}
           {{#if notStudent}}
           <li>
@@ -106,7 +106,7 @@
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'problems.home'}}problems{{/link-to}}</li>
         {{/unless}}
-        <li>{{#link-to 'sections.home'}}sections{{/link-to}}</li>
+        <li>{{#link-to 'sections.home'}}classes{{/link-to}}</li>
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
           {{/unless}}

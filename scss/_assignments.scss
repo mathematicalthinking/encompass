@@ -24,6 +24,7 @@ section.assignmentlist {
 }
 
 section.assignment-info-student {
+  margin-bottom: 50px;
   p {
     font-size: 1em;
       width: 70%;
@@ -97,6 +98,8 @@ section.assignment-info-teacher {
           width: 100%;
           font-size: 1em;
           margin-left: 0px;
+          height: 45px;
+          text-indent: 10px;
           border: 1px solid $input-border;
           border-radius: 4px;
           box-sizing: border-box;
@@ -133,6 +136,10 @@ section.assignment-info-teacher {
           border: none;
         }
       }
+      #assignedDate {
+        border: none;
+        color: black;
+      }
     }
     #assignment-info {
       .assignment-info {
@@ -166,5 +173,14 @@ section.assignment-info-teacher {
       font-size: .8em;
       border-radius: 3px;
       font-weight: $bold-font-weight;
+    }
+    .right {
+      float: right;
+      font-size: 1.5em;
+      color: $primary-font-color;
+      border: none;
+      &:hover {
+        color: lighten($primary-font-color, 10);
+      }
     }
 }
