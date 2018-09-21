@@ -24,6 +24,7 @@
     }
   }
   #newsectionform {
+    margin: 8px;
   input[type=text],
   select {
     width: 70%;
@@ -43,6 +44,34 @@
     padding: 12px 20px;
     color: black;
     font-size: 1em;
+  }
+  li.organization-info {
+    display: flex;
+    align-items: center;
+  }
+  p.section-new-info {
+    width: 70%;
+    display: inline-block;
+    font-size: 1em;
+    vertical-align: center;
+  }
+  div.twitter-typeahead{
+    display: inline-block;
+    width: 70%;
+    span{
+      width: 100%;
+    }
+    .typeahead {
+      width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    }
+
   }
 }
 }
