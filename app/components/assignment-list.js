@@ -17,7 +17,7 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let yourList = this.assignments.filter((assignment) => {
       let userId = currentUser.get('id');
       let assigmentCreator = assignment.get('createdBy');
-      return userId === assigmentCreator.get('id');
+      return userId === assigmentCreator.get('id') && !assignment.get('isTrashed');
     });
     return yourList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
@@ -28,7 +28,7 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let adminList = this.get('assignmentList').filter((assignment) => {
       let userId = currentUser.get('id');
       let assigmentCreator = assignment.get('createdBy');
-      return userId !== assigmentCreator.get('id');
+      return userId !== assigmentCreator.get('id') && !assignment.get('isTrashed');
     });
     return adminList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
@@ -38,7 +38,7 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let pdList = this.get('assignmentList').filter((assignment) => {
       let userId = currentUser.get('id');
       let assigmentCreator = assignment.get('createdBy');
-      return userId !== assigmentCreator.get('id');
+      return userId !== assigmentCreator.get('id') && !assignment.get('isTrashed');
     });
     return pdList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
