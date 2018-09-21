@@ -1,15 +1,11 @@
     <div class="student-search">
-     <h3>Search for existing users to add</h3>
+     <h3>Add Existing User</h3>
       {{twitter-typeahead minLength=2 selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
-      {{#if userAlreadyInSection}}
-        <p class="error-message"> User already registered in this section.</p>
-        <button class="action_button" {{action 'exitAddExistingUsername'}}> Close </button>
-      {{/if}}
     </div>
 
     <div class="student-create">
-      <h3>Create new student account</h3>
       <form id="create-student">
+        <h3>Create new student account</h3>
         <fieldset>
           <div class="create-student-input">
             <label for="usingDefaultPassword">Use default password for all students?</label>
@@ -62,6 +58,14 @@
         </fieldset>
         {{#if usernameAlreadyExists}}
           <p class="error-message"> Username is unavailable.</p>
+        {{/if}}
+        {{#if userAlreadyInSection}}
+          <p class="error-message"> User already registered in this section.</p>
+          {{!-- <button class="action_button" {{action 'exitAddExistingUsername'}}> Close </button> --}}
+        {{/if}}
+        {{#if isMissingCredentials}}
+          <p class="error-message"> Please fill in all required fields</p>
+          {{!-- <button class="action_button" {{action 'exitAddExistingUsername'}}> Close </button> --}}
         {{/if}}
         {{#if canAddExistingUser}}
           <p class="error-message"> {{studentUsername}} is an existing member of your organization. Do you want to add {{studentUsername}} to this section?

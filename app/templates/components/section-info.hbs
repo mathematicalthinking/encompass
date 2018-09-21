@@ -73,7 +73,7 @@
                   {{#unless cantEdit}}
                     {{#if isEditingTeachers}}
                       <button class="trash-button" {{action 'removeTeacher' teacher}}>
-                        <i class="far fa-times-circle" aria-hidden="true"></i>
+                        <i title="remove" class="far fa-times-circle" aria-hidden="true"></i>
                       </button>
                     {{/if}}
                   {{/unless}}
@@ -83,12 +83,13 @@
             {{#if removeTeacherError}}
               <p class="error-message">You must have at least one teacher</p>
             {{/if}}
+            {{#if isEditingTeachers}}
+              <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle"></i></label>
+              {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+            {{/if}}
           </li>
           {{#unless cantEdit}}
-            {{#if isEditingTeachers}}
-              <label>Add Teachers</label>
-              {{twitter-typeahead minLength=2 sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
-            {{/if}}
+
           {{/unless}}
           <li class="studentslist">
           <label for="students">Students
