@@ -150,7 +150,14 @@ addStudent: function() {
       }
 
       if (!username || !password) {
-        this.set('isMissingCredentials'. true);
+        this.set('isMissingCredentials', true);
+        return;
+      }
+
+      const students = this.get('students');
+
+      if (!Ember.isEmpty(students.findBy('username', username))) {
+        this.set('userAlreadyInSection', true);
         return;
       }
 
