@@ -28,6 +28,7 @@
   padding-top: 40px;
   background-color: white;
   box-shadow: $box-shadow;
+  border-radius: 3px;
   .encompass-logo {
     display: block;
     margin: 0 auto;
@@ -93,6 +94,7 @@
   margin: 0 auto;
   width: 500px;
   padding-top: 20px;
+  border-radius: 3px;
   background-color: white;
   box-shadow: $box-shadow;
   .encompass-logo {
@@ -124,6 +126,7 @@
     &.typeahead.tt-input {
       border-radius: 0;
       border: none;
+      height: 17px;
       border-bottom: 1px solid $primary-font-color;
 
     }
