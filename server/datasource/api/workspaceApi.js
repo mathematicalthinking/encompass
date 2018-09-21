@@ -188,13 +188,12 @@ function putWorkspace(req, res, next) {
   // for now let acting role student modify workspaces but need to come up with a better solution
 
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
-    console.log('ws found in put', ws);
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.status(403).send("You don't have permission to modify this workspace")
       // res.send(403, "You don't have permission to modify this workspace"); deprecated
       if (err) {
-        console.log('error is', err);
+        console.log('putWorkspace error is', err);
       }
     } else {
       models.Workspace.findById(req.params.id).exec(function(err, ws){

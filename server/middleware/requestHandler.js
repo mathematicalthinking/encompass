@@ -82,7 +82,24 @@ const sendError = {
     res.status(400).json({
       error: err || 'Rest error'
     });
-    }
+  },
+  ReturnEmberError: function (err, res) {
+    // Attempt to send error to UI
+    console.log(`ERROR - ReturnEmberError: ${err}`);
+    res.json = {
+      error: {
+        "errors": [
+          {
+            "status": "422",
+            "detail": err,
+            "source": {
+              "pointer": "data/attributes/name"
+            }
+          }
+        ]
+      }
+    };
+  }
 };
 
 // function sendError(error, res) {

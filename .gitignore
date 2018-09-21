@@ -24,6 +24,8 @@ babel/
 
 # public uploads
 server/public/image_uploads/**
+build/image_uploads/**
+dist/image_uploads/**
 
 # mac files
 .DS_Store
