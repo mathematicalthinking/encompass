@@ -4,7 +4,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
   showReport: false,
-  htmlDateFormat: 'MM-DD-YYYY',
+  htmlDateFormat: 'MM/DD/YYYY',
   displayDateFormat: "MMM Do YYYY",
   assignmentToDelete: null,
 
