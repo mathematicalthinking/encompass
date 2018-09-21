@@ -4,7 +4,7 @@
     </div>
 
     <div class="student-create">
-      <form id="create-student">
+      <form id="create-student" class="properForm">
         <h3>Create new student account</h3>
         <fieldset>
           <div class="create-student-input">
@@ -13,21 +13,36 @@
           </div>
           {{#if isUsingDefaultPassword}}
             <div class="create-student-input">
-              <label for="defaulPassword">Default Password</label>
-              {{input id="defaultPassword" type=fieldType value=defaultPassword placeholder="default password" action="checkError" on="key-down"}}
-              <button id="show-password-btn" {{action "showPassword"}}>
+              <label for="defaulPassword">Default Password<span class="required-star">*</span>
+                {{#if isEditingSectionPassword}}
+                  <button {{action "updateSectionPassword"}}>done</button>
+                {{else}}
+                  <button {{action (mut isEditingSectionPassword) true}}>edit</button>
+                {{/if}}
+              </label>
+              {{#if isEditingSectionPassword}}
+                {{input id="defaultPassword" type=fieldType value=sectionPassword placeholder="default password" action="checkError" on="key-down"}}
+                <button id="show-password-btn" {{action "showPassword"}}>
                   {{#if showingPassword}}
                     <i class="fas fa-eye-slash"></i>
                   {{else}}
                     <i class="fas fa-eye"></i>
                   {{/if}}
-              </button>
+                </button>
+              {{else}}
+                {{#if section.sectionPassword}}
+                  <p class="section-info">{{section.sectionPassword}}</p>
+                {{else}}
+                  <p class="section-info">Class password has not been set yet.</p>
+                {{/if}}
+              {{/if}}
+
             </div>
           {{/if}}
           <div class="student-info">
             <div class="create-student-input">
-            <label for="username">Username</label>
-            {{input id="username" type="text" value=username placeholder="username" action="checkError" on="key-down"}}
+            <label for="username">Username<span class="required-star">*</span></label>
+            {{input id="username" type="text" value=username placeholder="username" action="usernameValidate" on="key-down"}}
           </div>
 
           <div class="create-student-input">
@@ -38,7 +53,7 @@
           {{#unless isUsingDefaultPassword}}
             <div class="create-student-input">
 
-                <label for="addpassword">Password</label>
+                <label for="addpassword">Password<span class="required-star">*</span></label>
                 {{input id="password" type=fieldType value=password placeholder="password" action="checkError" on="key-down"}}
                   <button id="show-password-btn" {{action "showPassword"}}>
                     {{#if showingPassword}}
@@ -67,8 +82,11 @@
           <p class="error-message"> Please fill in all required fields</p>
           {{!-- <button class="action_button" {{action 'exitAddExistingUsername'}}> Close </button> --}}
         {{/if}}
+        {{#if incorrectUsername}}
+           <p class="error-message">Username must be all lowercase, at least 3 characters and can only contain the following special characters .-_@</p>
+        {{/if}}
         {{#if canAddExistingUser}}
-          <p class="error-message"> {{studentUsername}} is an existing member of your organization. Do you want to add {{studentUsername}} to this section?
+          <p class="error-message"> {{username}} is an existing member of your organization. Do you want to add {{username}} to this section?
           <button class="action_button" {{action 'addExistingStudent'}} > yes </button>
           <button class="action_button" {{action 'exitAddExistingUsername'}}> no </button>
           </p>
