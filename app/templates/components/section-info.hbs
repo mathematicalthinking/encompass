@@ -8,7 +8,7 @@
   <fieldset>
     <ul>
       <li>
-        <label for="name">Section Name
+        <label for="name">Class Name
           {{#unless cantEdit}}
             {{#if isEditingName}}
             <button class="done action_button" {{action "updateSectionName"}}>done</button>
@@ -29,7 +29,7 @@
         <ul class="listing">
           {{#if section.assignments}}
             {{#each section.assignments as |assignment|}}
-            <li>{{assignment.problem.title}} / {{format-date assignment.assignedDate 'MMM Do YYYY'}}</li>
+            <li>{{#link-to 'assignment' assignment.id}}{{assignment.name}}{{/link-to}}</li>
             {{/each}}
           {{else}}
             <li>No Assignments yet</li>
