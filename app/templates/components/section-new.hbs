@@ -15,30 +15,27 @@
   <section class="newSection">
       <form id='newsectionform' class='properForm'>
         <fieldset>
-          <ol>
-            <li>
-              <label for="title">Class/Group Name <span class="required-star">*</span></label>
-              {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class/group name" action="checkError" on="key-down"}}
+          <div class="section-new-name">
+            <label for="title">Class Name <span class="required-star">*</span></label>
+            {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
+          </div>
 
-            </li>
 
-            <li>
+
+            <div class="section-new-teacher">
               <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
               {{#if user.isAdmin}}
-                {{twitter-typeahead placeholder="Teacher's username" dataList=users optionLabelPath="username" selectedValue=teacher minLength=2}}
+                {{twitter-typeahead placeholder="Teacher's username" dataList=users optionLabelPath="username" selectedValue=teacher minLength=2 setSelectedValueOnChange=true}}
               {{else}}
-                {{input id="teacher" type="text" value=user.username disabled=true placeholder="username"}} {{/if}}
-                {{#if invalidTeacherUsername}}
-                  <p class="error-message">Sorry, there is no teacher with that username.</p>
-                {{/if}}
-            </li>
-            <li class="organization-info">
+                <p class="section-new-info">{{teacher.username}}</p>
+              {{/if}}
+            </div>
+            <div class="section-new-organization">
             <label for="organization">Organization</label>
-            {{#if currentUser.isAdmin}}
-              {{!-- {{input id="organization" type="text" value=organization disabled=true placeholder="Organization is automatically set to match the provided teachers organization"}} --}}
-              {{#if teacher}}
-                {{#if teacher.organization}}
-                  <p class="section-new-info">{{teacher.organization.name}}</p>
+            {{#if user.isAdmin}}
+              {{#if validTeacher}}
+                {{#if organization}}
+                  <p class="section-new-info">{{organization.name}}</p>
                 {{else}}
                   <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with your organization.</p>
                 {{/if}}
@@ -46,14 +43,16 @@
                 <p class="section-new-info">Please select a teacher first.</p>
               {{/if}}
             {{else}}
-              {{input id="organization" type="text" value=organization disabled=true placeholder=user.organization.name}}
+              <p class="section-new-info">{{organization.name}}</p>
             {{/if}}
 
-          </li>
-          </ol>
+          </div>
           {{#if missingFieldsError}}
               <p class="error-message">Please provide all required fields.</p>
-              {{/if}}
+          {{/if}}
+          {{#if invalidTeacherUsername}}
+            <p class="error-message">Sorry, there is no teacher with that username.</p>
+          {{/if}}
         </fieldset>
       </form>
   </section>
@@ -62,9 +61,11 @@
 {{!-- submit button to add a new section --}}
 
 <section class="submit">
-  <button class="action_button" {{action 'createSection'}} style="margin-right: 30px">
-    Create Class
-  </button>
+  <button class="action_button" {{action 'createSection'}}>Create Section</button>
+  <button class="action_button" {{action 'cancel'}}>
+      Cancel
+    </button>
+
 </section>
 
 {{!-- verify if section successfully created --}}
