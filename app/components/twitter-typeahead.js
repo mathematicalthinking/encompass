@@ -64,7 +64,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     this.$('.typeahead').typeahead('val', startingValue);
 
     this.$('.typeahead').on('typeahead:select', function(ev, suggestion) {
-
       that.set('selectedValue', suggestion);
       if (that.get('onSelect')) {
         that.sendAction('onSelect', suggestion);
@@ -74,32 +73,43 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       }
     });
 
-    this.$('.typeahead').on('typeahead:change', function(ev, val) {
-      console.log('typeahead ev change', val);
-      let selectedValue = that.get('selectedValue');
-      let inputValue = that.$('.typeahead').typeahead('val');
+    if (this.get('setSelectedValueOnChange')) {
+      this.$('.typeahead').on('typeahead:change', function(ev, val) {
 
-      if (selectedValue && typeof selectedValue === 'object') {
-        // check if text value in typeahead component is same as the object's path value
-        let str = selectedValue.get(path);
-        if (inputValue === str) {
+        if (that.get('isDestroyed') || that.get('isDestroying')) {
+          console.log('isdestroying or is destroyed');
           return;
         }
-      } else if (typeof selectedValue === 'string') {
-        if (selectedValue === inputValue) {
-          return;
+        let selectedValue = that.get('selectedValue');
+        let inputValue = that.$('.typeahead').typeahead('val');
+
+        if (selectedValue && typeof selectedValue === 'object') {
+          // check if text value in typeahead component is same as the object's path value
+          let str = selectedValue.get(path);
+          if (inputValue === str) {
+            return;
+          }
+        } else if (typeof selectedValue === 'string') {
+          if (selectedValue === inputValue) {
+            return;
+          }
         }
-      }
 
-      that.set('selectedValue', inputValue);
-      if (that.get('onSelect')) {
-        that.sendAction('onSelect', inputValue);
+        that.set('selectedValue', inputValue);
+        if (that.get('onSelect')) {
+          that.sendAction('onSelect', inputValue);
 
-      }
-      if (that.get('allowMultiple')) {
-        that.$('.typeahead').typeahead('val', '');
-      }
-    });
+        }
+        if (that.get('allowMultiple')) {
+          that.$('.typeahead').typeahead('val', '');
+        }
+      });
+    }
+
+  },
+
+  willDestroyElement: function() {
+    this.$('.typeahead').typeahead('destroy');
   },
 
   getOptions: function() {
