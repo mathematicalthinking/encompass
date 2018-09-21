@@ -158,6 +158,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   }.observes('teacherToAdd'),
 
+  scrollIfEditingStudents: function() {
+    Ember.run.later(() => {
+      $('html, body').animate({scrollTop: $(document).height()});
+    }, 100);
+  }.observes('isEditingStudents'),
+
   getAddableUsers: function(doGetTeachers) {
     const store = this.get('store');
 
