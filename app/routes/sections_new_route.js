@@ -13,6 +13,9 @@ Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
     actions: {
       toSectionInfo: function(section) {
         this.transitionTo('section', section);
+      },
+      toSectionsHome: function() {
+        this.transitionTo('sections.home');
       }
     }
   });
