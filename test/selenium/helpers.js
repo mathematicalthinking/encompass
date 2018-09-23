@@ -189,16 +189,14 @@ const findInputAndType = async function (webDriver, selector, text) {
 
  const selectOption = async function (webDriver, selector, item) {
    try {
-     let selectList = webDriver.findElement(By.id(selector));
-     selectList.click();
-     selectList.sendKeys(item);
-     selectList.sendKeys(Key.RETURN);
-    //  selectList.click();
+    let selectList = await webDriver.findElement(By.id(selector));
+    await selectList.click();
+    let el = await selectList.findElement(By.css(`option[value="${item}"]`));
+    await el.click();
      return;
    } catch (err) {
      console.log(err);
    }
-   return;
 }
 
 const login = async function(webDriver, host, user=admin) {

@@ -80,7 +80,7 @@ describe('Users', function() {
         let email = `mdoe@gmail.com`;
         let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
-        await helpers.selectOption(driver, 'my-select', 'Pd');
+        await helpers.selectOption(driver, 'my-select', 'Pd Admin');
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
@@ -213,7 +213,7 @@ describe('Users', function() {
 
       it('should have a list of pd admins', async function () {
         expect(await helpers.getWebElements(driver, 'ul.pd-users>li')).to.have.lengthOf.at.least(1);
-        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('pdadmin');
+        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('tpool');
       });
 
       it('should have a list of teachers', async function () {
@@ -267,11 +267,11 @@ describe('Users', function() {
   });
 
   describe('Logged in as a pd admin user', function () {
-    before(async function (done) {
+    before(async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
       await helpers.findAndClickElement(driver, css.topBar.users);
-      done(new Error('failed'));
+      // done(new Error('failed'));
     });
 
     function validateUsersPage() {
