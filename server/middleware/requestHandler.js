@@ -49,56 +49,79 @@ function sendResponse(res, data) {
 
 const sendError = {
   InternalError: function (err, res) {
-      res.status(500).json({
-        error: err || 'Internal Error'
-      });
-    },
+    res.status(500).json({
+      "errors": [
+        {
+          "detail": err || "Internal Error",
+        }
+      ]
+    });
+  },
   BadMethodError: function (err, res) {
     res.status(405).json({
-      error: err || 'Bad Method'
+      "errors": [
+        {
+          "detail": err || "Bad Method",
+        }
+      ]
     });
   },
   NotAuthorizedError: function (err, res) {
     res.status(403).json({
-      error: err || 'Not Authorized'
+      "errors": [
+        {
+          "detail": err || "Not Authorized",
+        }
+      ]
     });
   },
   InvalidCredentialsError: function (err, res) {
     res.status(401).json({
-      error: err || 'Invalid Credentials'
+      "errors": [
+        {
+          "detail": err || "Invalid Credentials",
+        }
+      ]
     });
   },
   InvalidArgumentError: function (err, res) {
     res.status(409).json({
-      error: err || 'Invalid Argument'
+      "errors": [
+        {
+          "detail": err || "Invalid Argument",
+        }
+      ]
     });
   },
   InvalidContentError: function (err, res) {
     res.status(400).json({
-      error: err || 'Invalid Content'
+      "errors": [
+        {
+          "detail": err || "Invalid Content",
+        }
+      ]
     });
   },
   RestError: function (err, res) {
     res.status(400).json({
-      error: err || 'Rest error'
+      "errors": [
+        {
+          "detail": err || "Rest Error",
+        }
+      ]
     });
   },
-  ReturnEmberError: function (err, res) {
-    // Attempt to send error to UI
-    console.log(`ERROR - ReturnEmberError: ${err}`);
-    res.json = {
-      error: {
+  ValidationError: function (err, attribute, res) {
+    res.status(422).json({
         "errors": [
           {
-            "status": "422",
             "detail": err,
             "source": {
-              "pointer": "data/attributes/name"
+              "pointer": `data/attributes/${attribute}`
             }
           }
         ]
-      }
-    };
+      });
   }
 };
 
