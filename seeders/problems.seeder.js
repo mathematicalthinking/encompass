@@ -92,6 +92,27 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2018-09-06T18:37:22.437Z"
+},
+{
+  "_id" : "5ba7c3cb1359dc2f6699f2b3",
+  "title" : "Tim's Public Problem",
+  "puzzleId" : null,
+  "text" : "This problem is for everyone.",
+  "imageUrl" : null,
+  "sourceUrl" : null,
+  "additionalInfo" : null,
+  "privacySetting" : "E",
+  "error" : null,
+  "createdBy" : "5ba7bedd2b7ba22c38a554fc",
+  "lastModifiedBy" : null,
+  "image" : null,
+  "origin" : null,
+  "modifiedBy" : null,
+  "organization" : "5b4e4b48808c7eebc9f9e827",
+  "categories" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-09-23T16:48:11.924Z"
 }
 ];
 
