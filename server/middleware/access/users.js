@@ -2,6 +2,7 @@ const _ = require('underscore');
 
 const utils = require('./utils');
 const models = require('../../datasource/schemas');
+const problemsAccess = require('./problems');
 
 module.exports.get = {};
 module.exports.put = {};
@@ -23,35 +24,19 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
     const accountType = user.accountType;
     const actingRole = user.actingRole;
 
-    let filter;
-
-    if (user.createdBy) {
-      filter = {
-        isTrashed: false,
-        $or: [
-          { _id: user.createdBy }
-        ]
-      };
-    } else {
-      filter = {
-        isTrashed: false,
-      };
-    }
-
-
+    let filter = {
+      isTrashed: false
+    };
 
   if (ids) {
-    //filter.$or.push({_id: { $in: ids }});
     filter._id = {$in : ids};
   }
 
   if (usernames) {
-    //filter.$or.push({username: { $in: usernames }});
     filter.username = { $in: usernames }
   }
 
   if (regex) {
-    //filter.$or.push({username: regex});
     filter.username = regex;
   }
 
@@ -59,20 +44,15 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   // students from a section // or teachers?
   if (actingRole === 'student' || accountType === 'S') {
 
-   const users = await utils.getStudentUsers(user);
+    const users = await utils.getStudentUsers(user);
 
-  // if (ids) {
-  //   const intersection = _.intersection(ids, users);
-  //   filter._id = {$in: intersection};
-  // } else {
-  //   filter._id = { $in: users };
-  // }
-  if (!filter.$or) {
-    filter.$or = [];
-  }
-  filter.$or.push({ _id: {$in: users } });
+    if (!filter.$or) {
+      filter.$or = [];
+    }
+    filter.$or.push({ _id: user.createdBy });
+    filter.$or.push({ _id: {$in: users } });
 
-  return filter;
+    return filter;
   }
 
   // will only reach here if admins/pdadmins are in actingRole teacher
@@ -89,48 +69,23 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   }
 
   filter.$or.push({ _id: {$in: usersFromWs } });
-
-    let intersection;
-    let union;
-
+  filter.$or.push({ _id: user.createdBy });
 
   if (accountType === 'P') {
-    // can access all users from organization
-    // can access all users who they created
     const users = await utils.getPdAdminUsers(user);
-    // get unique user list from workspace users and users from org
-    // union = _.union(users, usersFromWs);
+    filter.$or.push({ _id: {$in: users } });
 
-  //  if (ids) {
-  //   // user_id needs to be in both the query ids and the union list
-  //   intersection = _.intersection(ids, union);
-  //   filter._id = {$in: intersection};
-  //  } else {
-  //   filter._id = {$in: union}
-  //  }
-  filter.$or.push({ _id: {$in: users } });
-
-  return filter;
+    return filter;
   }
 
   if (accountType === 'T') {
-    // only answers from either a teacher's assignments or from a section where they are in the teachers array
-
     const users = await utils.getTeacherUsers(user);
     filter.$or.push({ _id: {$in: users } });
-
-    // union = _.union(users, usersFromWs);
-
-    // if (ids) {
-    // intersection = _.intersection(ids, union);
-    // filter._id = {$in: intersection};
-    //  } else {
-    //   filter._id = {$in: union}
-    //  }
     return filter;
   }
   }catch(err) {
-    console.log('err auq', err);
+    console.error(`Error accessibleUsersQuery: ${err}`);
+    console.trace();
   }
 
 };
@@ -169,21 +124,27 @@ const canGetUser = async function(user, id, username) {
     accessibleUserIds = accessibleUserIds.map(obj => obj.toString());
   }
   let isAccessibleCreator;
-  let creators = [];
+  let userCreators = [];
+  let problemCreators = [];
 
   if (id && _.isEmpty(accessibleUserIds)) {
     // check if requested user is creator
     let crit = await accessibleUsersQuery(user);
 
-    creators = await utils.getCreatorIds(crit);
-    isAccessibleCreator = _.contains(creators, id);
+    userCreators = await utils.getCreatorIds('User', crit);
+    isAccessibleCreator = _.contains(userCreators, id);
+
+    if (!isAccessibleCreator) {
+      //check if requsted user is creator of an accessible problem
+      let problemCrit = await problemsAccess.get.problems(user);
+      problemCreators = await utils.getCreatorIds('Problem', problemCrit);
+      isAccessibleCreator = _.contains(problemCreators, id);
+    }
   }
 
 
   let hasPermission = _.contains(accessibleUserIds, requestedUser._id.toString()) || isAccessibleCreator;
 
-  console.log('accessibleUserIds', accessibleUserIds);
-  console.log('hasPermission', hasPermission);
   if (hasPermission) {
     return({
       doesExist: true,
