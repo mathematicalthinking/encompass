@@ -75,7 +75,7 @@ const admin = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 36
+  accessibleUserCount: 37
 
 };
 
@@ -144,5 +144,12 @@ const users = {
   teacherActingStudent
 };
 
+const publicProblem = {
+  _id: "5ba7c3cb1359dc2f6699f2b3",
+  createdBy: "5ba7bedd2b7ba22c38a554fc",
+  creatorUsername: "tpool",
+};
+
 
 module.exports.users = users;
+module.exports.publicProblem = publicProblem;

@@ -132,25 +132,29 @@ const getProblem = (req, res, next) => {
 
 const postProblem = async function(req, res, next) {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
-
   if (req.body.problem.privacySetting === "E") {
-    console.log('creating public problem');
     let title = req.body.problem.title;
-    // title = title.replace(/\s+/g, "");
-    // regex = new RegExp(title, 'i');
-    const exists = await models.Problem.find({ title: { $eq: title } }).lean().exec();
+    title = title.replace(/\s+/g, "");
+    regex = new RegExp(title.split('').join('\\s*'), 'i');
+    const exists = await models.Problem.find({ title: {$regex: regex } }).lean().exec();
 
     if (exists.length >= 1) {
-      return utils.sendResponse(res, { problem: { error: 'Problem Name Exists' }});
+      return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
     }
   }
   problem.createdBy = user;
   problem.createDate = Date.now();
   problem.save((err, doc) => {
     if (err) {
-      logger.error(err);
+      console.error(`Error post problem: ${err}`);
+      console.trace();
       return utils.sendError.InternalError(err, res);
     }
     const data = {'problem': doc};
