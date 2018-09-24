@@ -31,6 +31,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
   didReceiveAttrs: function() {
     this.set('isEditing', false);
+    this.set('assignmentName', this.assignment.get('name'));
     if (this.get('showReport')) {
       this.set('showReport', false);
     }
@@ -160,11 +161,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
     updateAssignment: function() {
       const assignment = this.get('assignment');
-      const values = ['section', 'problem', 'dueDate'];
+      const values = ['section', 'problem', 'dueDate', 'name'];
 
       const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       const dueDate = this.getEndDate(endDate);
 
+      const name = this.get('assignmentName');
+
+      this.set('name', name);
       this.set('dueDate', dueDate);
 
       for (let value of values) {
