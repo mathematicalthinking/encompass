@@ -204,20 +204,20 @@ module.exports = (passport) => {
                         return next(null, newUser);
                       })
                       .catch((err) => {
-                        console.error(`Error sending email (${template}) to ${recipient} from ${userAuth.getEmailAuth().username}: ${err}`);
+                        console.error(`Error local-signup: ${err}`);
                         console.trace();
                       });
                     });
                   })
                 .catch((err) => {
-                  console.log(err);
+                  console.error(`Error local-signup: ${err}`);
+                  console.trace();
                 });
               }
             });
           } else {
             let userSections = [];
                   if (req.body.sectionId) {
-                    console.log('in sectionid if', req.body.sectionId);
                     let section = {
                       sectionId: req.body.sectionId,
                       role: req.body.sectionRole
