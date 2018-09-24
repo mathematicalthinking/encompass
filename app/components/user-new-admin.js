@@ -77,6 +77,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     });
   },
 
+//warn admin they are creating new org
+
   actions: {
     newUser: function () {
       var username = this.get('username');
