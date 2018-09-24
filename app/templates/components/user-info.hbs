@@ -28,7 +28,6 @@
         <span class='displayName'>{{user.displayName}}</span>
       </td>
     </tr>
-    {{#if user.email}}
     <tr>
       <td>Email</td>
       <td>
@@ -39,7 +38,7 @@
         {{/if}}
       </td>
     </tr>
-    {{/if}}
+
     {{#if canConfirm}}
     <tr>
       <td>Email Confirmed</td>
@@ -47,8 +46,10 @@
         {{#if isEditing}}
           {{#if unconfirmedEmail}}
           {{!-- <button {{action 'authEmail'}}>Manually confirm email?</button> --}}
-            {{input type="checkbox" checked=user.isEmailConfirmed value=authorized classNames="user-email-auth"}}
-            <label for="">Manually confirm email?</label>
+            {{#if user.email}}
+              {{input type="checkbox" checked=user.isEmailConfirmed value=authorized classNames="user-email-auth"}}
+              <label for="">Manually confirm email?</label>
+            {{/if}}
           {{else}}
             {{user.isEmailConfirmed}}
           {{/if}}

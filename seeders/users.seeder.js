@@ -147,7 +147,8 @@ var data = [{
     "assignments": [],
     "sections": [],
     "createDate": "2018-08-14T18:20:51.382Z",
-    "createdBy": "5b1e758ba5d2157ef4c90b2d"
+    "createdBy": "5b1e758ba5d2157ef4c90b2d",
+    "email": "superuser@fakeemail.com"
   }, {
     "_id": "5b1e7bf9a5d2157ef4c911a6",
     "accountType": 'T',
