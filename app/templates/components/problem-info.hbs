@@ -97,7 +97,7 @@
     </section>
 
       {{#if canEdit}}
-        {{#if isProblemUsed}}
+        {{#if problem.isUsed}}
           {{#if currentUser.isAdmin}}
             <p class="warning-message">Warning, this problem has an answer. Be sure any changes do not change the intent or difficulty of the problem.</p>
             <button class="action_button" id="editProblem" {{action 'editProblem'}}>Edit Problem</button>
