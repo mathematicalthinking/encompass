@@ -32,7 +32,7 @@
     <tr>
       <td>Organization <span class="required-star">*</span></td>
       <td>
-        {{type-ahead content=organizations inputName="organization" inputId="organization" selectedValue=org optionLabelPath="name"}}
+        {{twitter-typeahead dataList=organizations minLength=0 onSelect="setOrg" optionLabelPath="name" setSelectedValueOnChange=true}}
       </td>
     </tr>
     <tr>
