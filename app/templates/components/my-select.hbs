@@ -1,5 +1,5 @@
 {{! app/templates/components/my-select.hbs}}
-<select disabled={{isDisabled}} {{action 'selectChange' on='change'}} id="my-select">
+<select disabled={{isDisabled}} {{action 'selectChange' on='change'}}>
   {{#if prompt}}
     {{#unless selectedValue}}
     <option value="" id="select-prompt">{{prompt}}</option>
