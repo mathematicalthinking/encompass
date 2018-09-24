@@ -229,6 +229,13 @@ const resetPasswordById = async function(req, res, next) {
     user.lastModifiedBy = reqUser.id;
     user.lastModifiedDate = Date.now();
 
+    let actingRole = user.actingRole;
+    let accountType = user.accountType;
+
+    if (!actingRole && accountType !== 'S') {
+      user.actingRole = 'teacher';
+    }
+
     // should we store most recent password and block that password in future? or all past passwords and block all of them?
 
     await user.save();
