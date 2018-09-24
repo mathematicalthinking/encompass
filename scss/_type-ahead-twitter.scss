@@ -8,14 +8,9 @@
 .tt-query,
 .tt-hint {
   width: 100%;
-  height: 30px;
   padding: 8px 12px;
-  font-size: 24px;
-  line-height: 30px;
-  border: 2px solid #ccc;
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
+  font-size: 0.8em;
+  line-height: 1.2em;
   outline: none;
 }
 
@@ -55,8 +50,8 @@
 
 .tt-suggestion {
   padding: 3px 20px;
-  font-size: 1em;
-  line-height: 24px;
+  font-size: .8em;
+  line-height: 1.2em;
 }
 .tt-header {
   padding: 3px 20px;
