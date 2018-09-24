@@ -117,9 +117,10 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
         if (err) {
-          console.error(`sendEmailSMTP error: ${err}`);
+          let errorMsg = `Error sending email (${template}) to ${recipient} from ${userAuth.getEmailAuth().username}: ${err}`;
+          console.error(errorMsg);
           console.trace();
-          return reject(err);
+          return reject(errorMsg);
         }
         let msg = `Email (${template}) sent successfully to ${recipient} from ${userAuth.getEmailAuth().username}`;
       return resolve(msg);
