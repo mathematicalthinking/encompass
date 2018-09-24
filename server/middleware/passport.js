@@ -193,20 +193,14 @@ module.exports = (passport) => {
                         next(err);
                       }
                       // send email to new user asking to confirm email
-                      auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token).then((res) => {
-                        console.log(res);
+                      auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token);
 
                       // send email to encompass main email notifying new user signup
-                      return auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification');
+                      auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification');
 
-                      }).then((res) => {
-                        console.log(res);
-                        return next(null, newUser);
-                      })
-                      .catch((err) => {
-                        console.error(`Error local-signup: ${err}`);
-                        console.trace();
-                      });
+                      return next(null, newUser);
+
+
                     });
                   })
                 .catch((err) => {
