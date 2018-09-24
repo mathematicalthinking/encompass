@@ -40,6 +40,17 @@
   }
 }
 
+@media screen and (min-width: 0px) and (max-width: 1460px) {
+  #assignment-new-btn {
+    span {
+      display: none;
+    }
+    i {
+      display: inline-block;
+    }
+  }
+}
+
 @media screen and (min-width: 1320px) and (max-width: 10000px) {
   .list-side {
     .list-header {
