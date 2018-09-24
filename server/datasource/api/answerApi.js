@@ -114,6 +114,13 @@ const getAnswer = (req, res, next) => {
     const data = {'answer': doc};
     utils.sendResponse(res, data);
     next();
+  }).then((answer) => {
+    models.Problem.findById(answer.problem).exec().then((problem) => {
+      if (!problem.isUsed) {
+        problem.isUsed = true;
+      }
+      problem.save();
+    });
   });
 };
 
