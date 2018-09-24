@@ -58,7 +58,7 @@ describe('Users', function() {
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-email')).to.be.true;
-        expect(await helpers.isElementVisible(driver, '#organization')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.typeahead')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'select')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-isAuth')).to.be.true;
@@ -84,10 +84,10 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', email);
-        await helpers.findInputAndType(driver, 'input#organization', organization);
+        await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '#user-info');
+        await helpers.waitForSelector(driver, '#user-info', 10000);
         await driver.sleep('1000');
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
       });
@@ -106,7 +106,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
         await helpers.findInputAndType(driver, 'input.user-email', oldEmail);
-        await helpers.findInputAndType(driver, 'input#organization', organization);
+        await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
@@ -116,7 +116,7 @@ describe('Users', function() {
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
         await helpers.findAndClickElement(driver, '#new-user-btn');
-        await helpers.waitForSelector(driver, '#user-info');
+        await helpers.waitForSelector(driver, '#user-info', 7000);
         expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('msmith');
       });
       //check to make sure the user info page has the info
@@ -132,7 +132,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
         await helpers.findInputAndType(driver, 'input.user-name', name);
-        await helpers.findInputAndType(driver, 'input#organization', organization);
+        await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await driver.sleep('1000');
@@ -144,7 +144,7 @@ describe('Users', function() {
         await driver.sleep('1000');
         await helpers.findAndClickElement(driver, 'button.new-user');
         await driver.sleep('1000');
-        await helpers.waitForSelector(driver, '#user-info');
+        await helpers.waitForSelector(driver, '#user-info', 7000);
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
 
@@ -267,10 +267,10 @@ describe('Users', function() {
 
   describe('Logged in as a pd admin user', function () {
     before(async function () {
+      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
       await helpers.findAndClickElement(driver, css.topBar.users);
-      // done(new Error('failed'));
     });
 
     function validateUsersPage() {
@@ -460,6 +460,7 @@ describe('Users', function() {
 
   describe('Logged in as a teacher', function() {
     before(async function() {
+      await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.regUser);
       await helpers.findAndClickElement(driver, css.topBar.users);
