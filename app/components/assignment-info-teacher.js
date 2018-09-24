@@ -161,28 +161,35 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
     updateAssignment: function() {
       const assignment = this.get('assignment');
-      const values = ['section', 'problem', 'dueDate', 'name'];
+      const values = ['section', 'problem'];
+      const name = this.get('assignmentName');
+      assignment.set('name', name);
 
       const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       const dueDate = this.getEndDate(endDate);
 
-      const name = this.get('assignmentName');
 
-      this.set('name', name);
-      this.set('dueDate', dueDate);
+      if (JSON.stringify(dueDate) !== JSON.stringify(assignment.get('dueDate'))) {
+        console.log('dates are not equal');
+        assignment.set('dueDate', dueDate);
+      }
 
       for (let value of values) {
         assignment.set(value, this.get(value));
       }
-      return assignment.save().then((assignment) => {
-        this.set('assignmentUpdateSuccess', true);
-        this.set('isEditing', false);
-        return;
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'updateRecordErrors', assignment);
-      });
 
+      if (assignment.get('hasDirtyAttributes')) {
+        return assignment.save().then((assignment) => {
+            this.set('assignmentUpdateSuccess', true);
+            this.set('isEditing', false);
+            return;
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateRecordErrors', assignment);
+        });
+      } else {
+        this.set('isEditing', false);
+      }
     },
     stopEditing: function() {
       this.set('isEditing', false);
