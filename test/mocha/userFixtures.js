@@ -1,4 +1,5 @@
 const pdAdminDrexel = {
+  _id: '5b7321ee59a672806ec903d5',
   testDescriptionTitle: 'PD Admin',
   username: 'pdadmin',
   password: 'pdadmin',
@@ -27,6 +28,7 @@ const pdAdminDrexel = {
 }
 
 const teacherMT = {
+  _id: '5b9149552ecaf7c30dd4748e',
   testDescriptionTitle: 'Teacher',
   username: 'ssmith',
   password: 'ssmith',
@@ -57,6 +59,7 @@ const teacherMT = {
 };
 
 const admin = {
+  _id: '5b245760ac75842be3189525',
   testDescriptionTitle: 'Admin',
   username: 'rick',
   password: 'sanchez',
@@ -80,6 +83,7 @@ const admin = {
 };
 
 const studentMT = {
+  _id: '5b914a102ecaf7c30dd47492',
   testDescriptionTitle: 'Student',
   username: 'tracyc',
   password: 'tracyc',
@@ -108,6 +112,7 @@ const studentMT = {
 };
 
 const teacherActingStudent = {
+  _id: '5b99146e25b620610ceead75',
   testDescriptionTitle: 'Teacher acting as Student',
   username: 'actingstudent',
   password: 'allison',
@@ -149,6 +154,8 @@ const publicProblem = {
   createdBy: "5ba7bedd2b7ba22c38a554fc",
   creatorUsername: "tpool",
 };
+
+const accessibleOrgCount = 3;
 
 
 module.exports.users = users;

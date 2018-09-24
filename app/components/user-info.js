@@ -153,20 +153,12 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('isEditing', false);
       },
 
-     setOrg(name) {
-       if (!name || typeof name !== "string") {
-         return;
-       }
-       const orgs = this.get('orgList');
-
-       let org = orgs.findBy('name', name);
-
-       if (!org) {
-         this.set('orgReq', name);
+     setOrg(org) {
+       if (typeof org === 'string') {
+         this.set('orgReq', org);
        } else {
          this.set('org', org);
        }
-
      },
 
       resetPassword: function() {
