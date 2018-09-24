@@ -175,34 +175,44 @@ const postProblem = async function(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 
-const putProblem = (req, res, next) => {
-  const user = userAuth.requireUser(req);
-  // Add permission checks here
-
-  // if (user.isStudent) {
-  //   return utils.sendError.InternalError(err, res);
-  // }
-
-  models.Problem.findById(req.params.id, (err, doc) => {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    // make the updates, but don't update categories or _id
-    for(let field in req.body.problem) {
-      if((field !== '_id') && (field !== undefined) && (field !== 'categories')) {
-        doc[field] = req.body.problem[field];
+const putProblem = async function(req, res, next){
+  try {
+    const user = userAuth.requireUser(req);
+    if (req.body.problem.privacySetting === "E") {
+      let title = req.body.problem.title;
+      title = title.replace(/\s+/g, "");
+      regex = new RegExp(title.split('').join('\\s*'), 'i');
+      const exists = await models.Problem.find({ title: {$regex: regex }, _id: {$ne: req.params.id} }).lean().exec();
+      if (exists.length >= 1) {
+        return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
       }
     }
-    doc.save((err, problem) => {
-      if (err) {
+
+    models.Problem.findById(req.params.id, (err, doc) => {
+      if(err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-      const data = {'problem': problem};
-      utils.sendResponse(res, data);
+      // make the updates, but don't update categories or _id
+      for(let field in req.body.problem) {
+        if((field !== '_id') && (field !== undefined) && (field !== 'categories')) {
+          doc[field] = req.body.problem[field];
+        }
+      }
+      doc.save((err, problem) => {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
+        const data = {'problem': problem};
+        utils.sendResponse(res, data);
+      });
     });
-  });
+  }catch(err) {
+    console.error(`Error putProblem: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
 };
 
 /**
