@@ -212,7 +212,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     updateSectionPassword: function() {
       this.set('isEditingSectionPassword', false);
       let section = this.get('section');
-      if (section.get('dirtyType') === 'updated') {
+      if (section.get('hasDirtyAttributes')) {
         section.save().then(() => {
           console.log('section password updated!');
         })
