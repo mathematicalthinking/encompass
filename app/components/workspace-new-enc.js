@@ -15,6 +15,22 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   init: function() {
     this._super(...arguments);
     this.set('userList', this.model.users);
+    $(function () {
+      $('input[name="daterange"]').daterangepicker({
+        autoUpdateInput: false,
+        showDropdowns: true,
+        locale: {
+          cancelLabel: 'Clear'
+        }
+      });
+      $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      });
+
+      $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
+        $(this).val('');
+      });
+    });
   },
 
   didReceiveAttrs: function() {
@@ -23,7 +39,11 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       this.set('selectedTeacher', currentUser);
     }
     this.set('teacherPool', this.getTeacherPool());
+  },
 
+  willDestroyElement: function () {
+    $(".daterangepicker").remove();
+    this._super(...arguments);
   },
 
   getTeacherPool: function() {
