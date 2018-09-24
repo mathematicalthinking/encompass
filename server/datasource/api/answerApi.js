@@ -45,7 +45,7 @@ const getAnswers = async function(req, res, next) {
     criteria = await access.get.answers(user, ids);
   } else if (req.query.problem) {
     criteria = req.query;
-    const requestedAnswers = await models.Answer.find(criteria).exec();
+    const requestedAnswers = await models.Answer.findOne(criteria).exec();
     let data = {
       'answers': requestedAnswers
     };
