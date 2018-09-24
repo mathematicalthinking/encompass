@@ -112,6 +112,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
+          let error = res.get('error');
+          if (error) {
+            this.set('problemNameExists', true);
+            this.set('successMessage', true);
+            return;
+          }
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
