@@ -13,6 +13,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const auth = require('../datasource/api/auth');
+const userAuth = require('../../server/middleware/userAuth');
 
 //PASSWORD ENCRYPTION
 const bcrypt = require('bcrypt');
@@ -191,12 +192,20 @@ module.exports = (passport) => {
                       if (err) {
                         next(err);
                       }
+                      // send email to new user asking to confirm email
                       auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token).then((res) => {
-                        console.log('email send success');
+                        console.log(res);
+
+                      // send email to encompass main email notifying new user signup
+                      return auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification');
+
+                      }).then((res) => {
+                        console.log(res);
                         return next(null, newUser);
                       })
                       .catch((err) => {
-                        console.log('error sending email', err);
+                        console.error(`Error sending email (${template}) to ${recipient} from ${userAuth.getEmailAuth().username}: ${err}`);
+                        console.trace();
                       });
                     });
                   })

@@ -121,7 +121,8 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
           console.trace();
           return reject(err);
         }
-      return resolve('email sent!');
+        let msg = `Email (${template}) sent successfully to ${recipient} from ${userAuth.getEmailAuth().username}`;
+      return resolve(msg);
     });
   });
 }
