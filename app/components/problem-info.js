@@ -196,9 +196,17 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         });
       }
 
+      problem.set('title', title);
+      problem.set('text', text);
+      if (privacy !== null) {
+        problem.set('privacySetting', privacy);
+      }
+      problem.set('modifiedBy', currentUser);
 
-
-
+      if (problem.get('hasDirtyAttributes')) {
+        problem.save();
+      }
+      this.set('isEditing', false);
     },
 
     addToMyProblems: function() {
