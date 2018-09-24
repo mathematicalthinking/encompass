@@ -68,6 +68,11 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       }
     },
 
+  willDestroyElement: function () {
+    $(".daterangepicker").remove();
+    this._super(...arguments);
+  },
+
   isYourOwn: function() {
     const currentUserId = this.get('currentUser.id');
     const creatorId = this.assignment.get('createdBy.id');
