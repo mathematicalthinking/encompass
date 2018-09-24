@@ -144,8 +144,30 @@ describe('User CRUD operations by account type', async function() {
           });
         });
 
+        describe('/GET createdBy from a public problem', () => {
+          const problem = userFixtures.publicProblem;
+          it(`should return the user "${problem.creatorUsername}"`, done => {
+            const url = baseUrl + problem.createdBy;
+            agent
+            .get(url)
+            .end((err, res) => {
+              expect(res).to.have.status(200);
+              expect(res.body).to.have.all.keys('user');
+              expect(res.body.user).to.be.a('object');
+              expect(res.body.user.username).to.eql(problem.creatorUsername);
+              done();
+            });
+          });
+        });
+
         describe('/PUT update user name', () => {
-          it(`should change ${modifiableUser.username}'s name from null to test name`, done => {
+          let description;
+          if (user.accountType === 'S' || user.actingRole === 'student') {
+            description = 'should return 403 error';
+          } else {
+            description = `should change ${modifiableUser.username}'s name from null to test name`;
+          }
+          it(description, done => {
             const url = baseUrl + modifiableUser._id;
             agent
             .put(url)

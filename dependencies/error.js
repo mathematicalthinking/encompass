@@ -14,11 +14,14 @@ function errorHandler(error) {
   var is404;
 
   if (Array.isArray(error)) {
+    console.log('error', error);
     error.forEach((err) => {
-      window.alert(JSON.stringify(err));
+      // window.alert(JSON.stringify(err));
+      console.log(JSON.stringify(err));
     });
   } else {
-    window.alert(JSON.stringify(error));
+    // window.alert(JSON.stringify(error));
+    console.log(JSON.stringify(error));
 
     if (Array.isArray(errors) && errors[0]) {
       is404 = errors[0].status === '404';

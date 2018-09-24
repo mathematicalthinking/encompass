@@ -44,8 +44,21 @@ const newlyAuthorized = function(recipient, host, token) {
   };
 };
 
+const newUserNotification = function(recipient, host, token) {
+  if (!recipient) {
+    return;
+  }
+  return {
+    to: recipient,
+    from: 'encompassmath@gmail.com',
+    subject: 'A new user has registered an EnCoMPASS account',
+    text: `A new user just signed up for an EnCoMPASS account and is waiting to be authorized. Please visit http://${host}/ to login and navigate to the users portal to view users that are waiting for authorization.`
+  };
+};
+
 
 
 module.exports.resetTokenEmail = resetTokenEmail;
 module.exports.confirmEmailAddress = confirmEmailAddress;
 module.exports.newlyAuthorized = newlyAuthorized;
+module.exports.newUserNotification = newUserNotification;

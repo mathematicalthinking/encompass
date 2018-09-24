@@ -14,6 +14,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   authorizedBy: '',
   newUserData: {},
   actingRole: null,
+  orgReq: null,
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -36,17 +37,31 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   handleOrg: function (org) {
     var that = this;
     return new Promise((resolve, reject) => {
-      if (!org) {
+     if (!org) {
         return reject('Invalid Data');
-      }
+     }
+
+     let orgReq;
+      // make sure user did not type in existing org
       if (typeof org === 'string') {
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', org);
+        if (matchingOrg) {
+          this.set('org', matchingOrg);
+          org = matchingOrg;
+        } else {
+          orgReq = org;
+        }
+      }
+
+      if (orgReq) {
         let rec = that.store.createRecord('organization', {
-          name: org
+          name: orgReq,
+          createdBy: that.get('currentUser')
         });
 
         rec.save()
           .then((res) => {
-            console.log('res', res);
             return resolve(res.get('organizationId'));
           })
           .catch((err) => {
@@ -208,6 +223,10 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
     cancelNew: function () {
       this.sendAction('toUserHome');
+    },
+
+    setOrg(org) {
+      this.set('org', org);
     },
 
     resetErrors(e) {

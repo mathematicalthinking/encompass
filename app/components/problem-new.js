@@ -1,6 +1,7 @@
-Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   filesToBeUploaded: null,
-  createProblemError: null,
+  createProblemErrors: [],
+  imageUploadErrors: [],
   isMissingRequiredFields: null,
   isPublic: null,
   privacySetting: null,
@@ -33,7 +34,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var privacySetting = that.get('privacySetting');
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
-    //var imageUrl = ;
 
     if (!this.get('approvedProblem')) {
       this.set('noLegalNotice', true);
@@ -49,11 +49,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
       organization: organization,
-      //imageUrl: imageUrl
     });
 
     if (that.filesToBeUploaded) {
-      console.log('filesToBeUploaded', that.filesToBeUploaded);
       var uploadData = that.get('filesToBeUploaded');
       var formData = new FormData();
       for(let f of uploadData) {
@@ -78,11 +76,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
-                that.set('createProblemError', err);
+                that.handleErrors(err, 'createProblemErrors', createProblemData);
               });
           });
         }).catch(function (err) {
-          that.set('uploadError', err);
+          that.handleErrors(err, 'imageUploadErrors');
         });
       } else {
         Ember.$.post({
@@ -97,31 +95,23 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
-                console.log('problem', problem);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
-                that.set('createProblemError', err);
+                that.handleErrors(err, 'createProblemErrors', createProblemData);
               });
           });
         }).catch(function (err) {
-          that.set('uploadError', err);
+          that.handleErrors(err, 'imageUploadErrors');
         });
       }
     } else {
       createProblemData.save()
         .then((res) => {
-          let error = res.get('error');
-          if (error) {
-            this.set('problemNameExists', true);
-            return;
-          }
           that.sendAction('toProblemInfo', res);
-          //TODO: decide how to handle clearing form and whether to redirect to the created problem
-          //that.get('validator').clearForm();
         })
         .catch((err) => {
-          that.set('createProblemError', err);
+          that.handleErrors(err, 'createProblemErrors', createProblemData);
         });
       }
     },
@@ -151,11 +141,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       .catch(console.log);
     },
     resetErrors(e) {
-      const errors = ['noLegalNotice', 'problemNameExists'];
+      const errors = ['noLegalNotice', 'createProblemErrors', 'imageUploadErrors'];
 
       for (let error of errors) {
         if (this.get(error)) {
-          this.set(error, false);
+          this.set(error, null);
         }
       }
     },

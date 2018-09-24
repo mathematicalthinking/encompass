@@ -12,6 +12,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   didReceiveAttrs: function () {
     this.set('isEditing', false);
+    this.set('org', null);
     this.store.findAll('organization').then((orgs) => {
       this.set('orgList', orgs);
     });
@@ -112,6 +113,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     actions: {
       editUser: function () {
         let user = this.get('user');
+        this.set('userEmail', user.get('email'));
         let accountType = user.get('accountType');
         if (accountType === "S") {
           this.set('selectedType', 'Student');
@@ -134,6 +136,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let newDate = new Date();
         let user = this.get('user');
         let org = this.get('org');
+        console.log('org save User', org);
         let orgReq = this.get('orgReq');
 
         // should we check to see if any information was actually updated before updating modified by/date?
@@ -144,29 +147,27 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('accountType', accountTypeLetter);
 
         if (org) {
+          console.log('org', org);
           user.set('organization', org);
         }
+        console.log('req', orgReq);
         user.set('organizationRequest', orgReq);
+        user.set('email', this.get('userEmail'));
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
-        user.save();
-        this.set('isEditing', false);
+        user.save().then((res) => {
+          this.set('isEditing', false);
+        });
+
       },
 
-     setOrg(name) {
-       if (!name || typeof name !== "string") {
-         return;
-       }
-       const orgs = this.get('orgList');
-
-       let org = orgs.findBy('name', name);
-
-       if (!org) {
-         this.set('orgReq', name);
+     setOrg(org) {
+      console.log('org set org', org);
+      if (typeof org === 'string') {
+         this.set('orgReq', org);
        } else {
          this.set('org', org);
        }
-
      },
 
       resetPassword: function() {
@@ -189,10 +190,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           .then((org) => {
             let user = this.get('user');
             user.set('organization', org);
-            this.set('org', org);
+            // this.set('org', org);
             this.set('orgReq', null);
+            user.set('organizationRequest', null);
             user.save().then((user) => {
-              user.set('orgReq', null);
+              console.log('user', user);
             });
           });
       },

@@ -142,6 +142,12 @@ module.exports = {
       selections: [],
       isTrashed: false,
     }
+  },
+
+  organization: {
+    validOrg: {
+      name: 'Valid Test Organization'
+    }
   }
 };
 

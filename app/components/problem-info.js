@@ -1,4 +1,4 @@
-Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-info',
   isEditing: false,
   problemName: null,
@@ -13,6 +13,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   showAssignment: false,
   problemList: [],
   sectionList: null,
+  updateProblemErrors: [],
+  imageUploadErrors: [],
+  isMissingRequiredFields: null,
 
   init: function () {
     this._super(...arguments);
@@ -54,6 +57,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return canEdit;
   }),
 
+  resetErrors: function() {
+    let errors = ['updateProblemErrors', 'imageUploadErrors', 'isMissingRequiredFields'];
+    for (let error of errors) {
+      if (this.get(error)) {
+        this.set(error, null);
+      }
+    }
+
+  },
 
   actions: {
     deleteProblem: function () {
@@ -62,6 +74,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         problem.save()
           .then(() => {
               this.sendAction('toProblemList');
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateProblemErrors', problem);
           });
     },
 
@@ -88,6 +103,24 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
 
+
+
+      if (!title || !text || !privacy) {
+        this.set('isMissingRequiredFields', true);
+        return;
+      } else {
+        if (this.get('isMissingRequiredFields')) {
+          this.set('isMissingRequiredFields', null);
+        }
+      }
+
+      problem.set('title', title);
+      problem.set('text', text);
+      if (privacy !== null) {
+        problem.set('privacySetting', privacy);
+      }
+      problem.set('modifiedBy', currentUser);
+
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
         var formData = new FormData();
@@ -107,8 +140,18 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.set('uploadResults', res.images);
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
-              problem.save();
+              problem.save().then((res) => {
+                // handle success
+                this.set('isEditing', false);
+                this.resetErrors();
+              })
+              .catch((err) => {
+                this.handleErrors(err, 'updateProblemErrors', problem);
+              });
             });
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'imageUploadErrors');
           });
         } else {
           Ember.$.post({
@@ -120,20 +163,36 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.set('uploadResults', res.images);
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
-              problem.save();
+              problem.save().then((res) => {
+                // handle success
+                this.set('isEditing', false);
+
+                this.resetErrors();
+              })
+              .catch((err) => {
+                this.handleErrors(err, 'updateProblemErrors', problem);
+              });
             });
+          })
+          .catch((err) =>{
+            this.handleErrors(err, 'imageUploadErrors');
           });
         }
+      } else {
+        problem.save().then((res) => {
+          // handle success
+          this.resetErrors();
+          this.set('isEditing', false);
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateProblemErrors', problem);
+          return;
+        });
       }
 
-      problem.set('title', title);
-      problem.set('text', text);
-      if (privacy !== null) {
-        problem.set('privacySetting', privacy);
-      }
-      problem.set('modifiedBy', currentUser);
-      problem.save();
-      this.set('isEditing', false);
+
+
+
     },
 
     addToMyProblems: function() {
@@ -204,7 +263,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     deleteImage: function () {
       let problem = this.get('problem');
       problem.set('image', null);
-      problem.save();
+      problem.save().then((res) => {
+        // handle success
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'updateProblemErrors', problem);
+      });
     },
 
     toAssignmentInfo: function (assignment) {
@@ -218,6 +282,5 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         $('html, body').animate({scrollTop: $(document).height()});
       }, 100);
     }
-
   }
 });

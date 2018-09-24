@@ -24,7 +24,7 @@ async function getOrgSections(user) {
     const sectionIds = await getModelIds('Section', filter);
     return sectionIds;
   }catch(err) {
-    console.error(err);
+    console.error(`Error getOrgSections: ${err}`);
     console.trace();
   }
 }
@@ -36,7 +36,7 @@ async function getAssignmentProblems(user) {
     const assignments = await models.Assignment.find(criteria).lean();
     return assignments.map(assn => assn.problem.toString());
   }catch(err) {
-    console.error(err);
+    console.error(`Error getAssignmentProblems: ${err}`);
     console.trace();
   }
 }
@@ -46,7 +46,8 @@ async function getTeacherAssignments(userId) {
     const ownAssignmentIds = await models.Assignment.find({createdBy: userId}, {_id: 1}).lean().exec();
     return ownAssignmentIds.map(obj => obj._id);
   }catch(err) {
-    console.log('error getting teacher assignments', err);
+    console.error(`Error getTeacherAssignments: ${err}`);
+    console.trace();
   }
 }
 
@@ -64,7 +65,8 @@ async function getTeacherSectionsById(userId) {
     const sectionIds = await getModelIds('Section', {teachers: userId});
     return sectionIds;
   }catch(err) {
-    console.log('err', err);
+    console.error(`Error getTeacherSectionsById: ${err}`);
+    console.trace();
   }
 }
 
@@ -80,18 +82,23 @@ const getStudentSections = function(user) {
 }
 
 const getStudentResponses = async function (user) {
-  if (!user) {
-    return;
+  try {
+    if (!user) {
+      return;
+    }
+
+    let userId = user._id;
+
+    let respones = await models.Response.find({recipient: userId}).lean().exec();
+
+    return respones.map((response) => {
+      return response.createdBy;
+    });
+  }catch(err) {
+    console.error(`Error getStudentResponses: ${err}`);
+    console.trace();
   }
-
- let userId = user._id;
-
- let respones = await models.Response.find({recipient: userId}).lean().exec();
-
-  return respones.map((response) => {
-    return response.createdBy;
-  });
-}
+};
 
 
 async function getStudentUsers(user) {
@@ -120,53 +127,63 @@ async function getStudentUsers(user) {
   return flattened.map(id => id.toString());
 
   }catch(err) {
-    return new Error(err);
+    console.error(`Error getStudentUsers: ${err}`);
+    console.trace();
   }
 }
 
 async function getPdAdminUsers(user) {
-  if (!user) {
-    return user;
+  try {
+    if (!user) {
+      return;
+    }
+    const ids = [];
+    ids.push(user._id);
+    const org = user.organization;
+    const filter = {
+      $or: [
+        {organization: org},
+        {createdBy: user._id}
+      ]
+    };
+    const orgUserIds = await getModelIds('User', filter);
+
+    ids.push(orgUserIds);
+
+    const flattened = _.flatten(ids);
+    return flattened.map(id => id.toString());
+  }catch(err) {
+    console.error(`Error getPdAdminUsers: ${err}`);
+    console.trace();
   }
-  const ids = [];
-  ids.push(user._id);
-  const org = user.organization;
-  const filter = {
-    $or: [
-      {organization: org},
-      {createdBy: user._id}
-    ]
-  };
-  const orgUserIds = await getModelIds('User', filter);
-
-  ids.push(orgUserIds);
-
-  const flattened = _.flatten(ids);
-  return flattened.map(id => id.toString());
 }
 // teachers can also get all users in org, but may not be able to edit all
 async function getTeacherUsers(user) {
-  if (!user) {
-    return user;
+  try {
+    if (!user) {
+      return;
+    }
+    const ids = [];
+    ids.push(user._id);
+
+    const org = user.organization;
+    const filter = {
+      $or: [
+        {organization: org},
+        {createdBy: user._id}
+      ]
+    };
+
+    const orgUserIds = await getModelIds('User', filter);
+
+    ids.push(orgUserIds);
+
+    const flattened = _.flatten(ids);
+    return flattened.map(id => id.toString());
+  }catch(err) {
+    console.error(`Error getTeacherUsers: ${err}`);
+    console.trace();
   }
-  const ids = [];
-  ids.push(user._id);
-
-  const org = user.organization;
-  const filter = {
-    $or: [
-      {organization: org},
-      {createdBy: user._id}
-    ]
-  };
-
-  const orgUserIds = await getModelIds('User', filter);
-
-  ids.push(orgUserIds);
-
-  const flattened = _.flatten(ids);
-  return flattened.map(id => id.toString());
-
 }
 
 async function getAccessibleWorkspaceIds(user) {
@@ -179,7 +196,8 @@ async function getAccessibleWorkspaceIds(user) {
     return ids;
 
   } catch(err) {
-    console.log('err getacc ids', err);
+    console.error(`Error accessibleWorkspaceIds: ${err}`);
+    console.trace();
   }
 }
 
@@ -200,29 +218,29 @@ async function getUsersFromWorkspaces(workspaceIds) {
     return flattened;
 
   }catch(err) {
-    console.log('err', err);
+    console.error(`Error getUsersFromWorkspaces: ${err}`);
+    console.trace();
   }
 
 }
 
-const getCreatorIds = async function(crit={}) {
+const getCreatorIds = async function(model, crit={}) {
   try {
-    let users = await models.User.find(crit, {createdBy: 1}).lean().exec();
-    let creators = users.map((user) => {
-      let createdBy = user.createdBy;
-      if (!createdBy) {
-        return null;
-      }
-      return createdBy.toString();
-    });
+    if (!model) {
+      return [];
+    }
+    let users = await models[model].find(crit, {createdBy: 1}).lean().exec();
 
-    creators = _.without(creators, null);
+    let withCreatedBy = users.filter(user => !!user.createdBy);
+    let creators = withCreatedBy.map(user => user.createdBy.toString());
+
     return _.uniq(creators);
   }catch(err) {
-    console.error('error getAccessibleUsersCreators', err);
+    console.error('error getCreatorIds', err);
     console.trace();
   }
 }
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;

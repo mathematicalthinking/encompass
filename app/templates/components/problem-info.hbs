@@ -15,11 +15,11 @@
           <ol>
             <li>
               <label for="title">Problem Name</label>
-              {{input name="title" id="title" type="text" value=problemName placeholder=problem.title}}
+              {{input name="title" id="title" type="text" value=problemName}}
             </li>
             <li>
               <label for="text">Problem Statement</label>
-              {{input name="text" id="text" type="text" value=problemText placeholder=problem.text}}
+              {{input name="text" id="text" type="text" value=problemText}}
             </li>
             <li class="privacy-settings">
               <label>Privacy Settings
@@ -125,6 +125,15 @@
   {{/if}}
 
 </section>
+{{#if isMissingRequiredFields}}
+  <p class="error-message">Please fill in all required fields.</p>
+{{/if}}
+{{#each updateProblemErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each imageUploadErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
 
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}

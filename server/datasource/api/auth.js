@@ -117,11 +117,13 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
         if (err) {
-          console.error(`sendEmailSMTP error: ${err}`);
+          let errorMsg = `Error sending email (${template}) to ${recipient} from ${userAuth.getEmailAuth().username}: ${err}`;
+          console.error(errorMsg);
           console.trace();
-          return reject(err);
+          return reject(errorMsg);
         }
-      return resolve('email sent!');
+        let msg = `Email (${template}) sent successfully to ${recipient} from ${userAuth.getEmailAuth().username}`;
+      return resolve(msg);
     });
   });
 }
@@ -226,6 +228,13 @@ const resetPasswordById = async function(req, res, next) {
     user.password = hashPass;
     user.lastModifiedBy = reqUser.id;
     user.lastModifiedDate = Date.now();
+
+    let actingRole = user.actingRole;
+    let accountType = user.accountType;
+
+    if (!actingRole && accountType !== 'S') {
+      user.actingRole = 'teacher';
+    }
 
     // should we store most recent password and block that password in future? or all past passwords and block all of them?
 
