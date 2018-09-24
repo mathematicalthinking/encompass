@@ -32,7 +32,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
 
     if (record) {
       if (this.isRecordInvalid(record)) {
-        record.destroyRecord();
+        record.rollbackAttributes();
       }
     }
 
