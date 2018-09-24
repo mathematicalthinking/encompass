@@ -149,6 +149,21 @@ const putAnswer = (req, res, next) => {
       logger.error("answer already submitted");
       return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
     }
+
+    // if (doc.isTrashed) {
+    //   models.Problem.findById(answer.problem).exec().then((problem) => {
+    //     if (problem.isUsed) {
+    //       models.Answer.findOne({ isTrashed: false, problem: problem.id }).exec().then((answer) => {
+    //         console.log('answer is', answer);
+    //         if (answer === null) {
+    //           problem.isUsed == false;
+    //           problem.save();
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
+
     // make the updates
     for(let field in req.body.answer) {
       if((field !== '_id') && (field !== undefined)) {
