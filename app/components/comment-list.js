@@ -10,7 +10,7 @@
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
-Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
   thisSubmissionOnly: true,
@@ -19,6 +19,9 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   newComment: '',
   newCommentLabel: 'notice',
   newCommentParent: null,
+  queryErrors: [],
+  createRecordErrors: [],
+  uploadRecordErrors: [],
   labels: {
     notice: {
       placeholder: 'I notice...'
@@ -82,6 +85,9 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }).then((comments) => {
       this.set('searchResults', comments);
       this.set('isLoadingSearchResults', false);
+    }).catch((err) => {
+      this.set('isLoadingSearchResults', false);
+      this.handleErrors(err, 'queryErrors');
     });
   }.observes('commentFilterText', 'myCommentsOnly', 'sinceDate'),
 
@@ -201,6 +207,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         comp.set('newComment', ''); //clear out the comment
         comp.clearCommentParent();
         comp.get('comments').pushObject(record);
+      }).catch((err) => {
+        this.handleErrors(err, 'createRecordErrors', comment);
       });
     },
 
@@ -208,7 +216,11 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       comment.get('submission').then(function(submission){
         console.log("Comment to delete submission: " + submission.get('submissionId'));
         comment.set('isTrashed', true);
-        comment.save();
+        comment.save().then((res) => {
+          this.set('commentDeleteSuccess', true);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', comment);
+        });
       });
     },
 

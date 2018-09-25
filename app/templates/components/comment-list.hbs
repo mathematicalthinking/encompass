@@ -37,6 +37,9 @@
       {{/if}}
 		</div>
 	</form>
+  {{#each createRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 	<div class="clear"></div>
 </div>
 
@@ -90,7 +93,14 @@
 <div>
 	<form>
 		<div id="al_feedback_display" class="al_vertical_stretch">
-			{{#if showLoadingMessage}}
+			{{#each queryErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+      {{#each updateRecordErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+
+      {{#if showLoadingMessage}}
         Searching for comments. Thank you for your patience.
       {{else}}
       <ul>
