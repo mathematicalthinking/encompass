@@ -12,9 +12,9 @@
 <p class="loading-message">Uploading images... Thank you for your patience.</p>
 {{/if}}
 
-{{#if uploadError}}
-  <p class="error-message">{{uploadError}}</p>
-{{/if}}
+{{#each uploadErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+{{/each}}
 
 {{#if uploadResults}}
 <ul>

@@ -1,4 +1,4 @@
-Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'image-upload',
   isHidden: false,
   //uploadedFiles: null,
@@ -7,6 +7,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
   uploadError: null,
   missingFilesError: false,
   acceptMultiple: false,
+  uploadErrors: [],
 
   handleLoadingMessage: function() {
     const that = this;
@@ -32,12 +33,12 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       contentType: false,
       createdBy: currentUser,
       data: formData
-    }).then(function (res) {
-      console.log('res from image API', res);
+    }).then((res) => {
       that.set('uploadedImages', res.images);
       return res.images;
-    }).catch(function (err) {
-      that.set('uploadError', err);
+    }).catch((err) => {
+      that.set('isUploading', false);
+      that.handleErrors(err, 'uploadErrors', err);
       return err;
     });
   },
@@ -51,12 +52,12 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       data: formData,
       createdBy: currentUser
     }).then(function (res) {
-      console.log('res from pdf api', res);
       that.set('uploadedPdfs', res.images);
       return res.images;
-    }).catch(function (err) {
-      that.set('uploadError', err);
-      return err;
+    }).catch((err) => {
+      that.set('isUploading', false);
+      that.handleErrors(err, 'uploadErrors', err);
+      return;
     });
   },
 
@@ -96,11 +97,6 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
                 this.set('isUploading', false);
                 this.set('uploadResults', results);
               }
-
-            })
-            .catch((err) => {
-              this.set('isUploading', false);
-              this.set('uploadError', err);
             });
           } else {
             this.set('isUploading', false);
@@ -111,13 +107,8 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return this.uploadPdf(currentUser, pdfFormData).then((res) => {
           this.set('isUploading', false);
           this.set('uploadResults', this.get('uploadedPdfs'));
-        })
-        .catch((err) => {
-          this.set('isUploading', false);
-          this.set('uploadError', err);
         });
       }
-
     },
 
     updateFiles: function(event) {
