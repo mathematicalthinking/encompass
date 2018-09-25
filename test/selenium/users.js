@@ -177,6 +177,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
+        await driver.sleep(2000);
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
@@ -221,8 +222,8 @@ describe('Users', function() {
       });
 
       it('should have a list of students', async function () {
-        expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf.at.least(1);
-        expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('tracyc');
+        expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf(9);
+        // expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('tracyc');
       });
 
       describe('clicking on your own account', function () {
@@ -380,7 +381,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep('500');
+        await driver.sleep('2000');
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
