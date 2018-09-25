@@ -1,9 +1,6 @@
-Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: ['unconfirmed-page'],
-  didReceiveAttrs: function() {
-
-  },
-
+  emailErrors: [],
 
   actions: {
     sendEmail: function() {
@@ -15,7 +12,7 @@ Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUs
             }
           })
           .catch((err) => {
-            this.set('emailError', err);
+            this.handleErrors(err, 'emailErrors');
           });
       }
   }
