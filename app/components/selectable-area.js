@@ -14,7 +14,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this.setupTagging();
   },
   didInsertElement: function() {
-    console.log('running didInsertEl');
     this.set('currSubId', this.model.id);
     this.set('selecting', this.makingSelection);
     this.set('showing', this.showingSelections);
@@ -74,17 +73,12 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     var highlighting = this.selectionHighlighting;
     var tagging = this.imageTagging;
     var modelId = this.model.id;
-    console.log('model id', this.model.id);
-    console.log('trashed', this.trashed.get('length'));
-    console.log('comp trashed', this.get('trashedSelections.length'));
 
     if (this.get('currSubId') !== this.model.id) {
-      console.log('diff!');
       this.imageTagging.removeAllTags();
     return this.sendAction('handleTransition', true);
     }
     if (this.trashed.get('length') > this.get('trashedSelections.length')) {
-      console.log('deleted!');
       this.set('trashedSelections', this.trashed);
       tagging.removeAllTags();
       highlighting.removeAllHighlights();
@@ -99,7 +93,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
     var isSelecting = this.makingSelection;
     var isShowing = this.showingSelections;
-    console.log('isShowing');
     if (isSelecting !== this.get('selecting')) {
       if (isSelecting) {
         this.set('selecting', true);
@@ -175,7 +168,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
 
   willDestroyElement: function() {
-    console.log('destroying selArea Comp');
     this.sendAction('handleTransition', false);
     this.selectionHighlighting.destroy();
     this.imageTagging.destroy();
