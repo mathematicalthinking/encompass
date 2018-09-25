@@ -109,8 +109,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
 
-
-
       if (!title || !text || !privacy) {
         this.set('isMissingRequiredFields', true);
         return;
@@ -122,10 +120,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       problem.set('title', title);
       problem.set('text', text);
+
       if (privacy !== null) {
         problem.set('privacySetting', privacy);
       }
-      problem.set('modifiedBy', currentUser);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -185,28 +183,20 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
         }
       } else {
-        problem.save().then((res) => {
-          // handle success
-          this.resetErrors();
+        if (problem.get('hasDirtyAttributes')) {
+          problem.set('modifiedBy', currentUser);
+          problem.save().then((res) => {
+            this.resetErrors();
+            this.set('isEditing', false);
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateProblemErrors', problem);
+            return;
+          });
+        } else {
           this.set('isEditing', false);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateProblemErrors', problem);
-          return;
-        });
+        }
       }
-
-      problem.set('title', title);
-      problem.set('text', text);
-      if (privacy !== null) {
-        problem.set('privacySetting', privacy);
-      }
-      problem.set('modifiedBy', currentUser);
-
-      if (problem.get('hasDirtyAttributes')) {
-        problem.save();
-      }
-      this.set('isEditing', false);
     },
 
     addToMyProblems: function() {
