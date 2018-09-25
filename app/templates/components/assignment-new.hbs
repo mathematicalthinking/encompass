@@ -50,9 +50,9 @@
     </button>
   </section>
 
-  {{#if createdAssignmentError}}
-    <p class="error-message">{{createAssignmentError}}</p>
-  {{/if}}
+  {{#each createRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 
 <script>
   $(function() {

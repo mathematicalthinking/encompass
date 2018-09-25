@@ -7,6 +7,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   sectionList: null,
   problemList: null,
   formId: null,
+  createRecordErrors: [],
 
   init: function() {
     console.log('running Init problem-new');
@@ -44,7 +45,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     this.set('isMissingRequiredFields', isMissing);
   },
   createAssignment: function() {
-    console.log('creating Assignment');
     const that = this;
 
     const createdBy = that.get('currentUser');
@@ -91,7 +91,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
             //that.get('validator').clearForm();
         })
         .catch((err) => {
-            that.set('createAssignmentError', err);
+          that.handleErrors(err, 'createRecordErrors', createAssignmentData);
           });
     },
 
@@ -121,10 +121,8 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       var that = this;
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
-        console.log('res', res);
         if (res.isValid) {
           // proceed with assignment creation
-          console.log('Form is Valid!');
           this.createAssignment();
         } else {
           if (res.invalidInputs) {
