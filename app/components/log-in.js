@@ -1,8 +1,9 @@
-Encompass.LogInComponent = Ember.Component.extend({
+Encompass.LogInComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['login-page'],
   incorrectPassword: false,
   incorrectUsername: false,
   missingCredentials: false,
+  postErrors: [],
 
   actions: {
     login: function () {
@@ -39,7 +40,9 @@ Encompass.LogInComponent = Ember.Component.extend({
           that.sendAction('toHome');
         }
       })
-      .catch(console.log);
+      .catch((err) => {
+        this.handleErrors(err, 'postErrors');
+      });
     },
 
     resetErrors() {

@@ -26,6 +26,9 @@
     </div>
 
     <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
+    {{#each postErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
   </form>
 
   <p class="or">Or</p>
