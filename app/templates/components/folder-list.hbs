@@ -11,6 +11,12 @@
 </div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
+  {{#each createRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each updateRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
     <div id="al_folders_modify">
       <table>
         <tr>
