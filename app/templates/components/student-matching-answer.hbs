@@ -1,4 +1,7 @@
 <div class="student-matching-answer">
+  {{#each studentLoadErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
   <div class="answer-img">
     <p>{{image.originalname}}</p>
     <img src="{{{image.imageData}}}" alt="">
