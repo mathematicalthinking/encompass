@@ -82,7 +82,7 @@
       <tr>
         <td>Requested Organization</td>
         {{#if isEditing}}
-          {{#if user.isAdmin}}
+          {{#if currentUser.isAdmin}}
             <td>
               Would you like to create {{user.organizationRequest}}<br/>
               <button {{action 'createNewOrg'}}>Yes</button>
