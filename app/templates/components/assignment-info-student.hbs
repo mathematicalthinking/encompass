@@ -35,6 +35,10 @@
   {{/if}}
 </section>
 
+{{#each findRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+{{/each}}
+
 
 
 {{#if isResponding}}
