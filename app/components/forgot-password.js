@@ -1,5 +1,6 @@
-Encompass.ForgotPasswordComponent = Ember.Component.extend({
+Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['forgot-page'],
+  postErrors: [],
 
   validateEmail: function() {
     var email = this.get('email');
@@ -74,7 +75,7 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend({
           }
         })
         .catch((err) => {
-          this.set(('forgotPasswordErr', err));
+          this.handleErrors(err, 'postErrors');
         });
     },
     resetMessages: function() {
