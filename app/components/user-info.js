@@ -173,6 +173,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
             this.handleErrors(err, 'updateRecordErrors', user);
           });
         }
+        this.set('isEditing', false);
       },
 
      setOrg(org) {
