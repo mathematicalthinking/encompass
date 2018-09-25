@@ -82,6 +82,10 @@
     <p class="error-message">Missing required fields</p>
   {{/if}}
 
+  {{#each createUserErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+
 
 
     <div class="button-row">
