@@ -3,7 +3,9 @@
   <div class="clear"></div>
 </header>
 
-
+{{#each dataLoadErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
 <form id="sectioninfo" class="properForm">
   <fieldset>
     <ul>
@@ -75,6 +77,9 @@
             <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle fa-sm"></i></label>
             {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
           {{/if}}
+          {{#each updateTeacherErrors as |error|}}
+            <p class="error-message">{{error}}</p>
+          {{/each}}
         </li>
         {{#unless cantEdit}}
 
@@ -113,10 +118,21 @@
           {{#if isEditingStudents}}
             {{add-create-student store=store currentUser=currentUser section=currentSection students=studentList addStudentTypeahead=addStudentTypeahead sectionPassword=section.sectionPassword}}
           {{/if}}
+          {{#each updateStudentErrors as |error|}}
+            <p class="error-message">{{error}}</p>
+          {{/each}}
         </li>
       </ul>
     </fieldset>
-
+  {{#each queryErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each updateSectionErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each findRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
   </form>
   {{#unless cantEdit}}
     <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
@@ -128,6 +144,9 @@
     {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
   {{/if}}
 
+{{#each problemLoadErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromSectionInfo=true problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}
