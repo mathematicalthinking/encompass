@@ -1,5 +1,8 @@
-Encompass.ResetPasswordComponent = Ember.Component.extend({
+Encompass.ResetPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['reset-page'],
+  getTokenErrors: [],
+  resetPasswordErrors: [],
+
   didReceiveAttrs: function() {
     const token = this.token;
     const that = this;
@@ -16,7 +19,7 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
 
         })
         .catch((err) => {
-          that.set('invalidTokenError', err);
+          that.handleErrors(err, 'getTokenErrors');
         });
     }
   },
@@ -51,7 +54,7 @@ Encompass.ResetPasswordComponent = Ember.Component.extend({
           that.sendAction('toHome');
         })
         .catch((err) => {
-          this.set(('resetPasswordErr', err));
+          this.handleErrors(err, 'resetPasswordErrors');
         });
     },
     resetErrors: function(e) {
