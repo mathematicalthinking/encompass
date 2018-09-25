@@ -69,9 +69,15 @@
   </section>
 
 
-  {{#if createdAnswerError}}
-    <p>{{createAnswerError}}</p>
-  {{/if}}
+  {{#each findRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each createRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each uploadErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 
 <script>
   var options = {
