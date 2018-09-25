@@ -1,10 +1,11 @@
-Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   tagName: 'header',
   classNameBindings: ['isSmallHeader:small', 'isHidden:hide'],
   elementId: 'al_header',
   isSmallHeader: false,
   isHidden: false,
   openMenu: false,
+  toggleRoleErrors: [],
 
   isStudent: function() {
     return this.user.get('isStudent') || this.user.get('actingRole') === 'student';
@@ -30,6 +31,8 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
       console.log('toggle called', this.openMenu);
     },
     toggleActingRole: function() {
+      // should this action be moved to the application controller?
+
       const currentUser = this.get('currentUser');
 
       // student account types cannot toggle to teacher role
@@ -46,6 +49,11 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
         this.set('actionToConfirm', null);
         this.store.unloadAll('assignment');
         this.sendAction('toHome');
+      }).catch((err) => {
+        // handle error
+        this.handleErrors(err, 'toggleRoleErrors', currentUser);
+        this.set('isToggleError', true);
+        // send error up to application level to handle?
       });
     }
   }
