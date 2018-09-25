@@ -1,8 +1,11 @@
-Encompass.AddCreateStudentComponent = Ember.Component.extend({
+Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   elementId: 'add-create-student',
   isUsingDefaultPassword: false,
   fieldType: 'password',
   isShowingClassPassword: true,
+  createUserErrors: [],
+  findUserErrors: [],
+  updateSectionErrors: [],
 
   clearCreateInputs: function() {
     let fields = ['username', 'name', 'password'];
@@ -84,16 +87,21 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend({
           return this.store.findRecord('user', userId)
             .then((user) => {
               students.pushObject(user);   //add student to students aray
-              section.save();  //save section
-              that.clearCreateInputs();
+              section.save().then((res) => {
+                that.clearCreateInputs();
+              })
+              .catch((err) => {
+                that.handleErrors(err, 'updateSectionErrors', section);
+              });
             })
             .catch((err) => {
-              console.log(err);
+              that.handleErrors(err, 'findUserErrors');
             });
         }
       })
       .catch((err) => {
-        console.log(err);
+        that.handleErrors(err, 'createUserErrors', createUserData);
+
       });
   },
 
@@ -123,6 +131,9 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend({
         } else {
           this.set('userAlreadyInSection', true);
         }
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'findUserErrors');
       });
     },
 
@@ -204,6 +215,9 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend({
       if (section.get('dirtyType') === 'updated') {
         section.save().then(() => {
           console.log('section password updated!');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors');
         });
       }
 
