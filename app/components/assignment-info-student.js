@@ -5,7 +5,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   displayedAnswer: null,
   answerList: [],
   isLoadingAnswers: null,
-  findRecordErrors: [],
+  loadAnswerErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -20,13 +20,14 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     const student = this.get('currentUser');
     return student.get('answers')
     .catch((err) => {
-      this.handleErrors(err, 'findRecordErrors');
+      this.set('isLoadingAnswers', false);
+      this.handleErrors(err, 'loadAnswerErrors');
     });
   },
 
   filteredList: function() {
     const answers = this.get('answerList');
-      if (this.get('isLoadingAnswers')) {
+      if (this.get('isLoadingAnswers') || !Ember.isEmpty(this.get('loadAnswerErrors'))) {
         return [];
       } else {
         return answers.filterBy('assignment.id', this.assignment.id);
