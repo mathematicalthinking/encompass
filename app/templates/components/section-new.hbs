@@ -69,6 +69,6 @@
 </section>
 
 {{!-- verify if section successfully created --}}
-{{#if createSectionError}}
-  <p>{{createSectionError}}</p>
-{{/if}}
+{{#each createRecordErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
