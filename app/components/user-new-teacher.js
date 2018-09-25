@@ -1,4 +1,4 @@
-Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-teacher',
   usernameExists: null,
   errorMessage: null,
@@ -7,6 +7,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
   name: '',
   authorizedBy: '',
   newUserData: {},
+  createUserErrors: [],
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -66,12 +67,11 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
             this.set('emailExistsError', res.message);
             return;
           } else {
-            console.log('success new user username', res.username);
             this.sendAction('toUserInfo', res.username);
           }
         })
         .catch((err) => {
-          console.log(err);
+          this.handleErrors(err, 'createUserErrors', newUserData);
         });
 
     },
