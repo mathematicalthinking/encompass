@@ -134,7 +134,9 @@
       </p>
       {{/if}}
     </div>
-
+    {{#each updateRecordErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
   </section>
 
 </div>

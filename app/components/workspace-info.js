@@ -1,14 +1,19 @@
-Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-info',
   comments: Ember.inject.controller,
   isEditing: false,
   selectedMode: null,
   searchText: "",
+  updateRecordErrors: [],
 
 
   willDestroyElement: function () {
+    // do we need to be saving the workspace here?
+    // what if a user was editing but never clicked save and they did not intend to save the changes?
     let workspace = this.get('workspace');
-    workspace.save();
+    workspace.save().catch((err) => {
+      this.handleErrors(err, 'updateRecordErrors', workspace);
+    });
     this._super(...arguments);
   },
 
@@ -77,10 +82,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     changeOwner: function (owner) {
       let workspace = this.get('workspace');
-      console.log('owner is in changeOwner', owner);
       workspace.set('owner', owner);
-      workspace.save();
-      this.set('isChangingOwner', false);
+      workspace.save().then((res) => {
+        this.set('isChangingOwner', false);
+
+      }).catch((err) => {
+        this.handleErrors(err, 'updateRecordErrors', workspace);
+      });
     },
 
     editWorkspace: function () {
@@ -93,10 +101,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       // this.actions.changeMode.call(this);
       this.set('isEditing', false);
       let mode = this.get('selectedMode');
-      console.log('selected mode is', mode);
       let workspace = this.get('workspace');
       workspace.set('mode', mode);
-      workspace.save();
+      workspace.save().then((res) => {
+        // handle success
+      }).catch((err) => {
+        this.handleErrors(err, 'updateRecordErrors', workspace);
+      });
 
     }
   }
