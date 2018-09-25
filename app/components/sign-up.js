@@ -137,8 +137,22 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         accountType: 'T',
         isAuthorized: false,
       };
+
+      let orgRequest;
+
+      // make sure user did not type in existing org
       if (typeof organization === 'string') {
-        createUserData.organizationRequest = organization;
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', organization);
+        if (matchingOrg) {
+          organization = matchingOrg;
+        } else {
+          orgRequest = organization;
+        }
+      }
+
+      if (orgRequest) {
+        createUserData.organizationRequest = orgRequest;
       } else {
         createUserData.organization = organization.id;
       }
