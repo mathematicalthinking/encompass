@@ -144,6 +144,13 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let org = this.get('org');
         let orgReq = this.get('orgReq');
 
+        let orgs = this.get('orgList');
+        let matchingOrg = orgs.findBy('name', orgReq);
+        if (matchingOrg) {
+          org = matchingOrg;
+          orgReq = null;
+        }
+
         // should we check to see if any information was actually updated before updating modified by/date?
         let accountType = this.get('selectedType');
         let accountTypeLetter = accountType.charAt(0).toUpperCase();

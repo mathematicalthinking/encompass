@@ -13,7 +13,7 @@ Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
   actions: {
     submit: function () {
-      const organization = this.get('org');
+      let organization = this.get('org');
       const location = this.get('location');
       const requestReason = this.get('requestReason');
 
@@ -28,9 +28,21 @@ Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMi
       }
 
       let user = this.get('currentUser');
+      let orgRequest;
 
+      // make sure user did not type in existing org
       if (typeof organization === 'string') {
-        user.set('organizationRequest', organization);
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', organization);
+        if (matchingOrg) {
+          organization = matchingOrg;
+        } else {
+          orgRequest = organization;
+        }
+      }
+
+      if (orgRequest) {
+        user.set('organizationRequest', orgRequest);
       } else {
         user.set('organization', organization);
       }
