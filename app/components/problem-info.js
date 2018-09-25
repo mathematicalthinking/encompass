@@ -15,12 +15,16 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   sectionList: null,
   updateProblemErrors: [],
   imageUploadErrors: [],
+  findRecordErrors: [],
+  createRecordErrors: [],
   isMissingRequiredFields: null,
 
   init: function () {
     this._super(...arguments);
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
+    }).catch((err) => {
+      this.handleErrors(err, 'findRecordErrors');
     });
   },
 
@@ -43,6 +47,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
+    }).catch((err) => {
+      this.handleErrors(err, 'findRecordErrors');
     });
   },
 
@@ -222,6 +228,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       newProblem.save()
         .then((problem) => {
           this.set('savedProblem', problem);
+        }).catch((err) => {
+          this.handleErrors(err, 'createRecordErrors', newProblem);
         });
     },
 
@@ -252,6 +260,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       newProblem.save()
         .then((problem) => {
           this.set('savedProblem', problem);
+      }).catch((err) => {
+        this.handleErrors(err, 'createRecordErrors', newProblem);
       });
     },
 
