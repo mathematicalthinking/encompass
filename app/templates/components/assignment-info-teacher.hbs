@@ -65,6 +65,16 @@
   {{/if}}
   </section>
 
+  {{#each findRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each updateRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each dataFetchErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+
   {{#if assignmentToDelete}}
     {{modal-delete itemToDelete=assignmentToDelete onConfirm="deleteAssignment" optionLabelPath = "problem.title"}}
   {{/if}}
