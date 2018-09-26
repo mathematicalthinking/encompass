@@ -80,6 +80,10 @@
     text-align: center;
     padding: 10px 0;
   }
+  a {
+    color: $accent-color;
+    font-weight: $bold-font-weight;
+  }
 }
 
 .reset-user-box {
