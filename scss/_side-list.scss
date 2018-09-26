@@ -88,7 +88,7 @@
     box-shadow: $box-shadow;
     h1 {
       text-transform: capitalize;
-      margin: 10px 0 10px 20px;
+      margin: 10px 0 0px 20px;
       color: $primary-font-color;
       font-weight: bold;
       display: inline-block;
@@ -115,7 +115,32 @@
         background: darken($accent-color, 10%);
       }
     }
+    .search-bar {
+      font-size: 1em;
+      background-color: white;
+      padding-bottom: 10px;
+      input {
+        margin-left:20px;
+        border-radius: 3px;
+        width: 75%;
+        height: 30px;
+        text-indent: 20px;
+      }
+      .icons {
+        width: 20%;
+        .fa {
+          margin: 0 5px;
+        }
+      }
+    }
   }
+  // .main-search {
+  //   font-size: 1.5em;
+  //   float: right;
+  // }
+  // #with-search-bar {
+  //   margin-top: 120px;
+  // }
   .list-box {
     padding-top: 10px;
     background: $background-color;
