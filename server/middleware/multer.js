@@ -33,7 +33,9 @@ const buildDestination = function (req, res, next) {
         let errResp = `ERROR - PDF Images directory ${dest} does not exist - ${err}`;
         console.error(errResp);
         // attempt to send error to UI
-        return utils.sendError.InternalError(errResp, res);
+        //
+        // return utils.sendError.InternalError(errResp, res);
+        next(err);
       }
     });
 
