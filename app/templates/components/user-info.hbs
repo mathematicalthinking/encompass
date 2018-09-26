@@ -98,6 +98,16 @@
         {{/if}}
       </tr>
     {{/if}}
+    {{#if user.sections}}
+    <tr>
+      <td>User's Sections</td>
+      <td>
+        {{#each userSections as |section|}}
+          <p>{{#link-to 'section' section}}{{section.name}}{{/link-to}}</p>
+        {{/each}}
+      </td>
+    </tr>
+    {{/if}}
     <tr>
       <td>Location</td>
       <td>
