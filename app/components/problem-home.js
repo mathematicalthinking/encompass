@@ -5,7 +5,8 @@ Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMix
   publicProblems: function () {
     var problems = this.problems.filterBy('isTrashed', false);
     var publicProblems = problems.filterBy('privacySetting', 'E');
-    return publicProblems.sortBy('createDate').reverse();
+    var sorted = publicProblems.sortBy('createDate').reverse();
+    return sorted.slice(0, 10);
   }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
 
 
