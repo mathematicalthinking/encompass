@@ -102,6 +102,17 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('privacySetting', value);
     },
 
+    checkPrivacy: function() {
+      let currentPrivacy = this.problem.get('privacySetting');
+      let privacy = this.get('privacySetting');
+
+      if (currentPrivacy !== "E" && privacy === "E") {
+        this.set('showConfirmModal', true);
+      } else {
+        this.send('updateProblem');
+      }
+    },
+
     updateProblem: function () {
       let title = this.get('problemName');
       let text = this.get('problemText');
@@ -118,12 +129,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         }
       }
 
-      problem.set('title', title);
-      problem.set('text', text);
-
       if (privacy !== null) {
         problem.set('privacySetting', privacy);
       }
+
+      problem.set('title', title);
+      problem.set('text', text);
+
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -170,7 +182,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               problem.save().then((res) => {
                 // handle success
                 this.set('isEditing', false);
-
                 this.resetErrors();
               })
               .catch((err) => {
@@ -187,6 +198,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           problem.set('modifiedBy', currentUser);
           problem.save().then((res) => {
             this.resetErrors();
+            this.set('showConfirmModal', false);
             this.set('isEditing', false);
           })
           .catch((err) => {
