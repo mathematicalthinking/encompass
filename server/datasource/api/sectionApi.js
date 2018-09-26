@@ -43,8 +43,17 @@ function accessibleSections(user) {
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  const criteria = access.get.sections(user);
-  console.log('section get criteria', criteria);
+  let criteria;
+
+  if (req.query.ids) {
+    criteria = {
+     _id: { $in: req.query.ids },
+     isTrashed: false,
+    };
+  } else {
+    criteria = accessibleSections(user);
+  }
+
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {
