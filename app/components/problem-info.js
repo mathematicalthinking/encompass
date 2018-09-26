@@ -32,18 +32,18 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isWide', false);
     this.set('showAssignment', false);
     this.set('isEditing', false);
+
     let problem = this.get('problem');
     let problemId = problem.get('id');
-
-    this.get('store').queryRecord('answer', {
-      problem: problemId
-    }).then((answer) => {
-      if (answer !== null) {
-        this.set('isProblemUsed', true);
-      } else {
-        this.set('isProblemUsed', false);
-      }
-    });
+    // this.get('store').queryRecord('answer', {
+    //   problem: problemId
+    // }).then((answer) => {
+    //   if (answer !== null) {
+    //     this.set('isProblemUsed', true);
+    //   } else {
+    //     this.set('isProblemUsed', false);
+    //   }
+    // });
 
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
@@ -78,17 +78,38 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
         problem.set('isTrashed', true);
         problem.save()
-          .then(() => {
-              this.sendAction('toProblemList');
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateProblemErrors', problem);
-          });
+        .then(() => {
+            this.sendAction('toProblemList');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateProblemErrors', problem);
+        });
     },
 
     editProblem: function () {
       let problem = this.get('problem');
+      let problemId = problem.get('id');
+
+      if (!problem.get('isUsed')) {
+        this.get('store').queryRecord('assignment', {
+          problem: problemId
+        }).then(assignment => {
+          if (assignment !== null) {
+            this.set('showEditWarning', true);
+          } else {
+            this.set('isEditing', true);
+            this.set('problemName', problem.get('title'));
+            this.set('problemText', problem.get('text'));
+            this.set('privacySetting', problem.get('privacySetting'));
+          }
+        });
+      }
+    },
+
+    continueEdit: function () {
+      this.set('showEditWarning', false);
       this.set('isEditing', true);
+      let problem = this.get('problem');
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
       this.set('privacySetting', problem.get('privacySetting'));
@@ -113,6 +134,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.send('updateProblem');
       }
     },
+
 
     updateProblem: function () {
       let title = this.get('problemName');
