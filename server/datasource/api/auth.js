@@ -305,7 +305,7 @@ const confirmEmail = async function(req, res, next) {
 resendConfirmationEmail = async function(req, res, next) {
   const user = userAuth.getUser(req);
   if (!user) {
-    return utils.sendError.InvalidCredentialsError(err, res);
+    return utils.sendError.InvalidCredentialsError(null, res);
   }
 
   try {

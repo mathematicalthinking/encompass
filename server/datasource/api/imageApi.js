@@ -98,7 +98,7 @@ const readFilePromise = function(file) {
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   if (!user) {
-    return utils.sendError.NotAuthorizedError('No user logged in!', res);
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
   let docs;
   // who can create images - add permission here

@@ -127,7 +127,7 @@ async function sendUser(req, res, next) {
   try {
     var user = userAuth.requireUser(req);
     if (!user) {
-      return utils.sendError.NotAuthorizedError(null, res);
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
 
     // userPermissions is an object with doesExist, hasPermission, and requestedUser
@@ -147,7 +147,7 @@ async function sendUser(req, res, next) {
 
     // Record exists but user does not have permission
     if (!hasPermission) {
-      return utils.sendError.NotAuthorizedError(null, res);
+      return utils.sendError.NotAuthorizedError('You do not have permission to access this user.', res);
     }
 
     // User exists and has permission
@@ -164,7 +164,8 @@ async function sendUser(req, res, next) {
       return utils.sendResponse(res, data);
     }
   }catch(err) {
-    console.log('error sendUser', err);
+    console.error(`Error sendUser: ${err}`);
+    console.trace();
     return utils.sendError.InternalError(err, res);
   }
 }
