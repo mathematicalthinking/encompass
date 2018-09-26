@@ -148,6 +148,11 @@
   {{/if}}
 {{/if}}
 
+{{#if showEditWarning}}
+  {{modal-confirm actionToConfirm=showEditWarning onConfirm="continueEdit" actionName="edit a problem that has already been assigned"
+  warningMessage="This probably has been used in an assignment but no answers have been submitted yet. Be careful editing this problem"}}
+{{/if}}
+
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}
