@@ -22,69 +22,85 @@ section.assignmentlist {
     font-weight: $bold-font-weight;
   }
 }
+#assignment-info-student {
+  section.assignment-info-student {
+    margin-bottom: 15px;
+    div.info-detail {
+      display: flex;
+      align-items: center;
+    }
 
-section.assignment-info-student {
-  margin-bottom: 50px;
-  p {
-    font-size: 1em;
+    p {
+      font-size: 0.8em;
       width: 70%;
       padding: 12px 20px;
       margin: 8px 0;
       display: inline-block;
-  }
-  label {
-    width: 20%;
-    font-size: 1em;
-    padding: 12px 20px;
-    color: $dark-font-color;
-  }
-  .action_button {
-    padding: 12px 20px;
-  }
-  button.action_button {
-    margin: 8px 15px 8px 5px;
-    padding: 10px 15px;
-    font-size: .8em;
-    border-radius: 3px;
-    font-weight: $bold-font-weight;
-  }
-}
-
-
-div.past-submissions {
-  display: flex;
-  width: 800px;
-  section.past-submissions-list {
-    width: 50%;
-    display: inline-block;
-    p {
-      font-size: 1em;
-      padding: 5px;
-      margin: 8px 0px;
     }
-    ol {
-      li {
-        padding: 6px 0 6px 10px;
+    label {
+      width: 20%;
+      font-size: 1em;
+      padding: 12px 20px;
+      color: $dark-font-color;
+    }
+    .action_button {
+      padding: 12px 20px;
+    }
+    button.action_button {
+      margin: 8px 15px 8px 5px;
+      padding: 10px 15px;
+      font-size: .8em;
+      border-radius: 3px;
+      font-weight: $bold-font-weight;
+    }
+  }
 
-        &.highlight {
-          font-weight: $bold-font-weight;
-            background-color: lighten($background-color, 5%);
+  .info-msg-container {
+    margin-bottom: 8px;
+    p.info {
+      font-size: 0.9em;
+    }
+  }
+
+
+  div.past-submissions {
+    display: flex;
+    width: 100%;
+    margin-bottom: 50px;
+    section.past-submissions-list {
+      width: 20%;
+      display: inline-block;
+      p {
+        font-size: 0.7em;
+        padding: 5px;
+        margin: 8px 0px;
+      }
+      ol {
+        li {
+          padding: 6px 0 6px 10px;
+          font-size: 0.7em;
+
+          &.highlight {
+            font-weight: $bold-font-weight;
+              background-color: lighten($background-color, 5%);
+          }
         }
       }
     }
-  }
 
-  section.past-answer-view {
-    width: 50%;
-    display: inline-block;
+    section.past-answer-view {
+      width: 70%;
+      display: inline-block;
+    }
+    div#answer-info {
+      label {
+        font-size: 0.8em;
+      }
+      border-left: 1px solid;
+    }
   }
-  div#answer-info {
-    display: inline-block;
-    width: 100%;
-    margin-top: 0px;
-  }
-
 }
+
 
 section.assignment-info-teacher {
     #assignment-info-form {

@@ -9,6 +9,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   findRecordErrors: [],
   uploadErrors: [],
   createRecordErrors: [],
+  elementId: 'answer-new',
 
 
   didInsertElement: function() {

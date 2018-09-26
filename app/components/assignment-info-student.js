@@ -6,6 +6,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   answerList: [],
   isLoadingAnswers: null,
   loadAnswerErrors: [],
+  elementId: 'assignment-info-student',
 
   init: function() {
     this._super(...arguments);
@@ -71,6 +72,9 @@ toggleResponse: function() {
       if (this.get('answerCreated')) {
         this.set('answerCreated', false);
       }
+      Ember.run.later(() => {
+        $('html, body').animate({scrollTop: $(document).height()});
+      }, 100);
     },
 
     reviseAssignmentResponse: function() {
@@ -78,17 +82,24 @@ toggleResponse: function() {
       if (this.get('answerCreated')) {
         this.set('answerCreated', false);
       }
+      Ember.run.later(() => {
+        $('html, body').animate({scrollTop: $(document).height()});
+      }, 100);
     },
 
     toAnswerInfo: function(answer) {
       this.sendAction('toAnswerInfo', answer);
     },
     displayAnswer: function(answer) {
-      //this.set('isDisplayingAnswer', true);
       if (this.get('answerCreated')) {
         this.set('answerCreated', false);
       }
       this.set('displayedAnswer', answer);
+
+        Ember.run.later(() => {
+          $('html, body').animate({scrollTop: $(document).height()});
+        }, 100);
+
     },
 
     handleCreatedAnswer: function(answer) {
