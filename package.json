@@ -49,7 +49,6 @@
     "passport-local": "^1.0.0",
     "pdf-poppler": "^0.2.1",
     "pdf2pic": "^1.2.6",
-    "pg": "^7.4.3",
     "q": "^1.5.1",
     "request": "^2.85.0",
     "underscore": "^1.9.0",
@@ -89,6 +88,7 @@
     "load-grunt-tasks": "^4.0.0",
     "mocha": "^5.2.0",
     "mongoose-data-seed": "^1.0.6",
+    "pg": "^7.4.3",
     "selenium-webdriver": "^4.0.0-alpha.1"
   }
 }
