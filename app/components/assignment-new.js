@@ -14,6 +14,12 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
     const formId = 'form#newassignmentform';
     this.set('formId', formId);
+    $(function () {
+      $('input[name="daterange"]').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+      });
+    });
   },
 
   didReceiveAttrs: function() {
@@ -37,6 +43,11 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     if (formId) {
       this.get('validator').initialize(formId, isMissing);
     }
+  },
+
+  willDestroyElement: function () {
+    $(".daterangepicker").remove();
+    this._super(...arguments);
   },
 
   checkMissing: function() {

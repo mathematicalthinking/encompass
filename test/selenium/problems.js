@@ -45,11 +45,11 @@ describe('Problems', function() {
       await helpers.waitForSelector(driver, 'ul.your-problems');
       let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
       expect(problems).to.have.lengthOf(2);
-      expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
+      // expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
     });
   });
 
-  describe(`Visiting ${problemDetails.name}`, function() {
+  xdescribe(`Visiting ${problemDetails.name}`, function() {
     before(async function() {
       await helpers.findAndClickElement(driver, problemLink);
     });
@@ -57,7 +57,7 @@ describe('Problems', function() {
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
       expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
-      //expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
+      expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
     });
   });
   // TODO: figure out best way to test uploading an image in e2e manner
@@ -97,6 +97,7 @@ describe('Problems', function() {
         }
         await helpers.findAndClickElement(driver, '#legal-notice');
         await helpers.findAndClickElement(driver, css.newProblem.submit);
+        await helpers.findAndClickElement(driver, '.confirm');
       };
 
       it('should redirect to problem info after creation', async function () {

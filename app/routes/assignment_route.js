@@ -1,6 +1,5 @@
 Encompass.AssignmentRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
-    console.log('params in assn route', params);
     return this.get('store').findRecord('assignment', params.assignmentId);
 
   },

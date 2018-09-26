@@ -40,6 +40,10 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       return;
     }
 
+    if (privacySetting === "E") {
+      this.set('showConfirmModal', true);
+    }
+
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
@@ -108,6 +112,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
+          let error = res.get('error');
+          if (error) {
+            this.set('problemNameExists', true);
+            this.set('successMessage', true);
+            return;
+          }
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
@@ -116,8 +126,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       }
     },
 
-
-
+  confirmCreatePublic: function() {
+    this.set('showConfirmModal', true);
+  },
 
   actions: {
     radioSelect: function (value) {
@@ -130,7 +141,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       .then((res) => {
         if (res.isValid) {
           // proceed with problem creation
-          this.createProblem();
+          var privacySetting = that.get('privacySetting');
+          if (privacySetting === "E") {
+            this.confirmCreatePublic();
+          } else {
+            this.createProblem();
+          }
         } else {
           if (res.invalidInputs) {
             this.set('isMissingRequiredFields', true);
@@ -140,6 +156,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       })
       .catch(console.log);
     },
+
+    problemCreate: function() {
+      this.createProblem();
+    },
+
     resetErrors(e) {
       const errors = ['noLegalNotice', 'createProblemErrors', 'imageUploadErrors'];
 

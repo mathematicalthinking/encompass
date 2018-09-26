@@ -285,7 +285,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       updateSectionName: function() {
         this.set('isEditingName', false);
         let section = this.get('currentSection');
-        if (section.get('dirtyType') === 'updated') {
+        if (section.get('hasDirtyAttributes')) {
           this.get('currentSection').save().then(() => {
             console.log('section name updated!');
           }).catch((err) => {

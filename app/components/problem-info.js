@@ -32,18 +32,18 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isWide', false);
     this.set('showAssignment', false);
     this.set('isEditing', false);
+
     let problem = this.get('problem');
     let problemId = problem.get('id');
-
-    this.get('store').queryRecord('answer', {
-      problem: problemId
-    }).then((answer) => {
-      if (answer !== null) {
-        this.set('isProblemUsed', true);
-      } else {
-        this.set('isProblemUsed', false);
-      }
-    });
+    // this.get('store').queryRecord('answer', {
+    //   problem: problemId
+    // }).then((answer) => {
+    //   if (answer !== null) {
+    //     this.set('isProblemUsed', true);
+    //   } else {
+    //     this.set('isProblemUsed', false);
+    //   }
+    // });
 
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
@@ -58,9 +58,46 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let problem = this.get('problem');
     let creator = problem.get('createdBy.content.id');
     let currentUser = this.get('currentUser');
+    let accountType = currentUser.get('accountType');
+    let canEdit;
 
-    let canEdit = creator === currentUser.id ? true : false;
+    if (accountType === "A") {
+      canEdit = true;
+    } else if (accountType === "P") {
+      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+        canEdit = true;
+      }
+    } else if (accountType === "T") {
+      if (creator === currentUser.id) {
+        canEdit = true;
+      }
+    } else {
+      canEdit = false;
+    }
     return canEdit;
+  }),
+
+  canDelete: Ember.computed('problem.id', function () {
+    let problem = this.get('problem');
+    let currentUser = this.get('currentUser');
+    let currentUserType = currentUser.get('accountType');
+    let creator = problem.get('createdBy.content.id');
+    let canDelete;
+
+    if (currentUserType === "A") {
+      canDelete = true;
+    } else if (currentUserType === "P") {
+      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+        canDelete = true;
+      }
+    } else if (currentUserType === "T") {
+      if (problem.get('privacySetting') === "M") {
+        canDelete = true;
+      }
+    } else {
+      canDelete = false;
+    }
+    return canDelete;
   }),
 
   resetErrors: function() {
@@ -78,17 +115,38 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
         problem.set('isTrashed', true);
         problem.save()
-          .then(() => {
-              this.sendAction('toProblemList');
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateProblemErrors', problem);
-          });
+        .then(() => {
+            this.sendAction('toProblemList');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateProblemErrors', problem);
+        });
     },
 
     editProblem: function () {
       let problem = this.get('problem');
+      let problemId = problem.get('id');
+
+      if (!problem.get('isUsed')) {
+        this.get('store').queryRecord('assignment', {
+          problem: problemId
+        }).then(assignment => {
+          if (assignment !== null) {
+            this.set('showEditWarning', true);
+          } else {
+            this.set('isEditing', true);
+            this.set('problemName', problem.get('title'));
+            this.set('problemText', problem.get('text'));
+            this.set('privacySetting', problem.get('privacySetting'));
+          }
+        });
+      }
+    },
+
+    continueEdit: function () {
+      this.set('showEditWarning', false);
       this.set('isEditing', true);
+      let problem = this.get('problem');
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
       this.set('privacySetting', problem.get('privacySetting'));
@@ -96,11 +154,24 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     cancelEdit: function () {
       this.set('isEditing', false);
+      this.resetErrors();
     },
 
     radioSelect: function (value) {
       this.set('privacySetting', value);
     },
+
+    checkPrivacy: function() {
+      let currentPrivacy = this.problem.get('privacySetting');
+      let privacy = this.get('privacySetting');
+
+      if (currentPrivacy !== "E" && privacy === "E") {
+        this.set('showConfirmModal', true);
+      } else {
+        this.send('updateProblem');
+      }
+    },
+
 
     updateProblem: function () {
       let title = this.get('problemName');
@@ -108,8 +179,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
-
-
 
       if (!title || !text || !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -120,12 +189,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         }
       }
 
-      problem.set('title', title);
-      problem.set('text', text);
       if (privacy !== null) {
         problem.set('privacySetting', privacy);
       }
-      problem.set('modifiedBy', currentUser);
+
+      problem.set('title', title);
+      problem.set('text', text);
+
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -153,6 +223,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               })
               .catch((err) => {
                 this.handleErrors(err, 'updateProblemErrors', problem);
+                this.set('showConfirmModal', false);
               });
             });
           })
@@ -172,11 +243,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               problem.save().then((res) => {
                 // handle success
                 this.set('isEditing', false);
-
                 this.resetErrors();
               })
               .catch((err) => {
                 this.handleErrors(err, 'updateProblemErrors', problem);
+                this.set('showConfirmModal', false);
               });
             });
           })
@@ -185,20 +256,22 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
         }
       } else {
-        problem.save().then((res) => {
-          // handle success
-          this.resetErrors();
+        if (problem.get('hasDirtyAttributes')) {
+          problem.set('modifiedBy', currentUser);
+          problem.save().then((res) => {
+            this.resetErrors();
+            this.set('showConfirmModal', false);
+            this.set('isEditing', false);
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'updateProblemErrors', problem);
+            this.set('showConfirmModal', false);
+            return;
+          });
+        } else {
           this.set('isEditing', false);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateProblemErrors', problem);
-          return;
-        });
+        }
       }
-
-
-
-
     },
 
     addToMyProblems: function() {

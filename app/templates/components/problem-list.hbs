@@ -4,6 +4,14 @@
     {{#if currentUser.isStudent}}
     {{else}}
       {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span><i class="fas fa-plus"></i>{{/link-to}}
+      {{!-- <i class="fa fa-search main-search" aria-hidden="true"></i>
+      <div class="search-bar">
+        {{input type="text" placeholder="Search problems"}}
+        <span class="icons">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <i class="fa fa-filter" aria-hidden="true"></i>
+        </span>
+      </div> --}}
     {{/if}}
     <div class="clear"></div>
   </header>
@@ -11,7 +19,7 @@
 
 
   <section>
-    <nav class="list-box">
+    <nav class="list-box" id="with-search-bar">
       <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
       <ul class="your-problems">
       {{#if yourProblems}}

@@ -30,8 +30,9 @@ var ProblemSchema = new Schema({
   organization: { type: ObjectId, ref: 'Organization' },
   // isPublic: { type: Boolean },
   categories: [{ type: ObjectId, ref: 'Category' }],
-  error: { type: String },
+  isUsed: { type: Boolean, 'default': false },
 }, { versionKey: false });
+
 
 /**
   * ## Pre-Validation
@@ -91,5 +92,7 @@ var ProblemSchema = new Schema({
 //   }
 
 // });
+
+
 
 module.exports.Problem = mongoose.model('Problem', ProblemSchema);

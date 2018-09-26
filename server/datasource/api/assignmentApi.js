@@ -33,7 +33,18 @@ module.exports.put = {};
 
 const getAssignments = async function(req, res, next) {
   const user = userAuth.requireUser(req);
-  const criteria = await access.get.assignments(user);
+  let criteria;
+
+  if (req.query.problem) {
+    criteria = req.query;
+    const requestedAssignments = await models.Assignment.findOne(criteria).exec();
+    let data = {
+      assignments: requestedAssignments
+    };
+    return utils.sendResponse(res, data);
+  }
+
+  criteria = await access.get.assignments(user);
   models.Assignment.find(criteria)
   .exec((err, assignments) => {
     if (err) {

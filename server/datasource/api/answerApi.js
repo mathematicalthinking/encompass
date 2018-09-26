@@ -45,7 +45,7 @@ const getAnswers = async function(req, res, next) {
     criteria = await access.get.answers(user, ids);
   } else if (req.query.problem) {
     criteria = req.query;
-    const requestedAnswers = await models.Answer.find(criteria).exec();
+    const requestedAnswers = await models.Answer.findOne(criteria).exec();
     let data = {
       'answers': requestedAnswers
     };
@@ -114,6 +114,13 @@ const getAnswer = (req, res, next) => {
     const data = {'answer': doc};
     utils.sendResponse(res, data);
     next();
+  }).then((answer) => {
+    models.Problem.findById(answer.problem).exec().then((problem) => {
+      if (!problem.isUsed) {
+        problem.isUsed = true;
+      }
+      problem.save();
+    });
   });
 };
 
@@ -142,6 +149,21 @@ const putAnswer = (req, res, next) => {
       logger.error("answer already submitted");
       return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
     }
+
+    // if (doc.isTrashed) {
+    //   models.Problem.findById(answer.problem).exec().then((problem) => {
+    //     if (problem.isUsed) {
+    //       models.Answer.findOne({ isTrashed: false, problem: problem.id }).exec().then((answer) => {
+    //         console.log('answer is', answer);
+    //         if (answer === null) {
+    //           problem.isUsed == false;
+    //           problem.save();
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
+
     // make the updates
     for(let field in req.body.answer) {
       if((field !== '_id') && (field !== undefined)) {

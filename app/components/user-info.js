@@ -139,7 +139,6 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       saveUser: function () {
         let currentUser = this.get('currentUser');
-        let newDate = new Date();
         let user = this.get('user');
         let org = this.get('org');
         let orgReq = this.get('orgReq');
@@ -154,23 +153,27 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         // should we check to see if any information was actually updated before updating modified by/date?
         let accountType = this.get('selectedType');
         let accountTypeLetter = accountType.charAt(0).toUpperCase();
-        user.set('lastModifiedBy', currentUser);
-        user.set('lastModifiedDate', newDate);
         user.set('accountType', accountTypeLetter);
 
         if (org) {
           user.set('organization', org);
         }
-        user.set('organizationRequest', orgReq);
+        if (orgReq) {
+          user.set('organizationRequest', orgReq);
+        }
         user.set('email', this.get('userEmail'));
-
       //if is authorized is now true, then we need to set the value of authorized by to current user
-        user.save().then((res) => {
-          this.set('isEditing', false);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', user);
-        });
-
+        if (user.get('hasDirtyAttributes')) {
+          let newDate = new Date();
+          user.set('lastModifiedBy', currentUser);
+          user.set('lastModifiedDate', newDate);
+          user.save().then((res) => {
+            this.set('isEditing', false);
+          }).catch((err) => {
+            this.handleErrors(err, 'updateRecordErrors', user);
+          });
+        }
+        this.set('isEditing', false);
       },
 
      setOrg(org) {

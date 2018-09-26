@@ -99,24 +99,3 @@
 {{/each}}
 
 <button class="action_button" {{action "buildCriteria"}}>Create</button>
-
-
-<script type="text/javascript">
-  $(function () {
-    $('input[name="daterange"]').daterangepicker({
-      autoUpdateInput: false,
-      showDropdowns: true,
-      locale: {
-        cancelLabel: 'Clear'
-      }
-    });
-    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
-      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-    });
-
-    $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
-      $(this).val('');
-    });
-
-  });
-</script>
