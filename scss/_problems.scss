@@ -125,3 +125,19 @@
     }
   }
 }
+
+
+#problem-home {
+  ul {
+    display: block;
+    // margin-left: 10%;
+    text-align: center;
+    li {
+      padding: 20px;
+      a {
+        color: $accent-color;
+        font-weight: $bold-font-weight;
+      }
+    }
+  }
+}
