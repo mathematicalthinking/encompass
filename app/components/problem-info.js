@@ -96,6 +96,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     cancelEdit: function () {
       this.set('isEditing', false);
+      this.resetErrors();
     },
 
     radioSelect: function (value) {
@@ -163,6 +164,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               })
               .catch((err) => {
                 this.handleErrors(err, 'updateProblemErrors', problem);
+                this.set('showConfirmModal', false);
               });
             });
           })
@@ -186,6 +188,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               })
               .catch((err) => {
                 this.handleErrors(err, 'updateProblemErrors', problem);
+                this.set('showConfirmModal', false);
               });
             });
           })
@@ -203,6 +206,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           })
           .catch((err) => {
             this.handleErrors(err, 'updateProblemErrors', problem);
+            this.set('showConfirmModal', false);
             return;
           });
         } else {
