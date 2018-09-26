@@ -58,9 +58,46 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let problem = this.get('problem');
     let creator = problem.get('createdBy.content.id');
     let currentUser = this.get('currentUser');
+    let accountType = currentUser.get('accountType');
+    let canEdit;
 
-    let canEdit = creator === currentUser.id ? true : false;
+    if (accountType === "A") {
+      canEdit = true;
+    } else if (accountType === "P") {
+      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+        canEdit = true;
+      }
+    } else if (accountType === "T") {
+      if (creator === currentUser.id) {
+        canEdit = true;
+      }
+    } else {
+      canEdit = false;
+    }
     return canEdit;
+  }),
+
+  canDelete: Ember.computed('problem.id', function () {
+    let problem = this.get('problem');
+    let currentUser = this.get('currentUser');
+    let currentUserType = currentUser.get('accountType');
+    let creator = problem.get('createdBy.content.id');
+    let canDelete;
+
+    if (currentUserType === "A") {
+      canDelete = true;
+    } else if (currentUserType === "P") {
+      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+        canDelete = true;
+      }
+    } else if (currentUserType === "T") {
+      if (problem.get('privacySetting') === "M") {
+        canDelete = true;
+      }
+    } else {
+      canDelete = false;
+    }
+    return canDelete;
   }),
 
   resetErrors: function() {
