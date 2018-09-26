@@ -18,7 +18,7 @@ var ProblemSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   title: { type: String, required: true },
-  puzzleId: { type: Number }, // Not used now
+  puzzleId: { type: Number },  // old POWs converted puzzle id
   text: { type: String },
   imageUrl: { type: String },
   sourceUrl: { type: String },
