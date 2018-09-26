@@ -53,7 +53,9 @@
       </form>
     <button class="action_button" {{action 'checkPrivacy'}}>Save Problem</button>
     <button class="action_button" {{action 'cancelEdit'}}>Cancel</button>
-    <button class="right" {{action 'deleteProblem'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+    {{#if canDelete}}
+      <button class="right" {{action 'deleteProblem'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+    {{/if}}
 
   {{else}}
 
