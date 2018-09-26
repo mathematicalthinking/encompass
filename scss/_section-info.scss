@@ -42,6 +42,27 @@
   i {
     padding: 2px;
   }
+
+  .section-info-detail{
+    display:flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .btn-container {
+      width:50%;
+    }
+
+    ul.listing {
+      width:35%;
+      li {
+        padding: 12px 0;
+      }
+    }
+  }
+
+  .update-teachers, .update-students {
+    width:100%;
+  }
   .section-info {
     font-size: 1em;
     width: 70%;
@@ -56,8 +77,8 @@
       color: $primary-font-color;
     }
   }
-  .teacherslist, .studentslist, .assignmentslist {
-    border: 1px solid $primary-font-color;
+  .section-info-detail {
+    // border: 1px solid $primary-font-color;
     margin: 10px 5px;
   }
 
@@ -86,19 +107,21 @@
   }
   li {
     padding-bottom: 12px;
+    display: flex;
+    align-items: center;
   }
-  ul.listing {
-    width: 100%;
-    padding-left: 5px;
-    margin-left: 10px;
-    display: inline-block;
-    border: none;
-    box-sizing: border-box;
+  // ul.listing {
+  //   width: 100%;
+  //   padding-left: 5px;
+  //   margin-left: 10px;
+  //   display: inline-block;
+  //   border: none;
+  //   box-sizing: border-box;
 
-    li {
-      width: 35%;
-    }
-  }
+  //   li {
+  //     width: 35%;
+  //   }
+  // }
   .trash-button {
     float: right;
     border: none;
@@ -106,8 +129,10 @@
     background: none;
     font-size: .8em;
   }
+
   .twitter-typeahead {
     margin-left: 10px;
+
     input {
     width: 100%;
       -webkit-appearance: textfield;
