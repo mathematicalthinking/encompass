@@ -31,7 +31,7 @@ section.assignmentlist {
     }
 
     p {
-      font-size: 0.8em;
+      font-size: 1em;
       width: 70%;
       padding: 12px 20px;
       margin: 8px 0;
@@ -71,14 +71,15 @@ section.assignmentlist {
       width: 20%;
       display: inline-block;
       p {
-        font-size: 0.7em;
+        font-size: 0.8em;
         padding: 5px;
         margin: 8px 0px;
       }
       ol {
         li {
           padding: 6px 0 6px 10px;
-          font-size: 0.7em;
+          font-size: 0.8em;
+          cursor: pointer;
 
           &.highlight {
             font-weight: $bold-font-weight;
@@ -94,7 +95,7 @@ section.assignmentlist {
     }
     div#answer-info {
       label {
-        font-size: 0.8em;
+        font-size: 1em;
       }
       border-left: 1px solid;
     }
