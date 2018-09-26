@@ -17,15 +17,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     if (this.priorAnswer) {
       const ans = this.priorAnswer;
       this.set('answer', ans.get('answer'));
-      this.set('explanation', ans.get('explanation'));
+      let explanation = ans.get('explanation');
+
+      this.$('.ql-editor').html(explanation);
       if (ans.additionalImage) {
         this.set('students', ans.get('students'));
       }
     } else {
       this.get('students').addObject(this.get('currentUser'));
     }
-
-
 
     let formId = 'form#newanswerform';
     this.set('formId', formId);
@@ -43,7 +43,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return resolve(that.get('existingImageId'));
       }
       if (that.filesToBeUploaded) {
-        console.log('filesToBeUploaded', that.filesToBeUploaded);
         const uploadData = that.get('filesToBeUploaded');
         const formData = new FormData();
         for(let f of uploadData) {
