@@ -1,4 +1,4 @@
-Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
   isEditing: false,
@@ -7,6 +7,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   htmlDateFormat: 'MM/DD/YYYY',
   displayDateFormat: "MMM Do YYYY",
   assignmentToDelete: null,
+  dataFetchErrors: [],
+  findRecordErrors: [],
+  updateRecordErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -22,7 +25,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         return;
       })
       .catch((err) => {
-        this.set('initalDataFetchError', err);
+        this.handleErrors(err, 'dataFetchErrors');
       });
   },
 
@@ -60,9 +63,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
           });
         })
         .catch((err) => {
-          console.log(err);
+          this.handleErrors(err, 'findRecordErrors');
         });
-      }  },
+      }
+    },
 
   isYourOwn: function() {
     const currentUserId = this.get('currentUser.id');
@@ -145,7 +149,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       })
       .catch((err) => {
         this.set('assignmentToDelete', null);
-        this.set('deleteAssignmentError', err);
+        this.handleErrors(err, 'updateRecordErrors', assignment);
       });
     },
 
@@ -167,7 +171,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         return;
       })
       .catch((err) => {
-        this.set('updateAssignmentError', err);
+        this.handleErrors(err, 'updateRecordErrors', assignment);
       });
 
     },

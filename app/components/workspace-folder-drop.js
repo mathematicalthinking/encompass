@@ -6,9 +6,10 @@
  */
 require('app/components/Droppable');
 
-Encompass.WorkspaceFolderDropComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.CurrentUserMixin, {
+Encompass.WorkspaceFolderDropComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   classNames: ['dropTarget'],
   classNameBindings: ['dragAction'],
+  folderSaveErrors: [],
 
   // This will determine which class (if any) you should add to
   // the view when you are in the process of dragging an item.
@@ -60,6 +61,10 @@ Encompass.WorkspaceFolderDropComponent = Ember.Component.extend(Encompass.DragND
     parentFolder.get('children').removeObject(folderModel);
     folderModel.set('parent', null);
     folderModel.set('isTopLevel', true);
-    folderModel.save();
+    folderModel.save().then((res) => {
+      // handle success
+    }).catch((err) => {
+      this.handleErrors(err, 'folderSaveErrors', folderModel);
+    });
   }
 });

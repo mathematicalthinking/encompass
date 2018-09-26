@@ -35,7 +35,9 @@
   {{/if}}
 </section>
 
-
+{{#each loadAnswerErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+{{/each}}
 
 {{#if isResponding}}
   {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"

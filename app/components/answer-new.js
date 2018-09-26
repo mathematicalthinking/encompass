@@ -1,4 +1,4 @@
-Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   filesToBeUploaded: null,
   createAnswerError: null,
   isMissingRequiredFields: null,
@@ -6,6 +6,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   validator: Ember.inject.service('form-validator'),
   students: [],
   editor: null,
+  findRecordErrors: [],
+  uploadErrors: [],
+  createRecordErrors: [],
 
 
   didInsertElement: function() {
@@ -59,12 +62,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             that.set('uploadResults', res.images);
             that.store.findRecord('image', res.images[0]._id).then((image) => {
               return resolve(image);
+            })
+            .catch((err) => {
+              that.handleErrors(err, 'findRecordErrors');
             });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
           })
           .catch((err) => {
-            that.set('createAnswerError', err);
+            that.handleErrors(err, 'uploadErrors');
             return reject(err);
           });
         } else {
@@ -77,12 +83,14 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             that.set('uploadResults', res.images);
             that.store.findRecord('image', res.images[0]._id).then((image) => {
               return resolve(image);
+            }).catch((err) => {
+              that.handleErrors(err, 'findRecordErrors');
             });
             // currently allowing multiple images to be uploaded but only saving
             // the first image url as the image in the answer doc
           })
           .catch((err) => {
-            that.set('createAnswerError', err);
+            that.handleErrors(err, 'uploadErrors');
             return reject(err);
           });
         }
@@ -136,7 +144,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return that.get('handleCreatedAnswer')(yourAnswer);
       })
         .catch((err) => {
-          that.set('createAnswerError', err);
+          // do we need to roll back all recs that were created?
+          that.handleErrors(err, 'createRecordErrors');
         });
     });
   },

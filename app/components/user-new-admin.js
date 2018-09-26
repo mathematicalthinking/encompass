@@ -1,4 +1,4 @@
-Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-admin',
   usernameExists: null,
   emailExistsError: null,
@@ -15,6 +15,8 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   newUserData: {},
   actingRole: null,
   orgReq: null,
+  createOrgErrors: [],
+  createUserErrors: [],
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -65,6 +67,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
             return resolve(res.get('organizationId'));
           })
           .catch((err) => {
+            this.handleErrors(err, 'createOrgErrors', rec);
             return reject(err);
           });
       } else {
@@ -156,11 +159,12 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
               }
             })
             .catch((err) => {
-              console.log(err);
+              this.handleErrors(err, 'createUserErrors', newUserData);
             });
         })
         .catch((err) => {
-          console.log(err);
+          // err should be handled within handleOrg function
+          console.log('err', err);
         });
     },
 

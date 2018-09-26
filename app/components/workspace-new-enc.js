@@ -1,4 +1,4 @@
-Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-new-enc',
   selectedPdSetId: null,
   selectedFolderSet: null,
@@ -9,7 +9,8 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   teacher: null,
   mode: 'private',
   userList: null,
-
+  findRecordErrors: [],
+  wsRequestErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -171,11 +172,13 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
           let submission = workspace.get('submissions').get('firstObject');
           let submissionId = submission.get('id');
           this.sendAction('toWorkspaces', workspaceId, submissionId);
+        }).catch((err) => {
+          this.handleErrors(err, 'findRecordErrors');
         });
 
       })
       .catch((err) => {
-        this.set('createWorkspaceError', err);
+        this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
         return;
       });
     },

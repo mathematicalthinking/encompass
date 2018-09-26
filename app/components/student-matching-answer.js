@@ -1,9 +1,10 @@
-Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
+Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   assignedStudent: null,
   section: null,
   submission: null,
   assignedStudents: [],
   defaultStudentList: null,
+  loadStudentsErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -21,6 +22,8 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend({
 
     Promise.resolve(section.get('students')).then((students) => {
       this.set('students', students);
+    }).catch((err) => {
+      this.handleErrors(err, 'loadStudentsErrors');
     });
   },
 

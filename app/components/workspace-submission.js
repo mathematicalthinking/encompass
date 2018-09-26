@@ -4,11 +4,12 @@
  *
  * selections come from this.currentSubmission.selections
  */
-Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   makingSelection: true,
   showingSelections: false,
   isTransitioning: false,
   isDirty: false,
+  wsSaveErrors: [],
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     var making = this.get('makingSelection');
@@ -25,22 +26,20 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   init: function() {
     this._super(...arguments);
-    let workspace = this.get('currentWorkspace');
-    let submissions = workspace.get('submissions').get('content');
-    console.log('submissions are', submissions);
-    submissions.forEach((submission) => {
-      let answer = submission.get('answer').get('data');
-      console.log('answer is', answer);
-      // let assignment = answer.get('assignement');
-      // console.log('assignment is', assignment);
-      // this.store.findRecord('answer', answerId).then((answer) => {
-      //   console.log('answer is', answer);
-      //   let assignment = answer.get('assignement');
-      //   console.log('assignment is', assignment);
-      //   let answers = assignment.get('answers');
-      // });
+    // let workspace = this.get('currentWorkspace');
+    // let submissions = workspace.get('submissions').get('content');
+    // submissions.forEach((submission) => {
+    //   let answer = submission.get('answer').get('data');
+    //   // let assignment = answer.get('assignement');
+    //   // console.log('assignment is', assignment);
+    //   // this.store.findRecord('answer', answerId).then((answer) => {
+    //   //   console.log('answer is', answer);
+    //   //   let assignment = answer.get('assignement');
+    //   //   console.log('assignment is', assignment);
+    //   //   let answers = assignment.get('answers');
+    //   // });
 
-    });
+    // });
   },
 
   didRender: function() {
@@ -53,12 +52,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     let workspace = this.get('currentWorkspace');
 
     if (this.get('isDirty')) {
-      console.log('inside isDirty workspace leaving');
       workspace.set('lastModifiedDate', new Date());
       workspace.set('lastModifiedBy', this.get('currentUser'));
     }
 
-    workspace.save();
+    workspace.save().catch((err) => {
+      this.handleErrors(err, 'wsSaveErrors', workspace);
+    });
 
     this._super(...arguments);
   },
@@ -125,16 +125,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       this.set('makingSelection', !selecting);
     },
     handleTransition: function(isBeginning) {
-      console.log('in handleTransition', isBeginning);
       this.get('showSelectableView');
       if (Ember.isEmpty(isBeginning)) {
         return;
       }
       if (isBeginning === true) {
-        console.log('setting isTr true');
         this.set('isTransitioning', true);
       } else {
-        console.log('setting is Trans false');
         this.set('isTransitioning', false);
       }
     },

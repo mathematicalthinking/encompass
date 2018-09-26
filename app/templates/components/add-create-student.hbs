@@ -101,6 +101,15 @@
           <button class="action_button" {{action 'exitAddExistingUsername'}}> no </button>
           </p>
         {{/if}}
+        {{#each createUserErrors as |error|}}
+          <p class="error-message">{{error}}</p>
+        {{/each}}
+        {{#each findUserErrors as |error|}}
+          <p class="error-message">{{error}}</p>
+        {{/each}}
+        {{#each updateSectionErrors as |error|}}
+          <p class="error-message">{{error}}</p>
+        {{/each}}
 
 
       </form>

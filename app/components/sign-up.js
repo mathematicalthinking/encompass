@@ -1,4 +1,4 @@
-Encompass.SignUpComponent = Ember.Component.extend({
+Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['signup-page'],
   usernameExists: false,
   missingCredentials: false,
@@ -9,6 +9,7 @@ Encompass.SignUpComponent = Ember.Component.extend({
   agreedToTerms: false,
   emailExistsError: null,
   org: null,
+  postErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -136,26 +137,38 @@ Encompass.SignUpComponent = Ember.Component.extend({
         accountType: 'T',
         isAuthorized: false,
       };
+
+      let orgRequest;
+
+      // make sure user did not type in existing org
       if (typeof organization === 'string') {
-        createUserData.organizationRequest = organization;
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', organization);
+        if (matchingOrg) {
+          organization = matchingOrg;
+        } else {
+          orgRequest = organization;
+        }
+      }
+
+      if (orgRequest) {
+        createUserData.organizationRequest = orgRequest;
       } else {
         createUserData.organization = organization.id;
       }
 
       return that.createUser(createUserData)
         .then((res) => {
-          console.log('RES', res);
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
           } else if (res.message === 'There already exists a user with that email address.') {
             that.set('emailExistsError', res.message);
           } else {
-            console.log('res from signup', res);
             that.sendAction('toHome');
           }
         })
         .catch((err) => {
-          console.log(err);
+          this.handleErrors(err, 'postErrors');
         });
     },
 

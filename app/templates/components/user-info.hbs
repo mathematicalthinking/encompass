@@ -1,5 +1,8 @@
 <h3><span class="username">{{user.username}}</span>'s Account Details</h3>
 
+{{#each loadOrgsErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
 <article class="user">
   <table class="values rows">
     <tr>
@@ -79,7 +82,7 @@
       <tr>
         <td>Requested Organization</td>
         {{#if isEditing}}
-          {{#if user.isAdmin}}
+          {{#if currentUser.isAdmin}}
             <td>
               Would you like to create {{user.organizationRequest}}<br/>
               <button {{action 'createNewOrg'}}>Yes</button>
@@ -198,6 +201,17 @@
         {{/if}}
       {{/if}}
     {{#unless isResettingPassword}}
+
+  {{#each findRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each createRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+  {{#each updateRecordErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
+
     <div class="button-row">
       <button class='action_button save-user' {{action 'saveUser'}}>Save</button>
       <button class='action_button canecel-user' {{action 'cancel'}}>Cancel</button>

@@ -8,7 +8,7 @@
   <form class="form-signup">
     <div class="auth-form-input">
       <label for="organization">Institution, Organization, School or District Name:</label>
-      {{twitter-typeahead dataList=organizations optionLabelPath="name" onSelect="setOrg"}}
+      {{twitter-typeahead minLength=0 header=typeaheadHeader listName="orgs" dataList=organizations optionLabelPath="name" selectedValue=org setSelectedValueOnChange=true}}
     </div>
     <div class="auth-form-input">
       <label for="location">City and State:</label>
@@ -34,6 +34,9 @@
     </div>
     <button class="auth-button" type="submit" {{action 'submit'}}>Submit</button>
   </form>
+  {{#each updateUserErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 </div>
 
 

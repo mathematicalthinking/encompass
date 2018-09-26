@@ -113,9 +113,15 @@
       </div>
     {{/if}}
 
-    {{#if uploadError}}
-      <p class="error-message">{{uploadError}}</p>
-    {{/if}}
+    {{#each findRecordErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
+    {{#each postErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
+    {{#each createAnswerErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
   </div>
 </div>
 

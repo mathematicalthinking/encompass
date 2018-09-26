@@ -9,6 +9,9 @@
                               {{! Need to send askToDelete action to folder-list to confirm deletion }}
 			<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
       {{input value=model.name focus-out='editFolderName' size=10}}
+			{{#each updateRecordErrors as |error|}}
+    		<p class="error-message">{{error}}</p>
+  		{{/each}}
 		{{else}}
       <span class="toggle-icon {{if model.filteredChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
         {{#if model.isExpanded}}
@@ -24,6 +27,9 @@
 			</span>
 		  <aside>
 				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
+				{{#each queryErrors as |error|}}
+					<p class="error-message">{{error}}</p>
+				{{/each}}
 				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
 				<a {{action 'openLink'}}>
 					<span class="al_sprite al_folder_ct"></span>

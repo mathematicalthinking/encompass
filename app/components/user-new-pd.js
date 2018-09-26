@@ -1,4 +1,4 @@
-Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-pd',
   usernameExists: null,
   emailExistsError: null,
@@ -14,6 +14,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   authorizedBy: '',
   newUserData: {},
   actingRole: null,
+  createUserErrors: [],
 
   createNewUser: function (data) {
     return new Promise((resolve, reject) => {
@@ -104,8 +105,6 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       let newUserData = this.get('newUserData');
       return this.createNewUser(newUserData)
         .then((res) => {
-          console.log('res is PDAMDIN', res);
-          console.log('res message is', res.message);
           if (res.message === 'Can add existing user') {
             this.set('usernameExists', true);
             return;
@@ -113,13 +112,12 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             this.set('emailExistsError', res.message);
             return;
           } else {
-            console.log('res if success', res);
             // res is user object
             this.sendAction('toUserInfo', res.username);
           }
         })
         .catch((err) => {
-          console.log(err);
+          this.handleErrors(err, 'createUserErrors', newUserData);
         });
     },
 

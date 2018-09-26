@@ -1,4 +1,4 @@
-Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
 
   didReceiveAttrs: function() {
     console.log('receive attrs assn-info');
@@ -15,6 +15,7 @@ Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUser
         return;
       })
       .catch((err) => {
+        this.handleErrors(err, 'initialLoadErrors');
         console.log('err',err);
       });
     }

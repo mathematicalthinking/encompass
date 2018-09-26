@@ -1,13 +1,19 @@
-Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'signup-google',
   missingCredentials: false,
   noTermsAndConditions: false,
   agreedToTerms: false,
   org: null,
+  updateUserErrors: [],
+
+  init: function() {
+    this._super(...arguments);
+    this.set('typeaheadHeader', '<label class="tt-header">Popular Organizations:</label>');
+  },
 
   actions: {
     submit: function () {
-      const organization = this.get('org');
+      let organization = this.get('org');
       const location = this.get('location');
       const requestReason = this.get('requestReason');
 
@@ -22,9 +28,21 @@ Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMi
       }
 
       let user = this.get('currentUser');
+      let orgRequest;
 
+      // make sure user did not type in existing org
       if (typeof organization === 'string') {
-        user.set('organizationRequest', organization);
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', organization);
+        if (matchingOrg) {
+          organization = matchingOrg;
+        } else {
+          orgRequest = organization;
+        }
+      }
+
+      if (orgRequest) {
+        user.set('organizationRequest', orgRequest);
       } else {
         user.set('organization', organization);
       }
@@ -33,24 +51,11 @@ Encompass.SignupGoogleComponent = Ember.Component.extend(Encompass.CurrentUserMi
       user.set('requestReason', requestReason);
       user.set('createdBy', user);
 
-      user.save();
-    },
-
-    setOrg(name) {
-      if (!name || typeof name !== "string") {
-        return;
-      }
-
-      const orgs = this.get('organizations');
-
-      let org = orgs.findBy('name', name);
-
-      if (!org) {
-        this.set('org', name);
-      } else {
-        this.set('org', org);
-      }
-
+      user.save().then((res) => {
+        // handle success
+      }).catch((err) => {
+        this.handleErrors(err, 'updateUserErrors', user);
+      });
     },
     resetErrors(e) {
       const errors = ['missingCredentials', 'noTermsAndConditions'];

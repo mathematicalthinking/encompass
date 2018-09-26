@@ -29,7 +29,12 @@ const nconf = config.nconf;
 function sendResponse(res, data) {
   if (!data) {
     res.status(404).json({
-      error: 'Not found'
+      "errors": [
+        {
+          "detail": "The requested resource could not be found.",
+          "status": "404"
+        }
+      ]
     });
   } else {
     res.send(data);
@@ -53,6 +58,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Internal Error",
+          "status": "500"
         }
       ]
     });
@@ -62,6 +68,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Bad Method",
+          "status": "405"
         }
       ]
     });
@@ -71,6 +78,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Not Authorized",
+          "status": "403"
         }
       ]
     });
@@ -80,6 +88,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Invalid Credentials",
+          "status": "401"
         }
       ]
     });
@@ -89,6 +98,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Invalid Argument",
+          "status": "409"
         }
       ]
     });
@@ -98,6 +108,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Invalid Content",
+          "status": "400"
         }
       ]
     });
@@ -107,6 +118,7 @@ const sendError = {
       "errors": [
         {
           "detail": err || "Rest Error",
+          "status": "400"
         }
       ]
     });

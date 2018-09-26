@@ -10,6 +10,9 @@
   {{#if emailSuccess}}
     <p id="resent-confirm" class="success-message">Email sent!</p>
   {{/if}}
+  {{#each emailErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 </div>
 
 

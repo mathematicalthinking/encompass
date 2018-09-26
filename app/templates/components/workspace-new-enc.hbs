@@ -90,6 +90,14 @@
 {{#if isEmptyAnswerSet}}
 <p class="error-message">Sorry, no answers were found matching your criteria.</p>
 {{/if}}
+
+{{#each findRecordErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each wsRequestErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+
 <button class="action_button" {{action "buildCriteria"}}>Create</button>
 
 

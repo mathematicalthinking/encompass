@@ -85,6 +85,9 @@
 
     <button class="auth-button" type="submit" {{action 'signup'}}>Sign Up</button>
   </form>
+  {{#each postErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+  {{/each}}
 
   <div class="social-signin-div">
     {{social-signin}}

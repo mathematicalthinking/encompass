@@ -5,6 +5,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   displayedAnswer: null,
   answerList: [],
   isLoadingAnswers: null,
+  loadAnswerErrors: [],
 
   init: function() {
     this._super(...arguments);
@@ -19,14 +20,14 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     const student = this.get('currentUser');
     return student.get('answers')
     .catch((err) => {
-      this.set('errorLoadingAnswers', true);
+      this.set('isLoadingAnswers', false);
+      this.handleErrors(err, 'loadAnswerErrors');
     });
   },
 
   filteredList: function() {
     const answers = this.get('answerList');
-    console.log('answers in filteredList', answers);
-      if (this.get('isLoadingAnswers')) {
+      if (this.get('isLoadingAnswers') || !Ember.isEmpty(this.get('loadAnswerErrors'))) {
         return [];
       } else {
         return answers.filterBy('assignment.id', this.assignment.id);
@@ -44,7 +45,6 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
   didReceiveAttrs: function() {
     if (this.assignment) {
-      console.log('assignment in route', this.assignment);
     if (this.get('displayedAnswer')) {
       this.set('displayedAnswer', null);
     }
@@ -92,14 +92,12 @@ toggleResponse: function() {
     },
 
     handleCreatedAnswer: function(answer) {
-      console.log('handling created Answer');
       this.set('answerCreated', true);
       this.toggleResponse();
       this.get('answerList').pushObject(answer);
     },
 
     cancelResponse: function() {
-      console.log('cancelling response');
       this.toggleResponse();
 
     },

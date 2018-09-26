@@ -3,6 +3,10 @@
   <div class="clear"></div>
 </header>
 
+{{#each initialLoadErrors as |error|}}
+    <p class="error-message">{{error}}</p>
+{{/each}}
+
 {{#if currentUser.isStudent}}
   {{assignment-info-student assignment=assignment problem=problem section=section store=store}}
 {{else}}

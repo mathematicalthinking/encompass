@@ -11,13 +11,15 @@
  * - putInWorkspace (is this really used?)
  * - openModal action to add a new folder
  */
-Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   hideNewFolderModal: true,
   hideDeleteFolderModal: true,
   weighting: 1,
   editFolderMode: false,
   canManageFolders: true,
   sortProperties: ['weight', 'name'],
+  createRecordErrors: [],
+  updateRecordErrors: [],
   /*
   canManageFolders: function() {
     return Permissions.userCan(
@@ -29,10 +31,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   */
   init: function() {
     this._super(...arguments);
-    console.log('init folder-list');
-  },
-  didInsertElement: function() {
-    console.log('inserted element folder-list');
   },
 
   filteredFolders: function() {
@@ -84,7 +82,11 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           createdBy: currentUser,
         });
 
-        folder.save();
+        folder.save().then((res) => {
+          //handle success
+        }).catch((err) => {
+          this.handleErrors(err, 'createRecordErrors', folder);
+        });
       }
     },
 
@@ -96,7 +98,11 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     confirmDelete: function(){
       var folder = this.get( 'folderToDelete' );
       folder.set('isTrashed', true);
-      folder.save();
+      folder.save().then((res) => {
+        // handle success
+      }).catch((err) => {
+        this.handleErrors(err, 'updateRecordErrors', folder);
+      });
     },
 
     fileSelectionInFolder: function(objId, folder){
@@ -137,7 +143,11 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           newParent.get('children').addObject(folder);
         }
 
-        folder.save();
+        folder.save().then((res) => {
+          // handle success
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', folder);
+        });
       }
     },
 

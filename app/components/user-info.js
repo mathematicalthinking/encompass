@@ -1,10 +1,14 @@
-Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-info',
   isEditing: false,
   authorized: null,
   selectedType: null,
   willOveride: null,
   fieldType: 'password',
+  loadOrgsErrors: [],
+  updateRecordErrors: [],
+  createRecordErrors: [],
+  findRecordErrors: [],
 
   // this was returning undefined if you are logged in and viewing your own profile and
   // your account does not have a createdBy
@@ -15,6 +19,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     this.set('org', null);
     this.store.findAll('organization').then((orgs) => {
       this.set('orgList', orgs);
+    }).catch((err) => {
+      this.handleErrors(err, 'loadOrgsErrors');
     });
   },
 
@@ -136,8 +142,14 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         let newDate = new Date();
         let user = this.get('user');
         let org = this.get('org');
-        console.log('org save User', org);
         let orgReq = this.get('orgReq');
+
+        let orgs = this.get('orgList');
+        let matchingOrg = orgs.findBy('name', orgReq);
+        if (matchingOrg) {
+          org = matchingOrg;
+          orgReq = null;
+        }
 
         // should we check to see if any information was actually updated before updating modified by/date?
         let accountType = this.get('selectedType');
@@ -147,22 +159,21 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('accountType', accountTypeLetter);
 
         if (org) {
-          console.log('org', org);
           user.set('organization', org);
         }
-        console.log('req', orgReq);
         user.set('organizationRequest', orgReq);
         user.set('email', this.get('userEmail'));
 
       //if is authorized is now true, then we need to set the value of authorized by to current user
         user.save().then((res) => {
           this.set('isEditing', false);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', user);
         });
 
       },
 
      setOrg(org) {
-      console.log('org set org', org);
       if (typeof org === 'string') {
          this.set('orgReq', org);
        } else {
@@ -190,19 +201,26 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           .then((org) => {
             let user = this.get('user');
             user.set('organization', org);
-            // this.set('org', org);
             this.set('orgReq', null);
             user.set('organizationRequest', null);
             user.save().then((user) => {
               console.log('user', user);
+            }).catch((err) => {
+              this.handleErrors(err, 'updateRecordErrors', user);
             });
+          }).catch((err) => {
+            this.handleErrors(err, 'createRecordErrors', newOrg);
           });
       },
 
       removeOrg: function () {
         let user = this.get('user');
         user.set('organizationRequest', null);
-        user.save();
+        user.save().then((res) => {
+          // handle success
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', user);
+        });
       },
 
       cancel: function () {
@@ -215,12 +233,13 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       handleResetSuccess: function(updatedUser) {
         const user = this.get('user');
-        const currentUser = this.get('currentUser');
 
         return this.store.findRecord('user', user.id).then((user) => {
           this.set('user', user);
           this.set('isResettingPassword', false);
           this.set('resetPasswordSuccess', true);
+        }).catch((err) => {
+          this.handleErrors(err, 'findRecordErrors');
         });
       },
 

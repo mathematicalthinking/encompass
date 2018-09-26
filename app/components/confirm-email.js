@@ -1,5 +1,7 @@
-Encompass.ConfirmEmailComponent = Ember.Component.extend({
+Encompass.ConfirmEmailComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['confirm-page'],
+  confirmTokenErrors: [],
+
   didReceiveAttrs: function() {
     const token = this.token;
     const that = this;
@@ -16,7 +18,7 @@ Encompass.ConfirmEmailComponent = Ember.Component.extend({
 
         })
         .catch((err) => {
-          that.set('invalidTokenError', err);
+          that.set(err, 'confirmTokenErrors');
         });
     }
   },

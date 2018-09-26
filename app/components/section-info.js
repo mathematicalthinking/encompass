@@ -1,4 +1,4 @@
-Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'section-info',
   className: ['section-info'],
 
@@ -14,6 +14,13 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   sectionToDelete: null,
   pending: '<p>Loading results...</p>',
   notFound: '<p>No matching users.</p>',
+  dataLoadErrors: [],
+  updateSectionErrors: [],
+  updateTeacherErrors: [],
+  updateStudentErrors: [],
+  queryErrors: [],
+  findRecordErrors: [],
+  problemLoadErrors: [],
 
   init: function () {
     this._super(...arguments);
@@ -27,7 +34,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   didReceiveAttrs: function () {
     let section = this.get('currentSection');
     let didSectionChange = !Ember.isEqual(section, this.section);
-    console.log('didSectionChange', didSectionChange);
     this.set('isEditing', false);
     this.set('isAddingTeacher', false);
 
@@ -60,7 +66,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('organization', org);
     })
     .catch((err) => {
-      this.set('sectionInitError', err);
+      this.handleErrors(err, 'dataLoadErrors');
     });
   },
 
@@ -108,7 +114,11 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         teacher.save().then(() => {
           console.log('saved teacher');
           this.set('teacherToAdd', null);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateTeacherErrors', teacher);
         });
+      }).catch((err) => {
+        this.handleErrors(err, 'updateSectionErrors', section);
       });
     }
   }.observes('teacherToAdd'),
@@ -151,7 +161,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           return asyncCb(filtered.toArray());
         })
         .catch((err) => {
-          console.log('err', err);
+          this.handleErrors(err, 'queryErrors');
         });
       };
 
@@ -182,8 +192,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               }
             });
             user.set('sections', newSections);
-            user.save();
+            user.save().then((res) => {
+              // handle success
+            }).catch((err) => {
+              this.handleErrors(err, 'updateStudentErrors', user);
+            });
+          }).catch((err) => {
+            this.handleErrors(err, 'findRecordErrors');
           });
+        }).catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
         });
         this.set('removedStudent', true);
     },
@@ -219,7 +237,13 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               }
             });
             user.set('sections', newSections);
-            user.save();
+            user.save().then((res) => {
+              // handle success
+            }).catch((err) => {
+              this.handleErrors(err, 'updateTeacherErrors', user);
+            });
+          }).catch((err) => {
+            this.handleErrors(err, 'findRecordErrors');
           });
       });
       this.set('removedTeacher', true);
@@ -234,7 +258,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       })
       .catch((err) => {
         this.set('sectionToDelete', null);
-        this.set('deleteSectionError', err);
+        this.handleErrors(err, 'updateSectionErrors', section);
       });
     },
 
@@ -254,7 +278,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           }, 100);
         })
         .catch((err) => {
-          this.set('problemLoadErr', err);
+          this.handleErrors(err, 'problemLoadErrors');
         });
       },
 
@@ -264,6 +288,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         if (section.get('dirtyType') === 'updated') {
           this.get('currentSection').save().then(() => {
             console.log('section name updated!');
+          }).catch((err) => {
+            this.handleErrors(err, 'updateSectionErrors', section);
           });
         }
       },

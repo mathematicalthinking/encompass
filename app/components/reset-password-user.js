@@ -1,8 +1,10 @@
 // Used for when a logged in user is resetting either their own password or another user's password
-Encompass.ResetPasswordUserComponent = Ember.Component.extend({
+Encompass.ResetPasswordUserComponent = Ember.Component.extend(
+  Encompass.ErrorHandlingMixin, {
   ElementId: 'reset-password-user',
   displayResetForm: true,
   fieldType: 'password',
+  postErrors: [],
 
   doPasswordsMatch: function() {
     return this.get('password') === this.get('confirmPassword');
@@ -40,7 +42,6 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend({
         data: resetPasswordData
       })
         .then((res) => {
-          console.log('resetPass response: ', res);
           if (res._id && res._id === id) {
             that.get('handleResetSuccess')(res);
           } else {
@@ -54,8 +55,7 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend({
           }
         })
         .catch((err) => {
-          console.log('err', err);
-          that.set(('resetError', err));
+          that.handleErrors(err, 'postErrors');
         });
     },
 

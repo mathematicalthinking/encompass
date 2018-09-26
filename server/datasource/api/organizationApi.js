@@ -105,7 +105,7 @@ const postOrganization = (req, res, next) => {
   const canPost = canPostOrg(user);
 
   if (!canPost) {
-    return utils.sendError.NotAuthorizedError(null, res);
+    return utils.sendError.NotAuthorizedError('You are not authorizd to create a new organization.', res);
   }
   // do we want to check if the user is allowed to create organizations?
   const organization = new models.Organization(req.body.organization);

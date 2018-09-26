@@ -1,8 +1,8 @@
-Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'section-new',
   className: ['sections'],
   createdSection: null,
-  createSectionError: null,
+  createRecordErrors: [],
   teacher: null,
   leader: null,
   teachers: [],
@@ -15,11 +15,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   //set user as teacher
   didInsertElement: function () {
     var user = this.get('user');
-    var teachers = this.get('teachers');
     if (!user.get('isAdmin')) {
       this.set('teacher', user);
-      // this.set('leader', user);
-      // teachers.pushObject(user);
     }
   },
 
@@ -101,7 +98,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         that.sendAction('toSectionInfo', section);
       })
       .catch((err) => {
-        that.set('createdSectionError', err);
+        that.handleErrors(err, 'createRecordErrors', sectionData);
       });
   },
 

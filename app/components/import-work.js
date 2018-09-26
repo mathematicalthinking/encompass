@@ -1,4 +1,4 @@
-Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   selectedProblem: null,
   selectedSection: null,
   selectedFiles: null,
@@ -15,12 +15,14 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   doNotCreateWorkspace: false,
   doCreateWorkspace: Ember.computed.not('doNotCreateWorkspace'),
 
-  uploadError: null,
   isSelectingImportDetails: true,
   mode: 'private',
   requestedName: null,
   selectedFolderSet: null,
   isPrivate: Ember.computed.equal('mode', 'private'),
+  findRecordErrors: [],
+  createAnswerErrors: [],
+  postErrors: [],
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', 'isAddingMoreFiles', function() {
     const problem = this.get('selectedProblem');
@@ -162,6 +164,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       let images = this.get('uploadedFiles');
       let answers = [];
 
+      // should this be using Promise.all/map since findRecord is async?
       images.forEach((image) => {
         let ans = {};
         let imageId = image._id;
@@ -172,6 +175,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           ans.isSubmitted = true;
           answers.push(ans);
           this.set('answers', answers);
+        }).catch((err) => {
+          this.handleErrors(err, 'findRecordErrors');
         });
       });
     },
@@ -269,8 +274,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             }
           })
           .catch((err) => {
-            that.set('uploadError', err);
-            console.log(err);
+            this.handleErrors(err, 'postErrors');
           });
         } else { // don't create workspace
         that.set('isReviewingSubmissions', false);
@@ -278,6 +282,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         }
 
 
+      }).catch((err) => {
+        this.handleErrors(err, 'createAnswerErrors');
       });
     }
 

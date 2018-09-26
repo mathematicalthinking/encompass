@@ -227,7 +227,8 @@ function putComment(req, res, next) {
       );
     } else { //not permitted
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      // res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`);
     }
   });
 }

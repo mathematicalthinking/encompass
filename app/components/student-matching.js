@@ -4,11 +4,9 @@ Encompass.StudentMatchingComponent = Ember.Component.extend({
 
   actions: {
     reviewAnswers: function() {
-      console.log('reviewingAnswers');
       this.get('reviewSubmissions')();
     },
     checkStatus: function() {
-      console.log('checking status');
       let answers = this.get('answers');
 
       answers.forEach((ans) => {

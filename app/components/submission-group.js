@@ -79,7 +79,6 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
   }.property('currentThread'),
 
   currentThread: function() {
-    console.log('calculating currentThread');
     return this.get('submissionThreads')
       .get( this.get('currentStudent') );
   }.property('submission'),
@@ -142,7 +141,6 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
   }.property('submissionThreads.[]', 'submission'),
 
   modelChanged: function() {
-    console.log('sub changed');
     this.set('switching', true);
   }.observes('submission'),
 

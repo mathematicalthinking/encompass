@@ -723,7 +723,7 @@ function sendWorkspaces(req, res, next) {
   logger.debug('looking for workspaces for user id' + user._id);
   prepareAndUpdateWorkspaces(user, function(err){
     if(err){
-      utils.sendError(err, res);
+      utils.sendError.InternalError(err, res);
       logger.error('error preparing and updating ws');
     }
 

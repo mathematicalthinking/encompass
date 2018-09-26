@@ -15,15 +15,13 @@
  * - Replace folderList reference with a passed in action.
  * - drag folder out, then put back in - it won't go back in until you refresh.  Ember seems to be sending the correct data to the server api.
  */
-Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, {
+Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, Encompass.ErrorHandlingMixin, {
   tagName: 'li',
   classNames: ['folderItem'],
   link: null,
+  updateRecordErrors: [],
+  queryErrors: [],
   //editFolderMode: true, // (from folder controller)
-
-  didInsertElement: function() {
-    console.log(`didInsertElement for folder ${this.model.get('name')}`);
-  },
 
   init: function() {
     this._super(...arguments);
@@ -182,7 +180,11 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       children.pushObject(droppedFolder);
     });
 
-    droppedFolder.save();
+    droppedFolder.save().then((res) => {
+      console.log('folder dropped in folder success!');
+    }).catch((err) => {
+      this.handleErrors(err, 'updateRecordErrors', droppedFolder);
+    });
   },
 
   actions: {
@@ -196,7 +198,11 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       var folder = this.get('model');
       if(folder.get('hasDirtyAttributes')) {
         folder.get('workspace').then(function(){
-          folder.save(); //we need the workspace to be populated
+          folder.save().then((res) => {
+            console.log('folder name edit success!');
+          }).catch((err) => {
+            this.handleErrors(err, 'updateRecordErrors', folder);
+          }); //we need the workspace to be populated
         });
       }
 
@@ -231,8 +237,9 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       this.store.query('tagging', {
         ids: tagIds
       }).then((tags) => {
-        console.log('queried tags', tags);
         this.model.set('taggings', tags);
+      }).catch((err) => {
+        this.handleErrors(err, 'queryErrors');
       });
     }
   }
