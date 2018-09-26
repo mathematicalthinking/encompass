@@ -16,6 +16,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   didReceiveAttrs: function () {
     this.set('isEditing', false);
+    let user = this.get('user');
+    if (user.get('sections')) {
+      this.getUserSections();
+    }
     this.set('org', null);
     this.store.findAll('organization').then((orgs) => {
       this.set('orgList', orgs);
@@ -62,6 +66,22 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       return true;
     }
   }),
+
+  getUserSections: function () {
+    let user = this.get('user');
+    let sections = user.get('sections');
+
+    let sectionIds = sections.map((section) => {
+      return section.sectionId;
+    });
+
+    this.get('store').query('section', {
+      ids: sectionIds
+    }).then((sections) => {
+      this.set('userSections', sections);
+    });
+  },
+
 
   removeSuccessMessages: function() {
     const succesStates = ['resetPasswordSuccess'];
