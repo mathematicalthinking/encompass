@@ -81,7 +81,7 @@ var UserSchema = new Schema({
   assignments: [{type: ObjectId, ref: 'Assignment'}],
   seenTour: { type: Date },
   lastSeen: { type: Date },
-  history: [Log], // currently not working
+  history: [Log] // currently not working
   //sessions: [{key: String, starts: Number, ends: Number}]
 },
 {
