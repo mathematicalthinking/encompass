@@ -51,7 +51,7 @@
           </ol>
         </fieldset>
       </form>
-    <button class="action_button" {{action 'updateProblem'}}>Save Problem</button>
+    <button class="action_button" {{action 'checkPrivacy'}}>Save Problem</button>
     <button class="action_button" {{action 'cancelEdit'}}>Cancel</button>
     <button class="right" {{action 'deleteProblem'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
 
@@ -140,6 +140,12 @@
 {{#each findRecordErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
+
+{{#if isEditing}}
+  {{#if showConfirmModal}}
+    {{modal-confirm actionToConfirm=showConfirmModal onConfirm="updateProblem" actionName="make your problem public" warningMessage="You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used"}}
+  {{/if}}
+{{/if}}
 
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
