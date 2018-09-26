@@ -121,12 +121,16 @@
     </tr>
     <tr>
       <td>Last Seen</td>
-      <td>{{lastSeenDate}}</td>
+      {{#if user.lastSeen}}
+        <td>{{format-date user.lastSeen 'MMM Do YYYY'}} at {{format-date user.lastSeen 'hh:mma'}}</td>
+      {{else}}
+        <td>Never</td>
+      {{/if}}
     </tr>
     {{#if user.lastModifiedBy}}
     <tr>
       <td>Last Modified</td>
-      <td>{{user.lastModifiedBy.username}} on  {{format-date user.lastModifiedDate 'MMM Do YYYY'}}</td>
+      <td>{{format-date user.lastModifiedDate 'MMM Do YYYY'}} by {{user.lastModifiedBy.username}}</td>
     </tr>
     {{/if}}
     <tr>
