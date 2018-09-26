@@ -34,14 +34,17 @@
             <label for="students">Contributing Students</label>
             <div class="student-list">
               <ul>
-              {{#each students as |student|}}
-                <li>{{student.username}}</li>
+              {{#each contributors as |student|}}
+                <li>{{student.username}}
+                  {{#unless (is-equal student currentUser)}}
+                    <i {{action "removeStudent" student}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
+                  {{/unless}}
+                  </li>
               {{/each}}
               </ul>
             </div>
           </div>
-            {{input type="text" value=student id="student" key-press=(action "toggleAddStudentMessages")}}
-            <button id="addStudent"{{action "addStudent"}}>Add</button>
+          {{twitter-typeahead minLength=1 selectedValue=studentToAdd selectedItems=contributors onSelect="addStudent" dataList=section.students placeholder="username" optionLabelPath="username" allowMultiple=true}}
 
           {{#if addStudentError}}
               <p class="error-message"></p>Sorry, that user is not in your class.
