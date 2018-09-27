@@ -16,6 +16,19 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     let isMissing = this.checkMissing.bind(this);
     this.get('validator').initialize(formId, isMissing);
+
+    var options = {
+      debug: 'false',
+      modules: {
+        toolbar: [
+        ['bold', 'italic', 'underline'],
+        ['image'],
+        ]
+      },
+      placeholder: 'Problem Statement',
+      theme: 'snow'
+    };
+    var quill = new window.Quill('#editor', options);
   },
 
   checkMissing: function() {
@@ -28,7 +41,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var that = this;
     var createdBy = that.get('currentUser');
     var title = that.get('title');
-    var text = that.get('text');
+    const quillContent = this.$('.ql-editor').html();
+    const text = quillContent.replace(/["]/g, "'");
     //var categories = [];
     var additionalInfo = that.get('additionalInfo');
     var privacySetting = that.get('privacySetting');

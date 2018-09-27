@@ -52,6 +52,31 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
+  insertQuillContent: function() {
+    const isEditing = this.get('isEditing');
+    if (!isEditing) {
+      return;
+    }
+    const options = {
+      debug: 'false',
+      modules: {
+        toolbar: [
+        ['bold', 'italic', 'underline'],
+        ['image'],
+        ]
+      },
+      theme: 'snow'
+    };
+    const that = this;
+    this.$('#editor').ready(function() {
+      const quill = new window.Quill('#editor', options);
+      let problem = that.get('problem');
+      let text = problem.get('text');
+
+      that.$('.ql-editor').html(text);
+    });
+  }.observes('isEditing'),
+
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
@@ -175,7 +200,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     updateProblem: function () {
       let title = this.get('problemName');
-      let text = this.get('problemText');
+      const quillContent = this.$('.ql-editor').html();
+      let text = quillContent.replace(/["]/g, "'");
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');

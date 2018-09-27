@@ -19,7 +19,9 @@
             </li>
             <li>
               <label for="text">Problem Statement</label>
-              {{input name="text" id="text" type="text" value=problemText}}
+              <div class="quill-container">
+            <section id="editor"></section>
+          </div>
             </li>
             <li class="privacy-settings">
               <label>Privacy Settings
@@ -68,7 +70,7 @@
           </li>
           <li>
             <label for="text">Problem Statement</label>
-            <p class="problem-info">{{problem.text}}</p>
+            <p class="problem-info">{{{problem.text}}}</p>
           </li>
 
           {{#if problem.origin}}

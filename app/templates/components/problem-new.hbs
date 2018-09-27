@@ -14,7 +14,10 @@
           </li>
           <li>
             <label for="text">Problem Statement <span class="required-star">*</span></label>
-            {{input id="text" required="true" type="text" value=text placeholder="enter problem question"}}
+            {{!-- {{input id="text" required="true" type="text" value=text placeholder="enter problem question"}} --}}
+            <div class="quill-container">
+            <section id="editor"></section>
+          </div>
           </li>
           <li>
             <label for="categories">Problem Category</label>
