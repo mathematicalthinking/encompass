@@ -9,7 +9,8 @@
       select {
         font-size: 1em;
         color: $primary-font-color;
-        width: 70%;
+        width: 50%;
+        max-width: 600px;
         padding: 12px 20px;
         margin: 8px 0px;
         display: inline-block;
@@ -19,6 +20,25 @@
         background: none;
         &::placeholder {
           color: $primary-font-color;
+        }
+      }
+      li.privacy-settings {
+        display: flex;
+        align-items: center;
+      }
+      .quill-container {
+        width: 50%;
+        min-width: 150px;
+        max-width: 600px;
+        display: inline-block;
+        section#editor {
+          width: 100%;
+          display: inline-block;
+          min-height: 100px;
+          .ql-editor {
+            width: 100%;
+            display: inline-block;
+          }
         }
       }
       label {

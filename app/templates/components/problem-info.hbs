@@ -23,6 +23,10 @@
                 <section id="editor"></section>
               </div>
             </li>
+            <li>
+              <label for="additionalInfo">Additional Info</label>
+              {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
+            </li>
             <li class="privacy-settings">
               <label>Privacy Settings
                 <span class="required-star">*</span>
@@ -37,10 +41,6 @@
               <input type="radio" checked={{is-equal privacySetting "E"}} required="true" name="privacy" value="E" onclick={{action "radioSelect" "E"}}>
               <label class="radio-label">Everyone</label>
             {{/if}}
-            </li>
-            <li>
-              <label for="additionalInfo">Additional Info</label>
-              {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
             </li>
             <li>
               <label for="imagedata">Problem Image:</label>
