@@ -20,8 +20,8 @@
             <li>
               <label for="text">Problem Statement</label>
               <div class="quill-container">
-            <section id="editor"></section>
-          </div>
+                <section id="editor"></section>
+              </div>
             </li>
             <li class="privacy-settings">
               <label>Privacy Settings
@@ -37,6 +37,10 @@
               <input type="radio" checked={{is-equal privacySetting "E"}} required="true" name="privacy" value="E" onclick={{action "radioSelect" "E"}}>
               <label class="radio-label">Everyone</label>
             {{/if}}
+            </li>
+            <li>
+              <label for="additionalInfo">Additional Info</label>
+              {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
             </li>
             <li>
               <label for="imagedata">Problem Image:</label>
@@ -71,6 +75,10 @@
           <li>
             <label for="text">Problem Statement</label>
             <p class="problem-info">{{{problem.text}}}</p>
+          </li>
+          <li>
+            <label for="additionalInfo">Additional Info</label>
+            <p class="problem-info">{{problem.additionalInfo}}</p>
           </li>
 
           {{#if problem.origin}}

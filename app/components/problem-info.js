@@ -162,6 +162,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.set('isEditing', true);
             this.set('problemName', problem.get('title'));
             this.set('problemText', problem.get('text'));
+            this.set('additionalInfo', problem.get('additionalInfo'));
             this.set('privacySetting', problem.get('privacySetting'));
           }
         });
