@@ -42,12 +42,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
 
-    if (ret && uploading) {
-      this.set('isCompDirty', false);
+    if (ret) {
+      this.set('isCompDirty', true);
+      this.sendAction('doConfirmLeaving', true);
       return;
     }
-
-    this.set('isCompDirty', ret);
+    this.set('isCompDirty', false);
+    this.sendAction('doConfirmLeaving', false);
   }.observes('selectedProblem', 'selectedSection', 'uploadedFiles', 'isUploadingAnswer'),
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
