@@ -145,12 +145,34 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('isEditing', true);
     },
 
+    showDeleteModal: function () {
+      window.swal({
+        title: 'Are you sure you want to delete this assignment?',
+        type: 'warning',
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          this.send('deleteAssignment');
+        }
+      });
+    },
+
     deleteAssignment: function() {
       const assignment = this.get('assignment');
       assignment.set('isTrashed', true);
       return assignment.save().then((assignment) => {
         this.set('assignmentToDelete', null);
-
+        window.swal({
+          title: 'Assignment Deleted',
+          type: 'success',
+          toast: true,
+          position: 'bottom-end',
+          timer: 4000,
+          showConfirmButton: false,
+          background: '#CBFDCB',
+        });
         this.sendAction('toAssignments');
       })
       .catch((err) => {
@@ -180,6 +202,15 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
       if (assignment.get('hasDirtyAttributes')) {
         return assignment.save().then((assignment) => {
+          window.swal({
+            title: 'Assignment Updated',
+            type: 'success',
+            toast: true,
+            position: 'bottom-end',
+            timer: 4000,
+            showConfirmButton: false,
+            background: '#CBFDCB',
+          });
             this.set('assignmentUpdateSuccess', true);
             this.set('isEditing', false);
             return;

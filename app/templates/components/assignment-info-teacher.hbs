@@ -30,7 +30,7 @@
     </form>
     <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
     <button class="action_button cancel" {{action 'stopEditing'}}>Cancel</button>
-    <button class="right" {{action (mut assignmentToDelete) assignment}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+    <button class="right" {{action 'showDeleteModal'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
   {{/if}}
   {{#if isDisplaying}}
     <section id='assignment-info' class='properForm'>
@@ -75,9 +75,9 @@
     <p class="error-message">{{error}}</p>
   {{/each}}
 
-  {{#if assignmentToDelete}}
+  {{!-- {{#if assignmentToDelete}}
     {{modal-delete itemToDelete=assignmentToDelete onConfirm="deleteAssignment" optionLabelPath = "problem.title"}}
-  {{/if}}
+  {{/if}} --}}
 
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
