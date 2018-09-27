@@ -68,7 +68,15 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       const uploadData = that.get('filesToBeUploaded');
       if (!uploadData) {
         this.set('isUploading', false);
-        this.set('missingFilesError', true);
+        window.swal({
+          title: 'Please Upload Files',
+          type: 'error',
+          toast: true,
+          position: 'bottom-end',
+          timer: 5000,
+          showConfirmButton: false,
+        });
+        // this.set('missingFilesError', true);
         return;
       }
       this.set('isUploading', true);
