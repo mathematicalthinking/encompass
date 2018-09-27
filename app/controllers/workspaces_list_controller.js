@@ -99,7 +99,8 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
             position: 'bottom-end',
             timer: 5000,
             showConfirmButton: true,
-            confirmButtonText: 'Undo'
+            confirmButtonText: 'Undo',
+            background: '#CBFDCB',
           }).then((result) => {
             if (result.value) {
               ws.set('isTrashed', false);
@@ -111,6 +112,7 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
                   position: 'bottom-end',
                   timer: 3000,
                   showConfirmButton: false,
+                  background: '#CBFDCB',
                 });
               });
             }

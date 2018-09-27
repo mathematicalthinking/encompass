@@ -75,6 +75,7 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
           position: 'bottom-end',
           timer: 5000,
           showConfirmButton: false,
+          background: '#ffe0e0',
         });
         // this.set('missingFilesError', true);
         return;
