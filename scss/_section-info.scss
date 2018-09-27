@@ -156,6 +156,7 @@
 
 #show-password-btn {
   border: none;
+  background: none;
   i {
     font-size: 1.4em;
     color: $primary-font-color;
@@ -176,6 +177,7 @@
 
   .hidden-class-pass {
     border: none;
+    background: none;
   }
 
   .student-search {
@@ -202,6 +204,9 @@
 
   .student-create {
     padding: 5px 20px;
+    input {
+      max-width: 120px;
+    }
 
     #create-student {
       h3 {
@@ -209,8 +214,22 @@
       }
 
       .student-info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
         .create-student-input {
-          display: inline-block;
+          input {
+            max-width: 120px;
+            border-radius: 0;
+            margin: 0 5px;
+            padding: 2px;
+            font-size: 1em;
+
+          }
+          &::placeholder {
+            color: $primary-font-color;
+          }
+
         }
       }
     }

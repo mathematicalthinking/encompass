@@ -15,9 +15,9 @@
             <div class="create-student-input">
               <label for="defaulPassword">Class Password<span class="required-star">*</span>
                 {{#if isEditingSectionPassword}}
-                  <button class="done action_button" {{action "updateSectionPassword"}}>done</button>
-                {{else}}
-                  <button class="edit action_button" {{action (mut isEditingSectionPassword) true}}>edit</button>
+                  <i title="Done" {{action "updateSectionPassword"}} class="far fa-check-square"></i>
+              {{else}}
+                <i title="Edit" {{action (mut isEditingSectionPassword) true}} class="far fa-edit"></i>
                 {{/if}}
               </label>
               {{#if isEditingSectionPassword}}
