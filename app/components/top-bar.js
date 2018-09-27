@@ -30,9 +30,25 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
     toggleMenu: function () {
       console.log('toggle called', this.openMenu);
     },
+    showToggleModal: function () {
+        window.swal({
+          title: 'Are you sure you want to switch roles?',
+          text: 'If you are currently modifying or creating a new record, you will lose all unsaved progress',
+          type: 'warning',
+          confirmButtonText: 'Ok',
+          showCancelButton: true,
+        }).then((result) => {
+          if (result.value) {
+            this.send('toggleActingRole');
+            // window.swal(
+            //   'You sucessfuly switched roles'
+            // );
+          }
+        });
+    },
+
     toggleActingRole: function() {
       // should this action be moved to the application controller?
-
       const currentUser = this.get('currentUser');
 
       // student account types cannot toggle to teacher role
@@ -49,6 +65,14 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
         this.set('actionToConfirm', null);
         this.store.unloadAll('assignment');
         this.sendAction('toHome');
+        window.swal({
+          title: 'Sucessfully switched roles',
+          type: 'success',
+          toast: true,
+          position: 'bottom-end',
+          timer: 2500,
+          showConfirmButton: false,
+        });
       }).catch((err) => {
         // handle error
         this.handleErrors(err, 'toggleRoleErrors', currentUser);
@@ -58,4 +82,3 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
     }
   }
 });
-
