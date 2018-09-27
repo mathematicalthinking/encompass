@@ -81,20 +81,3 @@
   {{#each uploadErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
-
-<script>
-  var options = {
-    debug: 'info',
-    modules: {
-      toolbar: [
-      ['bold', 'italic', 'underline'],
-      ['image'],
-      ]
-    },
-    placeholder: 'Explain your ideas and how you figured them out...',
-    theme: 'snow'
-  };
-  var quill = new Quill('#editor', options);
-</script>
-
-

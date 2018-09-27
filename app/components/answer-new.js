@@ -25,6 +25,18 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.set('contributors', students.map(s => s));
 
     } else {
+      const options = {
+        debug: 'false',
+        modules: {
+          toolbar: [
+          ['bold', 'italic', 'underline'],
+          ['image'],
+          ]
+        },
+        placeholder: 'Explain your ideas and how you figured them out...',
+        theme: 'snow'
+      };
+      var quill = new window.Quill('#editor', options);
       this.get('contributors').addObject(this.get('currentUser'));
     }
 
