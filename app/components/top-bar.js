@@ -72,6 +72,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
           position: 'bottom-end',
           timer: 2500,
           showConfirmButton: false,
+          background: '#CBFDCB',
         });
       }).catch((err) => {
         // handle error

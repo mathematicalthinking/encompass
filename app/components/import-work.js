@@ -280,6 +280,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
                 toast: true,
                 position: 'bottom-end',
                 timer: 4000,
+                showConfirmButton: false,
+                background: '#CBFDCB',
               });
             }
           })
