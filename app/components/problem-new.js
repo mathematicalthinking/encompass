@@ -126,16 +126,28 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
-          let error = res.get('error');
-          if (error) {
-            this.set('problemNameExists', true);
-            this.set('successMessage', true);
-            return;
-          }
+          window.swal({
+            title: 'Problem Created',
+            type: 'success',
+            toast: true,
+            position: 'bottom-end',
+            timer: 4000,
+            showConfirmButton: false,
+            background: '#CBFDCB',
+          });
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
-          that.handleErrors(err, 'createProblemErrors', createProblemData);
+          window.swal({
+            title: 'Problem Name Exists',
+            type: 'error',
+            toast: true,
+            position: 'bottom-end',
+            timer: 4000,
+            showConfirmButton: false,
+            background: '#ffe0e0',
+          });
+          // that.handleErrors(err, 'createProblemErrors', createProblemData);
         });
       }
     },
