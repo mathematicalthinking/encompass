@@ -24,10 +24,11 @@
           </li>
           <li>
             <label for="additionalInfo">Additional Info</label>
-            {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
+            {{textarea value=additionalInfo rows="3" placeholder="Additional info..."}}
+            {{input id="additionalInfo" type="hidden" value=additionalInfo }}
           </li>
           <li>
-            <label for="imageUrl">Upload Images</label>
+            <label for="imageUrl">Additional Image</label>
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
           <li class="privacy-settings">

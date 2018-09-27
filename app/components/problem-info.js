@@ -206,6 +206,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
+      let additionalInfo = this.get('additionalInfo');
 
       if (!title || !text || !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -222,6 +223,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       problem.set('title', title);
       problem.set('text', text);
+      problem.set('additionalInfo', additionalInfo);
 
 
       if(this.filesToBeUploaded) {

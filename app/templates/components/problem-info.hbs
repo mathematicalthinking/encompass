@@ -25,7 +25,8 @@
             </li>
             <li>
               <label for="additionalInfo">Additional Info</label>
-              {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
+              {{textarea value=additionalInfo rows="3" placeholder="Additional info..."}}
+              {{input id="additionalInfo" type="hidden" value=additionalInfo }}
             </li>
             <li class="privacy-settings">
               <label>Privacy Settings
@@ -76,10 +77,12 @@
             <label for="text">Problem Statement</label>
             <p class="problem-info">{{{problem.text}}}</p>
           </li>
-          <li>
-            <label for="additionalInfo">Additional Info</label>
-            <p class="problem-info">{{problem.additionalInfo}}</p>
-          </li>
+          {{#if additionalInfo}}
+            <li>
+              <label for="additionalInfo">Additional Info</label>
+              <p class="problem-info">{{problem.additionalInfo}}</p>
+            </li>
+          {{/if}}
 
           {{#if problem.origin}}
           <li>
@@ -98,7 +101,7 @@
           </li>
           {{#if problem.image}}
           <li>
-            <label for="imagedata">Problem Image:</label>
+            <label for="imagedata">Additional Image:</label>
               <a {{action 'toggleImageSize'}}>
                 <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
               </a>

@@ -5,8 +5,7 @@
 #problem-info {
   section.problemdetails {
     #probleminfoform {
-      input[type=text],
-      select {
+      textarea, input[type=text], select {
         font-size: 1em;
         color: $primary-font-color;
         width: 50%;
