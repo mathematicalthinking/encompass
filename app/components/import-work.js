@@ -208,6 +208,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           const uploadedAnswers = res;
 
           if (that.get('doCreateWorkspace')) {
+          this.set('isCompDirty', false);
+          this.sendAction('doConfirmLeaving', false);
           subs = res.map((ans) => {
             //const teachers = {};
             const clazz = {};
@@ -272,6 +274,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             if (res.workspaceId) {
               that.set('createdWorkspace', res);
               that.sendAction('toWorkspaces', res);
+              window.swal({
+                title: 'Workspace Created',
+                type: 'success',
+                toast: true,
+                position: 'bottom-end',
+                timer: 4000,
+              });
             }
           })
           .catch((err) => {
