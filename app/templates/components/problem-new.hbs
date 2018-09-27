@@ -14,7 +14,9 @@
           </li>
           <li>
             <label for="text">Problem Statement <span class="required-star">*</span></label>
-            {{input id="text" required="true" type="text" value=text placeholder="enter problem question"}}
+            <div class="quill-container">
+              <section id="editor"></section>
+            </div>
           </li>
           <li>
             <label for="categories">Problem Category</label>
@@ -22,10 +24,11 @@
           </li>
           <li>
             <label for="additionalInfo">Additional Info</label>
-            {{input id="additionalInfo" type="text" value=additionalInfo placeholder="enter additional info"}}
+            {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
+            {{input id="additionalInfo" type="hidden" value=additionalInfo }}
           </li>
           <li>
-            <label for="imageUrl">Upload Images</label>
+            <label for="imageUrl">Additional Image</label>
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
           <li class="privacy-settings">

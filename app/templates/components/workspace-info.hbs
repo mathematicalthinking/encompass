@@ -54,14 +54,7 @@
                 <button {{action 'editOwner' workspace.owner}}> Change owner</button>
               {{/unless}}
               {{#if isChangingOwner}}
-                {{input type="text" id="edit-owner-input" placeholder=workspace.owner.username value=owner}}
-                <ul>
-                  {{#each ownerSearchResults as |result|}}
-                  <li>
-                    <button {{action 'changeOwner' result}}>{{result.username}}</button>
-                  </li>
-                  {{/each}}
-                </ul>
+                {{twitter-typeahead minLength=2 sourceFunction=addEditorTypeahead placeholder="username" onSelect="changeOwner" isAsync=true optionLabelPath="username" allowMultiple=true}}
               {{/if}}
             {{else}}
               <span class="owner username">{{workspace.owner.username}}</span>
@@ -110,14 +103,8 @@
     <div class="half">
       {{#if isEditing}}
       <label>Add Editor</label>
-      {{input type="text" value=searchText placeholder="Search..." classNames="editor search"}}
-      <ul>
-        {{#each editorSearchResults as |result|}}
-        <li>
-          <button class="addEditor" {{action 'addEditor' result}}>{{result.username}}</button>
-        </li>
-        {{/each}}
-      </ul>
+      {{twitter-typeahead minLength=2 sourceFunction=addEditorTypeahead placeholder="username" onSelect="addEditor" isAsync=true optionLabelPath="username" allowMultiple=true}}
+
       {{else}} {{#if canEdit}}
       <p>
         Click

@@ -24,8 +24,15 @@ form#newproblemform {
   .required-error {
     border: 2px solid red;
   }
+  .quill-container {
+    width: 70%;
+    display: inline-block;
+    #editor {
+      min-height: 100px;
+    }
+  }
 
-  input[type=text], select {
+  input[type=text], select, textarea {
     width: 70%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -84,7 +91,9 @@ form#newproblemform {
   }
 
   .privacy-settings {
-    margin-bottom: 10px;
+    // margin-bottom: 10px;
+    display: flex;
+    align-items: center;
   }
 
   #myOrg {

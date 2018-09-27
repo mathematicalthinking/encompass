@@ -9,22 +9,36 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   findRecordErrors: [],
   uploadErrors: [],
   createRecordErrors: [],
-
+  elementId: 'answer-new',
+  contributors: [],
 
   didInsertElement: function() {
     //prefill form if revising
     if (this.priorAnswer) {
       const ans = this.priorAnswer;
       this.set('answer', ans.get('answer'));
-      this.set('explanation', ans.get('explanation'));
-      if (ans.additionalImage) {
-        this.set('students', ans.get('students'));
-      }
+      let explanation = ans.get('explanation');
+
+      this.$('.ql-editor').html(explanation);
+
+      let students = ans.get('students');
+      this.set('contributors', students.map(s => s));
+
     } else {
-      this.get('students').addObject(this.get('currentUser'));
+      const options = {
+        debug: 'false',
+        modules: {
+          toolbar: [
+          ['bold', 'italic', 'underline'],
+          ['image'],
+          ]
+        },
+        placeholder: 'Explain your ideas and how you figured them out...',
+        theme: 'snow'
+      };
+      var quill = new window.Quill('#editor', options);
+      this.get('contributors').addObject(this.get('currentUser'));
     }
-
-
 
     let formId = 'form#newanswerform';
     this.set('formId', formId);
@@ -34,7 +48,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     this.get('validator').initialize(formId, isMissing);
   },
 
-
   handleImage: function() {
     const that = this;
     return new Promise((resolve, reject) => {
@@ -42,7 +55,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return resolve(that.get('existingImageId'));
       }
       if (that.filesToBeUploaded) {
-        console.log('filesToBeUploaded', that.filesToBeUploaded);
         const uploadData = that.get('filesToBeUploaded');
         const formData = new FormData();
         for(let f of uploadData) {
@@ -100,11 +112,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     });
   },
 
-  didReceiveAttrs: function() {
-    return this.get('section').get('students').then((students) => {
-      this.set('sectionStudents', students);
-    });
-  },
   checkMissing: function() {
     const id = this.get('formId');
     let isMissing = this.get('validator').isMissingRequiredFields(id);
@@ -116,7 +123,12 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const quillContent = this.$('.ql-editor').html();
     const explanation = quillContent.replace(/["]/g, "'");
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
-    const students = that.get('students');
+    const students = that.get('contributors');
+
+    if (!answer || !explanation) {
+      this.set('isMissingRequiredFields', true);
+      return;
+    }
 
     return this.handleImage().then((image) => {
       const records = students.map((student) => {
@@ -185,19 +197,28 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         this.set('addedStudent', false);
       }
     },
-    addStudent: function() {
-      const sectionStudents = this.get('sectionStudents');
-      const username = this.get('student');
-      //What should we be checking by? organization? section? or in the students array of the assignment? What if a student is in section but somehow not assigned to the assignment?
-      const filtered = sectionStudents.filterBy('username', username);
-      if (Ember.isEmpty(filtered)) {
-        this.set('addStudentError', true);
+    addStudent: function(student) {
+      if (!student) {
         return;
       }
-      this.get('students').addObject(filtered.objectAt(0));
-      this.set('student', '');
-      this.set('addedStudent', true);
+
+      let students = this.get('contributors');
+
+      if (students.includes(student)) {
+        this.set('userAlreadyInSection', true);
+        return;
+      }
+
+      students.pushObject(student);
+      // this.set('addedStudent', true);
     },
+    removeStudent: function(student) {
+      if (!student) {
+        return;
+      }
+      let students = this.get('contributors');
+      students.removeObject(student);
+    }
   }
 });
 

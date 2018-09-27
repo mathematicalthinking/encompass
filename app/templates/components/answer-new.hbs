@@ -6,51 +6,52 @@
   <section class="third submissions">
     <form id='newanswerform' class='properForm'>
       <fieldset>
-        <ol>
-          <li>
-            <label for="answer">Brief Summary <span class="required-star">*</span></label>
-            {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
-            {{input id="answer" required="true" type="hidden" value=answer}}
-          </li>
-          <li>
-            <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
-            <section id="editor">
-            </section>
-          </li>
-         <li>
-              <label for="uploadedFile">Upload PDF</label>
-              {{#if imageData}}
-                <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
-                  <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
-                </a>
-                  <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
-                  <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
-              {{else}}
-                  {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
-              {{/if}}
-            </li>
-            <li>
+        <div class="new-answer-input">
+          <label for="answer">Brief Summary <span class="required-star">*</span></label>
+          {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
+          {{input id="answer" required="true" type="hidden" value=answer}}
+        </div>
+        <div class="new-answer-input">
+          <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
+          <div class="quill-container">
+            <section id="editor"></section>
+          </div>
 
-              <label for="students">Contributing Students</label>
-              <ol>
-              {{#each students as |student|}}
-
-                <li>{{student.username}}</li>
-
-
+        </div>
+         <div class="new-answer-input">
+            <label for="uploadedFile">Upload PDF</label>
+            {{#if imageData}}
+              <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
+                <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
+              </a>
+            <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
+            <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
+            {{else}}
+              {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
+            {{/if}}
+          </div>
+          <div class="new-answer-input">
+            <label for="students">Contributing Students</label>
+            <div class="student-list">
+              <ul>
+              {{#each contributors as |student|}}
+                <li>{{student.username}}
+                  {{#unless (is-equal student currentUser)}}
+                    <i {{action "removeStudent" student}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
+                  {{/unless}}
+                  </li>
               {{/each}}
-              </ol>
-              {{input type="text" value=student id="student" key-press=(action "toggleAddStudentMessages")}}
-              <button id="addStudent"{{action "addStudent"}}>Add</button>
-              {{#if addStudentError}}
-                <p class="error-message"></p>Sorry, that user is not in your class.
-              {{/if}}
-              {{#if addedStudent}}
-              <p class="success-message"></p>Successfully added student.
-              {{/if}}
+              </ul>
+            </div>
+          </div>
+          {{twitter-typeahead minLength=1 selectedValue=studentToAdd selectedItems=contributors onSelect="addStudent" dataList=section.students placeholder="username" optionLabelPath="username" allowMultiple=true}}
 
-            </li>
-        </ol>
+          {{#if addStudentError}}
+              <p class="error-message"></p>Sorry, that user is not in your class.
+            {{/if}}
+            {{#if addedStudent}}
+            <p class="success-message"></p>Successfully added student.
+          {{/if}}
       </fieldset>
       {{#if isMissingRequiredFields}}
         <p class="error-message">Please provide all required fields.</p>
@@ -69,6 +70,8 @@
   </section>
 
 
+
+
   {{#each findRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
@@ -78,20 +81,3 @@
   {{#each uploadErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
-
-<script>
-  var options = {
-    debug: 'info',
-    modules: {
-      toolbar: [
-      ['bold', 'italic', 'underline'],
-      ['image'],
-      ]
-    },
-    placeholder: 'Explain your ideas and how you figured them out...',
-    theme: 'snow'
-  };
-  var quill = new Quill('#editor', options);
-</script>
-
-

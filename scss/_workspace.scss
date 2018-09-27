@@ -74,11 +74,14 @@
     .required-error {
       border: 2px solid $error-color;
     }
+
+    #my-select {
+      width:70%;
+    }
     div.mySelect {
       display: inline-block;
       padding: 12px 0px;
       font-size: 1em;
-      width: 50%;
       select {
         font-size: 1em;
         height: 45px;
@@ -88,6 +91,7 @@
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
+        width: 50%;
         // -webkit-appearance:none;
         &::placeholder {
           color: $primary-font-color;
@@ -108,7 +112,7 @@
       margin-top: 40px;
     }
     input[type=date], input[type=text], .workspace-info {
-      width: 50%;
+      width: 35%;
       padding: 12px 20px;
       margin: 8px 0;
       font-size: 1em;

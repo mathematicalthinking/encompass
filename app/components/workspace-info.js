@@ -3,9 +3,11 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   comments: Ember.inject.controller,
   isEditing: false,
   selectedMode: null,
-  searchText: "",
   updateRecordErrors: [],
 
+  didInsertElement: function() {
+    this.set('addEditorTypeahead', this.getAddableEditors.call(this));
+  },
 
   willDestroyElement: function () {
     // do we need to be saving the workspace here?
@@ -17,34 +19,35 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
   },
 
-  setSearchResults: function () {
-    let searchText = this.get('searchText');
-    searchText = searchText.replace(/\W+/g, "");
-    if (searchText.length < 2) {
-      return;
-    }
+  getAddableEditors: function() {
+    const store = this.get('store');
 
-    this.get('store').query('user', {
-      usernameSearch: searchText,
-    }).then((people) => {
-      this.set('editorSearchResults', people.rejectBy('accountType', 'S'));
-    });
-  }.observes('searchText'),
+    let ret = function(query, syncCb, asyncCb) {
+      let selectedUsers = this.get('workspace.editors');
 
-  setOwnerResults: function () {
-    let owner = this.get('owner');
-    owner = owner.replace(/\W+/g, "");
-    if (owner.length < 2) {
-      return;
-    }
+      let text = query.replace(/\W+/g, "");
+      return store.query('user', {
+        usernameSearch: text,
+        }).then((users) => {
+          if (!users) {
+            return [];
+          }
 
-    this.get('store').query('user', {
-      usernameSearch: owner,
-    }).then((people) => {
-      this.set('ownerSearchResults', people.rejectBy('accountType', 'S'));
-    });
-  }.observes('owner'),
+        users = users.rejectBy('accountType', 'S');
 
+
+          let filtered = users.filter((user) => {
+            return !selectedUsers.includes(user);
+          });
+          return asyncCb(filtered.toArray());
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'queryErrors');
+        });
+      };
+
+      return ret.bind(this);
+    },
 
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');

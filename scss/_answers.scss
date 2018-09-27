@@ -1,0 +1,67 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#answer-info{
+  .info-detail{
+    display: flex;
+    align-items: center;
+  }
+  i {
+    padding: 5px;
+  }
+  .info-header {
+    text-align: center;
+  }
+  .list-header {
+    border-bottom: 1px solid;
+  }
+  label {
+    width: 20%;
+    font-size: 1em;
+    padding: 12px 20px;
+    color: $dark-font-color;
+  }
+}
+
+#answer-new {
+  .new-answer-input {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    textarea {
+      width: 35%;
+      min-width:150px;
+    }
+  }
+
+  .quill-container {
+    width: 35%;
+    min-width: 150px;
+    section#editor {
+      width: 100%;
+      display: inline-block;
+      min-height: 100px;
+      .ql-editor {
+        width: 100%;
+        display: inline-block;
+      }
+
+    }
+  }
+
+  label {
+    width: 20%;
+    font-size: 1em;
+    padding: 12px 20px;
+    color: $dark-font-color;
+  }
+  .ql-toolbar.ql-snow {
+    width: 100%;
+    display: inline-block;
+  }
+
+  .student-list {
+    display: block;
+  }
+}

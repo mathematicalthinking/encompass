@@ -46,9 +46,9 @@ module.exports = {
     form: 'form#newproblemform',
     inputs: {
       name: 'input#title',
-      question: 'input#text',
+      question: 'div.ql-editor',
       category: 'input#categories',
-      additionalInfo: 'input#additionalInfo',
+      additionalInfo: 'textarea.additional-info-area',
       // isPublicYes: 'input.public',
       // isPublicNo: 'input.private',
       justMe: 'input.justMe',
