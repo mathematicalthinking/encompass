@@ -70,7 +70,19 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
   actions: {
     showModal: function(ws) {
       this.set('workspaceToDelete', ws);
+      window.swal({
+        title: 'Are you sure you want to delete this worksapce?',
+        type: 'warning',
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          this.send('trashWorkspace', ws);
+        }
+      });
     },
+
     trashWorkspace: function(ws) {
       const id = ws.id;
       const workspaces = this.get('model');
@@ -78,8 +90,31 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
       if (!Ember.isEmpty(filtered)) {
         const ws = filtered.objectAt(0);
         ws.set('isTrashed', true);
-        ws.save().then((rec) => {
+        ws.save().then((res) => {
           this.set('workspaceToDelete', null);
+          window.swal({
+            title: 'Workspace Deleted',
+            type: 'success',
+            toast: true,
+            position: 'bottom-end',
+            timer: 5000,
+            showConfirmButton: true,
+            confirmButtonText: 'Undo'
+          }).then((result) => {
+            if (result.value) {
+              ws.set('isTrashed', false);
+              ws.save().then(() => {
+                window.swal({
+                  title: 'Workspace Restored',
+                  type: 'success',
+                  toast: true,
+                  position: 'bottom-end',
+                  timer: 3000,
+                  showConfirmButton: false,
+                });
+              });
+            }
+          });
         })
         .catch((err) => {
           this.set('workspaceToDelete', null);
