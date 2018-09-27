@@ -29,13 +29,19 @@
     display: flex;
     align-items: center;
     margin: 20px 0;
+    textarea {
+      width: 35%;
+      min-width:300px;
+    }
   }
 
   .quill-container {
-    width: 70%;
+    width: 35%;
+    min-width: 300px;
     section#editor {
       width: 100%;
       display: inline-block;
+      min-height: 100px;
       .ql-editor {
         width: 100%;
         display: inline-block;
