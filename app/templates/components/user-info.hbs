@@ -85,7 +85,7 @@
           {{#if currentUser.isAdmin}}
             <td>
               Would you like to create {{user.organizationRequest}}<br/>
-              <button {{action 'createNewOrg'}}>Yes</button>
+              <button {{action 'confirmOrgModal'}}>Yes</button>
               <button{{action 'removeOrg'}}>No</button>
             </td>
           {{else}}
@@ -225,6 +225,14 @@
   {{#each updateRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
+
+  {{#if orgModal}}
+    {{modal-confirm actionToConfirm=orgModal onConfirm="createNewOrg" actionName="create a new organization"}}
+  {{/if}}
+
+  {{#if noOrgModal}}
+    {{modal-confirm actionToConfirm=noOrgModal onConfirm="saveUser" actionName="save a user with no organization" warningMessage="Users should always belong to an organization in order for EnCoMPASS to work properly"}}
+  {{/if}}
 
     <div class="button-row">
       <button class='action_button save-user' {{action 'saveUser'}}>Save</button>

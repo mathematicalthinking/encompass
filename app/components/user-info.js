@@ -157,6 +157,40 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('authorized', isAuth);
       },
 
+      // checkOrgExists: function () {
+      //   let user = this.get('user');
+      //   let userOrg = user.get('organization');
+      //   let userOrgRequest = user.get('organizationRequest');
+
+      //   let org = this.get('org');
+
+      //   let orgReq = this.get('orgReq');
+
+      //   let orgSaved = org || orgReq;
+        // if org saved is true then we are good
+
+        // if org saved is false check if one of the following true:
+        //   user has an org or orgReq
+
+        // if (!orgSaved) {
+        //   if (!org) {
+        //     this.set('noOrgModal', true);
+        //   }
+        //   if (!orgReq) {
+        //     if (org) {
+        //       this.send('saveUser');
+        //     } else {
+        //     this.set('noOrgModal', true);
+        //     }
+        //   }
+        // } else {
+        //   if (!org) {
+        //     this.set('noOrgModal', true);
+        //   }
+        //   this.send('saveUser');
+        // }
+      // },
+
       saveUser: function () {
         let currentUser = this.get('currentUser');
         let user = this.get('user');
@@ -212,6 +246,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('willOveride', true);
       },
 
+      confirmOrgModal: function () {
+        this.set('orgModal', true);
+      },
+
       createNewOrg: function () {
         let user = this.get('user');
         let currentUser = this.get('currentUser');
@@ -228,6 +266,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
             user.set('organizationRequest', null);
             user.save().then((user) => {
               console.log('user', user);
+              this.set('orgModal', false);
             }).catch((err) => {
               this.handleErrors(err, 'updateRecordErrors', user);
             });
@@ -248,6 +287,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       cancel: function () {
         this.set('isEditing', false);
+        this.set('noOrgModal', false);
       },
 
       handleCancelForm: function() {

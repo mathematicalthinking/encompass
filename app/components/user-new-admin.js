@@ -78,8 +78,17 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
   },
 
 //warn admin they are creating new org
+// When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
   actions: {
+    // checkNewOrg: function () {
+    //   if (this.get('orgReq')) {
+    //     this.set('confirmNewOrg', true);
+    //   } else {
+    //     this.send('newUser');
+    //   }
+    // },
+
     newUser: function () {
       var username = this.get('username');
       var password = this.get('password');
@@ -92,7 +101,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
 
-      if (!username || !password || !organization || !accountType) {
+      if (!username || !password || !accountType) {
         this.set('errorMessage', true);
         return;
       }
@@ -231,9 +240,13 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       this.sendAction('toUserHome');
     },
 
-    setOrg(org) {
-      this.set('org', org);
-    },
+     setOrg(org) {
+      //  if (typeof org === 'string') {
+      //    this.set('orgReq', org);
+      //  } else {
+         this.set('org', org);
+      //  }
+     },
 
     resetErrors(e) {
       const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];
