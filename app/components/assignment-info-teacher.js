@@ -10,6 +10,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   dataFetchErrors: [],
   findRecordErrors: [],
   updateRecordErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
   init: function() {
     this._super(...arguments);
@@ -164,14 +165,15 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       assignment.set('isTrashed', true);
       return assignment.save().then((assignment) => {
         this.set('assignmentToDelete', null);
-        window.swal({
-          title: 'Assignment Deleted',
-          type: 'success',
-          toast: true,
-          position: 'bottom-end',
-          timer: 4000,
-          showConfirmButton: false,
-          background: '#CBFDCB',
+        this.get('alert').showToast('success', 'Assignment Deleted', 'bottom-end', 5000, true, 'Undo')
+        .then((result) => {
+          if (result.value) {
+            assignment.set('isTrashed', false);
+            assignment.save().then(() => {
+              this.get('alert').showToast('success', 'Assignment Restored', 'bottom-end', 5000, false, null);
+              window.history.back();
+            });
+          }
         });
         this.sendAction('toAssignments');
       })
@@ -201,22 +203,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       }
 
       if (assignment.get('hasDirtyAttributes')) {
-        return assignment.save().then((assignment) => {
-          window.swal({
-            title: 'Assignment Updated',
-            type: 'success',
-            toast: true,
-            position: 'bottom-end',
-            timer: 4000,
-            showConfirmButton: false,
-            background: '#CBFDCB',
-          });
-            this.set('assignmentUpdateSuccess', true);
-            this.set('isEditing', false);
-            return;
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateRecordErrors', assignment);
+        return assignment.save().then(() => {
+          this.get('alert').showToast('success', 'Assignment Updated', 'bottom-end', 4000, false, null);
+          this.set('assignmentUpdateSuccess', true);
+          this.set('isEditing', false);
+          return;
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', assignment);
         });
       } else {
         this.set('isEditing', false);
