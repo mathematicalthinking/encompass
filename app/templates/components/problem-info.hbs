@@ -157,17 +157,6 @@
   <p class="error-message">{{error}}</p>
 {{/each}}
 
-{{!-- {{#if isEditing}}
-  {{#if showConfirmModal}}
-    {{modal-confirm actionToConfirm=showConfirmModal onConfirm="updateProblem" actionName="make your problem public" warningMessage="You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used"}}
-  {{/if}}
-{{/if}} --}}
-
-{{#if showEditWarning}}
-  {{modal-confirm actionToConfirm=showEditWarning onConfirm="continueEdit" actionName="edit a problem that has already been assigned"
-  warningMessage="This probably has been used in an assignment but no answers have been submitted yet. Be careful editing this problem"}}
-{{/if}}
-
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}
