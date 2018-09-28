@@ -35,7 +35,35 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
         record.rollbackAttributes();
       }
     }
+  },
 
+  removeErrors: function(...errors) {
+
+    for (let e of errors) {
+      this._removeErrors(e);
+    }
+  },
+  _removeErrors: function(err) {
+    if (!err) {
+      return;
+    }
+
+    if (Array.isArray(err)) {
+      for (let e of err) {
+        if (typeof e === 'string') {
+          if (!!this.get(e)) {
+            this.set(e, null);
+          }
+        }
+      }
+    } else {
+      if (typeof err !== 'string') {
+        return;
+      }
+      if (!!this.get(err)) {
+        this.set(err, null);
+      }
+    }
   }
 
 });
