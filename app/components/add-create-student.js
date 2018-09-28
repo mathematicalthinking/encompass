@@ -6,6 +6,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
   createUserErrors: [],
   findUserErrors: [],
   updateSectionErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
   clearCreateInputs: function() {
     let fields = ['username', 'name', 'password'];
@@ -87,8 +88,9 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
           return this.store.findRecord('user', userId)
             .then((user) => {
               students.pushObject(user);   //add student to students aray
-              section.save().then((res) => {
+              section.save().then(() => {
                 that.clearCreateInputs();
+                this.get('alert').showToast('success', 'Student Created', 'bottom-end', 3000, false, null);
               })
               .catch((err) => {
                 that.handleErrors(err, 'updateSectionErrors', section);
@@ -214,7 +216,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       let section = this.get('section');
       if (section.get('hasDirtyAttributes')) {
         section.save().then(() => {
-          console.log('section password updated!');
+          this.get('alert').showToast('success', 'Class Password Updated', 'bottom-end', 3000, false, null);
         })
         .catch((err) => {
           this.handleErrors(err, 'updateSectionErrors');
