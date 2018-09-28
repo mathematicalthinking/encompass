@@ -147,7 +147,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     },
 
     showDeleteModal: function () {
-      this.get('alert').showModel('warning', 'Are you sure you want to delete this assignment?', 'Yes, delete it')
+      this.get('alert').showModel('warning', 'Are you sure you want to delete this assignment?', null, 'Yes, delete it')
       .then((result) => {
         if (result.value) {
           this.send('deleteAssignment');

@@ -125,13 +125,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   actions: {
     deleteProblem: function () {
       let problem = this.get('problem');
-      window.swal({
-        title: 'Are you sure you want to delete this problem?',
-        type: 'warning',
-        showCancelButton: true,
-        showConfirmButton: true,
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
+      .then((result) => {
         if (result.value) {
           problem.set('isTrashed', true);
           this.sendAction('toProblemList');
@@ -197,14 +192,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
 
       if (currentPrivacy !== "E" && privacy === "E") {
-        window.swal({
-          title: 'Are you sure you want to make your problem public?',
-          text: "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
-          type: 'question',
-          showCancelButton: true,
-          showConfirmButton: true,
-          confirmButtonText: 'Yes'
-        }).then((result) => {
+        this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
+        .then((result) => {
           if (result.value) {
             this.send('updateProblem');
           }

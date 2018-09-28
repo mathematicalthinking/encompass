@@ -139,14 +139,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
   confirmCreatePublic: function() {
-    window.swal({
-      title: 'Are you sure you want to create a public problem?',
-      text: 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used',
-      type: 'question',
-      showCancelButton: true,
-      showConfirmButton: true,
-      confirmButtonText: 'Yes'
-    }).then((result) => {
+    this.get('alert').showModal('question', 'Are you sure you want to create a public problem?', 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used', 'Yes')
+    .then((result) => {
       if (result.value) {
         this.createProblem();
       }
