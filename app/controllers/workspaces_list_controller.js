@@ -71,7 +71,7 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
     showModal: function(ws) {
       this.set('workspaceToDelete', ws);
       window.swal({
-        title: 'Are you sure you want to delete this worksapce?',
+        title: 'Are you sure you want to delete this workspace?',
         type: 'warning',
         showCancelButton: true,
         showConfirmButton: true,

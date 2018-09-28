@@ -49,7 +49,7 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
         transition.abort();
         window.swal({
           title: 'Are you sure you want to leave',
-          type: 'warning',
+          type: 'question',
           showCancelButton: true,
           showConfirmButton: true,
           confirmButtonText: 'Yes',

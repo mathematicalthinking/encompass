@@ -34,7 +34,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
         window.swal({
           title: 'Are you sure you want to switch roles?',
           text: 'If you are currently modifying or creating a new record, you will lose all unsaved progress',
-          type: 'warning',
+          type: 'question',
           confirmButtonText: 'Ok',
           showCancelButton: true,
         }).then((result) => {
