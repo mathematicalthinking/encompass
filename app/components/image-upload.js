@@ -68,16 +68,17 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
       const uploadData = that.get('filesToBeUploaded');
       if (!uploadData) {
         this.set('isUploading', false);
-        window.swal({
-          title: 'Please Upload Files',
-          type: 'error',
-          toast: true,
-          position: 'bottom-end',
-          timer: 5000,
-          showConfirmButton: false,
-          background: '#ffe0e0',
-        });
-        // this.set('missingFilesError', true);
+        // window.swal({
+        //   title: 'Please Upload Files',
+        //   type: 'error',
+        //   toast: true,
+        //   position: 'bottom-end',
+        //   timer: 5000,
+        //   showConfirmButton: false,
+        //   background: '#ffe0e0',
+        //   target: document.getElementById('error-field'),
+        // });
+        this.set('missingFilesError', true);
         return;
       }
       this.set('isUploading', true);
