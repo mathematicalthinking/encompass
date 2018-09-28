@@ -2,6 +2,7 @@
 Encompass.ResetPasswordUserComponent = Ember.Component.extend(
   Encompass.ErrorHandlingMixin, {
   ElementId: 'reset-password-user',
+  alert: Ember.inject.service('sweet-alert'),
   displayResetForm: true,
   fieldType: 'password',
   postErrors: [],
@@ -44,6 +45,7 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend(
         .then((res) => {
           if (res._id && res._id === id) {
             that.get('handleResetSuccess')(res);
+            this.get('alert').showToast('success', 'Password Reset', 'bottom-end', 3000, false, null);
           } else {
             let err;
             if (res.info) {

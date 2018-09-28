@@ -209,10 +209,6 @@
     {{#if isEditing}}
       {{#if isResettingPassword}}
         {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess") cancelReset=(action "handleCancelForm")}}
-      {{else}}
-        {{#if resetPasswordSuccess}}
-          <p class="success-message">Succesfully reset password for {{user.username}}</p>
-        {{/if}}
       {{/if}}
     {{#unless isResettingPassword}}
 

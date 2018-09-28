@@ -2,6 +2,7 @@ Encompass.ResetPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlin
   classNames: ['reset-page'],
   getTokenErrors: [],
   resetPasswordErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
   didReceiveAttrs: function() {
     const token = this.token;
@@ -50,7 +51,7 @@ Encompass.ResetPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlin
         data: resetPasswordData
       })
         .then((res) => {
-          console.log('resetPass response: ', res);
+          this.get('alert').showToast('success', 'Password Reset', 'bottom-end', 3000, false, null);
           that.sendAction('toHome');
         })
         .catch((err) => {

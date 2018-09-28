@@ -240,6 +240,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       resetPassword: function() {
         this.set('isResettingPassword', true);
+        Ember.run.later(() => {
+          $('html, body').animate({
+            scrollTop: $(document).height()
+          });
+        }, 100);
       },
 
       authEmail: function() {
