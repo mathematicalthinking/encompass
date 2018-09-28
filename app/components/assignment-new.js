@@ -51,18 +51,18 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   checkMissing: function() {
-    // const id = this.get('formId');
-    // let isMissing = this.get('validator').isMissingRequiredFields(id);
-    // this.set('isMissingRequiredFields', isMissing);
-    window.swal({
-      title: 'Missing fields',
-      type: 'error',
-      toast: true,
-      position: 'bottom-end',
-      timer: 4000,
-      showConfirmButton: false,
-      background: '#ffe0e0',
-    });
+    const id = this.get('formId');
+    let isMissing = this.get('validator').isMissingRequiredFields(id);
+    this.set('isMissingRequiredFields', isMissing);
+    // window.swal({
+    //   title: 'Missing fields',
+    //   type: 'error',
+    //   toast: true,
+    //   position: 'bottom-end',
+    //   timer: 4000,
+    //   showConfirmButton: false,
+    //   background: '#ffe0e0',
+    // });
   },
   createAssignment: function() {
     const that = this;
@@ -83,16 +83,16 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
 
     if (assignedDate > dueDate) {
-      // this.set('invalidDateRange', true);
-      window.swal({
-        title: 'Due Date must be after Assign Date',
-        type: 'error',
-        toast: true,
-        position: 'bottom-end',
-        timer: 4000,
-        showConfirmButton: false,
-        background: '#ffe0e0',
-      });
+      this.set('invalidDateRange', true);
+      // window.swal({
+      //   title: 'Due Date must be after Assign Date',
+      //   type: 'error',
+      //   toast: true,
+      //   position: 'bottom-end',
+      //   timer: 4000,
+      //   showConfirmButton: false,
+      //   background: '#ffe0e0',
+      // });
       return;
     }
     // need to get all students from section
@@ -164,16 +164,16 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
           this.createAssignment();
         } else {
           if (res.invalidInputs) {
-            // this.set('isMissingRequiredFields', true);
-            window.swal({
-              title: 'Missing fields',
-              type: 'error',
-              toast: true,
-              position: 'bottom-end',
-              timer: 4000,
-              showConfirmButton: false,
-              background: '#ffe0e0',
-            });
+            this.set('isMissingRequiredFields', true);
+            // window.swal({
+            //   title: 'Missing fields',
+            //   type: 'error',
+            //   toast: true,
+            //   position: 'bottom-end',
+            //   timer: 4000,
+            //   showConfirmButton: false,
+            //   background: '#ffe0e0',
+            // });
             return;
           }
         }
