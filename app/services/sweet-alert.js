@@ -54,6 +54,16 @@ Encompass.SweetAlertService = Ember.Service.extend({
       showConfirmButton: true,
       confirmButtonText: confirmText,
     });
-  }
+  },
+
+  showPrompt: function(input, title, text, confirmButtonText) {
+    return window.swal({
+      input: input,
+      title: title,
+      text: text,
+      confirmButtonText:  confirmButtonText,
+      showCancelButton: true,
+    });
+  },
 
 });
