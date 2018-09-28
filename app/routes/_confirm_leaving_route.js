@@ -7,6 +7,7 @@
  It also currently marks 'editing' false on the controller (room for improvement)
 */
 Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
+  alert: Ember.inject.service('sweet-alert'),
 
   confirmText: 'You have unsaved changes which you may lose.  Are you sure you want to leave?',
 
@@ -19,52 +20,28 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
     });
   },
 
-  // activate: function() {
-  //   var route = this;
-  //   $(window).on('beforeunload', function() {
-  //     console.log('before rcgcl');
-  //     if(route.controller.get('confirmLeaving')) {
-  //       console.log('hey');
-  //       // return route.get('confirmText');
-  //     }
-  //   });
-  // },
-
   deactivate: function() {
     var route = this;
-    console.log('confirm route deactivate function');
     $(window).off('beforeunload.' + route.get('controllerName') + '.confirm');
   },
 
   actions: {
     doConfirmLeaving: function (value) {
-      console.log('do confirm leaving: ', value);
       this.sendAction('doConfirmLeaving', value);
     },
 
     willTransition: function(transition) {
       var controller = this.get('controller');
-      console.log('transition', transition);
       if (controller.get('confirmLeaving')) {
         transition.abort();
-        window.swal({
-          title: 'Are you sure you want to leave',
-          type: 'question',
-          showCancelButton: true,
-          showConfirmButton: true,
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'Cancel',
-        }).then((result) => {
-          console.log('result is', result);
+        this.get('alert').showModal('question', 'Are you sure you want to leave?', 'Any progress will not be saved', 'Yes')
+        .then((result) => {
           if (result.value) {
             controller.set('editing', false);
             controller.set('confirmLeaving', false);
             transition.retry();
-            console.log('result value exists');
           } else if (result.dismiss === "cancel") {
-            console.log('result is cancel');
             if (window.history) {
-              console.log('inside window history');
               window.history.forward();
             }
           }
