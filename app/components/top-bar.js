@@ -32,20 +32,12 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
       console.log('toggle called', this.openMenu);
     },
     showToggleModal: function () {
-        window.swal({
-          title: 'Are you sure you want to switch roles?',
-          text: 'If you are currently modifying or creating a new record, you will lose all unsaved progress',
-          type: 'question',
-          confirmButtonText: 'Ok',
-          showCancelButton: true,
-        }).then((result) => {
-          if (result.value) {
-            this.send('toggleActingRole');
-            // window.swal(
-            //   'You sucessfuly switched roles'
-            // );
-          }
-        });
+      this.get('alert').showModal('question', 'Are you sure you want to switch roles?', 'If you are currently modifying or creating a new record, you will lose all unsaved progress', 'Ok')
+      .then((result) => {
+        if (result.value) {
+          this.send('toggleActingRole');
+        }
+      });
     },
 
     toggleActingRole: function() {
