@@ -6,6 +6,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
   isHidden: false,
   openMenu: false,
   toggleRoleErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
   isStudent: function() {
     return this.user.get('isStudent') || this.user.get('actingRole') === 'student';
@@ -65,15 +66,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
         this.set('actionToConfirm', null);
         this.store.unloadAll('assignment');
         this.sendAction('toHome');
-        window.swal({
-          title: 'Sucessfully switched roles',
-          type: 'success',
-          toast: true,
-          position: 'bottom-end',
-          timer: 2500,
-          showConfirmButton: false,
-          background: '#CBFDCB',
-        });
+        this.get('alert').showToast('success', 'Successfully switched roles', 'bottom-end', 2500, false, null);
       }).catch((err) => {
         // handle error
         this.handleErrors(err, 'toggleRoleErrors', currentUser);
