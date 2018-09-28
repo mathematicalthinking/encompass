@@ -18,6 +18,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   findRecordErrors: [],
   createRecordErrors: [],
   isMissingRequiredFields: null,
+  alert: Ember.inject.service('sweet-alert'),
 
   init: function () {
     this._super(...arguments);
@@ -32,19 +33,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('isWide', false);
     this.set('showAssignment', false);
     this.set('isEditing', false);
-
-    let problem = this.get('problem');
-    let problemId = problem.get('id');
-    // this.get('store').queryRecord('answer', {
-    //   problem: problemId
-    // }).then((answer) => {
-    //   if (answer !== null) {
-    //     this.set('isProblemUsed', true);
-    //   } else {
-    //     this.set('isProblemUsed', false);
-    //   }
-    // });
-
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
     }).catch((err) => {
@@ -132,20 +120,37 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set(error, null);
       }
     }
-
   },
 
   actions: {
     deleteProblem: function () {
       let problem = this.get('problem');
-        problem.set('isTrashed', true);
-        problem.save()
-        .then(() => {
-            this.sendAction('toProblemList');
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'updateProblemErrors', problem);
-        });
+      window.swal({
+        title: 'Are you sure you want to delete this problem?',
+        type: 'warning',
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          problem.set('isTrashed', true);
+          this.sendAction('toProblemList');
+          problem.save().then((problem) => {
+            this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
+            .then((result) => {
+              if (result.value) {
+                problem.set('isTrashed', false);
+                problem.save().then(() => {
+                  this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+                  window.history.back();
+                });
+              }
+            });
+          }).catch((err) => {
+            this.handleErrors(err, 'updateProblemErrors', problem);
+          });
+        }
+      });
     },
 
     editProblem: function () {
@@ -192,12 +197,22 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let privacy = this.get('privacySetting');
 
       if (currentPrivacy !== "E" && privacy === "E") {
-        this.set('showConfirmModal', true);
+        window.swal({
+          title: 'Are you sure you want to make your problem public?',
+          text: "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used",
+          type: 'question',
+          showCancelButton: true,
+          showConfirmButton: true,
+          confirmButtonText: 'Yes'
+        }).then((result) => {
+          if (result.value) {
+            this.send('updateProblem');
+          }
+        });
       } else {
         this.send('updateProblem');
       }
     },
-
 
     updateProblem: function () {
       let title = this.get('problemName');
@@ -246,6 +261,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
               problem.save().then((res) => {
+                this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 // handle success
                 this.set('isEditing', false);
                 this.resetErrors();
