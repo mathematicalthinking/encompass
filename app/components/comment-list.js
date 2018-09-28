@@ -11,6 +11,7 @@
  *   - Test the hashtag stuff to see if that is still working.
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  alert: Ember.inject.service('sweet-alert'),
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
   thisSubmissionOnly: true,
@@ -127,7 +128,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   //canComment: true,
   canComment: function() {
-    console.log("Folder List onSelection: " + this.get('onSelection') + ", allowedToComment: " + this.get('allowedToComment') );
     return (this.get('onSelection') && this.get('allowedToComment'));
   }.property('onSelection', 'allowedToComment'),
 
@@ -157,16 +157,13 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       var currentUser = this.get('currentUser');
       var label = this.get('newCommentLabel');
       var text = this.get('newComment');
-      console.log("Create Comment text: " + text );
       var useForResponse = this.labels[label].useForResponse;
       //var controller = this;
       if (!text || !text.trim()) { return; }
 
       //var selection = this.currentWorkspace.get('currentSelection');
       var selection = this.currentSelection;
-      var currentSubmission = this.get( 'currentSubmission' );
-      console.log("Sumbission: " + currentSubmission.get("submissionId") );
-      console.log("Selection: " + selection.get("selectionId") );
+      var currentSubmission = this.get('currentSubmission');
 
       var data = {
         text: text,
@@ -178,8 +175,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         useForResponse: !!useForResponse,
         createdBy: currentUser,
       };
-
-      console.log("New comment data:\n" + JSON.stringify(data) );
       var comment = this.get('store').createRecord('comment', data);
 
       //TODO push comment onto origin's derivatives
@@ -190,8 +185,10 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       var newCommentParent = this.get('newCommentParent');
       var comp = this;
+      this.set('alerts', this.get('alert'));
 
-      comment.save().then(function(record) {
+      comment.save().then((record) => {
+        this.get('alerts').showToast('success', 'Comment Created', 'bottom-end', 2000, false, null);
         //controller.get('currentSelection.comments').addObject(record);
         selection.get('comments').then(function(comments){
           comments.addObject(record);
@@ -200,7 +197,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
           comments.addObject(record);
         });
         if( newCommentParent ) {
-          newCommentParent.get( 'children' ).then(function(comments){
+          newCommentParent.get('children').then(function(comments){
             comments.addObject(record);
           });
         }
@@ -208,24 +205,34 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         comp.clearCommentParent();
         comp.get('comments').pushObject(record);
       }).catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', comment);
+        console.log('error creating comment', err);
+        this.handleErrors(err, 'createRecordErrors');
       });
     },
 
     deleteComment: function(comment) {
-      comment.get('submission').then(function(submission){
-        console.log("Comment to delete submission: " + submission.get('submissionId'));
+      comment.get('submission').then((submission) => {
         comment.set('isTrashed', true);
-        comment.save().then((res) => {
-          this.set('commentDeleteSuccess', true);
+        this.set('alerting', this.get('alert'));
+        comment.save()
+        .then(() => {
+          this.get('alerting').showToast('success', 'Comment Deleted', 'bottom-end', 3000, true, 'Undo').then((result) => {
+            if (result.value) {
+              comment.set('isTrashed', false);
+              comment.save().then(() => {
+                this.get('alerting').showToast('success', 'Comment Restored', 'bottom-end', 2000, false, null);
+              });
+            }
+          });
+          // this.set('commentDeleteSuccess', true);
         }).catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors', comment);
+          console.log('error deleting comment', err);
+          this.handleErrors(err, 'updateRecordErrors');
         });
       });
     },
 
     reuseComment: function(comment) {
-      console.log("Reuse Comment in Comment-list: " + comment.get('label') );
       var controller = this;
 
       //copy the comment text to the input

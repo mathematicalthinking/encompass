@@ -4,6 +4,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedSection: null,
   selectedProblem: null,
   validator: Ember.inject.service('form-validator'),
+  alert: Ember.inject.service('sweet-alert'),
   sectionList: null,
   problemList: null,
   formId: null,
