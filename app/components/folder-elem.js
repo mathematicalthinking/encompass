@@ -16,6 +16,7 @@
  * - drag folder out, then put back in - it won't go back in until you refresh.  Ember seems to be sending the correct data to the server api.
  */
 Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, Encompass.ErrorHandlingMixin, {
+  alert: Ember.inject.service('sweet-alert'),
   tagName: 'li',
   classNames: ['folderItem'],
   link: null,
@@ -135,6 +136,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   putFolderInFolder: function(child, parent) {
     console.log("Put folder " + child.id + " into " + this.model.get('name') );
+    let parentName = this.model.get('name');
     var droppedFolder = false;
     var parentOfDropped = false;
     var iterator    = parent;
@@ -147,13 +149,16 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     var folders = this.folderList.get('folders');
     droppedFolder = folders.filterBy('id', child.id).get('firstObject');
 
+    let childName = droppedFolder.get('name');
+    console.log('dropped folder name', childName);
+
     if (!droppedFolder) {
       console.info('Could not retrieve the folder\'s model...');
       return;
     }
 
     // look from the bottom up to see if parent is a descendent of child
-    while ( iterator.get('parent') ) {
+    while (iterator.get('parent')) {
       iterator = iterator.get('parent');
 
       if (iterator.get('id') === droppedFolder.get('id')) {
@@ -181,6 +186,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     });
 
     droppedFolder.save().then((res) => {
+      this.get('alert').showToast('success', `${childName} is now inside ${parentName}`, 'bottom-end', 3000, false, null);
       console.log('folder dropped in folder success!');
     }).catch((err) => {
       this.handleErrors(err, 'updateRecordErrors', droppedFolder);
@@ -191,21 +197,20 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     toggle: function() {
       console.log("expand folder " + this.model.get('name') );
       this.set('model.isExpanded', !this.get('model.isExpanded'));
-      console.log("expand folder status " + this.model.get('isExpanded') );
     },
 
     editFolderName: function() {
       var folder = this.get('model');
-      if(folder.get('hasDirtyAttributes')) {
-        folder.get('workspace').then(function(){
+      this.set('alerts', this.get('alert'));
+      if (folder.get('hasDirtyAttributes')) {
+        folder.get('workspace').then(() => {
           folder.save().then((res) => {
-            console.log('folder name edit success!');
+            this.get('alerts').showToast('success', 'Folder updated', 'bottom-end', 3000, false, null);
           }).catch((err) => {
             this.handleErrors(err, 'updateRecordErrors', folder);
           }); //we need the workspace to be populated
         });
       }
-
       return true; //bubbling the event so that if the user clicks into another input it takes
       //we'll handle the event further up to dismiss it so it doesn't cause an
       //error
