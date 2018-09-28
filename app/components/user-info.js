@@ -22,8 +22,11 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       this.getUserSections();
     }
     this.set('org', null);
+    this.removeErrors('updateRecordErrors', 'createRecordErrors', 'findRecordErrors');
+
     this.store.findAll('organization').then((orgs) => {
       this.set('orgList', orgs);
+      this.removeErrors('loadOrgErrors');
     }).catch((err) => {
       this.handleErrors(err, 'loadOrgsErrors');
     });
@@ -213,6 +216,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           user.save().then(() => {
             this.get('alert').showToast('success', 'User updated', 'bottom-end', 3000, false, null);
             this.set('isEditing', false);
+            this.removeErrors('updateRecordErrors');
           }).catch((err) => {
             this.handleErrors(err, 'updateRecordErrors', user);
           });
@@ -262,14 +266,19 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         });
         newOrg.save()
           .then((org) => {
+            this.removeErrors('createRecordErrors');
             let user = this.get('user');
             let orgName = org.get('name');
             user.set('organization', org);
             this.set('orgReq', null);
             user.set('organizationRequest', null);
             user.save().then((user) => {
+<<<<<<< HEAD
               this.get('alert').showToast('success', `${orgName} Created`, 'bottom-end', 3000, false, null);
               this.set('orgModal', false);
+=======
+              this.removeErrors('updateRecordErrors');
+>>>>>>> Handle removal of error messages for user-info
             }).catch((err) => {
               this.handleErrors(err, 'updateRecordErrors', user);
             });
@@ -283,6 +292,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         user.set('organizationRequest', null);
         user.save().then((res) => {
           // handle success
+          this.removeErrors('updateRecordErrors');
         }).catch((err) => {
           this.handleErrors(err, 'updateRecordErrors', user);
         });
@@ -304,6 +314,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           this.set('user', user);
           this.set('isResettingPassword', false);
           this.set('resetPasswordSuccess', true);
+          this.removeErrors('findRecordErrors');
         }).catch((err) => {
           this.handleErrors(err, 'findRecordErrors');
         });
