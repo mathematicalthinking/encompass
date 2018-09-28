@@ -12,8 +12,7 @@
  * - openModal action to add a new folder
  */
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  hideNewFolderModal: true,
-  hideDeleteFolderModal: true,
+  alert: Ember.inject.service('sweet-alert'),
   weighting: 1,
   editFolderMode: false,
   canManageFolders: true,
@@ -64,17 +63,19 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
 
   actions: {
-    openModal: function( modalName ){
-      console.log("Open Modal: " + modalName );
-      this.set( 'hideNewFolderModal', false );
+    openModal: function(){
+      this.get('alert').showPrompt('text', 'Create New Folder', null, 'Save').then((result) => {
+        if (result.value) {
+          this.send('createFolder', result.value);
+        }
+      });
     },
 
-    createFolder: function( folderName ){
-      console.log("Create folder named: " + folderName );
+    createFolder: function(folderName){
       var ws = this.workspace;
       var currentUser = this.get('currentUser');
 
-      if( folderName ) {
+      if(folderName) {
         var folder = this.store.createRecord('folder', {
           name: folderName,
           workspace: ws,
@@ -82,24 +83,31 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           createdBy: currentUser,
         });
 
-        folder.save().then((res) => {
-          //handle success
+        folder.save().then(() => {
+          this.get('alert').showToast('success', `${folderName} created`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
           this.handleErrors(err, 'createRecordErrors', folder);
         });
       }
     },
 
-    askToDelete: function( folder ){
-      this.set( 'folderToDelete', folder );
-      this.set( 'hideDeleteFolderModal', false );
+    askToDelete: function(folder) {
+      console.log('folder is', folder);
+      console.log('ask to Delete is running');
+      let folderName = folder.get('name');
+      this.get('alert').showModal('warning', `Are you sure you want to delete ${folderName}`, null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          this.send('confirmDelete', folder);
+        }
+      });
     },
 
-    confirmDelete: function(){
-      var folder = this.get( 'folderToDelete' );
+    confirmDelete: function(folder) {
+      let folderName = folder.get('name');
       folder.set('isTrashed', true);
-      folder.save().then((res) => {
-        // handle success
+      folder.save().then((folder) => {
+        this.get('alert').showToast('success', `${folderName} deleted`, 'bottom-end', 5000, false, null);
       }).catch((err) => {
         this.handleErrors(err, 'updateRecordErrors', folder);
       });
