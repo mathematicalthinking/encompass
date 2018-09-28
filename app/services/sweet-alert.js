@@ -7,8 +7,8 @@ Encompass.SweetAlertService = Ember.Service.extend({
   showConfirmButton: null,
   backgroundColor: null,
   successColor: '#CBFDCB',
-  errorColor: 'ffe0e0',
-  warningColor: 'ffcd94',
+  errorColor: '#ffe0e0',
+  warningColor: '#ffcd94',
   infoColor: '#afeeee',
 
   setBackgroundColor: function(type) {
@@ -31,8 +31,8 @@ Encompass.SweetAlertService = Ember.Service.extend({
     }
   },
 
-  showToast: function(type="success", title="Updated Successfully", position='bottom-end', timer=4000, showConfirmButton=false) {
-    this.setBackgroundColor();
+  showToast: function(type="success", title="Updated Successfully", position='bottom-end', timer=4000, showConfirmButton=false, confirmButtonText=null) {
+    this.setBackgroundColor(type);
     return window.swal({
       title: title,
       position: position,
@@ -41,6 +41,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
       type: type,
       background: this.get('backgroundColor'),
       showConfirmButton: showConfirmButton,
+      confirmButtonText: confirmButtonText,
     });
   },
 
