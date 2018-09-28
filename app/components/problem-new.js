@@ -138,22 +138,24 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
-          window.swal({
-            title: 'Problem Name Exists',
-            type: 'error',
-            toast: true,
-            position: 'bottom-end',
-            timer: 4000,
-            showConfirmButton: false,
-            background: '#ffe0e0',
-          });
-          // that.handleErrors(err, 'createProblemErrors', createProblemData);
+          that.handleErrors(err, 'createProblemErrors', createProblemData);
         });
       }
     },
 
   confirmCreatePublic: function() {
-    this.set('showConfirmModal', true);
+    window.swal({
+      title: 'Are you sure you want to create a public problem?',
+      text: 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used',
+      type: 'question',
+      showCancelButton: true,
+      showConfirmButton: true,
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.value) {
+        this.createProblem();
+      }
+    });
   },
 
   actions: {
