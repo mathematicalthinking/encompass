@@ -25,38 +25,49 @@
   }
   #newsectionform {
     margin: 8px;
+    max-width: 800px;
   input[type=text],
-  select {
-    width: 70%;
+  {
+  width: 70%;
     padding: 12px 20px;
     margin: 8px 0;
-    display: inline-block;
     border: 1px solid #cccccc;
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 1em;
+    min-width:200px;
   }
   input:required {
     box-shadow: none;
   }
-  label {
-    width: 20%;
-    padding: 12px 20px;
-    color: black;
-    font-size: 1em;
-  }
-  .section-new-organization, .section-new-teacher {
+
+  .section-new-input {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+
+    label {
+      flex: 1 0 100px;
+      width: 20%;
+      max-width: 200px;
+      padding: 12px 20px;
+      color: black;
+      font-size: 1em;
+    }
+
+    input {
+      flex: 1 0 200px;
+      max-width: 400px;
+    }
+
   }
-  p.section-new-info {
-    width: 70%;
-    display: inline-block;
-    font-size: 1em;
-    vertical-align: center;
-  }
+  // p.section-new-info {
+  //   width: 70%;
+  //   display: inline-block;
+  //   font-size: 1em;
+  //   vertical-align: center;
+  // }
   div.twitter-typeahead{
-    display: inline-block;
     width: 70%;
     span{
       width: 100%;
@@ -65,7 +76,6 @@
       width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
-    display: inline-block;
     border: 1px solid #cccccc;
     border-radius: 4px;
     box-sizing: border-box;
