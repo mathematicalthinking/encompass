@@ -7,6 +7,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   privacySetting: null,
   checked: true,
   validator: Ember.inject.service('form-validator'),
+  alert: Ember.inject.service('sweet-alert'),
   approvedProblem: false,
   noLegalNotice: null,
 
@@ -91,6 +92,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
+                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -113,6 +115,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
+                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -126,15 +129,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
-          window.swal({
-            title: 'Problem Created',
-            type: 'success',
-            toast: true,
-            position: 'bottom-end',
-            timer: 4000,
-            showConfirmButton: false,
-            background: '#CBFDCB',
-          });
+          this.get('alert').showToast();
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
