@@ -151,21 +151,36 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     editProblem: function () {
       let problem = this.get('problem');
       let problemId = problem.get('id');
+      let currentUserAccountType = this.get('currentUser').get('accountType');
+      let isAdmin = currentUserAccountType === "A";
+       this.set('problemName', problem.get('title'));
+       this.set('problemText', problem.get('text'));
+       this.set('additionalInfo', problem.get('additionalInfo'));
+       this.set('privacySetting', problem.get('privacySetting'));
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
           problem: problemId
         }).then(assignment => {
           if (assignment !== null) {
-            this.set('showEditWarning', true);
+            this.get('alert').showModal('warning', 'Are you sure you want to edit a problem that has already been assigned', 'This problem has been used in an assignment but no answers have been submitted yet. Be careful editing the content of this problem', 'Yes').then((result) => {
+              if (result.value) {
+                this.send('continueEdit');
+              }
+            });
           } else {
-            this.set('isEditing', true);
-            this.set('problemName', problem.get('title'));
-            this.set('problemText', problem.get('text'));
-            this.set('additionalInfo', problem.get('additionalInfo'));
-            this.set('privacySetting', problem.get('privacySetting'));
+            this.send('continueEdit');
           }
         });
+      } else {
+        if (isAdmin) {
+          this.get('alert').showModal('warning', 'Are you sure you want to edit a problem with answers?', 'Be careful changing the content of this problem because changes will be made everywhere this problem is used', 'Yes')
+          .then((result) => {
+            if (result.value) {
+              this.send('continueEdit');
+            }
+          });
+        }
       }
     },
 

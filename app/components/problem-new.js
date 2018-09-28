@@ -55,10 +55,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       return;
     }
 
-    if (privacySetting === "E") {
-      this.set('showConfirmModal', true);
-    }
-
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
@@ -129,7 +125,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
-          this.get('alert').showToast();
+          this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
