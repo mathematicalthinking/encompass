@@ -161,29 +161,24 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     if (!path || typeof path !== 'string') {
       path = 'id';
     }
-
     if (!display) {
       display = function(suggestion) {
         return suggestion.get(path);
       };
     }
-
     let ret = {
       source,
       display,
       templates
     };
-
     if (name) {
       ret.name = name;
     }
-
     return ret;
   },
 
   substringMatcher: function(data) {
     // data should be array of ember objects
-
     let path = this.get('optionLabelPath');
     if (!path) {
       path = 'id';
@@ -194,26 +189,17 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     }
 
     let suggestions;
-
-
     suggestions= data;
-
-
-
     const that = this;
 
     return function findMatches(q, cb, async) {
       var matches, substrRegex, filtered, pool;
-
-
       if (that.get('allowMultiple')) {
         // filter out already selected items
-
         let selectedItems = that.get('selectedItems');
         if (!selectedItems) {
           selectedItems = [];
         }
-
         filtered = suggestions.filter((item) => {
           let alreadySelected = selectedItems.includes(item);
           return !alreadySelected;
@@ -227,7 +213,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       }
       // an array that will be populated with substring matches
       matches = [];
-
       // regex used to determine if a string contains the substring `q`
       substrRegex = new RegExp(q, 'i');
       // iterate through the pool of strings and for any string that
