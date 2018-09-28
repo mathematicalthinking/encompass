@@ -55,9 +55,9 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
   },
+
   createAssignment: function() {
     const that = this;
-
     const createdBy = that.get('currentUser');
     const section = that.get('selectedSection');
     const problem = that.get('selectedProblem');
@@ -96,14 +96,14 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
 
     createAssignmentData.save()
-      .then((assignment) => {
-        that.sendAction('toAssignmentInfo', assignment);
-        this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
-        })
-        .catch((err) => {
-          that.handleErrors(err, 'createRecordErrors', createAssignmentData);
-        });
-    },
+    .then((assignment) => {
+      that.sendAction('toAssignmentInfo', assignment);
+      this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
+    })
+    .catch((err) => {
+       that.handleErrors(err, 'createRecordErrors', createAssignmentData);
+    });
+  },
 
     getMongoDate: function(htmlDateString) {
       const htmlFormat = 'YYYY-MM-DD';
