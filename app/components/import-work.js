@@ -14,7 +14,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   isReviewingSubmissions: null,
   doNotCreateWorkspace: false,
   doCreateWorkspace: Ember.computed.not('doNotCreateWorkspace'),
-
+  alert: Ember.inject.service('sweet-alert'),
   isSelectingImportDetails: true,
   mode: 'private',
   requestedName: null,
@@ -274,15 +274,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             if (res.workspaceId) {
               that.set('createdWorkspace', res);
               that.sendAction('toWorkspaces', res);
-              window.swal({
-                title: 'Workspace Created',
-                type: 'success',
-                toast: true,
-                position: 'bottom-end',
-                timer: 4000,
-                showConfirmButton: false,
-                background: '#CBFDCB',
-              });
+              this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
             }
           })
           .catch((err) => {

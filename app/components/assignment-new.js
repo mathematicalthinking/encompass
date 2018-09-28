@@ -54,15 +54,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     const id = this.get('formId');
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
-    // window.swal({
-    //   title: 'Missing fields',
-    //   type: 'error',
-    //   toast: true,
-    //   position: 'bottom-end',
-    //   timer: 4000,
-    //   showConfirmButton: false,
-    //   background: '#ffe0e0',
-    // });
   },
   createAssignment: function() {
     const that = this;
@@ -84,15 +75,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     if (assignedDate > dueDate) {
       this.set('invalidDateRange', true);
-      // window.swal({
-      //   title: 'Due Date must be after Assign Date',
-      //   type: 'error',
-      //   toast: true,
-      //   position: 'bottom-end',
-      //   timer: 4000,
-      //   showConfirmButton: false,
-      //   background: '#ffe0e0',
-      // });
       return;
     }
     // need to get all students from section
@@ -116,17 +98,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     createAssignmentData.save()
       .then((assignment) => {
         that.sendAction('toAssignmentInfo', assignment);
-        window.swal({
-          title: 'Assignment Created',
-          type: 'success',
-          toast: true,
-          position: 'bottom-end',
-          timer: 3000,
-          showConfirmButton: false,
-          background: '#CBFDCB',
-        });
-        //TODO: decide how to handle clearing form and whether to redirect to the created assignment
-            //that.get('validator').clearForm();
+        this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
         })
         .catch((err) => {
           that.handleErrors(err, 'createRecordErrors', createAssignmentData);
@@ -165,15 +137,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
         } else {
           if (res.invalidInputs) {
             this.set('isMissingRequiredFields', true);
-            // window.swal({
-            //   title: 'Missing fields',
-            //   type: 'error',
-            //   toast: true,
-            //   position: 'bottom-end',
-            //   timer: 4000,
-            //   showConfirmButton: false,
-            //   background: '#ffe0e0',
-            // });
             return;
           }
         }
