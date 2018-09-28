@@ -75,6 +75,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
         data: createUserData
       })
       .then((res) => {
+        that.removeMessages('createUserErrors');
         if (res.message === 'Username already exists') {
           that.set('usernameAlreadyExists', true);
           return;
@@ -126,6 +127,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       }
       let students = this.get('students');
       this.store.findRecord('user', student._id).then((user) => {
+        this.removeMessags('findUserErrors');
         if (!students.includes(user)) {
           students.pushObject(user);
           this.clearAddExistingUser();
@@ -216,7 +218,8 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       let section = this.get('section');
       if (section.get('hasDirtyAttributes')) {
         section.save().then(() => {
-            this.get('alert').showToast('success', 'Class Password Updated', 'bottom-end', 3000, false, null);
+          this.get('alert').showToast('success', 'Class Password Updated', 'bottom-end', 3000, false, null);
+          this.removeMessages('updateSectionErrors');
         })
         .catch((err) => {
           this.handleErrors(err, 'updateSectionErrors');
