@@ -7,8 +7,8 @@
       <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to
         create a workspace.</p>
     </div>
-    <ol>
-      <li>
+    <ol class="filter-criteria">
+      <li class="ws-filter teacher">
         <label for="teacher">Teacher</label>
         {{#if currentUser.isTeacher}}
         <p class="workspace-info">{{currentUser.username}}</p>
@@ -17,22 +17,22 @@
         a username" action=(action (mut selectedTeacher))}}
         {{/if}}
       </li>
-      <li>
+      <li class="ws-filter assignment">
         <label for="assignment">Assignment</label>
         {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment"
         action=(action (mut selectedAssignment))}}
       </li>
-      <li>
+      <li class="ws-filter problem">
         <label for="problem">Problem</label>
         {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut
         selectedproblem))}}
       </li>
-      <li>
+      <li class="ws-filter section">
         <label for="section">Class</label>
         {{my-select content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut
         selectedSection))}}
       </li>
-      <li>
+      <li class="ws-filter date">
         <label for="startDate">Date Range</label>
         {{input id="dateRange" name="daterange" type="text" value=dateRange}}
       </li>
@@ -46,8 +46,8 @@
       <p class="info">All workspace settings, except for Owner, can always be changed after creation from the workspace
         info page.</p>
     </div>
-    <ol>
-      <li>
+    <ol class="workspace-settings">
+      <li class="ws-settings owner">
         <label for="owner">Owner <span class="required-star">*</span></label>
         {{#if currentUser.isTeacher}}
         <p class="workspace-info">{{currentUser.username}}</p>
@@ -56,11 +56,11 @@
         owner" action=(action (mut selectedOwner))}}
         {{/if}}
       </li>
-      <li>
+      <li class="ws-settings name">
         <label for="name">Workspace Name</label>
         {{input id="requestedName" type="text" value=requestedName}}
       </li>
-      <li>
+      <li class="ws-settings folders">
         <label for="folders">Folders</label>
         {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
         (mut selectedFolderSet))}}
@@ -98,4 +98,4 @@
   <p class="error-message">{{error}}</p>
 {{/each}}
 
-<button class="action_button" {{action "buildCriteria"}}>Create</button>
+<button class="action_button create-ws" {{action "buildCriteria"}}>Create</button>
