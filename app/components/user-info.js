@@ -273,12 +273,9 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
             this.set('orgReq', null);
             user.set('organizationRequest', null);
             user.save().then((user) => {
-<<<<<<< HEAD
               this.get('alert').showToast('success', `${orgName} Created`, 'bottom-end', 3000, false, null);
               this.set('orgModal', false);
-=======
               this.removeErrors('updateRecordErrors');
->>>>>>> Handle removal of error messages for user-info
             }).catch((err) => {
               this.handleErrors(err, 'updateRecordErrors', user);
             });
