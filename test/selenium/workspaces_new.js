@@ -117,6 +117,28 @@ async function runTests(users) {
               expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.create));
             });
         });
+
+        describe('Creating a new workspace', async function() {
+          async function submitForm(shouldFail) {
+            try {
+              const submitButton = await driver.findElement(By.css(css.newWorkspaceEnc.create));
+              await submitButton.click();
+              if (shouldFail) {
+                await helpers.waitForSelector(driver, css.general.errorMessage);
+              }
+
+            }catch(err) {
+              console.log(`Error submitForm: ${err}`);
+            }
+          }
+          describe('Submitting empty form', async function() {
+            it('should display error message', async function() {
+              // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+              await submitForm(true);
+              expect(await helpers.isTextInDom(driver, 'Please fill in all required fields')).to.be.true;
+            });
+          });
+        });
       }
 
     });
