@@ -14,6 +14,7 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
   cantRespond: Ember.computed.not('canRespond'),
   showHelp: false,
   confirmLeaving: Ember.computed.and('editing', 'dirty'),
+  alert: Ember.inject.service('sweet-alert'),
 
   resizeDisplay: function () {
     Ember.run.next(this, Ember.verticalSizing);
@@ -192,6 +193,7 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
         response.set('original', this.get('response'));
         response.set('createdBy', currentUser);
         response.save().then(function (saved) {
+          // this.get('alert').showToast('success', 'Response Created', 'bottom-end', 3000, false, null);
           if (callback instanceof Function) {
             callback(saved);
           }
@@ -214,7 +216,9 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
     },
     save: function () {
       var controller = this;
+      let alerts = this.get('alert');
       this._persistThen(function (saved) {
+        alerts.showToast('success', 'Response Saved', 'bottom-end', 3000, false, null);
         controller.transitionToRoute('response', saved);
       });
     },
@@ -225,9 +229,6 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
         var powId = controller.get('model.powId');
         var uri = /new.*/;
         var src = window.location.href.replace(uri, saved.get('id')); //ENC-607 No longer a new submission, now saved at a different location
-        console.info('sending user to pow for submission: ' + powId);
-        console.info(src);
-
         window.open('/encpows/response-flow.do?submissionId=' + powId + '&message=' + encodeURIComponent(message) + '&notepad=' + encodeURIComponent(src));
       });
     }
