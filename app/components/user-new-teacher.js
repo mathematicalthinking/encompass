@@ -1,5 +1,6 @@
 Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-teacher',
+  alert: Ember.inject.service('sweet-alert'),
   usernameExists: null,
   errorMessage: null,
   username: '',
@@ -67,6 +68,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
             this.set('emailExistsError', res.message);
             return;
           } else {
+            this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
             this.sendAction('toUserInfo', res.username);
           }
         })
