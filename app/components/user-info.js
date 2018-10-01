@@ -159,39 +159,26 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('authorized', isAuth);
       },
 
-      // checkOrgExists: function () {
-      //   let user = this.get('user');
-      //   let userOrg = user.get('organization');
-      //   let userOrgRequest = user.get('organizationRequest');
+      checkOrgExists: function () {
+        let user = this.get('user');
+        let userOrg = user.get('organization').get('content');
+        let userOrgRequest = user.get('organizationRequest');
+        let org = this.get('org');
+        let orgReq = this.get('orgReq');
 
-      //   let org = this.get('org');
+        let options = [Boolean(userOrg), Boolean(userOrgRequest), Boolean(org), Boolean(orgReq)];
 
-      //   let orgReq = this.get('orgReq');
-
-      //   let orgSaved = org || orgReq;
-        // if org saved is true then we are good
-
-        // if org saved is false check if one of the following true:
-        //   user has an org or orgReq
-
-        // if (!orgSaved) {
-        //   if (!org) {
-        //     this.set('noOrgModal', true);
-        //   }
-        //   if (!orgReq) {
-        //     if (org) {
-        //       this.send('saveUser');
-        //     } else {
-        //     this.set('noOrgModal', true);
-        //     }
-        //   }
-        // } else {
-        //   if (!org) {
-        //     this.set('noOrgModal', true);
-        //   }
-        //   this.send('saveUser');
-        // }
-      // },
+        if (options.includes(true)) {
+          this.send('saveUser');
+        } else {
+          this.get('alert').showModal('warning', 'Are you sure you want to save a user that has no organization?', 'Users should belong to an organization to improve the EnCoMPASS experience', 'Yes')
+            .then((result) => {
+              if (result.value) {
+                this.send('saveUser');
+              }
+            });
+        }
+      },
 
       saveUser: function () {
         let currentUser = this.get('currentUser');
@@ -223,7 +210,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           let newDate = new Date();
           user.set('lastModifiedBy', currentUser);
           user.set('lastModifiedDate', newDate);
-          user.save().then((res) => {
+          user.save().then(() => {
+            this.get('alert').showToast('success', 'User updated', 'bottom-end', 3000, false, null);
             this.set('isEditing', false);
           }).catch((err) => {
             this.handleErrors(err, 'updateRecordErrors', user);
