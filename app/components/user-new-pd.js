@@ -1,5 +1,6 @@
 Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-pd',
+  alert: Ember.inject.service('sweet-alert'),
   usernameExists: null,
   emailExistsError: null,
   errorMessage: null,
@@ -112,7 +113,7 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             this.set('emailExistsError', res.message);
             return;
           } else {
-            // res is user object
+            this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, null, false);
             this.sendAction('toUserInfo', res.username);
           }
         })
