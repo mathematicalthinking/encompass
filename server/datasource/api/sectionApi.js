@@ -43,17 +43,24 @@ function accessibleSections(user) {
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
+  console.log('user is', user);
+  let isAdmin = user.accountType === "A";
+
   let criteria;
+    console.log('inside section get');
 
   if (req.query.ids) {
     criteria = {
      _id: { $in: req.query.ids },
      isTrashed: false,
     };
+  } else if (isAdmin) {
+    criteria = { isTrashed: false };
   } else {
     criteria = accessibleSections(user);
   }
 
+  console.log('criteria is', criteria);
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {
