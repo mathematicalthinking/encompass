@@ -43,11 +43,8 @@ function accessibleSections(user) {
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  console.log('user is', user);
   let isAdmin = user.accountType === "A";
-
   let criteria;
-    console.log('inside section get');
 
   if (req.query.ids) {
     criteria = {
