@@ -290,7 +290,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.store.findRecord('image', res.images[0]._id).then((image) => {
               problem.set('image', image);
               problem.save().then((res) => {
-                // handle success
+                this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 this.set('isEditing', false);
                 this.resetErrors();
               })
@@ -308,6 +308,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         if (problem.get('hasDirtyAttributes')) {
           problem.set('modifiedBy', currentUser);
           problem.save().then((res) => {
+            this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
             this.resetErrors();
             this.set('showConfirmModal', false);
             this.set('isEditing', false);
@@ -349,7 +350,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       newProblem.save()
         .then((problem) => {
+          let name = problem.get('title');
           this.set('savedProblem', problem);
+          this.showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
           this.handleErrors(err, 'createRecordErrors', newProblem);
         });
@@ -381,7 +384,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       newProblem.save()
         .then((problem) => {
+          let name = problem.get('title');
           this.set('savedProblem', problem);
+          this.showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
       }).catch((err) => {
         this.handleErrors(err, 'createRecordErrors', newProblem);
       });
@@ -396,7 +401,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problem = this.get('problem');
       problem.set('image', null);
       problem.save().then((res) => {
-        // handle success
+        this.get('alert').showToast('success', 'Image Deleted', 'bottom-end', 3000, false, null);
       })
       .catch((err) => {
         this.handleErrors(err, 'updateProblemErrors', problem);
