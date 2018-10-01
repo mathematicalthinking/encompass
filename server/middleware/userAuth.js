@@ -176,7 +176,7 @@ function protect(options) {
      if (isAllowed) {
       return next();
      }
-     return utils.sendError.InvalidCredentialsError('You are not Authorized.', res);
+     return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
     }
 
     var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
