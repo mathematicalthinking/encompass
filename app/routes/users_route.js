@@ -6,6 +6,14 @@
   * @since 1.0.0
   */
 Encompass.UsersRoute = Ember.Route.extend({
+  beforeModel: function() {
+    const user = this.modelFor('application');
+    const isStudent = user.get('isStudent');
+
+    if (isStudent) {
+      this.transitionTo('/');
+    }
+  },
   model: function () {
     return Ember.RSVP.hash({
       users: this.get('store').findAll('user'),
