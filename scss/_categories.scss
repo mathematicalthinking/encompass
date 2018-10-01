@@ -11,6 +11,10 @@
     display: none;
   }
 
+  span {
+    font-weight: $bolder-font-weight;
+  }
+
   .cd-accordion-menu li {
     -webkit-user-select: none;
     -moz-user-select: none;
