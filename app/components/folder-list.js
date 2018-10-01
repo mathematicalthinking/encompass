@@ -92,8 +92,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     askToDelete: function(folder) {
-      console.log('folder is', folder);
-      console.log('ask to Delete is running');
       let folderName = folder.get('name');
       this.get('alert').showModal('warning', `Are you sure you want to delete ${folderName}`, null, 'Yes, delete it')
       .then((result) => {
@@ -114,12 +112,7 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     fileSelectionInFolder: function(objId, folder){
-      console.log("Folder List File Selection Action: " + objId +" in folder " + folder.get('name') );
       this.sendAction( 'fileSelection', objId, folder );
-    },
-
-    testAction: function(){
-      console.log("Test clicked: " + this.folderTest );
     },
 
     activateEditFolderMode: function() {
