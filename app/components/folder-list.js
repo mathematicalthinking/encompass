@@ -15,19 +15,24 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   alert: Ember.inject.service('sweet-alert'),
   weighting: 1,
   editFolderMode: false,
-  canManageFolders: true,
   sortProperties: ['weight', 'name'],
   createRecordErrors: [],
   updateRecordErrors: [],
-  /*
+
+
   canManageFolders: function() {
-    return Permissions.userCan(
-      this.get('currentUser'),
-      this.get('currentWorkspace'),
-      "FOLDERS"
-    );
+    let workspace = this.workspace;
+    let owner = workspace.get('owner').get('id');
+    let editors = workspace.get('editors');
+    let currentUser = this.get('currentUser');
+    let accountType = currentUser.get('accountType');
+    let isAdmin = accountType === "A";
+    let isOwner = currentUser.get('id') === owner;
+    let isEditor = editors.includes(currentUser);
+
+    return isAdmin || isEditor || isOwner;
   }.property('currentUser', 'workspace.owner', 'workspace.editors.[].username'),
-  */
+
   init: function() {
     this._super(...arguments);
   },
@@ -86,7 +91,10 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         folder.save().then(() => {
           this.get('alert').showToast('success', `${folderName} created`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
+          let message = err.errors[0].detail;
           this.handleErrors(err, 'createRecordErrors', folder);
+          this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
+          folder.deleteRecord();
         });
       }
     },
@@ -107,6 +115,8 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       folder.save().then((folder) => {
         this.get('alert').showToast('success', `${folderName} deleted`, 'bottom-end', 5000, false, null);
       }).catch((err) => {
+        let message = err.errors[0].detail;
+        this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
         this.handleErrors(err, 'updateRecordErrors', folder);
       });
     },
