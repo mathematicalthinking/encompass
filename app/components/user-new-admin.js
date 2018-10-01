@@ -1,5 +1,6 @@
 Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-new-admin',
+  alert: Ember.inject.service('sweet-alert'),
   usernameExists: null,
   emailExistsError: null,
   errorMessage: null,
@@ -64,6 +65,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
         rec.save()
           .then((res) => {
+            let name = res.get('name');
             return resolve(res.get('organizationId'));
           })
           .catch((err) => {
@@ -165,7 +167,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
                 this.set('emailExistsError', res.message);
                 return;
               } else {
-                console.log('success new user username', res.username);
+                this.get('alert').showToast('success', `${res.username} created`, 'bottom-end', 3000, false, null);
                 this.sendAction('toUserInfo', res.username);
               }
             })
