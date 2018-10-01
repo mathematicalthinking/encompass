@@ -72,8 +72,12 @@
       <tr>
         <td>Organization</td>
       {{#if isEditing}}
-        <td>{{twitter-typeahead dataList=orgList selectedValue=user.organization onSelect="setOrg" minLength=0 optionLabelPath='name' setSelectedValueOnChange=true}}</td>
+        {{#if currentUser.isAdmin}}
+          <td>{{twitter-typeahead dataList=orgList selectedValue=user.organization onSelect="setOrg" minLength=0 optionLabelPath='name' setSelectedValueOnChange=true}}</td>
         {{else}}
+        <td>{{user.organization.name}}</td>
+        {{/if}}
+      {{else}}
         <td>{{user.organization.name}}</td>
       {{/if}}
       </tr>
@@ -221,10 +225,6 @@
   {{#each updateRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
-
-  {{#if orgModal}}
-    {{modal-confirm actionToConfirm=orgModal onConfirm="createNewOrg" actionName="create a new organization"}}
-  {{/if}}
 
   {{#if noOrgModal}}
     {{modal-confirm actionToConfirm=noOrgModal onConfirm="saveUser" actionName="save a user with no organization" warningMessage="Users should always belong to an organization in order for EnCoMPASS to work properly"}}

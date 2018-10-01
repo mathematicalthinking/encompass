@@ -1,5 +1,6 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-info',
+  alert: Ember.inject.service('sweet-alert'),
   isEditing: false,
   authorized: null,
   selectedType: null,
@@ -71,17 +72,18 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     let user = this.get('user');
     let sections = user.get('sections');
 
-    let sectionIds = sections.map((section) => {
-      return section.sectionId;
-    });
+    if (sections) {
+      let sectionIds = sections.map((section) => {
+        return section.sectionId;
+      });
 
-    this.get('store').query('section', {
-      ids: sectionIds
-    }).then((sections) => {
-      this.set('userSections', sections);
-    });
-  },
-
+      this.get('store').query('section', {
+        ids: sectionIds
+      }).then((sections) => {
+        this.set('userSections', sections);
+      });
+    }
+  }.observes('user.id'),
 
   removeSuccessMessages: function() {
     const succesStates = ['resetPasswordSuccess'];
@@ -252,7 +254,14 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       },
 
       confirmOrgModal: function () {
-        this.set('orgModal', true);
+        let user = this.get('user');
+        let reqOrg = user.get('organizationRequest');
+        this.get('alert').showModal('question', `Are you sure you want to create a new organization?`, `This will create a brand new organization called ${reqOrg}`, 'Yes')
+        .then((result) => {
+          if (result.value) {
+            this.send('createNewOrg');
+          }
+        });
       },
 
       createNewOrg: function () {
@@ -266,11 +275,12 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         newOrg.save()
           .then((org) => {
             let user = this.get('user');
+            let orgName = org.get('name');
             user.set('organization', org);
             this.set('orgReq', null);
             user.set('organizationRequest', null);
             user.save().then((user) => {
-              console.log('user', user);
+              this.get('alert').showToast('success', `${orgName} Created`, 'bottom-end', 3000, false, null);
               this.set('orgModal', false);
             }).catch((err) => {
               this.handleErrors(err, 'updateRecordErrors', user);
