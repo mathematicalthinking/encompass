@@ -8,7 +8,7 @@
 {{/each}}
 <form id="sectioninfo">
   <fieldset>
-    <div class="section-info-detail">
+    <div class="section-info-detail name">
       <label for="name">Class Name
         {{#unless cantEdit}}
           {{#if isEditingName}}
@@ -25,7 +25,7 @@
         <p class="section-info">{{section.name}}</p>
       {{/if}}
     </div>
-      <div class="section-info-detail">
+      <div class="section-info-detail assignments">
         <label for="assignments">Assignments
           {{#unless cantEdit}}
           {{#if isEditingAssignments}}
@@ -53,7 +53,7 @@
           <button class="action_button" {{action 'showAssignment'}}>New Assignment</button>
         </div>
       {{/if}}
-        <div class="section-info-detail">
+        <div class="section-info-detail teachers">
           <label for="teachers">Teachers
             {{#unless cantEdit}}
               {{#if isEditingTeachers}}
@@ -100,7 +100,7 @@
           {{/if}}
         {{/unless}}
 
-        <div class="section-info-detail">
+        <div class="section-info-detail students">
         <label for="students">Students
           {{#unless cantEdit}}
             {{#if isEditingStudents}}

@@ -67,7 +67,11 @@ module.exports = {
     form: 'form#newsectionform',
     inputs: {
       name: 'input#newSectionName',
-      teachers: 'input.typeahead'
+      teacher: 'input.typeahead',
+    },
+    fixedInputs: {
+      teacher: 'p.section-new-info.teacher',
+      organization: 'p.section-new-info org'
     },
     create: 'button.action_button'
   },
@@ -132,5 +136,13 @@ module.exports = {
   },
   errorPage: {
     div: '.error-page'
-  }
+  },
+  sectionInfo: {
+    details: {
+      name: 'section-info-detail.name'
+    },
+    newSectionButton: '#new-section-link'
+  },
+
+  sectionHome: 'div#section-home'
 };
