@@ -1,5 +1,14 @@
 Encompass.SectionsNewRoute = Encompass.AuthenticatedRoute.extend({
-    model: function (params) {
+  beforeModel: function() {
+    const user = this.modelFor('application');
+    const isStudent = user.get('isStudent');
+
+    if (isStudent) {
+      this.transitionTo('sections.home');
+    }
+  },
+
+  model: function (params) {
       return Ember.RSVP.hash({
         users: this.get('store').findAll('user'),
         organizations: this.get('store').findAll('organization'),
