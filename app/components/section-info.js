@@ -1,7 +1,7 @@
 Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'section-info',
   className: ['section-info'],
-
+  alert: Ember.inject.service('sweet-alert'),
   removeTeacherError: null,
   isEditingStudents: false,
   isEditingTeachers: false,
@@ -24,10 +24,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   init: function () {
     this._super(...arguments);
-
-   return this.setSectionAttributes().then(() => {
-     console.log('section info set!');
-   });
+    return this.setSectionAttributes().then(() => {
+      console.log('section info set!');
+    });
 
   },
 
@@ -36,7 +35,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let didSectionChange = !Ember.isEqual(section, this.section);
     this.set('isEditing', false);
     this.set('isAddingTeacher', false);
-
 
     if (didSectionChange) {
       if (this.get('isEditingStudents')) {
@@ -50,32 +48,29 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
 
-  setSectionAttributes: function() {
+  setSectionAttributes: function () {
     let section = this.get('section');
     this.set('currentSection', section);
     return Promise.resolve(section.get('students'))
-    .then((students) => {
-      this.set('studentList', students);
-      return section.get('teachers');
-    })
-    .then((teachers) => {
-      this.set('teacherList', teachers);
-      return section.get('organization');
-    })
-    .then((org) => {
-      this.set('organization', org);
-    })
-    .catch((err) => {
-      this.handleErrors(err, 'dataLoadErrors');
-    });
+      .then((students) => {
+        this.set('studentList', students);
+        return section.get('teachers');
+      })
+      .then((teachers) => {
+        this.set('teacherList', teachers);
+        return section.get('organization');
+      })
+      .then((org) => {
+        this.set('organization', org);
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'dataLoadErrors');
+      });
   },
 
-  didInsertElement: function() {
+  didInsertElement: function () {
     this.set('addTeacherTypeahead', this.getAddableUsers.call(this, true));
     this.set('addStudentTypeahead', this.getAddableUsers.call(this, false));
-  },
-
-  willDestroyElement: function () {
   },
 
   cantEdit: Ember.computed('section.id', function () {
@@ -86,7 +81,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return cantEdit;
   }),
 
-  addTeacher: function() {
+  addTeacher: function () {
     let teacher = this.get('teacherToAdd');
 
     if (!teacher) {
@@ -109,10 +104,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           teacher.set('sections', []);
         }
         teacher.get('sections').pushObject(sectionObj);
-
-
         teacher.save().then(() => {
-          console.log('saved teacher');
+          this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
           this.set('teacherToAdd', null);
         }).catch((err) => {
           this.handleErrors(err, 'updateTeacherErrors', teacher);
@@ -123,18 +116,20 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   }.observes('teacherToAdd'),
 
-  scrollIfEditingStudents: function() {
+  scrollIfEditingStudents: function () {
     if (this.get('isEditingStudents')) {
       Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+        $('html, body').animate({
+          scrollTop: $(document).height()
+        });
       }, 100);
     }
   }.observes('isEditingStudents'),
 
-  getAddableUsers: function(doGetTeachers) {
+  getAddableUsers: function (doGetTeachers) {
     const store = this.get('store');
 
-    let ret = function(query, syncCb, asyncCb) {
+    let ret = function (query, syncCb, asyncCb) {
       let selectedUsers;
 
       if (doGetTeachers) {
@@ -142,19 +137,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       } else {
         selectedUsers = this.get('studentList');
       }
-
       let text = query.replace(/\W+/g, "");
       return store.query('user', {
-        usernameSearch: text,
+          usernameSearch: text,
         }).then((users) => {
           if (!users) {
             return [];
           }
-
           if (doGetTeachers) {
             users = users.rejectBy('accountType', 'S');
           }
-
           let filtered = users.filter((user) => {
             return !selectedUsers.includes(user);
           });
@@ -163,10 +155,9 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         .catch((err) => {
           this.handleErrors(err, 'queryErrors');
         });
-      };
-
-      return ret.bind(this);
-    },
+    };
+    return ret.bind(this);
+  },
 
   actions: {
     removeStudent: function (user) {
@@ -193,18 +184,19 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             });
             user.set('sections', newSections);
             user.save().then((res) => {
-              // handle success
+              this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
             }).catch((err) => {
               this.handleErrors(err, 'updateStudentErrors', user);
             });
           }).catch((err) => {
             this.handleErrors(err, 'findRecordErrors');
           });
-        }).catch((err) => {
-          this.handleErrors(err, 'updateSectionErrors', section);
-        });
-        this.set('removedStudent', true);
+      }).catch((err) => {
+        this.handleErrors(err, 'updateSectionErrors', section);
+      });
+      this.set('removedStudent', true);
     },
+
     removeTeacher: function (user) {
       let section = this.get('currentSection');
       let teachers = this.get('teacherList');
@@ -229,7 +221,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             if (!userSections) {
               return;
             }
-            let removedSectionId =section.get('id');
+            let removedSectionId = section.get('id');
             let newSections = [];
             userSections.map((section) => {
               if (section.sectionId !== removedSectionId) {
@@ -238,7 +230,7 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             });
             user.set('sections', newSections);
             user.save().then((res) => {
-              // handle success
+              this.get('alert').showToast('success', 'Teacher Removed', 'bottom-end', 3000, false, null);
             }).catch((err) => {
               this.handleErrors(err, 'updateTeacherErrors', user);
             });
@@ -249,17 +241,26 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('removedTeacher', true);
     },
 
-    deleteSection: function() {
+    confirmDelete: function () {
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this class?', 'This may interfere with any work you have already created.', 'Yes, delete it')
+        .then((result) => {
+          if (result.value) {
+            this.send('deleteSection');
+          }
+        });
+    },
+
+    deleteSection: function () {
       const section = this.get('section');
       section.set('isTrashed', true);
-      return section.save().then((section) => {
-        this.set('sectionToDelete', null);
-        this.sendAction('toSectionList');
-      })
-      .catch((err) => {
-        this.set('sectionToDelete', null);
-        this.handleErrors(err, 'updateSectionErrors', section);
-      });
+      return section.save().then(() => {
+          this.get('alert').showToast('success', 'Class Deleted', 'bottom-end', 3000, false, null);
+          this.sendAction('toSectionList');
+        })
+        .catch((err) => {
+          this.set('sectionToDelete', null);
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
     },
 
     toAssignmentInfo: function (assignment) {
@@ -274,24 +275,26 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           this.get('sectionList').pushObject(this.section);
 
           Ember.run.later(() => {
-            $('html, body').animate({scrollTop: $(document).height()});
+            $('html, body').animate({
+              scrollTop: $(document).height()
+            });
           }, 100);
         })
         .catch((err) => {
           this.handleErrors(err, 'problemLoadErrors');
         });
-      },
+    },
 
-      updateSectionName: function() {
-        this.set('isEditingName', false);
-        let section = this.get('currentSection');
-        if (section.get('hasDirtyAttributes')) {
-          this.get('currentSection').save().then(() => {
-            console.log('section name updated!');
-          }).catch((err) => {
-            this.handleErrors(err, 'updateSectionErrors', section);
-          });
-        }
-      },
+    updateSectionName: function () {
+      this.set('isEditingName', false);
+      let section = this.get('currentSection');
+      if (section.get('hasDirtyAttributes')) {
+        this.get('currentSection').save().then(() => {
+          this.get('alert').showToast('success', 'Class Name Updated', 'bottom-end', 3000, false, null);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
+      }
+    },
   }
 });

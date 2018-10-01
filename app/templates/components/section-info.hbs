@@ -154,14 +154,11 @@
   {{/each}}
   </form>
   {{#unless cantEdit}}
-    <button class="action_button" id="deleteSection" {{action (mut sectionToDelete) section}} style="margin-right: 30px">
+    <button class="action_button" id="deleteSection" {{action 'confirmDelete'}} style="margin-right: 30px">
       Delete Section
     </button>
   {{/unless}}
 
-    {{#if sectionToDelete}}
-    {{modal-delete itemToDelete=sectionToDelete onConfirm="deleteSection" optionLabelPath = "name"}}
-  {{/if}}
 
 {{#each problemLoadErrors as |error|}}
   <p class="error-message">{{error}}</p>
