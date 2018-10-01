@@ -352,7 +352,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         .then((problem) => {
           let name = problem.get('title');
           this.set('savedProblem', problem);
-          this.showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
           this.handleErrors(err, 'createRecordErrors', newProblem);
         });
@@ -386,7 +386,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         .then((problem) => {
           let name = problem.get('title');
           this.set('savedProblem', problem);
-          this.showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
       }).catch((err) => {
         this.handleErrors(err, 'createRecordErrors', newProblem);
       });
