@@ -36,7 +36,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
   didReceiveAttrs: function() {
     const currentUser = this.get('currentUser');
-    if (currentUser.get('accountType') !== 'A') {
+    if (currentUser.get('accountType') === 'T') {
       this.set('selectedTeacher', currentUser);
     }
     this.set('teacherPool', this.getTeacherPool());

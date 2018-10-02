@@ -226,10 +226,6 @@
     <p class="error-message">{{error}}</p>
   {{/each}}
 
-  {{#if noOrgModal}}
-    {{modal-confirm actionToConfirm=noOrgModal onConfirm="saveUser" actionName="save a user with no organization" warningMessage="Users should always belong to an organization in order for EnCoMPASS to work properly"}}
-  {{/if}}
-
     <div class="button-row">
       <button class='action_button save-user' {{action 'checkOrgExists'}}>Save</button>
       <button class='action_button cancel-user' {{action 'cancel'}}>Cancel</button>
@@ -244,6 +240,5 @@
     <p class="warning-message">You can't edit users you haven't created. Contact an admin to make changes.</p>
   {{/if}}
 </article>
-
 
 

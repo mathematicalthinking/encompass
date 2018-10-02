@@ -15,27 +15,24 @@
   <section class="newSection">
       <form id='newsectionform' class='properForm'>
         <fieldset>
-          <div class="section-new-name">
+          <div class="section-new-input">
             <label for="title">Class Name <span class="required-star">*</span></label>
             {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
           </div>
-
-
-
-            <div class="section-new-teacher">
+          <div class="section-new-input">
               <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
-              {{#if user.isAdmin}}
+                {{#if user.isTeacher}}
+                <p class="section-new-info teacher">{{teacher.username}}</p>
+                {{else}}
                 {{twitter-typeahead placeholder="Teacher's username" dataList=users optionLabelPath="username" selectedValue=teacher minLength=2 setSelectedValueOnChange=true}}
-              {{else}}
-                <p class="section-new-info">{{teacher.username}}</p>
               {{/if}}
             </div>
-            <div class="section-new-organization">
+            <div class="section-new-input">
             <label for="organization">Organization</label>
             {{#if user.isAdmin}}
               {{#if validTeacher}}
                 {{#if organization}}
-                  <p class="section-new-info">{{organization.name}}</p>
+                  <p class="section-new-info org">{{organization.name}}</p>
                 {{else}}
                   <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with your organization.</p>
                 {{/if}}

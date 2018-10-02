@@ -67,7 +67,11 @@ module.exports = {
     form: 'form#newsectionform',
     inputs: {
       name: 'input#newSectionName',
-      teachers: 'input.typeahead'
+      teacher: 'input.typeahead',
+    },
+    fixedInputs: {
+      teacher: 'p.section-new-info.teacher',
+      organization: 'p.section-new-info org'
     },
     create: 'button.action_button'
   },
@@ -98,5 +102,47 @@ module.exports = {
     infoMessage: 'p.info',
     newEmailButton: 'button.action_button',
     resentConfirm: 'p#resent-confirm',
-  }
+  },
+
+  newWorkspaceEnc: {
+    form: '#encImportForm',
+    create: 'button.create-ws',
+    filterCriteria: {
+      list: 'ol.filter-criteria',
+      inputs: {
+        teacher: 'li.ws-filter.teacher select',
+        assignment: 'li.ws-filter.assignment select',
+        problem: 'li.ws-filter.problem select',
+        section: 'li.ws-filter.section select',
+        date: '#dateRange'
+      },
+      fixedInputs: {
+        teacher: 'li.ws-filter.teacher p'
+      }
+    },
+    workspaceSettings: {
+      list: 'ol.workspace-settings',
+      inputs: {
+        owner: 'li.ws-settings.owner select',
+        name: 'li.ws-settings.name',
+        folders: 'li.ws-settings.folders select',
+        modePrivate: 'input[value="private"]',
+        modePublic: 'input[value="public"]'
+      },
+      fixedInputs: {
+        owner: 'li.ws-settings.owner p',
+      }
+    }
+  },
+  errorPage: {
+    div: '.error-page'
+  },
+  sectionInfo: {
+    details: {
+      name: 'section-info-detail.name'
+    },
+    newSectionButton: '#new-section-link'
+  },
+
+  sectionHome: 'div#section-home'
 };

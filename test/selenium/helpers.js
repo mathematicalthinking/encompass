@@ -260,6 +260,35 @@ const clearElement = async function(webDriver, element) {
   }
 };
 
+//boilerplate setup for running tests by account type
+// async function runTests(users) {
+//   async function _runTests(user) {
+//     const { accountType, actingRole, testDescriptionTitle } = user;
+//     describe(`As ${testDescriptionTitle}`, async function() {
+//       this.timeout(helpers.timeoutTestMsStr);
+//       let driver = null;
+
+//       before(async function() {
+//         driver = new Builder()
+//           .forBrowser('chrome')
+//           .build();
+//           await dbSetup.prepTestDb();
+//           return await helpers.login(driver, host, user);
+//         });
+
+//       after(async function() {
+//         return await driver.quit();
+//       });
+//     });
+
+    //TESTS HERE
+//   }
+//   for (let user of Object.keys(users)) {
+//     await _runTests(users[user]);
+//   }
+// }
+
+
 module.exports.getWebElements = getWebElements;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;

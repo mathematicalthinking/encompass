@@ -120,6 +120,31 @@ function fetchUser(options) {
   return (_fetchUser);
 }
 
+function determineStudentAccess(user, path, method) {
+  if (!user) {
+    return;
+  }
+
+  const {accountType, actingRole} = user;
+  const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets'];
+  const allowedPostPutPaths = ['answers', 'image', 'errors'];
+
+  if (method === 'GET') {
+    // students currently cannot make any requests related to workspaces
+    let isForbiddenPath = _.any(forbiddenGetPaths, (p) => {
+      return path.includes(p);
+    });
+    return !isForbiddenPath;
+
+  } else {
+    // students currently can only make POST/PUT requests to /answers, /image
+    let isAllowedPath = _.any(allowedPostPutPaths, (p) => {
+      return path.includes(p);
+    });
+    return isAllowedPath;
+  }
+}
+
 /*
   General layer of protection for all requests
 */
@@ -136,8 +161,8 @@ function protect(options) {
     });
 
     var user = getUser(req);
+
     var openPaths = ['/api/users', '/api/stats', '/api/organizations'];
-    var studentPostPaths = ['/api/answers', '/image'];
     // /api/user - people need this to login; allows new users to see the user list
     // /api/stats - nagios checks this
     var openRequest = _.contains(openPaths, req.path);
@@ -145,14 +170,14 @@ function protect(options) {
     if ((openRequest && req.method === 'GET')) {
       return next();
     }
-    // if (user.accountType === 'S' || user.actingRole === 'student') {
-    //   if (req.method !== 'GET') {
-    //     console.log('req.path student', req.path );
-    //     if (!_.contains(studentPostPaths, req.path)) {
-    //       return res.redirect('/');
-    //     }
-    //   }
-    // }
+    if (user.accountType === 'S' || user.actingRole === 'student') {
+     let isAllowed = determineStudentAccess(user, req.path, req.method);
+     console.log('is allowed', isAllowed);
+     if (isAllowed) {
+      return next();
+     }
+     return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
+    }
 
     var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
     console.log('is user authenticated in protect: ', userAuthenticated);
@@ -164,7 +189,7 @@ function protect(options) {
 
 
     if (notAuthenticated) {
-      return utils.sendResponse(res, {"error": 'You are not Authenticated'});
+      return utils.sendError.InvalidCredentialsError('You are not Authenticated.', res);
     }
     // users who sign up with google need to be able to update their user info with org, requestReason, and location
     if (notAuthorized && !isGoogleUser) {
