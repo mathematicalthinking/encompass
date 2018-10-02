@@ -46,7 +46,7 @@
 
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
-    <h3>Selectabe View!</h3>
+    <h3>Selectab1e View!</h3>
     {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
       <div id="submission_container">
         <div class="submission short">
@@ -78,13 +78,16 @@
       {{/if}}
     </div>
     <div class="submission long">
-     {{#if currentSubmission.answer.explanation}}
+      {{#if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}
-      {{else}}
+      {{/if}}
+      {{#if currentSubmission.answer.explanationImage}}
+        <img src="{{currentSubmission.answer.explanationImage.imageData}}" alt="">
+      {{/if}}
+      {{#if currentSubmission.longAnswer}}
         {{{currentSubmission.longAnswer}}}
       {{/if}}
     </div>
-
   {{/if}}
     {{!-- <div id="tags-list">
       <p class="al_small">Below is a list of image tags. Hover over a tag

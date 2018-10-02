@@ -16,7 +16,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     var making = this.get('makingSelection');
     var showing = this.get('showingSelections');
     var transitioning = this.get('isTransitioning');
-    return (making || showing) && !transitioning && !this.switching;
+    var ws = this.get('currentWorkspace');
+    let canSelect = this.get('permissions').canEdit(ws);
+    return (making || showing) && !transitioning && !this.switching && canSelect;
   }),
 
   shouldCheck: Ember.computed('makingSelection', function() {
