@@ -61,8 +61,6 @@ describe('Sections', async function () {
               });
             }
           }
-
-
         });
 
         describe(`Visiting ${sectionDetails.name}`, function () {
