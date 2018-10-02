@@ -55,8 +55,12 @@
       {{/if}}
       </div>
 
+      {{#if publicSearchResults}}
+        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+      {{else}}
+      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter queryResults=publicQueryResults model="problem"}}
+      {{/if}}
 
-      {{pagination-control store=store currentPage=publicCurrentPage queryPageCount=publicProblemsMetadata.pageCount searchPageCount=publicSearchMetadata.pageCount searchTotal=publicSearchMetadata.total filter=publicFilter queryResults=publicQueryResults searchResults=publicSearchResults model="problem" searchText=searchQuery}}
 
       <ul class="public">
         {{#if publicSearchResults}}
@@ -73,7 +77,11 @@
       {{/if}}
       {{/if}}
       </ul>
-      {{pagination-control store=store currentPage=publicCurrentPage queryPageCount=publicProblemsMetadata.pageCount searchPageCount=publicSearchMetadata.pageCount searchTotal=publicSearchMetadata.total filter=publicFilter queryResults=publicQueryResults searchResults=publicSearchResults model="problem" searchText=searchQuery}}
+      {{#if publicSearchResults}}
+        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+      {{else}}
+      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter queryResults=publicQueryResults model="problem"}}
+      {{/if}}
     </nav>
   </section>
 </section>

@@ -5,7 +5,7 @@
       <div class="nav-left">
     <i {{action "getPage" -1}} class="fas fa-caret-left"></i>
   </div>
-  <span class="page-status"> {{currentPage}} / {{maxPage}}</span>
+  <div class="page-status"> <p>Page {{details.currentPage}} / {{details.pageCount}}</p></div>
 
   <div class="nav-right">
     <i {{action "getPage" 1}} class="fas fa-caret-right"></i>

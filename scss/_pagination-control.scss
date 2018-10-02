@@ -18,6 +18,7 @@
   .nav-arrows {
     display: flex;
     align-items: center;
+    min-width: 120px;
     .page-status {
       margin: 0 3px;
     }
@@ -25,10 +26,14 @@
 
   .nav-goto {
     margin-left: 10px;
+    padding: 2px;
 
-    input.goto-page {
-      width: 4em;
+    input {
+      width: 10%;
+      min-width: 35px;
+      max-width:50px;
     }
+
   }
 
 }
