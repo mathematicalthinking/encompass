@@ -36,6 +36,7 @@ function accessibleSections(user) {
       { createdBy: user },
       { teachers: { $in : [user] } },
       { students: { $in : [user] } },
+      {organization: user.organization}
     ],
     isTrashed: false
   };
@@ -43,19 +44,10 @@ function accessibleSections(user) {
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
-  let isAdmin = user.accountType === "A";
-  let criteria;
 
-  if (req.query.ids) {
-    criteria = {
-     _id: { $in: req.query.ids },
-     isTrashed: false,
-    };
-  } else if (isAdmin) {
-    criteria = { isTrashed: false };
-  } else {
-    criteria = accessibleSections(user);
-  }
+  let criteria;
+  let ids = req.query.ids;
+  criteria = access.get.sections(user, ids);
 
   console.log('criteria is', criteria);
   models.Section.find(criteria)
