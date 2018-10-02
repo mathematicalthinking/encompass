@@ -3,12 +3,15 @@ const pg = require("pg");
 // const cheerio = require('cheerio');
 // const domParser = require('dom-parser');
 const htmlparser = require("htmlparser2");
+var fs = require('fs');
 
 const models = require('../datasource/schemas');
 const _ = require('underscore');
 mongoose.Promise = global.Promise;
 
-async function allPuzzlesLoop(pgClient, pows_user) {
+const imgDirRoot = '/Users/davidtaylor/Documents/synched_21/mathematicalThinking/EnCoMPASS/data/pow_images/'
+
+async function allPuzzlesLoop(pgClient, pows_user, errorStream) {
   console.log(`Starting allPuzzlesLoop `);
   try {
     // try does not catch postgres server not running
@@ -18,15 +21,16 @@ async function allPuzzlesLoop(pgClient, pows_user) {
     const resIds = res.rows.map(d => d.id)
     console.log(`There are ${resIds.length} resIds`)
     for (let id of resIds) {
+      console.log(`------------------------------`);
       console.log(`allPuzzlesLoop pow id: ${id}`);
       // find existing encompass problem, else create new one from pow record
       const problems = await models.Problem.find({puzzleId: id}).exec();
       let problem;
       if (problems.length > 0) {
         problem = problems[0];
-        console.log(`found problem in encompass: ${problem.title}, puzzleId: ${problem.puzzleId}`);
+        // console.log(`found problem in encompass: ${problem.title}, puzzleId: ${problem.puzzleId}`);
       } else {
-        console.log(`create new problem`);
+        // console.log(`create new problem`);
         const pows_problem = await pgClient.query(`select * from pow_puzzles where id = ${id}`);
         const pow = pows_problem.rows[0];
         // console.log(`pows_user: ${pows_user}`);
@@ -42,15 +46,22 @@ async function allPuzzlesLoop(pgClient, pows_user) {
       // update values in problems (e.g. images, category, etc)
       problem.createdBy = pows_user;
       console.log(`set to user: ${problem.createdBy.username}`);
-      await insertImagesIntoText(problem.text);
+      newHtml = insertImagesIntoText(problem.text, errorStream, problem.title);
+      if (newHtml) {
+        problem.isTrashed = false;
+        problem.text = newHtml;
+      } else {
+        problem.isTrashed = true;
+      }
       // save updated values into encompass problems (as obtained)
       try {
+        console.log(`trashed: ${problem.isTrashed}`)
         await problem.save();
         console.log(`Saved ${problem.title}`);
       } catch (err) {
         console.error(`ERROR saving ${prob.title} - ${err}`);
       }
-  }
+    }
   } catch (err) {
     console.log(`allPuzzlesLoop query error stack: ${err.stack}`);
   }
@@ -98,34 +109,32 @@ async function getOrCreatePowUser() {
   }
 }
 
-async function insertImagesIntoText(text) {
-
-  // text = "<div><img src='test1'><img src='test2'><iframe src='test3'>zzz</iframe></div>"
-  // console.log(`starting text: ${text}`);
-
-  // // cheerio attempt
-  // const ct = cheerio.load(text);
-  // let imgs = ct('img');
-  // console.log(`length: ${imgs.length}`);
-  // console.log(`0: ${imgs[0]}`);
-  // console.log(`1: ${imgs[1]}`);
-  // // console.log(`html 0: ${imgs[0].html()}`);
-  // // console.log(`html 1: ${imgs[1].html()}`);
-  // let imgs2 = ct('img').attr('src');
-  // console.log(`length: ${imgs2.length}`);
-  // console.log(`0: ${imgs2[0]}`);
-  // console.log(`1: ${imgs2[1]}`);
-
-
-  // htmlparser2 attempt
+function insertImagesIntoText(text, errorStream, probTitle) {
+  // console.log(`\n--------------\nOriginal HTML: ${text}`)
   result = [];
   var parser = new htmlparser.Parser({
     onopentag: function(name, attribs){
       result.push('<' + name + '>');
     },
     onattribute: function(name, value) {
-      if (name === 'src') {
-        value = "this is changed"
+      const origUrl = value;
+      let imageFilePath;
+      if (name == 'src') {
+        console.log(`url: ${origUrl}`)
+        if (origUrl.substring(0, 20) === 'http://mathforum.org') {
+          imageFilePath = imgDirRoot + origUrl.substring(21);
+        } else {
+          imageFilePath = imgDirRoot + origUrl.substring(1);
+        }
+        value = imageFileToBase64(imageFilePath);
+        if (value === '') {
+          // dont print kenken in error stream file
+          if (origUrl.substring(0, 27) === 'http://mathforum.org/kenken') {
+            result.push(`K ERROR: POW kenken puzzle ${probTitle} Missing image file: ${origUrl}\n`)
+          } else {
+            result.push(`ERROR: POW puzzle ${probTitle} Missing image file: ${origUrl}\n`)
+          }
+        }
       }
       result.push(' ' + name + '="' + value + '"');
     },
@@ -136,67 +145,75 @@ async function insertImagesIntoText(text) {
       result.push('</' + tagname + '>');
     }
   }, {decodeEntities: true});
-  parser.write(text);
-  parser.end();
-  outStr = '';
-  saveAttrs = '';
-  result.forEach ( (elem) => {
-    switch (elem[0] ) {
-      case '<':
-        if (saveAttrs.length > 0) {
-          outStr += elem.substring(0, elem.length - 1) + saveAttrs + '>';
-          saveAttrs = '';
-        } else {
-          outStr += elem;
-        }
-        break;
-      case ' ':
-        saveAttrs += elem;
-        break;
-      case 'T':
-        outStr +=  elem.substring(1);
-        break;
-      default:
-        console.log(`ERROR: invalid stack element ${elem}`);
-        break;
+  try {
+    parser.write(text);
+    parser.end();
+    let imgErrs = 0;
+    let outStr = '';
+    let saveAttrs = '';
+    result.forEach ( (elem) => {
+      switch (elem[0] ) {
+        case '<':
+          if (saveAttrs.length > 0) {
+            outStr += elem.substring(0, elem.length - 1) + saveAttrs + '>';
+            saveAttrs = '';
+          } else {
+            outStr += elem;
+          }
+          break;
+        case ' ':
+          saveAttrs += elem;
+          break;
+        case 'T':
+          outStr +=  elem.substring(1);
+          break;
+        case 'E':
+          // print missing images in error stream file
+          console.log(elem);
+          errorStream.write(elem);
+          imgErrs += 1;
+          break;
+        case 'K':
+          // dont print kenken in error stream file
+          console.log(elem);
+          // errorStream.write(elem);
+          imgErrs += 1;
+          break;
+        default:
+          console.log(`ERROR: invalid stack element ${elem}`);
+          break;
+      }
+    });
+    if (imgErrs > 0) {
+      console.error(`ERROR: missing image(s)`)
+      return ''; // missing images error
+    } else {
+      // console.log(`\n--------------\nFinal HTML: ${outStr}`)
+      return outStr; // no errors
     }
-
-  });
-  // console.log(`\n\noutStr: ${outStr}`)
-
-
-
-  // // dom-parser attempt
-  // const rootedText = `<div id='rootedElement'>${text}</div>`
-  // var parser = new DomParser();
-  // var dom = parser.parseFromString(rootedText);
-  // srcTags1 = dom.getElementsByTagName('img');
-  // console.log(`dom-parser: length: ${srcTags1.length}`)
-  // let saveElem;
-  // srcTags1.forEach( (elem) => {
-  //   saveElem = elem;
-  //   srcAttrib = elem.getAttribute('src');
-  //   console.log(`element - ${srcAttrib}`);
-  //   // srcAttrib.innerHTML = "what?";
-  //   elem.setAttribute('src', 'What?');
-  //   console.log(`element - ${srcAttrib}`);
-  // })
-  // console.log(`dom-parser: : ${srcTags1.length}`)
-  // console.log(`updated string: ${dom.getElementById('rootedElement').outerHTML}`)
-
+  } catch (e) {
+    console.error(`ERROR: ${e}`);
+    return ''; // have errors
+  }
 }
 
-async function imageFileToBase64(file) {
-  // return readFilePromise(file).then((data) => {
-  //   let newImage = new models.Image(f);
-  //   let buffer = new Buffer(data).toString('base64');
-  //   let format = `data:image/png;base64,`;
-  //   let imgData = `${format}${buffer}`;
-  //   newImage.imageData = imgData;
-  //   return newImage;
-  // })
-}
 
+function imageFileToBase64(file) {
+  try {
+    let data = fs.readFileSync(file);
+    if (data) {
+      let buffer = new Buffer(data).toString('base64');
+      let format = `data:image/png;base64,`;
+      let imgData = `${format}${buffer}`;
+      // console.log(`imgData: ${imgData}`);
+      return imgData;
+    } else {
+      return '';
+    }
+  } catch (err) {
+    return '';
+  }
+}
 
 
 async function update() {
@@ -214,12 +231,16 @@ async function update() {
     pgClient.connect();
     console.log(`pg client connected`);
 
+    // error log file:
+    const errorStream = fs.createWriteStream("errorProblems.txt");
+
+
     await cleanPowUsers();
 
     const pows_user = await getOrCreatePowUser();
-    await allPuzzlesLoop(pgClient, pows_user);
+    await allPuzzlesLoop(pgClient, pows_user, errorStream);
 
-
+    errorStream.end();
     console.log(`client end`);
     await pgClient.end()
     mongoose.connection.close();
