@@ -9,12 +9,11 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
     this._super(...arguments);
   },
 
-  getResultsByPage: function(model, page, limit=50) {
+  getResultsByPage: function(model, page, limit=null) {
     let filterBy = this.get('filter');
 
     let queryParams = {
       page,
-      limit,
       filterBy
     };
 
