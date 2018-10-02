@@ -11,7 +11,7 @@ async function getStudentProblems(user) {
 }
 
 
-const accessibleProblemsQuery = async function(user, ids, regex) {
+const accessibleProblemsQuery = async function(user, ids, filterBy) {
   try {
     if (!user) {
       return [];
@@ -19,12 +19,13 @@ const accessibleProblemsQuery = async function(user, ids, regex) {
     const accountType = user.accountType;
     const actingRole = user.actingRole;
 
-  let filter = {
+    let filter = {
     isTrashed: false
   };
-
-  if (regex) {
-    filter.title = regex;
+  if (filterBy) {
+    for (let key of Object.keys(filterBy)) {
+      filter[key] = filterBy[key];
+    }
   }
 
   if (ids) {

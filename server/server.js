@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const multer = require('multer');
 const expressPath = require('path');
+const paginate = require('express-paginate');
 require('dotenv').config();
 
 
@@ -183,7 +184,7 @@ server.get('/api/responses', api.get.responses);
 server.get('/api/responses/:id', path.validateId(), api.get.response);
 server.get('/api/taggings', api.get.taggings);
 server.get('/api/taggings/:id', path.validateId(), api.get.tagging);
-server.get('/api/problems', api.get.problems);
+server.get('/api/problems', paginate.middleware(20,100), api.get.problems);
 server.get('/api/problems/:id', path.validateId(), api.get.problem);
 server.get('/api/answers', api.get.answers);
 server.get('/api/answers/:id', path.validateId(), api.get.answer);

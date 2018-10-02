@@ -45,7 +45,29 @@
       {{/if}}
 
       <h2>Public Problems</h2>
+      <div class="search-bar">
+         {{input type=text value=publicSearchText placeholder="Search by title..."}}
+      <button {{action "searchPublic"}}><i class="fas fa-search"></i></button>
+      {{#if publicSearchResults}}
+      <button {{action "clearPublicResults"}}>Clear results</button>
+      <p>{{publicSearchMetadata.total}} results for '{{searchQuery}}'</p>
+
+      {{/if}}
+      </div>
+
+      {{#if publicSearchResults}}
+        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+      {{else}}
+      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter queryResults=publicQueryResults model="problem"}}
+      {{/if}}
+
+
       <ul class="public">
+        {{#if publicSearchResults}}
+          {{#each publicSearchResults as |problem|}}
+            <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
+          {{/each}}
+        {{else}}
       {{#if publicProblems}}
         {{#each publicProblems as |problem|}}
           <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
@@ -53,7 +75,13 @@
       {{else}}
         <li>There are no public problems</li>
       {{/if}}
+      {{/if}}
       </ul>
+      {{#if publicSearchResults}}
+        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+      {{else}}
+      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter queryResults=publicQueryResults model="problem"}}
+      {{/if}}
     </nav>
   </section>
 </section>

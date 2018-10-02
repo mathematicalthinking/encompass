@@ -6,6 +6,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
+const paginate = require('express-paginate');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -59,38 +60,69 @@ function accessibleProblems(user) {
   });
 
 }
-
+// query params support:
+// ids
+// filterBy
+// sortBy
 const getProblems = async function(req, res, next) {
-  const user = userAuth.requireUser(req);
-
-// if (req.query.problemTitle) {
-//   let title = req.query.problemTitle;
-//   title = title.replace(/\s+/g, "");
-//   regex = new RegExp(title, 'i');
-//   console.log('req title is', title);
-
-//   let criteria = await access.get.problems(user, null, regex);
-//   console.log('criteria is', criteria);
-
-//   const requestedProblems = await models.Problem.find(criteria).lean().exec();
-//   let data;
-//   data = {
-//     'problem': requestedProblems
-//   }
-//   return utils.sendResponse(res, data);
-// }
-
-const criteria = await access.get.problems(user);
-    models.Problem.find(criteria)
-  .exec((err, problems) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+  try {
+    const user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError(null, res);
     }
-    const data = {'problems': problems};
+    let { ids, filterBy, sortBy, page, } = req.query;
+
+    if (filterBy) {
+      let {title, problemStatement } = filterBy;
+      if (title) {
+        title = title.replace(/\s+/g, "");
+        let regex = new RegExp(title, 'i');
+        filterBy.title = regex;
+      }
+      // currently no front end functionality for searching by problemStatement text
+      // would need to optimize search by ignoring common words
+      if (problemStatement) {
+        problemStatement = problemStatement.replace(/\s+/g, "");
+        let regex = new RegExp(problemStatement, 'i');
+        filterBy.problemStatement = regex;
+      }
+    }
+
+    const criteria = await access.get.problems(user, ids, filterBy);
+
+    const [ results, itemCount ] = await Promise.all([
+      models.Problem.find(criteria).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Problem.count(criteria)
+    ]);
+
+    // no front end functionality for sending sort query params but we should add that
+    if (sortBy) {
+      // handle sort
+      // default sorting?
+    }
+
+    const pageCount = Math.ceil(itemCount / req.query.limit);
+
+    let currentPage = page;
+    if (!currentPage) {
+      currentPage = 1;
+    }
+    const data = {
+      'problems': results,
+      'meta': {
+        'total': itemCount,
+        pageCount,
+        currentPage
+      }
+  };
     utils.sendResponse(res, data);
     next();
-  });
+  }catch(err) {
+    console.error(`Error getProblems: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
+
 
   // add permissions here
 
