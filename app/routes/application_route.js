@@ -29,7 +29,6 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
   afterModel: function(user, transition) {
     //not crazy that this is duplicated here and in AuthenticatedRoute...
 
-    console.log('in afterModel app route', transition);
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
     const allowedPaths = ['auth.reset', 'auth.confirm', 'auth.forgot', 'auth.login', 'auth.signup'];
@@ -52,7 +51,6 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
   actions: {
     // TODO: Remove all the modal stuff
     openModal: function(modalName, model) {
-      console.log("Application opening modal: " + modalName );
       if(model) {
         this.controllerFor(modalName).set('model', model);
       }

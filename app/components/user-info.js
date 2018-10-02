@@ -1,5 +1,6 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-info',
+  alert: Ember.inject.service('sweet-alert'),
   isEditing: false,
   authorized: null,
   selectedType: null,
@@ -16,6 +17,10 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   didReceiveAttrs: function () {
     this.set('isEditing', false);
+    let user = this.get('user');
+    if (user.get('sections')) {
+      this.getUserSections();
+    }
     this.set('org', null);
     this.store.findAll('organization').then((orgs) => {
       this.set('orgList', orgs);
@@ -62,6 +67,23 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
       return true;
     }
   }),
+
+  getUserSections: function () {
+    let user = this.get('user');
+    let sections = user.get('sections');
+
+    if (sections) {
+      let sectionIds = sections.map((section) => {
+        return section.sectionId;
+      });
+
+      this.get('store').query('section', {
+        ids: sectionIds
+      }).then((sections) => {
+        this.set('userSections', sections);
+      });
+    }
+  }.observes('user.id'),
 
   removeSuccessMessages: function() {
     const succesStates = ['resetPasswordSuccess'];
@@ -137,6 +159,27 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         this.set('authorized', isAuth);
       },
 
+      checkOrgExists: function () {
+        let user = this.get('user');
+        let userOrg = user.get('organization').get('content');
+        let userOrgRequest = user.get('organizationRequest');
+        let org = this.get('org');
+        let orgReq = this.get('orgReq');
+
+        let options = [Boolean(userOrg), Boolean(userOrgRequest), Boolean(org), Boolean(orgReq)];
+
+        if (options.includes(true)) {
+          this.send('saveUser');
+        } else {
+          this.get('alert').showModal('warning', 'Are you sure you want to save a user that has no organization?', 'Users should belong to an organization to improve the EnCoMPASS experience', 'Yes')
+            .then((result) => {
+              if (result.value) {
+                this.send('saveUser');
+              }
+            });
+        }
+      },
+
       saveUser: function () {
         let currentUser = this.get('currentUser');
         let user = this.get('user');
@@ -167,7 +210,8 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
           let newDate = new Date();
           user.set('lastModifiedBy', currentUser);
           user.set('lastModifiedDate', newDate);
-          user.save().then((res) => {
+          user.save().then(() => {
+            this.get('alert').showToast('success', 'User updated', 'bottom-end', 3000, false, null);
             this.set('isEditing', false);
           }).catch((err) => {
             this.handleErrors(err, 'updateRecordErrors', user);
@@ -186,10 +230,26 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       resetPassword: function() {
         this.set('isResettingPassword', true);
+        Ember.run.later(() => {
+          $('html, body').animate({
+            scrollTop: $(document).height()
+          });
+        }, 100);
       },
 
       authEmail: function() {
         this.set('willOveride', true);
+      },
+
+      confirmOrgModal: function () {
+        let user = this.get('user');
+        let reqOrg = user.get('organizationRequest');
+        this.get('alert').showModal('question', `Are you sure you want to create a new organization?`, `This will create a brand new organization called ${reqOrg}`, 'Yes')
+        .then((result) => {
+          if (result.value) {
+            this.send('createNewOrg');
+          }
+        });
       },
 
       createNewOrg: function () {
@@ -203,11 +263,13 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         newOrg.save()
           .then((org) => {
             let user = this.get('user');
+            let orgName = org.get('name');
             user.set('organization', org);
             this.set('orgReq', null);
             user.set('organizationRequest', null);
             user.save().then((user) => {
-              console.log('user', user);
+              this.get('alert').showToast('success', `${orgName} Created`, 'bottom-end', 3000, false, null);
+              this.set('orgModal', false);
             }).catch((err) => {
               this.handleErrors(err, 'updateRecordErrors', user);
             });
@@ -228,6 +290,7 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
       cancel: function () {
         this.set('isEditing', false);
+        this.set('noOrgModal', false);
       },
 
       handleCancelForm: function() {

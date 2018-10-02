@@ -7,13 +7,14 @@
  It also currently marks 'editing' false on the controller (room for improvement)
 */
 Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
+  alert: Ember.inject.service('sweet-alert'),
 
   confirmText: 'You have unsaved changes which you may lose.  Are you sure you want to leave?',
 
-  activate: function() {
+  activate: function () {
     var route = this;
-    $(window).on('beforeunload.' + route.get('controllerName') + '.confirm', function() {
-      if(route.controller.get('confirmLeaving')) {
+    $(window).on('beforeunload.' + route.get('controllerName') + '.confirm', function () {
+      if (route.controller.get('confirmLeaving')) {
         return route.get('confirmText');
       }
     });
@@ -25,22 +26,42 @@ Encompass.ConfirmLeavingRoute = Ember.Mixin.create({
   },
 
   actions: {
+    doConfirmLeaving: function (value) {
+      this.sendAction('doConfirmLeaving', value);
+    },
+
     willTransition: function(transition) {
       var controller = this.get('controller');
-      if (controller.get('confirmLeaving') && !window.confirm(this.get('confirmText'))) {
-        if (window.history) {
-          window.history.forward();
-        }
+      if (controller.get('confirmLeaving')) {
         transition.abort();
-
-      } else {
-        // Bubble the `willTransition` action so that
-        // parent routes can decide whether or not to abort.
-        controller.set('editing', false); //always set editing to false, that way
-          //1: arbitrary nested response routes don't trigger the confirm
-          //2: reinforce that people are leaving the editing mode
-        return true;
+        this.get('alert').showModal('question', 'Are you sure you want to leave?', 'Any progress will not be saved', 'Yes')
+        .then((result) => {
+          if (result.value) {
+            controller.set('editing', false);
+            controller.set('confirmLeaving', false);
+            transition.retry();
+          } else if (result.dismiss === "cancel") {
+            if (window.history) {
+              window.history.forward();
+            }
+          }
+        });
       }
+
+      // if (controller.get('confirmLeaving') && !window.confirm(this.get('confirmText'))) {
+      //   if (window.history) {
+      //     window.history.forward();
+      //   }
+      //   transition.abort();
+
+      // } else {
+      //   // Bubble the `willTransition` action so that
+      //   // parent routes can decide whether or not to abort.
+      //   controller.set('editing', false); //always set editing to false, that way
+      //     //1: arbitrary nested response routes don't trigger the confirm
+      //     //2: reinforce that people are leaving the editing mode
+      //   return true;
+      // }
     }
   }
 

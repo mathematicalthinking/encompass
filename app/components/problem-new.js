@@ -7,6 +7,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   privacySetting: null,
   checked: true,
   validator: Ember.inject.service('form-validator'),
+  alert: Ember.inject.service('sweet-alert'),
   approvedProblem: false,
   noLegalNotice: null,
 
@@ -54,10 +55,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       return;
     }
 
-    if (privacySetting === "E") {
-      this.set('showConfirmModal', true);
-    }
-
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
@@ -91,6 +88,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
+                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -113,6 +111,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
+                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -126,12 +125,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     } else {
       createProblemData.save()
         .then((res) => {
-          let error = res.get('error');
-          if (error) {
-            this.set('problemNameExists', true);
-            this.set('successMessage', true);
-            return;
-          }
+          this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
@@ -141,7 +135,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
   confirmCreatePublic: function() {
-    this.set('showConfirmModal', true);
+    this.get('alert').showModal('question', 'Are you sure you want to create a public problem?', 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used', 'Yes')
+    .then((result) => {
+      if (result.value) {
+        this.createProblem();
+      }
+    });
   },
 
   actions: {

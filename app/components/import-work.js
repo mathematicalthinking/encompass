@@ -14,7 +14,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   isReviewingSubmissions: null,
   doNotCreateWorkspace: false,
   doCreateWorkspace: Ember.computed.not('doNotCreateWorkspace'),
-
+  alert: Ember.inject.service('sweet-alert'),
   isSelectingImportDetails: true,
   mode: 'private',
   requestedName: null,
@@ -42,12 +42,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
 
-    if (ret && uploading) {
-      this.set('isCompDirty', false);
+    if (ret) {
+      this.set('isCompDirty', true);
+      this.sendAction('doConfirmLeaving', true);
       return;
     }
-
-    this.set('isCompDirty', ret);
+    this.set('isCompDirty', false);
+    this.sendAction('doConfirmLeaving', false);
   }.observes('selectedProblem', 'selectedSection', 'uploadedFiles', 'isUploadingAnswer'),
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
@@ -207,6 +208,8 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           const uploadedAnswers = res;
 
           if (that.get('doCreateWorkspace')) {
+          this.set('isCompDirty', false);
+          this.sendAction('doConfirmLeaving', false);
           subs = res.map((ans) => {
             //const teachers = {};
             const clazz = {};
@@ -271,6 +274,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             if (res.workspaceId) {
               that.set('createdWorkspace', res);
               that.sendAction('toWorkspaces', res);
+              this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
             }
           })
           .catch((err) => {

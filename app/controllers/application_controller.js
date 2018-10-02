@@ -16,7 +16,6 @@ Encompass.ApplicationController = Ember.Controller.extend({
 
   actions: {
     toHome: function() {
-      console.log('in to home app controller');
       this.transitionToRoute('/');
     }
   }

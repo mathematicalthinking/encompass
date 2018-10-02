@@ -10,6 +10,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   dataFetchErrors: [],
   findRecordErrors: [],
   updateRecordErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
   init: function() {
     this._super(...arguments);
@@ -145,12 +146,30 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('isEditing', true);
     },
 
+    showDeleteModal: function () {
+      this.get('alert').showModel('warning', 'Are you sure you want to delete this assignment?', null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          this.send('deleteAssignment');
+        }
+      });
+    },
+
     deleteAssignment: function() {
       const assignment = this.get('assignment');
       assignment.set('isTrashed', true);
       return assignment.save().then((assignment) => {
         this.set('assignmentToDelete', null);
-
+        this.get('alert').showToast('success', 'Assignment Deleted', 'bottom-end', 5000, true, 'Undo')
+        .then((result) => {
+          if (result.value) {
+            assignment.set('isTrashed', false);
+            assignment.save().then(() => {
+              this.get('alert').showToast('success', 'Assignment Restored', 'bottom-end', 5000, false, null);
+              window.history.back();
+            });
+          }
+        });
         this.sendAction('toAssignments');
       })
       .catch((err) => {
@@ -179,13 +198,14 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       }
 
       if (assignment.get('hasDirtyAttributes')) {
-        return assignment.save().then((assignment) => {
-            this.set('assignmentUpdateSuccess', true);
-            this.set('isEditing', false);
-            return;
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'updateRecordErrors', assignment);
+        return assignment.save().then(() => {
+          this.get('alert').showToast('success', 'Assignment Updated', 'bottom-end', 4000, false, null);
+          this.set('assignmentUpdateSuccess', true);
+          this.set('isEditing', false);
+          return;
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', assignment);
         });
       } else {
         this.set('isEditing', false);

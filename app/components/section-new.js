@@ -1,6 +1,7 @@
 Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'section-new',
   className: ['sections'],
+  alert: Ember.inject.service('sweet-alert'),
   createdSection: null,
   createRecordErrors: [],
   teacher: null,
@@ -94,6 +95,8 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
       sectionData.save()
       .then((section) => {
+        let name = section.get('name');
+        this.get('alert').showToast('success', `${name} created`, 'bottom-end', 3000, false, null);
         that.set('createdSection', section);
         that.sendAction('toSectionInfo', section);
       })

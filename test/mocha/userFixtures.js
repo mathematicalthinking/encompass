@@ -55,7 +55,7 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 18
+  accessibleUserCount: 20
 };
 
 const admin = {

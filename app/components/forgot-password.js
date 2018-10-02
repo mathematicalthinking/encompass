@@ -9,15 +9,12 @@ Encompass.ForgotPasswordComponent = Ember.Component.extend(Encompass.ErrorHandli
     }
     var emailPattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/);
     var emailTest = emailPattern.test(email);
-    console.log(emailTest);
 
     if (emailTest === false) {
-      console.log('false email');
       return false;
     }
 
     if (emailTest === true) {
-      console.log('true email');
       return true;
     }
 

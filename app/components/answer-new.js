@@ -4,6 +4,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   isMissingRequiredFields: null,
   requiredInputIds: [],
   validator: Ember.inject.service('form-validator'),
+  alert: Ember.inject.service('sweet-alert'),
   students: [],
   editor: null,
   findRecordErrors: [],
@@ -147,6 +148,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         });
       });
       return Promise.all(records.map((rec) => {
+        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
         return rec.save();
       }))
       .then((answers) => {
@@ -210,6 +212,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       }
 
       students.pushObject(student);
+      this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
       // this.set('addedStudent', true);
     },
     removeStudent: function(student) {
@@ -218,6 +221,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       }
       let students = this.get('contributors');
       students.removeObject(student);
+      this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
     }
   }
 });

@@ -2,14 +2,6 @@
 	<h2>Select a workspace</h2>
 	<aside>
     <span class="meta pointer refresh" {{action 'reloadPage'}}>current as of {{currentAsOf}}</span>
-    {{!-- <span {{action "toggleFilter" "all"}} class="filter-all action_button">all</span>
-    <span {{action "toggleFilter" "mine"}} class="filter-mine action_button">mine</span>
-    <span {{action "toggleFilter" "public"}} class="filter-public action_button">public</span> --}}
-
-    {{!-- {{link-to 'all' 'workspaces.index'}}
-    {{link-to 'mine' 'workspaces.mine'}}
-    {{link-to 'public' 'workspaces.public'}} --}}
-    {{!-- {{#link-to 'workspaces.new'}}new{{/link-to}} --}}
 	</aside>
   <div class="toggle-btn">
         <button {{action "toggleFilter" "all"}} class="filter-btn {{if (is-equal listFilter 'all') "active-filter"}}" >All</button>
@@ -62,9 +54,6 @@
         <td>{{#link-to 'workspace.info' workspace}}{{workspace.editorsLength}}{{/link-to}}</td>
       </tr>
     {{/each}}
-    {{#if workspaceToDelete}}
-    {{modal-delete itemToDelete=workspaceToDelete onConfirm="trashWorkspace" optionLabelPath = "name" warningMessage="This workspace will no longer be accessible to any Encompass user."}}
-    {{/if}}
       <p class="create-new-workspace">
         <i class="fas fa-plus"></i>
          {{#link-to 'workspaces.new' id="new-workspace-link"}}Create a New Workspace{{/link-to}}

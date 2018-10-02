@@ -4,6 +4,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedSection: null,
   selectedProblem: null,
   validator: Ember.inject.service('form-validator'),
+  alert: Ember.inject.service('sweet-alert'),
   sectionList: null,
   problemList: null,
   formId: null,
@@ -55,9 +56,9 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
   },
+
   createAssignment: function() {
     const that = this;
-
     const createdBy = that.get('currentUser');
     const section = that.get('selectedSection');
     const problem = that.get('selectedProblem');
@@ -96,15 +97,14 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
 
     createAssignmentData.save()
-      .then((assignment) => {
-        that.sendAction('toAssignmentInfo', assignment);
-        //TODO: decide how to handle clearing form and whether to redirect to the created assignment
-            //that.get('validator').clearForm();
-        })
-        .catch((err) => {
-          that.handleErrors(err, 'createRecordErrors', createAssignmentData);
-          });
-    },
+    .then((assignment) => {
+      that.sendAction('toAssignmentInfo', assignment);
+      this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
+    })
+    .catch((err) => {
+       that.handleErrors(err, 'createRecordErrors', createAssignmentData);
+    });
+  },
 
     getMongoDate: function(htmlDateString) {
       const htmlFormat = 'YYYY-MM-DD';

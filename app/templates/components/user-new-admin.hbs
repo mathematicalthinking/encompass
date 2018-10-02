@@ -96,5 +96,9 @@
     <button class='action_button new-user' {{action 'cancelNew'}}>Cancel</button>
   </div>
 
+{{#if confirmNewOrg}}
+  {{modal-confirm actionToConfirm=confirmNewOrg onConfirm="newUser" actionName="create a new organization"}}
+{{/if}}
+
 </article>
 

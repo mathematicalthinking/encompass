@@ -783,12 +783,6 @@ div.selectBox .selector {
   width: 100px;
 }
 
-.properForm em {
-  font-weight: bold;
-  font-style: normal;
-  color: #f00;
-}
-
 .properForm fieldset ol {
   margin: 0;
   padding: 0;

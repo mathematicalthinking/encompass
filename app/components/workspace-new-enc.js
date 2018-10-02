@@ -1,5 +1,6 @@
 Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-new-enc',
+  alert: Ember.inject.service('sweet-alert'),
   selectedPdSetId: null,
   selectedFolderSet: null,
   selectedAssignment: null,
@@ -141,7 +142,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       this.set('mode', value);
     },
 
-
     buildCriteria: function() {
       if (!this.get('isFormValid')) {
         this.set('missingRequiredFields', true);
@@ -185,6 +185,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
           this.set('createWorkspaceError', res.get('createWorkspaceError'));
           return;
         }
+        this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 3000, false, null);
         //Get the created workspaceId from the res
         let workspaceId = res.get('createdWorkspace').get('id');
         //Then find the first SubmissionID, this is sent to route in order to redirect

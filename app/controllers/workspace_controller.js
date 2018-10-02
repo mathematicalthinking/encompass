@@ -19,7 +19,6 @@ Encompass.WorkspaceController = Ember.Controller.extend(Encompass.CurrentUserMix
       this.transitionToRoute('workspace.submission', this.get('currentSubmission'));
     },
     tagSelection: function(selection, tags){
-      console.log('tagging');
     }
   }
 });

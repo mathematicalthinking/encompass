@@ -1,6 +1,7 @@
 Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-info',
   comments: Ember.inject.controller,
+  alert: Ember.inject.service('sweet-alert'),
   isEditing: false,
   selectedMode: null,
   updateRecordErrors: [],
@@ -10,8 +11,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   willDestroyElement: function () {
-    // do we need to be saving the workspace here?
-    // what if a user was editing but never clicked save and they did not intend to save the changes?
     let workspace = this.get('workspace');
     workspace.save().catch((err) => {
       this.handleErrors(err, 'updateRecordErrors', workspace);
@@ -32,10 +31,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
           if (!users) {
             return [];
           }
-
-        users = users.rejectBy('accountType', 'S');
-
-
+          users = users.rejectBy('accountType', 'S');
           let filtered = users.filter((user) => {
             return !selectedUsers.includes(user);
           });
@@ -45,7 +41,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
           this.handleErrors(err, 'queryErrors');
         });
       };
-
       return ret.bind(this);
     },
 
@@ -69,13 +64,17 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   actions: {
     removeEditor: function (editor) {
       let workspace = this.get('workspace');
+      let username = editor.get('username');
       workspace.get('editors').removeObject(editor);
+      this.get('alert').showToast('success', `${username} removed`, 'bottom-end', 3000, null, false);
     },
 
     addEditor: function (editor) {
       let workspace = this.get('workspace');
+      let username = editor.get('username');
       if (!workspace.get('editors').contains(editor)) {
         workspace.get('editors').pushObject(editor);
+        this.get('alert').showToast('success', `${username} added`, 'bottom-end', 3000, null, false);
       }
     },
 
@@ -85,10 +84,11 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     changeOwner: function (owner) {
       let workspace = this.get('workspace');
+      let username = owner.get('username');
       workspace.set('owner', owner);
       workspace.save().then((res) => {
         this.set('isChangingOwner', false);
-
+        this.get('alert').showToast('success', `Owner is now ${username}`, 'bottom-end', 3000, null, false);
       }).catch((err) => {
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });
@@ -101,13 +101,12 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
 
     saveWorkspace: function () {
-      // this.actions.changeMode.call(this);
       this.set('isEditing', false);
       let mode = this.get('selectedMode');
       let workspace = this.get('workspace');
       workspace.set('mode', mode);
       workspace.save().then((res) => {
-        // handle success
+        this.get('alert').showToast('success', 'Workspace Updated', 'bottom-end', 3000, null, false);
       }).catch((err) => {
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });

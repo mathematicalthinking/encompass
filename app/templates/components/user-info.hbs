@@ -72,8 +72,12 @@
       <tr>
         <td>Organization</td>
       {{#if isEditing}}
-        <td>{{twitter-typeahead dataList=orgList selectedValue=user.organization onSelect="setOrg" minLength=0 optionLabelPath='name' setSelectedValueOnChange=true}}</td>
+        {{#if currentUser.isAdmin}}
+          <td>{{twitter-typeahead dataList=orgList selectedValue=user.organization onSelect="setOrg" minLength=0 optionLabelPath='name' setSelectedValueOnChange=true}}</td>
         {{else}}
+        <td>{{user.organization.name}}</td>
+        {{/if}}
+      {{else}}
         <td>{{user.organization.name}}</td>
       {{/if}}
       </tr>
@@ -85,7 +89,7 @@
           {{#if currentUser.isAdmin}}
             <td>
               Would you like to create {{user.organizationRequest}}<br/>
-              <button {{action 'createNewOrg'}}>Yes</button>
+              <button {{action 'confirmOrgModal'}}>Yes</button>
               <button{{action 'removeOrg'}}>No</button>
             </td>
           {{else}}
@@ -97,6 +101,16 @@
           </td>
         {{/if}}
       </tr>
+    {{/if}}
+    {{#if user.sections}}
+    <tr>
+      <td>User's Sections</td>
+      <td>
+        {{#each userSections as |section|}}
+          <p>{{#link-to 'section' section}}{{section.name}}{{/link-to}}</p>
+        {{/each}}
+      </td>
+    </tr>
     {{/if}}
     <tr>
       <td>Location</td>
@@ -199,10 +213,6 @@
     {{#if isEditing}}
       {{#if isResettingPassword}}
         {{reset-password-user user=user handleResetSuccess=(action "handleResetSuccess") cancelReset=(action "handleCancelForm")}}
-      {{else}}
-        {{#if resetPasswordSuccess}}
-          <p class="success-message">Succesfully reset password for {{user.username}}</p>
-        {{/if}}
       {{/if}}
     {{#unless isResettingPassword}}
 
@@ -216,9 +226,13 @@
     <p class="error-message">{{error}}</p>
   {{/each}}
 
+  {{#if noOrgModal}}
+    {{modal-confirm actionToConfirm=noOrgModal onConfirm="saveUser" actionName="save a user with no organization" warningMessage="Users should always belong to an organization in order for EnCoMPASS to work properly"}}
+  {{/if}}
+
     <div class="button-row">
-      <button class='action_button save-user' {{action 'saveUser'}}>Save</button>
-      <button class='action_button canecel-user' {{action 'cancel'}}>Cancel</button>
+      <button class='action_button save-user' {{action 'checkOrgExists'}}>Save</button>
+      <button class='action_button cancel-user' {{action 'cancel'}}>Cancel</button>
     </div>
     {{/unless}}
     {{else}}

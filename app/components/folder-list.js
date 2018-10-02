@@ -12,23 +12,27 @@
  * - openModal action to add a new folder
  */
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  hideNewFolderModal: true,
-  hideDeleteFolderModal: true,
+  alert: Ember.inject.service('sweet-alert'),
   weighting: 1,
   editFolderMode: false,
-  canManageFolders: true,
   sortProperties: ['weight', 'name'],
   createRecordErrors: [],
   updateRecordErrors: [],
-  /*
+
+
   canManageFolders: function() {
-    return Permissions.userCan(
-      this.get('currentUser'),
-      this.get('currentWorkspace'),
-      "FOLDERS"
-    );
+    let workspace = this.workspace;
+    let owner = workspace.get('owner').get('id');
+    let editors = workspace.get('editors');
+    let currentUser = this.get('currentUser');
+    let accountType = currentUser.get('accountType');
+    let isAdmin = accountType === "A";
+    let isOwner = currentUser.get('id') === owner;
+    let isEditor = editors.includes(currentUser);
+
+    return isAdmin || isEditor || isOwner;
   }.property('currentUser', 'workspace.owner', 'workspace.editors.[].username'),
-  */
+
   init: function() {
     this._super(...arguments);
   },
@@ -64,17 +68,19 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
 
   actions: {
-    openModal: function( modalName ){
-      console.log("Open Modal: " + modalName );
-      this.set( 'hideNewFolderModal', false );
+    openModal: function(){
+      this.get('alert').showPrompt('text', 'Create New Folder', null, 'Save').then((result) => {
+        if (result.value) {
+          this.send('createFolder', result.value);
+        }
+      });
     },
 
-    createFolder: function( folderName ){
-      console.log("Create folder named: " + folderName );
+    createFolder: function(folderName){
       var ws = this.workspace;
       var currentUser = this.get('currentUser');
 
-      if( folderName ) {
+      if(folderName) {
         var folder = this.store.createRecord('folder', {
           name: folderName,
           workspace: ws,
@@ -82,36 +88,41 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           createdBy: currentUser,
         });
 
-        folder.save().then((res) => {
-          //handle success
+        folder.save().then(() => {
+          this.get('alert').showToast('success', `${folderName} created`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
+          let message = err.errors[0].detail;
           this.handleErrors(err, 'createRecordErrors', folder);
+          this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
+          folder.deleteRecord();
         });
       }
     },
 
-    askToDelete: function( folder ){
-      this.set( 'folderToDelete', folder );
-      this.set( 'hideDeleteFolderModal', false );
+    askToDelete: function(folder) {
+      let folderName = folder.get('name');
+      this.get('alert').showModal('warning', `Are you sure you want to delete ${folderName}`, null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          this.send('confirmDelete', folder);
+        }
+      });
     },
 
-    confirmDelete: function(){
-      var folder = this.get( 'folderToDelete' );
+    confirmDelete: function(folder) {
+      let folderName = folder.get('name');
       folder.set('isTrashed', true);
-      folder.save().then((res) => {
-        // handle success
+      folder.save().then((folder) => {
+        this.get('alert').showToast('success', `${folderName} deleted`, 'bottom-end', 5000, false, null);
       }).catch((err) => {
+        let message = err.errors[0].detail;
+        this.get('alert').showToast('error', `${message}`, 'bottom-end', 4000, false, null);
         this.handleErrors(err, 'updateRecordErrors', folder);
       });
     },
 
     fileSelectionInFolder: function(objId, folder){
-      console.log("Folder List File Selection Action: " + objId +" in folder " + folder.get('name') );
       this.sendAction( 'fileSelection', objId, folder );
-    },
-
-    testAction: function(){
-      console.log("Test clicked: " + this.folderTest );
     },
 
     activateEditFolderMode: function() {

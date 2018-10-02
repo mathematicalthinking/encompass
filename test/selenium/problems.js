@@ -97,7 +97,7 @@ describe('Problems', function() {
         }
         await helpers.findAndClickElement(driver, '#legal-notice');
         await helpers.findAndClickElement(driver, css.newProblem.submit);
-        await helpers.findAndClickElement(driver, '.confirm');
+        await helpers.findAndClickElement(driver, '.swal2-confirm');
       };
 
       it('should redirect to problem info after creation', async function () {

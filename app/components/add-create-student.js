@@ -6,23 +6,23 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
   createUserErrors: [],
   findUserErrors: [],
   updateSectionErrors: [],
+  alert: Ember.inject.service('sweet-alert'),
 
-  clearCreateInputs: function() {
+  clearCreateInputs: function () {
     let fields = ['username', 'name', 'password'];
-
-    for (let field of fields) {
-      this.set(field, null);
-    }
-  },
-  clearAddExistingUser: function() {
-  let fields = ['canAddExistingUser', 'existingUser'];
-
     for (let field of fields) {
       this.set(field, null);
     }
   },
 
-  addStudent: function() {
+  clearAddExistingUser: function () {
+    let fields = ['canAddExistingUser', 'existingUser'];
+    for (let field of fields) {
+      this.set(field, null);
+    }
+  },
+
+  addStudent: function () {
     let student = this.get('studentToAdd');
     if (!student) {
       return;
@@ -37,19 +37,20 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     }
 
     students.pushObject(student);
+    this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
     this.set('studentToAdd', null);
   }.observes('studentToAdd'),
-
-
 
   createStudent: function (info) {
     const that = this;
     // info is object with username, password, name?
-    let { username, password, name } = info;
-
+    let {
+      username,
+      password,
+      name
+    } = info;
 
     let organization = this.get('organization');
-
     let sectionId = this.get('section').id;
     let sectionRole = 'student';
     let currentUser = that.get('currentUser');
@@ -70,9 +71,9 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     }
 
     return Ember.$.post({
-      url: '/auth/signup',
-      data: createUserData
-    })
+        url: '/auth/signup',
+        data: createUserData
+      })
       .then((res) => {
         if (res.message === 'Username already exists') {
           that.set('usernameAlreadyExists', true);
@@ -86,13 +87,14 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
           let students = section.get('students');
           return this.store.findRecord('user', userId)
             .then((user) => {
-              students.pushObject(user);   //add student to students aray
-              section.save().then((res) => {
-                that.clearCreateInputs();
-              })
-              .catch((err) => {
-                that.handleErrors(err, 'updateSectionErrors', section);
-              });
+              students.pushObject(user); //add student to students aray
+              section.save().then(() => {
+                  that.clearCreateInputs();
+                  this.get('alert').showToast('success', 'Student Created', 'bottom-end', 3000, false, null);
+                })
+                .catch((err) => {
+                  that.handleErrors(err, 'updateSectionErrors', section);
+                });
             })
             .catch((err) => {
               that.handleErrors(err, 'findUserErrors');
@@ -117,7 +119,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       }
     },
 
-    addExistingStudent: function() {
+    addExistingStudent: function () {
       let student = this.get('existingUser');
       if (!student) {
         return;
@@ -142,7 +144,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       this.clearCreateInputs();
     },
 
-    validateCreateStudent: function() {
+    validateCreateStudent: function () {
       const username = this.get('username');
       let password;
 
@@ -209,18 +211,17 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       }
     },
 
-    updateSectionPassword: function() {
+    updateSectionPassword: function () {
       this.set('isEditingSectionPassword', false);
       let section = this.get('section');
       if (section.get('hasDirtyAttributes')) {
         section.save().then(() => {
-          console.log('section password updated!');
+            this.get('alert').showToast('success', 'Class Password Updated', 'bottom-end', 3000, false, null);
         })
         .catch((err) => {
           this.handleErrors(err, 'updateSectionErrors');
         });
       }
-
     }
   }
 });

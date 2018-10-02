@@ -1,8 +1,6 @@
 Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'user-list-teacher',
 
-  // Get all the teacher's sections where they are role student. Then get all the students inside the teacher's sections
-
   // These are all the students that are in sections you are a teacher of
   yourStudents: function () {
     let yourSections = this.get('currentUser').get('sections');
@@ -24,7 +22,6 @@ Encompass.UserListTeacherComponent = Ember.Component.extend(Encompass.CurrentUse
     return studentListing.without(undefined);
 
   }.property('users.@each.accountType'),
-
 
   // These are all the users that you have created - filter out duplicates
   yourUsers: function () {

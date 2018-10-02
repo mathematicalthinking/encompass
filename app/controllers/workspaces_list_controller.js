@@ -7,6 +7,7 @@
 Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
   sortProperties: ['name'],
   workspaceToDelete: null,
+  alert: Ember.inject.service('sweet-alert'),
 
   currentAsOf: function() {
     return moment(this.get('since')).format('H:mm');
@@ -70,7 +71,14 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
   actions: {
     showModal: function(ws) {
       this.set('workspaceToDelete', ws);
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this workspace?', null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          this.send('trashWorkspace', ws);
+        }
+      });
     },
+
     trashWorkspace: function(ws) {
       const id = ws.id;
       const workspaces = this.get('model');
@@ -78,8 +86,16 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
       if (!Ember.isEmpty(filtered)) {
         const ws = filtered.objectAt(0);
         ws.set('isTrashed', true);
-        ws.save().then((rec) => {
+        ws.save().then(() => {
           this.set('workspaceToDelete', null);
+          this.get('alert').showToast('success', 'Workspace Deleted', 'bottom-end', 5000, true, 'Undo').then((result) => {
+            if (result.value) {
+              ws.set('isTrashed', false);
+              ws.save().then(() => {
+                this.get('alert').showToast('success', 'Workspace Restored', 'bottom-end', 3000, null);
+              });
+            }
+          });
         })
         .catch((err) => {
           this.set('workspaceToDelete', null);

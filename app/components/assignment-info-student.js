@@ -28,12 +28,12 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
   filteredList: function() {
     const answers = this.get('answerList');
-      if (this.get('isLoadingAnswers') || !Ember.isEmpty(this.get('loadAnswerErrors'))) {
-        return [];
-      } else {
-        return answers.filterBy('assignment.id', this.assignment.id);
-      }
-    }.property('answerList.[]', 'assignment.id'),
+    if (this.get('isLoadingAnswers') || !Ember.isEmpty(this.get('loadAnswerErrors'))) {
+      return [];
+    } else {
+      return answers.filterBy('assignment.id', this.assignment.id);
+    }
+  }.property('answerList.[]', 'assignment.id'),
 
   sortedList: function() {
     const filtered = this.get('filteredList');
@@ -46,25 +46,25 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
   didReceiveAttrs: function() {
     if (this.assignment) {
-    if (this.get('displayedAnswer')) {
-      this.set('displayedAnswer', null);
+      if (this.get('displayedAnswer')) {
+          this.set('displayedAnswer', null);
+        }
+      this.toggleResponse();
+      let dateTime = 'YYYY-MM-DD';
+      let dueDate = this.assignment.get('dueDate');
+      let assignedDate = this.assignment.get('assignedDate');
+      this.set('formattedDueDate', moment(dueDate).format(dateTime));
+      this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
     }
-    this.toggleResponse();
+  },
 
-    let dateTime = 'YYYY-MM-DD';
-    let dueDate = this.assignment.get('dueDate');
-    let assignedDate = this.assignment.get('assignedDate');
-    this.set('formattedDueDate', moment(dueDate).format(dateTime));
-    this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
-  }
-},
-toggleResponse: function() {
-  if (this.get('isResponding')) {
-    this.set('isResponding', false);
-  } else if (this.get('isRevising')) {
-    this.set('isRevising', false);
-  }
-},
+  toggleResponse: function() {
+    if (this.get('isResponding')) {
+      this.set('isResponding', false);
+    } else if (this.get('isRevising')) {
+      this.set('isRevising', false);
+    }
+  },
 
   actions: {
     beginAssignmentResponse: function() {
@@ -90,16 +90,15 @@ toggleResponse: function() {
     toAnswerInfo: function(answer) {
       this.sendAction('toAnswerInfo', answer);
     },
+
     displayAnswer: function(answer) {
       if (this.get('answerCreated')) {
         this.set('answerCreated', false);
       }
       this.set('displayedAnswer', answer);
-
-        Ember.run.later(() => {
-          $('html, body').animate({scrollTop: $(document).height()});
-        }, 100);
-
+      Ember.run.later(() => {
+        $('html, body').animate({scrollTop: $(document).height()});
+      }, 100);
     },
 
     handleCreatedAnswer: function(answer) {

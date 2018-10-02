@@ -46,8 +46,9 @@ module.exports = {
       return false;
     }
     //console.log("Resolve User Name");
+    let owner;
     user  = Properties.resolveUsername(user);
-    if(typeof user == "undefined") { return false; }
+    if(typeof user === "undefined") { return false; }
     //console.log("Resolve Owner Obj");
     var ownerObj = Properties.resolveOwner(object);
     //console.log("Resolve Owner Name");
@@ -61,6 +62,7 @@ module.exports = {
 
   //TODO: This does not work properly. Fix or replace
   isEditor: function(user, object) {
+    let editors;
     if(!user || !object) {
       return false;
     }
@@ -139,4 +141,4 @@ module.exports = {
 
     return (isOwner || isAdmin);
   }
-}
+};
