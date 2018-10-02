@@ -19,14 +19,12 @@ module.exports = {
   // else throws error if hard is truthy
   // else only warns if hard is falsy
   resolveProperty: function(field, object, hard) {
-
+    // should this throw an error?
     if(!field || !object) {
       return;
     }
     // if there is a get function, get the username from there
     if(_.isFunction(object.get)) {
-      console.log('field getting is', field);
-      console.log('editors are', object.get('editors'));
       return object.get(field);
     }
     // sometimes the object has a property but it's undefined (Ember) so we check .get first
