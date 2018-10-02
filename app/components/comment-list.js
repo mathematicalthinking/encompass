@@ -12,6 +12,7 @@
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
   thisSubmissionOnly: true,
@@ -40,7 +41,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   init: function() {
     this._super(...arguments);
     const htmlFormat = 'YYYY-MM-DD';
-
     let oneYearAgo = moment().subtract(365, 'days').calendar();
     let oneYearAgoDate = new Date(oneYearAgo);
     let htmlDate = moment(oneYearAgoDate).format(htmlFormat);
@@ -126,9 +126,10 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return !!this.get('currentSelection');
   }.property('currentSelection'),
 
-  //canComment: true,
   canComment: function() {
-    return (this.get('onSelection') && this.get('allowedToComment'));
+    let ws = this.currentWorkspace;
+    return this.get('permissions').canEdit(ws);
+    // return (this.get('onSelection') && this.get('allowedToComment'));
   }.property('onSelection', 'allowedToComment'),
 
   handleLoadingMessage: function() {
