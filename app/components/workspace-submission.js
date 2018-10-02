@@ -10,6 +10,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   isTransitioning: false,
   isDirty: false,
   wsSaveErrors: [],
+  permissions: Ember.inject.service('workspace-permissions'),
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     var making = this.get('makingSelection');
@@ -26,20 +27,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   init: function() {
     this._super(...arguments);
-    // let workspace = this.get('currentWorkspace');
-    // let submissions = workspace.get('submissions').get('content');
-    // submissions.forEach((submission) => {
-    //   let answer = submission.get('answer').get('data');
-    //   // let assignment = answer.get('assignement');
-    //   // console.log('assignment is', assignment);
-    //   // this.store.findRecord('answer', answerId).then((answer) => {
-    //   //   console.log('answer is', answer);
-    //   //   let assignment = answer.get('assignement');
-    //   //   console.log('assignment is', assignment);
-    //   //   let answers = assignment.get('answers');
-    //   // });
-
-    // });
   },
 
   didRender: function() {
@@ -86,17 +73,12 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('workspaceSelections').filterBy('isTrashed');
   }.property('workspaceSelections.@each.isTrashed'),
 
-  canSelect: true,
-
-  /* TODO: fix this:
-  canSelect: function() {
-    return Permissions.userCan(
-      this.get('this.currentUser'),
-      this.get('this.currentWorkspace'),
-      "SELECTIONS"
-    );
-  }.property('this.currentUser.username', 'this.currentWorkspace.owner.username', 'this.currentWorkspace.editors.[].username'),
-  */
+  canSelect: function () {
+    var cws = this.get('currentWorkspace');
+    let canEdit = this.get('permissions').canEdit(cws);
+    console.log('canEdit in worksapce sub controller is', canEdit);
+    return canEdit;
+  }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
   actions: {
     addSelection: function( selection ){
