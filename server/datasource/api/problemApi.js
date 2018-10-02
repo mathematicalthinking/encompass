@@ -70,7 +70,7 @@ const getProblems = async function(req, res, next) {
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
-    let { ids, filterBy, sortBy, page, } = req. query;
+    let { ids, filterBy, sortBy, page, } = req.query;
 
     if (filterBy) {
       let {title, problemStatement } = filterBy;
