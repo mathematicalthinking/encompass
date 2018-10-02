@@ -9,17 +9,11 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   publicCurrentPage: null,
   publicGoToPage: null,
 
-  // showTopPageNav: function() {
-  //   let count = this.get('publicProblems.length');
-  //   let searchCount = this.get('publicSearchResults.length');
-  //   return count > 20 || searchCount > 20;
-  // }.property('publicProblems.[]', 'publicSearchResults.[]'),
 
   didReceiveAttrs: function() {
+    let filter = this.get('publicFilter');
     this.store.query('problem', {
-      filterBy: {
-        privacySetting: 'E'
-      }
+      filterBy: filter,
     }).then((res) => {
       this.set('publicQueryResults', res);
       this.set('publicProblemsMetadata', res.get('meta'));
@@ -57,10 +51,13 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // This sorts all the problems that are visible to everyone
   publicProblems: function () {
     var queryResults = this.get('publicQueryResults');
+    var problems;
     if (!queryResults) {
-      return [];
+      problems = this.problems;
+    } else {
+      problems = queryResults;
     }
-    var problems = queryResults.filterBy('isTrashed', false);
+    problems = problems.filterBy('isTrashed', false);
     var currentUser = this.get('currentUser');
     var publicProblems = problems.filterBy('privacySetting', 'E');
     var yourPublic = publicProblems.filter((el) => {
@@ -68,7 +65,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return content.id !== currentUser.id;
     });
     return yourPublic.sortBy('createDate').reverse();
-  }.property('publicQueryResults.@each.isTrashed', 'currentUser.isStudent'),
+  }.property('problems.@each.isTrashed','publicQueryResults.@each.isTrashed', 'currentUser.isStudent'),
 
   actions: {
     searchPublic: function() {
