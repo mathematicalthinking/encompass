@@ -54,17 +54,20 @@ async function runTests(users) {
       describe('Navigating directly', async function() {
         before(async function() {
           await driver.get(url);
-          await driver.wait(until.urlIs(url), 5000);
 
         });
 
         if (accountType === 'S' || actingRole === 'student') {
-          it('should display 404 page', async function() {
-            expect(await helpers.isElementVisible(driver, css.errorPage.div)).to.be.true;
+          it('should redirect to homepage', async function() {
+            await driver.wait(until.urlIs(`${host}/#/`), 5000);
+
+            expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
             expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
           });
         } else {
           it(`should display new workspace creation form`, async function() {
+            await driver.wait(until.urlIs(url), 5000);
+
             expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
           });
         }
@@ -132,11 +135,21 @@ async function runTests(users) {
             }
           }
           describe('Submitting empty form', async function() {
-            it('should display error message', async function() {
-              // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
-              await submitForm(true);
-              expect(await helpers.isTextInDom(driver, 'Please fill in all required fields')).to.be.true;
-            });
+            if (accountType === 'T') {
+              it('should create workspace and redirect to workspace page', async function() {
+                await submitForm(false);
+                await helpers.waitForSelector(driver, '.workspace-name');
+                let url = await helpers.getCurrentUrl(driver);
+                expect(url).to.include('submissions');
+              });
+            } else {
+              it('should display error message', async function() {
+                // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+                await submitForm(true);
+                expect(await helpers.isTextInDom(driver, 'Please fill in all required fields')).to.be.true;
+              });
+            }
+
           });
         });
       }
