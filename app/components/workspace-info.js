@@ -8,6 +8,15 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   didInsertElement: function() {
     this.set('addEditorTypeahead', this.getAddableEditors.call(this));
+    let user = this.get('currentUser');
+    let ws = this.get('workspace');
+    // console.log('permissions is', Permissions);
+    // console.log('isAdmin is', Permissions.isAdmin(user));
+    // console.log('isOwner is', Permissions.isOwner(user, ws));
+    //This works on refresh
+
+    console.log('isEditor is', Permissions.isEditor(user, ws));
+    //THis is not working
   },
 
   willDestroyElement: function () {
