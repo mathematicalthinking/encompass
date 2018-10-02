@@ -160,3 +160,14 @@
     }
   }
 }
+
+nav#with-search-bar {
+  .search-bar {
+    font-size: 1em;
+    padding-bottom: 10px;
+    input {
+      margin-left:20px;
+
+    }
+  }
+}
