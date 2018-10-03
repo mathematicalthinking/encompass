@@ -73,18 +73,20 @@ const getProblems = async function(req, res, next) {
     let { ids, filterBy, sortBy, page, } = req.query;
 
     if (filterBy) {
-      let {title, problemStatement } = filterBy;
+      let {title, text } = filterBy;
       if (title) {
         title = title.replace(/\s+/g, "");
-        let regex = new RegExp(title, 'i');
+        let regex = new RegExp(title.split('').join('\\s*'), 'i');
+
         filterBy.title = regex;
       }
-      // currently no front end functionality for searching by problemStatement text
+      // currently no front end functionality for searching by text
       // would need to optimize search by ignoring common words
-      if (problemStatement) {
-        problemStatement = problemStatement.replace(/\s+/g, "");
-        let regex = new RegExp(problemStatement, 'i');
-        filterBy.problemStatement = regex;
+      if (text) {
+        text = text.replace(/\s+/g, "");
+        let regex = new RegExp(text.split('').join('\\s*'), 'i');
+
+        filterBy.text = regex;
       }
     }
 
