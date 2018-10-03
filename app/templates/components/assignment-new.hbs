@@ -13,10 +13,16 @@
             {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
           </li>
-          <li>
+          <li class="problem">
             <label for="text">Problem <span class="required-star">*</span></label>
-            {{my-select isRequired=true cannotBeNull=fromProblemInfo selectedValue=selectedProblem prompt="Select a problem." content=problemList optionLabelPath="title" action=(action (mut selectedProblem))}}
-            {{input required=true type="hidden" value=selectedProblem}}
+            {{#if selectedProblem}}
+            <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
+            {{else}}
+              {{#if addProblemTypeahead}}
+                {{twitter-typeahead minLength=0 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+              {{/if}}
+            {{/if}}
+
           </li>
           <li>
             <label for="additionalInfo">Date Assigned <span class="required-star">*</span></label>

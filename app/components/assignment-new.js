@@ -1,4 +1,4 @@
-Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   createAssignmentError: null,
   isMissingRequiredFields: null,
   selectedSection: null,
@@ -9,9 +9,9 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   problemList: null,
   formId: null,
   createRecordErrors: [],
+  queryErrors: [],
 
   init: function() {
-    console.log('running Init problem-new');
     this._super(...arguments);
     const formId = 'form#newassignmentform';
     this.set('formId', formId);
@@ -38,7 +38,8 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didInsertElement: function() {
-    console.log('running didInsertElement problemNew');
+    this.set('addProblemTypeahead', this.getAddableProblems.call(this));
+
     const formId = this.get('formId');
     let isMissing = this.checkMissing.bind(this);
     if (formId) {
@@ -126,6 +127,27 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       return date;
     },
 
+    getAddableProblems: function () {
+      const store = this.get('store');
+      let ret = function (query, syncCb, asyncCb) {
+        let text = query.replace(/\W+/g, "");
+        return store.query('problem', {
+           filterBy: {
+             title: text
+           }
+          }).then((problems) => {
+            if (!problems) {
+              return [];
+            }
+
+            return asyncCb(problems.toArray());
+          })
+          .catch((err) => {
+            this.handleErrors(err, 'queryErrors');
+          });
+      };
+      return ret.bind(this);
+    },
 
   actions: {
     validate: function() {
