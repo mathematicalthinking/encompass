@@ -147,6 +147,11 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     let display = this.get('display');
     let templates = this.get('templates');
     let isAsync = this.get('isAsync');
+    let debounceTime = this.get('debounceTime');
+
+    if (!debounceTime) {
+      debounceTime = 100;
+    }
 
     let source;
 
@@ -155,7 +160,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
     } else if (!isAsync) {
       source = sourceFunction.call(this, dataList);
     } else {
-      source = sourceFunction;
+      source = window._.debounce(sourceFunction, debounceTime);
     }
 
     if (!path || typeof path !== 'string') {
