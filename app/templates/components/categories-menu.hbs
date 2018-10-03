@@ -1,25 +1,24 @@
-
 <ul class="cd-accordion-menu animated">
   {{#each categories as |category|}}
   <li class="has-children">
-    <input type="checkbox" name="{{category.description}}" id="{{category.description}}">
-    <label for="{{category.description}}">{{category.description}}</label>
+    <input type="checkbox" name="{{category.identifier}}" id="{{category.identifier}}">
+    <label for="{{category.identifier}}">{{category.description}}</label>
     <ul>
       {{#each category.domains as |domain|}}
       <li class="has-children">
-        <input type="checkbox" name="{{domain.description}}" id="{{domain.description}}">
-        <label for="{{domain.description}}">{{domain.description}}<a href="{{domain.url}}" target="_blank"> <i class="fas fa-external-link-alt"></i></a></label>
+        <input type="checkbox" name="{{domain.identifier}}" id="{{domain.identifier}}">
+        <label for="{{domain.identifier}}">{{domain.description}}<a href="{{domain.url}}" target="_blank"> <i class="fas fa-external-link-alt"></i></a></label>
           <ul>
             {{#each domain.topics as |topic|}}
             <li class="has-children">
-              <input type="checkbox" name="{{topic.description}}" id="{{topic.description}}">
-              <label for="{{topic.description}}">{{topic.description}}</label>
+              <input type="checkbox" name="{{topic.identifier}}" id="{{topic.identifier}}">
+              <label for="{{topic.identifier}}">{{topic.description}}</label>
                 <ul>
                   {{#each topic.standards as |standard|}}
                     {{#if standard.substandards}}
                     <li class="has-children">
-                      <input type="checkbox" name="{{standard.description}}" id="{{standard.description}}">
-                      <label for="{{standard.description}}">{{standard.description}}</label>
+                      <input type="checkbox" name="{{standard.identifier}}" id="{{standard.identifier}}">
+                      <label for="{{standard.identifier}}">{{standard.description}}</label>
                       <ul>
                         {{#each standard.substandards as |sub|}}
                           <li class="item"><span>{{sub.identifier}}</span> - {{sub.description}}</li>
@@ -40,7 +39,6 @@
   </li>
   {{/each}}
 </ul>
-
 
 {{!-- <ul class="cd-accordion-menu animated">
   <li class="has-children">
