@@ -100,7 +100,7 @@
             <p class="problem-info">{{format-date problem.createDate 'MMM Do YYYY'}}</p>
           </li>
           {{#if problem.image}}
-          <li>
+          <li class='additional_image'>
             <label for="imagedata">Additional Image:</label>
               <a {{action 'toggleImageSize'}}>
                 <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
