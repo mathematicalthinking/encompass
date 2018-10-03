@@ -1,4 +1,4 @@
-Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
   createAssignmentError: null,
   isMissingRequiredFields: null,
   selectedSection: null,
@@ -30,15 +30,8 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
       this.set('sectionList', sections);
     }
+    this.setAddProblemFunction('addProblemTypeahead');
 
-    // if (this.problems) {
-    //   const problems = this.problems.filterBy('isTrashed', false);
-    //   this.set('problemList', problems);
-    // }
-
-    if (!this.get('addProblemTypeahead')) {
-      this.set('addProblemTypeahead',this.getAddableProblems.call(this));
-    }
   },
 
   didInsertElement: function() {
@@ -128,28 +121,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       let date = new Date(dateMoment);
       date.setHours(23, 59, 59);
       return date;
-    },
-
-    getAddableProblems: function () {
-      const store = this.get('store');
-      let ret = function (query, syncCb, asyncCb) {
-        let text = query.replace(/\W+/g, "");
-        return store.query('problem', {
-           filterBy: {
-             title: text
-           }
-          }).then((problems) => {
-            if (!problems) {
-              return [];
-            }
-
-            return asyncCb(problems.toArray());
-          })
-          .catch((err) => {
-            this.handleErrors(err, 'queryErrors');
-          });
-      };
-      return ret.bind(this);
     },
 
   actions: {
