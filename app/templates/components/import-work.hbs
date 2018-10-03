@@ -32,20 +32,9 @@
       {{#unless selectedProblem}}
         <div class="import-prep-problem">
           <div class="import-select">
-            {{#if problems.length}}
-              <p>Please select a problem</p>
-              <br>
-              {{my-select selectedProblem = selectedProblem content=problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut selectedProblem))}}
-              <br>
-            {{else}}
-              <p class="info">It looks like you do not have any problems. Create one {{#link-to 'problems.new'}}<span>here.</span>{{/link-to}}</p>
-
-            {{/if}}
-
+           <p>Please select a problem</p>
+                {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
           </div>
-          {{#if isCreatingNewProblem}}
-            {{problem-new class="form-problem" store=store createdProblem= selectedProblem}}
-          {{/if}}
         </div>
       {{/unless}}
       <br>

@@ -84,6 +84,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   didReceiveAttrs: function() {
     this.setIsCompDirty();
+    if (!this.get('addProblemTypeahead')) {
+      this.set('addProblemTypeahead',this.getAddableProblems.call(this));
+    }
   },
 
   resetImportDetails: function() {
@@ -98,6 +101,27 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   willDestroyElement: function() {
     this.resetImportDetails();
+  },
+
+  getAddableProblems: function () {
+    const store = this.get('store');
+    let ret = function (query, syncCb, asyncCb) {
+      return store.query('problem', {
+         filterBy: {
+           title: query
+         }
+        }).then((problems) => {
+          if (!problems) {
+            return [];
+          }
+
+          return asyncCb(problems.toArray());
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'queryErrors');
+        });
+    };
+    return ret.bind(this);
   },
 
   handleAdditionalFiles: function() {
