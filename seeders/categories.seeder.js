@@ -154,17 +154,17 @@ var gradek = [
     url: 'http://corestandards.org/Math/Content/K/CC/B/5'
   },
   {
-    identifier: 'CCSS.Math.Content.K.CC.B.4c',
+    identifier: 'CCSS.Math.Content.K.CC.B.4.c',
     description: 'Understand that each successive number name refers to a quantity that is one larger.',
     url: 'http://corestandards.org/Math/Content/K/CC/B/4/c'
   },
   {
-    identifier: 'CCSS.Math.Content.K.CC.B.4b',
+    identifier: 'CCSS.Math.Content.K.CC.B.4.b',
     description: 'Understand that the last number name said tells the number of objects counted. The number of objects is the same regardless of their arrangement or the order in which they were counted.',
     url: 'http://corestandards.org/Math/Content/K/CC/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.K.CC.B.4a',
+    identifier: 'CCSS.Math.Content.K.CC.B.4.a',
     description: 'When counting objects, say the number names in the standard order, pairing each object with one and only one number name and each number name with one and only one object.',
     url: 'http://corestandards.org/Math/Content/K/CC/B/4/a'
   },
@@ -302,17 +302,17 @@ var grade1 = [
     url: 'http://corestandards.org/Math/Content/1/NBT/B/3'
   },
   {
-    identifier: 'CCSS.Math.Content.1.NBT.B.2c',
+    identifier: 'CCSS.Math.Content.1.NBT.B.2.c',
     description: 'The numbers 10, 20, 30, 40, 50, 60, 70, 80, 90 refer to one, two, three, four, five, six, seven, eight, or nine tens (and 0 ones).',
     url: 'http://corestandards.org/Math/Content/1/NBT/B/2/c'
   },
   {
-    identifier: 'CCSS.Math.Content.1.NBT.B.2b',
+    identifier: 'CCSS.Math.Content.1.NBT.B.2.b',
     description: 'The numbers from 11 to 19 are composed of a ten and one, two, three, four, five, six, seven, eight, or nine ones.',
     url: 'http://corestandards.org/Math/Content/1/NBT/B/2/b'
   },
   {
-    identifier: 'CCSS.Math.Content.1.NBT.B.2a',
+    identifier: 'CCSS.Math.Content.1.NBT.B.2.a',
     description: '10 can be thought of as a bundle of ten ones — called a "ten."',
     url: 'http://corestandards.org/Math/Content/1/NBT/B/2/a'
   },
@@ -576,11 +576,11 @@ var grade2 = [
      description: 'Count within 1000; skip-count by 5s, 10s, and 100s.',
      url: 'http://corestandards.org/Math/Content/2/NBT/A/2'
    }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.1b',
+     identifier: 'CCSS.Math.Content.2.NBT.A.1.b',
      description: 'The numbers 100, 200, 300, 400, 500, 600, 700, 800, 900 refer to one, two, three, four, five, six, seven, eight, or nine hundreds (and 0 tens and 0 ones).',
      url: 'http://corestandards.org/Math/Content/2/NBT/A/1/b'
    }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.1a',
+     identifier: 'CCSS.Math.Content.2.NBT.A.1.a',
      description: '100 can be thought of as a bundle of ten tens — called a "hundred."',
      url: 'http://corestandards.org/Math/Content/2/NBT/A/1/a'
    }, {
@@ -637,22 +637,22 @@ var grade3 = [
      url: 'http://corestandards.org/Math/Content/3'
    },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.3d',
+    identifier: 'CCSS.Math.Content.3.NF.A.3.d',
     description: 'Compare two fractions with the same numerator or the same denominator by reasoning about their size. Recognize that comparisons are valid only when the two fractions refer to the same whole. Record the results of comparisons with the symbols >, =, or <, and justify the conclusions, e.g., by using a visual fraction model.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/3/d'
   },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.3c',
+    identifier: 'CCSS.Math.Content.3.NF.A.3.c',
     description: 'Express whole numbers as fractions, and recognize fractions that are equivalent to whole numbers.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/3/c'
   },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.3b',
+    identifier: 'CCSS.Math.Content.3.NF.A.3.b',
     description: 'Recognize and generate simple equivalent fractions, e.g., 1/2 = 2/4, 4/6 = 2/3). Explain why the fractions are equivalent, e.g., by using a visual fraction model.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.3a',
+    identifier: 'CCSS.Math.Content.3.NF.A.3.a',
     description: 'Understand two fractions as equivalent (equal) if they are the same size, or the same point on a number line.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/3/a'
   },
@@ -662,12 +662,12 @@ var grade3 = [
     url: 'http://corestandards.org/Math/Content/3/NF/A/3'
   },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.2b',
+    identifier: 'CCSS.Math.Content.3.NF.A.2.b',
     description: 'Represent a fraction a/b on a number line diagram by marking off a lengths 1/b from 0. Recognize that the resulting interval has size a/b and that its endpoint locates the number a/b on the number line.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/2/b'
   },
   {
-    identifier: 'CCSS.Math.Content.3.NF.A.2a',
+    identifier: 'CCSS.Math.Content.3.NF.A.2.a',
     description: 'Represent a fraction 1/b on a number line diagram by defining the interval from 0 to 1 as the whole and partitioning it into b equal parts. Recognize that each part has size 1/b and that the endpoint of the part based at 0 locates the number 1/b on the number line.',
     url: 'http://corestandards.org/Math/Content/3/NF/A/2/a'
   },
@@ -722,22 +722,22 @@ var grade3 = [
     url: 'http://corestandards.org/Math/Content/3/MD/D'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.7d',
+    identifier: 'CCSS.Math.Content.3.MD.C.7.d',
     description: 'Recognize area as additive. Find areas of rectilinear figures by decomposing them into non-overlapping rectangles and adding the areas of the non-overlapping parts, applying this technique to solve real world problems.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/7/d'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.7c',
+    identifier: 'CCSS.Math.Content.3.MD.C.7.c',
     description: 'Use tiling to show in a concrete case that the area of a rectangle with whole-number side lengths a and b + c is the sum of a × b and a × c. Use area models to represent the distributive property in mathematical reasoning.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/7/c'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.7b',
+    identifier: 'CCSS.Math.Content.3.MD.C.7.b',
     description: 'Multiply side lengths to find areas of rectangles with whole-number side lengths in the context of solving real world and mathematical problems, and represent whole-number products as rectangular areas in mathematical reasoning.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.7a',
+    identifier: 'CCSS.Math.Content.3.MD.C.7.a',
     description: 'Find the area of a rectangle with whole-number side lengths by tiling it, and show that the area is the same as would be found by multiplying the side lengths.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/7/a'
   },
@@ -752,12 +752,12 @@ var grade3 = [
     url: 'http://corestandards.org/Math/Content/3/MD/C/6'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.5b',
+    identifier: 'CCSS.Math.Content.3.MD.C.5.b',
     description: 'A plane figure which can be covered without gaps or overlaps by n unit squares is said to have an area of n square units.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.3.MD.C.5a',
+    identifier: 'CCSS.Math.Content.3.MD.C.5.a',
     description: 'A square with side length 1 unit, called "a unit square," is said to have "one square unit" of area, and can be used to measure area.',
     url: 'http://corestandards.org/Math/Content/3/MD/C/5/a'
   },
@@ -930,17 +930,17 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/NF/C'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.4c',
+    identifier: 'CCSS.Math.Content.4.NF.B.4.c',
     description: 'Solve word problems involving multiplication of a fraction by a whole number, e.g., by using visual fraction models and equations to represent the problem.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/4/c'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.4b',
+    identifier: 'CCSS.Math.Content.4.NF.B.4.b',
     description: 'Understand a multiple of a/b as a multiple of 1/b, and use this understanding to multiply a fraction by a whole number.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.4a',
+    identifier: 'CCSS.Math.Content.4.NF.B.4.a',
     description: 'Understand a fraction a/b as a multiple of 1/b.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/4/a'
   },
@@ -950,22 +950,22 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/NF/B/4'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.3d',
+    identifier: 'CCSS.Math.Content.4.NF.B.3.d',
     description: 'Solve word problems involving addition and subtraction of fractions referring to the same whole and having like denominators, e.g., by using visual fraction models and equations to represent the problem.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/3/d'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.3c',
+    identifier: 'CCSS.Math.Content.4.NF.B.3.c',
     description: 'Add and subtract mixed numbers with like denominators, e.g., by replacing each mixed number with an equivalent fraction, and/or by using properties of operations and the relationship between addition and subtraction.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/3/c'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.3b',
+    identifier: 'CCSS.Math.Content.4.NF.B.3.b',
     description: 'Decompose a fraction into a sum of fractions with the same denominator in more than one way, recording each decomposition by an equation. Justify decompositions, e.g., by using a visual fraction model.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.4.NF.B.3a',
+    identifier: 'CCSS.Math.Content.4.NF.B.3.a',
     description: 'Understand addition and subtraction of fractions as joining and separating parts referring to the same whole.',
     url: 'http://corestandards.org/Math/Content/4/NF/B/3/a'
   },
@@ -1035,12 +1035,12 @@ var grade4 = [
     url: 'http://corestandards.org/Math/Content/4/MD/C/6'
   },
   {
-    identifier: 'CCSS.Math.Content.4.MD.C.5b',
+    identifier: 'CCSS.Math.Content.4.MD.C.5.b',
     description: 'An angle that turns through n one-degree angles is said to have an angle measure of n degrees.',
     url: 'http://corestandards.org/Math/Content/4/MD/C/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.4.MD.C.5a',
+    identifier: 'CCSS.Math.Content.4.MD.C.5.a',
     description: 'An angle is measured with reference to a circle with its center at the common endpoint of the rays, by considering the fraction of the circular arc between the points where the two rays intersect the circle. An angle that turns through 1/360 of a circle is called a "one-degree angle," and can be used to measure angles.',
     url: 'http://corestandards.org/Math/Content/4/MD/C/5/a'
   },
@@ -1188,17 +1188,17 @@ var grade5 = [
      url: 'http://corestandards.org/Math/Content/5'
    },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.7c',
+    identifier: 'CCSS.Math.Content.5.NF.B.7.c',
     description: 'Solve real world problems involving division of unit fractions by non-zero whole numbers and division of whole numbers by unit fractions, e.g., by using visual fraction models and equations to represent the problem.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/7/c'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.7b',
+    identifier: 'CCSS.Math.Content.5.NF.B.7.b',
     description: 'Interpret division of a whole number by a unit fraction, and compute such quotients.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.7a',
+    identifier: 'CCSS.Math.Content.5.NF.B.7.a',
     description: 'Interpret division of a unit fraction by a non-zero whole number, and compute such quotients.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/7/a'
   },
@@ -1213,12 +1213,12 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/NF/B/6'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.5b',
+    identifier: 'CCSS.Math.Content.5.NF.B.5.b',
     description: 'Explaining why multiplying a given number by a fraction greater than 1 results in a product greater than the given number (recognizing multiplication by whole numbers greater than 1 as a familiar case); explaining why multiplying a given number by a fraction less than 1 results in a product smaller than the given number; and relating the principle of fraction equivalence a/b = (n×a)/(n×b) to the effect of multiplying a/b by 1.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.5a',
+    identifier: 'CCSS.Math.Content.5.NF.B.5.a',
     description: 'Comparing the size of a product to the size of one factor on the basis of the size of the other factor, without performing the indicated multiplication.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/5/a'
   },
@@ -1228,12 +1228,12 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/NF/B/5'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.4b',
+    identifier: 'CCSS.Math.Content.5.NF.B.4.b',
     description: 'Find the area of a rectangle with fractional side lengths by tiling it with unit squares of the appropriate unit fraction side lengths, and show that the area is the same as would be found by multiplying the side lengths. Multiply fractional side lengths to find areas of rectangles, and represent fraction products as rectangular areas.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NF.B.4a',
+    identifier: 'CCSS.Math.Content.5.NF.B.4.a',
     description: 'Interpret the product (a/b) × q as a parts of a partition of q into b equal parts; equivalently, as the result of a sequence of operations a × q ÷ b.',
     url: 'http://corestandards.org/Math/Content/5/NF/B/4/a'
   },
@@ -1308,17 +1308,17 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/G/'
   },
   {
-    identifier: 'CCSS.Math.Content.5.MD.C.5c',
+    identifier: 'CCSS.Math.Content.5.MD.C.5.c',
     description: 'Recognize volume as additive. Find volumes of solid figures composed of two non-overlapping right rectangular prisms by adding the volumes of the non-overlapping parts, applying this technique to solve real world problems.',
     url: 'http://corestandards.org/Math/Content/5/MD/C/5/c'
   },
   {
-    identifier: 'CCSS.Math.Content.5.MD.C.5b',
+    identifier: 'CCSS.Math.Content.5.MD.C.5.b',
     description: 'Apply the formulas V = l × w × h and V = b × h for rectangular prisms to find volumes of right rectangular prisms with whole-number edge lengths in the context of solving real world and mathematical problems.',
     url: 'http://corestandards.org/Math/Content/5/MD/C/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.MD.C.5a',
+    identifier: 'CCSS.Math.Content.5.MD.C.5.a',
     description: 'Find the volume of a right rectangular prism with whole-number side lengths by packing it with unit cubes, and show that the volume is the same as would be found by multiplying the edge lengths, equivalently by multiplying the height by the area of the base. Represent threefold whole-number products as volumes, e.g., to represent the associative property of multiplication.',
     url: 'http://corestandards.org/Math/Content/5/MD/C/5/a'
   },
@@ -1333,12 +1333,12 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/MD/C/4'
   },
   {
-    identifier: 'CCSS.Math.Content.5.MD.C.3b',
+    identifier: 'CCSS.Math.Content.5.MD.C.3.b',
     description: 'A solid figure which can be packed without gaps or overlaps using n unit cubes is said to have a volume of n cubic units.',
     url: 'http://corestandards.org/Math/Content/5/MD/C/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.MD.C.3a',
+    identifier: 'CCSS.Math.Content.5.MD.C.3.a',
     description: 'A cube with side length 1 unit, called a "unit cube," is said to have "one cubic unit" of volume, and can be used to measure volume.',
     url: 'http://corestandards.org/Math/Content/5/MD/C/3/a'
   },
@@ -1403,12 +1403,12 @@ var grade5 = [
     url: 'http://corestandards.org/Math/Content/5/NBT/A/4'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NBT.A.3b',
+    identifier: 'CCSS.Math.Content.5.NBT.A.3.b',
     description: 'Compare two decimals to thousandths based on meanings of the digits in each place, using >, =, and < symbols to record the results of comparisons.',
     url: 'http://corestandards.org/Math/Content/5/NBT/A/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.5.NBT.A.3a',
+    identifier: 'CCSS.Math.Content.5.NBT.A.3.a',
     description: 'Read and write decimals to thousandths using base-ten numerals, number names, and expanded form, e.g., 347.392 = 3 × 100 + 4 × 10 + 7 × 1 + 3 × (1/10) + 9 × (1/100) + 2 × (1/1000).',
     url: 'http://corestandards.org/Math/Content/5/NBT/A/3/a'
   },
@@ -1476,22 +1476,22 @@ var grade6 = [
      url: 'http://corestandards.org/Math/Content/6'
    },
   {
-    identifier: 'CCSS.Math.Content.6.SP.B.5d',
+    identifier: 'CCSS.Math.Content.6.SP.B.5.d',
     description: 'Relating the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered.',
     url: 'http://corestandards.org/Math/Content/6/SP/B/5/d'
   },
   {
-    identifier: 'CCSS.Math.Content.6.SP.B.5c',
+    identifier: 'CCSS.Math.Content.6.SP.B.5.c',
     description: 'Giving quantitative measures of center (median and/or mean) and variability (interquartile range and/or mean absolute deviation), as well as describing any overall pattern and any striking deviations from the overall pattern with reference to the context in which the data were gathered.',
     url: 'http://corestandards.org/Math/Content/6/SP/B/5/c'
   },
   {
-    identifier: 'CCSS.Math.Content.6.SP.B.5b',
+    identifier: 'CCSS.Math.Content.6.SP.B.5.b',
     description: 'Describing the nature of the attribute under investigation, including how it was measured and its units of measurement.',
     url: 'http://corestandards.org/Math/Content/6/SP/B/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.6.SP.B.5a',
+    identifier: 'CCSS.Math.Content.6.SP.B.5.a',
     description: 'Reporting the number of observations.',
     url: 'http://corestandards.org/Math/Content/6/SP/B/5/a'
   },
@@ -1581,17 +1581,17 @@ var grade6 = [
     url: 'http://corestandards.org/Math/Content/6/EE/A/3'
   },
   {
-    identifier: 'CCSS.Math.Content.6.EE.A.2c',
+    identifier: 'CCSS.Math.Content.6.EE.A.2.c',
     description: 'Evaluate expressions at specific values of their variables. Include expressions that arise from formulas used in real-world problems. Perform arithmetic operations, including those involving whole-number exponents, in the conventional order when there are no parentheses to specify a particular order (Order of Operations).',
     url: 'http://corestandards.org/Math/Content/6/EE/A/2/c'
   },
   {
-    identifier: 'CCSS.Math.Content.6.EE.A.2b',
+    identifier: 'CCSS.Math.Content.6.EE.A.2.b',
     description: 'Identify parts of an expression using mathematical terms (sum, term, product, factor, quotient, coefficient); view one or more parts of an expression as a single entity.',
     url: 'http://corestandards.org/Math/Content/6/EE/A/2/b'
   },
   {
-    identifier: 'CCSS.Math.Content.6.EE.A.2a',
+    identifier: 'CCSS.Math.Content.6.EE.A.2.a',
     description: 'Write expressions that record operations with numbers and with letters standing for numbers.',
     url: 'http://corestandards.org/Math/Content/6/EE/A/2/a'
   },
@@ -1621,22 +1621,22 @@ var grade6 = [
     url: 'http://corestandards.org/Math/Content/6/NS/C/8'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.7d',
+    identifier: 'CCSS.Math.Content.6.NS.C.7.d',
     description: 'Distinguish comparisons of absolute value from statements about order.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/7/d'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.7c',
+    identifier: 'CCSS.Math.Content.6.NS.C.7.c',
     description: 'Understand the absolute value of a rational number as its distance from 0 on the number line; interpret absolute value as magnitude for a positive or negative quantity in a real-world situation.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/7/c'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.7b',
+    identifier: 'CCSS.Math.Content.6.NS.C.7.b',
     description: 'Write, interpret, and explain statements of order for rational numbers in real-world contexts.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.7a',
+    identifier: 'CCSS.Math.Content.6.NS.C.7.a',
     description: 'Interpret statements of inequality as statements about the relative position of two numbers on a number line diagram.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/7/a'
   },
@@ -1646,17 +1646,17 @@ var grade6 = [
     url: 'http://corestandards.org/Math/Content/6/NS/C/7'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.6c',
+    identifier: 'CCSS.Math.Content.6.NS.C.6.c',
     description: 'Find and position integers and other rational numbers on a horizontal or vertical number line diagram; find and position pairs of integers and other rational numbers on a coordinate plane.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/6/c'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.6b',
+    identifier: 'CCSS.Math.Content.6.NS.C.6.b',
     description: 'Understand signs of numbers in ordered pairs as indicating locations in quadrants of the coordinate plane; recognize that when two ordered pairs differ only by signs, the locations of the points are related by reflections across one or both axes.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/6/b'
   },
   {
-    identifier: 'CCSS.Math.Content.6.NS.C.6a',
+    identifier: 'CCSS.Math.Content.6.NS.C.6.a',
     description: 'Recognize opposite signs of numbers as indicating locations on opposite sides of 0 on the number line; recognize that the opposite of the opposite of a number is the number itself, e.g., -(-3) = 3, and that 0 is its own opposite.',
     url: 'http://corestandards.org/Math/Content/6/NS/C/6/a'
   },
@@ -1711,22 +1711,22 @@ var grade6 = [
     url: 'http://corestandards.org/Math/Content/6/NS/'
   },
   {
-    identifier: 'CCSS.Math.Content.6.RP.A.3d',
+    identifier: 'CCSS.Math.Content.6.RP.A.3.d',
     description: 'Use ratio reasoning to convert measurement units; manipulate and transform units appropriately when multiplying or dividing quantities.',
     url: 'http://corestandards.org/Math/Content/6/RP/A/3/d'
   },
   {
-    identifier: 'CCSS.Math.Content.6.RP.A.3c',
+    identifier: 'CCSS.Math.Content.6.RP.A.3.c',
     description: 'Find a percent of a quantity as a rate per 100 (e.g., 30% of a quantity means 30/100 times the quantity); solve problems involving finding the whole, given a part and the percent.',
     url: 'http://corestandards.org/Math/Content/6/RP/A/3/c'
   },
   {
-    identifier: 'CCSS.Math.Content.6.RP.A.3b',
+    identifier: 'CCSS.Math.Content.6.RP.A.3.b',
     description: 'Solve unit rate problems including those involving unit pricing and constant speed.',
     url: 'http://corestandards.org/Math/Content/6/RP/A/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.6.RP.A.3a',
+    identifier: 'CCSS.Math.Content.6.RP.A.3.a',
     description: 'Make tables of equivalent ratios relating quantities with whole number measurements, find missing values in the tables, and plot the pairs of values on the coordinate plane. Use tables to compare ratios.',
     url: 'http://corestandards.org/Math/Content/6/RP/A/3/a'
   },
@@ -1794,17 +1794,17 @@ var grade7 = [
      url: 'http://corestandards.org/Math/Content/7'
    },
   {
-    identifier: 'CCSS.Math.Content.7.SP.C.8c',
+    identifier: 'CCSS.Math.Content.7.SP.C.8.c',
     description: 'Design and use a simulation to generate frequencies for compound events.',
     url: 'http://corestandards.org/Math/Content/7/SP/C/8/c'
   },
   {
-    identifier: 'CCSS.Math.Content.7.SP.C.8b',
+    identifier: 'CCSS.Math.Content.7.SP.C.8.b',
     description: 'Represent sample spaces for compound events using methods such as organized lists, tables and tree diagrams. For an event described in everyday language (e.g., "rolling double sixes"), identify the outcomes in the sample space which compose the event.',
     url: 'http://corestandards.org/Math/Content/7/SP/C/8/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.SP.C.8a',
+    identifier: 'CCSS.Math.Content.7.SP.C.8.a',
     description: 'Understand that, just as with simple events, the probability of a compound event is the fraction of outcomes in the sample space for which the compound event occurs.',
     url: 'http://corestandards.org/Math/Content/7/SP/C/8/a'
   },
@@ -1814,12 +1814,12 @@ var grade7 = [
     url: 'http://corestandards.org/Math/Content/7/SP/C/8'
   },
   {
-    identifier: 'CCSS.Math.Content.7.SP.C.7b',
+    identifier: 'CCSS.Math.Content.7.SP.C.7.b',
     description: 'Develop a probability model (which may not be uniform) by observing frequencies in data generated from a chance process.',
     url: 'http://corestandards.org/Math/Content/7/SP/C/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.SP.C.7a',
+    identifier: 'CCSS.Math.Content.7.SP.C.7.a',
     description: 'Develop a uniform probability model by assigning equal probability to all outcomes, and use the model to determine probabilities of events.',
     url: 'http://corestandards.org/Math/Content/7/SP/C/7/a'
   },
@@ -1879,12 +1879,12 @@ var grade7 = [
     url: 'http://corestandards.org/Math/Content/7/SP/'
   },
   {
-    identifier: 'CCSS.Math.Content.7.EE.B.4b',
+    identifier: 'CCSS.Math.Content.7.EE.B.4.b',
     description: 'Solve word problems leading to inequalities of the form px + q > r or px + q < r, where p, q, and r are specific rational numbers. Graph the solution set of the inequality and interpret it in the context of the problem.',
     url: 'http://corestandards.org/Math/Content/7/EE/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.EE.B.4a',
+    identifier: 'CCSS.Math.Content.7.EE.B.4.a',
     description: 'Solve word problems leading to equations of the form px + q = r and p(x + q) = r, where p, q, and r are specific rational numbers. Solve equations of these forms fluently. Compare an algebraic solution to an arithmetic solution, identifying the sequence of the operations used in each approach.',
     url: 'http://corestandards.org/Math/Content/7/EE/B/4/a'
   },
@@ -1929,22 +1929,22 @@ var grade7 = [
     url: 'http://corestandards.org/Math/Content/7/NS/A/3'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.2d',
+    identifier: 'CCSS.Math.Content.7.NS.A.2.d',
     description: 'Convert a rational number to a decimal using long division; know that the decimal form of a rational number terminates in 0s or eventually repeats.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/2/d'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.2c',
+    identifier: 'CCSS.Math.Content.7.NS.A.2.c',
     description: 'Apply properties of operations as strategies to multiply and divide rational numbers.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/2/c'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.2b',
+    identifier: 'CCSS.Math.Content.7.NS.A.2.b',
     description: 'Understand that integers can be divided, provided that the divisor is not zero, and every quotient of integers (with non-zero divisor) is a rational number. If p and q are integers, then -(p/q) = (-p)/q = p/(-q). Interpret quotients of rational numbers by describing real-world contexts.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/2/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.2a',
+    identifier: 'CCSS.Math.Content.7.NS.A.2.a',
     description: 'Understand that multiplication is extended from fractions to rational numbers by requiring that operations continue to satisfy the properties of operations, particularly the distributive property, leading to products such as (-1)(-1) = 1 and the rules for multiplying signed numbers. Interpret products of rational numbers by describing real-world contexts.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/2/a'
   },
@@ -1954,22 +1954,22 @@ var grade7 = [
     url: 'http://corestandards.org/Math/Content/7/NS/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.1d',
+    identifier: 'CCSS.Math.Content.7.NS.A.1.d',
     description: 'Apply properties of operations as strategies to add and subtract rational numbers.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/1/d'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.1c',
+    identifier: 'CCSS.Math.Content.7.NS.A.1.c',
     description: 'Understand subtraction of rational numbers as adding the additive inverse, p - q = p + (-q). Show that the distance between two rational numbers on the number line is the absolute value of their difference, and apply this principle in real-world contexts.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/1/c'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.1b',
+    identifier: 'CCSS.Math.Content.7.NS.A.1.b',
     description: 'Understand p + q as the number located a distance |q| from p, in the positive or negative direction depending on whether q is positive or negative. Show that a number and its opposite have a sum of 0 (are additive inverses). Interpret sums of rational numbers by describing real-world contexts.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.NS.A.1a',
+    identifier: 'CCSS.Math.Content.7.NS.A.1.a',
     description: 'Describe situations in which opposite quantities combine to make 0.',
     url: 'http://corestandards.org/Math/Content/7/NS/A/1/a'
   },
@@ -1994,22 +1994,22 @@ var grade7 = [
     url: 'http://corestandards.org/Math/Content/7/RP/A/3'
   },
   {
-    identifier: 'CCSS.Math.Content.7.RP.A.2d',
+    identifier: 'CCSS.Math.Content.7.RP.A.2.d',
     description: 'Explain what a point (x, y) on the graph of a proportional relationship means in terms of the situation, with special attention to the points (0, 0) and (1, r) where r is the unit rate.',
     url: 'http://corestandards.org/Math/Content/7/RP/A/2/d'
   },
   {
-    identifier: 'CCSS.Math.Content.7.RP.A.2c',
+    identifier: 'CCSS.Math.Content.7.RP.A.2.c',
     description: 'Represent proportional relationships by equations.',
     url: 'http://corestandards.org/Math/Content/7/RP/A/2/c'
   },
   {
-    identifier: 'CCSS.Math.Content.7.RP.A.2b',
+    identifier: 'CCSS.Math.Content.7.RP.A.2.b',
     description: 'Identify the constant of proportionality (unit rate) in tables, graphs, equations, diagrams, and verbal descriptions of proportional relationships.',
     url: 'http://corestandards.org/Math/Content/7/RP/A/2/b'
   },
   {
-    identifier: 'CCSS.Math.Content.7.RP.A.2a',
+    identifier: 'CCSS.Math.Content.7.RP.A.2.a',
     description: 'Decide whether two quantities are in a proportional relationship, e.g., by testing for equivalent ratios in a table or graphing on a coordinate plane and observing whether the graph is a straight line through the origin.',
     url: 'http://corestandards.org/Math/Content/7/RP/A/2/a'
   },
@@ -2157,17 +2157,17 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/SP'
   },
   {
-    identifier: 'CCSS.Math.Content.8.EE.C.8c',
+    identifier: 'CCSS.Math.Content.8.EE.C.8.c',
     description: 'Solve real-world and mathematical problems leading to two linear equations in two variables.',
     url: 'http://corestandards.org/Math/Content/8/EE/C/8/c'
   },
   {
-    identifier: 'CCSS.Math.Content.8.EE.C.8b',
+    identifier: 'CCSS.Math.Content.8.EE.C.8.b',
     description: 'Solve systems of two linear equations in two variables algebraically, and estimate solutions by graphing the equations. Solve simple cases by inspection.',
     url: 'http://corestandards.org/Math/Content/8/EE/C/8/b'
   },
   {
-    identifier: 'CCSS.Math.Content.8.EE.C.8a',
+    identifier: 'CCSS.Math.Content.8.EE.C.8.a',
     description: 'Understand that solutions to a system of two linear equations in two variables correspond to points of intersection of their graphs, because points of intersection satisfy both equations simultaneously.',
     url: 'http://corestandards.org/Math/Content/8/EE/C/8/a'
   },
@@ -2177,12 +2177,12 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/EE/C/8'
   },
   {
-    identifier: 'CCSS.Math.Content.8.EE.C.7b',
+    identifier: 'CCSS.Math.Content.8.EE.C.7.b',
     description: 'Solve linear equations with rational number coefficients, including equations whose solutions require expanding expressions using the distributive property and collecting like terms.',
     url: 'http://corestandards.org/Math/Content/8/EE/C/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.8.EE.C.7a',
+    identifier: 'CCSS.Math.Content.8.EE.C.7.a',
     description: 'Give examples of linear equations in one variable with one solution, infinitely many solutions, or no solutions. Show which of these possibilities is the case by successively transforming the given equation into simpler forms, until an equivalent equation of the form x = a, a = a, or a = b results (where a and b are different numbers).',
     url: 'http://corestandards.org/Math/Content/8/EE/C/7/a'
   },
@@ -2312,17 +2312,17 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/G/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.8.G.A.1c',
+    identifier: 'CCSS.Math.Content.8.G.A.1.c',
     description: 'Parallel lines are taken to parallel lines.',
     url: 'http://corestandards.org/Math/Content/8/G/A/1/c'
   },
   {
-    identifier: 'CCSS.Math.Content.8.G.A.1b',
+    identifier: 'CCSS.Math.Content.8.G.A.1.b',
     description: 'Angles are taken to angles of the same measure.',
     url: 'http://corestandards.org/Math/Content/8/G/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.8.G.A.1a',
+    identifier: 'CCSS.Math.Content.8.G.A.1.a',
     description: 'Lines are taken to lines, and line segments to line segments of the same length.',
     url: 'http://corestandards.org/Math/Content/8/G/A/1/a'
   },
@@ -2360,12 +2360,12 @@ var gradeHSS = [
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/6'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.MD.B.5b',
+    identifier: 'CCSS.Math.Content.HSS.MD.B.5.b',
     description: 'Evaluate and compare strategies on the basis of expected values.',
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.MD.B.5a',
+    identifier: 'CCSS.Math.Content.HSS.MD.B.5.a',
     description: 'Find the expected payoff for a game of chance.',
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/a'
   },
@@ -2535,17 +2535,17 @@ var gradeHSS = [
     url: 'http://corestandards.org/Math/Content/HSS/ID/C'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6c',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.c',
     description: 'Fit a linear function for a scatter plot that suggests a linear association.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6b',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.b',
     description: 'Informally assess the fit of a function by plotting and analyzing residuals.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6a',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.a',
     description: 'Fit a function to the data; use functions fitted to data to solve problems in the context of the data.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/a'
   },
@@ -2591,8 +2591,8 @@ var gradeHSS = [
   },
   {
     identifier: 'CCSS.Math.Content.HSS.ID',
-    description: 'High School — Statistics and Probability',
-    url: 'http://corestandards.org/Math/Content/HSS/ID!'
+    description: 'Interpreting Categorical & Quantitative Data',
+    url: 'http://corestandards.org/Math/Content/HSS/ID'
   },
   {
     identifier: 'CCSS.Math.Content.HSG.MG.A.3',
@@ -2810,12 +2810,12 @@ var gradeHSS = [
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.HSG.SRT.A.1b',
+    identifier: 'CCSS.Math.Content.HSG.SRT.A.1.b',
     description: 'The dilation of a line segment is longer or shorter in the ratio given by the scale factor.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSG.SRT.A.1a',
+    identifier: 'CCSS.Math.Content.HSG.SRT.A.1.a',
     description: 'A dilation takes a line not passing through the center of the dilation to a parallel line, and leaves a line passing through the center unchanged.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/a'
   },
@@ -2985,15 +2985,15 @@ var gradeHSS = [
     description: 'Construct linear and exponential functions, including arithmetic and geometric sequences, given a graph, a description of a relationship, or two input-output pairs (include reading these from a table).',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/2'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1c',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.c',
     description: 'Recognize situations in which a quantity grows or decays by a constant percent rate per unit interval relative to another.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1b',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.b',
     description: 'Recognize situations in which one quantity changes at a constant rate per unit interval relative to another.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1a',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.a',
     description: 'Prove that linear functions grow by equal differences over equal intervals, and that exponential functions grow by equal factors over equal intervals.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/a'
   }, {
@@ -3013,19 +3013,19 @@ var gradeHSS = [
     description: '(+) Understand the inverse relationship between exponents and logarithms and use this relationship to solve problems involving logarithms and exponents.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/5'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4d',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.d',
     description: '(+) Produce an invertible function from a non-invertible function by restricting the domain.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/d'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4c',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.c',
     description: '(+) Read values of an inverse function from a graph or a table, given that the function has an inverse.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4b',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.b',
     description: '(+) Verify by composition that one function is the inverse of another.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4a',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.a',
     description: 'Solve an equation of the form f(x) = c for a simple function f that has an inverse and write an expression for the inverse.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/a'
   }, {
@@ -3045,15 +3045,15 @@ var gradeHSS = [
     description: 'Write arithmetic and geometric sequences both recursively and with an explicit formula, use them to model situations, and translate between the two forms.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/2'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1c',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.c',
     description: '(+) Compose functions.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1b',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.b',
     description: 'Combine standard function types using arithmetic operations.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1a',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.a',
     description: 'Determine an explicit expression, a recursive process, or steps for calculation from a context.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/a'
   }, {
@@ -3073,11 +3073,11 @@ var gradeHSS = [
     description: 'Compare properties of two functions each represented in a different way (algebraically, graphically, numerically in tables, or by verbal descriptions).',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/9'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.8b',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.8.b',
     description: 'Use the properties of exponents to interpret expressions for exponential functions.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.8a',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.8.a',
     description: 'Use the process of factoring and completing the square in a quadratic function to show zeros, extreme values, and symmetry of the graph, and interpret these in terms of a context.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/a'
   }, {
@@ -3085,23 +3085,23 @@ var gradeHSS = [
     description: 'Write a function defined by an expression in different but equivalent forms to reveal and explain different properties of the function.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7e',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.e',
     description: 'Graph exponential and logarithmic functions, showing intercepts and end behavior, and trigonometric functions, showing period, midline, and amplitude.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/e'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7d',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.d',
     description: '(+) Graph rational functions, identifying zeros and asymptotes when suitable factorizations are available, and showing end behavior.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/d'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7c',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.c',
     description: 'Graph polynomial functions, identifying zeros when suitable factorizations are available, and showing end behavior.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7b',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.b',
     description: 'Graph square root, cube root, and piecewise-defined functions, including step functions and absolute value functions.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7a',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.a',
     description: 'Graph linear and quadratic functions and show intercepts, maxima, and minima.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/a'
   }, {
@@ -3193,11 +3193,11 @@ var gradeHSS = [
     description: 'Solve systems of equations',
     url: 'http://corestandards.org/Math/Content/HSA/REI/C'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.REI.B.4b',
+    identifier: 'CCSS.Math.Content.HSA.REI.B.4.b',
     description: 'Solve quadratic equations by inspection (e.g., for x² = 49), taking square roots, completing the square, the quadratic formula and factoring, as appropriate to the initial form of the equation. Recognize when the quadratic formula gives complex solutions and write them as a ± bi for real numbers a and b.',
     url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.REI.B.4a',
+    identifier: 'CCSS.Math.Content.HSA.REI.B.4.a',
     description: 'Use the method of completing the square to transform any quadratic equation in x into an equation of the form (x - p)² = q that has the same solutions. Derive the quadratic formula from this form.',
     url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/a'
   }, {
@@ -3306,15 +3306,15 @@ var gradeHSS = [
     description: 'Derive the formula for the sum of a finite geometric series (when the common ratio is not 1), and use the formula to solve problems.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/4'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3c',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.c',
     description: 'Use the properties of exponents to transform expressions for exponential functions.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3b',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.b',
     description: 'Complete the square in a quadratic expression to reveal the maximum or minimum value of the function it defines.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3a',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.a',
     description: 'Factor a quadratic expression to reveal the zeros of the function it defines.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/a'
   }, {
@@ -3330,11 +3330,11 @@ var gradeHSS = [
     description: 'Use the structure of an expression to identify ways to rewrite it.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/2'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.SSE.A.1b',
+    identifier: 'CCSS.Math.Content.HSA.SSE.A.1.b',
     description: 'Interpret complicated expressions by viewing one or more of their parts as a single entity.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSA.SSE.A.1a',
+    identifier: 'CCSS.Math.Content.HSA.SSE.A.1.a',
     description: 'Interpret parts of an expression, such as terms, factors, and coefficients.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/a'
   }, {
@@ -3386,11 +3386,11 @@ var gradeHSS = [
     description: 'Perform operations on matrices and use matrices in applications.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/C'
   }, {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.5b',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.5.b',
     description: 'Compute the magnitude of a scalar multiple cv using ||cv|| = |c|v. Compute the direction of cv knowing that when |c|v ? 0, the direction of cv is either along v (for c > 0) or against v (for c < 0).',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.5a',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.5.a',
     description: 'Represent scalar multiplication graphically by scaling vectors and possibly reversing their direction; perform scalar multiplication component-wise, e.g., as c(v<sub>x</sub>, v<sub>y</sub>) = (cv<sub>x</sub>, cv<sub>y</sub>).',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/a'
   }, {
@@ -3398,15 +3398,15 @@ var gradeHSS = [
     description: '(+) Multiply a vector by a scalar.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5'
   }, {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4c',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.c',
     description: 'Understand vector subtraction v - w as v + (-w), where -w is the additive inverse of w, with the same magnitude as w and pointing in the opposite direction. Represent vector subtraction graphically by connecting the tips in the appropriate order, and perform vector subtraction component-wise.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/c'
   }, {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4b',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.b',
     description: 'Given two vectors in magnitude and direction form, determine the magnitude and direction of their sum.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/b'
   }, {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4a',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.a',
     description: 'Add vectors end-to-end, component-wise, and by the parallelogram rule. Understand that the magnitude of a sum of two vectors is typically not the sum of the magnitudes.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/a'
   }, {
@@ -3592,12 +3592,12 @@ var gradeHSAlgebra = [
     url: 'http://corestandards.org/Math/Content/HSA/REI/C'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.REI.B.4b',
+    identifier: 'CCSS.Math.Content.HSA.REI.B.4.b',
     description: 'Solve quadratic equations by inspection (e.g., for x² = 49), taking square roots, completing the square, the quadratic formula and factoring, as appropriate to the initial form of the equation. Recognize when the quadratic formula gives complex solutions and write them as a ± bi for real numbers a and b.',
     url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.REI.B.4a',
+    identifier: 'CCSS.Math.Content.HSA.REI.B.4.a',
     description: 'Use the method of completing the square to transform any quadratic equation in x into an equation of the form (x - p)² = q that has the same solutions. Derive the quadratic formula from this form.',
     url: 'http://corestandards.org/Math/Content/HSA/REI/B/4/a'
   },
@@ -3732,17 +3732,17 @@ var gradeHSAlgebra = [
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/4'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3c',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.c',
     description: 'Use the properties of exponents to transform expressions for exponential functions.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3b',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.b',
     description: 'Complete the square in a quadratic expression to reveal the maximum or minimum value of the function it defines.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.SSE.B.3a',
+    identifier: 'CCSS.Math.Content.HSA.SSE.B.3.a',
     description: 'Factor a quadratic expression to reveal the zeros of the function it defines.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/B/3/a'
   },
@@ -3762,12 +3762,12 @@ var gradeHSAlgebra = [
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.SSE.A.1b',
+    identifier: 'CCSS.Math.Content.HSA.SSE.A.1.b',
     description: 'Interpret complicated expressions by viewing one or more of their parts as a single entity.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSA.SSE.A.1a',
+    identifier: 'CCSS.Math.Content.HSA.SSE.A.1.a',
     description: 'Interpret parts of an expression, such as terms, factors, and coefficients.',
     url: 'http://corestandards.org/Math/Content/HSA/SSE/A/1/a'
   },
@@ -3880,17 +3880,17 @@ var gradeHSFunctions = [
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1c',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.c',
     description: 'Recognize situations in which a quantity grows or decays by a constant percent rate per unit interval relative to another.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1b',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.b',
     description: 'Recognize situations in which one quantity changes at a constant rate per unit interval relative to another.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.LE.A.1a',
+    identifier: 'CCSS.Math.Content.HSF.LE.A.1.a',
     description: 'Prove that linear functions grow by equal differences over equal intervals, and that exponential functions grow by equal factors over equal intervals.',
     url: 'http://corestandards.org/Math/Content/HSF/LE/A/1/a'
   },
@@ -3915,22 +3915,22 @@ var gradeHSFunctions = [
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/5'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4d',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.d',
     description: '(+) Produce an invertible function from a non-invertible function by restricting the domain.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/d'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4c',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.c',
     description: '(+) Read values of an inverse function from a graph or a table, given that the function has an inverse.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4b',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.b',
     description: '(+) Verify by composition that one function is the inverse of another.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.B.4a',
+    identifier: 'CCSS.Math.Content.HSF.BF.B.4.a',
     description: 'Solve an equation of the form f(x) = c for a simple function f that has an inverse and write an expression for the inverse.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/B/4/a'
   },
@@ -3955,17 +3955,17 @@ var gradeHSFunctions = [
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1c',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.c',
     description: '(+) Compose functions.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1b',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.b',
     description: 'Combine standard function types using arithmetic operations.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.BF.A.1a',
+    identifier: 'CCSS.Math.Content.HSF.BF.A.1.a',
     description: 'Determine an explicit expression, a recursive process, or steps for calculation from a context.',
     url: 'http://corestandards.org/Math/Content/HSF/BF/A/1/a'
   },
@@ -3990,12 +3990,12 @@ var gradeHSFunctions = [
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/9'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.8b',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.8.b',
     description: 'Use the properties of exponents to interpret expressions for exponential functions.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.8a',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.8.a',
     description: 'Use the process of factoring and completing the square in a quadratic function to show zeros, extreme values, and symmetry of the graph, and interpret these in terms of a context.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8/a'
   },
@@ -4005,27 +4005,27 @@ var gradeHSFunctions = [
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/8'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7e',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.e',
     description: 'Graph exponential and logarithmic functions, showing intercepts and end behavior, and trigonometric functions, showing period, midline, and amplitude.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/e'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7d',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.d',
     description: '(+) Graph rational functions, identifying zeros and asymptotes when suitable factorizations are available, and showing end behavior.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/d'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7c',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.c',
     description: 'Graph polynomial functions, identifying zeros when suitable factorizations are available, and showing end behavior.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7b',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.b',
     description: 'Graph square root, cube root, and piecewise-defined functions, including step functions and absolute value functions.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSF.IF.C.7a',
+    identifier: 'CCSS.Math.Content.HSF.IF.C.7.a',
     description: 'Graph linear and quadratic functions and show intercepts, maxima, and minima.',
     url: 'http://corestandards.org/Math/Content/HSF/IF/C/7/a'
   },
@@ -4303,12 +4303,12 @@ var gradeHsGeometry = [
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'
   },
   {
-    identifier: 'CCSS.Math.Content.HSG.SRT.A.1b',
+    identifier: 'CCSS.Math.Content.HSG.SRT.A.1.b',
     description: 'The dilation of a line segment is longer or shorter in the ratio given by the scale factor.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSG.SRT.A.1a',
+    identifier: 'CCSS.Math.Content.HSG.SRT.A.1.a',
     description: 'A dilation takes a line not passing through the center of the dilation to a parallel line, and leaves a line passing through the center unchanged.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/1/a'
   },
@@ -4461,12 +4461,12 @@ var gradeHSNumber = [
     url: 'http://corestandards.org/Math/Content/HSN/VM/C'
   },
   {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.5b',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.5.b',
     description: 'Compute the magnitude of a scalar multiple cv using ||cv|| = |c|v. Compute the direction of cv knowing that when |c|v ? 0, the direction of cv is either along v (for c > 0) or against v (for c < 0).',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.5a',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.5.a',
     description: 'Represent scalar multiplication graphically by scaling vectors and possibly reversing their direction; perform scalar multiplication component-wise, e.g., as c(v<sub>x</sub>, v<sub>y</sub>) = (cv<sub>x</sub>, cv<sub>y</sub>).',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5/a'
   },
@@ -4476,17 +4476,17 @@ var gradeHSNumber = [
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/5'
   },
   {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4c',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.c',
     description: 'Understand vector subtraction v - w as v + (-w), where -w is the additive inverse of w, with the same magnitude as w and pointing in the opposite direction. Represent vector subtraction graphically by connecting the tips in the appropriate order, and perform vector subtraction component-wise.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4b',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.b',
     description: 'Given two vectors in magnitude and direction form, determine the magnitude and direction of their sum.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSN.VM.B.4a',
+    identifier: 'CCSS.Math.Content.HSN.VM.B.4.a',
     description: 'Add vectors end-to-end, component-wise, and by the parallelogram rule. Understand that the magnitude of a sum of two vectors is typically not the sum of the magnitudes.',
     url: 'http://corestandards.org/Math/Content/HSN/VM/B/4/a'
   },
@@ -4659,12 +4659,12 @@ var gradeHSProbability = [
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/6'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.MD.B.5b',
+    identifier: 'CCSS.Math.Content.HSS.MD.B.5.b',
     description: 'Evaluate and compare strategies on the basis of expected values.',
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.MD.B.5a',
+    identifier: 'CCSS.Math.Content.HSS.MD.B.5.a',
     description: 'Find the expected payoff for a game of chance.',
     url: 'http://corestandards.org/Math/Content/HSS/MD/B/5/a'
   },
@@ -4834,17 +4834,17 @@ var gradeHSProbability = [
     url: 'http://corestandards.org/Math/Content/HSS/ID/C'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6c',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.c',
     description: 'Fit a linear function for a scatter plot that suggests a linear association.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/c'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6b',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.b',
     description: 'Informally assess the fit of a function by plotting and analyzing residuals.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/b'
   },
   {
-    identifier: 'CCSS.Math.Content.HSS.ID.B.6a',
+    identifier: 'CCSS.Math.Content.HSS.ID.B.6.a',
     description: 'Fit a function to the data; use functions fitted to data to solve problems in the context of the data.',
     url: 'http://corestandards.org/Math/Content/HSS/ID/B/6/a'
   },
