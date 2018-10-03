@@ -18,9 +18,9 @@ var AnswerSchema = new Schema({
   //====
   problem: { type: ObjectId, ref: 'Problem', required: true },
   assignment: { type: ObjectId, ref: 'Assignment' },
-  answer: { type: String },
-  explanation: { type: String }, //Change to text if we can save image ObjectId
-  explanationImage: { type: ObjectId, ref: 'Image' },
+  answer: { type: String }, // this is the brief summary (short answer)
+  explanation: { type: String }, // HTML answer, possibly with images embedded
+  explanationImage: { type: ObjectId, ref: 'Image' }, // image from upload process
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
   additionalImage: { type: ObjectId, ref: 'Image' },
