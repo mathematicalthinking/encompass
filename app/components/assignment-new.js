@@ -31,10 +31,10 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('sectionList', sections);
     }
 
-    if (this.problems) {
-      const problems = this.problems.filterBy('isTrashed', false);
-      this.set('problemList', problems);
-    }
+    // if (this.problems) {
+    //   const problems = this.problems.filterBy('isTrashed', false);
+    //   this.set('problemList', problems);
+    // }
 
     if (!this.get('addProblemTypeahead')) {
       this.set('addProblemTypeahead',this.getAddableProblems.call(this));
