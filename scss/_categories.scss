@@ -4,6 +4,7 @@
     background: #4d5158;
     margin: 4em auto;
     box-shadow: $box-shadow;
+    text-align: left;
   }
 
   .cd-accordion-menu ul {
@@ -20,6 +21,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    text-align: left;
   }
 
   .cd-accordion-menu input[type=checkbox] {
