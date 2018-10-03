@@ -78,7 +78,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       createdBy: createdBy,
       createDate: new Date(),
       title: title,
-      problemStatement: problemStatement,
+      text: problemStatement,
       // categories: categories,
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
