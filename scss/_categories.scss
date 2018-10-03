@@ -28,26 +28,41 @@
     opacity: 0;
   }
 
-  .cd-accordion-menu label,
-  .cd-accordion-menu a {
-    position: relative;
-    display: block;
-    cursor: pointer;
-    padding: 18px 18px 18px 64px;
-    background: #4d5158;
-    box-shadow: inset 0 -1px #555960;
-    color: #ffffff;
-    font-size: 1em;
-  }
+  .cd-accordion-menu
+    label {
+      position: relative;
+      display: block;
+      cursor: pointer;
+      padding: 18px 18px 18px 64px;
+      background: #4d5158;
+      box-shadow: inset 0 -1px #555960;
+      color: #ffffff;
+      font-size: 1em;
+    }
+    #test {
+      display: inline;
+      background: 1px solid white;
+    }
+    .item {
+      position: relative;
+      display: block;
+      cursor: pointer;
+      padding: 18px 18px 18px 64px;
+      background: #4d5158;
+      box-shadow: inset 0 -1px #555960;
+      color: #ffffff;
+      font-size: 1em;
+    }
+
 
   .no-touch .cd-accordion-menu label:hover,
-  .no-touch .cd-accordion-menu a:hover {
+  .no-touch .cd-accordion-menu .item:hover {
     background: #52565d;
   }
 
   .cd-accordion-menu label::before,
   .cd-accordion-menu label::after,
-  .cd-accordion-menu a::after {
+  .cd-accordion-menu .item::after {
     /* icons */
     content: '';
     display: inline-block;
@@ -89,7 +104,7 @@
     background-position: -16px 0;
   }
 
-  .cd-accordion-menu a::after {
+  .cd-accordion-menu .item::after {
     /* image icon */
     left: 36px;
     background: url(../img/cd-icons.svg) no-repeat -48px 0;
@@ -117,21 +132,21 @@
   }
 
   .cd-accordion-menu ul label,
-  .cd-accordion-menu ul a {
+  .cd-accordion-menu ul .item {
     background: #35383d;
     box-shadow: inset 0 -1px #41444a;
     padding-left: 82px;
   }
 
   .no-touch .cd-accordion-menu ul label:hover,
-  .no-touch .cd-accordion-menu ul a:hover {
+  .no-touch .cd-accordion-menu ul .item:hover {
     background: #3c3f45;
   }
 
   .cd-accordion-menu>li:last-of-type>label,
-  .cd-accordion-menu>li:last-of-type>a,
+  .cd-accordion-menu>li:last-of-type>.item,
   .cd-accordion-menu>li>ul>li:last-of-type label,
-  .cd-accordion-menu>li>ul>li:last-of-type a {
+  .cd-accordion-menu>li>ul>li:last-of-type .item {
     box-shadow: none;
   }
 
@@ -140,12 +155,12 @@
   }
 
   .cd-accordion-menu ul label::after,
-  .cd-accordion-menu ul a::after {
+  .cd-accordion-menu ul .item::after {
     left: 59px;
   }
 
   .cd-accordion-menu ul ul label,
-  .cd-accordion-menu ul ul a {
+  .cd-accordion-menu ul ul .item {
     padding-left: 100px;
   }
 
@@ -154,12 +169,12 @@
   }
 
   .cd-accordion-menu ul ul label::after,
-  .cd-accordion-menu ul ul a::after {
+  .cd-accordion-menu ul ul .item::after {
     left: 77px;
   }
 
   .cd-accordion-menu ul ul ul label,
-  .cd-accordion-menu ul ul ul a {
+  .cd-accordion-menu ul ul ul .item {
     padding-left: 118px;
   }
 
@@ -168,12 +183,12 @@
   }
 
   .cd-accordion-menu ul ul ul label::after,
-  .cd-accordion-menu ul ul ul a::after {
+  .cd-accordion-menu ul ul ul .item::after {
     left: 95px;
   }
 
   .cd-accordion-menu ul ul ul ul label,
-  .cd-accordion-menu ul ul ul ul a {
+  .cd-accordion-menu ul ul ul ul .item {
     padding-left: 140px;
   }
 

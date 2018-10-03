@@ -2,32 +2,32 @@
 <ul class="cd-accordion-menu animated">
   {{#each categories as |category|}}
   <li class="has-children">
-    <input type="checkbox" name="{{category.name}}" id="{{category.name}}">
-    <label for="{{category.name}}">{{category.name}}</label>
+    <input type="checkbox" name="{{category.description}}" id="{{category.description}}">
+    <label for="{{category.description}}">{{category.description}}</label>
     <ul>
       {{#each category.domains as |domain|}}
       <li class="has-children">
-        <input type="checkbox" name="{{domain.name}}" id="{{domain.name}}">
-        <label for="{{domain.name}}">{{domain.name}}</label>
+        <input type="checkbox" name="{{domain.description}}" id="{{domain.description}}">
+        <label for="{{domain.description}}">{{domain.description}}<a href="{{domain.url}}" target="_blank"> <i class="fas fa-external-link-alt"></i></a></label>
           <ul>
             {{#each domain.topics as |topic|}}
             <li class="has-children">
-              <input type="checkbox" name="{{topic.name}}" id="{{topic.name}}">
-              <label for="{{topic.name}}">{{topic.name}}</label>
+              <input type="checkbox" name="{{topic.description}}" id="{{topic.description}}">
+              <label for="{{topic.description}}">{{topic.description}}</label>
                 <ul>
                   {{#each topic.standards as |standard|}}
                     {{#if standard.substandards}}
                     <li class="has-children">
-                      <input type="checkbox" name="{{standard.name}}" id="{{standard.name}}">
-                      <label for="{{standard.name}}">{{standard.name}}</label>
+                      <input type="checkbox" name="{{standard.description}}" id="{{standard.description}}">
+                      <label for="{{standard.description}}">{{standard.description}}</label>
                       <ul>
                         {{#each standard.substandards as |sub|}}
-                          <li><a href="#"><span>{{sub.identifier}}</span> - {{sub.name}}</a></li>
+                          <li class="item"><span>{{sub.identifier}}</span> - {{sub.description}}</li>
                         {{/each}}
                       </ul>
                     </li>
                     {{else}}
-                      <li><a href="#"><span>{{standard.identifier}}</span> - {{standard.name}}</a></li>
+                      <li class="item"><span>{{standard.identifier}}</span> - {{standard.description}}</li>
                     {{/if}}
                   {{/each}}
                 </ul>
