@@ -1,6 +1,7 @@
 Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'problem-home',
   classNames: ['home-view'],
+  showCategories: false,
 
   publicProblems: function () {
     var problems = this.problems.filterBy('isTrashed', false);
@@ -11,5 +12,8 @@ Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
 
   actions: {
+    showCategories: function () {
+      this.set('showCategories', !(this.get('showCategories')));
+    }
   }
 });

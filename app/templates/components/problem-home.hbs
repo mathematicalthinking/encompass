@@ -19,6 +19,13 @@
   {{/if}}
 {{/if}}
 
+{{#unless showCategories}}
+  <button {{action 'showCategories'}}>Show Category Menu</button>
+{{/unless}}
+{{#if showCategories}}
+  <button {{action 'showCategories'}}>Hide Category Menu</button>
+  {{categories-menu categories=categories}}
+{{/if}}
 {{!-- <section>
   <h2>Your Recently Created Problems</h2>
 </section>

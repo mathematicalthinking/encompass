@@ -7,6 +7,7 @@ Encompass.ProblemsHomeRoute = Encompass.AuthenticatedRoute.extend({
         }
       }),
       organizations: this.get('store').findAll('organization'),
+      categories: this.get('store').query('category', {}),
     });
   },
   renderTemplate: function () {
