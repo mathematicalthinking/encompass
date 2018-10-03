@@ -164,15 +164,17 @@
     a {
       color: $accent-color;
     }
-    img {
-      width: 40%;
-      position: relative;
-      z-index: 999;
-    }
-    .wide {
-      height: initial;
-      width: 100%;
-      margin-bottom: 30px;
+    .additional_image {
+      img {
+        width: 40%;
+        position: relative;
+        z-index: 999;
+      }
+      .wide {
+        height: initial;
+        width: 100%;
+        margin-bottom: 30px;
+      }
     }
   }
 
