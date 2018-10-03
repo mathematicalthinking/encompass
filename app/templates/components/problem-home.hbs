@@ -4,7 +4,7 @@
 {{else}}
   {{#if currentUser.isAdmin}}
     <h1>Here are some recently created public problems</h1>
-    <ul>
+    <ul class="info">
       {{#each publicProblems as |problem|}}
       <li>
         {{#link-to 'problem' problem.id}}{{problem.title}} {{/link-to}} created on {{format-date  problem.createDate 'MMM Do YYYY'}} by {{problem.createdBy.username}}

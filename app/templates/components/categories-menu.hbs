@@ -10,27 +10,31 @@
         <label for="{{domain.identifier}}">{{domain.description}}<a href="{{domain.url}}" target="_blank"> <i class="fas fa-external-link-alt"></i></a></label>
           <ul>
             {{#each domain.topics as |topic|}}
-            <li class="has-children">
-              <input type="checkbox" name="{{topic.identifier}}" id="{{topic.identifier}}">
-              <label for="{{topic.identifier}}">{{topic.description}}</label>
-                <ul>
-                  {{#each topic.standards as |standard|}}
+              {{#if topic.standards}}
+                <li class="has-children">
+                  <input type="checkbox" name="{{topic.identifier}}" id="{{topic.identifier}}">
+                  <label for="{{topic.identifier}}">{{topic.description}}</label>
+                  <ul>
+                    {{#each topic.standards as |standard|}}
                     {{#if standard.substandards}}
                     <li class="has-children">
                       <input type="checkbox" name="{{standard.identifier}}" id="{{standard.identifier}}">
                       <label for="{{standard.identifier}}">{{standard.description}}</label>
                       <ul>
                         {{#each standard.substandards as |sub|}}
-                          <li class="item"><span>{{sub.identifier}}</span> - {{sub.description}}</li>
+                        <li class="item"><span>{{sub.identifier}}</span> - {{sub.description}}</li>
                         {{/each}}
                       </ul>
                     </li>
                     {{else}}
-                      <li class="item"><span>{{standard.identifier}}</span> - {{standard.description}}</li>
+                    <li class="item"><span>{{standard.identifier}}</span> - {{standard.description}}</li>
                     {{/if}}
-                  {{/each}}
-                </ul>
-            </li>
+                    {{/each}}
+                  </ul>
+                </li>
+              {{else}}
+                  <li class="item"><span>{{topic.identifier}}</span> - {{topic.description}}</li>
+              {{/if}}
             {{/each}}
           </ul>
       </li>
@@ -39,7 +43,6 @@
   </li>
   {{/each}}
 </ul>
-
 
 
 
