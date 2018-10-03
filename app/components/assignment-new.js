@@ -35,10 +35,13 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       const problems = this.problems.filterBy('isTrashed', false);
       this.set('problemList', problems);
     }
+
+    if (!this.get('addProblemTypeahead')) {
+      this.set('addProblemTypeahead',this.getAddableProblems.call(this));
+    }
   },
 
   didInsertElement: function() {
-    this.set('addProblemTypeahead', this.getAddableProblems.call(this));
 
     const formId = this.get('formId');
     let isMissing = this.checkMissing.bind(this);
