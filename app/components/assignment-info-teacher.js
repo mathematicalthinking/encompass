@@ -37,7 +37,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         this.set('showReport', false);
       }
       this.set('currentAssignment', this.assignment);
-      console.log('setting currentAssignment');
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
