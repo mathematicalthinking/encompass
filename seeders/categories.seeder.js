@@ -2,8 +2,7 @@ var _ = require('underscore');
 var Seeder = require('mongoose-data-seed').Seeder;
 var Category = require('../server/datasource/schemas').Category;
 
-var gradek = [
-  {
+var gradek = [{
     identifier: 'CCSS.Math.Content.K',
     description: 'Grade K',
     url: 'http://corestandards.org/Math/Content/K'
@@ -205,8 +204,7 @@ var gradek = [
   }
 ]
 
-var grade1 = [
-  {
+var grade1 = [{
     identifier: 'CCSS.Math.Content.1',
     description: 'Grade 1',
     url: 'http://corestandards.org/Math/Content/1'
@@ -405,51 +403,6 @@ var grade1 = [
     identifier: 'CCSS.Math.Content.1.OA',
     description: 'Operations and Algebraic Thinking',
     url: 'http://www.corestandards.org/Math/Content/1/OA/'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP8',
-    description: 'Look for and express regularity in repeated reasoning.',
-    url: 'http://corestandards.org/Math/Practice/MP8'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP7',
-    description: 'Look for and make use of structure.',
-    url: 'http://corestandards.org/Math/Practice/MP7'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP6',
-    description: 'Attend to precision.',
-    url: 'http://corestandards.org/Math/Practice/MP6'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP5',
-    description: 'Use appropriate tools strategically.',
-    url: 'http://corestandards.org/Math/Practice/MP5'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP4',
-    description: 'Model with mathematics.',
-    url: 'http://corestandards.org/Math/Practice/MP4'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP3',
-    description: 'Construct viable arguments and critique the reasoning of others.',
-    url: 'http://corestandards.org/Math/Practice/MP3'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP2',
-    description: 'Reason abstractly and quantitatively.',
-    url: 'http://corestandards.org/Math/Practice/MP2'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP1',
-    description: 'Make sense of problems and persevere in solving them.',
-    url: 'http://corestandards.org/Math/Practice/MP1'
-  },
-  {
-    identifier: 'CCSS.Math.Practice.MP1',
-    description: 'Standards for Mathematical Practice',
-    url: 'http://www.corestandards.org/Math/Practice/'
   }
 ];
 
@@ -459,183 +412,183 @@ var grade2 = [
     description: 'Grade 2',
     url: 'http://corestandards.org/Math/Content/2'
   },
-   {
-     identifier: 'CCSS.Math.Content.2.G.A.3',
-     description: 'Partition circles and rectangles into two, three, or four equal shares, describe the shares using the words halves, thirds, half of, a third of, etc., and describe the whole as two halves, three thirds, four fourths. Recognize that equal shares of identical wholes need not have the same shape.',
-     url: 'http://corestandards.org/Math/Content/2/G/A/3'
-   }, {
-     identifier: 'CCSS.Math.Content.2.G.A.2',
-     description: 'Partition a rectangle into rows and columns of same-size squares and count to find the total number of them.',
-     url: 'http://corestandards.org/Math/Content/2/G/A/2'
-   }, {
-     identifier: 'CCSS.Math.Content.2.G.A.1',
-     description: 'Recognize and draw shapes having specified attributes, such as a given number of angles or a given number of equal faces. Identify triangles, quadrilaterals, pentagons, hexagons, and cubes.',
-     url: 'http://corestandards.org/Math/Content/2/G/A/1'
-   }, {
-     identifier: 'CCSS.Math.Content.2.G.A',
-     description: 'Reason with shapes and their attributes.',
-     url: 'http://corestandards.org/Math/Content/2/G/A'
-   }, {
-     identifier: 'CCSS.Math.Content.2.G',
-     description: 'Geometry',
-     url: 'http://corestandards.org/Math/Content/2/G'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.D.10',
-     description: 'Draw a picture graph and a bar graph (with single-unit scale) to represent a data set with up to four categories. Solve simple put-together, take-apart, and compare problems using information presented in a bar graph.',
-     url: 'http://corestandards.org/Math/Content/2/MD/D/10'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.D.9',
-     description: 'Generate measurement data by measuring lengths of several objects to the nearest whole unit, or by making repeated measurements of the same object. Show the measurements by making a line plot, where the horizontal scale is marked off in whole-number units.',
-     url: 'http://corestandards.org/Math/Content/2/MD/D/9'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.D',
-     description: 'Represent and interpret data.',
-     url: 'http://corestandards.org/Math/Content/2/MD/D'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.C.8',
-     description: 'Solve word problems involving dollar bills, quarters, dimes, nickels, and pennies, using $ and ¢ symbols appropriately.',
-     url: 'http://corestandards.org/Math/Content/2/MD/C/8'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.C.7',
-     description: 'Tell and write time from analog and digital clocks to the nearest five minutes, using a.m. and p.m.',
-     url: 'http://corestandards.org/Math/Content/2/MD/C/7'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.C',
-     description: 'Work with time and money.',
-     url: 'http://corestandards.org/Math/Content/2/MD/C'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.B.6',
-     description: 'Represent whole numbers as lengths from 0 on a number line diagram with equally spaced points corresponding to the numbers 0, 1, 2, …, and represent whole-number sums and differences within 100 on a number line diagram.',
-     url: 'http://corestandards.org/Math/Content/2/MD/B/6'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.B.5',
-     description: 'Use addition and subtraction within 100 to solve word problems involving lengths that are given in the same units, e.g., by using drawings (such as drawings of rulers) and equations with a symbol for the unknown number to represent the problem.',
-     url: 'http://corestandards.org/Math/Content/2/MD/B/5'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.B',
-     description: 'Relate addition and subtraction to length.',
-     url: 'http://corestandards.org/Math/Content/2/MD/B'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.A.4',
-     description: 'Measure to determine how much longer one object is than another, expressing the length difference in terms of a standard length unit.',
-     url: 'http://corestandards.org/Math/Content/2/MD/A/4'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.A.3',
-     description: 'Estimate lengths using units of inches, feet, centimeters, and meters.',
-     url: 'http://corestandards.org/Math/Content/2/MD/A/3'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.A.2',
-     description: 'Measure the length of an object twice, using length units of different lengths for the two measurements; describe how the two measurements relate to the size of the unit chosen.',
-     url: 'http://corestandards.org/Math/Content/2/MD/A/2'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.A.1',
-     description: 'Measure the length of an object by selecting and using appropriate tools such as rulers, yardsticks, meter sticks, and measuring tapes.',
-     url: 'http://corestandards.org/Math/Content/2/MD/A/1'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD.A',
-     description: 'Measure and estimate lengths in standard units.',
-     url: 'http://corestandards.org/Math/Content/2/MD/A'
-   }, {
-     identifier: 'CCSS.Math.Content.2.MD',
-     description: 'Measurement and Data',
-     url: 'http://corestandards.org/Math/Content/2/MD'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B.9',
-     description: 'Explain why addition and subtraction strategies work, using place value and the properties of operations.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B/9'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B.8',
-     description: 'Mentally add 10 or 100 to a given number 100—900, and mentally subtract 10 or 100 from a given number 100—900.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B/8'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B.7',
-     description: 'Add and subtract within 1000, using concrete models or drawings and strategies based on place value, properties of operations, and/or the relationship between addition and subtraction; relate the strategy to a written method. Understand that in adding or subtracting three-digit numbers, one adds or subtracts hundreds and hundreds, tens and tens, ones and ones; and sometimes it is necessary to compose or decompose tens or hundreds.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B/7'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B.6',
-     description: 'Add up to four two-digit numbers using strategies based on place value and properties of operations.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B/6'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B.5',
-     description: 'Fluently add and subtract within 100 using strategies based on place value, properties of operations, and/or the relationship between addition and subtraction.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B/5'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.B',
-     description: 'Use place value understanding and properties of operations to add and subtract.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/B'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.4',
-     description: 'Compare two three-digit numbers based on meanings of the hundreds, tens, and ones digits, using >, =, and < symbols to record the results of comparisons.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/4'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.3',
-     description: 'Read and write numbers to 1000 using base-ten numerals, number names, and expanded form.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/3'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.2',
-     description: 'Count within 1000; skip-count by 5s, 10s, and 100s.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/2'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.1.b',
-     description: 'The numbers 100, 200, 300, 400, 500, 600, 700, 800, 900 refer to one, two, three, four, five, six, seven, eight, or nine hundreds (and 0 tens and 0 ones).',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/1/b'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.1.a',
-     description: '100 can be thought of as a bundle of ten tens — called a "hundred."',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/1/a'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A.1',
-     description: 'Understand that the three digits of a three-digit number represent amounts of hundreds, tens, and ones; e.g., 706 equals 7 hundreds, 0 tens, and 6 ones. Understand the following as special cases:',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A/1'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT.A',
-     description: 'Understand place value.',
-     url: 'http://corestandards.org/Math/Content/2/NBT/A'
-   }, {
-     identifier: 'CCSS.Math.Content.2.NBT',
-     description: 'Number and Operations in Base Ten',
-     url: 'http://corestandards.org/Math/Content/2/NBT/'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.C.4',
-     description: 'Use addition to find the total number of objects arranged in rectangular arrays with up to 5 rows and up to 5 columns; write an equation to express the total as a sum of equal addends.',
-     url: 'http://corestandards.org/Math/Content/2/OA/C/4'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.C.3',
-     description: 'Determine whether a group of objects (up to 20) has an odd or even number of members, e.g., by pairing objects or counting them by 2s; write an equation to express an even number as a sum of two equal addends.',
-     url: 'http://corestandards.org/Math/Content/2/OA/C/3'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.C',
-     description: 'Work with equal groups of objects to gain foundations for multiplication.',
-     url: 'http://corestandards.org/Math/Content/2/OA/C'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.B.2',
-     description: 'Fluently add and subtract within 20 using mental strategies. By end of Grade 2, know from memory all sums of two one-digit numbers.',
-     url: 'http://corestandards.org/Math/Content/2/OA/B/2'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.B',
-     description: 'Add and subtract within 20.',
-     url: 'http://corestandards.org/Math/Content/2/OA/B'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.A.1',
-     description: 'Use addition and subtraction within 100 to solve one- and two-step word problems involving situations of adding to, taking from, putting together, taking apart, and comparing, with unknowns in all positions, e.g., by using drawings and equations with a symbol for the unknown number to represent the problem.',
-     url: 'http://corestandards.org/Math/Content/2/OA/A/1'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA.A',
-     description: 'Represent and solve problems involving addition and subtraction.',
-     url: 'http://corestandards.org/Math/Content/2/OA/A'
-   }, {
-     identifier: 'CCSS.Math.Content.2.OA',
-     description: 'Operations and Algebraic Thinking',
-     url: 'http://corestandards.org/Math/Content/2/OA/'
-   },
+  {
+    identifier: 'CCSS.Math.Content.2.G.A.3',
+    description: 'Partition circles and rectangles into two, three, or four equal shares, describe the shares using the words halves, thirds, half of, a third of, etc., and describe the whole as two halves, three thirds, four fourths. Recognize that equal shares of identical wholes need not have the same shape.',
+    url: 'http://corestandards.org/Math/Content/2/G/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.2.G.A.2',
+    description: 'Partition a rectangle into rows and columns of same-size squares and count to find the total number of them.',
+    url: 'http://corestandards.org/Math/Content/2/G/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.2.G.A.1',
+    description: 'Recognize and draw shapes having specified attributes, such as a given number of angles or a given number of equal faces. Identify triangles, quadrilaterals, pentagons, hexagons, and cubes.',
+    url: 'http://corestandards.org/Math/Content/2/G/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.2.G.A',
+    description: 'Reason with shapes and their attributes.',
+    url: 'http://corestandards.org/Math/Content/2/G/A'
+  }, {
+    identifier: 'CCSS.Math.Content.2.G',
+    description: 'Geometry',
+    url: 'http://corestandards.org/Math/Content/2/G'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.D.10',
+    description: 'Draw a picture graph and a bar graph (with single-unit scale) to represent a data set with up to four categories. Solve simple put-together, take-apart, and compare problems using information presented in a bar graph.',
+    url: 'http://corestandards.org/Math/Content/2/MD/D/10'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.D.9',
+    description: 'Generate measurement data by measuring lengths of several objects to the nearest whole unit, or by making repeated measurements of the same object. Show the measurements by making a line plot, where the horizontal scale is marked off in whole-number units.',
+    url: 'http://corestandards.org/Math/Content/2/MD/D/9'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.D',
+    description: 'Represent and interpret data.',
+    url: 'http://corestandards.org/Math/Content/2/MD/D'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.C.8',
+    description: 'Solve word problems involving dollar bills, quarters, dimes, nickels, and pennies, using $ and ¢ symbols appropriately.',
+    url: 'http://corestandards.org/Math/Content/2/MD/C/8'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.C.7',
+    description: 'Tell and write time from analog and digital clocks to the nearest five minutes, using a.m. and p.m.',
+    url: 'http://corestandards.org/Math/Content/2/MD/C/7'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.C',
+    description: 'Work with time and money.',
+    url: 'http://corestandards.org/Math/Content/2/MD/C'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.B.6',
+    description: 'Represent whole numbers as lengths from 0 on a number line diagram with equally spaced points corresponding to the numbers 0, 1, 2, …, and represent whole-number sums and differences within 100 on a number line diagram.',
+    url: 'http://corestandards.org/Math/Content/2/MD/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.B.5',
+    description: 'Use addition and subtraction within 100 to solve word problems involving lengths that are given in the same units, e.g., by using drawings (such as drawings of rulers) and equations with a symbol for the unknown number to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/2/MD/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.B',
+    description: 'Relate addition and subtraction to length.',
+    url: 'http://corestandards.org/Math/Content/2/MD/B'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.A.4',
+    description: 'Measure to determine how much longer one object is than another, expressing the length difference in terms of a standard length unit.',
+    url: 'http://corestandards.org/Math/Content/2/MD/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.A.3',
+    description: 'Estimate lengths using units of inches, feet, centimeters, and meters.',
+    url: 'http://corestandards.org/Math/Content/2/MD/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.A.2',
+    description: 'Measure the length of an object twice, using length units of different lengths for the two measurements; describe how the two measurements relate to the size of the unit chosen.',
+    url: 'http://corestandards.org/Math/Content/2/MD/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.A.1',
+    description: 'Measure the length of an object by selecting and using appropriate tools such as rulers, yardsticks, meter sticks, and measuring tapes.',
+    url: 'http://corestandards.org/Math/Content/2/MD/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD.A',
+    description: 'Measure and estimate lengths in standard units.',
+    url: 'http://corestandards.org/Math/Content/2/MD/A'
+  }, {
+    identifier: 'CCSS.Math.Content.2.MD',
+    description: 'Measurement and Data',
+    url: 'http://corestandards.org/Math/Content/2/MD'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B.9',
+    description: 'Explain why addition and subtraction strategies work, using place value and the properties of operations.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B/9'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B.8',
+    description: 'Mentally add 10 or 100 to a given number 100—900, and mentally subtract 10 or 100 from a given number 100—900.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B/8'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B.7',
+    description: 'Add and subtract within 1000, using concrete models or drawings and strategies based on place value, properties of operations, and/or the relationship between addition and subtraction; relate the strategy to a written method. Understand that in adding or subtracting three-digit numbers, one adds or subtracts hundreds and hundreds, tens and tens, ones and ones; and sometimes it is necessary to compose or decompose tens or hundreds.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B/7'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B.6',
+    description: 'Add up to four two-digit numbers using strategies based on place value and properties of operations.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B/6'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B.5',
+    description: 'Fluently add and subtract within 100 using strategies based on place value, properties of operations, and/or the relationship between addition and subtraction.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B/5'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.B',
+    description: 'Use place value understanding and properties of operations to add and subtract.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/B'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.4',
+    description: 'Compare two three-digit numbers based on meanings of the hundreds, tens, and ones digits, using >, =, and < symbols to record the results of comparisons.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/4'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.3',
+    description: 'Read and write numbers to 1000 using base-ten numerals, number names, and expanded form.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/3'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.2',
+    description: 'Count within 1000; skip-count by 5s, 10s, and 100s.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/2'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.1.b',
+    description: 'The numbers 100, 200, 300, 400, 500, 600, 700, 800, 900 refer to one, two, three, four, five, six, seven, eight, or nine hundreds (and 0 tens and 0 ones).',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/1/b'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.1.a',
+    description: '100 can be thought of as a bundle of ten tens — called a "hundred."',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/1/a'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A.1',
+    description: 'Understand that the three digits of a three-digit number represent amounts of hundreds, tens, and ones; e.g., 706 equals 7 hundreds, 0 tens, and 6 ones. Understand the following as special cases:',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT.A',
+    description: 'Understand place value.',
+    url: 'http://corestandards.org/Math/Content/2/NBT/A'
+  }, {
+    identifier: 'CCSS.Math.Content.2.NBT',
+    description: 'Number and Operations in Base Ten',
+    url: 'http://corestandards.org/Math/Content/2/NBT/'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.C.4',
+    description: 'Use addition to find the total number of objects arranged in rectangular arrays with up to 5 rows and up to 5 columns; write an equation to express the total as a sum of equal addends.',
+    url: 'http://corestandards.org/Math/Content/2/OA/C/4'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.C.3',
+    description: 'Determine whether a group of objects (up to 20) has an odd or even number of members, e.g., by pairing objects or counting them by 2s; write an equation to express an even number as a sum of two equal addends.',
+    url: 'http://corestandards.org/Math/Content/2/OA/C/3'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.C',
+    description: 'Work with equal groups of objects to gain foundations for multiplication.',
+    url: 'http://corestandards.org/Math/Content/2/OA/C'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.B.2',
+    description: 'Fluently add and subtract within 20 using mental strategies. By end of Grade 2, know from memory all sums of two one-digit numbers.',
+    url: 'http://corestandards.org/Math/Content/2/OA/B/2'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.B',
+    description: 'Add and subtract within 20.',
+    url: 'http://corestandards.org/Math/Content/2/OA/B'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.A.1',
+    description: 'Use addition and subtraction within 100 to solve one- and two-step word problems involving situations of adding to, taking from, putting together, taking apart, and comparing, with unknowns in all positions, e.g., by using drawings and equations with a symbol for the unknown number to represent the problem.',
+    url: 'http://corestandards.org/Math/Content/2/OA/A/1'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA.A',
+    description: 'Represent and solve problems involving addition and subtraction.',
+    url: 'http://corestandards.org/Math/Content/2/OA/A'
+  }, {
+    identifier: 'CCSS.Math.Content.2.OA',
+    description: 'Operations and Algebraic Thinking',
+    url: 'http://corestandards.org/Math/Content/2/OA/'
+  },
 ];
 
 var grade3 = [
-   {
-     identifier: 'CCSS.Math.Content.3',
-     description: 'Grade 3',
-     url: 'http://corestandards.org/Math/Content/3'
-   },
+  {
+    identifier: 'CCSS.Math.Content.3',
+    description: 'Grade 3',
+    url: 'http://corestandards.org/Math/Content/3'
+  },
   {
     identifier: 'CCSS.Math.Content.3.NF.A.3.d',
     description: 'Compare two fractions with the same numerator or the same denominator by reasoning about their size. Recognize that comparisons are valid only when the two fractions refer to the same whole. Record the results of comparisons with the symbols >, =, or <, and justify the conclusions, e.g., by using a visual fraction model.',
@@ -904,11 +857,11 @@ var grade3 = [
 ];
 
 var grade4 = [
-   {
-     identifier: 'CCSS.Math.Content.4',
-     description: 'Grade 4',
-     url: 'http://corestandards.org/Math/Content/4'
-   },
+  {
+    identifier: 'CCSS.Math.Content.4',
+    description: 'Grade 4',
+    url: 'http://corestandards.org/Math/Content/4'
+  },
   {
     identifier: 'CCSS.Math.Content.4.NF.C.7',
     description: 'Compare two decimals to hundredths by reasoning about their size. Recognize that comparisons are valid only when the two decimals refer to the same whole. Record the results of comparisons with the symbols >, =, or <, and justify the conclusions, e.g., by using a visual model.',
@@ -1182,11 +1135,11 @@ var grade4 = [
 ];
 
 var grade5 = [
-   {
-     identifier: 'CCSS.Math.Content.5',
-     description: 'Grade 5',
-     url: 'http://corestandards.org/Math/Content/5'
-   },
+  {
+    identifier: 'CCSS.Math.Content.5',
+    description: 'Grade 5',
+    url: 'http://corestandards.org/Math/Content/5'
+  },
   {
     identifier: 'CCSS.Math.Content.5.NF.B.7.c',
     description: 'Solve real world problems involving division of unit fractions by non-zero whole numbers and division of whole numbers by unit fractions, e.g., by using visual fraction models and equations to represent the problem.',
@@ -1470,11 +1423,11 @@ var grade5 = [
 ];
 
 var grade6 = [
-   {
-     identifier: 'CCSS.Math.Content.6',
-     description: 'Grade 6',
-     url: 'http://corestandards.org/Math/Content/6'
-   },
+  {
+    identifier: 'CCSS.Math.Content.6',
+    description: 'Grade 6',
+    url: 'http://corestandards.org/Math/Content/6'
+  },
   {
     identifier: 'CCSS.Math.Content.6.SP.B.5.d',
     description: 'Relating the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered.',
@@ -1788,11 +1741,11 @@ var grade6 = [
 ];
 
 var grade7 = [
-   {
-     identifier: 'CCSS.Math.Content.7',
-     description: 'Grade 7',
-     url: 'http://corestandards.org/Math/Content/7'
-   },
+  {
+    identifier: 'CCSS.Math.Content.7',
+    description: 'Grade 7',
+    url: 'http://corestandards.org/Math/Content/7'
+  },
   {
     identifier: 'CCSS.Math.Content.7.SP.C.8.c',
     description: 'Design and use a simulation to generate frequencies for compound events.',
@@ -2081,11 +2034,11 @@ var grade7 = [
 ];
 
 var grade8 = [
-   {
-     identifier: 'CCSS.Math.Content.8',
-     description: 'Grade 8',
-     url: 'http://corestandards.org/Math/Content/8'
-   },
+  {
+    identifier: 'CCSS.Math.Content.8',
+    description: 'Grade 8',
+    url: 'http://corestandards.org/Math/Content/8'
+  },
   {
     identifier: 'CCSS.Math.Content.8.F.B.5',
     description: 'Describe qualitatively the functional relationship between two quantities by analyzing a graph (e.g., where the function is increasing or decreasing, linear or nonlinear). Sketch a graph that exhibits the qualitative features of a function that has been described verbally.',
@@ -4895,20 +4848,91 @@ var gradeHSProbability = [
   },
 ];
 
+var mathPractice = [
+  {
+    identifier: 'CCSS.Math.Practice.MP8',
+    description: 'Look for and express regularity in repeated reasoning.',
+    url: 'http://corestandards.org/Math/Practice/MP8'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP7',
+    description: 'Look for and make use of structure.',
+    url: 'http://corestandards.org/Math/Practice/MP7'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP6',
+    description: 'Attend to precision.',
+    url: 'http://corestandards.org/Math/Practice/MP6'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP5',
+    description: 'Use appropriate tools strategically.',
+    url: 'http://corestandards.org/Math/Practice/MP5'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP4',
+    description: 'Model with mathematics.',
+    url: 'http://corestandards.org/Math/Practice/MP4'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP3',
+    description: 'Construct viable arguments and critique the reasoning of others.',
+    url: 'http://corestandards.org/Math/Practice/MP3'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP2',
+    description: 'Reason abstractly and quantitatively.',
+    url: 'http://corestandards.org/Math/Practice/MP2'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP1',
+    description: 'Make sense of problems and persevere in solving them.',
+    url: 'http://corestandards.org/Math/Practice/MP1'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP',
+    description: 'Standards for Mathematical Practice',
+    url: 'http://www.corestandards.org/Math/Practice/'
+  }, {
+    identifier: 'CCSS.Math.Practice.MP1',
+    description: "Mathematically proficient students start by explaining to themselves the meaning of a problem and looking for entry points to its solution. They analyze givens, constraints, relationships, and goals. They make conjectures about the form and meaning of the solution and plan a solution pathway rather than simply jumping into a solution attempt. They consider analogous problems, and try special cases and simpler forms of the original problem in order to gain insight into its solution. They monitor and evaluate their progress and change course if necessary. Older students might, depending on the context of the problem, transform algebraic expressions or change the viewing window on their graphing calculator to get the information they need. Mathematically proficient students can explain correspondences between equations, verbal descriptions, tables, and graphs or draw diagrams of important features and relationships, graph data, and search for regularity or trends. Younger students might rely on using concrete objects or pictures to help conceptualize and solve a problem. Mathematically proficient students check their answers to problems using a different method, and they continually ask themselves, \"Does this make sense?\" They can understand the approaches of others to solving complex problems and identify correspondences between different approaches.",
+    url: "http://corestandards.org/Math/Practice/MP1"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP2",
+    "description": "Mathematically proficient students make sense of quantities and their relationships in problem situations. They bring two complementary abilities to bear on problems involving quantitative relationships: the ability to decontextualize—to abstract a given situation and represent it symbolically and manipulate the representing symbols as if they have a life of their own, without necessarily attending to their referents—and the ability to contextualize, to pause as needed during the manipulation process in order to probe into the referents for the symbols involved. Quantitative reasoning entails habits of creating a coherent representation of the problem at hand; considering the units involved; attending to the meaning of quantities, not just how to compute them; and knowing and flexibly using different properties of operations and objects.",
+    "url": "http://corestandards.org/Math/Practice/MP2"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP3",
+    "description": "Mathematically proficient students understand and use stated assumptions, definitions, and previously established results in constructing arguments.They make conjectures and build a logical progression of statements to explore the truth of their conjectures.They are able to analyze situations by breaking them into cases, and can recognize and use counterexamples.They justify their conclusions, communicate them to others, and respond to the arguments of others.They reason inductively about data, making plausible arguments that take into account the context from which the data arose.Mathematically proficient students are also able to compare the effectiveness of two plausible arguments, distinguish correct logic or reasoning from that which is flawed, and if there is a flaw in an argument explain what it is.Elementary students can construct arguments using concrete referents such as objects, drawings, diagrams, and actions.Such arguments can make sense and be correct, even though they are not generalized or made formal until later grades.Later, students learn to determine domains to which an argument applies.Students at all grades can listen or read the arguments of others, decide whether they make sense, and ask useful questions to clarify or improve the arguments.",
+    "url": "http://corestandards.org/Math/Practice/MP3"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP4",
+    "description": "Mathematically proficient students can apply the mathematics they know to solve problems arising in everyday life, society, and the workplace. In early grades, this might be as simple as writing an addition equation to describe a situation. In middle grades, a student might apply proportional reasoning to plan a school event or analyze a problem in the community. By high school, a student might use geometry to solve a design problem or use a function to describe how one quantity of interest depends on another. Mathematically proficient students who can apply what they know are comfortable making assumptions and approximations to simplify a complicated situation, realizing that these may need revision later. They are able to identify important quantities in a practical situation and map their relationships using such tools as diagrams, two-way tables, graphs, flowcharts and formulas. They can analyze those relationships mathematically to draw conclusions. They routinely interpret their mathematical results in the context of the situation and reflect on whether the results make sense, possibly improving the model if it has not served its purpose.",
+    "url": "http://corestandards.org/Math/Practice/MP4"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP5",
+    "description": "Mathematically proficient students consider the available tools when solving a mathematical problem. These tools might include pencil and paper, concrete models, a ruler, a protractor, a calculator, a spreadsheet, a computer algebra system, a statistical package, or dynamic geometry software. Proficient students are sufficiently familiar with tools appropriate for their grade or course to make sound decisions about when each of these tools might be helpful, recognizing both the insight to be gained and their limitations. For example, mathematically proficient high school students analyze graphs of functions and solutions generated using a graphing calculator. They detect possible errors by strategically using estimation and other mathematical knowledge. When making mathematical models, they know that technology can enable them to visualize the results of varying assumptions, explore consequences, and compare predictions with data. Mathematically proficient students at various grade levels are able to identify relevant external mathematical resources, such as digital content located on a website, and use them to pose or solve problems. They are able to use technological tools to explore and deepen their understanding of concepts.",
+    "url": "http://corestandards.org/Math/Practice/MP5"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP6",
+    "description": "Mathematically proficient students try to communicate precisely to others. They try to use clear definitions in discussion with others and in their own reasoning. They state the meaning of the symbols they choose, including using the equal sign consistently and appropriately. They are careful about specifying units of measure, and labeling axes to clarify the correspondence with quantities in a problem. They calculate accurately and efficiently, express numerical answers with a degree of precision appropriate for the problem context. In the elementary grades, students give carefully formulated explanations to each other. By the time they reach high school they have learned to examine claims and make explicit use of definitions.",
+    "url": "http://corestandards.org/Math/Practice/MP6"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP7",
+    "description": "Mathematically proficient students look closely to discern a pattern or structure. Young students, for example, might notice that three and seven more is the same amount as seven and three more, or they may sort a collection of shapes according to how many sides the shapes have. Later, students will see 7 × 8 equals the well remembered 7 × 5 + 7 × 3, in preparation for learning about the distributive property. In the expression x2 + 9x + 14, older students can see the 14 as 2 × 7 and the 9 as 2 + 7. They recognize the significance of an existing line in a geometric figure and can use the strategy of drawing an auxiliary line for solving problems. They also can step back for an overview and shift perspective. They can see complicated things, such as some algebraic expressions, as single objects or as being composed of several objects. For example, they can see 5 - 3(x - y)2 as 5 minus a positive number times a square and use that to realize that its value cannot be more than 5 for any real numbers x and y.",
+    "url": "http://corestandards.org/Math/Practice/MP7"
+  }, {
+    "identifier": "CCSS.Math.Practice.MP8",
+    "description": "Mathematically proficient students notice if calculations are repeated, and look both for general methods and for shortcuts. Upper elementary students might notice when dividing 25 by 11 that they are repeating the same calculations over and over again, and conclude they have a repeating decimal. By paying attention to the calculation of slope as they repeatedly check whether points are on the line through (1, 2) with slope 3, middle school students might abstract the equation (y - 2)/(x - 1) = 3. Noticing the regularity in the way terms cancel when expanding (x - 1)(x + 1), (x - 1)(x2 + x + 1), and (x - 1)(x3 + x2 + x + 1) might lead them to the general formula for the sum of a geometric series. As they work to solve a problem, mathematically proficient students maintain oversight of the process, while attending to the details. They continually evaluate the reasonableness of their intermediate results.",
+    "url": "http://corestandards.org/Math/Practice/MP8"
+  },
+];
 
-var data = gradek.concat(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra, gradeHSFunctions, gradeHsGeometry, gradeHSNumber, gradeHSProbability);
+var data = gradek.concat(gradek, grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra, gradeHSFunctions, gradeHsGeometry, gradeHSNumber, gradeHSProbability);
 
 var nonDuplicated = _.uniq(data, 'identifier');
+
+let list = nonDuplicated.concat(mathPractice);
 
 var CategoriesSeeder = Seeder.extend({
   shouldRun: function () {
     return Category.count().exec().then(count => count === 0);
   },
   run: function () {
-    return Category.create(nonDuplicated);
+    return Category.create(list);
   }
 });
 
 module.exports = CategoriesSeeder;
-
-
