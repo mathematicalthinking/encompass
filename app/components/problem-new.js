@@ -11,6 +11,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   approvedProblem: false,
   noLegalNotice: null,
   showCategories: false,
+  selectedCategories: [],
 
   didInsertElement: function() {
     let formId = 'form#newproblemform';
@@ -77,13 +78,14 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var privacySetting = that.get('privacySetting');
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
+    var categories = this.get('selectedCategories');
 
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
       title: title,
       text: problemStatement,
-      // categories: categories,
+      categories: categories,
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
       organization: organization,
@@ -197,6 +199,14 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     problemCreate: function() {
       this.createProblem();
+    },
+
+    addCategories: function(category) {
+      let categories = this.get('selectedCategories');
+      if (!categories.includes(category)) {
+        categories.pushObject(category);
+      }
+      console.log('selected cats are', categories);
     },
 
     showCategories: function() {
