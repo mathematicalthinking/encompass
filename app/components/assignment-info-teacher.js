@@ -209,6 +209,16 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       const dueDate = this.getEndDate(endDate);
 
+      const assignedDate = assignment.get('assignedDate');
+      if (assignedDate > dueDate) {
+        this.set('invalidDateRange', true);
+        return;
+      } else {
+        if (this.get('invalidDateRange')) {
+          this.set('invalidDateRange', null);
+        }
+      }
+
 
       if (JSON.stringify(dueDate) !== JSON.stringify(assignment.get('dueDate'))) {
         assignment.set('dueDate', dueDate);

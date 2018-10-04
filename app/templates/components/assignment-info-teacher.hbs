@@ -9,13 +9,21 @@
           </li>
           <li>
             <label for="problem">Problem</label>
-              {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
-
-          </li>
+              {{#if canEdit}}
+                {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+              {{else}}
+                <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
+              {{/if}}
+            </li>
           <li>
             <label for="section">Section</label>
-            {{my-select cannotBeNull=true selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut select)) isDisabled=isReadOnly}}
-            {{input required=true type="hidden" value=selectedSection}}
+            {{#if canEdit}}
+              {{my-select cannotBeNull=true selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut select)) isDisabled=isReadOnly}}
+              {{input required=true type="hidden" value=selectedSection}}
+            {{else}}
+              <p class="assignment-info">{{#link-to 'section' assignment.section.id}}{{assignment.section.name}}{{/link-to}}</p>
+
+            {{/if}}
         </li>
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
@@ -76,6 +84,9 @@
   {{/each}}
   {{#if isMissingRequiredFields}}
     <p class="error-message">Please provide all required fields.</p>
+  {{/if}}
+  {{#if invalidDateRange}}
+    <p class="error-message">Invalid Date Range</p>
   {{/if}}
 
   {{!-- {{#if assignmentToDelete}}
