@@ -18,7 +18,11 @@
           <div class="section-new-input">
             <label for="title">Class Name <span class="required-star">*</span></label>
             {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
+            {{#each nameFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
           </div>
+
           <div class="section-new-input">
               <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
                 {{#if user.isTeacher}}
@@ -27,6 +31,9 @@
                 {{twitter-typeahead placeholder="Teacher's username" dataList=users optionLabelPath="username" selectedValue=teacher minLength=2 setSelectedValueOnChange=true}}
               {{/if}}
             </div>
+            {{#each teacherFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
             <div class="section-new-input">
             <label for="organization">Organization</label>
             {{#if user.isAdmin}}
@@ -44,9 +51,9 @@
             {{/if}}
 
           </div>
-          {{#if missingFieldsError}}
-              <p class="error-message">Please provide all required fields.</p>
-          {{/if}}
+          {{#each organizationFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+          {{/each}}
           {{#if invalidTeacherUsername}}
             <p class="error-message">Sorry, there is no teacher with that username.</p>
           {{/if}}
