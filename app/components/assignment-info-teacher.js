@@ -1,4 +1,4 @@
-Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
   isEditing: false,
@@ -19,11 +19,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return this.store.findAll('section')
       .then((sections) => {
         this.set('sections', sections);
-        return this.store.findAll('problem');
-      })
-      .then((problems) => {
-        this.set('problems', problems);
-        return;
       })
       .catch((err) => {
         this.handleErrors(err, 'dataFetchErrors');
@@ -31,17 +26,25 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   didReceiveAttrs: function() {
-    this.set('isEditing', false);
-    this.set('assignmentName', this.assignment.get('name'));
-    if (this.get('showReport')) {
-      this.set('showReport', false);
-    }
+    let currentAssignment= this.get('currentAssignment');
     const assignment = this.assignment;
-    if (this.assignment) {
+
+    if (!Ember.isEqual(currentAssignment, this.assignment)) {
+      this.set('isEditing', false);
+      this.setAddProblemFunction('addProblemTypeahead');
+
+      if (this.get('showReport')) {
+        this.set('showReport', false);
+      }
+      this.set('currentAssignment', this.assignment);
+      console.log('setting currentAssignment');
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
+      this.set('selectedProblem', assignment.get('problem.content'));
+      this.set('selectedSection', assignment.get('section.content'));
 
+      this.set('assignmentName', assignment.get('name'));
       this.set('formattedDueDate', moment(dueDate).format(dateFormat));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
@@ -67,8 +70,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         .catch((err) => {
           this.handleErrors(err, 'findRecordErrors');
         });
-      }
-    },
+    }
+  },
 
   willDestroyElement: function () {
     $(".daterangepicker").remove();
@@ -180,24 +183,39 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
 
     updateAssignment: function() {
       const assignment = this.get('assignment');
-      const values = ['section', 'problem'];
+
+      let selectedProblem = this.get('selectedProblem');
+      let selectedSection = this.get('selectedSection');
+
+      let currentProblem = assignment.get('problem.content');
+      let currentSection = assignment.get('section.content');
+
+      let didProblemChange = !Ember.isEqual(selectedProblem, currentProblem);
+      let didSectionChange = !Ember.isEqual(selectedSection, currentSection);
+
+      let didRelationshipsChange = didProblemChange || didSectionChange;
+
       const name = this.get('assignmentName');
       assignment.set('name', name);
+
+      if (didProblemChange) {
+        assignment.set('problem', selectedProblem);
+
+      }
+      if (didSectionChange) {
+        assignment.set('section', selectedSection);
+
+      }
 
       const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       const dueDate = this.getEndDate(endDate);
 
 
       if (JSON.stringify(dueDate) !== JSON.stringify(assignment.get('dueDate'))) {
-        console.log('dates are not equal');
         assignment.set('dueDate', dueDate);
       }
 
-      for (let value of values) {
-        assignment.set(value, this.get(value));
-      }
-
-      if (assignment.get('hasDirtyAttributes')) {
+      if (assignment.get('hasDirtyAttributes') || didRelationshipsChange) {
         return assignment.save().then(() => {
           this.get('alert').showToast('success', 'Assignment Updated', 'bottom-end', 4000, false, null);
           this.set('assignmentUpdateSuccess', true);
