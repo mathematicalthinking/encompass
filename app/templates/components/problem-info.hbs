@@ -28,7 +28,7 @@
               {{#if problem.categories}}
               <ul class="problem-info">
                 {{#each problem.categories as |category|}}
-                  <li>{{category.identifier}} <button {{action 'removeCategory'}}>X</button></li>
+                  <li>{{category.identifier}} <button {{action 'removeCategory' category}}>X</button></li>
                 {{/each}}
                   <button>Add Categories</button>
               </ul>
