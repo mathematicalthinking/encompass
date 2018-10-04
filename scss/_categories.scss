@@ -48,10 +48,11 @@
   }
 
   .cd-accordion-menu
-    label {
+    .menu-label {
       position: relative;
       display: block;
       cursor: pointer;
+      width: inherit;
       padding: 18px 18px 18px 64px;
       background: #4d5158;
       box-shadow: inset 0 -1px #555960;
@@ -70,13 +71,13 @@
     }
 
 
-  .no-touch .cd-accordion-menu label:hover,
+  .no-touch .cd-accordion-menu .menu-label:hover,
   .no-touch .cd-accordion-menu .item:hover {
     background: #52565d;
   }
 
-  .cd-accordion-menu label::before,
-  .cd-accordion-menu label::after,
+  .cd-accordion-menu .menu-label::before,
+  .cd-accordion-menu .menu-label::after,
   .cd-accordion-menu .item::after {
     /* icons */
     content: '';
@@ -92,7 +93,7 @@
     transform: translateY(-50%);
   }
 
-  .cd-accordion-menu label {
+  .cd-accordion-menu .menu-label {
     cursor: pointer;
   }
 
@@ -100,13 +101,13 @@
     outline: 5px solid red;
   }
 
-  .cd-accordion-menu label::before,
-  .cd-accordion-menu label::after {
+  .cd-accordion-menu .menu-label::before,
+  .cd-accordion-menu .menu-label::after {
     background-image: url(./images/cd-icons.svg);
     background-repeat: no-repeat;
   }
 
-  .cd-accordion-menu label::before {
+  .cd-accordion-menu .menu-label::before {
     /* arrow icon */
     left: 18px;
     background-position: 0 0;
@@ -117,7 +118,7 @@
     transform: translateY(-50%) rotate(-90deg);
   }
 
-  .cd-accordion-menu label::after {
+  .cd-accordion-menu .menu-label::after {
     /* folder icons */
     left: 41px;
     background-position: -16px 0;
@@ -128,7 +129,7 @@
     left: 36px;
   }
 
-  .cd-accordion-menu input[type=checkbox]:checked+label::before {
+  .cd-accordion-menu input[type=checkbox]:checked+.menu-label::before {
     /* rotate arrow */
     -webkit-transform: translateY(-50%);
     -moz-transform: translateY(-50%);
@@ -137,82 +138,82 @@
     transform: translateY(-50%);
   }
 
-  .cd-accordion-menu input[type=checkbox]:checked+label::after {
+  .cd-accordion-menu input[type=checkbox]:checked+.menu-label::after {
     /* show open folder icon if item is checked */
     background-position: -32px 0;
   }
 
-  .cd-accordion-menu input[type=checkbox]:checked+label+ul,
-  .cd-accordion-menu input[type=checkbox]:checked+label:nth-of-type(n)+ul {
-    /* use label:nth-of-type(n) to fix a bug on safari (<= 8.0.8) with multiple adjacent-sibling selectors*/
+  .cd-accordion-menu input[type=checkbox]:checked+.menu-label+ul,
+  .cd-accordion-menu input[type=checkbox]:checked+.menu-label:nth-of-type(n)+ul {
+    /* use .menu-label:nth-of-type(n) to fix a bug on safari (<= 8.0.8) with multiple adjacent-sibling selectors*/
     /* show children when item is checked */
     display: block;
   }
 
-  .cd-accordion-menu ul label,
+  .cd-accordion-menu ul .menu-label,
   .cd-accordion-menu ul .item {
     background: #35383d;
     box-shadow: inset 0 -1px #41444a;
     padding-left: 82px;
   }
 
-  .no-touch .cd-accordion-menu ul label:hover,
+  .no-touch .cd-accordion-menu ul .menu-label:hover,
   .no-touch .cd-accordion-menu ul .item:hover {
     background: #3c3f45;
   }
 
-  .cd-accordion-menu>li:last-of-type>label,
+  .cd-accordion-menu>li:last-of-type>.menu-label,
   .cd-accordion-menu>li:last-of-type>.item,
-  .cd-accordion-menu>li>ul>li:last-of-type label,
+  .cd-accordion-menu>li>ul>li:last-of-type .menu-label,
   .cd-accordion-menu>li>ul>li:last-of-type .item {
     box-shadow: none;
   }
 
-  .cd-accordion-menu ul label::before {
+  .cd-accordion-menu ul .menu-label::before {
     left: 36px;
   }
 
-  .cd-accordion-menu ul label::after,
+  .cd-accordion-menu ul .menu-label::after,
   .cd-accordion-menu ul .item::after {
     left: 59px;
   }
 
-  .cd-accordion-menu ul ul label,
+  .cd-accordion-menu ul ul .menu-label,
   .cd-accordion-menu ul ul .item {
     padding-left: 100px;
   }
 
-  .cd-accordion-menu ul ul label::before {
+  .cd-accordion-menu ul ul .menu-label::before {
     left: 54px;
   }
 
-  .cd-accordion-menu ul ul label::after,
+  .cd-accordion-menu ul ul .menu-label::after,
   .cd-accordion-menu ul ul .item::after {
     left: 77px;
   }
 
-  .cd-accordion-menu ul ul ul label,
+  .cd-accordion-menu ul ul ul .menu-label,
   .cd-accordion-menu ul ul ul .item {
     padding-left: 118px;
   }
 
-  .cd-accordion-menu ul ul ul label::before {
+  .cd-accordion-menu ul ul ul .menu-label::before {
     left: 72px;
   }
 
-  .cd-accordion-menu ul ul ul label::after,
+  .cd-accordion-menu ul ul ul .menu-label::after,
   .cd-accordion-menu ul ul ul .item::after {
     left: 95px;
   }
 
-  .cd-accordion-menu ul ul ul ul label,
+  .cd-accordion-menu ul ul ul ul .menu-label,
   .cd-accordion-menu ul ul ul ul .item {
     padding-left: 140px;
   }
 
   // @media only screen and (min-width: 600px) {
 
-  //   .cd-accordion-menu label,
+  //   .cd-accordion-menu .menu-label,
   //   .cd-accordion-menu a {
   //     padding: 24px 24px 24px 82px;
   //     font-size: 1em;
