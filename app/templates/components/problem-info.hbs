@@ -24,6 +24,19 @@
               </div>
             </li>
             <li>
+              <label for="categories">Problem Categories</label>
+              {{#if problem.categories}}
+              <ul class="problem-info">
+                {{#each problem.categories as |category|}}
+                  <li>{{category.identifier}} <button {{action 'removeCategory'}}>X</button></li>
+                {{/each}}
+                  <button>Add Categories</button>
+              </ul>
+              {{else}}
+                <button>Add Categories</button>
+              {{/if}}
+            </li>
+            <li>
               <label for="additionalInfo">Additional Info</label>
               {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
               {{input id="additionalInfo" type="hidden" value=additionalInfo }}
@@ -77,6 +90,18 @@
             <label for="text">Problem Statement</label>
             <p class="problem-info">{{{problem.text}}}</p>
           </li>
+          {{#if problem.categories}}
+            <li>
+              <label for="text">Problem Categories</label>
+              <ul class="problem-info">
+              {{#each problem.categories as |category|}}
+                <li>
+                  <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
+                </li>
+              {{/each}}
+              </ul>
+            </li>
+          {{/if}}
           {{#if additionalInfo}}
             <li>
               <label for="additionalInfo">Additional Info</label>

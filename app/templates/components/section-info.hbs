@@ -27,7 +27,7 @@
     </div>
       <div class="section-info-detail assignments">
         <label for="assignments">Assignments
-          {{#unless cantEdit}}
+        {{#unless cantEdit}}
           {{#if isEditingAssignments}}
           <i title="Done" {{action (mut isEditingAssignments) false}} class="fa fa-check"></i>
         {{else}}
@@ -165,6 +165,3 @@
 {{#if showAssignment}}
   {{assignment-new cancel=(action (mut showAssignment) null) fromSectionInfo=true problems=problemList selectedSection=section sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
 {{/if}}
-
-
-{{categories-menu store=store}}
