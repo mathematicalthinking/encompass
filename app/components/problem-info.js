@@ -167,10 +167,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problemId = problem.get('id');
       let currentUserAccountType = this.get('currentUser').get('accountType');
       let isAdmin = currentUserAccountType === "A";
-       this.set('problemName', problem.get('title'));
-       this.set('problemText', problem.get('text'));
-       this.set('additionalInfo', problem.get('additionalInfo'));
-       this.set('privacySetting', problem.get('privacySetting'));
+      this.set('problemName', problem.get('title'));
+      this.set('problemText', problem.get('text'));
+      this.set('additionalInfo', problem.get('additionalInfo'));
+      this.set('privacySetting', problem.get('privacySetting'));
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -334,8 +334,16 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.set('showConfirmModal', false);
             return;
           });
+        } else if (this.get('categoryChanged')) {
+          problem.save().then((res) => {
+            this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
+            this.resetErrors();
+            this.set('showConfirmModal', false);
+            this.set('isEditing', false);
+          });
         } else {
           this.set('isEditing', false);
+          console.log('problem is not dirty');
         }
       }
     },
@@ -350,6 +358,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let image = problem.get('image');
       let imageUrl = problem.get('imageUrl');
       let createdBy = this.get('currentUser');
+      let categories = problem.get('categories');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
@@ -358,6 +367,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         imageUrl: imageUrl,
         isPublic: isPublic,
         origin: problem,
+        categories: categories,
         createdBy: createdBy,
         image: image,
         privacySetting: "M",
@@ -383,6 +393,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let isPublic = problem.get('isPublic');
       let imageUrl = problem.get('imageUrl');
       let image = problem.get('image');
+      let categories = problem.get('categories');
       let createdBy = this.get('currentUser');
 
       let newProblem = this.store.createRecord('problem', {
@@ -393,6 +404,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isPublic: isPublic,
         image: image,
         origin: problem,
+        categories: categories,
         privacySetting: "M",
         createdBy: createdBy,
         createDate: new Date()
@@ -421,6 +433,23 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       })
       .catch((err) => {
         this.handleErrors(err, 'updateProblemErrors', problem);
+      });
+    },
+
+    removeCategory: function (category) {
+      let problem = this.get('problem');
+      let categories = problem.get('categories');
+      categories.removeObject(category);
+      problem.save().then(() => {
+        this.get('alert').showToast('success', 'Category Removed', 'bottom-end', 4000, true, 'Undo')
+        .then((result) => {
+          if (result.value) {
+            problem.get('categories').pushObject(category);
+            problem.save().then(() => {
+              this.get('alert').showToast('success', 'Category Restored', 'bottom-end', 4000, false, null);
+            });
+          }
+        });
       });
     },
 
