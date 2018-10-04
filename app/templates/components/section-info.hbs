@@ -12,7 +12,7 @@
       <label for="name">Class Name
         {{#unless cantEdit}}
           {{#if isEditingName}}
-          <i title="Done" {{action "updateSectionName"}} class="far fa-check-square"></i>
+          <i title="Done" {{action "updateSectionName"}} class="fa fa-check"></i>
         {{else}}
           <i title="Edit" {{action (mut isEditingName) true}} class="far fa-edit"></i>
           {{/if}}
@@ -29,7 +29,7 @@
         <label for="assignments">Assignments
           {{#unless cantEdit}}
           {{#if isEditingAssignments}}
-          <i title="Done" {{action (mut isEditingAssignments) false}} class="far fa-check-square"></i>
+          <i title="Done" {{action (mut isEditingAssignments) false}} class="fa fa-check"></i>
         {{else}}
           <i title="Edit" {{action (mut isEditingAssignments) true}} class="far fa-edit"></i>
           {{/if}}
@@ -57,7 +57,7 @@
           <label for="teachers">Teachers
             {{#unless cantEdit}}
               {{#if isEditingTeachers}}
-                <i title="Done" {{action (mut isEditingTeachers) false}} class="far fa-check-square"></i>
+                <i title="Done" {{action (mut isEditingTeachers) false}} class="fa fa-check"></i>
               {{else}}
                 <i title="Edit" {{action (mut isEditingTeachers) true}} class="far fa-edit"></i>
               {{/if}}
@@ -99,12 +99,11 @@
             </div>
           {{/if}}
         {{/unless}}
-
         <div class="section-info-detail students">
         <label for="students">Students
           {{#unless cantEdit}}
             {{#if isEditingStudents}}
-              <i title="Done" {{action (mut isEditingStudents) false}} class="far fa-check-square"></i>
+              <i title="Done" {{action (mut isEditingStudents) false}} class="fa fa-check"></i>
             {{else}}
               <i title="Edit" {{action (mut isEditingStudents) true}} class="far fa-edit"></i>
             {{/if}}

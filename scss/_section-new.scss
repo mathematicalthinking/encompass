@@ -68,7 +68,8 @@
   //   vertical-align: center;
   // }
   div.twitter-typeahead{
-    width: 70%;
+      flex: 1 0 200px;
+      max-width: 400px;
     span{
       width: 100%;
     }
