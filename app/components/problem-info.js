@@ -18,6 +18,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   findRecordErrors: [],
   createRecordErrors: [],
   isMissingRequiredFields: null,
+  showCategories: false,
   alert: Ember.inject.service('sweet-alert'),
 
   init: function () {
@@ -424,7 +425,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.toggleProperty('isWide');
     },
 
-
     deleteImage: function () {
       let problem = this.get('problem');
       problem.set('image', null);
@@ -435,6 +435,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.handleErrors(err, 'updateProblemErrors', problem);
       });
     },
+
+    showCategories: function () {
+      this.get('store').query('category', {}).then((category) => {
+        this.set('categoryTree', category);
+        let categories = category.get('meta');
+        console.log('category are', categories);
+        this.set('categoryTree', categories.categories);
+        console.log('category tree is', this.get('categoryTree'));
+      });
+      this.set('showCategories', !(this.get('showCategories')));
+    },
+
+
 
     removeCategory: function (category) {
       let problem = this.get('problem');

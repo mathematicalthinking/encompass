@@ -30,7 +30,13 @@
                 {{#each problem.categories as |category|}}
                   <li>{{category.identifier}} <button {{action 'removeCategory' category}}>X</button></li>
                 {{/each}}
-                  <button>Add Categories</button>
+                  {{#unless showCategories}}
+                    <button {{action 'showCategories'}}>Add Categories</button>
+                  {{/unless}}
+                  {{#if showCategories}}
+                    <button {{action 'showCategories'}}>Hide Categories</button>
+                    {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                  {{/if}}
               </ul>
               {{else}}
                 <button>Add Categories</button>
