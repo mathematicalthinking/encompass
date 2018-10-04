@@ -20,15 +20,21 @@
           </li>
           <li>
             <label for="categories">Problem Category</label>
-            {{twitter-typeahead minLength=0 header=typeaheadHeader listName="orgs" dataList=categories optionLabelPath="identifier" selectedValue=category setSelectedValueOnChange=true}}
             {{#unless showCategories}}
-              <button {{action 'showCategories'}}>Show Category Menu</button>
+              <div class="button-row">
+                <button {{action 'showCategories'}}>Show Category Menu</button>
+              </div>
             {{/unless}}
             {{#if showCategories}}
-              <button {{action 'showCategories'}}>Hide Category Menu</button>
+              <div class="button-row">
+                <button {{action 'showCategories'}}>Hide Category Menu</button>
+              </div>
               {{categories-menu categories=categories store=store addCategories="addCategories"}}
             {{/if}}
-            {{!-- {{input id="categories" type="text" value=categories placeholder="enter a category"}} --}}
+          </li>
+          <li>
+            <label for="keywords">Keywords</label>
+            {{twitter-typeahead}}
           </li>
           <li>
             <label for="additionalInfo">Additional Info</label>
