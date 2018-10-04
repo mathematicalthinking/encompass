@@ -9,13 +9,15 @@ Encompass.CategoriesMenuComponent = Ember.Component.extend({
 
   actions: {
     addCategory: function (category) {
-      let categoryId = category.id;
-      this.get('store').findRecord('category', categoryId).then((cat) => {
+      let identifier = category.identifier;
+      this.get('store').queryRecord('category', {identifier: identifier}).then((cat) => {
         this.sendAction('addCategories', cat);
       });
+      // this.get('store').find('category', categoryId).then((cat) => {
+      //   this.sendAction('addCategories', cat);
+      // });
     },
   }
 
 });
-
 
