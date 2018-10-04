@@ -22,7 +22,7 @@
                       <label class="menu-label" for="{{standard.identifier}}">{{standard.description}}</label>
                       <ul>
                         {{#each standard.substandards as |sub|}}
-                        <li class="item"><span>{{sub.identifier}}</span> - {{sub.description}}</li>
+                        <li class="item"><button {{action 'addCategory' sub}}>+</button> <span>{{sub.identifier}}</span> - {{sub.description}}</li>
                         {{/each}}
                       </ul>
                     </li>
@@ -33,7 +33,7 @@
                   </ul>
                 </li>
               {{else}}
-                  <li class="item"><span>{{topic.identifier}}</span> - {{topic.description}}</li>
+                  <li class="item"><button {{action 'addCategory' topic}}>+</button> <span>{{topic.identifier}}</span> - {{topic.description}}</li>
               {{/if}}
             {{/each}}
           </ul>
