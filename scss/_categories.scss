@@ -96,6 +96,10 @@
     cursor: pointer;
   }
 
+  #real-check {
+    outline: 5px solid red;
+  }
+
   .cd-accordion-menu label::before,
   .cd-accordion-menu label::after {
     background-image: url(./images/cd-icons.svg);
