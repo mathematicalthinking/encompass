@@ -28,8 +28,8 @@ var ProblemSchema = new Schema({
   modifiedBy: { type: ObjectId, ref: 'User' },
   privacySetting: { type: String, enum: ['M', 'O', 'E'] },
   organization: { type: ObjectId, ref: 'Organization' },
-  // isPublic: { type: Boolean },
   categories: [{ type: ObjectId, ref: 'Category' }],
+  keywords: [{ type: String }],
   isUsed: { type: Boolean, 'default': false },
 }, { versionKey: false });
 
