@@ -14,6 +14,6 @@ Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMix
   actions: {
     showCategories: function () {
       this.set('showCategories', !(this.get('showCategories')));
-    }
+    },
   }
 });
