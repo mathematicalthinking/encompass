@@ -27,7 +27,7 @@
                       </ul>
                     </li>
                     {{else}}
-                    <li class="item"><span>{{standard.identifier}}</span> - {{standard.description}}</li>
+                    <li class="item"><button {{action 'addCategory' standard}}>+</button> <span>{{standard.identifier}}</span> - {{standard.description}}</li>
                     {{/if}}
                     {{/each}}
                   </ul>
