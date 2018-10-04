@@ -45,12 +45,36 @@ form#newproblemform {
   input:required {
     box-shadow: none;
   }
-
   input[type=radio] {
     padding: 12px 20px;
     margin: 24px 2px;
   }
-
+  .button-row {
+    width: 70%;
+    padding: 12px 0;
+    margin: 8px 0;
+    font-size: 1em;
+    display: inline-block;
+    box-sizing: border-box;
+    button {
+      font-size: .8em;
+      padding: 5px 15px;
+      background-color: none;
+      border-radius: 3px;
+      border-color: $input-border;
+    }
+  }
+  .twitter-typeahead {
+    width: 70%;
+    height: 60px;
+    font-size: 1em;
+    display: inline-block;
+    border-radius: 4px;
+    box-sizing: border-box;
+    .typeahead {
+      width: 143%;
+    }
+  }
   label {
     width: 20%;
     padding: 12px 20px;
