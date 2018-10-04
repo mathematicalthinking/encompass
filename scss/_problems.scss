@@ -76,6 +76,21 @@
           color: lighten($primary-font-color, 10);
         }
       }
+      .problem-info {
+        font-size: 1em;
+        width: 70%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+
+        &::placeholder {
+          color: $primary-font-color;
+        }
+      }
     }
     #probleminfo {
       .problem-info {
