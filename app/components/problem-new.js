@@ -10,6 +10,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   alert: Ember.inject.service('sweet-alert'),
   approvedProblem: false,
   noLegalNotice: null,
+  showCategories: false,
 
   didInsertElement: function() {
     let formId = 'form#newproblemform';
@@ -196,6 +197,10 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     problemCreate: function() {
       this.createProblem();
+    },
+
+    showCategories: function() {
+      this.set('showCategories', !(this.get('showCategories')));
     },
 
     resetErrors(e) {

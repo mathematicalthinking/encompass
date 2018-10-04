@@ -3,9 +3,10 @@ Encompass.CategoriesMenuComponent = Ember.Component.extend({
 
   init: function() {
     this._super(...arguments);
+    console.log('categories menu init running');
     let categories = this.get('categories.meta');
+    console.log('categories are', categories);
     this.set('categories', categories.categories);
-
   },
 
   actions: {
