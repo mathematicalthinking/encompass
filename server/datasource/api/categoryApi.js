@@ -33,9 +33,9 @@ module.exports.put = {};
   */
 
 const getCategories = (req, res, next) => {
+
   if (req.query.ids) {
     const criteria = utils.buildCriteria(req);
-    console.log('criteria is', criteria);
     models.Category.find(criteria)
     .exec((err, categories) => {
       if (err) {
@@ -45,6 +45,16 @@ const getCategories = (req, res, next) => {
       const data = {'categories': categories};
       return utils.sendResponse(res, data);
     });
+  } else if (req.query.identifier) {
+    models.Category.find({ identifier: {$eq: req.query.identifier }})
+      .exec((err, categories) => {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
+        const data = {'categories': categories};
+        return utils.sendResponse(res, data);
+      });
   } else {
     let data = {
       categories: [],
@@ -54,7 +64,6 @@ const getCategories = (req, res, next) => {
     };
     return utils.sendResponse(res, data);
   }
-
 };
 
 
