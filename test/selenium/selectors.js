@@ -139,7 +139,10 @@ module.exports = {
   },
   sectionInfo: {
     details: {
-      name: 'section-info-detail.name'
+      name: 'div.section-info-detail.name p',
+      assignments: 'div.section-info-detail.assignments ul',
+      teachers: 'div.section-info-detail.teachers ul',
+      students: 'div.section-info-detail.students ul'
     },
     newSectionButton: '#new-section-link'
   },
