@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const expect = require('chai').expect;
+const moment = require('moment');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -49,7 +50,7 @@ describe('Problems', function() {
     });
   });
 
-  xdescribe(`Visiting ${problemDetails.name}`, function() {
+  describe(`Visiting ${problemDetails.name}`, function() {
     before(async function() {
       await helpers.findAndClickElement(driver, problemLink);
     });
@@ -57,7 +58,8 @@ describe('Problems', function() {
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
       expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.creationDate)).to.be.true;
+      let today = moment().format("MMM Do YYYY");
+      expect(await helpers.isTextInDom(driver, today)).to.be.true;
     });
   });
   // TODO: figure out best way to test uploading an image in e2e manner
@@ -104,7 +106,7 @@ describe('Problems', function() {
         const problem = helpers.newProblem;
         await submitProblem(problem.details, true);
         await helpers.waitForSelector(driver, '#editProblem');
-        expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/\w/);
+        expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/[a-z0-9]{24}/);
         expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
         expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
 

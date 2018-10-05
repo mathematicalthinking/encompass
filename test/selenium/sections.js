@@ -176,8 +176,8 @@ describe('Sections', async function () {
             it('should redirect to section-info page after creating', async function () {
               await submitSection(details);
               await helpers.waitForSelector(driver, '#section-info');
+              expect(await helpers.getCurrentUrl(driver)).to.match(/sections\/[a-z0-9]{24}/);
               expect(await helpers.isTextInDom(driver, details.name)).to.be.true;
-              expect(await helpers.getCurrentUrl(driver)).to.match(/sections\/\w/);
 
               let teacher;
               if (accountType === 'T') {
