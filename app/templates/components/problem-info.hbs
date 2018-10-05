@@ -79,11 +79,11 @@
             {{/if}}
             </li>
             <li>
-              <label for="copyright">Copyright Notice:</label>
-              {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+              <label class="form-label" for="copyright">Copyright Notice:</label>
+              &copy;&nbsp;{{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
             </li>
             <li>
-              <label for="sharing">Sharing Authorization:</label>
+              <label class="form-label" for="sharing">Sharing Authorization:</label>
               {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
             </li>
             <li>
@@ -152,7 +152,7 @@
           </li>
           <li>
             <label for="copyright">Copyright Notice:</label>
-            <p class="problem-info">{{problem.copyrightNotice}}</p>
+            <p class="problem-info">&copy;&nbsp;{{problem.copyrightNotice}}</p>
           </li>
           <li>
             <label for="sharing">Sharing Authorization:</label>
