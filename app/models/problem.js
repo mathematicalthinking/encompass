@@ -11,15 +11,10 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   organization: DS.belongsTo('organization', { inverse: null }),
   additionalInfo: DS.attr('string'),
   privacySetting: DS.attr('string'),
-<<<<<<< HEAD
   categories: DS.hasMany('category', { inverse: null }),
   keywords: DS.attr(),
-=======
   copyrightNotice: DS.attr('string'),
   sharingAuth: DS.attr('string'),
-  // isPublic: DS.attr('boolean'),
-  categories: DS.hasMany('category', { async: true }),
->>>>>>> Display copyright notice and authorization for problems, fix privacy flag on old POWs problems
   error: DS.attr('string'),
   isUsed: DS.attr('boolean'),
 });
