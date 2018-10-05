@@ -159,6 +159,7 @@ describe('Sections', async function () {
             describe('Creating section', function() {
               const inputs = css.newSection.inputs;
               const details = sections.newSection;
+              const nameError = 'Name can\'t be blank';
 
               const submitSection = async function(details) {
                 for (let detail of Object.keys(details)) {
@@ -171,20 +172,34 @@ describe('Sections', async function () {
                 await helpers.findAndClickElement(driver, css.newSection.create);
               };
 
-            it('should redirect to section-info page after creating', async function () {
-              await submitSection(details);
-              await helpers.waitForSelector(driver, '#section-info');
-              await helpers.waitForUrlMatch(driver, /sections\/[a-z0-9]{24}/, 10000);
-              expect(await helpers.isTextInDom(driver, details.name)).to.be.true;
+              describe('submitting empty form', async function() {
+                it('should display error message(s)', async function() {
+                  await helpers.findAndClickElement(driver, css.newSection.create);
+                  await helpers.waitForSelector(driver, css.general.errorMessage);
+                  expect(await helpers.getCurrentUrl(driver)).to.match(/sections\/new/);
+                  expect(await helpers.isTextInDom(driver, nameError)).to.be.true;
+                });
+              });
 
-              let teacher;
-              if (accountType === 'T') {
-                teacher = username;
-              } else {
-                teacher = details.teacher;
-              }
-              expect(await helpers.isTextInDom(driver, teacher)).to.be.true;
-            });
+              describe('submitting valid form', async function() {
+                it('should redirect to section-info page after creating', async function () {
+                  await submitSection(details);
+                  // await helpers.waitForSelector(driver, 'div.section-info-detail.name p', 10000);
+                  await helpers.waitForUrlMatch(driver, /sections\/[a-z0-9]{24}/, 10000);
+                  console.log('after url match');
+                  // expect(await helpers.isTextInDom(driver, details.name)).to.be.true;
+
+                  let teacher;
+                  if (accountType === 'T') {
+                    teacher = username;
+                  } else {
+                    teacher = details.teacher;
+                  }
+                  expect(await helpers.isTextInDom(driver, teacher)).to.be.true;
+                });
+              });
+
+
           });
           }
         });

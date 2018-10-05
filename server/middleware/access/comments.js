@@ -44,8 +44,7 @@ const accessibleCommentsQuery = async function(user, ids) {
 
       //const userIds = await getOrgUsers(userOrg);
       const userIds = await utils.getModelIds('User', {organization: userOrg});
-
-      userIds.push(user_.id);
+      userIds.push(user._id);
 
       filter.$or.push({createdBy : {$in : userIds}});
       return filter;
