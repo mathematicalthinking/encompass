@@ -277,7 +277,7 @@ async function countProblemPrivacy() {
   const problemsE = await models.Problem.find({privacySetting: 'E'}).exec();
   console.log(`Public Problems count: ${problemsE.length}`);
   const problemsM = await models.Problem.find({privacySetting: 'M'}).exec();
-  console.log(`Public Problems count: ${problemsM.length}`);
+  console.log(`Private Problems count: ${problemsM.length}`);
 }
 
 
@@ -309,7 +309,7 @@ async function unusedProblemsPrivate() {
 async function update() {
   try {
     console.log(`connect to mongo`);
-    mongoose.connect('mongodb://localhost:27017/encompass');
+    mongoose.connect('mongodb://localhost:27017/encompass_prod');
 
     // console.log(`postgres client create`)
     // const pgClient = new pg.Client({
