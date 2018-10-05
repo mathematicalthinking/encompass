@@ -40,12 +40,15 @@
           }
         }
       }
-      label {
+      .form-label {
         width: 20%;
         font-size: 1em;
         padding: 12px 20px;
         color: black;
         margin: 8px 0px;
+      }
+      a {
+        color: $accent-color;
       }
       .radio-label {
         padding: 0px 5px;
@@ -53,6 +56,37 @@
         padding: 12px 3px;
         margin: 8px 0;
         font-size: 1em;
+      }
+      .button-row-list {
+        width: 70%;
+        padding: 0;
+        margin: 0;
+        font-size: 1em;
+        display: inline-block;
+        box-sizing: border-box;
+        margin-left: 25%;
+        button {
+          font-size: .8em;
+          padding: 5px 15px;
+          background-color: none;
+          border-radius: 3px;
+          border-color: $input-border;
+        }
+      }
+      .button-row {
+        width: 70%;
+        padding: 0;
+        margin: 20px 0;
+        font-size: 1em;
+        display: inline-block;
+        box-sizing: border-box;
+        button {
+          font-size: .8em;
+          padding: 5px 15px;
+          background-color: none;
+          border-radius: 3px;
+          border-color: $input-border;
+        }
       }
       input[type=radio] {
         padding: 12px 20px;
@@ -106,7 +140,7 @@
           color: $primary-font-color;
         }
       }
-      label {
+      .form-label {
         width: 20%;
         margin: 8px 0;
         font-size: 1em;
