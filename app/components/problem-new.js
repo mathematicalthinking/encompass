@@ -201,15 +201,19 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.createProblem();
     },
 
+    showCategories: function () {
+      this.get('store').query('category', {}).then((queryCats) => {
+        let categories = queryCats.get('meta');
+        this.set('categoryTree', categories.categories);
+      });
+      this.set('showCategories', !(this.get('showCategories')));
+    },
+
     addCategories: function(category) {
       let categories = this.get('selectedCategories');
       if (!categories.includes(category)) {
         categories.pushObject(category);
       }
-    },
-
-    showCategories: function() {
-      this.set('showCategories', !(this.get('showCategories')));
     },
 
     resetErrors(e) {

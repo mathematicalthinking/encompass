@@ -13,7 +13,12 @@ Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   actions: {
     showCategories: function () {
+      this.get('store').query('category', {}).then((queryCats) => {
+        let categories = queryCats.get('meta');
+        this.set('categoryTree', categories.categories);
+      });
       this.set('showCategories', !(this.get('showCategories')));
     },
   }
+
 });
