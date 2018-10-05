@@ -14,13 +14,13 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   constraints: {
     name: {
-      presence: true,
+      presence: { allowEmpty: false }
     },
     teacher: {
-      presence: true
+      presence: { allowEmpty: false }
     },
     organization: {
-      presence: true
+      presence: { allowEmpty: false }
     }
   },
 
