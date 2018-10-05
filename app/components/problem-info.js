@@ -19,6 +19,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   createRecordErrors: [],
   isMissingRequiredFields: null,
   showCategories: false,
+  selectedCategories: [],
   alert: Ember.inject.service('sweet-alert'),
 
   init: function () {
@@ -437,17 +438,20 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     showCategories: function () {
-      this.get('store').query('category', {}).then((category) => {
-        this.set('categoryTree', category);
-        let categories = category.get('meta');
-        console.log('category are', categories);
+      this.get('store').query('category', {}).then((queryCats) => {
+        let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
-        console.log('category tree is', this.get('categoryTree'));
       });
       this.set('showCategories', !(this.get('showCategories')));
     },
 
-
+    addCategories: function (category) {
+      let categories = this.get('selectedCategories');
+      if (!categories.includes(category)) {
+        categories.pushObject(category);
+      }
+      console.log('selected cats are', categories);
+    },
 
     removeCategory: function (category) {
       let problem = this.get('problem');
