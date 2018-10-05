@@ -13,7 +13,9 @@
 
 <div id="al_comments">
 	<form id="newForm">
+    {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    {{/if}}
     <div class="filterControl meta">
       <a {{action 'toggleFilter'}}>
         <i class="fas fa-filter"></i> filter
@@ -32,8 +34,6 @@
           <a class="al_popup_close" {{action "cancelComment"}}>CANCEL</a>
           |
 		    	<button class="action_button comment save" tabindex=2 {{action "createComment"}}>SAVE</button>
-      {{else}}
-        <span class="meta">Search or make/choose a selection</span>
       {{/if}}
 		</div>
 	</form>

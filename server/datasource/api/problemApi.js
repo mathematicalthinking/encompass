@@ -238,7 +238,7 @@ const putProblem = async function(req, res, next){
       }
       // make the updates, but don't update categories or _id
       for(let field in req.body.problem) {
-        if((field !== '_id') && (field !== undefined) && (field !== 'categories')) {
+        if((field !== '_id') && (field !== undefined)) {
           doc[field] = req.body.problem[field];
         }
       }

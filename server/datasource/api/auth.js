@@ -18,7 +18,6 @@ const emails = require('../../datasource/email_templates');
 
 
 const localLogin = (req, res, next) => {
-  console.log('inside local login');
   passport.authenticate('local-login', {
       // failureRedirect: '/#/auth/login',
       // failureFlash: true,

@@ -11,8 +11,8 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   organization: DS.belongsTo('organization', { inverse: null }),
   additionalInfo: DS.attr('string'),
   privacySetting: DS.attr('string'),
-  // isPublic: DS.attr('boolean'),
-  categories: DS.hasMany('category', { async: true }),
+  categories: DS.hasMany('category', { inverse: null }),
+  keywords: DS.attr(),
   error: DS.attr('string'),
   isUsed: DS.attr('boolean'),
 });

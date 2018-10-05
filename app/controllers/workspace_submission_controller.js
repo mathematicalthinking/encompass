@@ -14,6 +14,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   currentWorkspace: Ember.computed.alias('workspace.model'),
   currentSelection: Ember.computed.alias('workspace.currentSelection'),
   workspaceOwner: Ember.computed.alias('currentWorkspace.owner'),
+  permissions: Ember.inject.service('workspace-permissions'),
 
   inWorkspace: function() {
     var controller = this;
@@ -31,11 +32,10 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   }.observes('selections.[]'),
 
   canSelect: function() {
-    return Permissions.userCan(
-      this.get('currentUser'),
-      this.get('currentWorkspace'),
-      "SELECTIONS"
-    );
+    var cws = this.get('currentWorkspace');
+    let canEdit = this.get('permissions').canEdit(cws);
+    console.log('canEdit in worksapce sub controller is', canEdit);
+    return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
   canFolder: function() {
@@ -49,34 +49,9 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   //permittedToComment: true,
   permittedToComment: function() {
     var cws = this.get('currentWorkspace');
-    var owner = cws.get('owner');
-    var currentUser = this.get('currentUser');
-    // this.get('workspaceOwner').then( function(owner){
-    //   console.log("WORKSPACE OWNER: " + owner.get('username') );
-    // });
-    var editors = cws.get('editors').mapBy('id');
-    var isEditor = editors.includes(currentUser.id);
-    var isAdmin = currentUser.get('isAdmin');
-    var isOwner = Ember.isEqual(owner, currentUser);
-
-    var canComment = isEditor || isAdmin || isOwner;
+    let canComment = this.get('permissions').canEdit(cws);
     console.log('canComment', canComment);
     return canComment;
-
-    /*
-    return new Ember.RSVP.Promise(function(resolve){
-      cws.get('owner').then( function(owner){
-        cws.set('owner', owner);
-        var perm = Permissions.userCan(
-          this.get('currentUser'),
-          this.get('currentWorkspace'),
-          "COMMENTS"
-        );
-        resolve( perm );
-        //fetchFacebookPicture(this.get('facebookId'), resolve);
-      });
-    });
-    */
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
   currentDragItem: Ember.computed(function(){

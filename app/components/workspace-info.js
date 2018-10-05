@@ -2,6 +2,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   elementId: 'workspace-info',
   comments: Ember.inject.controller,
   alert: Ember.inject.service('sweet-alert'),
+  permissions: Ember.inject.service('workspace-permissions'),
   isEditing: false,
   selectedMode: null,
   updateRecordErrors: [],

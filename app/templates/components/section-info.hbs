@@ -27,7 +27,7 @@
     </div>
       <div class="section-info-detail assignments">
         <label for="assignments">Assignments
-          {{#unless cantEdit}}
+        {{#unless cantEdit}}
           {{#if isEditingAssignments}}
           <i title="Done" {{action (mut isEditingAssignments) false}} class="fa fa-check"></i>
         {{else}}

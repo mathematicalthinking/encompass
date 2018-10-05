@@ -63,7 +63,6 @@ Encompass.WorkspacesListController = Ember.Controller.extend(Encompass.CurrentUs
   }.observes('model.@each.isTrashed'),
 
   setPublicWorkspaces: function() {
-    console.log('public');
     const workspaces = this.get('model').rejectBy('isTrashed');
     this.set('publicWorkspaces', workspaces.filterBy('mode', 'public'));
   }.observes('model.@each.isTrashed'),

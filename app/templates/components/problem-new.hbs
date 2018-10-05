@@ -3,7 +3,6 @@
   <div class="clear"></div>
 </header>
 
-
   <section class="third submissions">
     <form id='newproblemform' class='properForm'>
       <fieldset>
@@ -19,8 +18,29 @@
             </div>
           </li>
           <li>
-            <label for="categories">Problem Category</label>
-            {{input id="categories" type="text" value=categories placeholder="enter a category"}}
+            <label for="categories">Problem Categories</label>
+            {{#if selectedCategories}}
+              <ul class="problem-info">
+              {{#each selectedCategories as |category|}}
+                <li><a href="{{category.url}}">{{category.identifier}}</a></li>
+              {{/each}}
+              </ul>
+            {{/if}}
+            {{#unless showCategories}}
+              <div class="button-row {{if selectedCategories "center"}}">
+                <button id="add-category" {{action 'showCategories'}}>Show Category Menu</button>
+              </div>
+            {{/unless}}
+            {{#if showCategories}}
+              <div class="button-row {{if selectedCategories "center"}}">
+                <button id="add-category" {{action 'showCategories'}}>Hide Category Menu</button>
+              </div>
+              {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+            {{/if}}
+          </li>
+          <li>
+            <label for="keywords">Keywords</label>
+            {{twitter-typeahead}}
           </li>
           <li>
             <label for="additionalInfo">Additional Info</label>

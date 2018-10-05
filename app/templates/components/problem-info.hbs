@@ -14,22 +14,57 @@
         <fieldset>
           <ol>
             <li>
-              <label for="title">Problem Name</label>
+              <label class="form-label" for="title">Problem Name</label>
               {{input name="title" id="title" type="text" value=problemName}}
             </li>
             <li>
-              <label for="text">Problem Statement</label>
+              <label class="form-label" for="text">Problem Statement</label>
               <div class="quill-container">
                 <section id="editor"></section>
               </div>
             </li>
             <li>
-              <label for="additionalInfo">Additional Info</label>
+              <label class="form-label" for="categories">Problem Categories</label>
+              {{#if problem.categories}}
+              <ul class="problem-info">
+                {{#each problem.categories as |category|}}
+                  <li><a href="{{category.url}}">{{category.identifier}}</a> <button {{action 'removeCategory' category}}>X</button></li>
+                {{/each}}
+              </ul>
+                {{#unless showCategories}}
+                <div class="button-row-list">
+                  <button {{action 'showCategories'}}>Add Categories</button>
+                </div>
+                {{/unless}}
+                {{#if showCategories}}
+                  <div class="button-row-list">
+                    <button {{action 'showCategories'}}>Hide Categories</button>
+                  </div>
+                  {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                {{/if}}
+              {{else}}
+                {{#unless showCategories}}
+                  <div class="button-row">
+                    <button {{action 'showCategories'}}>Add Categories</button>
+                  </div>
+                {{/unless}}
+                {{#if showCategories}}
+                    <div class="button-row">
+                      <button {{action 'showCategories'}}>Hide Categories</button>
+                    </div>
+                    {{#if categoryTree}}
+                      {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                    {{/if}}
+                {{/if}}
+              {{/if}}
+            </li>
+            <li>
+              <label class="form-label" for="additionalInfo">Additional Info</label>
               {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
               {{input id="additionalInfo" type="hidden" value=additionalInfo }}
             </li>
             <li class="privacy-settings">
-              <label>Privacy Settings
+              <label class="form-label">Privacy Settings
                 <span class="required-star">*</span>
               </label>
             {{#if problem.origin}}
@@ -44,7 +79,7 @@
             {{/if}}
             </li>
             <li>
-              <label for="imagedata">Problem Image:</label>
+              <label class="form-label" for="imagedata">Problem Image:</label>
               {{#if problem.image}}
                   <a {{action 'toggleImageSize'}} >
                     <img src="{{problem.image.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
@@ -70,38 +105,50 @@
       <fieldset>
         <ol>
           <li>
-            <label for="title">Problem Name</label>
+            <label class="form-label" for="title">Problem Name</label>
             <p class="problem-info">{{problem.title}}</p>
           </li>
           <li>
-            <label for="text">Problem Statement</label>
+            <label class="form-label" for="text">Problem Statement</label>
             <p class="problem-info">{{{problem.text}}}</p>
           </li>
+          {{#if problem.categories}}
+            <li>
+              <label class="form-label" for="text">Problem Categories</label>
+              <ul class="problem-info">
+              {{#each problem.categories as |category|}}
+                <li>
+                  <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
+                </li>
+              {{/each}}
+              </ul>
+            </li>
+          {{/if}}
           {{#if additionalInfo}}
             <li>
-              <label for="additionalInfo">Additional Info</label>
+              <label class="form-label" for="additionalInfo">Additional Info</label>
               <p class="problem-info">{{problem.additionalInfo}}</p>
             </li>
           {{/if}}
 
           {{#if problem.origin}}
           <li>
-            <label for="origin">Problem Origin</label>
+            <label class="form-label" for="origin">Problem Origin</label>
             <p class="problem-info">{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
           </li>
           {{/if}}
 
           <li>
-            <label for="currentlyPublic">Privacy Setting</label>
+            <label class="form-label" for="currentlyPublic">Privacy Setting</label>
             <p class="problem-info">{{privacy-setting problem.privacySetting}}</p>
           </li>
           <li>
-            <label for="createDate">Creation Date</label>
+            <label class="form-label" for="createDate">Creation Date</label>
             <p class="problem-info">{{format-date problem.createDate 'MMM Do YYYY'}}</p>
           </li>
           {{#if problem.image}}
           <li>
-            <label for="imagedata">Additional Image:</label>
+            <label class="form-label" for="imagedata">Additional Image:</label>
               <a {{action 'toggleImageSize'}}>
                 <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
               </a>

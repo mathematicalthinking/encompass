@@ -48,6 +48,7 @@ module.exports = {
     //console.log("Resolve User Name");
     let owner;
     user  = Properties.resolveUsername(user);
+
     if(typeof user === "undefined") { return false; }
     //console.log("Resolve Owner Obj");
     var ownerObj = Properties.resolveOwner(object);

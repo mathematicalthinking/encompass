@@ -66,7 +66,6 @@ AnswerSchema.post('save', function (Answer) {
   }
 
   if (Answer.createdBy) {
-    console.log('in post answer hook');
     var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
     mongoose.models.User.update({ '_id': userIdObj },
       update,
@@ -74,7 +73,6 @@ AnswerSchema.post('save', function (Answer) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('affected users', affected);
       });
   }
 
@@ -86,7 +84,6 @@ AnswerSchema.post('save', function (Answer) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('affected assignments', affected);
       });
   }
 
@@ -98,7 +95,6 @@ AnswerSchema.post('save', function (Answer) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('affected problems', affected);
       });
   }
 

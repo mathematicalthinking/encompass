@@ -47,11 +47,6 @@ async function getComments(req, res, next) {
     console.trace();
   }
 
-
-
-
-  console.log('req.query getComments', req.query);
-
   var textSearch = req.query.text;
 
   // Determine what comments can be searched
@@ -72,8 +67,6 @@ async function getComments(req, res, next) {
   }
 
   var workspaces = req.query.workspaces;
-  console.log('workspaces query', workspaces);
-
 
   if(workspaces) {
     criteria.workspace = {$in: req.query.workspaces};
@@ -198,7 +191,6 @@ function putComment(req, res, next) {
 
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
-  console.log("WS ID: ", workspaceId);
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(wsAccess.canModify(user, ws)) {
 

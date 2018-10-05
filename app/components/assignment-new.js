@@ -35,7 +35,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didInsertElement: function() {
-
     const formId = this.get('formId');
     let isMissing = this.checkMissing.bind(this);
     if (formId) {

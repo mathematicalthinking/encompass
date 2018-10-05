@@ -49,7 +49,6 @@ const getSections = (req, res, next) => {
   let ids = req.query.ids;
   criteria = access.get.sections(user, ids);
 
-  console.log('criteria is', criteria);
   models.Section.find(criteria)
   .exec((err, sections) => {
     if (err) {

@@ -12,8 +12,10 @@ const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
 const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
-const utils    = require('../../middleware/requestHandler');
+const permissions = require('../../../common/permissions');
+const utils = require('../../middleware/requestHandler');
+const fs = require('fs');
+const categories = require('../categories.json');
 
 
 module.exports.get = {};
@@ -31,19 +33,40 @@ module.exports.put = {};
   */
 
 const getCategories = (req, res, next) => {
-  const criteria = utils.buildCriteria(req);
-  const user = userAuth.requireUser(req);
-  models.Category.find(criteria)
-  .exec((err, categories) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    const data = {'categories': categories};
-    utils.sendResponse(res, data);
-    next();
-  });
+
+  if (req.query.ids) {
+    const criteria = utils.buildCriteria(req);
+    models.Category.find(criteria)
+    .exec((err, categories) => {
+      if (err) {
+        logger.error(err);
+        return utils.sendError.InternalError(err, res);
+      }
+      const data = {'categories': categories};
+      return utils.sendResponse(res, data);
+    });
+  } else if (req.query.identifier) {
+    models.Category.find({ identifier: {$eq: req.query.identifier }})
+      .exec((err, categories) => {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
+        const data = {'categories': categories};
+        return utils.sendResponse(res, data);
+      });
+  } else {
+    let data = {
+      categories: [],
+      meta: {
+        categories: categories
+      }
+    };
+    return utils.sendResponse(res, data);
+  }
 };
+
+
 
 /**
   * @public
