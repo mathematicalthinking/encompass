@@ -184,9 +184,10 @@ describe('Sections', async function () {
               describe('submitting valid form', async function() {
                 it('should redirect to section-info page after creating', async function () {
                   await submitSection(details);
-                  await helpers.waitForSelector(driver, 'div.section-info-detail.name p');
+                  await helpers.waitForSelector(driver, 'div.section-info-detail.name p', 10000);
                   await helpers.waitForUrlMatch(driver, /sections\/[a-z0-9]{24}/, 10000);
-                  expect(await helpers.findAndGetText(driver, 'div.section-info-detail.name p')).to.eql(details.name);
+                  await driver.sleep(1000);
+                  expect(await helpers.isTextInDom(driver, details.name)).to.be.true;
 
                   let teacher;
                   if (accountType === 'T') {
