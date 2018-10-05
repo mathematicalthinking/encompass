@@ -11,6 +11,7 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
 
   getResultsByPage: function(model, page, limit=null) {
     let filterBy = this.get('filter');
+    this.get('startPageChange')();
 
     let queryParams = {
       page,
@@ -18,8 +19,12 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
     };
 
     this.store.query(model, queryParams).then((results) => {
+      this.get('endPageChange')();
       this.set('queryResults', results);
       this.set('details', results.get('meta'));
+      if (this.get('handleQueryResults')) {
+        this.get('handleQueryResults')(results);
+      }
     }).catch((err) => {
       this.handleErrors(err, 'dataLoadError');
     });
