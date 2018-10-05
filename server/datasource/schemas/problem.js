@@ -27,6 +27,8 @@ var ProblemSchema = new Schema({
   origin: { type: ObjectId, ref: 'Problem' },
   modifiedBy: { type: ObjectId, ref: 'User' },
   privacySetting: { type: String, enum: ['M', 'O', 'E'] },
+  copyrightNotice: { type: String },
+  sharingAuth: { type: String },
   organization: { type: ObjectId, ref: 'Organization' },
   categories: [{ type: ObjectId, ref: 'Category' }],
   keywords: [{ type: String }],

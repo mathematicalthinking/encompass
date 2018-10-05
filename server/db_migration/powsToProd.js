@@ -216,33 +216,132 @@ function imageFileToBase64(file) {
 }
 
 
+async function allPOWsProblemsPrivate() {
+  let oldCount = 0;
+  let deletedCount = 0;
+  const problems = await models.Problem.find({}).exec();
+  console.log(`problems to review ${problems.length}`);
+  const problemIds = problems.map(p => p._id);
+  for (let id of problemIds) {
+    try {
+      const p = await models.Problem.find({ _id: id}).exec();
+      const prob = p[0];
+      if (prob.puzzleId) {
+        console.log(`problem: ${prob.title} has puzzleId: ${prob.puzzleId} - count ${oldCount}`);
+        if (prob.isTrashed === true && prob.title.includes("KenKen")) {
+          deletedCount += 1;
+          await models.Problem.remove({ _id: id}).exec();
+          console.log(`problem: ${prob.title} was trashed KenKen - was deleted`);
+        } else {
+          oldCount += 1;
+          prob.copyrightNotice = 'National Council of Teachers of Mathematics';
+          prob.sharingAuth = 'Used with the permission of NCTM.';
+          prob.privacySetting = 'M';
+          await prob.save();
+        }
+      } else {
+        console.log(`problem: ${id} ${prob.title} has no puzzle`);
+      }
+    } catch (err) {
+      console.error(`ERROR resetting problem ${id} - ${err}`)
+    }
+  }
+  console.log(`problems deleted ${deletedCount}`);
+  console.log(`problems updated ${oldCount}`);
+}
+
+
+async function listProblemPrivacy() {
+  let oldCount = 0;
+  const problems = await models.Problem.find({}).exec();
+  console.log(`problems to review ${problems.length}`);
+  const problemIds = problems.map(p => p._id);
+  for (let id of problemIds) {
+    try {
+      const p = await models.Problem.find({ _id: id}).exec();
+      const prob = p[0];
+      if (prob.puzzleId) {
+        oldCount += 1;
+        console.log(`problem: ${prob.title} has puzzleId: ${prob.puzzleId} - privacySetting: ${prob.privacySetting}`);
+      } else {
+        console.log(`problem: ${id} ${prob.title} has no puzzle - privacySetting: ${prob.privacySetting}`);
+      }
+    } catch (err) {
+      console.error(`ERROR resetting problem ${id} - ${err}`)
+    }
+  }
+}
+
+
+async function countProblemPrivacy() {
+  let oldCount = 0;
+  const problemsE = await models.Problem.find({privacySetting: 'E'}).exec();
+  console.log(`Public Problems count: ${problemsE.length}`);
+  const problemsM = await models.Problem.find({privacySetting: 'M'}).exec();
+  console.log(`Public Problems count: ${problemsM.length}`);
+}
+
+
+async function unusedProblemsPrivate() {
+  const submissions = await models.Submission.find({}).exec();
+  console.log(`submissions to review ${submissions.length}`);
+  const submissionIds = submissions.map(s => s._id);
+  for (let id of submissionIds) {
+    try {
+      const s = await models.Submission.find({ _id: id}).exec();
+      const sub = s[0];
+      if (sub.publication && sub.publication.puzzle) {
+        // console.log(`submission: ${id} has puzzle: ${sub.publication.puzzle.puzzleId} - ${sub.publication.puzzle.title}`);
+        const prob = await models.Problem.findOne({'puzzleId': sub.publication.puzzle.puzzleId}).exec();
+        // console.log(`problem: ${prob._id} has puzzle: ${prob.puzzleId} - ${prob.privacySetting} - ${prob.title}`);
+        prob.privacySetting = 'E';
+        await prob.save();
+      } else {
+        console.log(`submission: ${id} ${sub.powId} has no puzzle`);
+      }
+    } catch (err) {
+      console.error(`ERROR privatizing submission id: ${id} - ${err}`)
+    }
+  }
+}
+
+
+
 async function update() {
   try {
     console.log(`connect to mongo`);
-    mongoose.connect('mongodb://localhost:27017/encompass_prod');
-    console.log(`postgres client create`)
-    const pgClient = new pg.Client({
-      user: 'postgres',
-      host: 'localhost',
-      database: 'POWS',
-      password: '',
-      port: 5432,
-    });
-    pgClient.connect();
-    console.log(`pg client connected`);
+    mongoose.connect('mongodb://localhost:27017/encompass');
 
-    // error log file:
-    const errorStream = fs.createWriteStream("errorProblems.txt");
+    // console.log(`postgres client create`)
+    // const pgClient = new pg.Client({
+    //   user: 'postgres',
+    //   host: 'localhost',
+    //   database: 'POWS',
+    //   password: '',
+    //   port: 5432,
+    // });
+    // pgClient.connect();
+    // console.log(`pg client connected`);
 
+    // // Updates Done week of 9/28/2018
+    // // Puzzles added as problems owned by old pows user
+    // // Puzzle image sources set as base64 text
+    // const errorStream = fs.createWriteStream("errorProblems.txt");
+    // await cleanPowUsers();
+    // const pows_user = await getOrCreatePowUser();
+    // await allPuzzlesLoop(pgClient, pows_user, errorStream);
 
-    await cleanPowUsers();
+    // updates for Oct 5?
+    await allPOWsProblemsPrivate();
+    // await listProblemPrivacy();
+    await countProblemPrivacy();
+    await unusedProblemsPrivate();
+    await countProblemPrivacy();
 
-    const pows_user = await getOrCreatePowUser();
-    await allPuzzlesLoop(pgClient, pows_user, errorStream);
+    // errorStream.end();
+    // console.log(`client end`);
+    // await pgClient.end()
 
-    errorStream.end();
-    console.log(`client end`);
-    await pgClient.end()
     mongoose.connection.close();
   } catch (err) {
     console.error(`ERROR - ${err}`)
