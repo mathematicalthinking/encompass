@@ -64,6 +64,9 @@ form#newproblemform {
       border-color: $input-border;
     }
   }
+  .center {
+    margin-left: 25%;
+  }
   .twitter-typeahead {
     width: 70%;
     height: 60px;
@@ -82,7 +85,18 @@ form#newproblemform {
     font-size: 1em;
     color:black;
   }
-
+  .problem-info {
+    font-size: 1em;
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border-radius: 4px;
+    box-sizing: border-box;
+    a {
+      color: $accent-color;
+    }
+  }
   #image-upload {
     width: 70%;
     padding: 12px 0px;
