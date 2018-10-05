@@ -24,6 +24,18 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     }
   },
 
+  didReceiveAttrs: function() {
+    let users = this.users;
+    let userList = this.get('userList');
+
+    if (!Ember.isEqual(users, userList)) {
+      this.set('userList', users);
+      //filter out students for adding teachers;
+      let addableTeachers = users.rejectBy('accountType', 'S');
+      this.set('addableTeachers', addableTeachers);
+    }
+  },
+
   //Non admin User creating section
   //set user as teacher
   didInsertElement: function () {
