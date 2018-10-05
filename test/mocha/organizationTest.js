@@ -19,7 +19,7 @@ describe('Organization CRUD operations by account type', async function() {
   const accessibleOrgCount = 3;
 
   async function runTests(user) {
-    describe(`Organization CRUD operations as ${user.testDescriptionTitle}` , function() {
+    await describe(`Organization CRUD operations as ${user.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
@@ -41,6 +41,9 @@ describe('Organization CRUD operations by account type', async function() {
           agent
           .get(baseUrl)
           .end((err, res) => {
+            if (err) {
+              console.error(err);
+            }
             expect(res).to.have.status(200);
             expect(res.body).to.have.all.keys('organizations');
             expect(res.body.organizations).to.be.a('array');
@@ -67,7 +70,9 @@ describe('Organization CRUD operations by account type', async function() {
             createdBy: user._id
           }})
           .end((err, res) => {
-
+            if (err) {
+              console.error(err);
+            }
             if (user.accountType !== 'A') {
               expect(res).to.have.status(403);
               done();

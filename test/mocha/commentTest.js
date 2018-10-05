@@ -32,6 +32,9 @@ describe('Comment CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.comments).to.be.a('array');
         expect(res.body.comments[0]).to.have.any.keys('label', 'ancestors', 'children', 'text');
@@ -46,6 +49,9 @@ describe('Comment CRUD operations', function() {
       agent
       .get(url)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.comment).to.have.any.keys('label', 'text', 'submission', 'workspace');
         expect(res.body.comment._id).to.eql(fixtures.comment._id);
@@ -71,6 +77,9 @@ describe('Comment CRUD operations', function() {
       .post(baseUrl)
       .send({comment: fixtures.comment.validComment})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.comment.text).to.eql(fixtures.comment.validComment.text);
         done();
@@ -92,6 +101,9 @@ describe('Comment CRUD operations', function() {
         createdBy: fixtures.comment.validComment.createdBy,
       }})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.comment.text).to.eql('new test text');
         done();
@@ -109,9 +121,12 @@ describe('Comment CRUD operations', function() {
         text: 'new test text'
       }})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(400);
         done();
       });
     });
   });
-})
+});

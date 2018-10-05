@@ -34,6 +34,9 @@ describe('Tagging CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('taggings');
         expect(res.body.taggings).to.be.a('array');
@@ -47,6 +50,9 @@ describe('Tagging CRUD operations', function() {
       agent
       .get(baseUrl + fixtures.tagging._id)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('tagging');
         expect(res.body.tagging).to.be.a('object');
@@ -63,6 +69,9 @@ describe('Tagging CRUD operations', function() {
       .post(baseUrl)
       .send({tagging: fixtures.tagging.validTagging})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.tagging).to.have.any.keys('folder', 'workspace', 'submission');
         expect(res.body.tagging.folder).to.eql(fixtures.tagging.validTagging.folder);
@@ -79,6 +88,9 @@ describe('Tagging CRUD operations', function() {
       .put(url)
       .send({tagging: fixtures.tagging.validTagging})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.tagging).to.have.any.keys('workspace', 'submission', 'folder');
         expect(res.body.tagging.submission).to.eql(fixtures.tagging.validTagging.submission);

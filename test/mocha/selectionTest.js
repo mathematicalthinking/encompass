@@ -34,6 +34,9 @@ describe('Selection CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('selections');
         expect(res.body.selections).to.be.a('array');
@@ -47,6 +50,9 @@ describe('Selection CRUD operations', function() {
       agent
       .get(baseUrl + fixtures.selection._id)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('selection');
         expect(res.body.selection).to.be.a('object');
@@ -64,6 +70,9 @@ describe('Selection CRUD operations', function() {
       .post(baseUrl)
       .send({selection: fixtures.selection.validSelection})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.selection).to.have.any.keys('text', 'submission');
         expect(res.body.selection.text).to.eql(fixtures.selection.validSelection.text);
@@ -78,14 +87,19 @@ describe('Selection CRUD operations', function() {
       let url = baseUrl + fixtures.selection._id;
       agent
       .put(url)
-      .send({
+      .send(
+        {
             selection: {
               text: 'updated text',
               coordinates: fixtures.selection.validSelection.coordinates,
               submission: fixtures.selection.validSelection.submission,
               createdBy: fixtures.selection.validSelection.createdBy,
-      }})
+            }
+        })
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.selection).to.have.any.keys('text', 'submission', 'taggingins', 'workspace');
         expect(res.body.selection.text).to.eql('updated text');

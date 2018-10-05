@@ -25,7 +25,7 @@ const pdAdminDrexel = {
     accountType: 'S'
   },
   accessibleUserCount: 24
-}
+};
 
 const teacherMT = {
   _id: '5b9149552ecaf7c30dd4748e',
@@ -139,7 +139,7 @@ const teacherActingStudent = {
     username: 'actingStudent',
     accountType: 'T'
   },
-}
+};
 
 const users = {
   admin,

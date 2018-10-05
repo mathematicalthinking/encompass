@@ -33,6 +33,9 @@ describe('Answer CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('answers');
         expect(res.body.answers).to.be.a('array');
@@ -49,6 +52,9 @@ describe('Answer CRUD operations', function() {
       .post(baseUrl)
       .send({answer: fixtures.answer.validAnswer})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.answer).to.have.any.keys('problem', 'studentName', 'answer');
         expect(res.body.answer.explanation).to.eql('I put 2 and 2 together');
@@ -65,6 +71,9 @@ describe('Answer CRUD operations', function() {
       .put(url)
       .send({answer: fixtures.answer.updated})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(403);
         done();
       });

@@ -34,6 +34,9 @@ describe('Problem CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('problems', 'meta');
         expect(res.body.problems).to.be.a('array');
@@ -50,6 +53,9 @@ describe('Problem CRUD operations', function() {
       .post(baseUrl)
       .send({problem: fixtures.problem.validProblem})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.problem).to.have.any.keys('title', 'puzzleId', 'categories');
         expect(res.body.problem.title).to.eql('test math problem');
@@ -68,8 +74,12 @@ describe('Problem CRUD operations', function() {
             problem: {
               title: 'test science problem',
               createdBy: fixtures.problem.validProblem.createdBy,
-      }})
+            }
+       })
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.problem).to.have.any.keys('puzzleId', 'title', 'categories');
         expect(res.body.problem.title).to.eql('test science problem');
