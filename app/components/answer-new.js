@@ -170,6 +170,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
         console.log('res', res);
+        /*eslint no-constant-condition: "off" */
         if (1) {
           // proceed with answer creation
           this.createAnswer();
