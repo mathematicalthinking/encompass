@@ -259,6 +259,14 @@ const clearElement = async function(webDriver, element) {
     console.log(err);
   }
 };
+const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
+  try {
+    await webDriver.wait(until.urlMatches(regex), timeout);
+  }catch(err) {
+    console.error(`Error waitForUrlMatch: ${err}`);
+    console.trace();
+  }
+};
 
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
@@ -316,3 +324,4 @@ module.exports.newProblem = newProblem;
 module.exports.waitForRemoval = waitForRemoval;
 module.exports.newSection = newSection;
 module.exports.timeoutTestMsStr = timeoutTestMsStr;
+module.exports.waitForUrlMatch = waitForUrlMatch;

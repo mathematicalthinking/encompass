@@ -24,8 +24,8 @@ require('dependencies/jquery.cookie');
 
 require('dependencies/guiders');
 require('dependencies/jq.keys');
-require('dependencies/autocomplete');
 require('dependencies/typeahead.bundle.min');
+require('dependencies/validate.min.js');
 
 /*
  * Since we're precompiling our templates, we only need the

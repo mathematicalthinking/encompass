@@ -12,6 +12,30 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   missingFieldsError: null,
   userOrg: null,
 
+  constraints: {
+    name: {
+      presence: true,
+    },
+    teacher: {
+      presence: true
+    },
+    organization: {
+      presence: true
+    }
+  },
+
+  didReceiveAttrs: function() {
+    let users = this.users;
+    let userList = this.get('userList');
+
+    if (!Ember.isEqual(users, userList)) {
+      this.set('userList', users);
+      //filter out students for adding teachers;
+      let addableTeachers = users.rejectBy('accountType', 'S');
+      this.set('addableTeachers', addableTeachers);
+    }
+  },
+
   //Non admin User creating section
   //set user as teacher
   didInsertElement: function () {
@@ -68,10 +92,21 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       var organization = this.get('organization');
       var teacher = this.get('teacher');
 
-      if (!newSectionName || !teacher || !organization) {
-        this.set('missingFieldsError', true);
+      let constraints = this.get('constraints');
+      let values = {
+        name: newSectionName,
+        teacher: teacher,
+        organization: organization
+      };
+      let validation = window.validate(values, constraints);
+      if (validation) { // errors
+        for (let key of Object.keys(validation)) {
+          let errorProp = `${key}FormErrors`;
+          this.set(errorProp, validation[key]);
+        }
         return;
       }
+
       var currentUser = this.get('currentUser');
 
       if (typeof teacher === 'string') {

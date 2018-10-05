@@ -121,6 +121,20 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     }
   },
+  // Empty quill editor .html() property returns <p><br></p>
+  // For quill to not be empty, there must either be some text or a student
+  // must have uploaded an img so there must be an img tag
+  isQuillValid: function() {
+    let pText = this.$('.ql-editor p').text();
+    if (pText.length > 0) {
+      return true;
+    }
+    let content = this.$('.ql-editor').html();
+    if (content.includes('<img')) {
+      return true;
+    }
+    return false;
+  },
 
   actions: {
     deleteProblem: function () {
@@ -227,7 +241,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let currentUser = this.get('currentUser');
       let additionalInfo = this.get('additionalInfo');
 
-      if (!title || !text || !privacy) {
+      let isQuillValid = this.isQuillValid();
+
+      if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
         return;
       } else {

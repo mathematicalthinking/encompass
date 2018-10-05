@@ -1,71 +1,99 @@
 Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'problem-list',
   classNames: ['problem-list', 'left-list'],
-  yourProblemList: null,
   publicFilter: {
     privacySetting: 'E'
   },
-  dataLoadErrors: [],
-  publicCurrentPage: null,
-  publicGoToPage: null,
+  privateFilter: {},
+  orgFilter: {
+    privacySetting: 'O',
+  },
 
+  dataLoadErrors: [],
+
+  observeNewProblem: function() {
+    if (this.get('changingPage')) {
+      return;
+    }
+    // all problems in store
+    let problems = this.problems;
+    // all valid problems
+    let validProblems = problems.filter((p) => {
+      return p.get('isValid');
+    });
+
+    // current problems being displayed
+    // converting to array because cant use addOBject on adapter populated array
+    let yourProblemsList = this.get('yourProblemsList').toArray();
+
+    let sortedProblems = validProblems.sortBy('createDate').reverse();
+    let mostRecent = sortedProblems.objectAt(0);
+    console.log('mostRecent', mostRecent);
+    yourProblemsList.addObject(mostRecent);
+    this.set('yourProblemsList', yourProblemsList);
+  }.observes('problems.[]'),
 
   didReceiveAttrs: function() {
-    let filter = this.get('publicFilter');
-    this.store.query('problem', {
-      filterBy: filter,
-    }).then((res) => {
-      this.set('publicQueryResults', res);
-      this.set('publicProblemsMetadata', res.get('meta'));
-    }).catch((err) => {
-      this.handleErrors(err, 'dataLoadErrors');
-    });
+    // set initial results from route
+    if (!this.get('yourProblemsList')) {
+      this.set('yourProblemsList', this.get('ownProblems'));
+    }
+
+    if (!this.get('orgProblemsList')) {
+      this.set('orgProblemsList', this.get('organizationProblems'));
+
+    }
+
+    if (!this.get('publicProblemsList')) {
+      this.set('publicProblemsList', this.get('openProblems'));
+    }
+
+    let currentUser = this.get('currentUser');
+    let privateFilter = this.get('privateFilter');
+    privateFilter.createdBy = currentUser.id;
+
+    let orgFilter = this.get('orgFilter');
+    orgFilter.createdBy = {$ne: currentUser.id};
+
+    let publicFilter = this.get('publicFilter');
+    publicFilter.createdBy = {$ne: currentUser.id};
+
+    let ownProblemsMetadata = this.ownProblems.get('meta');
+    this.set('ownProblemsMetadata', ownProblemsMetadata);
+
+    let orgProblemsMetadata = this.organizationProblems.get('meta');
+    this.set('orgProblemsMetadata', orgProblemsMetadata);
+
+    let publicProblemsMetadata = this.openProblems.get('meta');
+    this.set('publicProblemsMetadata', publicProblemsMetadata);
   },
 
   init: function() {
     this._super(...arguments);
   },
 
-
   // This displays only the problems beloging to the current user
   yourProblems: function () {
-    var problems = this.problems.filterBy('isTrashed', false);
-    var currentUser = this.get('currentUser');
-    var yourProblems = problems.filterBy('createdBy.content', currentUser);
-    this.set('yourProblemList', yourProblems);
-    return yourProblems.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
+    let problems = this.get('yourProblemsList');
+    let valid = problems.filter(p => !!p.id && !p.get('isTrashed'));
+    return valid;
+
+  }.property('yourProblemsList.@each.isTrashed'),
 
   // This displays only the problems beloging to the current user's organizaton
   orgProblems: function () {
-    var problems = this.problems.filterBy('isTrashed', false);
-    var currentUser = this.get('currentUser');
-    var orgProblems = problems.filterBy('privacySetting', 'O');
-    var yourOrg = orgProblems.filter((el) => {
-      let content = el.get('createdBy.content');
-      return content.id !== currentUser.id;
-    });
-    return yourOrg.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed', 'currentUser.isStudent'),
+    let problems = this.get('orgProblemsList');
+    let valid = problems.filter(p => !!p.id && !p.get('isTrashed'));
+    return valid;
 
-  // This sorts all the problems that are visible to everyone
+  }.property('orgProblemsList.@each.isTrashed'),
+
+  // // This sorts all the problems that are visible to everyone
   publicProblems: function () {
-    var queryResults = this.get('publicQueryResults');
-    var problems;
-    if (!queryResults) {
-      problems = this.problems;
-    } else {
-      problems = queryResults;
-    }
-    problems = problems.filterBy('isTrashed', false);
-    var currentUser = this.get('currentUser');
-    var publicProblems = problems.filterBy('privacySetting', 'E');
-    var yourPublic = publicProblems.filter((el) => {
-      let content = el.get('createdBy.content');
-      return content.id !== currentUser.id;
-    });
-    return yourPublic.sortBy('createDate').reverse();
-  }.property('problems.@each.isTrashed','publicQueryResults.@each.isTrashed', 'currentUser.isStudent'),
+    let problems = this.get('publicProblemsList');
+    let valid = problems.filter(p => !!p.id && !p.get('isTrashed'));
+    return valid;
+  }.property('publicProblemsList.@each.isTrashed'),
 
   actions: {
     searchPublic: function() {
@@ -106,9 +134,21 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.handleErrors(err, 'dataLoadErrors');
       });
     },
+    updatePageResults(results) {
+      this.set('yourProblemsList', results);
+    },
+    updatePublicPageResults(results) {
+      this.set('publicProblemsList', results);
+    },
+    updateOrgPageResults(results) {
+      this.set('orgProblemsList', results);
+    },
+    startPageChange() {
+      this.set('changingPage', true);
+    },
+    endPageChange() {
+      this.set('changingPage', false);
+    }
   },
-
-
-
 });
 

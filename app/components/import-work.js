@@ -1,9 +1,7 @@
-Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
   selectedProblem: null,
   selectedSection: null,
   selectedFiles: null,
-  isCreatingNewProblem: null,
-  problems: null,
   sections: null,
   uploadedFiles: null,
   isMatchingStudents: null,
@@ -74,16 +72,13 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   init: function() {
     this._super(...arguments);
-    let problems = this.model.problems;
-    // var currentUser = this.get('currentUser');
-    let myProblems = problems.sortBy('createDate').reverse();
-
-    this.set('problems', myProblems);
     this.set('sections', this.model.sections);
   },
 
   didReceiveAttrs: function() {
     this.setIsCompDirty();
+    this.setAddProblemFunction('addProblemTypeahead');
+
   },
 
   resetImportDetails: function() {

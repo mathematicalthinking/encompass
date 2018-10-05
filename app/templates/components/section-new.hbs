@@ -4,7 +4,7 @@
 </header>
 
 <div class="info">
-  {{#if user.isAdmin}}
+  {{#if currentUser.isAdmin}}
   <p>In order to create a new class, we need a name for the class, a primary teacher, and the affiliated organization. The organization will automatically be set as the selected teacher's organization. If the selected teacher does not belong to an organization, the organization will be set as your current organization</p>
   {{else}}
   <p>Please provide a name for the new class.</p>
@@ -18,35 +18,42 @@
           <div class="section-new-input">
             <label for="title">Class Name <span class="required-star">*</span></label>
             {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
+            {{#each nameFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
           </div>
+
           <div class="section-new-input">
               <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
-                {{#if user.isTeacher}}
+                {{#if currentUser.isTeacher}}
                 <p class="section-new-info teacher">{{teacher.username}}</p>
                 {{else}}
-                {{twitter-typeahead placeholder="Teacher's username" dataList=users optionLabelPath="username" selectedValue=teacher minLength=2 setSelectedValueOnChange=true}}
+                {{twitter-typeahead placeholder="Teacher's username" dataList=addableTeachers optionLabelPath="username" selectedValue=teacher minLength=2 setSelectedValueOnChange=true}}
               {{/if}}
             </div>
+            {{#each teacherFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
             <div class="section-new-input">
             <label for="organization">Organization</label>
-            {{#if user.isAdmin}}
+            {{#if currentUser.isAdmin}}
               {{#if validTeacher}}
                 {{#if organization}}
-                  <p class="section-new-info org">{{organization.name}}</p>
+                  <p class="section-new-info org">{{teacher.organization.name}}</p>
                 {{else}}
-                  <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with your organization.</p>
+                  <p class="section-new-info">{{teacher.username}} does not belong to an organization. Class will be created with your organization ({{currentUser.organization.name}}).</p>
                 {{/if}}
               {{else}}
                 <p class="section-new-info">Please select a teacher first.</p>
               {{/if}}
             {{else}}
-              <p class="section-new-info">{{organization.name}}</p>
+              <p class="section-new-info">{{currentUser.organization.name}}</p>
             {{/if}}
 
           </div>
-          {{#if missingFieldsError}}
-              <p class="error-message">Please provide all required fields.</p>
-          {{/if}}
+          {{#each organizationFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+          {{/each}}
           {{#if invalidTeacherUsername}}
             <p class="error-message">Sorry, there is no teacher with that username.</p>
           {{/if}}

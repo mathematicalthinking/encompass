@@ -144,36 +144,36 @@ describe('Home Page', function () {
     });
   });
   //TODO: Figure out best way to test signing in with google
-  xdescribe('Logging in with google', async function () {
-    let emailInput = 'input[type="email"]';
-    // let emailAddress = 'encompassmath@gmail.com';
-    let emailAddress = userAuth.getEmailAuth().username;
-    //let password = process.env.GMAIL_PASSWORD;
-    before(async function () {
-      await helpers.findAndClickElement(driver, css.topBar.login);
-      await helpers.waitForAndClickElement(driver, css.login.google);
-      await helpers.waitForSelector(driver, emailInput);
-    });
+  // xdescribe('Logging in with google', async function () {
+  //   let emailInput = 'input[type="email"]';
+  //   // let emailAddress = 'encompassmath@gmail.com';
+  //   let emailAddress = userAuth.getEmailAuth().username;
+  //   //let password = process.env.GMAIL_PASSWORD;
+  //   before(async function () {
+  //     await helpers.findAndClickElement(driver, css.topBar.login);
+  //     await helpers.waitForAndClickElement(driver, css.login.google);
+  //     await helpers.waitForSelector(driver, emailInput);
+  //   });
 
-    it('EnCoMPASS should be in DOM', async function () {
-      expect(await helpers.isTextInDom(driver, 'EnCoMPASS')).to.be.true;
-    });
-    xdescribe('Clicking next', function () {
-      before(async function () {
-        await helpers.findInputAndType(driver, emailInput, emailAddress);
-        await helpers.findAndClickElement(driver, 'content>span');
+  //   it('EnCoMPASS should be in DOM', async function () {
+  //     expect(await helpers.isTextInDom(driver, 'EnCoMPASS')).to.be.true;
+  //   });
+  //   xdescribe('Clicking next', function () {
+  //     before(async function () {
+  //       await helpers.findInputAndType(driver, emailInput, emailAddress);
+  //       await helpers.findAndClickElement(driver, 'content>span');
 
-        let isRecovery = await helpers.isTextInDom(driver, 'recovery');
+  //       let isRecovery = await helpers.isTextInDom(driver, 'recovery');
 
-        if (isRecovery) {
+  //       if (isRecovery) {
 
-        }
-      });
+  //       }
+  //     });
 
-      it('should display privacy notice', async function () {
-      });
-    });
-  });
+  //     it('should display privacy notice', async function () {
+  //     });
+  //   });
+  // });
 
 
 });

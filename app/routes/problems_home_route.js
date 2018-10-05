@@ -1,7 +1,11 @@
 Encompass.ProblemsHomeRoute = Encompass.AuthenticatedRoute.extend({
   model: function (params) {
     return Ember.RSVP.hash({
-      problems: this.get('store').findAll('problem'),
+      problems: this.get('store').query('problem', {
+        filterBy: {
+          privacySetting: 'E'
+        }
+      }),
       organizations: this.get('store').findAll('organization'),
     });
   },

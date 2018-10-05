@@ -60,6 +60,10 @@
       max-width: 400px;
     }
 
+    .error-message {
+      width: 70%;
+    }
+
   }
   // p.section-new-info {
   //   width: 70%;
@@ -68,7 +72,8 @@
   //   vertical-align: center;
   // }
   div.twitter-typeahead{
-    width: 70%;
+      flex: 1 0 200px;
+      max-width: 400px;
     span{
       width: 100%;
     }

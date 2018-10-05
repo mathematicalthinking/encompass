@@ -38,28 +38,50 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     this.set('isMissingRequiredFields', isMissing);
   },
 
+  observeErrors: function() {
+    let missingError = this.get('isMissingRequiredFields');
+    if (!missingError) {
+      return;
+    }
+    let title = this.get('title');
+    let privacySetting = this.get('privacySetting');
+    if (!!title && !!privacySetting) {
+      this.set('isMissingRequiredFields', false);
+    }
+  }.observes('title', 'privacySetting'),
+
+  // Empty quill editor .html() property returns <p><br></p>
+  // For quill to not be empty, there must either be some text or a student
+  // must have uploaded an img so there must be an img tag
+  isQuillValid: function() {
+    let pText = this.$('.ql-editor p').text();
+    if (pText.length > 0) {
+      return true;
+    }
+    let content = this.$('.ql-editor').html();
+    if (content.includes('<img')) {
+      return true;
+    }
+    return false;
+  },
+
   createProblem: function() {
     var that = this;
+    const quillContent = this.$('.ql-editor').html();
+    const problemStatement = quillContent.replace(/["]/g, "'");
     var createdBy = that.get('currentUser');
     var title = that.get('title');
-    const quillContent = this.$('.ql-editor').html();
-    const text = quillContent.replace(/["]/g, "'");
     //var categories = [];
     var additionalInfo = that.get('additionalInfo');
     var privacySetting = that.get('privacySetting');
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
 
-    if (!this.get('approvedProblem')) {
-      this.set('noLegalNotice', true);
-      return;
-    }
-
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
       title: title,
-      text: text,
+      text: problemStatement,
       // categories: categories,
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
@@ -149,25 +171,27 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     validate: function() {
-      var that = this;
-      return this.get('validator').validate(that.get('formId'))
-      .then((res) => {
-        if (res.isValid) {
-          // proceed with problem creation
-          var privacySetting = that.get('privacySetting');
-          if (privacySetting === "E") {
-            this.confirmCreatePublic();
-          } else {
-            this.createProblem();
-          }
-        } else {
-          if (res.invalidInputs) {
-            this.set('isMissingRequiredFields', true);
-            return;
-          }
-        }
-      })
-      .catch(console.log);
+      let title = this.get('title');
+      let privacySetting = this.get('privacySetting');
+
+      let isQuillValid = this.isQuillValid();
+      if (!isQuillValid || !title || !privacySetting) {
+        this.set('isMissingRequiredFields', true);
+        return;
+      }
+
+      if (!this.get('approvedProblem')) {
+        this.set('noLegalNotice', true);
+        return;
+      }
+      if (this.get('isMissingRequiredFields')) {
+        this.set('isMissingRequiredFields', null);
+      }
+      if (privacySetting === "E") {
+        this.confirmCreatePublic();
+      } else {
+        this.createProblem();
+      }
     },
 
     problemCreate: function() {

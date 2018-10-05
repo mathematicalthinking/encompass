@@ -73,34 +73,42 @@ const getProblems = async function(req, res, next) {
     let { ids, filterBy, sortBy, page, } = req.query;
 
     if (filterBy) {
-      let {title, problemStatement } = filterBy;
+      let {title, text } = filterBy;
       if (title) {
         title = title.replace(/\s+/g, "");
-        let regex = new RegExp(title, 'i');
+        let regex = new RegExp(title.split('').join('\\s*'), 'i');
+
         filterBy.title = regex;
       }
-      // currently no front end functionality for searching by problemStatement text
+      // currently no front end functionality for searching by text
       // would need to optimize search by ignoring common words
-      if (problemStatement) {
-        problemStatement = problemStatement.replace(/\s+/g, "");
-        let regex = new RegExp(problemStatement, 'i');
-        filterBy.problemStatement = regex;
+      if (text) {
+        text = text.replace(/\s+/g, "");
+        let regex = new RegExp(text.split('').join('\\s*'), 'i');
+
+        filterBy.text = regex;
       }
     }
 
     const criteria = await access.get.problems(user, ids, filterBy);
 
     const [ results, itemCount ] = await Promise.all([
-      models.Problem.find(criteria).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Problem.find(criteria).sort({title: 1}).limit(req.query.limit).skip(req.skip).lean().exec(),
       models.Problem.count(criteria)
     ]);
 
-    // no front end functionality for sending sort query params but we should add that
-    if (sortBy) {
-      // handle sort
-      // default sorting?
-    }
 
+    // no front end functionality for sending sort query params but we should add that
+    // if (sortBy) {
+    //   // handle sort
+    //   // default sorting?
+    // }
+    // let sorted;
+    // if (!sortBy) {
+    //   sorted = results.sort((a, b) => {
+    //     return b.createDate - a.createDate;
+    //   });
+    // }
     const pageCount = Math.ceil(itemCount / req.query.limit);
 
     let currentPage = page;
@@ -174,8 +182,10 @@ const postProblem = async function(req, res, next) {
   if (req.body.problem.privacySetting === "E") {
     let title = req.body.problem.title;
     title = title.replace(/\s+/g, "");
-    regex = new RegExp(title.split('').join('\\s*'), 'i');
-    const exists = await models.Problem.find({ title: {$regex: regex } }).lean().exec();
+    let split = title.split('').join('\\s*');
+    let full = `^${split}\\Z`;
+    regex = new RegExp(full, 'i');
+    const exists = await models.Problem.find({ title: {$regex: regex }, isTrashed: false }).lean().exec();
 
     if (exists.length >= 1) {
       return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
@@ -212,9 +222,10 @@ const putProblem = async function(req, res, next){
     const user = userAuth.requireUser(req);
     if (req.body.problem.privacySetting === "E") {
       let title = req.body.problem.title;
-      title = title.replace(/\s+/g, "");
-      regex = new RegExp(title.split('').join('\\s*'), 'i');
-      const exists = await models.Problem.find({ title: {$regex: regex }, _id: {$ne: req.params.id} }).lean().exec();
+      let split = title.split('').join('\\s*');
+      let full = `^${split}\\Z`;
+      regex = new RegExp(full, 'i');
+      const exists = await models.Problem.find({ title: {$regex: regex }, _id: {$ne: req.params.id}, isTrashed: false }).lean().exec();
       if (exists.length >= 1) {
         return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
       }

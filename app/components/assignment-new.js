@@ -1,4 +1,4 @@
-Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
   createAssignmentError: null,
   isMissingRequiredFields: null,
   selectedSection: null,
@@ -9,9 +9,9 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   problemList: null,
   formId: null,
   createRecordErrors: [],
+  queryErrors: [],
 
   init: function() {
-    console.log('running Init problem-new');
     this._super(...arguments);
     const formId = 'form#newassignmentform';
     this.set('formId', formId);
@@ -30,15 +30,12 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
       this.set('sectionList', sections);
     }
+    this.setAddProblemFunction('addProblemTypeahead');
 
-    if (this.problems) {
-      const problems = this.problems.filterBy('isTrashed', false);
-      this.set('problemList', problems);
-    }
   },
 
   didInsertElement: function() {
-    console.log('running didInsertElement problemNew');
+
     const formId = this.get('formId');
     let isMissing = this.checkMissing.bind(this);
     if (formId) {
@@ -125,7 +122,6 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       date.setHours(23, 59, 59);
       return date;
     },
-
 
   actions: {
     validate: function() {
