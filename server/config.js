@@ -5,6 +5,8 @@
  * @since 2.0.0
  */
 
+/*eslint no-process-env: "off"*/
+
 const fs = require('fs');
 const nconf = require('nconf');
 const logs = require('log4js');

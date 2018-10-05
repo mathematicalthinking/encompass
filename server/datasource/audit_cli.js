@@ -5,13 +5,13 @@
   * @since 1.0.0
   */
 
-var optimist = require('optimist'),
-    _        = require('underscore'),
-    util     = require('util'),
-    fs       = require('fs'),
-    mongo    = require('mongodb'),
-    client   = mongo.MongoClient,
-    bson     = mongo.BSONPure;
+const optimist = require('optimist');
+const _        = require('underscore');
+const util     = require('util');
+const fs       = require('fs');
+const mongo    = require('mongodb');
+const client   = mongo.MongoClient;
+const bson     = mongo.BSONPure;
 
 /** ## CLI Options
   * We use [Optimist](https://github.com/substack/node-optimist) to make our command line interface
@@ -150,10 +150,10 @@ function formatAuditOptions() {
       }
 
       query.update[util.format(cmdFormat, cmd)] = query.update[cmd];
-      delete(query.update[cmd]);
+      delete (query.update[cmd]);
     }
   }
-  
+
   //Set mongo url
   query.url = util.format(urlFormat, query.host, query.port, query.database);
 
@@ -163,7 +163,7 @@ function formatAuditOptions() {
 // Return help if requested
 if(program.h) {
   optimist.showHelp(console.info);
-  process.exit();
+  throw new Error(program.h);
 }
 
 // Parse options
@@ -172,7 +172,7 @@ var options = formatAuditOptions();
 
 if(options.errors.length) {
   console.error(options.errors);
-  process.exit();
+  throw new Error(options.errors);
 }
 
 mongo.connect(options.url, function(err, db) {
