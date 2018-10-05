@@ -64,15 +64,10 @@ function accessibleResponses(user) {
 
 
 function getResponses(req, res, next) {
-  console.log('get responses api called');
-  // var criteria = utils.buildCriteria(req);
-
   var user = userAuth.requireUser(req);
   var criteria = accessibleResponses(user);
 
   criteria.$or.push({ workspace: { $in: req.mf.auth.workspaces } });
-
-  console.log('responses criteria is', criteria);
 
   models.Response.find(criteria).exec(function(err, docs) {
     if(err) {
