@@ -91,6 +91,10 @@ function postSelection(req, res, next) {
   var workspaceId = req.body.selection.workspace;
 
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if (wsAccess.canModify(user, ws)) {
       var selection = new models.Selection(req.body.selection);
       selection.createdBy = user;

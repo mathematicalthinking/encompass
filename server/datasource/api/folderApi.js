@@ -87,6 +87,10 @@ function postFolder(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
@@ -119,6 +123,10 @@ function putFolder(req, res, next) {
 
   var user = userAuth.requireUser(req);
   models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
     if(wsAccess.canModify(user, ws)) {
       models.Folder.findById(req.params.id,
@@ -139,6 +147,10 @@ function putFolder(req, res, next) {
           }
 
           doc.save(function (err, folder) {
+            if (err) {
+              logger.error(err);
+              return utils.sendError.InternalError(err, res);
+            }
             var data = {'folder': folder};
             utils.sendResponse(res, data);
           });

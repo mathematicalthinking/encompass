@@ -36,6 +36,111 @@ const formatAnswers = (answers) => {
   */
 
 /* jshint ignore:start */
+const buildSubmissionSet = async function (submissions, user) {
+  let submissionSet;
+  if (!Array.isArray(submissions)) {
+    return;
+  }
+  const submissionIds = submissions.map((sub) => {
+    return sub._id;
+  });
+
+  var matchBy = {
+    "teacher.id": submissions[0].teacher.id,
+    "_id": {
+      $in: submissionIds
+    },
+    $or: [{
+        "workspaces": null
+      }, //and that aren't already in a workspace | @todo: might be in another user's workspace you know...
+      {
+        "workspaces": {
+          $size: 0
+        }
+      },
+      {
+        "workspaces": {
+          $exists: true
+        }
+      },
+    ],
+    "isTrashed": {
+      $in: [null, false]
+    } //submissions that are not deleted
+  };
+  var sortBy = {
+    "createDate": 1
+  };
+  var groupBy = {
+    _id: {
+      group: "$clazz.sectionId",
+      //pub: "$publication.publicationId",
+      puzzle: "$publication.puzzle.problemId",
+      name: "$clazz.name",
+      title: "$publication.puzzle.title"
+    },
+    pdSet: {
+      $first: "$pdSet"
+    },
+    firstSubmissionDate: {
+      $first: "$createDate"
+    },
+    lastSubmissionDate: {
+      $last: "$createDate"
+    },
+    submissions: {
+      $addToSet: "$_id"
+    },
+  };
+  var include = {
+    submissionSet: {
+      submissions: "$submissions",
+      description: {
+        pdSource: "$pdSet",
+        firstSubmissionDate: "$firstSubmissionDate",
+        lastSubmissionDate: "$lastSubmissionDate",
+        puzzle: {
+          title: "$_id.title"
+        },
+        group: {
+          name: "$_id.name"
+        },
+        // publication: {
+        //   pubId: "$_id.pub"
+        // }
+      },
+      criteria: {
+        pdSet: "$pdSet",
+        group: {
+          groupId: "$_id.group"
+        },
+        puzzle: {
+          puzzleId: "$_id.puzzle"
+        }
+      }
+    }
+  };
+  try {
+    submissionSet = await models.Submission.aggregate([{
+        $match: matchBy
+      },
+      {
+        $sort: sortBy
+      },
+      {
+        $group: groupBy
+      },
+      {
+        $project: include
+      }
+    ]);
+  } catch (err) {
+    console.log(err);
+  }
+  return submissionSet[0].submissionSet;
+};
+
+/* jshint ignore:start */
 const postImport = async function(req, res, next) {
   let submissionSet;
   const user = userAuth.requireUser(req);
@@ -99,8 +204,9 @@ let workspace = new models.Workspace({
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);
 //sending back workspace and submissionID for redirect
-const data = { 'workspaceId': ws._id,
-               'submissionId': ws.submissions[0]
+const data = {
+              'workspaceId': ws._id,
+              'submissionId': ws.submissions[0]
              };
 return utils.sendResponse(res, data);
 
@@ -109,80 +215,6 @@ return utils.sendResponse(res, data);
     return utils.sendError.InternalError(err, res);
   }
 };
-
-const buildSubmissionSet = async function(submissions, user) {
-  let submissionSet;
-  if (!Array.isArray(submissions)) {
-    return;
-  }
-  const submissionIds = submissions.map((sub) => {
-    return sub._id;
-  });
-
-  var matchBy = {
-    "teacher.id": submissions[0].teacher.id,
-    "_id": {$in: submissionIds},
-    $or: [
-      {"workspaces": null},  //and that aren't already in a workspace | @todo: might be in another user's workspace you know...
-      {"workspaces": {$size: 0}},
-      {"workspaces": {$exists: true}},
-    ],
-    "isTrashed": {$in: [null, false]} //submissions that are not deleted
-  };
-  var sortBy = { "createDate": 1 };
-  var groupBy = {
-    _id: {
-      group: "$clazz.sectionId",
-      //pub: "$publication.publicationId",
-      puzzle: "$publication.puzzle.problemId",
-      name:  "$clazz.name",
-      title:  "$publication.puzzle.title"
-    },
-    pdSet: {$first: "$pdSet"},
-    firstSubmissionDate: {$first: "$createDate"},
-    lastSubmissionDate:  {$last:  "$createDate"},
-    submissions: { $addToSet: "$_id" },
-  };
-  var include = {
-    submissionSet: {
-      submissions: "$submissions",
-      description: {
-        pdSource: "$pdSet",
-        firstSubmissionDate: "$firstSubmissionDate",
-        lastSubmissionDate: "$lastSubmissionDate",
-        puzzle: {
-          title: "$_id.title"
-        },
-        group: {
-          name: "$_id.name"
-        },
-        // publication: {
-        //   pubId: "$_id.pub"
-        // }
-      },
-      criteria: {
-        pdSet: "$pdSet",
-        group: {
-          groupId: "$_id.group"
-        },
-        puzzle: {
-          puzzleId: "$_id.puzzle"
-        }
-      }
-    }
-  };
-  try {
-    submissionSet = await models.Submission.aggregate([
-      { $match: matchBy},
-      { $sort: sortBy },
-      { $group: groupBy },
-      { $project: include }]);
-  }catch(err) {
-    console.log(err);
-  }
-  return submissionSet[0].submissionSet;
-};
-
 
 
 module.exports.post.import = postImport;

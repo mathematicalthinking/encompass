@@ -86,6 +86,10 @@ function postTagging(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
 
       var tagging = new models.Tagging(req.body.tagging);
@@ -122,6 +126,10 @@ function putTagging(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {

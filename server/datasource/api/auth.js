@@ -125,7 +125,7 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
       return resolve(msg);
     });
   });
-}
+};
 
 const forgot = async function(req, res, next) {
   let token;
@@ -140,7 +140,8 @@ const forgot = async function(req, res, next) {
       if (!user) {
         const msg = {
           info: 'There is no account associated with that email address',
-          isSuccess: false};
+          isSuccess: false
+        };
         return utils.sendResponse(res, msg);
       }
     } else if (username) {
@@ -148,7 +149,8 @@ const forgot = async function(req, res, next) {
       if (!user) {
         const msg = {
           info: 'There is no account associated with that username',
-          isSuccess: false};
+          isSuccess: false
+        };
         return utils.sendResponse(res, msg);
       }
     }
@@ -165,7 +167,8 @@ const forgot = async function(req, res, next) {
         } else {
           const msg = {
             info: 'You must have an email address associated with your EnCoMPASS account in order to reset your password',
-            isSuccess: false};
+            isSuccess: false
+          };
           return utils.sendResponse(res, msg);
         }
 
@@ -212,7 +215,7 @@ const resetPasswordById = async function(req, res, next) {
     if (!id || !password) {
       const err = {
         info: 'Invalid user id or password'
-      }
+      };
       return utils.sendError.InvalidArgumentError(err, res);
     }
 

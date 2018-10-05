@@ -5,15 +5,15 @@
 */
 /* jshint ignore:start */
 
-var mongoose = require('mongoose'),
-  express = require('express'),
-  _ = require('underscore'),
-  logger = require('log4js').getLogger('server'),
-  models = require('../schemas'),
-  auth = require('./auth'),
-  userAuth = require('../../middleware/userAuth'),
-  permissions = require('../../../common/permissions'),
-  utils = require('../../middleware/requestHandler');
+const mongoose = require('mongoose');
+const express = require('express');
+const _ = require('underscore');
+const logger = require('log4js').getLogger('server');
+const models = require('../schemas');
+const auth = require('./auth');
+const userAuth = require('../../middleware/userAuth');
+const permissions = require('../../../common/permissions');
+const utils = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 module.exports.post = {};

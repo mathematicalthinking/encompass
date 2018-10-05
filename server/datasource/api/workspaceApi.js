@@ -159,7 +159,10 @@ function getWorkspaceWithDependencies(id, callback) {
 function sendWorkspace(req, res, next) {
   console.log('in send WS');
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws) {
+    if (err) {
+      return utils.sendError.InternalError(err, res);
+    }
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.send(403, "You don't have permission for this workspace");
@@ -190,7 +193,7 @@ function putWorkspace(req, res, next) {
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
-      res.status(403).send("You don't have permission to modify this workspace")
+      res.status(403).send("You don't have permission to modify this workspace");
       // res.send(403, "You don't have permission to modify this workspace"); deprecated
       if (err) {
         console.log('putWorkspace error is', err);
@@ -216,6 +219,9 @@ function putWorkspace(req, res, next) {
         }
 
         ws.save(function(err, workspace) {
+          if (err) {
+            return utils.sendError.InternalError(err, res);
+          }
           utils.sendResponse(res, {workspace: workspace});
         });
       });
@@ -249,6 +255,10 @@ function updateWorkspaces(workspaces, submissionSet){
 
     if(!isSubDoc) {
       doc.populate(opts, function(err, submission) {
+        if (err) {
+          logger.error(err);
+          return;
+        }
         if(submission.pdSrcId) {
           obj = _.defaults(obj, {powId: submission.pdSrcId.powId});
         }
@@ -412,8 +422,7 @@ function nameWorkspace(submissionSet, user, isPows) {
 
   var mask = function(source) { return (pdSet === "default") ? "PoWs" : pdSet; };
 
-  var name = (group) ? helper.format(labelFmt, puzzle.title, group.name, mask(pdSet))
-                     : helper.format(labelFmt, puzzle.title, mask(pdSet));
+  var name = (group) ? helper.format(labelFmt, puzzle.title, group.name, mask(pdSet)) : helper.format(labelFmt, puzzle.title, mask(pdSet));
 
   if (isPows === false && name.includes('PoWs')) {
     name = name.slice(0, -5);
@@ -443,6 +452,9 @@ function newWorkspace(submissionSet, user, folderSetName) {
   });
   var promise = new mongoose.Promise();
   workspace.save(function(err, ws){
+    if (err) {
+      return utils.sendError.InternalError(err, res);
+    }
     newFolderStructure(user, ws, folderSetName).then(function(){
       promise.resolve();
     });
@@ -692,8 +704,10 @@ function prepareAndUpdateWorkspaces(user, callback) {
 
     packageSubmissions(matchBy, sortBy, groupBy, include, function (err, results) {
       logger.info('pkg sub callback in');
-      if(err) { logger.info('in error block pkgsub');callback( new Error( err.message ) ); }
-
+      if(err) {
+        logger.info('in error block pkgsub');
+        callback( new Error( err.message ));
+      }
       var submissionSets = _.pluck(results, 'submissionSet');
       console.log('We got '+ submissionSets.length + 'sets');
       console.log('We got '+ submissionSets.submissions + 'sets');
@@ -728,6 +742,9 @@ function sendWorkspaces(req, res, next) {
     }
 
     models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+      if (err) {
+        return utils.sendError.InternalError(err, res);
+      }
       var response = {
         workspaces: workspaces,
         meta: { sinceToken: new Date() }
@@ -851,6 +868,9 @@ function newWorkspaceRequest(req, res, next) {
   logger.debug('looking for workspaces for user id' + user._id);
   let criteria = await access.get.workspaces(user);
     models.Workspace.find(criteria).exec(function(err, workspaces) {
+      if (err) {
+        return utils.sendError.InternalError(err, res);
+      }
       workspaces.forEach((workspace) => {
         if (!workspace.lastViewed) {
           workspace.lastViewed = workspace.lastModifiedDate;
@@ -910,7 +930,7 @@ async function buildCriteria(ids, criteria, user) {
 // will always return empty results
   let teacher = criteria.teacher;
   if (!_.isEmpty(teacher && teacher !== user.id)) {
-    let assignments = await accessUtils.getTeacherAssignments(teacher)
+    let assignments = await accessUtils.getTeacherAssignments(teacher);
     let sections = await accessUtils.getTeacherSectionsById(teacher);
     // have to get teacher users and then filter the answers to be created by teacher
     filter.$or = [{
@@ -947,8 +967,11 @@ async function populateAnswers(answers) {
     {path: 'problem', select: 'title'},
     {path: 'section', select: ['name', 'teachers']}
   ];
-  return await models.Answer.populate(answers, opts);
-
+  try {
+     return await models.Answer.populate(answers, opts);
+  } catch(err) {
+    console.error(err);
+  }
 }
 
 async function answersToSubmissions(answers) {
@@ -1004,12 +1027,10 @@ async function answersToSubmissions(answers) {
       return sub;
     });
     return subs;
-  }catch(err) {
+  } catch(err) {
     console.log('error mapping answers to subs', err);
   }
-
-
-};
+}
 
 async function postWorkspaceEnc(req, res, next) {
   const user = req.user;

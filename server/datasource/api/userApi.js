@@ -86,7 +86,7 @@ async function sendUsers(req, res, next) {
       return utils.sendResponse(res, data);
 
   } else if (req.query.username) {
-    criteria = await access.get.users(user, null, req.query.username)
+    criteria = await access.get.users(user, null, req.query.username);
   } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids, null);
   } else {

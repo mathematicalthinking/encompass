@@ -106,7 +106,7 @@ const getAnswer = (req, res, next) => {
   const answer = new models.Answer(req.body.answer);
 
   answer.createDate = Date.now();
-  answer.save((err, doc) => {
+  await answer.save((err, doc) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);

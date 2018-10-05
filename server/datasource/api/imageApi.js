@@ -16,7 +16,7 @@ const userAuth = require('../../middleware/userAuth');
 const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
-const PDF2Pic = require('pdf2pic').default
+const PDF2Pic = require('pdf2pic').default;
 require('dotenv').config();
 
 
@@ -85,11 +85,13 @@ const getImage = (req, res, next) => {
 
 const readFilePromise = function(file) {
   return new Promise((resolve, reject) => {
-    if (!file)
+    if (!file) {
       return reject(new Error('failure extreme failure'));
+    }
     fs.readFile(file, (err, data) => {
-        if (err)
+        if (err) {
           return reject(err);
+        }
         return resolve(data);
     });
   });
@@ -116,7 +118,7 @@ const postImages = async function(req, res, next) {
     if (process.env.BUILD_DIR) {
       buildDir = process.env.BUILD_DIR;
     }
-    const saveDir = `./${buildDir}/image_uploads/tmp_pngs`
+    const saveDir = `./${buildDir}/image_uploads/tmp_pngs`;
     fs.access(saveDir, fs.constants.F_OK, (err) => {
       if (err) {
         console.error(`ERROR - PNG Images directory ${saveDir} does not exist`);
@@ -130,22 +132,22 @@ const postImages = async function(req, res, next) {
         savedir: saveDir, // output file location
         format: "png", // output file format
         size: 1000 // output size in pixels
-      })
+      });
       let file = img.path;
       return converter.convertBulk(file)
         .then(results => {
           let files = results.map((result) => {
             return result.path;
-          })
+          });
           return Promise.all(files.map((file) => {
             let f = {
               createdBy: user,
               createDate: Date.now(),
               originalname: img.originalname
-            }
+            };
             return readFilePromise(file).then((data) => {
               let newImage = new models.Image(f);
-              let buffer = new Buffer(data).toString('base64');
+              let buffer = Buffer.from(data).toString('base64');
               let format = `data:image/png;base64,`;
               let imgData = `${format}${buffer}`;
 
