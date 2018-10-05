@@ -47,7 +47,7 @@ module.exports = {
     inputs: {
       name: 'input#title',
       question: 'div.ql-editor',
-      category: 'input#categories',
+      category: '#add-category',
       additionalInfo: 'textarea.additional-info-area',
       // isPublicYes: 'input.public',
       // isPublicNo: 'input.private',

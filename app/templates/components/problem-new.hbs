@@ -22,12 +22,12 @@
             <label for="categories">Problem Category</label>
             {{#unless showCategories}}
               <div class="button-row">
-                <button {{action 'showCategories'}}>Show Category Menu</button>
+                <button id="add-category" {{action 'showCategories'}}>Show Category Menu</button>
               </div>
             {{/unless}}
             {{#if showCategories}}
               <div class="button-row">
-                <button {{action 'showCategories'}}>Hide Category Menu</button>
+                <button id="add-category" {{action 'showCategories'}}>Hide Category Menu</button>
               </div>
               {{categories-menu categories=categories store=store addCategories="addCategories"}}
             {{/if}}
