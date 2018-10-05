@@ -19,7 +19,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   createRecordErrors: [],
   isMissingRequiredFields: null,
   showCategories: false,
-  selectedCategories: [],
   alert: Ember.inject.service('sweet-alert'),
 
   init: function () {
@@ -235,12 +234,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     updateProblem: function () {
+      let problem = this.get('problem');
+      let currentUser = this.get('currentUser');
       let title = this.get('problemName');
       const quillContent = this.$('.ql-editor').html();
       let text = quillContent.replace(/["]/g, "'");
       let privacy = this.get('privacySetting');
-      let problem = this.get('problem');
-      let currentUser = this.get('currentUser');
       let additionalInfo = this.get('additionalInfo');
 
       let isQuillValid = this.isQuillValid();
@@ -261,7 +260,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('title', title);
       problem.set('text', text);
       problem.set('additionalInfo', additionalInfo);
-
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -325,7 +323,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       } else {
         if (problem.get('hasDirtyAttributes')) {
           problem.set('modifiedBy', currentUser);
-          problem.save().then((res) => {
+          problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
             this.resetErrors();
             this.set('showConfirmModal', false);
@@ -336,16 +334,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.set('showConfirmModal', false);
             return;
           });
-        } else if (this.get('categoryChanged')) {
-          problem.save().then((res) => {
-            this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
-            this.resetErrors();
-            this.set('showConfirmModal', false);
-            this.set('isEditing', false);
-          });
         } else {
           this.set('isEditing', false);
-          console.log('problem is not dirty');
         }
       }
     },
@@ -446,11 +436,22 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     addCategories: function (category) {
-      let categories = this.get('selectedCategories');
+      let problem = this.get('problem');
+      let categories = problem.get('categories');
       if (!categories.includes(category)) {
         categories.pushObject(category);
+        problem.save().then(() => {
+          this.get('alert').showToast('success', 'Category Added', 'bottom-end', 4000, true, 'Undo')
+          .then((result) => {
+            if (result.value) {
+              problem.get('categories').removeObject(category);
+              problem.save().then(() => {
+                this.get('alert').showToast('success', 'Category Removed', 'bottom-end', 4000, false, null);
+              });
+            }
+          });
+        });
       }
-      console.log('selected cats are', categories);
     },
 
     removeCategory: function (category) {
