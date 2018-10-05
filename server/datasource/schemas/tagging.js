@@ -1,9 +1,9 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId,
-    Workspace = require('./workspace'),
-    Selection = require('./selection'),
-    Folder = require('./folder');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const Workspace = require('./workspace');
+const Selection = require('./selection');
+const Folder = require('./folder');
 
 /**
   * @public
