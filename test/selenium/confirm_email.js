@@ -86,7 +86,7 @@ describe('Confirm Email', async function () {
       await helpers.findInputAndType(driver, css.login.password, user.password);
       await helpers.findAndClickElement(driver, css.login.submit);
       await helpers.waitForSelector(driver, css.topBar.logout);
-      await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 7000);
+      await helpers.waitForUrlMatch(driver, /unconfirmed/);
     });
 
     it('should redirect to /unconfirmed', async function() {

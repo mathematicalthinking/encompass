@@ -45,7 +45,7 @@ async function runTests(users) {
           it(`should display new workspace creation form`, async function() {
             await helpers.findAndClickElement(driver, css.topBar.workspaces);
             await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
-            await driver.wait(until.urlIs(`${host}/#/workspaces/new`), 5000);
+            await helpers.waitForUrlMatch(driver, /workspaces\/new/);
             expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
           });
         }
@@ -59,14 +59,15 @@ async function runTests(users) {
 
         if (accountType === 'S' || actingRole === 'student') {
           it('should redirect to homepage', async function() {
-            await driver.wait(until.urlIs(`${host}/#/`), 5000);
+            await helpers.waitForUrlMatch(driver, /\//);
 
             expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
             expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
           });
         } else {
           it(`should display new workspace creation form`, async function() {
-            await driver.wait(until.urlIs(url), 5000);
+            let regex = new RegExp(url);
+            await helpers.waitForUrlMatch(driver, regex);
 
             expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
           });
