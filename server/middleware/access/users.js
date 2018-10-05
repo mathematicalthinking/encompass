@@ -33,7 +33,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
   }
 
   if (usernames) {
-    filter.username = { $in: usernames }
+    filter.username = { $in: usernames };
   }
 
   if (regex) {
@@ -157,7 +157,7 @@ const canGetUser = async function(user, id, username) {
     hasPermission: false,
     requestedUser: null
   };
-}
+};
 
 const modifiableUserCriteria = function(user) {
   if (!user) {
