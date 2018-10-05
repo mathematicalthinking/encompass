@@ -72,11 +72,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     }
   },
 
-  willDestroyElement: function () {
-    $(".daterangepicker").remove();
-    this._super(...arguments);
-  },
-
   isYourOwn: function() {
     const currentUserId = this.get('currentUser.id');
     const creatorId = this.assignment.get('createdBy.id');
@@ -173,6 +168,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
           }
         });
         this.sendAction('toAssignments');
+        $(".daterangepicker").remove();
       })
       .catch((err) => {
         this.set('assignmentToDelete', null);
@@ -228,6 +224,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         return assignment.save().then(() => {
           this.get('alert').showToast('success', 'Assignment Updated', 'bottom-end', 4000, false, null);
           this.set('assignmentUpdateSuccess', true);
+          $(".daterangepicker").remove();
           this.set('isEditing', false);
           return;
         })
@@ -236,10 +233,12 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
         });
       } else {
         this.set('isEditing', false);
+        $(".daterangepicker").remove();
       }
     },
     stopEditing: function() {
       this.set('isEditing', false);
+      $(".daterangepicker").remove();
     },
   }
 });
