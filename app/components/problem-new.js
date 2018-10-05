@@ -206,7 +206,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       if (!categories.includes(category)) {
         categories.pushObject(category);
       }
-      console.log('selected cats are', categories);
     },
 
     showCategories: function() {
