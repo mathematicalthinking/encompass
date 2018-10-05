@@ -33,7 +33,7 @@ module.exports = {
     }
     if(hard) {
       console.error(object);
-      throw "alleged object is neither string, object with field key, nor array thereof";
+      throw new Error("alleged object is neither string, object with field key, nor array thereof");
     } else {
       console.warn("alleged object is neither string, object with field key, nor array thereof" + object);
     }
@@ -65,4 +65,4 @@ module.exports = {
     }
     return this.resolveProperty('username', user);
   }
-}
+};
