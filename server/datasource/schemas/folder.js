@@ -1,9 +1,7 @@
-var mongoose  = require('mongoose'),
-    Schema    = mongoose.Schema,
-    _         = require('underscore'),
-    ObjectId  = Schema.ObjectId,
-    Workspace = require('./workspace'),
-    Tagging   = require('./tagging');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const _ = require('underscore');
+const ObjectId = Schema.ObjectId;
 
 /**
   * @public
@@ -64,6 +62,9 @@ FolderSchema.pre('save', function (next) {
   var folder = this;
 
   mongoose.models.Folder.findById(folder.id, function(err, dbFolder) {
+    if (err) {
+      throw new Error(err);
+    }
     if(dbFolder && (dbFolder.parent !== folder.parent)) {
       console.log('parent of ' + folder.id + ' (' + folder.name +
         ') changing from ' + dbFolder.parent + ' to ' + folder.parent);
@@ -105,6 +106,9 @@ FolderSchema.post('save', function (folder) {
             to trigger their respective validators
     */
     folder.populate('taggings').populate('children', function(err, doc) {
+      if (err) {
+        throw new Error(err.message);
+      }
       doc.children.forEach(function (child) {
         child.isTrashed = true;
         child.save();
