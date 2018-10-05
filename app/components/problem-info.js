@@ -168,12 +168,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let problemId = problem.get('id');
       let currentUserAccountType = this.get('currentUser').get('accountType');
       let isAdmin = currentUserAccountType === "A";
-<<<<<<< HEAD
-      this.set('problemName', problem.get('title'));
-      this.set('problemText', problem.get('text'));
-      this.set('additionalInfo', problem.get('additionalInfo'));
-      this.set('privacySetting', problem.get('privacySetting'));
-=======
       this.set('copyrightNotice', problem.get('copyrightNotice'));
       this.set('sharingAuth', problem.get('sharingAuth'));
 
@@ -182,7 +176,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
        this.set('problemText', problem.get('text'));
        this.set('additionalInfo', problem.get('additionalInfo'));
        this.set('privacySetting', problem.get('privacySetting'));
->>>>>>> Display copyright notice and authorization for problems, fix privacy flag on old POWs problems
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {

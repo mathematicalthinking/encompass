@@ -78,9 +78,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var privacySetting = that.get('privacySetting');
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
-<<<<<<< HEAD
     var categories = this.get('selectedCategories');
-=======
     var copyrightNotice = that.get('copyrightNotice');
     var sharingAuth = that.get('sharingAuth');
 
@@ -88,7 +86,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.set('noLegalNotice', true);
       return;
     }
->>>>>>> Display copyright notice and authorization for problems, fix privacy flag on old POWs problems
 
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
