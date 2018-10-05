@@ -104,7 +104,7 @@ describe('Sections', async function () {
               }
 
             }
-          }
+          };
           describe('Clicking link from section-info', async function() {
             let sel = css.sectionInfo.newSectionButton;
             if (isStudent) {
