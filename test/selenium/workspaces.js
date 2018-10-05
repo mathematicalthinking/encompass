@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver')
+const {Builder, By, Key, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -27,7 +27,7 @@ describe('Visiting Workspaces', function() {
   });
 
   it('should land us at /workspaces', async function() {
-    await helpers.waitForAndClickElement(driver, css.topBar.workspaces)
+    await helpers.waitForAndClickElement(driver, css.topBar.workspaces);
     await helpers.waitForSelector(driver, '#workspace_listing');
     expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/#/workspaces`);
   });
@@ -197,7 +197,7 @@ describe('Visiting Workspaces', function() {
           comments = await driver.findElements(By.css('#al_feedback_display>ul>li'));
           commentsText = await Promise.all(comments.map((el) => {
             return el.getText();
-          }))
+          }));
         }catch(err) {
           console.log(err);
         }
@@ -269,7 +269,7 @@ describe('Visiting Workspaces', function() {
           let links = await driver.wait(until.elementsLocated(By.css('span.toggle-icon.branch')), 3000);
           if (links) {
             await links[0].click();
-            subFolderList = await driver.wait(until.elementLocated(By.css('ul.subfolders')))
+            subFolderList = await driver.wait(until.elementLocated(By.css('ul.subfolders')));
             if (subFolderList) {
               subFolders = await subFolderList.findElements(By.css('.folderItem'));
             }

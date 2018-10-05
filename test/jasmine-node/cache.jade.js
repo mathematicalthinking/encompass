@@ -68,8 +68,7 @@ describe("Cache", function() {
           expect(caching.failure).toHaveBeenCalled();
           expect(caching.success).not.toHaveBeenCalled();
 
-          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0]
-                                                               : null;
+          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0]: null;
 
           expect(expected).toHaveMissingArgumentsError();
           done();
@@ -82,8 +81,7 @@ describe("Cache", function() {
           expect(caching.failure).toHaveBeenCalled();
           expect(caching.success).not.toHaveBeenCalled();
 
-          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0]
-                                                               : null;
+          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0] : null;
 
           expect(expected).toHaveMissingArgumentsError();
           done();
@@ -100,8 +98,7 @@ describe("Cache", function() {
           expect(caching.failure).toHaveBeenCalled();
           expect(caching.success).not.toHaveBeenCalled();
 
-          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0]
-                                                               : null;
+          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0] : null;
 
           expect(expected).toHaveResponseError();
           done();
@@ -118,8 +115,7 @@ describe("Cache", function() {
           expect(caching.failure).toHaveBeenCalled();
           expect(caching.success).not.toHaveBeenCalled();
 
-          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0]
-                                                               : null;
+          var expected = (caching.failure.mostRecentCall.args) ? caching.failure.mostRecentCall.args[0] : null;
 
           expect(expected).toHaveFileError();
           done();
@@ -136,8 +132,7 @@ describe("Cache", function() {
           expect(caching.failure).not.toHaveBeenCalled();
           expect(caching.success).toHaveBeenCalled();
 
-          var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0]
-                                                             : {};
+          var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0] : {};
 
           expect(report.success).toBeTruthy();
           expect(report.importer).toEqual(mock.users.user.username);
@@ -158,8 +153,7 @@ describe("Cache", function() {
           expect(caching.failure).not.toHaveBeenCalled();
           expect(caching.success).toHaveBeenCalled();
 
-          var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0]
-                                                             : {};
+          var report = (caching.success.mostRecentCall.args) ? caching.success.mostRecentCall.args[0] : {};
 
           expect(report.success).toBeTruthy();
           expect(report.importer).toEqual(mock.users.user.username);
