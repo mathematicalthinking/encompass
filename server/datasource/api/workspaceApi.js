@@ -160,6 +160,8 @@ function sendWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if (err) {
+      console.error(`Error sendWorkspace: ${err}`);
+      console.trace();
       return utils.sendError.InternalError(err, res);
     }
     if (!ws) {

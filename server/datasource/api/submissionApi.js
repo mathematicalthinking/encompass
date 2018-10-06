@@ -204,10 +204,13 @@ function getPDSets(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 function getSubmission(req, res, next) {
+  var user = userAuth.requireUser(req);
+
   models.Submission.findById(req.params.id,
     function(err, submission) {
       if(err) {
-        logger.error(err);
+        console.error(`Error getSubmission: ${err}`);
+        console.trace();
         return utils.sendError.InternalError(err, res);
       }
       var data = {'submission': submission};
