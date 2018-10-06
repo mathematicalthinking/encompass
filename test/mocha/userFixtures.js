@@ -24,7 +24,12 @@ const pdAdminDrexel = {
     username: 'sam3',
     accountType: 'S'
   },
-  accessibleUserCount: 24
+  accessibleUserCount: 24,
+
+  accessibleSubmissionCount: 53,
+  unaccessibleSubmission: {
+    _id: "5bb814d19885323f6d894973"
+  }
 };
 
 const teacherMT = {
@@ -55,7 +60,12 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 20
+  accessibleUserCount: 20,
+  accessibleSubmissionCount: 18,
+  unaccessibleSubmission: {
+    _id: "53e1156db48b12793f000417"
+  }
+
 };
 
 const admin = {
@@ -78,7 +88,9 @@ const admin = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 37
+  accessibleUserCount: 37,
+  accessibleSubmissionCount: 54,
+
 
 };
 
@@ -109,6 +121,11 @@ const studentMT = {
     username: 'tracyc',
     accountType: 'S'
   },
+
+  unaccessibleSubmission: {
+    _id: "53e36522729e9ef59ba7f4df"
+  }
+
 };
 
 const teacherActingStudent = {
@@ -139,8 +156,10 @@ const teacherActingStudent = {
     username: 'actingStudent',
     accountType: 'T'
   },
+  unaccessibleSubmission: {
+    _id: "53e36522729e9ef59ba7f4db"
+  }
 };
-
 const users = {
   admin,
   pdAdminDrexel,
