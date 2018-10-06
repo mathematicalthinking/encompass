@@ -126,7 +126,7 @@ function determineStudentAccess(user, path, method) {
   }
 
   const {accountType, actingRole} = user;
-  const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets'];
+  const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
   const allowedPostPutPaths = ['answers', 'image', 'errors'];
 
   if (method === 'GET') {
