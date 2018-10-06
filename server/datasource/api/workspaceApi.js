@@ -157,21 +157,20 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-  console.log('in send WS');
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws) {
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if (err) {
       return utils.sendError.InternalError(err, res);
     }
+    if (!ws) {
+      return utils.sendResponse(res, null);
+    }
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
       getWorkspace(req.params.id, function(data) {
         console.log(`${user} has permission to load workspace #${req.params.id}`);
-        if(!data) {
-          return utils.sendCustomError(404, 'no such workspace', res);
-        }
         utils.sendResponse(res, data);
       });
     }
