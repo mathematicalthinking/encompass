@@ -10,10 +10,7 @@ const logger   = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
-const auth     = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
-const data     = require('./data');
 const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 
@@ -125,6 +122,11 @@ function postResponse(req, res, next) {
 function putResponse(req, res, next) {
 
   var user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Response.findById(req.params.id,
     function (err, doc) {
       if(err) {

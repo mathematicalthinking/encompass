@@ -22,14 +22,11 @@ const auth = require('./datasource/api/auth');
 const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
 const path = require('./middleware/path');
-const utils = require('./middleware/requestHandler');
 const multerMw = require('./middleware/multer');
 
 //REQUIRE MODELS
-const models = require('./datasource/schemas');
 
 //REQUIRE CONFIG SUPPORT
-const dbMigration = require('./db_migration/base');
 const fixed = require('./datasource/fixed');
 const nconf = config.nconf;
 
@@ -272,11 +269,14 @@ server.post('/api/importRequests', api.post.importSubmissionsRequest);
 // error handler
 server.use(function (err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  console.log('in catch all error handler', err);
+  // res.locals.message = err.message;
+  // res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
+  // res.status(err.status || 500);
+  err.status = 500;
+  next(err);
   //res.render('error');
 });
 

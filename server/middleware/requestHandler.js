@@ -6,17 +6,10 @@
  */
 
 //REQUIRE MODULES
-const logger = require('log4js').getLogger('server');
 const crypto = require('crypto');
 const _ = require('underscore');
 
 //REQUIRE FILES
-const userApi = require('../datasource/api/userApi');
-const path = require('./path');
-const models = require('../datasource/schemas');
-const config = require('../config');
-const nconf = config.nconf;
-//const powConf = nconf.get('cache');
 
 
 /**
@@ -244,7 +237,7 @@ function modelize(obj, currentField) {
   * @return {String} The encrypted secret
   */
 function generateApiSecret(time) {
-  var timestamp = (!!arguments.length) ? time : Date.now(),
+  var timestamp = (arguments.length) ? time : Date.now(),
       salt = process.env.key,
       hash = 'md5',
       secret = timestamp + salt;
@@ -302,6 +295,14 @@ function isValidApiKey(secret, timestamp) {
   return false;
 }
 
+const asyncWrapper = function(promise) {
+  return promise.then((data) => {
+    return [null, data];
+  }).catch((err) => {
+    return [err];
+  });
+};
+
 module.exports.sendResponse = sendResponse;
 module.exports.sendError = sendError;
 module.exports.buildCriteria = buildCriteria;
@@ -309,3 +310,4 @@ module.exports.modelize = modelize;
 module.exports.generateApiSecret = generateApiSecret;
 module.exports.generateApiKey = generateApiKey;
 module.exports.isValidApiKey = isValidApiKey;
+module.exports.asyncWrapper = asyncWrapper;

@@ -1,10 +1,9 @@
 // REQUIRE MODULES
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 const moment = require('moment');
 
 // REQUIRE FILES
-const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
@@ -84,7 +83,7 @@ describe('Problems', function() {
     describe('Submitting a problem without an image', function() {
       const inputs = css.newProblem.inputs;
 
-      const submitProblem = async function(details, privacySetting, image) {
+      const submitProblem = async function(details, privacySetting) {
         for (let detail of Object.keys(details)) {
           try {
             await helpers.findInputAndType(driver, inputs[detail], details[detail]);

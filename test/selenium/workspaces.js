@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -88,8 +88,8 @@ describe('Visiting Workspaces', function() {
       });
 
       it('should have selecting enabled by default', async function() {
-        let checkbox;
         let isEnabled;
+        let isVisible;
         try {
           let checkbox = await driver.wait(until.elementLocated(By.css('label.makingSelection>input')), 3000);
           if (checkbox) {
@@ -137,7 +137,6 @@ describe('Visiting Workspaces', function() {
       });
 
       it('should hide the list of students if clicked', async function() {
-        let studentList;
         try{
           await selectBox.click();
         }catch(err) {
@@ -258,8 +257,6 @@ describe('Visiting Workspaces', function() {
 
     describe('clicking the folder icon', function() {
       it('should display sub-folders (if any)', async function() {
-        let folders;
-        let interpretationFolder;
         let subFolderList;
         let subFolders;
 

@@ -1,5 +1,4 @@
 const utils = require('./utils');
-const wsAccess = require('./workspaces');
 
 module.exports.get = {};
 

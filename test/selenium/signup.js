@@ -1,14 +1,11 @@
 // REQUIRE MODULES
 const {
   Builder,
-  By,
-  Key,
-  until
+  By
 } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
-const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
@@ -54,7 +51,7 @@ describe('Signup form', async function () {
   describe('Submitting form', function () {
 
     it('should display missing fields error when omitting username', async function () {
-      await helpers.signup(driver, host, ['username']);
+      await helpers.signup(driver, ['username']);
       await helpers.waitForSelector(driver, 'p');
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.true;
     });

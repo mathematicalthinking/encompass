@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const { By, until } = require('selenium-webdriver');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -169,7 +169,7 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   try {
     return await webDriver.wait(async function() {
       return await isElementVisible(webDriver, selector) === false;
-    }, timeout=timeoutMs);
+    }, timeout);
   } catch (err) {
     console.log(err);
   }
@@ -210,12 +210,12 @@ const login = async function(webDriver, host, user=admin) {
   return await waitForSelector(webDriver, css.topBar.logout);
 };
 
-const signup = async function(webDriver, host, missingFields=[], user=newUser,  acceptedTerms=true) {
+const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
   const inputs = css.signup.inputs;
   for (let input of Object.keys(inputs)) {
     if (input !== 'terms' && !missingFields.includes(input)) {
       try {
-        await findInputAndType(webDriver, inputs[input], newUser[input]);
+        await findInputAndType(webDriver, inputs[input], user[input]);
       }catch(err){
         console.log(err);
       }
@@ -231,30 +231,12 @@ const signup = async function(webDriver, host, missingFields=[], user=newUser,  
   }
 };
 
-// use for checking if several elements are visible in dom
-// elements should be an array of css selectors
-const verifyElements = async function(webDriver, elements) {
-  let isVisible;
-  if (!Array.isArray(elements)) {
-    return;
-  }
-
-    for (let el of elements) {
-      try {
-        isVisible = await isElementVisible(webDriver, el);
-      }catch(err) {
-        console.log(err);
-      }
-      expect(isVisible).to.be.true;
-  }
-};
-
 const clearElement = async function(webDriver, element) {
   let ele;
   try {
    let elements = await getWebElements(webDriver, element);
-   el = elements[0];
-   await el.clear();
+   ele = elements[0];
+   await ele.clear();
   }catch(err) {
     console.log(err);
   }

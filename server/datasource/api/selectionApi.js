@@ -7,13 +7,10 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
-const _        = require('underscore');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
-const auth     = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 
@@ -34,6 +31,12 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 function getSelections(req, res, next) {
+  var user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   var criteria;
   criteria = utils.buildCriteria(req);
 
@@ -41,7 +44,8 @@ function getSelections(req, res, next) {
     criteria._id = {$in: req.query.ids};
   }
 
-  var user = userAuth.requireUser(req);
+
+
   models.Selection.find(criteria)
     .exec(function(err, selections) {
       if(err) {
@@ -65,6 +69,11 @@ function getSelections(req, res, next) {
 function getSelection(req, res, next) {
 
   var user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Selection.findById(req.params.id)
     .exec(function(err, selection) {
       if(err) {
@@ -127,6 +136,11 @@ function postSelection(req, res, next) {
 function putSelection(req, res, next) {
   logger.warn("Putting Selection 1");
   var user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Selection.findById(req.params.id, function (err, doc) {
     logger.warn("Putting Selection 2");
     if(err) {

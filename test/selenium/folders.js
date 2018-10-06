@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -34,7 +34,6 @@ describe('Folders', function() {
     });
 
     it('should display the folder name', async function() {
-      let name;
       expect(await helpers.findAndGetText(driver, 'div#menubar>h1')).to.eql('Improve');
     });
 

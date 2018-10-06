@@ -5,14 +5,11 @@
 */
 /* jshint ignore:start */
 //REQUIRE MODULES
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
 const access= require('../../middleware/access/answers');
 
@@ -102,6 +99,10 @@ const getAnswer = (req, res, next) => {
 
  const postAnswer = async function(req, res, next) {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
   // Add permission checks here
   const answer = new models.Answer(req.body.answer);
 
@@ -136,6 +137,10 @@ const getAnswer = (req, res, next) => {
 
 const putAnswer = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
   // what check do we want to perform if the user can edit
   // if they created the answer?
   models.Answer.findById(req.params.id, (err, doc) => {

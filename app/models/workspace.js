@@ -53,7 +53,6 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   }.property('submissions'),
 
   firstSubmission: function(){
-    var controller = this;
     //console.log("First Sub Id: " + this.hasMany( collection ).ids().objectAt(0) );
     return this.hasMany( 'submissions' ).ids()[0];
     /*

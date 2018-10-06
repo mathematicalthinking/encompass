@@ -127,7 +127,7 @@ FolderSchema.post('save', function (folder) {
         if (err) { throw new Error(err.message); }
       });
 
-    if (!!folder.parent) {
+    if (folder.parent) {
       mongoose.models.Folder.findByIdAndUpdate(folder.parent,
         {$addToSet: {'children': folder}},
         function (err, affected, results) {

@@ -65,7 +65,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
         rec.save()
           .then((res) => {
-            let name = res.get('name');
             return resolve(res.get('organizationId'));
           })
           .catch((err) => {

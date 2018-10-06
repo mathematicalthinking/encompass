@@ -9,9 +9,7 @@
 
 const mongoose = require('mongoose');
 const _ = require('underscore');
-const Q = require('q');
 const logger   = require('log4js').getLogger('server');
-const util = require('util');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -19,6 +17,8 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const spaces   = require('./workspaceApi');
 const access   = require('../../middleware/access/submissions');
+
+const asyncWrapper = utils.asyncWrapper;
 
     module.exports.get = {};
     module.exports.post = {};
@@ -112,6 +112,7 @@ async function getSubmissions(req, res, next) {
   } else {
     criteria = await access.get.submissions(user, null);
   }
+  console.log('criteria get subs', criteria);
 
   //console.log('req params', req.query);
   //logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
@@ -127,6 +128,7 @@ async function getSubmissions(req, res, next) {
       utils.sendResponse(res, data);
     });
   }catch(err) {
+    console.log('caught error getSubmsissions', err);
     return utils.sendError.InternalError(null, res);
   }
 
@@ -138,7 +140,7 @@ async function getSubmissions(req, res, next) {
   * @description Retrieves the most recent submission for user
   *              with `username`
   */
-function getLatestUserSubmission (username, callback) {
+function getLatestUserSubmission (username, callback) { // eslint-disable-line no-unused-vars
 
   mongoose.connection.once('open', function() {
     models.Submission.find({'teacher.username': username})
@@ -203,19 +205,27 @@ function getPDSets(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getSubmission(req, res, next) {
-  var user = userAuth.requireUser(req);
+async function getSubmission(req, res, next) {
+  const user = userAuth.requireUser(req);
 
-  models.Submission.findById(req.params.id,
-    function(err, submission) {
-      if(err) {
-        console.error(`Error getSubmission: ${err}`);
-        console.trace();
-        return utils.sendError.InternalError(err, res);
-      }
-      var data = {'submission': submission};
-      utils.sendResponse(res, data);
-    });
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+
+  const [ err, submission ] = await asyncWrapper(models.Submission.findById(req.params.id));
+
+  if (err) {
+    console.error(`Error getSubmission: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
+
+  const data = {
+    submission
+  };
+
+  return utils.sendResponse(res, data);
+
 }
 
 

@@ -171,7 +171,7 @@ let gradesArr = ["K", "1", "2", "3", "4", "5", "6", "7", "8", "HSS", "HSN", "HSG
 
 
 //SAMPLE TREE STURUCTURE;
-    let categories = [
+    let categories = [ // eslint-disable-line no-unused-vars
       {
         name: 'Grade K',
         identifier: 'CCSS.Math.Content.K',

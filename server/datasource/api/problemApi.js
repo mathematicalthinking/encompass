@@ -4,15 +4,11 @@
 */
 /* jshint ignore:start */
 //REQUIRE MODULES
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
-const paginate = require('express-paginate');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/problems');
 
@@ -32,34 +28,34 @@ module.exports.put = {};
 
 // This only returns problems that are public or belong to you
 // Needd to update to handle problems you participate in
-function accessibleProblems(user) {
-  let studentProblems = [];
+// function accessibleProblems(user) {
+//   let studentProblems = [];
 
-  return models.Assignment.find({'_id': {$in: user.assignments}}).then((assignments) => {
-      assignments.forEach((assn) => {
-        studentProblems.push(assn.problem);
-      });
-      return studentProblems;
-  })
-  .then((probs) => {
-    return {
-      $or: [
-        { createdBy: user },
-        { privacySetting: "E" },
-        { $and: [
-          { organization: user.organization },
-          { privacySetting: "O" }
-        ]},
-        {_id: {$in: probs}},
-      ],
-      isTrashed: false
-    };
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+//   return models.Assignment.find({'_id': {$in: user.assignments}}).then((assignments) => {
+//       assignments.forEach((assn) => {
+//         studentProblems.push(assn.problem);
+//       });
+//       return studentProblems;
+//   })
+//   .then((probs) => {
+//     return {
+//       $or: [
+//         { createdBy: user },
+//         { privacySetting: "E" },
+//         { $and: [
+//           { organization: user.organization },
+//           { privacySetting: "O" }
+//         ]},
+//         {_id: {$in: probs}},
+//       ],
+//       isTrashed: false
+//     };
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 
-}
+// }
 // query params support:
 // ids
 // filterBy
@@ -99,10 +95,10 @@ const getProblems = async function(req, res, next) {
 
 
     // no front end functionality for sending sort query params but we should add that
-    // if (sortBy) {
-    //   // handle sort
-    //   // default sorting?
-    // }
+    if (sortBy) {
+      // handle sort
+      // default sorting?
+    }
     // let sorted;
     // if (!sortBy) {
     //   sorted = results.sort((a, b) => {
@@ -148,6 +144,10 @@ const getProblems = async function(req, res, next) {
 
 const getProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
   // add permissions here
   models.Problem.findById(req.params.id)
   .exec((err, problem) => {
@@ -184,7 +184,7 @@ const postProblem = async function(req, res, next) {
     title = title.replace(/\s+/g, "");
     let split = title.split('').join('\\s*');
     let full = `^${split}\\Z`;
-    regex = new RegExp(full, 'i');
+    let regex = new RegExp(full, 'i');
     const exists = await models.Problem.find({ title: {$regex: regex }, isTrashed: false }).lean().exec();
 
     if (exists.length >= 1) {
@@ -220,11 +220,16 @@ const postProblem = async function(req, res, next) {
 const putProblem = async function(req, res, next){
   try {
     const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
     if (req.body.problem.privacySetting === "E") {
       let title = req.body.problem.title;
       let split = title.split('').join('\\s*');
       let full = `^${split}\\Z`;
-      regex = new RegExp(full, 'i');
+      let regex = new RegExp(full, 'i');
       const exists = await models.Problem.find({ title: {$regex: regex }, _id: {$ne: req.params.id}, isTrashed: false }).lean().exec();
       if (exists.length >= 1) {
         return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
@@ -270,6 +275,11 @@ const putProblem = async function(req, res, next){
 
 const addCategory = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -305,6 +315,11 @@ const addCategory = (req, res, next) => {
 
 const removeCategory = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Problem.findById(req.params.id, (err, doc) => {
     if (err) {
       logger.error(err);

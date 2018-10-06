@@ -31,7 +31,7 @@ Encompass.WorkspaceSubmissionSelectionRoute = Ember.Route.extend({
   renderTemplate: function() {
     this.render();
     $('#commentTextarea').focus();
-    var user = this.modelFor('application');
+    // var user = this.modelFor('application');
 //    if (!user.get('seenTour')) {
 //      this.doTour();
 //    }

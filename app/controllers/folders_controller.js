@@ -1,8 +1,8 @@
 /**
   * # Folders Controller
-  * @description The overarching controller for working with folders. 
+  * @description The overarching controller for working with folders.
   *              Currently used in workspace route for folders template
-  * @todo Clean up folder move logic 
+  * @todo Clean up folder move logic
   * @authors Damola Mabogunje <damola@mathforum.org>, Amir Tahvildaran <amir@mathforum.org>, Jon Hopkins <jrh327@drexel.edu>
   * @since 1.0.0
   */
@@ -35,17 +35,17 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
     var controller = this,
         workspace = controller.get('currentWorkspace'),
         parentID = (folder.get('parent')) ? folder.get('parent').get('id') : null,
-        weight = folder.get('weight'),
+        // weight = folder.get('weight'),
         workspaceFolders = workspace.get('folders')
           .filterBy('parent.id', parentID)
           .sortBy('weight', 'name');
-    
+
     var pos = workspaceFolders.indexOf(folder);
     var siblingsAbove = workspaceFolders.slice(0, pos);
     var siblingsBelow = workspaceFolders.slice(pos+1, workspaceFolders.length);
 
-    return (above) ? siblingsAbove : siblingsBelow;  
-  }, 
+    return (above) ? siblingsAbove : siblingsBelow;
+  },
 /*
   reweigh: function() {
     this.get('filteredContent').
@@ -106,12 +106,12 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
           folder.set('weight', min);
           siblings.get('lastObject').set('weight', weight);
           folder.save();
-          
+
           siblings.get('lastObject').save();
         } else {
           folder.set('weight', (weight - anchor));
           folder.save();
-          
+
           // need to also increment the siblings below the one
           // this folder is switching with, so they stay below it
           siblings.forEach( function(sibling, index){
@@ -123,7 +123,7 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
           });
         }
       }
-      
+
       controller.propertyDidChange('content');
     },
 
@@ -167,16 +167,16 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
     moveOut: function(folder) {
       var controller = this,
           parent = folder.get('parent'),
-          newParent = parent.get('parent'),
-          weight = parent.get('weight'),
-          anchor = controller.get('weighting'),
-          copy;
+          newParent = parent.get('parent');
+          // weight = parent.get('weight'),
+          // anchor = controller.get('weighting'),
+          // copy;
 
       controller.propertyWillChange('content');
 
       if(parent) { // move out only if this is a nested folder
         parent.get('children').removeObject(folder);
-        
+
         if(Ember.isNone(newParent)) {
           folder.set('isTopLevel', true);
         }
@@ -187,7 +187,7 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
 
         folder.save();
       }
-      
+
       controller.propertyDidChange('content');
     },
     editFolderName: function() {

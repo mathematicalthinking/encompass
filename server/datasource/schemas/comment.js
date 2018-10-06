@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-const Selection = require('./selection');
-const Submission = require('./submission');
-const Workspace = require('./workspace');
 
 /**
   * @public

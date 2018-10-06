@@ -174,7 +174,7 @@ const publicProblem = {
   creatorUsername: "tpool",
 };
 
-const accessibleOrgCount = 3;
+// const accessibleOrgCount = 3;
 
 
 module.exports.users = users;

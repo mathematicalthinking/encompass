@@ -1,10 +1,8 @@
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const _ = require('underscore');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures.js');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
 

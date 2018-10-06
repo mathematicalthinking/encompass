@@ -10,7 +10,6 @@
 //REQUIRE MODULES
 const mongoose = require('mongoose');
 const _ = require('underscore');
-const logger = require('log4js').getLogger('server');
 const fs = require('fs');
 const request = require('request');
 const qs = require('querystring');
@@ -18,7 +17,6 @@ const Q = require('q');
 
 //REQUIRE FILES
 const api = require('./submissionApi');
-const models = require('../schemas/submission');
 const db = require('../../config').nconf.get('database');
 //const config = require('../../config').nconf.get('cache');
 const utils = require('../../middleware/requestHandler');

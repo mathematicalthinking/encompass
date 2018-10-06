@@ -70,24 +70,24 @@ describe('Submission CRUD operations by account type', async function() {
         });
       });
 
-      xdescribe('/PUT update unaccessible user name', () => {
-        it('should return 403 error', done => {
-          const url = baseUrl + unaccessibleUser._id;
-          agent
-          .put(url)
-          .send({
-            user: {
-              'name': 'test name',
-              'username': unaccessibleUser.username,
-              'accountType': unaccessibleUser.accountType,
-            }
-          })
-          .end((err, res) => {
-            expect(res).to.have.status(403);
-            done();
-          });
-        });
-      });
+      // xdescribe('/PUT update unaccessible submission', () => {
+      //   it('should return 403 error', done => {
+      //     const url = baseUrl + unaccessibleSubmission._id;
+      //     agent
+      //     .put(url)
+      //     .send({
+      //       user: {
+      //         'name': 'test name',
+      //         'username': unaccessibleSubmission.username,
+      //         'accountType': unaccessibleSubmission.accountType,
+      //       }
+      //     })
+      //     .end((err, res) => {
+      //       expect(res).to.have.status(403);
+      //       done();
+      //     });
+      //   });
+      // });
 
 
     }
@@ -109,23 +109,20 @@ describe('Submission CRUD operations by account type', async function() {
   }
 
   /** POST **/
-  xdescribe('/POST submission', () => {
-    it('should post a new submission', done => {
-      agent
-      .post(baseUrl)
-      .send(fixtures.submission.validSubmission)
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(200);
-        expect(res.body.submission).to.be.a('array');
-        expect(res.body.submission[0]).to.have.any.keys('longAnswer', 'shortAnswer', 'answer');
-        expect(res.body.submission[0].longAnswer).to.eql(fixtures.submission.validSubmission.longAnswer);
-        done();
-      });
-    });
-  });
+  // xdescribe('/POST submission', () => {
+  //   it('should post a new submission', done => {
+  //     agent
+  //     .post(baseUrl)
+  //     .send(fixtures.submission.validSubmission)
+  //     .end((err, res) => {
+  //       expect(res).to.have.status(200);
+  //       expect(res.body.submission).to.be.a('array')
+  //       expect(res.body.submission[0]).to.have.any.keys('longAnswer', 'shortAnswer', 'answer');
+  //       expect(res.body.submission[0].longAnswer).to.eql(fixtures.submission.validSubmission.longAnswer);
+  //       done();
+  //     });
+  //   });
+  // });
 //   //
 //   /** PUT submission text**/
 //   describe('/PUT update submission text', () => {

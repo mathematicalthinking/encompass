@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES

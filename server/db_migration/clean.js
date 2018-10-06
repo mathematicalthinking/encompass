@@ -117,7 +117,7 @@ async function removeOrphanedTaggings() {
     let taggings = await model.find({});
     console.log(`there are ${taggings.length} taggings`);
 
-    for (tagging of taggings) {
+    for (let tagging of taggings) {
       let shouldDelete = true;
       let selectionId = tagging.selection;
       let folderId = tagging.folder;
@@ -224,7 +224,7 @@ async function removeIrrelevantUsers() {
   }
   return deleted;
 }
-async function cleaner() {
+async function cleaner() { // eslint-disable-line no-unused-vars
   try {
     await removeTrashedDocuments();
     await pruneWorkspaces();

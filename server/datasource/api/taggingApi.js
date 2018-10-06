@@ -8,9 +8,7 @@ const logger   = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
-const auth     = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 

@@ -14,12 +14,8 @@ const _ = require('underscore');
 
 //REQUIRE FILES
 const path = require('./path');
-const cache = require('../datasource/api/cache');
 const utils = require('./requestHandler');
 const models = require('../datasource/schemas');
-const User = require("../datasource/schemas/user");
-
-
 
 function getUser(req) {
   return req.user;
@@ -126,6 +122,10 @@ function determineStudentAccess(user, path, method) {
   }
 
   const {accountType, actingRole} = user;
+
+  if (accountType !== 'S' && actingRole !== 'student') {
+    return true;
+  }
   const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
   const allowedPostPutPaths = ['answers', 'image', 'errors'];
 

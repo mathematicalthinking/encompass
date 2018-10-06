@@ -527,6 +527,7 @@ module.exports = function (grunt) {
     mocha-test, casperjs, env, shell
  */
   require('load-grunt-tasks')(grunt);
+  grunt.loadNpmTasks("gruntify-eslint");
 
 
 

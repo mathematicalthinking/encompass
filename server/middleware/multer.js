@@ -9,7 +9,6 @@
  * @todo A better message response to user on failure.
  */
 
-const multer = require('multer');
 const path = require('path');
 // const imageFolder = path.resolve(__dirname, 'image_upload');
 const utils = require('../middleware/requestHandler');

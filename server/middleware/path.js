@@ -9,7 +9,6 @@
  */
 
 //REQUIRE MODULES
-const logger = require('log4js').getLogger('sane');
 const util = require('util');
 const _ = require('underscore');
 

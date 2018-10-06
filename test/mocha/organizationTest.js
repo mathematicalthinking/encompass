@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const _ = require('underscore');
 
 // REQUIRE FILES
 const fixtures = require('./fixtures.js');
@@ -22,7 +21,7 @@ describe('Organization CRUD operations by account type', async function() {
     await describe(`Organization CRUD operations as ${user.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
+      const { username, password } = user;
 
       before(async function(){
         try {

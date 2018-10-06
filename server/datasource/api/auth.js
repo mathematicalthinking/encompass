@@ -111,7 +111,6 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
       pass: userAuth.getEmailAuth().password
     }
   });
-
   const msg = emails[template](recipient, host, token);
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
@@ -207,7 +206,7 @@ const resetPasswordById = async function(req, res, next) {
     const hasPermission = reqUser && !reqUser.isStudent;
 
     if (!hasPermission) {
-      return utils.sendError.NotAuthorizedError(err, res);
+      return utils.sendError.NotAuthorizedError('You are not authorized.', res);
     }
 
     const { id, password } = req.body;
@@ -304,7 +303,7 @@ const confirmEmail = async function(req, res, next) {
   }
 };
 
-resendConfirmationEmail = async function(req, res, next) {
+const resendConfirmationEmail = async function(req, res, next) {
   const user = userAuth.getUser(req);
   if (!user) {
     return utils.sendError.InvalidCredentialsError(null, res);

@@ -72,7 +72,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
   didUpdateAttrs: function() {
     var highlighting = this.selectionHighlighting;
     var tagging = this.imageTagging;
-    var modelId = this.model.id;
 
     if (this.get('currSubId') !== this.model.id) {
       this.imageTagging.removeAllTags();

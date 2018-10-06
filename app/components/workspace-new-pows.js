@@ -52,7 +52,6 @@ Encompass.WorkspaceNewPowsComponent = Ember.Component.extend({
     },
 
     importWorkspace: function() {
-      var controller = this;
       var importData = { /*jshint camelcase: false */
         teacher: this.get('teacher'),
         submitter: this.get('submitter'),
@@ -79,12 +78,12 @@ Encompass.WorkspaceNewPowsComponent = Ember.Component.extend({
         }
       }
 
-      if(!!this.get('subs')) {
+      if(this.get('subs')) {
         importData.submissions = Ember.String.w( this.get('subs') );
       }
 
       var request = this.store.createRecord('importRequest', importData);
-      var output;
+
 
       request.save().then(function(obj) {
         var result = obj.get('results');

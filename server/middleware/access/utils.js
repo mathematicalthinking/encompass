@@ -15,7 +15,9 @@ const getModelIds = async function(model, filter={}) {
     console.trace();
     return new Error(`Error retrieving modelIds: ${err}`);
   }
+
 };
+
 
 async function getOrgSections(user) {
   try {

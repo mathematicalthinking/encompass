@@ -4,14 +4,9 @@
   * @author Michael McVeigh
 */
 
-const mongoose = require('mongoose');
-const express = require('express');
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/sections');
 
@@ -30,17 +25,17 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
 */
 
-function accessibleSections(user) {
-  return {
-    $or: [
-      { createdBy: user },
-      { teachers: { $in : [user] } },
-      { students: { $in : [user] } },
-      {organization: user.organization}
-    ],
-    isTrashed: false
-  };
-}
+// function accessibleSections(user) {
+//   return {
+//     $or: [
+//       { createdBy: user },
+//       { teachers: { $in : [user] } },
+//       { students: { $in : [user] } },
+//       {organization: user.organization}
+//     ],
+//     isTrashed: false
+//   };
+// }
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
@@ -118,6 +113,10 @@ const postSection = (req, res, next) => {
 
 const putSection = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
   // what check do we want to perform if the user can edit
   // if they created the section?
   models.Section.findById(req.params.id, (err, doc) => {
@@ -153,6 +152,11 @@ const putSection = (req, res, next) => {
 */
 const addTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -183,6 +187,11 @@ const addTeacher = (req, res, next) => {
 */
 const removeTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -213,6 +222,11 @@ const removeTeacher = (req, res, next) => {
 */
 const addStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -243,6 +257,11 @@ const addStudent = (req, res, next) => {
 */
 const removeStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -273,6 +292,11 @@ const removeStudent = (req, res, next) => {
 */
 const addProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -303,6 +327,11 @@ const addProblem = (req, res, next) => {
 */
 const removeProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Section.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);

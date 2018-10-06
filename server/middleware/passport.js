@@ -9,7 +9,6 @@
  */
 
 //REQUIRE MODULES
-const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const auth = require('../datasource/api/auth');

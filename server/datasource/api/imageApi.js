@@ -11,9 +11,7 @@ const logger = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
 const PDF2Pic = require('pdf2pic').default;
@@ -37,6 +35,10 @@ module.exports.put = {};
 const getImages = (req, res, next) => {
   const criteria = utils.buildCriteria(req);
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
 
   models.Image.find(criteria)
   .exec((err, images) => {
@@ -166,7 +168,6 @@ const postImages = async function(req, res, next) {
         });
     } else {
       let str = data.toString('base64');
-      let alt = '';
       let format = `data:${mimeType};base64,`;
       let imgData = `${format}${str}`;
 
@@ -203,6 +204,11 @@ const postImages = async function(req, res, next) {
 
 const putImage = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   // Who can edit the image?
   models.Image.findById(req.params.id, (err, doc) => {
     if(err) {

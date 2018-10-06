@@ -15,9 +15,7 @@ const helper = require('util');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth   = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
 const access = require('../../middleware/access/workspaces');
@@ -111,7 +109,7 @@ function getWorkspace(id, callback) {
   * @todo + This should really accept a node-style callback
   *       + Could be simpler. Needs refactoring
   */
-function getWorkspaceWithDependencies(id, callback) {
+function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-unused-vars
   models.Workspace.findById(id)
     .exec(
       function(err, workspace) {
@@ -417,7 +415,7 @@ function newFolderStructure(user, ws, folderSetName) {
 function nameWorkspace(submissionSet, user, isPows) {
   var puzzle = submissionSet.description.puzzle;
   var group = submissionSet.description.group;
-  var publication = submissionSet.description.publication;
+  // var publication = submissionSet.description.publication;
   var pdSet = submissionSet.description.pdSource;
   var labelFmt = "%s / %s";
 
@@ -1053,7 +1051,7 @@ async function postWorkspaceEnc(req, res, next) {
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
-
+    console.log('wsCrit', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
     console.log('answers are', answers.length);
 

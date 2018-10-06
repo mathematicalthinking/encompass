@@ -4,7 +4,6 @@ Encompass.UnconfirmedEmailComponent = Ember.Component.extend(Encompass.CurrentUs
 
   actions: {
     sendEmail: function() {
-      const recipient = this.get('currentUser.email');
       Ember.$.get('/auth/resend/confirm')
       .then((res) => {
         if (res.isSuccess) {
