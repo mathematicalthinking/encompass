@@ -31,7 +31,27 @@ var data = [
     "section": "5b1e7b2aa5d2157ef4c91108",
     "isTrashed": false,
     "isSubmitted": false
-  }
+  },
+  {
+    "_id" : "5bb813fc9885323f6d894972",
+    "answer" : "This is a brief summary of my thoughts.",
+    "explanation" : "<p>This is my explanation.</p>",
+    "createdBy" : "5b914a102ecaf7c30dd47492",
+    "lastModifiedBy" : null,
+    "problem" : "5b9173e23da5efca74705772",
+    "explanationImage" : null,
+    "section" : "5b9149a32ecaf7c30dd4748f",
+    "priorAnswer" : null,
+    "assignment" : "5b91743a3da5efca74705773",
+    "additionalImage" : null,
+    "isSubmitted" : true,
+    "students" : [
+        "5b914a102ecaf7c30dd47492"
+    ],
+    "lastModifiedDate" : null,
+    "isTrashed" : false,
+    "createDate" : "2018-10-06T01:46:36.979Z"
+}
 
 ];
 

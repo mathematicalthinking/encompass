@@ -2040,6 +2040,40 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
     threadId: 743629
   },
   workspaces: ["53e36522b48b12793f000d3b"]
+},
+{
+  "_id" : "5bb814d19885323f6d894973",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "answer" : "5bb813fc9885323f6d894972",
+  "responses" : [],
+  "workspaces" : [
+      "5bb814d19885323f6d894974"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5b9149552ecaf7c30dd4748e"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Summer's Org Problem",
+          "problemId" : "5b9173e23da5efca74705772"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5b9149a32ecaf7c30dd4748f",
+      "name" : "Summer's Algebra 2 1st Period"
+  },
+  "creator" : {
+      "studentId" : "5b914a102ecaf7c30dd47492",
+      "username" : "tracyc"
+  },
+  "lastModifiedDate" : "2018-10-06T01:44:45.151Z",
+  "isTrashed" : false,
+  "createDate" : "2018-10-06T01:50:09.789Z"
 }
 ];
 
