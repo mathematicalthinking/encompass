@@ -170,27 +170,28 @@ function protect(options) {
     if ((openRequest && req.method === 'GET')) {
       return next();
     }
+
+    var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
+    var notAuthenticated = !userAuthenticated;
+
+    if (notAuthenticated) {
+      return utils.sendError.InvalidCredentialsError('You are not Authenticated.', res);
+    }
+
     if (user.accountType === 'S' || user.actingRole === 'student') {
      let isAllowed = determineStudentAccess(user, req.path, req.method);
-     console.log('is allowed', isAllowed);
      if (isAllowed) {
       return next();
      }
      return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
     }
 
-    var userAuthenticated = req.isAuthenticated && req.isAuthenticated();
-    console.log('is user authenticated in protect: ', userAuthenticated);
+    // will only reach here if non-student
     var userAuthorized = (userAuthenticated && (user.accountType === 'A' || user.isAuthorized));
 
-    var notAuthenticated = !userAuthenticated;
     var notAuthorized = !userAuthorized;
     var isGoogleUser = !!user.googleId;
 
-
-    if (notAuthenticated) {
-      return utils.sendError.InvalidCredentialsError('You are not Authenticated.', res);
-    }
     // users who sign up with google need to be able to update their user info with org, requestReason, and location
     if (notAuthorized && !isGoogleUser) {
       res.redirect('/#/');
