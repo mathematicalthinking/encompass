@@ -3,23 +3,50 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
   isMissingRequiredFields: null,
   selectedSection: null,
   selectedProblem: null,
-  validator: Ember.inject.service('form-validator'),
   alert: Ember.inject.service('sweet-alert'),
   sectionList: null,
   problemList: null,
   formId: null,
   createRecordErrors: [],
   queryErrors: [],
+  constraints: {
+    section: {
+      presence: { allowEmpty: false }
+    },
+    problem: {
+      presence: { allowEmpty: false },
+    },
+    assignedDate: {
+      presence: { allowEmpty: false }
+    },
+    dueDate: {
+      presence: { allowEmpty: false }
+    },
+    name: {
+      presence: false
+    }
+  },
 
   init: function() {
     this._super(...arguments);
-    const formId = 'form#newassignmentform';
-    this.set('formId', formId);
     $(function () {
-      $('input[name="daterange"]').daterangepicker({
+      $('input#assignedDate').daterangepicker({
         singleDatePicker: true,
         showDropdowns: true,
+        autoUpdateInput: false,
+      }, function(start, end, label) {
+        let assignedDate = start.format('MM/DD/YYYY');
+        $('input#assignedDate').val(assignedDate);
       });
+      $('input#dueDate').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        autoUpdateInput: false,
+      }, function(start, end, label) {
+        let dueDate = start.format('MM/DD/YYYY');
+        $('input#dueDate').val(dueDate);
+      });
+      $('input[name="daterange"]').attr('placeholder', 'MM/DD/YYYY');
     });
   },
 
@@ -34,40 +61,23 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   },
 
-  didInsertElement: function() {
-    const formId = this.get('formId');
-    let isMissing = this.checkMissing.bind(this);
-    if (formId) {
-      this.get('validator').initialize(formId, isMissing);
-    }
-  },
 
   willDestroyElement: function () {
     $(".daterangepicker").remove();
     this._super(...arguments);
   },
 
-  checkMissing: function() {
-    const id = this.get('formId');
-    let isMissing = this.get('validator').isMissingRequiredFields(id);
-    this.set('isMissingRequiredFields', isMissing);
-  },
 
-  createAssignment: function() {
+  createAssignment: function(formValues) {
     const that = this;
+
+    let {section, problem, assignedDate, dueDate, name } = formValues;
     const createdBy = that.get('currentUser');
-    const section = that.get('selectedSection');
-    const problem = that.get('selectedProblem');
-    const startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-    const assignedDate = that.getMongoDate(startDate);
-    const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-    const dueDate = that.getEndDate(endDate);
-    let name = that.get('name');
 
     if (!name) {
-      let assignedDate = $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
+      let nameDate= $('#assignedDate').data('daterangepicker').startDate.format('MMM Do YYYY');
       let problemTitle = problem.get('title');
-      name = problemTitle + ' / ' + assignedDate;
+      name = problemTitle + ' / ' + nameDate;
     }
 
     if (assignedDate > dueDate) {
@@ -124,20 +134,38 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   actions: {
     validate: function() {
-      var that = this;
-      return this.get('validator').validate(that.get('formId'))
-      .then((res) => {
-        if (res.isValid) {
-          // proceed with assignment creation
-          this.createAssignment();
-        } else {
-          if (res.invalidInputs) {
-            this.set('isMissingRequiredFields', true);
-            return;
-          }
+      const section = this.get('selectedSection');
+      const problem = this.get('selectedProblem');
+      let assignedDate = $('#assignedDate').val();
+      let dueDate = $('#dueDate').val();
+      const name = this.get('name');
+
+      const values = {
+        section,
+        problem,
+        assignedDate,
+        dueDate,
+        name
+      };
+
+      const constraints = this.get('constraints');
+
+      let errors = window.validate(values, constraints);
+      if (errors) { // errors
+        for (let key of Object.keys(errors)) {
+          let errorProp = `${key}FormErrors`;
+          this.set(errorProp, errors[key]);
         }
-      })
-      .catch(console.log);
+        return;
+      }
+      const startDate = $('#assignedDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+      values.assignedDate = this.getMongoDate(startDate);
+
+      const endDate = $('#dueDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
+      values.dueDate = this.getEndDate(endDate);
+
+      this.createAssignment(values);
+
     },
 
     cancel: function() {

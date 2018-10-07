@@ -32,6 +32,9 @@ form#newassignmentform {
     }
 
   }
+  .flex-input {
+    width: 70%;
+  }
 
   input[type=text]  {
     width: 70%;
@@ -49,7 +52,7 @@ form#newassignmentform {
     font-size: 1em;
     display: inline-block;
   }
-  li.problem{
+  li{
     display:flex;
     align-items: center;
     flex-wrap: wrap;
