@@ -13,6 +13,7 @@
 exports.get = {};
 exports.post = {};
 exports.put = {};
+exports.delete = {};
 
 ["taggingApi",
  "errorApi",
@@ -53,6 +54,12 @@ exports.put = {};
     for(var k in module.put) {
       if(module.put.hasOwnProperty(k)) {
         exports.put[k] = module.put[k];
+      }
+    }
+
+    for (var l in module.delete) {
+      if (module.delete.hasOwnProperty(l)) {
+        exports.delete[l] = module.delete[l];
       }
     }
   });
