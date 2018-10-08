@@ -4,7 +4,10 @@
   "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
-    "test": "grunt",
+    "start": "grunt",
+    "seed": "grunt serve-seed",
+    "test": "grunt tests",
+    "mocha": "mocha",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test"
   },
   "repository": {

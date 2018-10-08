@@ -104,7 +104,7 @@ module.exports = {
         "no-undef": "off",
         "no-continue": "error",
         "no-console": "off",
-        "no-unused-vars": "off",
+        "no-unused-vars": "error",
         "no-div-regex": "error",
         "no-duplicate-imports": "error",
         "no-else-return": "off",
