@@ -145,19 +145,22 @@
             <p class="problem-info">{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
           </li>
           {{/if}}
-
           <li>
             <label class="form-label" for="currentlyPublic">Privacy Setting</label>
             <p class="problem-info">{{privacy-setting problem.privacySetting}}</p>
           </li>
+          {{#if problem.copyrightNotice}}
           <li>
-            <label for="copyright">Copyright Notice:</label>
+            <label class="form-label" for="copyright">Copyright Notice:</label>
             <p class="problem-info">&copy;&nbsp;{{problem.copyrightNotice}}</p>
           </li>
+          {{/if}}
+          {{#if problem.sharingAuth}}
           <li>
-            <label for="sharing">Sharing Authorization:</label>
+            <label class="form-label" for="sharing">Sharing Authorization:</label>
             <p class="problem-info">{{problem.sharingAuth}}</p>
           </li>
+          {{/if}}
           <li>
             <label class="form-label" for="createDate">Creation Date</label>
             <p class="problem-info">{{format-date problem.createDate 'MMM Do YYYY'}}</p>
