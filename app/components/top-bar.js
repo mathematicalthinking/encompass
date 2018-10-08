@@ -17,7 +17,6 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
 
   didReceiveAttrs: function() {
     let currentUser = this.get('currentUser');
-    let isStudent = this.get('isStudent');
     this.set('isStudentAccount', currentUser.get('accountType') === 'S');
   },
 

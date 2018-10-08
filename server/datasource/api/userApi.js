@@ -14,7 +14,6 @@ const models   = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
-const accessUtils = require('../../middleware/access/utils');
 const auth = require('../../datasource/api/auth');
 
 module.exports.get = {};
@@ -294,6 +293,10 @@ function postUser(req, res, next) {
 
   const addSection = (req, res, next) => {
     var user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
     // who can add a section for a user. If they're a teacher they should
     // be able to add a section to themselves. If they're a student
     models.User.findByIdAndUpdate(
@@ -321,6 +324,11 @@ function postUser(req, res, next) {
   */
   const removeSection = (req, res, next) => {
     const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$pull": {"sections": {"sectionId": req.body.sectionId}}},
@@ -336,7 +344,12 @@ function postUser(req, res, next) {
   };
 
   const addAssignment = (req, res, next) => {
-    const user= userAuth.requireUser(req);
+    const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$push": {"assignments": req.body.assignment}},
@@ -353,6 +366,11 @@ function postUser(req, res, next) {
 
   const removeAssignment = (req, res, next) => {
     const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
     models.User.findByIdAndUpdate(
       req.params.id,
       {"$pull": {"assignments": req.body.assignment}},

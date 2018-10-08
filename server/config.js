@@ -7,14 +7,13 @@
 
 /*eslint no-process-env: "off"*/
 
-const fs = require('fs');
 const nconf = require('nconf');
 const logs = require('log4js');
 const build = process.env.BUILD;
 console.log('build: ', build);
 
-const today = new Date();
-const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
+// const today = new Date();
+// const aYearAgo = new Date(today.getFullYear() - 1, 8, 18, 0, 0, 1);
 
 nconf.argv().env().file({ file: 'config.json' });
 
@@ -63,7 +62,7 @@ nconf.defaults({
 
 exports.nconf = nconf;
 
-var logConf = nconf.get('logs');
+// var logConf = nconf.get('logs');
 
 logs.configure({
   appenders: {

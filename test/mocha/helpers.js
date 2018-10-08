@@ -1,13 +1,8 @@
 // REQUIRE MODULES
-const chai = require('chai');
-const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
 const dbSetup = require('../data/restore');
-const fixtures = require('./fixtures.js');
 const config = require('../../server/config');
-
-const expect = chai.expect;
 const nconf = config.nconf;
 const port = nconf.get('testPort');
 const host = `http://localhost:${port}`;
@@ -27,10 +22,10 @@ const pdAdmin = {
   password: 'pdadmin'
 };
 
-const student = {
-  username: 'alex8',
-  password: 'alex'
-};
+// const student = {
+//   username: 'alex8',
+//   password: 'alex'
+// };
 
 const loginUrl = '/auth/login';
 

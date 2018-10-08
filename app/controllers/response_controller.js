@@ -80,7 +80,6 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
     if (this.get('isToStudent')) {
       return 'You';
     }
-    var controller = this;
     return this.get('student');
   }.property('student', 'to', 'anonymous'),
 
@@ -104,7 +103,6 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
     var defaultPrefix = '         ';
     var prefix = defaultPrefix;
     var str = '';
-    var lines = [];
 
     if (opts && opts.hasOwnProperty('type')) {
       if (opts.usePrefix) {
@@ -147,7 +145,7 @@ Encompass.ResponseController = Ember.Controller.extend(Encompass.CurrentUserMixi
     //var text = '%@\n\n'.fmt( controller.get('greeting') );
     var greeting = controller.get('greeting');
     var text = `${greeting}\n\n`;
-    var promise = new Ember.RSVP.Promise(function (resolve, reject) {
+    var promise = new Ember.RSVP.Promise(function (resolve, reject) { // eslint-disable-line no-unused-vars
       controller.get('model.selections').then(function (selections) {
         if (selections) {
           selections.forEach(function (s) {

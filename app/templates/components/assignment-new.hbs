@@ -10,8 +10,14 @@
         <ol>
           <li>
             <label for="section">Class <span class="required-star">*</span></label>
-            {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
+            <div class="flex-input">
+              {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
+            {{#each sectionFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
+            </div>
+
           </li>
           <li class="problem">
             <label for="text">Problem <span class="required-star">*</span></label>
@@ -19,22 +25,47 @@
             <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
             {{else}}
               {{#if addProblemTypeahead}}
-                {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+                <div class="flex-input">
+                  {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+                  {{#each problemFormErrors as |error|}}
+                    <p class="error-message">{{error}}</p>
+                  {{/each}}
+                </div>
+
               {{/if}}
             {{/if}}
 
           </li>
           <li>
-            <label for="additionalInfo">Date Assigned <span class="required-star">*</span></label>
-            {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
+            <label for="assignedDate">Date Assigned <span class="required-star">*</span></label>
+            <div class="flex-input">
+              {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
+            {{#each assignedDateFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
+            </div>
+
           </li>
+
           <li>
             <label for="dueDate">Due Date <span class="required-star">*</span></label>
-            {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
+            <div class="flex-input">
+              {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
+            {{#each dueDateFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
+            </div>
+
           </li>
           <li>
             <label for="name">Assignment Name</label>
-            {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
+            <div class="flex-input">
+              {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
+            {{#each nameFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
+            </div>
+
           </li>
         </ol>
       </fieldset>

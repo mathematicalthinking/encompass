@@ -6,7 +6,6 @@ const htmlparser = require("htmlparser2");
 var fs = require('fs');
 
 const models = require('../datasource/schemas');
-const _ = require('underscore');
 mongoose.Promise = global.Promise;
 
 const imgDirRoot = '/Users/davidtaylor/Documents/synched_21/mathematicalThinking/EnCoMPASS/data/pow_images/'
@@ -91,7 +90,7 @@ async function getOrCreatePowUser() {
     return users[0];
   } else {
     console.log(`no user with username: pows_old_user`)
-    newUser = await new models.User({
+    let newUser = await new models.User({
       createdBy: "529518daba1cd3d8c4013344", // steve
       username: `old_pows_user`,
       name: 'POWs User',
@@ -344,7 +343,7 @@ async function update() {
 
     mongoose.connection.close();
   } catch (err) {
-    console.error(`ERROR - ${err}`)
+    console.error(`ERROR - ${err}`);
   }
 }
 

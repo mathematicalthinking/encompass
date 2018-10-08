@@ -55,7 +55,7 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   siblings: function(folder, above) {
         //workspace = controller.get('currentWorkspace'),
     var parentID = (folder.get('parent')) ? folder.get('parent').get('id') : null;
-    var weight = folder.get('weight');
+    // var weight = folder.get('weight');
     var workspaceFolders = this.folders
           .filterBy('parent.id', parentID)
           .sortBy('weight', 'name');
@@ -137,9 +137,9 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       console.log("Move Out folder List! " + folder.get('name') );
       var parent = folder.get('parent');
       var newParent = parent.get('parent');
-      var weight = parent.get('weight');
-      var anchor = this.weighting;
-      var copy;
+      // var weight = parent.get('weight');
+      // var anchor = this.weighting;
+      // var copy;
 
       //controller.propertyWillChange('content');
       //

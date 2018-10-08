@@ -1,14 +1,8 @@
 // REQUIRE MODULES
-const {
-  Builder,
-  By,
-  Key,
-  until
-} = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
-const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
@@ -21,7 +15,7 @@ const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`;
 const expiredResetLink = `${host}${confirmPath}/${fixtures.userExpiredToken.token}`;
 
-describe('Confirm Email', async function () {
+describe('Confirm Email', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -34,7 +28,7 @@ describe('Confirm Email', async function () {
     driver.quit();
   });
 
-  describe('Invalid token', async function() {
+  describe('Invalid token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, invalidResetLink, css.confirmEmail.invalidToken);
     });
@@ -44,7 +38,7 @@ describe('Confirm Email', async function () {
     });
   });
 
-  describe('Matching but expired token', async function() {
+  describe('Matching but expired token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, expiredResetLink, css.confirmEmail.invalidToken, 10000);
     });
@@ -54,7 +48,7 @@ describe('Confirm Email', async function () {
     });
   });
 
-  describe('Valid token', async function() {
+  describe('Valid token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, confirmLink, css.confirmEmail.successMessage, 10000);
     });
@@ -71,7 +65,7 @@ describe('Confirm Email', async function () {
     });
   });
 
-  describe('Logging in without confirmed email', async function() {
+  describe('Logging in without confirmed email', function() {
     const user = {
       username: fixtures.userLiveToken.username,
       password: fixtures.userLiveToken.password

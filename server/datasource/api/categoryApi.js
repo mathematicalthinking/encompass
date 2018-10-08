@@ -5,16 +5,12 @@
 */
 
 //REQUIRE MODULES
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
-const fs = require('fs');
 const categories = require('../categories.json');
 
 
@@ -128,6 +124,11 @@ const postCategory = (req, res, next) => {
 
 const putCategory = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   // Who can edit the category?
   models.Category.findById(req.params.id, (err, doc) => {
     if(err) {

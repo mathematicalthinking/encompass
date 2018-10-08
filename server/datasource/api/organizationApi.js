@@ -5,14 +5,10 @@
 */
 /* jshint ignore:start */
 
-const mongoose = require('mongoose');
-const express = require('express');
-const _ = require('underscore');
+
 const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
 
 module.exports.get = {};
@@ -132,6 +128,11 @@ const postOrganization = (req, res, next) => {
 
 const putOrganization = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   // what check do we want to perform if the user can edit
   // if they created the organization?
   models.Organization.findById(req.params.id, (err, doc) => {

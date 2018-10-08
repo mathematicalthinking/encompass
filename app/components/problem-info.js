@@ -58,7 +58,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     };
     const that = this;
     this.$('#editor').ready(function() {
-      const quill = new window.Quill('#editor', options);
+      const quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
       let problem = that.get('problem');
       let text = problem.get('text');
 

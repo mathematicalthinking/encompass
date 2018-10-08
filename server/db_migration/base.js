@@ -147,7 +147,7 @@ function getSectionsFromSubmissions() {
     .catch(err => console.log(err));
 }
 
-function migrate() {
+function migrate() { // eslint-disable-line no-unused-vars
   getProblemsFromPuzzleIds()
     .then(getSectionsFromSubmissions)
     .then(getAnswersFromSubmissions)

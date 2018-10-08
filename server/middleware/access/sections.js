@@ -1,4 +1,3 @@
-const utils = require('./utils');
 module.exports.get = {};
 
 const accessibleSectionsQuery = function(user, ids) {

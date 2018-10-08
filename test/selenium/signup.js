@@ -1,21 +1,18 @@
 // REQUIRE MODULES
 const {
   Builder,
-  By,
-  Key,
-  until
+  By
 } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
-const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
 const host = helpers.host;
 
-describe('Signup form', async function () {
+describe('Signup form', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -31,10 +28,11 @@ describe('Signup form', async function () {
     driver.quit();
   });
   describe('Displaying form', async function () {
-    async function verifySignupForm() {
+    function verifySignupForm() {
       const inputs = css.signup.inputs;
       for (let input of Object.keys(inputs)) {
         if (input !== 'confirmEmail' && input !== 'confirmPassword') {
+          // eslint-disable-next-line no-loop-func
           it(`should display ${input} field`, async function () {
             expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
           });
@@ -54,7 +52,7 @@ describe('Signup form', async function () {
   describe('Submitting form', function () {
 
     it('should display missing fields error when omitting username', async function () {
-      await helpers.signup(driver, host, ['username']);
+      await helpers.signup(driver, ['username']);
       await helpers.waitForSelector(driver, 'p');
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.incomplete)).to.be.true;
     });
@@ -74,8 +72,10 @@ describe('Signup form', async function () {
       async function() {
         // uncheck terms box from previous test
         await helpers.findAndClickElement(driver, css.signup.inputs.terms);
+        await driver.sleep(100);
         await helpers.findAndClickElement(driver, css.signup.submit);
         await helpers.waitForSelector(driver, css.errorMessage);
+        await driver.sleep(100);
         expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
       });
 
@@ -87,6 +87,7 @@ describe('Signup form', async function () {
 
     // We are not going to automatically login users, they need to be approved, change to approval page
     it('should redirect to unconfirmed after successful signup', async function () {
+      await driver.sleep(1000);
       await helpers.findAndClickElement(driver, css.signup.submit);
       // await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 10000);
       await helpers.waitForUrlMatch(driver, /unconfirmed/,10000);

@@ -31,7 +31,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       placeholder: 'Problem Statement',
       theme: 'snow'
     };
-    var quill = new window.Quill('#editor', options);
+    var quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
   },
 
   checkMissing: function() {

@@ -1,14 +1,8 @@
 // REQUIRE MODULES
-const {
-  Builder,
-  By,
-  Key,
-  until
-} = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
-const config = require('../../server/config');
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
@@ -21,7 +15,7 @@ const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`;
 const expiredResetLink = `${host}${resetPath}/${fixtures.userExpiredToken.token}`;
 
-describe('Resetting Password', async function () {
+describe('Resetting Password', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -33,7 +27,7 @@ describe('Resetting Password', async function () {
   after(() => {
     driver.quit();
   });
-  describe('Invalid token', async function() {
+  describe('Invalid token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, invalidResetLink, css.resetPassword.invalidToken);
     });
@@ -47,7 +41,7 @@ describe('Resetting Password', async function () {
     });
   });
 
-  describe('Matching but expired token', async function() {
+  describe('Matching but expired token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, expiredResetLink, css.resetPassword.invalidToken, 10000);
     });
@@ -61,7 +55,7 @@ describe('Resetting Password', async function () {
     });
   });
 
-  describe('Valid token', async function() {
+  describe('Valid token', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, resetLink, css.resetPassword.resetForm);
       await driver.sleep(3000);
@@ -71,10 +65,11 @@ describe('Resetting Password', async function () {
       expect(await helpers.isElementVisible(driver, css.resetPassword.resetForm)).to.be.true;
     });
 
-    describe('Reset Password Form', async function() {
-      async function verifyResetForm() {
+    describe('Reset Password Form', function() {
+      function verifyResetForm() {
         const inputs = css.resetPassword.inputs;
         for (let input of Object.keys(inputs)) {
+          // eslint-disable-next-line no-loop-func
             it(`should display ${input} field`, async function () {
               expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
             });
@@ -88,7 +83,7 @@ describe('Resetting Password', async function () {
         await verifyResetForm();
       });
 
-      describe('Submitting Form', async function() {
+      describe('Submitting Form', function() {
         const user = fixtures.userLiveToken;
         before(async function() {
           await helpers.findInputAndType(driver, css.resetPassword.inputs.password, user.newPassword);

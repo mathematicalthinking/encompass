@@ -9,9 +9,7 @@
 
 const mongoose = require('mongoose');
 const _ = require('underscore');
-const Q = require('q');
 const logger   = require('log4js').getLogger('server');
-const util = require('util');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -19,6 +17,8 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const spaces   = require('./workspaceApi');
 const access   = require('../../middleware/access/submissions');
+
+const asyncWrapper = utils.asyncWrapper;
 
     module.exports.get = {};
     module.exports.post = {};
@@ -112,6 +112,7 @@ async function getSubmissions(req, res, next) {
   } else {
     criteria = await access.get.submissions(user, null);
   }
+  console.log('criteria get subs', criteria);
 
   //console.log('req params', req.query);
   //logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
@@ -127,6 +128,7 @@ async function getSubmissions(req, res, next) {
       utils.sendResponse(res, data);
     });
   }catch(err) {
+    console.log('caught error getSubmsissions', err);
     return utils.sendError.InternalError(null, res);
   }
 
@@ -138,7 +140,7 @@ async function getSubmissions(req, res, next) {
   * @description Retrieves the most recent submission for user
   *              with `username`
   */
-function getLatestUserSubmission (username, callback) {
+function getLatestUserSubmission (username, callback) { // eslint-disable-line no-unused-vars
 
   mongoose.connection.once('open', function() {
     models.Submission.find({'teacher.username': username})
@@ -203,16 +205,49 @@ function getPDSets(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getSubmission(req, res, next) {
-  models.Submission.findById(req.params.id,
-    function(err, submission) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      var data = {'submission': submission};
-      utils.sendResponse(res, data);
-    });
+async function getSubmission(req, res, next) {
+  const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+
+  let err;
+  let canLoadSubmission;
+  let submission;
+
+  let id = req.params.id;
+
+  [ err, submission ] = await asyncWrapper(models.Submission.findById(id));
+
+  if (err) {
+    console.error(`Error finding submission by id: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  if (!submission) { // record not found in db
+    return utils.sendResponse(res, null);
+  }
+
+  [ err, canLoadSubmission ] = await asyncWrapper(access.get.submission(user, id));
+
+  if (err) {
+    console.error(`Error getSubmission: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  if (!canLoadSubmission) { // user does not have permission to access submission
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
+  const data = { // user has permission; send back record
+    submission
+  };
+
+  return utils.sendResponse(res, data);
+
 }
 
 

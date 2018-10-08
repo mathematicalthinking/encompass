@@ -152,10 +152,19 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         this.set('selectedOwner', this.get('currentUser'));
       }
 
-      const start = $('#dateRange').data('daterangepicker').startDate.format('YYYY-MM-DD');
-      const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
-      const startDate = this.getMongoDate(start);
-      const endDate = this.getEndDate(end);
+      let startDate;
+      let endDate;
+      let dateRangeTextVal = $('#dateRange').val(); // empty string if no date range is picked
+
+      if (dateRangeTextVal) { // user selected a date range
+        const start = $('#dateRange').data('daterangepicker').startDate.format('YYYY-MM-DD');
+        const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        startDate = this.getMongoDate(start);
+        endDate = this.getEndDate(end);
+      } else {
+        startDate = null;
+        endDate = null;
+      }
 
       const requestedName = this.get('requestedName');
       const mode = this.get('mode');

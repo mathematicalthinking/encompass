@@ -65,7 +65,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   dragEnd: Ember.aliasMethod('onDrop'),
 
   onDrag: function(event) {
-    const view = this;
     document.getElementById(this.elementId).style.backgroundColor = 'rgb(255, 255, 255)';
     event = event || window.event;
     event.preventDefault();
@@ -86,7 +85,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   },
 
   onDrop: function(event) {
-    const view = this;
     document.getElementById(this.elementId).style.backgroundColor = 'transparent';
     event = event || window.event;
     event.preventDefault();

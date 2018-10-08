@@ -2,8 +2,6 @@
   * # Test Fixtures
   * @description This is the mock data to be used in REST API test
 **/
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   answer: {

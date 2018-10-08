@@ -7,7 +7,6 @@
 const Q        = require('q');
 const inflect  = require('i')();
 const models   = require('../schemas');
-const utils    = require('../../middleware/requestHandler');
 
 module.exports.get = {};
 

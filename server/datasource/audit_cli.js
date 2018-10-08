@@ -10,7 +10,6 @@ const _        = require('underscore');
 const util     = require('util');
 const fs       = require('fs');
 const mongo    = require('mongodb');
-const client   = mongo.MongoClient;
 const bson     = mongo.BSONPure;
 
 /** ## CLI Options

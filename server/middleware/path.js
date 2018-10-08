@@ -9,7 +9,6 @@
  */
 
 //REQUIRE MODULES
-const logger = require('log4js').getLogger('sane');
 const util = require('util');
 const _ = require('underscore');
 
@@ -68,6 +67,7 @@ function processPath(options) {
 
 /*
   ENC-486 bad ObjectIDs crash the server
+  is this validation sufficient? if for some reason someone passed an object as the id param, the server would crash
 */
 function validateId(options) {
   function _validateId(req, res, next) {

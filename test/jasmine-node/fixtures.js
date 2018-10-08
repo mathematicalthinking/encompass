@@ -4,21 +4,21 @@
   * @authors Damola Mabogunje <damola@mathforum.org>
   * @since 1.0.1
   */
-   
+
 var mongoose = require('mongoose');
 
 module.exports = {
   users: {
     guest: {
-      _id: 1, 
-      username: 'anon', 
-      name: 'Guest', 
+      _id: 1,
+      username: 'anon',
+      name: 'Guest',
       isGuest: true
     },
     user: {
       _id: mongoose.Types.ObjectId('5345cdf441cf92283b000001').toString(),
-      username: 'user_test', 
-      name: 'Test User', 
+      username: 'user_test',
+      name: 'Test User',
       isAuthorized: true,
       key:'8040b627-0d16-404e-93d6-0fdbaccdc084',
       isTrashed: false,
@@ -26,9 +26,9 @@ module.exports = {
     },
     admin: {
       _id: mongoose.Types.ObjectId('5345cdf441cf92283b000002').toString(),
-      username: 'admin_test', 
-      name: 'Test Admin', 
-      isAuthorized: true, 
+      username: 'admin_test',
+      name: 'Test Admin',
+      isAuthorized: true,
       isAdmin: true,
       key:'8040b627-0d16-404e-93d6-0fdbaccdc085',
       isTrashed: false,

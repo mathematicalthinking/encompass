@@ -37,7 +37,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         placeholder: 'Explain your ideas and how you figured them out...',
         theme: 'snow'
       };
-      var quill = new window.Quill('#editor', options);
+      var quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
       this.get('contributors').addObject(this.get('currentUser'));
     }
 
@@ -170,8 +170,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       return this.get('validator').validate(that.get('formId'))
       .then((res) => {
         console.log('res', res);
-        /*eslint no-constant-condition: "off" */
-        if (1) {
+        if (res) {
           // proceed with answer creation
           this.createAnswer();
         } else {

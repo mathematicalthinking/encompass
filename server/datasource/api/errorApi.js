@@ -11,7 +11,6 @@ const logger   = require('log4js').getLogger('server');
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
 const userAuth     = require('../../middleware/userAuth');
-const data     = require('./data');
 const models   = require('../schemas');
 
 module.exports.get = {};

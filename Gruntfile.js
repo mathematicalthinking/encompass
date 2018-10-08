@@ -211,28 +211,28 @@ module.exports = function (grunt) {
     watch: {
       common_code: {
         files: ['common/**/*.js'],
-        tasks: ['browserify', 'MochaTests', 'jshint', 'eslint'], //common code is used on the front and backend
+        tasks: ['browserify', 'MochaTests', 'eslint'], //common code is used on the front and backend
         options: {
           spawn: false
         }
       },
       common_files: {
-        files: ['.jshintrc', 'Gruntfile.js', '.eslintrc.js'],
-        tasks: ['jshint', 'eslint'], //anything could have changed in the Gruntfile
+        files: ['Gruntfile.js', '.eslintrc.js'],
+        tasks: ['eslint'], //anything could have changed in the Gruntfile
         options: {
           spawn: false
         }
       },
       ember_code: {
         files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!server/datasource/**', '!server/server.js', '!server/config.js'],
-        tasks: ['neuter:dev', 'jshint', 'eslint'], //jqunit
+        tasks: ['neuter:dev', 'eslint'], //jqunit
         options: {
           spawn: false
         }
       },
       server_code: {
         files: ['server/server.js', 'server/fake_login.js', 'server/config.js', 'server/datasource/**/*.js'],
-        tasks: ['jshint', 'eslint'], //nodemon monitors it's own files,
+        tasks: ['eslint'], //nodemon monitors it's own files,
         options: {
           spawn: false
         }
@@ -246,14 +246,14 @@ module.exports = function (grunt) {
       },
       common_tests: {
         files: ['test/jasmine/common/**'],
-        tasks: ['jasmine:common', 'jshint', 'eslint'],
+        tasks: ['jasmine:common','eslint'],
         options: {
           spawn: false
         }
       },
       ember_qunit: {
         files: ['test/qunit/**/*.*', 'test/data/fixtures.js'],
-        tasks: ['jshint', 'eslint'], //jqunit
+        tasks: ['eslint'], //jqunit
         options: {
           spawn: false
         }
@@ -310,13 +310,13 @@ module.exports = function (grunt) {
       support files.
     */
     jshint: {
-      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js', '!server/middleware/access/*.js'],
+      all: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', '!test/selenium/*.js', '!test/data/*.js', '!server/db_migration/*.js', '!test/mocha/*.js', '!server/middleware/access/*.js',],
       options: {
         jshintrc: '.jshintrc'
       }
     },
     eslint: {
-      target: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', 'common/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', 'test/selenium/*.js', 'test/data/*.js', '!server/db_migration/*.js', 'test/mocha/*.js', 'server/middleware/access/*.js'],
+      target: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'common/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', 'test/selenium/*.js', 'test/data/*.js', '!server/db_migration/*.js', 'test/mocha/*.js', 'server/middleware/access/*.js', '!server/fake_login.js'],
       options: {
         configFile: '.eslintrc.js'
       }
@@ -372,7 +372,7 @@ module.exports = function (grunt) {
      */
     concurrent: {
       dev: {
-        tasks: ['nodemon:dev', 'jshint', 'eslint', 'watch'],
+        tasks: ['nodemon:dev', 'eslint', 'watch'],
         options: {
           logConcurrentOutput: true
         }
@@ -527,8 +527,6 @@ module.exports = function (grunt) {
     mocha-test, casperjs, env, shell
  */
   require('load-grunt-tasks')(grunt);
-
-
 
   // ALL GRUNT TASKS & COMMANDS
 

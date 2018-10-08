@@ -58,7 +58,7 @@
       </div>
 
       {{#if publicSearchResults}}
-        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+        {{pagination-control startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
       {{else}}
       {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") handleQueryResults=(action "updatePublicPageResults") model="problem"}}
       {{/if}}
@@ -80,7 +80,7 @@
       {{/if}}
       </ul>
       {{#if publicSearchResults}}
-        {{pagination-control details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
+        {{pagination-control startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
       {{else}}
       {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") handleQueryResults=(action "updatePublicPageResults") model="problem"}}
       {{/if}}

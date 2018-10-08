@@ -24,7 +24,19 @@ const pdAdminDrexel = {
     username: 'sam3',
     accountType: 'S'
   },
-  accessibleUserCount: 24
+  accessibleUserCount: 24,
+
+  accessibleSubmissionCount: 53,
+  unaccessibleSubmission: {
+    _id: "5bb814d19885323f6d894973"
+  },
+  accessibleSubmission: {
+    _id: "53e1156db48b12793f00042d"
+  },
+  accessibleCommentCount: 3,
+  accessibleComment: {
+    _id: "53e12264b48b12793f000b84"
+  }
 };
 
 const teacherMT = {
@@ -55,7 +67,19 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 20
+  accessibleUserCount: 20,
+  accessibleSubmissionCount: 18,
+  unaccessibleSubmission: {
+    _id: "53e1156db48b12793f000417"
+  },
+  accessibleSubmission: {
+    _id: "53e36522729e9ef59ba7f4da"
+  },
+  accessibleCommentCount: 1,
+  accessibleComment: {
+    _id: "53e37a4ab48b12793f00104c"
+  }
+
 };
 
 const admin = {
@@ -78,7 +102,15 @@ const admin = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 37
+  accessibleUserCount: 37,
+  accessibleSubmissionCount: 54,
+  accessibleSubmission: {
+    _id: "5bb814d19885323f6d894973"
+  },
+  accessibleCommentCount: 3,
+  accessibleComment: {
+    _id: "53e12507b48b12793f000b91"
+  }
 
 };
 
@@ -109,6 +141,11 @@ const studentMT = {
     username: 'tracyc',
     accountType: 'S'
   },
+
+  unaccessibleSubmission: {
+    _id: "53e36522729e9ef59ba7f4df"
+  }
+
 };
 
 const teacherActingStudent = {
@@ -139,8 +176,10 @@ const teacherActingStudent = {
     username: 'actingStudent',
     accountType: 'T'
   },
+  unaccessibleSubmission: {
+    _id: "53e36522729e9ef59ba7f4db"
+  }
 };
-
 const users = {
   admin,
   pdAdminDrexel,
@@ -155,7 +194,7 @@ const publicProblem = {
   creatorUsername: "tpool",
 };
 
-const accessibleOrgCount = 3;
+// const accessibleOrgCount = 3;
 
 
 module.exports.users = users;

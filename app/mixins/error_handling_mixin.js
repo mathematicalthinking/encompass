@@ -52,7 +52,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
     if (Array.isArray(err)) {
       for (let e of err) {
         if (typeof e === 'string') {
-          if (!!this.get(e)) {
+          if (this.get(e)) {
             this.set(e, null);
           }
         }
@@ -61,7 +61,7 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
       if (typeof err !== 'string') {
         return;
       }
-      if (!!this.get(err)) {
+      if (this.get(err)) {
         this.set(err, null);
       }
     }

@@ -36,7 +36,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     const problem = this.get('selectedProblem');
     const section = this.get('selectedSection');
     const files = this.get('uploadedFiles');
-    const uploading = this.get('isUploadingAnswer');
+    // const uploading = this.get('isUploadingAnswer');
 
     const ret = !Ember.isEmpty(problem) || !Ember.isEmpty(section) || !Ember.isEmpty(files);
 

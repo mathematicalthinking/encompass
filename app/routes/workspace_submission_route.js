@@ -39,8 +39,8 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     var route = this;
 
     var foldersController = route.controllerFor('folders');
-    var commentsController = route.controllerFor('comments');
-    var workspaceController = route.controllerFor('workspace.submissions');
+    // var commentsController = route.controllerFor('comments');
+    // var workspaceController = route.controllerFor('workspace.submissions');
 
     var workspace = this.modelFor('workspace');
     foldersController.set('model', workspace.get('folders'));

@@ -20,14 +20,13 @@ Encompass.WorkspacesListRoute = Ember.Route.extend({
   },
 
   model: function() {
-    var route = this;
     var store = this.get('store');
 
     return store.findAll('workspace');
     /*
     return store.cache('workspace').then(function(model){
       return model;
-      //return store.filter('workspace', route.filter.bind(route)); 
+      //return store.filter('workspace', route.filter.bind(route));
       //stackoverflow.com/questions/24439394/emberjs-override-route-filter-without-global/24439468#24439468
     });
     */

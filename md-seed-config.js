@@ -23,6 +23,7 @@ var Workspaces = require('./seeders/workspaces.seeder');
 var Organizations = require('./seeders/organizations.seeder');
 var Categories = require('./seeders/categories.seeder');
 var Assignments = require('./seeders/assignments.seeder');
+var EncWorkspaceRequests = require('./seeders/encworkspacerequests.seeder');
 
 // to be able to read the .env file
 require('dotenv').config();
@@ -57,6 +58,7 @@ module.exports = {
     Taggings,
     Comments,
     Categories,
-    Assignments
+    Assignments,
+    EncWorkspaceRequests
   }
 };

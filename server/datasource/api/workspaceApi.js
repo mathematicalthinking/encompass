@@ -15,9 +15,7 @@ const helper = require('util');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth   = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const utils  = require('../../middleware/requestHandler');
 const data   = require('./data');
 const access = require('../../middleware/access/workspaces');
@@ -111,7 +109,7 @@ function getWorkspace(id, callback) {
   * @todo + This should really accept a node-style callback
   *       + Could be simpler. Needs refactoring
   */
-function getWorkspaceWithDependencies(id, callback) {
+function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-unused-vars
   models.Workspace.findById(id)
     .exec(
       function(err, workspace) {
@@ -157,21 +155,22 @@ function getWorkspaceWithDependencies(id, callback) {
            It's sending back way too much data right now
   */
 function sendWorkspace(req, res, next) {
-  console.log('in send WS');
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws) {
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
     if (err) {
+      console.error(`Error sendWorkspace: ${err}`);
+      console.trace();
       return utils.sendError.InternalError(err, res);
+    }
+    if (!ws) {
+      return utils.sendResponse(res, null);
     }
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+      return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
       getWorkspace(req.params.id, function(data) {
         console.log(`${user} has permission to load workspace #${req.params.id}`);
-        if(!data) {
-          return utils.sendCustomError(404, 'no such workspace', res);
-        }
         utils.sendResponse(res, data);
       });
     }
@@ -416,7 +415,7 @@ function newFolderStructure(user, ws, folderSetName) {
 function nameWorkspace(submissionSet, user, isPows) {
   var puzzle = submissionSet.description.puzzle;
   var group = submissionSet.description.group;
-  var publication = submissionSet.description.publication;
+  // var publication = submissionSet.description.publication;
   var pdSet = submissionSet.description.pdSource;
   var labelFmt = "%s / %s";
 
@@ -1052,7 +1051,7 @@ async function postWorkspaceEnc(req, res, next) {
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
-
+    console.log('wsCrit', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
     console.log('answers are', answers.length);
 

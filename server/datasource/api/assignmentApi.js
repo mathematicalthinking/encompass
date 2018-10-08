@@ -4,14 +4,9 @@
   * @author Daniel Kelly
 */
 /* jshint ignore:start */
-var mongoose = require('mongoose');
-const express = require('express');
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions = require('../../../common/permissions');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
 
@@ -114,6 +109,10 @@ const postAssignment = (req, res, next) => {
 
 const putAssignment = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
   // what check do we want to perform if the user can edit
   // if they created the assignment?
   models.Assignment.findById(req.params.id, (err, doc) => {
@@ -149,6 +148,11 @@ const putAssignment = (req, res, next) => {
 */
 const addTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -179,6 +183,11 @@ const addTeacher = (req, res, next) => {
 */
 const removeTeacher = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -209,6 +218,11 @@ const removeTeacher = (req, res, next) => {
 */
 const addStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -239,6 +253,11 @@ const addStudent = (req, res, next) => {
 */
 const removeStudent = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -269,6 +288,11 @@ const removeStudent = (req, res, next) => {
 */
 const addProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
@@ -299,6 +323,11 @@ const addProblem = (req, res, next) => {
 */
 const removeProblem = (req, res, next) => {
   const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
   models.Assignment.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);

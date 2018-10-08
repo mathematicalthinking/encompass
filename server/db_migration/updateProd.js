@@ -29,6 +29,7 @@ const allCollections = originalCollections.concat(newCollections);
 async function removeTrashedDocuments() {
   console.log(`Starting removeTrashedDocuments `)
   for (let collection of originalCollections) {
+    let trashed;
     let model = models[collection];
     // let allDocs = await model.find({}).exec();
     // let allDocsIds = allDocs.map(ws => ws._id);
@@ -39,7 +40,7 @@ async function removeTrashedDocuments() {
       console.log(`deleteMany error: ${e}`);
     }
     console.log(`${model.modelName} deleted ${trashed.deletedCount} records`);
-  };
+  }
   console.log(`done running remove Trashed Documents`);
   console.log(`-------------------`)
 }
@@ -51,7 +52,7 @@ async function removeOrphanedFromWs(collection, workspaceIds) {
   console.log(`Starting removeOrphanedFromWs for ${collection.name}`)
   let deleted = 0;
   let model = models[collection];
-  let mismatch = 0;
+  // let mismatch = 0; // unused - is this necessary?
 
   let allDocs = await model.find({}).exec();
   try {
@@ -90,7 +91,7 @@ async function removeOrphanedTaggings() {
     let taggings = await tags.find({}).exec();
     console.log(`there are ${taggings.length} taggings`);
 
-    for (tagging of taggings) {
+    for (let tagging of taggings) {
       let shouldDelete = true;
       let selectionId = tagging.selection;
       let folderId = tagging.folder;
@@ -140,7 +141,7 @@ async function removeIrrelevantUsers() {
     for (let ws of workspaces) {
       ws.editors.forEach((ed) => {
         // indexOf does not seem to be working here, all are added.
-        ix = wsUsers.indexOf(ed);
+        let ix = wsUsers.indexOf(ed);
         if (ix < 0) {
           wsUsers.push(ed);
         } else {
@@ -189,7 +190,7 @@ async function checkSubmissionWorkspaces() {
     subs.forEach((sub) => {
       subWs = sub.workspaces;
       wsCount = 0;
-      subWs.forEach((ws) => {
+      subWs.forEach(() => {
         // // This does not work - get UnhandledProiseRejectionWarning for each read
         // // cannot use await on findById, it gives a syntax error on models
         // let wsFound = await models.Workspace.findById(ws._id).exec();
@@ -224,7 +225,7 @@ async function cleanSubmissionWorkspaces() {
     let workspaces = await models.Workspace.find({}).exec();
     let workspaceIds = workspaces.map(ws => ws._id);
     console.log(`workspaces.length: ${workspaceIds.length}`);
-    results = await models.Submission.updateMany({}, {$pull: {workspaces: {$nin: workspaceIds}}}).exec();
+    let results = await models.Submission.updateMany({}, {$pull: {workspaces: {$nin: workspaceIds}}}).exec();
     console.log(`workspaces updated: ${results}`);
 
   }catch(err) {
@@ -239,7 +240,7 @@ async function cleanSubmissionWorkspaces() {
 async function updateRequiredFields(collection) {
   console.log(`Starting updateRequiredFields for collection: ${collection}`)
   const coll = models[collection]
-  let allDocs = await coll.find({}).exec();
+  // let allDocs = await coll.find({}).exec(); not used - duplicate of line 246
   try {
 
     const colDocs = await coll.find({}).exec();
@@ -322,7 +323,7 @@ async function updateRequiredFields(collection) {
           }}
         ).exec();
       }
-    };
+    }
 
     // // does not work: gets TypeError: doc.save is not a function
     // await coll.find({  }, (err, doc) => {

@@ -94,8 +94,8 @@ function formatCacheOptions() {
 
   // Rename those that should be named differently
   /* jshint camelcase: false */
-  if( !!query._ ) { query.source = program._[0]; }
-  if( !!query.pd ) { query.collection = program.pd; }
+  if( query._ ) { query.source = program._[0]; }
+  if( query.pd ) { query.collection = program.pd; }
   delete  query._;
   delete query.pd;
 
@@ -129,7 +129,7 @@ function formatCacheOptions() {
       delete query.date;
     }
   }
-  else if( !!query.date ) {
+  else if( query.date ) {
     try {
       query.since_date = Date.parse(query.date);
     }

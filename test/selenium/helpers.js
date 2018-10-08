@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const { By, until } = require('selenium-webdriver');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -111,7 +111,7 @@ const getWebElements = async function (webDriver, selector) {
 
 const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
   await webDriver.get(url);
-  return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+  return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 };
 
 const findAndGetText = async function (webDriver, selector) {
@@ -143,7 +143,7 @@ const isTextInDom = async function (webDriver, text) {
 const findAndClickElement = async function (webDriver, selector) {
   let elements = await getWebElements(webDriver, selector);
   if (elements.length > 0) {
-    return await elements[0].click();
+    return elements[0].click();
   }
   return;
 };
@@ -169,7 +169,7 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   try {
     return await webDriver.wait(async function() {
       return await isElementVisible(webDriver, selector) === false;
-    }, timeout=timeoutMs);
+    }, timeout);
   } catch (err) {
     console.log(err);
   }
@@ -207,15 +207,16 @@ const login = async function(webDriver, host, user=admin) {
   await findInputAndType(webDriver, css.login.username, user.username);
   await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
-  return await waitForSelector(webDriver, css.topBar.logout);
+  return waitForSelector(webDriver, css.topBar.logout);
 };
 
-const signup = async function(webDriver, host, missingFields=[], user=newUser,  acceptedTerms=true) {
+const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
   const inputs = css.signup.inputs;
   for (let input of Object.keys(inputs)) {
     if (input !== 'terms' && !missingFields.includes(input)) {
       try {
-        await findInputAndType(webDriver, inputs[input], newUser[input]);
+        // eslint-disable-next-line no-await-in-loop
+        await findInputAndType(webDriver, inputs[input], user[input]);
       }catch(err){
         console.log(err);
       }
@@ -231,30 +232,12 @@ const signup = async function(webDriver, host, missingFields=[], user=newUser,  
   }
 };
 
-// use for checking if several elements are visible in dom
-// elements should be an array of css selectors
-const verifyElements = async function(webDriver, elements) {
-  let isVisible;
-  if (!Array.isArray(elements)) {
-    return;
-  }
-
-    for (let el of elements) {
-      try {
-        isVisible = await isElementVisible(webDriver, el);
-      }catch(err) {
-        console.log(err);
-      }
-      expect(isVisible).to.be.true;
-  }
-};
-
 const clearElement = async function(webDriver, element) {
   let ele;
   try {
    let elements = await getWebElements(webDriver, element);
-   el = elements[0];
-   await el.clear();
+   ele = elements[0];
+   await ele.clear();
   }catch(err) {
     console.log(err);
   }

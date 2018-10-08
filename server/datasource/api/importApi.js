@@ -4,27 +4,17 @@
 */
 
 //REQUIRE MODULES
-const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
 
 //REQUIRE FILES
 const models = require('../schemas');
-const auth = require('./auth');
 const userAuth = require('../../middleware/userAuth');
-const permissions  = require('../../../common/permissions');
 const utils    = require('../../middleware/requestHandler');
 const workspaceApi = require('./workspaceApi');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
-
-const formatAnswers = (answers) => {
-  if (!Array.isArray(answers)) {
-    return;
-  }
-
-};
 
 /**
   * @public
@@ -202,7 +192,7 @@ let workspace = new models.Workspace({
   lastModifiedBy: user
 });
 let ws = await workspace.save();
-let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName);
+let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName); // eslint-disable-line no-unused-vars
 //sending back workspace and submissionID for redirect
 const data = {
               'workspaceId': ws._id,

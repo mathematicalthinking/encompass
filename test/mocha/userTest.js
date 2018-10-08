@@ -1,10 +1,8 @@
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const _ = require('underscore');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures.js');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
 
@@ -223,6 +221,7 @@ describe('User CRUD operations by account type', async function() {
 
   for (let user of Object.keys(testUsers)) {
     let testUser = testUsers[user];
+    // eslint-disable-next-line no-await-in-loop
     await runTests(testUser);
   }
 });

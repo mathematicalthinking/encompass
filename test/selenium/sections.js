@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const {Builder, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
-const _ = require('underscore');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -12,10 +11,8 @@ const testUsers = require('./fixtures/users');
 
 
 describe('Sections', async function () {
-  await runTests(testUsers);
-});
   async function runTests(users) {
-    async function _runTests(user) {
+    function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -23,7 +20,7 @@ describe('Sections', async function () {
       const sectionLink = `a[href='#/sections/${sectionDetails._id}`;
 
 
-      describe(`As ${testDescriptionTitle}`, async function() {
+      describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
 
@@ -32,14 +29,14 @@ describe('Sections', async function () {
             .forBrowser('chrome')
             .build();
             await dbSetup.prepTestDb();
-            return await helpers.login(driver, host, user);
+            return helpers.login(driver, host, user);
           });
 
-        after(async function() {
-          return await driver.quit();
+        after(function() {
+          return driver.quit();
         });
 
-        describe('Visiting sections page', async function () {
+        describe('Visiting sections page', function () {
           before(async function () {
             await helpers.findAndClickElement(driver, css.topBar.sections);
             await helpers.waitForSelector(driver, 'ul.your-sections');
@@ -75,17 +72,19 @@ describe('Sections', async function () {
 
         describe('Create section', function () {
           const url = `${host}/#/sections/new`;
-          const verifyForm = async function () {
+          const verifyForm = function () {
             const inputs = css.newSection.inputs;
 
             //testing for inputs
             for (let input of Object.keys(inputs)) {
               if (accountType === 'T' && input === 'teacher') {
+                // eslint-disable-next-line no-loop-func
                 it(`teacher field should be fixed as current user`, async function() {
                   expect(await helpers.findAndGetText(driver, css.newSection.fixedInputs.teacher)).to.eql(username);
                 });
               } else if (input === 'organization') {
                 if (accountType === 'A') {
+                  // eslint-disable-next-line no-loop-func
                   it('should prompt user to select a teacher', async function() {
                     expect(await helpers.isTextInDom(driver, 'Please select a teacher first.')).to.be.true;
                   });
@@ -96,6 +95,7 @@ describe('Sections', async function () {
                 }
 
               } else {
+                // eslint-disable-next-line no-loop-func
                 it(`${input} field should be visible`, async function() {
                   const thisUrl = await helpers.getCurrentUrl(driver);
                   console.log('url', thisUrl);
@@ -105,7 +105,7 @@ describe('Sections', async function () {
 
             }
           };
-          describe('Clicking link from section-info', async function() {
+          describe('Clicking link from section-info', function() {
             let sel = css.sectionInfo.newSectionButton;
             if (isStudent) {
               it(`link should not be visible`, async function() {
@@ -126,7 +126,7 @@ describe('Sections', async function () {
             }
           });
 
-          describe('Navigating directly', async function() {
+          describe('Navigating directly', function() {
             before(async function() {
               try {
                 await driver.get(url);
@@ -164,6 +164,7 @@ describe('Sections', async function () {
               const submitSection = async function(details) {
                 for (let detail of Object.keys(details)) {
                   try {
+                    // eslint-disable-next-line no-await-in-loop
                     await helpers.findInputAndType(driver, inputs[detail], details[detail]);
                   }catch(err) {
                     console.log(err);
@@ -172,7 +173,7 @@ describe('Sections', async function () {
                 await helpers.findAndClickElement(driver, css.newSection.create);
               };
 
-              describe('submitting empty form', async function() {
+              describe('submitting empty form', function() {
                 it('should display error message(s)', async function() {
                   await helpers.findAndClickElement(driver, css.newSection.create);
                   await helpers.waitForSelector(driver, css.general.errorMessage);
@@ -181,7 +182,7 @@ describe('Sections', async function () {
                 });
               });
 
-              describe('submitting valid form', async function() {
+              describe('submitting valid form', function() {
                 it('should redirect to section-info page after creating', async function () {
                   await submitSection(details);
                   // await helpers.waitForSelector(driver, 'div.section-info-detail.name p', 10000);
@@ -206,9 +207,13 @@ describe('Sections', async function () {
       });
     }
     for (let user of Object.keys(users)) {
+      // eslint-disable-next-line no-await-in-loop
       await _runTests(users[user]);
     }
   }
+  await runTests(testUsers);
+});
+
 
 
 

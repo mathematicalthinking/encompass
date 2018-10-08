@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const _        = require('underscore');
 const Schema   = mongoose.Schema;
-const Buffer   = Schema.Types.Buffer;
 const ObjectId = Schema.ObjectId;
-const Workspace = require('./workspace');
 
 /**
   * @public

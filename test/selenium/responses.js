@@ -1,7 +1,6 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver');
+const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
-const _ = require('underscore');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -63,10 +62,11 @@ describe('Responses', function() {
     // });
 
     describe('should have buttons', function() {
-      async function validateButtons() {
+      function validateButtons() {
         const selectors = ['button.edit:enabled', 'button.save:disabled'];
         for (let selector of selectors) {
           let name = selector.slice(7,11);
+          // eslint-disable-next-line no-loop-func
           it(`${name} button should be visible`, async function() {
             expect(await helpers.isElementVisible(driver, selector)).to.eql(true);
           });
@@ -76,10 +76,11 @@ describe('Responses', function() {
     });
 
     describe('should display a summary and a more details link', function() {
-      async function validateLinks() {
+      function validateLinks() {
         const links = ['a.workspace', 'a.submission', 'a#moreDetails'];
         for (let link of links) {
           let name = link.slice(2);
+          // eslint-disable-next-line no-loop-func
           it(`${name} link should be visible`, async function() {
              expect(await helpers.isElementVisible(driver, link)).to.eql(true);
           });

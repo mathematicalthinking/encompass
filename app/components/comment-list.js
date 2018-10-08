@@ -234,7 +234,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     reuseComment: function(comment) {
-      var controller = this;
 
       //copy the comment text to the input
       this.set('newComment', this.get('newComment') + ' ' + comment.get('text'));

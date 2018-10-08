@@ -4,8 +4,7 @@ Encompass.Tagging = DS.Model.extend(Ember.Copyable, Encompass.Auditable, {
   folder: DS.belongsTo('folder'),
 
   copy: function(deep) {
-    var model = this,
-        clone = this.toJSON();
+    var clone = this.toJSON();
 
     delete clone.id;
     return this.store.createRecord('tagging', clone).save();

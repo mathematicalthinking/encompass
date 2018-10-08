@@ -59,7 +59,6 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
     },
 
     importWorkspace: function() {
-      var controller = this;
       var importData = { /*jshint camelcase: false */
         teacher: this.get('teacher'),
         submitter: this.get('submitter'),
@@ -86,12 +85,11 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
         }
       }
 
-      if(!!this.get('subs')) {
+      if(this.get('subs')) {
         importData.submissions = Ember.String.w( this.get('subs') );
       }
 
       var request = this.store.createRecord('importRequest', importData);
-      var output;
 
       request.save().then(function(obj) {
         var result = obj.get('results');
