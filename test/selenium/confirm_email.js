@@ -17,9 +17,9 @@ const fixtures = require('./fixtures/confirm_email');
 const host = helpers.host;
 const confirmPath = '/#/auth/confirm';
 
-const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`
-const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`
-const expiredResetLink = `${host}${confirmPath}/${fixtures.userExpiredToken.token}`
+const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`;
+const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`;
+const expiredResetLink = `${host}${confirmPath}/${fixtures.userExpiredToken.token}`;
 
 describe('Confirm Email', async function () {
   this.timeout(helpers.timeoutTestMsStr);
@@ -95,7 +95,7 @@ describe('Confirm Email', async function () {
     });
 
     it('should display info message', async function() {
-      const msg = 'In order to start using the EnCoMPASS software, we need to confirm your email address.'
+      const msg = 'In order to start using the EnCoMPASS software, we need to confirm your email address.';
       expect(await helpers.isTextInDom(driver, msg)).to.be.true;
     });
 
@@ -107,7 +107,7 @@ describe('Confirm Email', async function () {
       await helpers.findAndClickElement(driver, css.confirmEmail.newEmailButton);
       await helpers.waitForSelector(driver, css.confirmEmail.resentConfirm);
 
-      expect (await helpers.isElementVisible(driver, css.confirmEmail.resentConfirm)).to.be.true;
+      expect(await helpers.isElementVisible(driver, css.confirmEmail.resentConfirm)).to.be.true;
     });
   });
 

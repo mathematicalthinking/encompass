@@ -81,7 +81,7 @@ describe('Sections', async function () {
             //testing for inputs
             for (let input of Object.keys(inputs)) {
               if (accountType === 'T' && input === 'teacher') {
-                it (`teacher field should be fixed as current user`, async function() {
+                it(`teacher field should be fixed as current user`, async function() {
                   expect(await helpers.findAndGetText(driver, css.newSection.fixedInputs.teacher)).to.eql(username);
                 });
               } else if (input === 'organization') {
@@ -90,7 +90,7 @@ describe('Sections', async function () {
                     expect(await helpers.isTextInDom(driver, 'Please select a teacher first.')).to.be.true;
                   });
                 } else {
-                  it (`organization field should be fixed as user's org`, async function() {
+                  it(`organization field should be fixed as user's org`, async function() {
                     expect(await helpers.findAndGetText(css.newSection.fixedInputs.organization)).to.eql(organization);
                   });
                 }
