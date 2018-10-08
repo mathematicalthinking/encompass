@@ -36,7 +36,8 @@ const pdAdminDrexel = {
   accessibleCommentCount: 3,
   accessibleComment: {
     _id: "53e12264b48b12793f000b84"
-  }
+  },
+  accessibleAnswerCount: 2
 };
 
 const teacherMT = {
@@ -78,7 +79,8 @@ const teacherMT = {
   accessibleCommentCount: 1,
   accessibleComment: {
     _id: "53e37a4ab48b12793f00104c"
-  }
+  },
+  accessibleAnswerCount: 1
 
 };
 
@@ -110,7 +112,8 @@ const admin = {
   accessibleCommentCount: 3,
   accessibleComment: {
     _id: "53e12507b48b12793f000b91"
-  }
+  },
+  accessibleAnswerCount: 3
 
 };
 
@@ -144,7 +147,8 @@ const studentMT = {
 
   unaccessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4df"
-  }
+  },
+  accessibleAnswerCount: 1
 
 };
 
@@ -178,7 +182,8 @@ const teacherActingStudent = {
   },
   unaccessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4db"
-  }
+  },
+  accessibleAnswerCount: 0
 };
 const users = {
   admin,
