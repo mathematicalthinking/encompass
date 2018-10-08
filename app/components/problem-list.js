@@ -15,6 +15,9 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (this.get('changingPage')) {
       return;
     }
+    if (this.get('isSearching')) {
+      return;
+    }
     // all problems in store
     let problems = this.problems;
     // all valid problems
@@ -28,7 +31,6 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     let sortedProblems = validProblems.sortBy('createDate').reverse();
     let mostRecent = sortedProblems.objectAt(0);
-    console.log('mostRecent', mostRecent);
     yourProblemsList.addObject(mostRecent);
     this.set('yourProblemsList', yourProblemsList);
   }.observes('problems.[]'),
@@ -74,9 +76,10 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   // This displays only the problems beloging to the current user
   yourProblems: function () {
+    let currentUser = this.get('currentUser');
     let problems = this.get('yourProblemsList');
     let valid = problems.filter(p => !!p.id && !p.get('isTrashed'));
-    return valid;
+    return valid.filterBy('createdBy.content', currentUser);
 
   }.property('yourProblemsList.@each.isTrashed'),
 
@@ -97,6 +100,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   actions: {
     searchPublic: function() {
+      this.set('isSearching', true);
       let searchText = this.get('publicSearchText');
       if (!searchText) {
         return;
@@ -119,6 +123,7 @@ Encompass.ProblemListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
     },
     clearPublicResults: function() {
+      this.set('isSearching', false);
       this.set('publicSearchText', null);
       this.set('searchQuery', null);
       this.set('publicSearchResults', null);
