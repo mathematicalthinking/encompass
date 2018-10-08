@@ -159,6 +159,10 @@ function postComment(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
       var comment = new models.Comment(req.body.comment);
       comment.createdBy = user;
@@ -168,7 +172,6 @@ function postComment(req, res, next) {
           logger.error(err);
           return utils.sendError.InternalError(err, res);
         }
-
         var data = {'comment': doc};
         utils.sendResponse(res, data);
       });
@@ -192,6 +195,10 @@ function putComment(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
 
       models.Comment.findById(req.params.id,

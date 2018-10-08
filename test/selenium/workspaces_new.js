@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, Actions, By, Key, until} = require('selenium-webdriver')
+const {Builder, Actions, By, Key, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -40,7 +40,8 @@ async function runTests(users) {
       describe('Clicking topbar link', async function() {
         if (accountType === 'S' || actingRole === 'student') {
           it(`link should not be visible`, async function() {
-            expect(await helpers.isElementVisible(driver, topLink)).to.be.false});
+            expect(await helpers.isElementVisible(driver, topLink)).to.be.false;
+          });
         } else {
           it(`should display new workspace creation form`, async function() {
             await helpers.findAndClickElement(driver, css.topBar.workspaces);
@@ -97,7 +98,7 @@ async function runTests(users) {
               const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
               const fixedInputs = css.newWorkspaceEnc.workspaceSettings.fixedInputs;
               for (let input of Object.keys(inputs)) {
-                if (accountType == 'T' && input === 'owner') {
+                if (accountType === 'T' && input === 'owner') {
                   it(`owner field should be fixed as teacher's username`, async function() {
                     expect(await helpers.isElementVisible(driver, inputs[input])).to.be.false;
                     expect(await helpers.findAndGetText(driver, fixedInputs.owner)).to.eql(user.username);
@@ -109,11 +110,11 @@ async function runTests(users) {
                 }
               }
 
-              it ('privacy setting should be private as default', async function() {
+              it('privacy setting should be private as default', async function() {
                 let privateSel = inputs.modePrivate;
                 let private = await driver.findElement(By.css(privateSel));
                 expect(await private.getAttribute('checked')).to.eql('true');
-              })
+              });
 
             });
 

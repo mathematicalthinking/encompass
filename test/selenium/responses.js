@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const {Builder, By, Key, until} = require('selenium-webdriver')
+const {Builder, By, Key, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const _ = require('underscore');
 
@@ -81,12 +81,12 @@ describe('Responses', function() {
         for (let link of links) {
           let name = link.slice(2);
           it(`${name} link should be visible`, async function() {
-            expect(await helpers.isElementVisible(driver, link)).to.eql(true);
+             expect(await helpers.isElementVisible(driver, link)).to.eql(true);
           });
         }
       }
       validateLinks();
-      it ('should display summary', async function() {
+      it('should display summary', async function() {
         expect(await helpers.isTextInDom(driver, 'This response was generated from')).to.eql(true);
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(false);
     });
@@ -98,7 +98,7 @@ describe('Responses', function() {
         expect(commentList).to.have.lengthOf(1);
         expect(selectionLis).to.have.lengthOf(4);
         //'a.other.response'.should.be.inDOM; TODO Test for other responses (needs a submission with multiple responses)
-      })
+      });
     });
 
     describe('Saving this response', function() {

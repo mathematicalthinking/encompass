@@ -186,6 +186,10 @@ function getPDSets(req, res, next) {
       }
     },
     function(err, results){
+      if (err) {
+        logger.error(err);
+        return utils.sendError.InternalError(err, res);
+      }
       utils.sendResponse(res, {PdSet: results});
     });
 }
@@ -206,7 +210,6 @@ function getSubmission(req, res, next) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
-
       var data = {'submission': submission};
       utils.sendResponse(res, data);
     });

@@ -1,8 +1,10 @@
-var mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  _ = require('underscore'),
-  ObjectId = Schema.ObjectId,
-  User = require('../schemas/user').User;
+
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const _ = require('underscore');
+const ObjectId = Schema.ObjectId;
+const User = require('../schemas/user').User;
+
 
 /**
   * @public

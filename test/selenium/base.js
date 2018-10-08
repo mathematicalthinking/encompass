@@ -51,7 +51,7 @@ describe('Home Page', function () {
   });
 
   describe('submitting login form', async function () {
-    it('should display missing credentials if empty form submitted', async function () {
+      it('should display missing credentials if empty form submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.true;
     });
@@ -91,7 +91,7 @@ describe('Home Page', function () {
     it('should remove incorrect username error', async function () {
       await helpers.findInputAndType(driver, css.login.username, 's');
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.username)).to.be.false;
-    })
+    });
 
     it('should redirect to homepage after logging in', async function () {
       let url;

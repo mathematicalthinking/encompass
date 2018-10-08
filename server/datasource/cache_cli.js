@@ -98,7 +98,7 @@ function formatCacheOptions() {
   if( !!query.pd ) { query.collection = program.pd; }
   delete  query._;
   delete query.pd;
-  
+
   // Massage those that have multiple query methods
   var complex = {
     ids: program.id,
@@ -148,7 +148,7 @@ function formatCacheOptions() {
 // Return help if requested
 if(program.h) {
   optimist.showHelp(console.info);
-  process.exit();
+  throw new Error(program.h);
 }
 
 // Run cache and print result or throw errors and close db connection
@@ -156,4 +156,4 @@ var options = formatCacheOptions();
 cache(options)
   .then(console.log)
   .then(mongoose.connection.close)
-  .done(process.exit); 
+  .done(process.exit);

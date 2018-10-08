@@ -211,28 +211,28 @@ module.exports = function (grunt) {
     watch: {
       common_code: {
         files: ['common/**/*.js'],
-        tasks: ['browserify', 'MochaTests', 'jshint'], //common code is used on the front and backend
+        tasks: ['browserify', 'MochaTests', 'jshint', 'eslint'], //common code is used on the front and backend
         options: {
           spawn: false
         }
       },
       common_files: {
-        files: ['.jshintrc', 'Gruntfile.js'],
-        tasks: ['jshint'], //anything could have changed in the Gruntfile
+        files: ['.jshintrc', 'Gruntfile.js', '.eslintrc.js'],
+        tasks: ['jshint', 'eslint'], //anything could have changed in the Gruntfile
         options: {
           spawn: false
         }
       },
       ember_code: {
         files: ['app/**/*.js', 'dependencies/**/*.js', '!dependencies/compiled/templates.js', '!server/datasource/**', '!server/server.js', '!server/config.js'],
-        tasks: ['neuter:dev', 'jshint'], //jqunit
+        tasks: ['neuter:dev', 'jshint', 'eslint'], //jqunit
         options: {
           spawn: false
         }
       },
       server_code: {
         files: ['server/server.js', 'server/fake_login.js', 'server/config.js', 'server/datasource/**/*.js'],
-        tasks: ['jshint'], //nodemon monitors it's own files,
+        tasks: ['jshint', 'eslint'], //nodemon monitors it's own files,
         options: {
           spawn: false
         }
@@ -246,14 +246,14 @@ module.exports = function (grunt) {
       },
       common_tests: {
         files: ['test/jasmine/common/**'],
-        tasks: ['jasmine:common', 'jshint'],
+        tasks: ['jasmine:common', 'jshint', 'eslint'],
         options: {
           spawn: false
         }
       },
       ember_qunit: {
         files: ['test/qunit/**/*.*', 'test/data/fixtures.js'],
-        tasks: ['jshint'], //jqunit
+        tasks: ['jshint', 'eslint'], //jqunit
         options: {
           spawn: false
         }
@@ -315,7 +315,12 @@ module.exports = function (grunt) {
         jshintrc: '.jshintrc'
       }
     },
-
+    eslint: {
+      target: ['Gruntfile.js', 'app/**/*.js', 'server/**/*.js', 'test/**/*.js', 'common/*.js', '!dependencies/*.*', '!test/qunit/support/*.*', 'test/selenium/*.js', 'test/data/*.js', '!server/db_migration/*.js', 'test/mocha/*.js', 'server/middleware/access/*.js'],
+      options: {
+        configFile: '.eslintrc.js'
+      }
+    },
     /*
       Finds Handlebars templates and precompiles them into functions.
       The provides two benefits:
@@ -367,7 +372,7 @@ module.exports = function (grunt) {
      */
     concurrent: {
       dev: {
-        tasks: ['nodemon:dev', 'jshint', 'watch'],
+        tasks: ['nodemon:dev', 'jshint', 'eslint', 'watch'],
         options: {
           logConcurrentOutput: true
         }

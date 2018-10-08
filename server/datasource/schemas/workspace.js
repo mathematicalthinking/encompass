@@ -1,10 +1,6 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId,
-    Folder = require('./folder'),
-    Tagging = require('./tagging'),
-    Submission = require('./submission'),
-    Selection = require('./selection');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 /**
   * @public

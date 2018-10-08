@@ -1,6 +1,6 @@
 
 const resetTokenEmail = function(recipient, host, token) {
-  if (! recipient) {
+  if (!recipient) {
     return;
   }
   return {
@@ -14,7 +14,7 @@ const resetTokenEmail = function(recipient, host, token) {
 };
 
 const confirmEmailAddress = function(recipient, host, token) {
-  if (! recipient) {
+  if (!recipient) {
     return;
   }
   return {

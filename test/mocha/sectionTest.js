@@ -37,6 +37,9 @@ describe('Section CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('sections');
         expect(res.body.sections).to.be.a('array');
@@ -50,6 +53,9 @@ describe('Section CRUD operations', function() {
       agent
       .get(baseUrl + fixtures.section._id)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('section');
         expect(res.body.section).to.be.a('object');
@@ -66,6 +72,9 @@ describe('Section CRUD operations', function() {
       .post(baseUrl)
       .send({section: fixtures.section.validSection})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.name).to.eql(fixtures.section.validSection.name);
@@ -84,8 +93,12 @@ describe('Section CRUD operations', function() {
             section: {
               name: 'phils class',
               createdBy: fixtures.section.validSection.createdBy,
-      }})
+            }
+      })
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.name).to.eql('phils class');
@@ -102,6 +115,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({teacherId: '52964659e4bad7087700014c'})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.teachers).to.contain('52964659e4bad7087700014c');
@@ -118,6 +134,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({teacherId: fixtures.teacher._id})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.teachers).to.not.contain(fixtures.teacher._id);
@@ -133,6 +152,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({studentId: fixtures.student._id})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.students).to.contain(fixtures.student._id);
@@ -149,6 +171,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({studentName: fixtures.student.name})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.students).to.not.contain(fixtures.student.name);
@@ -165,6 +190,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({problem: fixtures.problem._id})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.problems).to.contain(fixtures.problem._id);
@@ -181,6 +209,9 @@ describe('Section CRUD operations', function() {
       .put(url)
       .send({problem: fixtures.problem._id})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('sectionId', 'name', 'problems', 'students', 'teachers');
         expect(res.body.section.problems).to.not.contain(fixtures.problem._id);

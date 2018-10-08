@@ -1,5 +1,5 @@
 const spawn = require('child_process').spawn;
-const exec = require('child_process').exec
+const exec = require('child_process').exec;
 const path = require('path');
 const pathToBackup =  path.resolve(__dirname, 'encompass_test');
 const testDb = 'encompass_test';
@@ -39,7 +39,7 @@ const dropAndRestoreDb = function () {
   return new Promise((resolve, reject) => {
     exec(`md-seed run --dropdb`, (err, stdout, stderr) => {
       if (err) {
-        console.log("ERROR FROM RESTORE: ", err)
+        console.log("ERROR FROM RESTORE: ", err);
         reject(err);
       }
       console.log('db drop results: ', stdout);

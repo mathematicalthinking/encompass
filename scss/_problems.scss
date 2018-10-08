@@ -211,6 +211,19 @@
       }
     }
   }
+  .button-row {
+    width: 100%;
+    margin: 40px auto;
+    text-align: center;
+    display: block;
+    button {
+      font-size: .8em;
+      padding: 5px 15px;
+      background-color: none;
+      border-radius: 3px;
+      border-color: $input-border;
+    }
+  }
 }
 
 nav#with-search-bar {

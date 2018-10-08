@@ -71,7 +71,7 @@ describe('Problems', function() {
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         });
       }
-    }
+    };
     before(async function() {
       await helpers.findAndClickElement(driver, "#problem-new-link");
       await helpers.waitForSelector(driver, css.newProblem.form);

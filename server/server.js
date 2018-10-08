@@ -81,9 +81,9 @@ mongoose.connect(dbConf.host, dbConf.name, {
   pass: dbConf.pass
 });
 
-console.info (`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
-console.info (`Port: ${port.toString()}`);
-console.info (`db name: ${dbConf.name}`);
+console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
+console.info(`Port: ${port.toString()}`);
+console.info(`db name: ${dbConf.name}`);
 
 server.set('port', port);
 
@@ -97,16 +97,17 @@ mainServer.listen(port);
 const db = mongoose.connection;
 db.on('error', function (err) {
   console.trace(err);
-  process.exit(1);
+  throw new Error(err);
 });
 
 server.use(session({
   secret: 'encompass-app',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({mongooseConnection: mongoose.connection,
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
     stringify: false
-  })
+    })
 }));
 
 
@@ -262,7 +263,7 @@ server.post({
 server.post('/api/import', api.post.import);
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
 
-// //server.use(function (req, res, next) {
+//server.use(function (req, res, next) {
 //   var err = new Error('Not Found');
 //   err.status = 404;
 //   next(err);

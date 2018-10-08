@@ -13,17 +13,17 @@ const getModelIds = async function(model, filter={}) {
   }catch(err) {
     return new Error(`Error retrieving modelIds: ${err}`);
   }
-}
+};
 
 async function getOrgSections(user) {
   try {
     const org = user.organization;
     const filter = {
       organization: org
-    }
+    };
     const sectionIds = await getModelIds('Section', filter);
     return sectionIds;
-  }catch(err) {
+  } catch(err) {
     console.error(`Error getOrgSections: ${err}`);
     console.trace();
   }
@@ -35,7 +35,7 @@ async function getAssignmentProblems(user) {
     const criteria = await assignmentAuth.get.assignments(user);
     const assignments = await models.Assignment.find(criteria).lean();
     return assignments.map(assn => assn.problem.toString());
-  }catch(err) {
+  } catch(err) {
     console.error(`Error getAssignmentProblems: ${err}`);
     console.trace();
   }
@@ -45,19 +45,24 @@ async function getTeacherAssignments(userId) {
   try {
     const ownAssignmentIds = await models.Assignment.find({createdBy: userId}, {_id: 1}).lean().exec();
     return ownAssignmentIds.map(obj => obj._id);
-  }catch(err) {
+  } catch(err) {
     console.error(`Error getTeacherAssignments: ${err}`);
     console.trace();
   }
 }
 
 async function getTeacherSections(user) {
-  const ownSections = user.sections.map((section) => {
+  try {
+   ownSections = user.sections.map((section) => {
     if (section.role === 'teacher') {
       return section.sectionId;
     }
-   });
-   return ownSections;
+  });
+  return await ownSections;
+  } catch (err) {
+    console.error(`Error getAssignmentProblems: ${err}`);
+    console.trace();
+  }
 }
 
 async function getTeacherSectionsById(userId) {
@@ -79,7 +84,7 @@ const getStudentSections = function(user) {
       return section.sectionId;
     }
   });
-}
+};
 
 const getStudentResponses = async function (user) {
   try {
@@ -239,7 +244,7 @@ const getCreatorIds = async function(model, crit={}) {
     console.error('error getCreatorIds', err);
     console.trace();
   }
-}
+};
 
 
 module.exports.getModelIds = getModelIds;

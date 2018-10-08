@@ -256,11 +256,11 @@ describe('Users', function() {
         changeAccountType();
       });
 
-      describe('manually authorize a users email', function () {
+      describe('manually authorize a users email', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/superuser"]`);
         });
-        confirmEmail();
+        await confirmEmail();
       });
 
     });
@@ -449,7 +449,7 @@ describe('Users', function() {
         changeAccountType();
       });
 
-      describe('manually authorize a users email', function () {
+      describe('manually authorize a user\'s email', function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/perryu"]`);
         });

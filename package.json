@@ -4,7 +4,11 @@
   "description": "enCoMPASS",
   "main": "server/server.js",
   "scripts": {
-    "test": "grunt",
+    "start": "grunt",
+    "force": "grunt --force",
+    "seed": "grunt serve-seed",
+    "test": "grunt tests",
+    "mocha": "mocha",
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test"
   },
   "repository": {
@@ -64,6 +68,7 @@
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "chromedriver": "^2.40.0",
+    "eslint": "^5.6.1",
     "grunt": "^1.0.3",
     "grunt-assets-versioning": "^1.0.6",
     "grunt-babel": "^7.0.0",
@@ -80,6 +85,7 @@
     "grunt-contrib-watch": "^1.0.1",
     "grunt-ember-templates": "^1.1.2",
     "grunt-env": "0.4.4",
+    "grunt-eslint": "^21.0.0",
     "grunt-mocha-test": "^0.13.3",
     "grunt-neuter": "^0.6.0",
     "grunt-nodemon": "^0.4.2",
@@ -92,6 +98,7 @@
     "moment": "^2.22.2",
     "mongoose-data-seed": "^1.0.6",
     "pg": "^7.4.3",
+    "polyjuice": "^2.2.4",
     "selenium-webdriver": "^4.0.0-alpha.1"
   }
 }

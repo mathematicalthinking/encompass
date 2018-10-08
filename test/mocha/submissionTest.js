@@ -34,6 +34,9 @@ describe('Submission CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('submissions');
         expect(res.body.submissions).to.be.a('array');
@@ -47,6 +50,9 @@ describe('Submission CRUD operations', function() {
       agent
       .get(baseUrl + fixtures.submission._id)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('submission');
         expect(res.body.submission).to.be.a('object');
@@ -63,8 +69,11 @@ describe('Submission CRUD operations', function() {
       .post(baseUrl)
       .send(fixtures.submission.validSubmission)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
-        expect(res.body.submission).to.be.a('array')
+        expect(res.body.submission).to.be.a('array');
         expect(res.body.submission[0]).to.have.any.keys('longAnswer', 'shortAnswer', 'answer');
         expect(res.body.submission[0].longAnswer).to.eql(fixtures.submission.validSubmission.longAnswer);
         done();

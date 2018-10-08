@@ -9,12 +9,12 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
   canEdit: Ember.computed.not('currentUser.isAdmin'),
   teacher: Ember.computed.oneWay('currentUser.username'),
 
-  selectedPdSetId: null, 
+  selectedPdSetId: null,
   selectedFolderSetId: null,
 
   hasId: Ember.computed.or('pubId', 'puzzId', 'subs'),
   hasDate: Ember.computed.or('startDate', 'endDate'),
-  
+
   importMode: 0,
   isPdImport: Ember.computed.equal('importMode', 0),
   isPowImport: Ember.computed.equal('importMode', 1),
@@ -33,7 +33,7 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
         if(doPoWImport) { controller.send('importWorkspace'); }
         else { controller.send('newWorkspace'); }
       });
-    },  
+    },
 
     newWorkspace: function() {
       var controller    = this;
@@ -43,11 +43,11 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
       if(!pdSetName) {
         pdSetName = 'default';
       }
-      
+
       if(!folderSetName) {
         folderSetName = 'none';
       }
-      
+
       var request = this.store.createRecord('newWorkspaceRequest', {
         pdSetName: pdSetName,
         folderSetName: folderSetName
@@ -61,7 +61,7 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
     importWorkspace: function() {
       var controller = this;
       var importData = { /*jshint camelcase: false */
-        teacher: this.get('teacher'), 
+        teacher: this.get('teacher'),
         submitter: this.get('submitter'),
         publication: this.get('pubId'),
         puzzle: this.get('puzzId'),
@@ -86,7 +86,7 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
         }
       }
 
-      if(!!this.get('subs')) { 
+      if(!!this.get('subs')) {
         importData.submissions = Ember.String.w( this.get('subs') );
       }
 

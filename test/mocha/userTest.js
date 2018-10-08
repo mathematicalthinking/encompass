@@ -18,7 +18,7 @@ describe('User CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
   async function runTests(user) {
-    describe(`User CRUD operations as ${user.testDescriptionTitle}` , function() {
+    await describe(`User CRUD operations as ${user.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
@@ -40,6 +40,9 @@ describe('User CRUD operations by account type', async function() {
           agent
           .get(baseUrl)
           .end((err, res) => {
+            if (err) {
+              console.error(err);
+            }
             expect(res).to.have.status(200);
             expect(res.body).to.have.all.keys('user');
             expect(res.body.user).to.be.a('array');
@@ -56,6 +59,9 @@ describe('User CRUD operations by account type', async function() {
             .get(baseUrl)
             .query(`username=${unaccessibleUser.username}`)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(404);
               done();
             });
@@ -69,6 +75,9 @@ describe('User CRUD operations by account type', async function() {
             agent
             .get(url)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(403);
               done();
             });
@@ -88,6 +97,9 @@ describe('User CRUD operations by account type', async function() {
               }
             })
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(403);
               done();
             });
@@ -103,6 +115,9 @@ describe('User CRUD operations by account type', async function() {
             .get(baseUrl)
             .query(`username=${accessibleUser.username}`)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body).to.have.all.keys('user');
               expect(res.body.user).to.be.a('array');
@@ -120,6 +135,9 @@ describe('User CRUD operations by account type', async function() {
             agent
             .get(url)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body).to.have.all.keys('user');
               expect(res.body.user).to.be.a('object');
@@ -135,6 +153,9 @@ describe('User CRUD operations by account type', async function() {
             agent
             .get(url)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body).to.have.all.keys('user');
               expect(res.body.user).to.be.a('object');
@@ -151,6 +172,9 @@ describe('User CRUD operations by account type', async function() {
             agent
             .get(url)
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body).to.have.all.keys('user');
               expect(res.body.user).to.be.a('object');
@@ -179,6 +203,9 @@ describe('User CRUD operations by account type', async function() {
               }
             })
             .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
               if (user.accountType === 'S' || user.actingRole === 'student') {
                 expect(res).to.have.status(403);
                 done();

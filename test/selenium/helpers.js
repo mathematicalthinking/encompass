@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder, By, Key, until } = require('selenium-webdriver')
+const { Builder, By, Key, until } = require('selenium-webdriver');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -11,7 +11,7 @@ const timeoutTestMsStr = '20s';  // timeout per test
 
 const nconf = config.nconf;
 const port = nconf.get('testPort');
-const host = `http://localhost:${port}`
+const host = `http://localhost:${port}`;
 
 const loginUrl = `${host}/#/auth/login`;
 
@@ -84,7 +84,7 @@ const getCurrentUrl = async function(webdriver) {
     console.log(err);
   }
   return url;
-}
+};
 
 const isElementVisible = async function (webDriver, selector) {
   let isVisible = false;
@@ -173,7 +173,7 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const findInputAndType = async function (webDriver, selector, text) {
   try {
@@ -197,7 +197,7 @@ const findInputAndType = async function (webDriver, selector, text) {
    } catch (err) {
      console.log(err);
    }
-}
+};
 
 const login = async function(webDriver, host, user=admin) {
   await navigateAndWait(webDriver, host, css.topBar.login);

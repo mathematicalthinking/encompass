@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
-    _        = require('underscore'),
-    Schema   = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const _ = require('underscore');
+const ObjectId = Schema.ObjectId;
 
 /**
   * @public
@@ -109,6 +109,9 @@ SelectionSchema.post('save', function (selection) {
             to trigger their respective validators
     */
     selection.populate('taggings comments', function(err, doc) {
+      if (err) {
+        throw new Error(err.message);
+      }
       doc.comments.forEach(function (comment) {
         comment.isTrashed = true;
         comment.save();

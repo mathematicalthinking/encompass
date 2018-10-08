@@ -1,9 +1,9 @@
-var mongoose = require('mongoose'),
-    _        = require('underscore'),
-    Schema   = mongoose.Schema,
-    Buffer   = Schema.Types.Buffer,
-    ObjectId = Schema.ObjectId,
-    Workspace = require('./workspace');
+const mongoose = require('mongoose');
+const _        = require('underscore');
+const Schema   = mongoose.Schema;
+const Buffer   = Schema.Types.Buffer;
+const ObjectId = Schema.ObjectId;
+const Workspace = require('./workspace');
 
 /**
   * @public
@@ -144,7 +144,9 @@ EncompassSubmissionSchema.pre('save', function (next) {
 EncompassSubmissionSchema.post('save', function (submission) {
   /* + All related workspaces are updated with the submission */
   mongoose.models.Workspace.update({_id: {$in: submission.workspaces}},
-    {$addToSet: { 'submissions': submission,
+    {
+      $addToSet: {
+                  'submissions': submission,
                   'selections': {$each: submission.selections},
                   'comments': {$each: submission.comments}
                 }

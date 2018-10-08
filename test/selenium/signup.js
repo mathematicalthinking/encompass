@@ -79,7 +79,7 @@ describe('Signup form', async function () {
         expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
       });
 
-    it ('should remove terms error after checking the box', async function() {
+    it('should remove terms error after checking the box', async function () {
       await helpers.findAndClickElement(driver, css.signup.inputs.terms);
       await helpers.waitForRemoval(driver, css.errorMessage);
       expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.false;

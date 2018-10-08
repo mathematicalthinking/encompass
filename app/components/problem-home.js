@@ -18,6 +18,9 @@ Encompass.ProblemHomeComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('categoryTree', categories.categories);
       });
       this.set('showCategories', !(this.get('showCategories')));
+      Ember.run.later(() => {
+        $('html, body').animate({scrollTop: $(document).height()});
+      }, 5);
     },
   }
 

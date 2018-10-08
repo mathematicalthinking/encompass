@@ -33,6 +33,9 @@ describe('Folder CRUD operations', function() {
       agent
       .get(baseUrl)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('folders');
         expect(res.body.folders).to.be.a('array');
@@ -46,6 +49,9 @@ describe('Folder CRUD operations', function() {
       agent
       .get(baseUrl + fixtures.folder._id)
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body).to.have.all.keys('folder');
         expect(res.body.folder).to.be.a('object');
@@ -62,6 +68,9 @@ describe('Folder CRUD operations', function() {
       .post(baseUrl)
       .send({folder: fixtures.folder.validFolder})
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.folder).to.have.any.keys('name', 'workspace');
         expect(res.body.folder.name).to.eql(fixtures.folder.validFolder.name);
@@ -80,8 +89,12 @@ describe('Folder CRUD operations', function() {
             folder: {
               name: 'phils class',
               createdBy: fixtures.folder.validFolder.createdBy,
-            }})
+            }
+          })
       .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
         expect(res).to.have.status(200);
         expect(res.body.folder).to.have.any.keys('name', );
         expect(res.body.folder.name).to.eql('phils class');

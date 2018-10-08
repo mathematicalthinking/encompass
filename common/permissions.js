@@ -99,7 +99,7 @@ module.exports = {
   userCan: function(user, workspace, permission) {
     console.log('user in userCan', user);
     if(!this.isValidPermission(permission)) {
-      throw "bogus permission request: " + permission;
+      throw new Error("bogus permission request: " + permission);
     }
     //console.log("Check is owner.");
     var isOwner  = this.isOwner(user, workspace);

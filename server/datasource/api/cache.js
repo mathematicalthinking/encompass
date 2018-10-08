@@ -49,6 +49,7 @@ function connect() {
   }
 }
 
+/*eslint no-nested-ternary: "off"*/
 
 /*
  *  @description Count duplicates in submissions
@@ -97,7 +98,7 @@ function toQueryString(options, allowed) {
         case 'submitter':
           alias = 'creator_username';
           break;
-        case 'default':
+        default:
           alias = key;
       }
 
@@ -208,6 +209,8 @@ function cache(options) {
 
     return new Q(json);
   };
+
+/*eslint no-eval: "off"*/
 
   /**
     * @description This callback handles the response of an HTTP request

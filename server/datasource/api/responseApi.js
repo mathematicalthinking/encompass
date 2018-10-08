@@ -94,6 +94,10 @@ function postResponse(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.response.workspace;
   models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
     if(wsAccess.canModify(user, ws)) {
 
       var response = new models.Response(req.body.response);
@@ -137,6 +141,10 @@ function putResponse(req, res, next) {
       }
 
       doc.save(function (err, response) {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
         var data = {'response': response};
         utils.sendResponse(res, data);
         next();

@@ -17,9 +17,9 @@ const fixtures = require('./fixtures/reset_password');
 const host = helpers.host;
 const resetPath = '/#/auth/reset';
 
-const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`
-const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`
-const expiredResetLink = `${host}${resetPath}/${fixtures.userExpiredToken.token}`
+const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`;
+const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`;
+const expiredResetLink = `${host}${resetPath}/${fixtures.userExpiredToken.token}`;
 
 describe('Resetting Password', async function () {
   this.timeout(helpers.timeoutTestMsStr);
@@ -100,12 +100,12 @@ describe('Resetting Password', async function () {
           await helpers.waitForSelector(driver, css.topBar.logout);
         });
 
-        it ('should automatically log user in and redirect to home', async function() {
+        it('should automatically log user in and redirect to home', async function() {
           expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
           expect(await helpers.findAndGetText(driver, css.greeting)).to.eql(user.name);
         });
 
-        it ('should let user log in with new password', async function() {
+        it('should let user log in with new password', async function() {
           await helpers.findAndClickElement(driver, css.topBar.logout);
           await helpers.waitForAndClickElement(driver, css.topBar.login);
 

@@ -19,6 +19,7 @@
   {{/if}}
 {{/if}}
 
+<div class="button-row">
 {{#unless showCategories}}
   <button {{action 'showCategories'}}>Show Category Menu</button>
 {{/unless}}
@@ -26,6 +27,7 @@
   <button {{action 'showCategories'}}>Hide Category Menu</button>
   {{categories-menu categories=categoryTree store=store}}
 {{/if}}
+</div>
 {{!-- <section>
   <h2>Your Recently Created Problems</h2>
 </section>

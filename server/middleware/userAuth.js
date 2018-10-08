@@ -226,6 +226,10 @@ function loadAccessibleWorkspaces(options) {
       return (next()); //no user, no workspaces - revisit when public means public
     }
     models.Workspace.find(accessibleWorkspacesQuery(user)).select('_id').lean().exec(function (err, workspaces) {
+      if (err) {
+        logger.error('user required but not found');
+        throw new Error('user required but not found');
+      }
       var ids = workspaces.map(function (w) {
         return w._id;
       });
