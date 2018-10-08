@@ -595,7 +595,18 @@ var data = [
     isTrashed: false,
     selection: "53e38ec9b48b12793f0010e4",
     workspace: "53e36522b48b12793f000d3b"
-  }
+  },
+  {
+    "_id" : "5bbb9d5dc2aa0a1696840cea",
+    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "lastModifiedBy" : null,
+    "workspace" : "5bb814d19885323f6d894974",
+    "selection" : "5bbb9d57c2aa0a1696840ce9",
+    "folder" : "5bb814d19885323f6d894975",
+    "lastModifiedDate" : null,
+    "isTrashed" : false,
+    "createDate" : "2018-10-08T18:09:33.525Z"
+}
 ];
 
 var TaggingsSeeder = Seeder.extend({

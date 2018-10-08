@@ -792,6 +792,40 @@ var data = [
   taggings: ["53e38edcb48b12793f0010e5"],
   text: "Once groups have been assigned to their tables, put the prompts (charges) back on the screen so we can refer to them during our group discussion time.",
   workspace: "53e36522b48b12793f000d3b"
+},
+{
+  "_id" : "5bbb9d57c2aa0a1696840ce9",
+  "text" : "This is my explanation.",
+  "coordinates" : "node-3 0 0 node-3 0 23",
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "submission" : "5bb814d19885323f6d894973",
+  "workspace" : "5bb814d19885323f6d894974",
+  "taggings" : [
+      "5bbb9d5dc2aa0a1696840cea"
+  ],
+  "comments" : [
+      "5bbb9d86c2aa0a1696840ceb"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-10-08T18:09:27.457Z"
+},
+{
+  "_id" : "5bbbba75a6a7ee1a9a5ebc74",
+  "text" : "are.So",
+  "coordinates" : "node-1 2 32 node-1 2 38",
+  "createdBy" : "5b7321ee59a672806ec903d5",
+  "lastModifiedBy" : null,
+  "submission" : "53e1156db48b12793f000414",
+  "workspace" : "53e1156db48b12793f000442",
+  "taggings" : [],
+  "comments" : [
+      "5bbbba86a6a7ee1a9a5ebc75"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-10-08T20:13:41.935Z"
 }
 ];
 
