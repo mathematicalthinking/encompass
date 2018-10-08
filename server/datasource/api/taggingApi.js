@@ -154,7 +154,7 @@ function putTagging(req, res, next) {
         });
     } else {
       logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`);
+      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
   });
 }
