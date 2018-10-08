@@ -112,6 +112,8 @@ const getSection = async function(req, res, next) {
 */
 
 const postSection = (req, res, next) => {
+
+  // return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
   const user = userAuth.requireUser(req);
   // do we want to check if the user is allowed to create sections?
   const section = new models.Section(req.body.section);
