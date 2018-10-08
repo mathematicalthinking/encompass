@@ -32,6 +32,10 @@ const pdAdminDrexel = {
   },
   accessibleSubmission: {
     _id: "53e1156db48b12793f00042d"
+  },
+  accessibleCommentCount: 3,
+  accessibleComment: {
+    _id: "53e12264b48b12793f000b84"
   }
 };
 
@@ -70,6 +74,10 @@ const teacherMT = {
   },
   accessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4da"
+  },
+  accessibleCommentCount: 1,
+  accessibleComment: {
+    _id: "53e37a4ab48b12793f00104c"
   }
 
 };
@@ -98,8 +106,11 @@ const admin = {
   accessibleSubmissionCount: 54,
   accessibleSubmission: {
     _id: "5bb814d19885323f6d894973"
+  },
+  accessibleCommentCount: 3,
+  accessibleComment: {
+    _id: "53e12507b48b12793f000b91"
   }
-
 
 };
 
