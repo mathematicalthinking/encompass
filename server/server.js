@@ -244,6 +244,9 @@ server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
 server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
 
+//ALL DELETE REQUESTS
+server.delete('/api/images/:id', path.validateId(), api.delete.image);
+
 
 let buildDir = 'build';
 if (process.env.BUILD_DIR) {
