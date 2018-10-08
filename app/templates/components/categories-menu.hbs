@@ -30,15 +30,21 @@
                     <li class="item"><button {{action 'addCategory' standard}}>+</button> <span>{{standard.identifier}}</span> - {{standard.description}}</li>
                     {{/if}}
                     {{/each}}
+                      <li class="item"><button {{action 'addCategory' topic}}>+</button> Other</li>
                   </ul>
                 </li>
               {{else}}
                   <li class="item"><button {{action 'addCategory' topic}}>+</button> <span>{{topic.identifier}}</span> - {{topic.description}}</li>
               {{/if}}
             {{/each}}
+              <li class="item"><button {{action 'addCategory' domain}}>+</button> Other</li>
           </ul>
       </li>
       {{/each}}
+      <li>
+        <label for="other" class="menu-label-2"><button {{action 'addCategory' category}}>+</button> Other</label>
+      </li>
+        {{!-- <li class="top-level"><button {{action 'addCategory' category}}>+</button> Other</li> --}}
     </ul>
   </li>
   {{/each}}
