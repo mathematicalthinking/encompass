@@ -74,77 +74,73 @@ describe('Comment CRUD operations by account type', async function() {
 
 
        /** POST **/
-  describe('/POST valid comment', () => {
-    it('should post a new comment', done => {
-      agent
-      .post(baseUrl)
-      .send({comment: fixtures.comment.validComment})
-      .end((err, res) => {
-        if (isStudent) {
-          expect(res).to.have.status(403);
-          done();
-        } else {
-          expect(res).to.have.status(200);
-          expect(res.body.comment.text).to.eql(fixtures.comment.validComment.text);
-          done();
-        }
-      });
-    });
-  });
+      if (accountType === 'A') {
+        describe('/POST valid comment', () => {
+          it('should post a new comment', done => {
+            agent
+            .post(baseUrl)
+            .send({comment: fixtures.comment.validComment})
+            .end((err, res) => {
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.comment.text).to.eql(fixtures.comment.validComment.text);
+                done();
+              }
+            });
+          });
+        });
 
-  xdescribe('/PUT update comment text', () => {
-    it('should change the text field to "this is a test"', done => {
-      const url = baseUrl + fixtures.comment._id;
-      // copy the comment and update it
-      agent
-      .put(url)
-      .send({comment: {
-        workspace: fixtures.comment.validComment.workspace,
-        submission: fixtures.comment.validComment.submission,
-        selection: fixtures.comment.validComment.workspace,
-        text: 'new test text',
-        createdBy: fixtures.comment.validComment.createdBy,
-      }})
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(200);
-        expect(res.body.comment.text).to.eql('new test text');
-        done();
-      });
-    });
-    it('should fail to update because of missing required fields', done => {
-      const url = baseUrl + fixtures.comment._id;
-      // copy the comment and update it
-      agent
-      .put(url)
-      .send({comment: {
-        workspace: fixtures.comment.validComment.workspace,
-        // Missing submission field will cause the failure as expected
-        selection: fixtures.comment.validComment.workspace,
-        text: 'new test text'
-      }})
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(400);
-        done();
-      });
-    });
+        describe('/PUT update comment text', () => {
+          it('should change the text field to "this is a test"', done => {
+            const url = baseUrl + fixtures.comment._id;
+            // copy the comment and update it
+            agent
+            .put(url)
+            .send({comment: {
+              workspace: fixtures.comment.validComment.workspace,
+              submission: fixtures.comment.validComment.submission,
+              selection: fixtures.comment.validComment.workspace,
+              text: 'new test text',
+              createdBy: fixtures.comment.validComment.createdBy,
+            }})
+            .end((err, res) => {
+              expect(res).to.have.status(200);
+              expect(res.body.comment.text).to.eql('new test text');
+              done();
+            });
+          });
+          it('should fail to update because of missing required fields', done => {
+            const url = baseUrl + fixtures.comment._id;
+            // copy the comment and update it
+            agent
+            .put(url)
+            .send({comment: {
+              workspace: fixtures.comment.validComment.workspace,
+              // Missing submission field will cause the failure as expected
+              selection: fixtures.comment.validComment.workspace,
+              text: 'new test text'
+            }})
+            .end((err, res) => {
+              expect(res).to.have.status(400);
+              done();
+            });
+          });
 
-    // it('should fail if id is invalid', done => {
-    //   const url = baseUrl + '/badId';
-    //   agent
-    //   .get(url)
-    //   .set('Cookie', userCredentials)
-    //   .end((err, res) => {
-    //     expect(res).to.have.status(500);
-    //     done();
-    //   });
-    // });
-  });
+          // it('should fail if id is invalid', done => {
+          //   const url = baseUrl + '/badId';
+          //   agent
+          //   .get(url)
+          //   .set('Cookie', userCredentials)
+          //   .end((err, res) => {
+          //     expect(res).to.have.status(500);
+          //     done();
+          //   });
+          // });
+        });
+      }
 
 
     });
