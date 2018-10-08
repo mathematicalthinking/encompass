@@ -67,6 +67,7 @@ function processPath(options) {
 
 /*
   ENC-486 bad ObjectIDs crash the server
+  is this validation sufficient? if for some reason someone passed an object as the id param, the server would crash
 */
 function validateId(options) {
   function _validateId(req, res, next) {
