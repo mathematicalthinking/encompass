@@ -212,15 +212,37 @@ async function getSubmission(req, res, next) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
 
-  const [ err, submission ] = await asyncWrapper(models.Submission.findById(req.params.id));
+  let err;
+  let canLoadSubmission;
+  let submission;
+
+  let id = req.params.id;
+
+  [ err, submission ] = await asyncWrapper(models.Submission.findById(id));
+
+  if (err) {
+    console.error(`Error finding submission by id: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  if (!submission) { // record not found in db
+    return utils.sendResponse(res, null);
+  }
+
+  [ err, canLoadSubmission ] = await asyncWrapper(access.get.submission(user, id));
 
   if (err) {
     console.error(`Error getSubmission: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    return utils.sendError.InternalError(null, res);
   }
 
-  const data = {
+  if (!canLoadSubmission) { // user does not have permission to access submission
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
+  const data = { // user has permission; send back record
     submission
   };
 

@@ -68,4 +68,33 @@ const accessibleSubmissionsQuery = async function(user, ids) {
   }
 };
 
+const canLoadSubmission = async function(user, id) {
+  if (!user) {
+    return;
+  }
+
+  const { accountType, actingRole } = user;
+
+  if (accountType === 'S' || actingRole === 'student') {
+    return false; // currently we are blocking students from getting submissions
+  }
+
+  if (accountType === 'A') {
+    return true; // admins currently can get all submissions
+  }
+
+  // use accessibleSubmissions criteria to determine access for teachers/pdAdmins
+
+  let criteria = await accessibleSubmissionsQuery(user, id);
+
+  let accessibleIds = await utils.getModelIds('Submission', criteria);
+  accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
+
+    if (accessibleIds.includes(id)) {
+      return true;
+    }
+    return false;
+  }
+
 module.exports.get.submissions = accessibleSubmissionsQuery;
+module.exports.get.submission = canLoadSubmission;
