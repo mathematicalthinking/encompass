@@ -71,8 +71,10 @@ describe('Signup form', async function () {
       async function() {
         // uncheck terms box from previous test
         await helpers.findAndClickElement(driver, css.signup.inputs.terms);
+        await driver.sleep(100);
         await helpers.findAndClickElement(driver, css.signup.submit);
         await helpers.waitForSelector(driver, css.errorMessage);
+        await driver.sleep(100);
         expect(await helpers.isTextInDom(driver, helpers.signupErrors.terms)).to.be.true;
       });
 
@@ -84,6 +86,7 @@ describe('Signup form', async function () {
 
     // We are not going to automatically login users, they need to be approved, change to approval page
     it('should redirect to unconfirmed after successful signup', async function () {
+      await driver.sleep(1000);
       await helpers.findAndClickElement(driver, css.signup.submit);
       // await driver.wait(until.urlIs(`${host}/#/unconfirmed`), 10000);
       await helpers.waitForUrlMatch(driver, /unconfirmed/,10000);
