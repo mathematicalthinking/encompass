@@ -3,7 +3,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures.js');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
 
@@ -20,7 +19,7 @@ describe('Submission CRUD operations by account type', async function() {
     describe(`Submission CRUD operations as ${user.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleSubmissionCount, unaccessibleSubmission } = user;
+      const { username, password, accountType, actingRole, accessibleSubmissionCount, unaccessibleSubmission, accessibleSubmission } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
 
       before(async function(){
@@ -91,20 +90,22 @@ describe('Submission CRUD operations by account type', async function() {
 
 
     }
-
-    xdescribe('/GET submission by ID', () => {
+  if (!isStudent) {
+    describe('/GET submission by ID', () => {
       it('should get submission', done => {
         agent
-        .get(baseUrl + fixtures.submission._id)
+        .get(baseUrl + accessibleSubmission._id)
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.have.all.keys('submission');
           expect(res.body.submission).to.be.a('object');
-          expect(res.body.submission.pdSet).to.eql("Feather and Fur - Mary");
+          // expect(res.body.submission.pdSet).to.eql("Feather and Fur - Mary");
           done();
         });
       });
     });
+  }
+
   });
   }
 
