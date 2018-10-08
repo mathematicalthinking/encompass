@@ -21,6 +21,7 @@ require('dotenv').config();
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+module.exports.delete = {};
 
 /**
   * @public
@@ -235,8 +236,46 @@ const putImage = (req, res, next) => {
   });
 };
 
+/**
+ * @public
+ * @method deleteImage
+ * @description __URL__: /api/images/:id
+ * @throws {NotAuthorizedError} User has inadequate permissions
+ * @throws {InternalError} Data update failed
+ * @throws {RestError} Something? went wrong
+ */
+
+const deleteImage = (req, res) => {
+  const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
+  models.Image.findByIdAndRemove(req.params.id, (err, image) => {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
+    let createdBy = image.createdBy;
+
+    if (createdBy.toString() !== user._id.toString()) {
+      console.log('user did not create this image');
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
+
+    const data = {
+      message: 'Image successfully deleted',
+      id: image._id
+    };
+    return utils.sendResponse(res, data);
+  });
+};
+
 module.exports.get.images = getImages;
 module.exports.get.image = getImage;
 module.exports.post.images = postImages;
 module.exports.put.image = putImage;
+module.exports.delete.image = deleteImage;
 /* jshint ignore:end */
