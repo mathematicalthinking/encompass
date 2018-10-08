@@ -33,9 +33,33 @@ const pdAdminDrexel = {
   accessibleSubmission: {
     _id: "53e1156db48b12793f00042d"
   },
-  accessibleCommentCount: 3,
+  accessibleCommentCount: 4,
   accessibleComment: {
     _id: "53e12264b48b12793f000b84"
+  },
+  inaccessibleComment: {
+    _id: "5bbb9d86c2aa0a1696840ceb"
+  },
+  validComment: {
+    label: 'wonder',
+    text: 'i wonder if thats the best strategy',
+    selection: '53e11f20b48b12793f000b3a',
+    submission: '53e1156db48b12793f000427',
+    workspace: '53e1156db48b12793f000442',
+    useForResponse: true,
+    isTrashed: false,
+    createdBy: '5b7321ee59a672806ec903d5',
+  },
+  modifiableComment: {
+    _id: '5bbbba86a6a7ee1a9a5ebc75',
+    label : 'wonder',
+    text : 'I wonder what this means...',
+    createdBy : '5b7321ee59a672806ec903d5',
+    selection : '5bbbba75a6a7ee1a9a5ebc74',
+    origin : null,
+    parent : null,
+    submission : '53e1156db48b12793f000414',
+    workspace : '53e1156db48b12793f000442',
   },
   accessibleAnswerCount: 2
 };
@@ -76,9 +100,31 @@ const teacherMT = {
   accessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4da"
   },
-  accessibleCommentCount: 1,
+  accessibleCommentCount: 2,
   accessibleComment: {
     _id: "53e37a4ab48b12793f00104c"
+  },
+  inaccessibleComment: {
+    _id: "53e12264b48b12793f000b84"
+  },
+  validComment: {
+    label: 'feedback',
+    text: 'i wonder if thats the best strategy',
+    selection: '5bbb9d57c2aa0a1696840ce9',
+    submission: '5bb814d19885323f6d894973',
+    workspace: '5bb814d19885323f6d894974',
+    useForResponse: true,
+    isTrashed: false,
+    createdBy: '5b9149552ecaf7c30dd4748e',
+  },
+  modifiableComment: {
+    _id: "5bbb9d86c2aa0a1696840ceb",
+    label: "feedback",
+    selection : "5bbb9d57c2aa0a1696840ce9",
+    submission : "5bb814d19885323f6d894973",
+    workspace : "5bb814d19885323f6d894974",
+    createdBy: "5b9149552ecaf7c30dd4748e",
+    text: "I notice that your explanation is vague."
   },
   accessibleAnswerCount: 1
 
@@ -109,10 +155,30 @@ const admin = {
   accessibleSubmission: {
     _id: "5bb814d19885323f6d894973"
   },
-  accessibleCommentCount: 3,
+  accessibleCommentCount: 5,
   accessibleComment: {
     _id: "53e12507b48b12793f000b91"
   },
+  validComment: {
+    label: 'notice',
+    text: 'i wonder if thats the best strategy',
+    selection: '53e37f3cb48b12793f00109a',
+    submission: '53e36522729e9ef59ba7f4d7',
+    workspace: '53e36522b48b12793f000d3b',
+    useForResponse: true,
+    isTrashed: false,
+    createdBy: '5b245760ac75842be3189525',
+  },
+  modifiableComment: {
+    _id: "5bbb9d86c2aa0a1696840ceb",
+    label: "feedback",
+    selection : "5bbb9d57c2aa0a1696840ce9",
+    submission : "5bb814d19885323f6d894973",
+    workspace : "5bb814d19885323f6d894974",
+    createdBy: "5b9149552ecaf7c30dd4748e",
+    text: "I notice that your explanation is vague."
+  },
+
   accessibleAnswerCount: 3
 
 };
@@ -148,6 +214,20 @@ const studentMT = {
   unaccessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4df"
   },
+  inaccessibleComment: {
+    _id: "53e37a4ab48b12793f00104c"
+  },
+  validComment: {
+    label: 'feedback',
+    text: 'i wonder if thats the best strategy',
+    selection: '5bbb9d57c2aa0a1696840ce9',
+    submission: '5bb814d19885323f6d894973',
+    workspace: '5bb814d19885323f6d894974',
+    useForResponse: true,
+    isTrashed: false,
+    createdBy: '5b914a102ecaf7c30dd47492',
+  },
+
   accessibleAnswerCount: 1
 
 };
@@ -182,6 +262,19 @@ const teacherActingStudent = {
   },
   unaccessibleSubmission: {
     _id: "53e36522729e9ef59ba7f4db"
+  },
+  inaccessibleComment: {
+    _id: "53e37a4ab48b12793f00104c"
+  },
+  validComment: {
+    label: 'feedback',
+    text: 'i wonder if thats the best strategy',
+    selection: '5bbb9d57c2aa0a1696840ce9',
+    submission: '5bb814d19885323f6d894973',
+    workspace: '5bb814d19885323f6d894974',
+    useForResponse: true,
+    isTrashed: false,
+    createdBy: '5b99146e25b620610ceead75',
   },
   accessibleAnswerCount: 0
 };
