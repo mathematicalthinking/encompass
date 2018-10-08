@@ -17,7 +17,7 @@ chai.use(chaiHttp);
 describe('Comment CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
-  async function runTests(user) {
+  function runTests(user) {
     describe(`Comment CRUD operations as ${user.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
@@ -43,6 +43,9 @@ describe('Comment CRUD operations by account type', async function() {
           agent
           .get(baseUrl)
           .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
             if (isStudent) {
               expect(res).to.have.status(403);
               done();
@@ -63,6 +66,9 @@ describe('Comment CRUD operations by account type', async function() {
             agent
             .get(url)
             .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body.comment).to.have.any.keys('label', 'text', 'submission', 'workspace');
               expect(res.body.comment._id).to.eql(accessibleComment._id);
@@ -81,6 +87,9 @@ describe('Comment CRUD operations by account type', async function() {
             .post(baseUrl)
             .send({comment: fixtures.comment.validComment})
             .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
               if (isStudent) {
                 expect(res).to.have.status(403);
                 done();
@@ -107,6 +116,9 @@ describe('Comment CRUD operations by account type', async function() {
               createdBy: fixtures.comment.validComment.createdBy,
             }})
             .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
               expect(res).to.have.status(200);
               expect(res.body.comment.text).to.eql('new test text');
               done();
@@ -124,6 +136,9 @@ describe('Comment CRUD operations by account type', async function() {
               text: 'new test text'
             }})
             .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
               expect(res).to.have.status(400);
               done();
             });
@@ -148,6 +163,7 @@ describe('Comment CRUD operations by account type', async function() {
 }
 for (let user of Object.keys(testUsers)) {
   let testUser = testUsers[user];
+  // eslint-disable-next-line no-await-in-loop
   await runTests(testUser);
 }
 });

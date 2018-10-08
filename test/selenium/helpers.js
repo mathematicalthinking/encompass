@@ -111,7 +111,7 @@ const getWebElements = async function (webDriver, selector) {
 
 const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
   await webDriver.get(url);
-  return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
+  return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 };
 
 const findAndGetText = async function (webDriver, selector) {
@@ -143,7 +143,7 @@ const isTextInDom = async function (webDriver, text) {
 const findAndClickElement = async function (webDriver, selector) {
   let elements = await getWebElements(webDriver, selector);
   if (elements.length > 0) {
-    return await elements[0].click();
+    return elements[0].click();
   }
   return;
 };
@@ -207,7 +207,7 @@ const login = async function(webDriver, host, user=admin) {
   await findInputAndType(webDriver, css.login.username, user.username);
   await findInputAndType(webDriver, css.login.password, user.password);
   await findAndClickElement(webDriver, css.login.submit);
-  return await waitForSelector(webDriver, css.topBar.logout);
+  return waitForSelector(webDriver, css.topBar.logout);
 };
 
 const signup = async function(webDriver, missingFields=[], user=newUser,  acceptedTerms=true) {
@@ -215,6 +215,7 @@ const signup = async function(webDriver, missingFields=[], user=newUser,  accept
   for (let input of Object.keys(inputs)) {
     if (input !== 'terms' && !missingFields.includes(input)) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         await findInputAndType(webDriver, inputs[input], user[input]);
       }catch(err){
         console.log(err);

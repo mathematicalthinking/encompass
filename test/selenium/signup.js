@@ -12,7 +12,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
-describe('Signup form', async function () {
+describe('Signup form', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -28,10 +28,11 @@ describe('Signup form', async function () {
     driver.quit();
   });
   describe('Displaying form', async function () {
-    async function verifySignupForm() {
+    function verifySignupForm() {
       const inputs = css.signup.inputs;
       for (let input of Object.keys(inputs)) {
         if (input !== 'confirmEmail' && input !== 'confirmPassword') {
+          // eslint-disable-next-line no-loop-func
           it(`should display ${input} field`, async function () {
             expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
           });

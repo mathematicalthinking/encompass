@@ -41,6 +41,7 @@ describe('Users', function() {
 
         // should there be an input to change username?
         for (let input of inputs) {
+          // eslint-disable-next-line no-await-in-loop
           expect(await helpers.isElementVisible(driver, input)).to.be.true;
         }
         await helpers.findAndClickElement(driver, 'button.saveUser');
@@ -282,6 +283,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         // should there be an input to change username?
         for (let input of inputs) {
+          // eslint-disable-next-line no-await-in-loop
           expect(await helpers.isElementVisible(driver, input)).to.be.true;
         }
         await helpers.findAndClickElement(driver, 'button.save-user');
@@ -475,6 +477,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         // should there be an input to change username?
         for (let input of inputs) {
+          // eslint-disable-next-line no-await-in-loop
           expect(await helpers.isElementVisible(driver, input)).to.be.true;
         }
         await helpers.findAndClickElement(driver, 'button.save-user');

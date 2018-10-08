@@ -14,154 +14,160 @@ let topLink = css.topBar.workspacesNew;
 
 describe('Workspaces New', async function() {
   this.timeout(helpers.timeoutTestMsStr);
+  async function runTests(users) {
+    function _runTests(user) {
+      const { accountType, actingRole, testDescriptionTitle } = user;
+      describe(`As ${testDescriptionTitle}`, function() {
+        this.timeout(helpers.timeoutTestMsStr);
+
+        let driver = null;
+        before(async function() {
+          driver = new Builder()
+            .forBrowser('chrome')
+            .build();
+            await dbSetup.prepTestDb();
+            return helpers.login(driver, host, user);
+          });
+        after(function() {
+          return driver.quit();
+        });
+
+
+        describe('Clicking topbar link', function() {
+          if (accountType === 'S' || actingRole === 'student') {
+            it(`link should not be visible`, async function() {
+              expect(await helpers.isElementVisible(driver, topLink)).to.be.false;
+            });
+          } else {
+            it(`should display new workspace creation form`, async function() {
+              await helpers.findAndClickElement(driver, css.topBar.workspaces);
+              await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
+              await helpers.waitForUrlMatch(driver, /workspaces\/new/);
+              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
+            });
+          }
+        });
+
+        describe('Navigating directly', function() {
+          before(async function() {
+            await driver.get(url);
+
+          });
+
+          if (accountType === 'S' || actingRole === 'student') {
+            it('should redirect to homepage', async function() {
+              await helpers.waitForUrlMatch(driver, /\//);
+
+              expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
+              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
+            });
+          } else {
+            it(`should display new workspace creation form`, async function() {
+              let regex = new RegExp(url);
+              await helpers.waitForUrlMatch(driver, regex);
+
+              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
+            });
+          }
+        });
+
+        if (accountType !== 'S' && actingRole !== 'student') {
+          describe('Should display various inputs/ fields', function() {
+            describe('Filter Criteria', function() {
+              const inputs = css.newWorkspaceEnc.filterCriteria.inputs;
+              const fixedInputs = css.newWorkspaceEnc.filterCriteria.fixedInputs;
+                for (let input of Object.keys(inputs)) {
+                  if (accountType === 'T' && input === 'teacher') {
+                    // eslint-disable-next-line no-loop-func
+                    it(`teacher field should be fixed as teacher's username`, async function() {
+                      expect(await helpers.isElementVisible(driver, inputs[input])).to.be.false;
+                      expect(await helpers.findAndGetText(driver, fixedInputs.teacher)).to.eql(user.username);
+                    });
+                  } else {
+                    // eslint-disable-next-line no-loop-func
+                    it(`should display ${input} input`, async function() {
+                      expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+                    });
+                  }
+                }
+              });
+
+              describe('Workspace Settings', function() {
+                const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
+                const fixedInputs = css.newWorkspaceEnc.workspaceSettings.fixedInputs;
+                for (let input of Object.keys(inputs)) {
+                  if (accountType === 'T' && input === 'owner') {
+                    // eslint-disable-next-line no-loop-func
+                    it(`owner field should be fixed as teacher's username`, async function() {
+                      expect(await helpers.isElementVisible(driver, inputs[input])).to.be.false;
+                      expect(await helpers.findAndGetText(driver, fixedInputs.owner)).to.eql(user.username);
+                    });
+                  } else {
+                      // eslint-disable-next-line no-loop-func
+                      it(`should display ${input} input`, async function() {
+                      expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+                    });
+                  }
+                }
+
+                it('privacy setting should be private as default', async function() {
+                  let privateSel = inputs.modePrivate;
+                  let private = await driver.findElement(By.css(privateSel));
+                  expect(await private.getAttribute('checked')).to.eql('true');
+                });
+
+              });
+
+              it('should display create button', async function() {
+                expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.create));
+              });
+          });
+
+          describe('Creating a new workspace', function() {
+            async function submitForm(shouldFail) {
+              try {
+                const submitButton = await driver.findElement(By.css(css.newWorkspaceEnc.create));
+                await submitButton.click();
+                if (shouldFail) {
+                  await helpers.waitForSelector(driver, css.general.errorMessage);
+                }
+
+              }catch(err) {
+                console.log(`Error submitForm: ${err}`);
+              }
+            }
+            describe('Submitting empty form', function() {
+              if (accountType === 'T') {
+                it('should create workspace and redirect to workspace page', async function() {
+                  await submitForm(false);
+                  await helpers.waitForSelector(driver, '.workspace-name');
+                  let url = await helpers.getCurrentUrl(driver);
+                  expect(url).to.include('submissions');
+                });
+              } else {
+                it('should display error message', async function() {
+                  // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
+                  await submitForm(true);
+                  expect(await helpers.isTextInDom(driver, 'Please fill in all required fields')).to.be.true;
+                });
+              }
+
+            });
+          });
+        }
+
+      });
+    }
+
+    for (let user of Object.keys(users)) {
+      // eslint-disable-next-line no-await-in-loop
+      await _runTests(users[user]);
+    }
+  }
   await runTests(testUsers);
 });
 
-async function runTests(users) {
-  async function _runTests(user) {
-    const { accountType, actingRole, testDescriptionTitle } = user;
-    describe(`As ${testDescriptionTitle}`, async function() {
-      this.timeout(helpers.timeoutTestMsStr);
 
-      let driver = null;
-      before(async function() {
-        driver = new Builder()
-          .forBrowser('chrome')
-          .build();
-          await dbSetup.prepTestDb();
-          return await helpers.login(driver, host, user);
-        });
-      after(async function() {
-        return await driver.quit();
-      });
-
-
-      describe('Clicking topbar link', async function() {
-        if (accountType === 'S' || actingRole === 'student') {
-          it(`link should not be visible`, async function() {
-            expect(await helpers.isElementVisible(driver, topLink)).to.be.false;
-          });
-        } else {
-          it(`should display new workspace creation form`, async function() {
-            await helpers.findAndClickElement(driver, css.topBar.workspaces);
-            await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
-            await helpers.waitForUrlMatch(driver, /workspaces\/new/);
-            expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
-          });
-        }
-      });
-
-      describe('Navigating directly', async function() {
-        before(async function() {
-          await driver.get(url);
-
-        });
-
-        if (accountType === 'S' || actingRole === 'student') {
-          it('should redirect to homepage', async function() {
-            await helpers.waitForUrlMatch(driver, /\//);
-
-            expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
-            expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
-          });
-        } else {
-          it(`should display new workspace creation form`, async function() {
-            let regex = new RegExp(url);
-            await helpers.waitForUrlMatch(driver, regex);
-
-            expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.true;
-          });
-        }
-      });
-
-      if (accountType !== 'S' && actingRole !== 'student') {
-        describe('Should display various inputs/ fields', function() {
-          describe('Filter Criteria', async function() {
-            const inputs = css.newWorkspaceEnc.filterCriteria.inputs;
-            const fixedInputs = css.newWorkspaceEnc.filterCriteria.fixedInputs;
-              for (let input of Object.keys(inputs)) {
-                if (accountType === 'T' && input === 'teacher') {
-                  it(`teacher field should be fixed as teacher's username`, async function() {
-                    expect(await helpers.isElementVisible(driver, inputs[input])).to.be.false;
-                    expect(await helpers.findAndGetText(driver, fixedInputs.teacher)).to.eql(user.username);
-                  });
-                } else {
-                  it(`should display ${input} input`, async function() {
-                    expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
-                  });
-                }
-              }
-            });
-
-            describe('Workspace Settings', async function() {
-              const inputs = css.newWorkspaceEnc.workspaceSettings.inputs;
-              const fixedInputs = css.newWorkspaceEnc.workspaceSettings.fixedInputs;
-              for (let input of Object.keys(inputs)) {
-                if (accountType === 'T' && input === 'owner') {
-                  it(`owner field should be fixed as teacher's username`, async function() {
-                    expect(await helpers.isElementVisible(driver, inputs[input])).to.be.false;
-                    expect(await helpers.findAndGetText(driver, fixedInputs.owner)).to.eql(user.username);
-                  });
-                } else {
-                  it(`should display ${input} input`, async function() {
-                    expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
-                  });
-                }
-              }
-
-              it('privacy setting should be private as default', async function() {
-                let privateSel = inputs.modePrivate;
-                let private = await driver.findElement(By.css(privateSel));
-                expect(await private.getAttribute('checked')).to.eql('true');
-              });
-
-            });
-
-            it('should display create button', async function() {
-              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.create));
-            });
-        });
-
-        describe('Creating a new workspace', async function() {
-          async function submitForm(shouldFail) {
-            try {
-              const submitButton = await driver.findElement(By.css(css.newWorkspaceEnc.create));
-              await submitButton.click();
-              if (shouldFail) {
-                await helpers.waitForSelector(driver, css.general.errorMessage);
-              }
-
-            }catch(err) {
-              console.log(`Error submitForm: ${err}`);
-            }
-          }
-          describe('Submitting empty form', async function() {
-            if (accountType === 'T') {
-              it('should create workspace and redirect to workspace page', async function() {
-                await submitForm(false);
-                await helpers.waitForSelector(driver, '.workspace-name');
-                let url = await helpers.getCurrentUrl(driver);
-                expect(url).to.include('submissions');
-              });
-            } else {
-              it('should display error message', async function() {
-                // expect (await helpers.isElementVisible(driver, css.general.errorMessage)).to.be.true;
-                await submitForm(true);
-                expect(await helpers.isTextInDom(driver, 'Please fill in all required fields')).to.be.true;
-              });
-            }
-
-          });
-        });
-      }
-
-    });
-  }
-
-  for (let user of Object.keys(users)) {
-    await _runTests(users[user]);
-  }
-}
 // xdescribe('Visiting Workspace Creation', function() {
 //   this.timeout(helpers.timeoutTestMsStr);
 

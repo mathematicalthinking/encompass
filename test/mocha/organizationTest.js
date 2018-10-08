@@ -89,6 +89,7 @@ describe('Organization CRUD operations by account type', async function() {
 
   for (let user of Object.keys(testUsers)) {
     let testUser = testUsers[user];
+    // eslint-disable-next-line no-await-in-loop
     await runTests(testUser);
   }
 });

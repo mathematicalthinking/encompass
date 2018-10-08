@@ -12,7 +12,7 @@ const host = helpers.host;
 const url = `${host}/#/auth/forgot`;
 const messages = fixtures.messages;
 
-describe('Forgot Password', async function () {
+describe('Forgot Password', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
@@ -25,15 +25,16 @@ describe('Forgot Password', async function () {
     driver.quit();
   });
 
-  describe('Forgot Password Form', async function() {
+  describe('Forgot Password Form', function() {
     before(async function() {
       await helpers.navigateAndWait(driver, url, css.forgotPassword.forgotForm);
     });
-    async function verifyResetForm() {
+    function verifyResetForm() {
       const inputs = css.forgotPassword.inputs;
       for (let input of Object.keys(inputs)) {
-          it(`should display ${input} field`, async function () {
-            expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+        // eslint-disable-next-line no-loop-func
+        it(`should display ${input} field`, async function () {
+          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
           });
         }
       it('should display Request Reset Link button', async function () {
@@ -45,10 +46,10 @@ describe('Forgot Password', async function () {
       await verifyResetForm();
     });
 
-    describe('Submitting Form', async function() {
+    describe('Submitting Form', function() {
       const user = fixtures.user;
 
-      describe('Submitting Empty Form', async function() {
+      describe('Submitting Empty Form', function() {
         before(async function() {
           await helpers.findAndClickElement(driver, css.forgotPassword.submit);
         await helpers.waitForSelector(driver, css.general.errorMessage);
@@ -61,7 +62,7 @@ describe('Forgot Password', async function () {
         });
       });
 
-      describe('Providing both email and username', async function() {
+      describe('Providing both email and username', function() {
         before(async function() {
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.email);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.username);
@@ -77,7 +78,7 @@ describe('Forgot Password', async function () {
         });
       });
 
-      describe('Providing valid username that does not have an associated email address', async function() {
+      describe('Providing valid username that does not have an associated email address', function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.clearElement(driver, css.forgotPassword.inputs.username);
@@ -94,7 +95,7 @@ describe('Forgot Password', async function () {
         });
       });
 
-      describe('Using nonexistant email address', async function() {
+      describe('Using nonexistant email address', function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.clearElement(driver, css.forgotPassword.inputs.username);
@@ -110,7 +111,7 @@ describe('Forgot Password', async function () {
           expect(await helpers.isTextInDom(driver, msg)).to.be.true;
         });
       });
-      describe('Using existing email address', async function() {
+      describe('Using existing email address', function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.email, user.email);
@@ -125,7 +126,7 @@ describe('Forgot Password', async function () {
         });
       });
 
-      describe('Using nonexistant username', async function() {
+      describe('Using nonexistant username', function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.email);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.badUsername);
@@ -140,7 +141,7 @@ describe('Forgot Password', async function () {
         });
       });
 
-      describe('Using existing username', async function() {
+      describe('Using existing username', function() {
         before(async function() {
           await helpers.clearElement(driver, css.forgotPassword.inputs.username);
           await helpers.findInputAndType(driver, css.forgotPassword.inputs.username, user.username);

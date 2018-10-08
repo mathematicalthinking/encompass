@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 describe('Submission CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
-  async function runTests(user) {
+  function runTests(user) {
     describe(`Submission CRUD operations as ${user.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
@@ -40,6 +40,9 @@ describe('Submission CRUD operations by account type', async function() {
         agent
         .get(baseUrl)
         .end((err, res) => {
+          if (err) {
+            console.log(err);
+          }
           if (isStudent) {
             expect(res).to.have.status(403);
             done();
@@ -63,6 +66,9 @@ describe('Submission CRUD operations by account type', async function() {
           agent
           .get(url)
           .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
             expect(res).to.have.status(403);
             done();
           });
@@ -96,6 +102,9 @@ describe('Submission CRUD operations by account type', async function() {
         agent
         .get(baseUrl + accessibleSubmission._id)
         .end((err, res) => {
+          if (err) {
+            console.log(err);
+          }
           expect(res).to.have.status(200);
           expect(res.body).to.have.all.keys('submission');
           expect(res.body.submission).to.be.a('object');
@@ -143,6 +152,7 @@ describe('Submission CRUD operations by account type', async function() {
 //   });
 for (let user of Object.keys(testUsers)) {
   let testUser = testUsers[user];
+  // eslint-disable-next-line no-await-in-loop
   await runTests(testUser);
 }
 });

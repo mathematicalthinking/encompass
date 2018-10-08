@@ -94,7 +94,7 @@ const canLoadSubmission = async function(user, id) {
       return true;
     }
     return false;
-  }
+  };
 
 module.exports.get.submissions = accessibleSubmissionsQuery;
 module.exports.get.submission = canLoadSubmission;

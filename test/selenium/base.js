@@ -46,7 +46,7 @@ describe('Home Page', function () {
     expect(await helpers.isElementVisible(driver, css.login.signup)).to.be.true;
   });
 
-  describe('submitting login form', async function () {
+  describe('submitting login form', function () {
       it('should display missing credentials if empty form submitted', async function () {
       await helpers.findAndClickElement(driver, css.login.submit);
       expect(await helpers.isTextInDom(driver, helpers.signinErrors.incomplete)).to.be.true;
@@ -111,7 +111,7 @@ describe('Home Page', function () {
     });
   });
 
-  describe('NavBar', async function () {
+  describe('NavBar', function () {
     const elements = ['workspaces', 'responses', 'users/home', 'logout', 'problems/home', 'sections/home'];
 
     function verifyNavElement(navElement) {

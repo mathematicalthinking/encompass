@@ -63,9 +63,10 @@ describe('Problems', function() {
   });
   // TODO: figure out best way to test uploading an image in e2e manner
   describe('Problem creation', function() {
-    const verifyForm = async function() {
+    const verifyForm = function() {
       const inputs = css.newProblem.inputs;
       for (let input of Object.keys(inputs)) {
+        // eslint-disable-next-line no-loop-func
         it(`${input} field should be visible`, async function() {
           expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
         });
@@ -86,6 +87,7 @@ describe('Problems', function() {
       const submitProblem = async function(details, privacySetting) {
         for (let detail of Object.keys(details)) {
           try {
+            // eslint-disable-next-line no-await-in-loop
             await helpers.findInputAndType(driver, inputs[detail], details[detail]);
           } catch(err) {
             console.log(err);
