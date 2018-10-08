@@ -5,6 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "grunt",
+    "force": "grunt --force",
     "seed": "grunt serve-seed",
     "test": "grunt tests",
     "mocha": "mocha",
