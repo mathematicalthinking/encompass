@@ -9,7 +9,7 @@
 
 <section class="problemdetails">
 
-   {{#if isEditing}}
+  {{#if isEditing}}
       <form id='probleminfoform' class='properForm'>
         <fieldset>
           <ol>
@@ -79,6 +79,14 @@
             {{/if}}
             </li>
             <li>
+              <label class="form-label" for="copyright">Copyright Notice:</label>
+              &copy;&nbsp;{{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+            </li>
+            <li>
+              <label class="form-label" for="sharing">Sharing Authorization:</label>
+              {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
+            </li>
+            <li>
               <label class="form-label" for="imagedata">Problem Image:</label>
               {{#if problem.image}}
                   <a {{action 'toggleImageSize'}} >
@@ -141,6 +149,14 @@
           <li>
             <label class="form-label" for="currentlyPublic">Privacy Setting</label>
             <p class="problem-info">{{privacy-setting problem.privacySetting}}</p>
+          </li>
+          <li>
+            <label for="copyright">Copyright Notice:</label>
+            <p class="problem-info">&copy;&nbsp;{{problem.copyrightNotice}}</p>
+          </li>
+          <li>
+            <label for="sharing">Sharing Authorization:</label>
+            <p class="problem-info">{{problem.sharingAuth}}</p>
           </li>
           <li>
             <label class="form-label" for="createDate">Creation Date</label>

@@ -19,6 +19,10 @@ server.out
 prod.zip
 staging.zip
 
+# conversion files
+errorProblems.txt
+dump/**/*
+
 #babel files
 babel/
 

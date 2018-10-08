@@ -13,6 +13,8 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   privacySetting: DS.attr('string'),
   categories: DS.hasMany('category', { inverse: null }),
   keywords: DS.attr(),
+  copyrightNotice: DS.attr('string'),
+  sharingAuth: DS.attr('string'),
   error: DS.attr('string'),
   isUsed: DS.attr('boolean'),
 });

@@ -61,6 +61,14 @@
               <label class="radio-label">Everyone</label>
           </li>
           <li>
+            <label for="copyright">Copyright Notice:</label>
+            &copy;&nbsp;{{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+          </li>
+          <li>
+            <label for="sharing">Sharing Authorization:</label>
+            {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
+          </li>
+          <li>
             <label for="legal-notice">Legal Notice <span class="required-star">*</span></label>
             {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
             <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>

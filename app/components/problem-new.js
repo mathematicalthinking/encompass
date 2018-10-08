@@ -79,6 +79,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     var currentUser = that.get('currentUser');
     var organization = currentUser.get('organization');
     var categories = this.get('selectedCategories');
+    var copyrightNotice = that.get('copyrightNotice');
+    var sharingAuth = that.get('sharingAuth');
+
+    if (!this.get('approvedProblem')) {
+      this.set('noLegalNotice', true);
+      return;
+    }
 
     var createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
@@ -89,6 +96,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
       organization: organization,
+      copyrightNotice: copyrightNotice,
+      sharingAuth: sharingAuth
     });
 
     if (that.filesToBeUploaded) {
