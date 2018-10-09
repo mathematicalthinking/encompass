@@ -54,18 +54,21 @@ async function getTeacherAssignments(userId) {
   }
 }
 
-async function getTeacherSections(user) {
-  try {
-   ownSections = user.sections.map((section) => {
+function getTeacherSections(user) {
+  if (!user) {
+    return;
+  }
+  let sections = user.sections;
+
+  if (!Array.isArray(sections)) {
+    return;
+  }
+
+  return sections.map((section) => {
     if (section.role === 'teacher') {
       return section.sectionId;
     }
   });
-  return await ownSections;
-  } catch (err) {
-    console.error(`Error getAssignmentProblems: ${err}`);
-    console.trace();
-  }
 }
 
 async function getTeacherSectionsById(userId) {
