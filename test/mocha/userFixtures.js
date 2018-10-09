@@ -61,7 +61,14 @@ const pdAdminDrexel = {
     submission : '53e1156db48b12793f000414',
     workspace : '53e1156db48b12793f000442',
   },
-  accessibleAnswerCount: 2
+  accessibleAnswerCount: 2,
+  accessibleSelectionCount: 72,
+  inaccessibleSelection: {
+    _id: '5bbb9d57c2aa0a1696840ce9'
+  },
+  accessibleSelection: {
+    _id: '53e38ac3b48b12793f0010d4'
+  }
 };
 
 const teacherMT = {
@@ -126,7 +133,14 @@ const teacherMT = {
     createdBy: "5b9149552ecaf7c30dd4748e",
     text: "I notice that your explanation is vague."
   },
-  accessibleAnswerCount: 1
+  accessibleAnswerCount: 1,
+  accessibleSelectionCount: 62,
+  inaccessibleSelection: {
+    _id: '53e12211b48b12793f000b7e'
+  },
+  accessibleSelection: {
+    _id: '53e37f14b48b12793f001097'
+  }
 
 };
 
@@ -179,7 +193,11 @@ const admin = {
     text: "I notice that your explanation is vague."
   },
 
-  accessibleAnswerCount: 3
+  accessibleAnswerCount: 3,
+  accessibleSelectionCount: 73,
+  accessibleSelection: {
+    _id: '5bbb9d57c2aa0a1696840ce9'
+  }
 
 };
 
@@ -228,7 +246,10 @@ const studentMT = {
     createdBy: '5b914a102ecaf7c30dd47492',
   },
 
-  accessibleAnswerCount: 1
+  accessibleAnswerCount: 1,
+  inaccessibleSelection: {
+    _id: '5bbb9d57c2aa0a1696840ce9'
+  }
 
 };
 
@@ -276,7 +297,10 @@ const teacherActingStudent = {
     isTrashed: false,
     createdBy: '5b99146e25b620610ceead75',
   },
-  accessibleAnswerCount: 0
+  accessibleAnswerCount: 0,
+  inaccessibleSelection: {
+    _id: '5bbb9d57c2aa0a1696840ce9'
+  }
 };
 const users = {
   admin,
