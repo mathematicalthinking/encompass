@@ -41,7 +41,7 @@ var data = [
     clazzId: 103671,
     name: "Period 5 Basic Math"
   },
-  comments: [],
+  comments: ["5bbbba86a6a7ee1a9a5ebc75"],
   createDate: "2013-11-19T19:49:25.231Z",
   creator:   {
     creatorId: 237859,
@@ -56,7 +56,7 @@ var data = [
     publicationId: 4308,
 
   },
-  selections: [],
+  selections: ["5bbbba75a6a7ee1a9a5ebc74"],
   shortAnswer: "Xiao has 32 Pigeons and 4 dogs. are.So",
   status: "SUBMITTED",
   teacher:   {
@@ -2049,8 +2049,8 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   "workspaces" : [
       "5bb814d19885323f6d894974"
   ],
-  "comments" : [],
-  "selections" : [],
+  "comments" : ["5bbb9d86c2aa0a1696840ceb"],
+  "selections" : ["5bbb9d57c2aa0a1696840ce9"],
   "teacher" : {
       "id" : "5b9149552ecaf7c30dd4748e"
   },
