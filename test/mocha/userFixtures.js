@@ -68,6 +68,13 @@ const pdAdminDrexel = {
   },
   accessibleSelection: {
     _id: '53e38ac3b48b12793f0010d4'
+  },
+  accessibleAssignmentCount: 1,
+  accessibleAssignment: {
+    _id: '5b9146a83add43b868ae9809',
+  },
+  inaccessibleAssignment: {
+    _id: '5b91743a3da5efca74705773'
   }
 };
 
@@ -140,7 +147,15 @@ const teacherMT = {
   },
   accessibleSelection: {
     _id: '53e37f14b48b12793f001097'
+  },
+  accessibleAssignmentCount: 1,
+  accessibleAssignment: {
+    _id: '5b91743a3da5efca74705773',
+  },
+  inaccessibleAssignment: {
+    _id: '5b9146a83add43b868ae9809'
   }
+
 
 };
 
@@ -197,8 +212,11 @@ const admin = {
   accessibleSelectionCount: 73,
   accessibleSelection: {
     _id: '5bbb9d57c2aa0a1696840ce9'
-  }
-
+  },
+  accessibleAssignmentCount: 2,
+  accessibleAssignment: {
+    _id: '5b9146a83add43b868ae9809',
+  },
 };
 
 const studentMT = {
@@ -249,8 +267,14 @@ const studentMT = {
   accessibleAnswerCount: 1,
   inaccessibleSelection: {
     _id: '5bbb9d57c2aa0a1696840ce9'
+  },
+  accessibleAssignmentCount: 1,
+  accessibleAssignment: {
+    _id: '5b91743a3da5efca74705773',
+  },
+  inaccessibleAssignment: {
+    _id: '5b9146a83add43b868ae9809'
   }
-
 };
 
 const teacherActingStudent = {
@@ -300,7 +324,15 @@ const teacherActingStudent = {
   accessibleAnswerCount: 0,
   inaccessibleSelection: {
     _id: '5bbb9d57c2aa0a1696840ce9'
+  },
+  accessibleAssignmentCount: 1,
+  accessibleAssignment: {
+    _id: '5b91743a3da5efca74705773',
+  },
+  inaccessibleAssignment: {
+    _id: '5b9146a83add43b868ae9809'
   }
+
 };
 const users = {
   admin,
