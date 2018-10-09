@@ -20,7 +20,7 @@ describe('Selection CRUD operations by account type', async function() {
     describe(`Selection CRUD operations as ${user.testDescriptionTitle}`, function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleSelectionCount, inaccessibleSelection,  accessibleSelection, validSelection, modifiableSelection } = user;
+      const { username, password, accountType, actingRole, accessibleSelectionCount, inaccessibleSelection,  accessibleSelection } = user;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 
