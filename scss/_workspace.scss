@@ -74,6 +74,27 @@
     .required-error {
       border: 2px solid $error-color;
     }
+    div.twitter-typeahead {
+      display: inline-block;
+      padding: 12px 0px;
+      font-size: 1em;
+      width: 35%;
+
+      span.twitter-typeahead {
+        width:100%;
+      }
+
+      input.typeahead {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        font-size: 1em;
+        border: 1px solid $input-border;
+
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+    }
 
     #my-select {
       width:70%;
@@ -120,6 +141,12 @@
       border: 1px solid $input-border;
       border-radius: 4px;
       box-sizing: border-box;
+    }
+    p {
+      width: 70%;
+      margin: 8px 0;
+      font-size: 1em;
+      display: inline-block;
     }
     input[type=radio] {
       padding: 12px 20px;
