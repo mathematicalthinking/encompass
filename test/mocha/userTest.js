@@ -19,7 +19,7 @@ describe('User CRUD operations by account type', async function() {
     await describe(`User CRUD operations as ${user.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
+      const { username, password, accountType, actingRole, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
 
       before(async function(){
         try {
@@ -216,6 +216,48 @@ describe('User CRUD operations by account type', async function() {
             });
           });
         });
+
+        describe('Put request to update acting role', function() {
+          let description;
+          let newRole;
+          if (accountType === 'S') {
+            description = 'should return 403 error';
+            newRole = 'teacher';
+          } else if (actingRole === 'student') {
+            description = 'should toggle actingRole back to teacher';
+            newRole = 'teacher';
+          } else {
+            description = 'should toggle actingRole to student';
+            newRole = 'student';
+          }
+
+          it(description, done => {
+            const url = baseUrl + user._id;
+            agent
+            .put(url)
+            .send({
+              user: {
+                username,
+                accountType,
+                actingRole: newRole
+              }
+            })
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
+              if (accountType === 'S') {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.user.actingRole).to.eql(newRole);
+                done();
+              }
+            });
+          });
+        });
+
     });
   }
 
