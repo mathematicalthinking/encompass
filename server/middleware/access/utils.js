@@ -13,7 +13,6 @@ const getModelIds = async function(model, filter={}) {
   }catch(err) {
     console.error(`Error getModelIds: ${err}`);
     console.trace();
-    return new Error(`Error retrieving modelIds: ${err}`);
   }
 
 };

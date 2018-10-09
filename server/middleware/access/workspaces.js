@@ -110,12 +110,50 @@ function canModify(user, ws) {
   if (!user || !ws) {
     return false;
   }
-  var isAdmin = user.accountType === 'A';
-  var isOwner = user.id === ws.owner._id.toString();
-  var editorIds = ws.editors.map(obj => obj._id.toString());
+  const isAdmin = user.accountType === 'A';
 
-  var isEditor = _.includes(editorIds, user.id);
-  return isAdmin || isOwner || isEditor;
+  if (isAdmin) {
+    return true;
+  }
+
+  const isOwner = user.id === ws.owner._id.toString();
+
+  if (isOwner) {
+    return true;
+  }
+
+  const editorIds = ws.editors.map(obj => obj._id.toString());
+
+  const isEditor = _.includes(editorIds, user.id);
+
+  if (isEditor) {
+    return true;
+  }
+
+  //pdAdmins should be able to modify any ws where the owner belongs to their org
+
+  const isPdAdmin = user.accountType === 'P';
+
+  if (isPdAdmin) {
+    let pdOrg = user.organization;
+    let wsOwner = ws.owner;
+
+    if (!wsOwner || !pdOrg) {
+      return;
+    }
+    let wsOwnerOrg = wsOwner.organization;
+    if (!wsOwnerOrg) {
+      return;
+    }
+
+    pdOrg = pdOrg.toString();
+    wsOwnerOrg = wsOwnerOrg.toString();
+
+    if (pdOrg === wsOwnerOrg) {
+      return true;
+    }
+  }
+    return false;
 }
 
 module.exports.get.workspace = canLoadWorkspace;

@@ -15,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/comments');
+const asyncWrapper = utils.asyncWrapper;
 
 module.exports.get = {};
 module.exports.post = {};
@@ -132,17 +133,48 @@ async function getComments(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getComment(req, res, next) {
-  models.Comment.findById(req.params.id)
-    .exec(function(err, comment) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+async function getComment(req, res, next) {
+  const user = userAuth.requireUser(req);
 
-      var data = {'comment': comment};
-      utils.sendResponse(res, data);
-    });
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+
+  let err;
+  let canLoadComment;
+  let comment;
+
+  let id = req.params.id;
+
+  [ err, comment ] = await asyncWrapper(models.Comment.findById(id));
+
+  if (err) {
+    console.error(`Error finding comment by id: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  if (!comment) { // record not found in db
+    return utils.sendResponse(res, null);
+  }
+
+  [ err, canLoadComment ] = await asyncWrapper(access.get.comment(user, id));
+
+  if (err) {
+    console.error(`Error getComment: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  if (!canLoadComment) { // user does not have permission to access comment
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
+  const data = { // user has permission; send back record
+    comment
+  };
+
+  return utils.sendResponse(res, data);
 }
 
 /**
@@ -225,7 +257,7 @@ function putComment(req, res, next) {
     } else { //not permitted
       logger.info("permission denied");
       // res.send(403, "You don't have permission for this workspace");
-      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`);
+      return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
   });
 }

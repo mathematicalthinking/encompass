@@ -80,7 +80,6 @@ function validateId(options) {
     //http://stackoverflow.com/questions/11985228/mongodb-node-check-if-objectid-is-valid
     var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
-      //TODO this is sending a 500 error although its a 4xx
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
     return next();

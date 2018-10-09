@@ -14,8 +14,23 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   contributors: [],
 
   didInsertElement: function() {
-    //prefill form if revising
+    // initialize quill editor
+    const options = {
+      debug: 'false',
+      modules: {
+        toolbar: [
+        ['bold', 'italic', 'underline'],
+        ['image'],
+        ]
+      },
+      placeholder: 'Explain your ideas and how you figured them out...',
+      theme: 'snow'
+    };
+    // eslint-disable-next-line no-unused-vars
+    const quill = new window.Quill('#editor', options);
+
     if (this.priorAnswer) {
+      //prefill form if revising
       const ans = this.priorAnswer;
       this.set('answer', ans.get('answer'));
       let explanation = ans.get('explanation');
@@ -26,18 +41,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.set('contributors', students.map(s => s));
 
     } else {
-      const options = {
-        debug: 'false',
-        modules: {
-          toolbar: [
-          ['bold', 'italic', 'underline'],
-          ['image'],
-          ]
-        },
-        placeholder: 'Explain your ideas and how you figured them out...',
-        theme: 'snow'
-      };
-      var quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
       this.get('contributors').addObject(this.get('currentUser'));
     }
 

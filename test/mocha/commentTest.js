@@ -3,10 +3,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures.js');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
-
 
 const expect = chai.expect;
 const host = helpers.host;
@@ -21,7 +19,7 @@ describe('Comment CRUD operations by account type', async function() {
     describe(`Comment CRUD operations as ${user.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleCommentCount,  accessibleComment } = user;
+      const { username, password, accountType, actingRole, accessibleCommentCount, inaccessibleComment,  accessibleComment, validComment, modifiableComment } = user;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -59,6 +57,23 @@ describe('Comment CRUD operations by account type', async function() {
           });
         });
       });
+      if (accountType !== 'A') {
+        describe('/GET inaccessible comment by id', () => {
+          it('should return 403 error', done => {
+            const url = baseUrl + inaccessibleComment._id;
+            agent
+            .get(url)
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
+              expect(res).to.have.status(403);
+              done();
+            });
+          });
+        });
+      }
+
       if (!isStudent) {
         describe('/GET accessible comment by id', () => {
           it('should get one comment with matching id', done => {
@@ -80,12 +95,12 @@ describe('Comment CRUD operations by account type', async function() {
 
 
        /** POST **/
-      if (accountType === 'A') {
+
         describe('/POST valid comment', () => {
           it('should post a new comment', done => {
             agent
             .post(baseUrl)
-            .send({comment: fixtures.comment.validComment})
+            .send({comment: validComment})
             .end((err, res) => {
               if (err) {
                 console.log(err);
@@ -95,7 +110,7 @@ describe('Comment CRUD operations by account type', async function() {
                 done();
               } else {
                 expect(res).to.have.status(200);
-                expect(res.body.comment.text).to.eql(fixtures.comment.validComment.text);
+                expect(res.body.comment.text).to.eql(validComment.text);
                 done();
               }
             });
@@ -103,62 +118,95 @@ describe('Comment CRUD operations by account type', async function() {
         });
 
         describe('/PUT update comment text', () => {
-          it('should change the text field to "this is a test"', done => {
-            const url = baseUrl + fixtures.comment._id;
+          let changeTextMsg = 'should change the text field to "this is a test"';
+          let failMissingFieldsMsg= 'should fail to update because of missing required fields';
+          let commentId;
+
+          if (isStudent) {
+            changeTextMsg = 'should return 403 error';
+            failMissingFieldsMsg = 'should return 403 error';
+            commentId = '53e37a4ab48b12793f00104c';
+          } else {
+            commentId = accessibleComment._id;
+          }
+          it(changeTextMsg, done => {
+            const url = baseUrl + commentId;
+            let body;
+            if (isStudent) {
+              body = validComment;
+            } else {
+              body = modifiableComment;
+              body.text = 'new test text';
+            }
             // copy the comment and update it
             agent
             .put(url)
-            .send({comment: {
-              workspace: fixtures.comment.validComment.workspace,
-              submission: fixtures.comment.validComment.submission,
-              selection: fixtures.comment.validComment.workspace,
-              text: 'new test text',
-              createdBy: fixtures.comment.validComment.createdBy,
-            }})
+            .send({comment: body})
             .end((err, res) => {
               if (err) {
                 console.log(err);
               }
-              expect(res).to.have.status(200);
-              expect(res.body.comment.text).to.eql('new test text');
-              done();
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.comment.text).to.eql('new test text');
+                done();
+              }
             });
           });
-          it('should fail to update because of missing required fields', done => {
-            const url = baseUrl + fixtures.comment._id;
+          it(failMissingFieldsMsg, done => {
+            let commentId;
+            if (isStudent) {
+              commentId = '53e37a4ab48b12793f00104c';
+            } else {
+              commentId = modifiableComment._id;
+            }
+            const url = baseUrl + commentId;
+
             // copy the comment and update it
             agent
             .put(url)
             .send({comment: {
-              workspace: fixtures.comment.validComment.workspace,
+              workspace: validComment.workspace,
               // Missing submission field will cause the failure as expected
-              selection: fixtures.comment.validComment.workspace,
+              selection: validComment.workspace,
               text: 'new test text'
             }})
             .end((err, res) => {
               if (err) {
                 console.log(err);
               }
-              expect(res).to.have.status(400);
-              done();
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(400);
+                done();
+              }
             });
           });
 
-          // it('should fail if id is invalid', done => {
-          //   const url = baseUrl + '/badId';
-          //   agent
-          //   .get(url)
-          //   .set('Cookie', userCredentials)
-          //   .end((err, res) => {
-          //     expect(res).to.have.status(500);
-          //     done();
-          //   });
-          // });
+          it('should fail if id is invalid', done => {
+            const url = baseUrl + 'badId';
+            agent
+            .get(url)
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(409);
+                done();
+              }
+            });
+          });
         });
-      }
-
-
-    });
+      });
 
 }
 for (let user of Object.keys(testUsers)) {

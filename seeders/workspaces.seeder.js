@@ -42,9 +42,9 @@ var data = [
     "createdBy" : "5b9149552ecaf7c30dd4748e",
     "lastModifiedBy" : "5b9149552ecaf7c30dd4748e",
     "lastViewed" : "2018-10-06T01:50:09.797Z",
-    "taggings" : [],
-    "comments" : [],
-    "selections" : [],
+    "taggings" : ["5bbb9d5dc2aa0a1696840cea"],
+    "comments" : ["5bbb9d86c2aa0a1696840ceb"],
+    "selections" : ["5bbb9d57c2aa0a1696840ce9"],
     "responses" : [],
     "submissions" : [
         "5bb814d19885323f6d894973"

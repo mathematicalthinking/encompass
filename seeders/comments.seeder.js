@@ -41,7 +41,43 @@ var data = [
     text: "I spoke with Michael about the balance between the specific contexts we are working on and the teaching issues and that he could continue to help articulate the teaching issues even as there is a focus on implementing pows and the software",
     useForResponse: true,
     workspace: "53e36522b48b12793f000d3b"
-  }
+  },
+  {
+    "_id" : "5bbb9d86c2aa0a1696840ceb",
+    "label" : "feedback",
+    "text" : "I notice that your explanation is vague.",
+    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "lastModifiedBy" : null,
+    "selection" : "5bbb9d57c2aa0a1696840ce9",
+    "origin" : null,
+    "parent" : null,
+    "submission" : "5bb814d19885323f6d894973",
+    "workspace" : "5bb814d19885323f6d894974",
+    "children" : [],
+    "ancestors" : [],
+    "useForResponse" : true,
+    "lastModifiedDate" : null,
+    "isTrashed" : false,
+    "createDate" : "2018-10-08T18:10:14.579Z"
+},
+{
+  "_id" : "5bbbba86a6a7ee1a9a5ebc75",
+  "label" : "wonder",
+  "text" : "I wonder what this means...",
+  "createdBy" : "5b7321ee59a672806ec903d5",
+  "lastModifiedBy" : null,
+  "selection" : "5bbbba75a6a7ee1a9a5ebc74",
+  "origin" : null,
+  "parent" : null,
+  "submission" : "53e1156db48b12793f000414",
+  "workspace" : "53e1156db48b12793f000442",
+  "children" : [],
+  "ancestors" : [],
+  "useForResponse" : false,
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-10-08T20:13:58.108Z"
+}
 ];
 
 var CommentsSeeder = Seeder.extend({
