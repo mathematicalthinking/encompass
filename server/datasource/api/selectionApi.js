@@ -13,7 +13,7 @@ const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
-
+const access = require('../../middleware/access/selections');
 
 
 module.exports.get = {};
@@ -30,20 +30,22 @@ module.exports.put = {};
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getSelections(req, res, next) {
+async function getSelections(req, res, next) {
   var user = userAuth.requireUser(req);
 
   if (!user) {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
+  let ids = req.query.ids;
+  let criteria;
+  try {
+    criteria = await access.get.selections(user, ids);
 
-  var criteria;
-  criteria = utils.buildCriteria(req);
-
-  if (req.query.ids) {
-    criteria._id = {$in: req.query.ids};
+  }catch(err) {
+    console.error(`Error building selections criteria: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
-
 
 
   models.Selection.find(criteria)
@@ -66,24 +68,38 @@ function getSelections(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getSelection(req, res, next) {
+async function getSelection(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
 
-  var user = userAuth.requireUser(req);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    }
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    let id = req.params.id;
+
+    let selection = await models.Selection.findById(id);
+
+    if (!selection) { // record not found in db
+      return utils.sendResponse(res, null);
+    }
+
+    let canLoadSelection = await access.get.selection(user, id);
+
+    if (!canLoadSelection) { // user does not have permission to access selection
+      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+    }
+
+    const data = { // user has permission; send back record
+      selection
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getSelection: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
-
-  models.Selection.findById(req.params.id)
-    .exec(function(err, selection) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-
-      var data = {'selection': selection};
-      utils.sendResponse(res, data);
-    });
 }
 
 /**
