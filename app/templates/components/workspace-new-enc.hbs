@@ -24,8 +24,16 @@
       </li>
       <li class="ws-filter problem">
         <label for="problem">Problem</label>
-        {{my-select content=model.problems optionLabelPath="title" prompt="Please select a problem" action=(action (mut
-        selectedproblem))}}
+        {{#if selectedProblem}}
+          <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
+        {{else}}
+          {{#if addProblemTypeahead}}
+            {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+            {{#each problemFormErrors as |error|}}
+              <p class="error-message">{{error}}</p>
+            {{/each}}
+          {{/if}}
+        {{/if}}
       </li>
       <li class="ws-filter section">
         <label for="section">Class</label>

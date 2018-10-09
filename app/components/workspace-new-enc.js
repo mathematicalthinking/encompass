@@ -1,4 +1,4 @@
-Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
   elementId: 'workspace-new-enc',
   alert: Ember.inject.service('sweet-alert'),
   selectedPdSetId: null,
@@ -35,6 +35,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   },
 
   didReceiveAttrs: function() {
+    this.setAddProblemFunction('addProblemTypeahead');
     const currentUser = this.get('currentUser');
     if (currentUser.get('accountType') === 'T') {
       this.set('selectedTeacher', currentUser);
