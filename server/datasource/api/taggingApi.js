@@ -60,13 +60,16 @@ function getTaggings(req, res, next) {
   */
 function getTagging(req, res, next) {
   models.Tagging.findById(req.params.id)
-    .exec(function(err, tags) {
+    .exec(function(err, tagging) {
       if(err) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
+      if (!tagging || tagging.isTrashed) {
+        return utils.sendResponse(res, null);
+      }
 
-      var data = {'tagging': tags};
+      var data = {'tagging': tagging};
       utils.sendResponse(res, data);
     });
 }
