@@ -14,6 +14,7 @@ const userAuth = require('../../middleware/userAuth');
 const data     = require('./data');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
+const access = require('../../middleware/access/folders');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -26,20 +27,41 @@ module.exports.put = {};
   * @returns {Object} A 'named' folder object
   * @throws {InternalError} Data retrieval failed
   */
-function getFolder(req, res, next) {
-  models.Folder.findById(req.params.id)
-    .exec(function(err, doc){
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+async function getFolder(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
 
-      if (!doc || doc.isTrashed) {
-        return utils.sendResponse(res, null);
-      }
-      var data = {'folder': doc};
-      utils.sendResponse(res, data);
-    });
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    }
+
+    let id = req.params.id;
+
+    let folder = await models.Folder.findById(id);
+
+    // record not found in db
+    if (!folder || folder.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
+
+    let canLoadFolder = await access.get.folder(user, id);
+
+    // user does not have permission to access folder
+    if (!canLoadFolder) {
+      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+    }
+
+    // user has permission; send back record
+    const data = {
+      folder
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getFolder: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 /**
@@ -71,17 +93,31 @@ function getFolderSets(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getFolders(req, res, next) {
-  var criteria = utils.buildCriteria(req);
+async function getFolders(req, res, next) {
+  const user = userAuth.requireUser(req);
 
-  models.Folder.find(criteria).exec(function(err, docs) {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+  let ids = req.query.ids;
+  let criteria;
+  try {
+    criteria = await access.get.folders(user, ids);
 
-    var data = {'folders': docs};
-    utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error building folders criteria: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
+  models.Folder.find(criteria)
+    .exec(function(err, folders) {
+      if(err) {
+        logger.error(err);
+        return utils.sendError.InternalError(err, res);
+      }
+    const data = {'folders': folders};
+    return utils.sendResponse(res, data);
   });
 }
 
