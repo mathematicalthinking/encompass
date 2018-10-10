@@ -77,6 +77,15 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2018-10-08T20:13:58.108Z"
+},
+{
+  "_id" : "5bbdfa74ecd6e597fd8d3cdf",
+  "isTrashed" : true,
+  "createdBy": "5b7321ee59a672806ec903d5",
+  "selection" : "5bbbba75a6a7ee1a9a5ebc74",
+  "submission" : "53e1156db48b12793f000414",
+  "workspace" : "53e1156db48b12793f000442",
+  "text": "trashed comment"
 }
 ];
 

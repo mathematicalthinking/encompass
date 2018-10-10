@@ -14,6 +14,13 @@ var data = [
     "selections": [],
     "isTrashed": false,
     "createDate": "2018-06-08T21:04:58.683Z"
+  },
+  {
+    "_id" : "5bbe0224ecd6e597fd8eea13",
+    "isTrashed" : true,
+    "source": "submission",
+    "text": "trashed response",
+    "createdBy": "5b245760ac75842be3189525",
   }
 ];
 

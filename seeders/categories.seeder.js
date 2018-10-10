@@ -202,7 +202,7 @@ var gradek = [{
     description: 'Counting and Cardinality',
     url: 'http://corestandards.org/Math/Content/K/CC'
   }
-]
+];
 
 var grade1 = [{
     identifier: 'CCSS.Math.Content.1',
@@ -4370,7 +4370,7 @@ var gradeHsGeometry = [
     description: 'Congruence',
     url: 'http://corestandards.org/Math/Content/HSG/CO/'
   },
-]
+];
 
 var gradeHSNumber = [
   {
@@ -4918,6 +4918,11 @@ var mathPractice = [
     "description": "Mathematically proficient students notice if calculations are repeated, and look both for general methods and for shortcuts. Upper elementary students might notice when dividing 25 by 11 that they are repeating the same calculations over and over again, and conclude they have a repeating decimal. By paying attention to the calculation of slope as they repeatedly check whether points are on the line through (1, 2) with slope 3, middle school students might abstract the equation (y - 2)/(x - 1) = 3. Noticing the regularity in the way terms cancel when expanding (x - 1)(x + 1), (x - 1)(x2 + x + 1), and (x - 1)(x3 + x2 + x + 1) might lead them to the general formula for the sum of a geometric series. As they work to solve a problem, mathematically proficient students maintain oversight of the process, while attending to the details. They continually evaluate the reasonableness of their intermediate results.",
     "url": "http://corestandards.org/Math/Practice/MP8"
   },
+  {
+    "_id" : "5bbdfc46ecd6e597fd8d7aa3",
+    "isTrashed" : true,
+    "identifier": 'CCSS.Math.Practice.MP2'
+}
 ];
 
 var data = gradek.concat(gradek, grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, gradeHSS, gradeHSAlgebra, gradeHSFunctions, gradeHsGeometry, gradeHSNumber, gradeHSProbability);

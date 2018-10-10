@@ -826,6 +826,14 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2018-10-08T20:13:41.935Z"
+},
+{
+  "_id" : "5bbe014cecd6e597fd8e8e99",
+  "isTrashed" : true,
+  "submission" : "53e1156db48b12793f000414",
+  "createdBy" : "5b7321ee59a672806ec903d5",
+  "text" : "trashed selection",
+  "coordinates" : "node-1 2 32 node-1 2 38",
 }
 ];
 

@@ -81,6 +81,13 @@ var data = [
     "lastModifiedDate" : "2018-10-06T01:50:09.797Z",
     "isTrashed" : false,
     "createDate" : "2018-10-06T01:44:45.159Z"
+},
+{
+    "_id" : "5bbd146aecd6e597fd89da76",
+    "isTrashed" : true,
+    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "owner" : "5b9149552ecaf7c30dd4748e",
+    "name" : "trashed workspace"
 }
 ];
 

@@ -91,7 +91,6 @@ var data = [{
     "createdBy": "5370dc9c8f3e3d1f21000022"
   }, {
     "_id": "53a355a932f2863240000026",
-    "createDate": null,
     "accountType": 'T',
     "isAuthorized": true,
     "isTrashed": false,
@@ -123,7 +122,6 @@ var data = [{
     "seenTour": null,
     "lastSeen": null,
     "isTrashed": false,
-    "createDate": null,
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "53d274a032f2863240001a71"
   }, {
@@ -538,7 +536,6 @@ var data = [{
   "createdBy" : "5b9149552ecaf7c30dd4748e",
   "lastModifiedBy" : "5b245760ac75842be3189525",
   "seenTour" : null,
-  "actingRole": "teacher"
 },
 {
   "_id" : "5b99146e25b620610ceead75",
@@ -614,7 +611,14 @@ var data = [{
   "lastModifiedBy" : "5b245760ac75842be3189525",
   "organizationRequest" : null,
   "seenTour" : null
+},
+{
+  "_id" : "5bbe04dbecd6e597fd8fc177",
+  "isTrashed" : true,
+  "username": "trasheduser",
+  "accountType": "T"
 }
+
 ];
 
 var UsersSeeder = Seeder.extend({
