@@ -25,7 +25,7 @@
       <li class="ws-filter problem">
         <label for="problem">Problem</label>
         {{#if selectedProblem}}
-          <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
+          <p>{{selectedProblem.title}} <i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
         {{else}}
           {{#if addProblemTypeahead}}
             {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
@@ -83,21 +83,20 @@
       </li>
     </ol>
   </fieldset>
-
+  {{#if missingRequiredFields}}
+    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss" {{action 'closeError'}}>x</button></p>
+  {{/if}}
+  {{#if isEmptyAnswerSet}}
+    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss" {{action 'closeError'}}>x</button></p>
+  {{/if}}
 
 </form>
 
-{{#if missingRequiredFields}}
-<p class="error-message">Please fill in all required fields.</p>
-{{/if}}
 
 {{#if createdWorkspace}}
-<p class="success-message">Success!</p>
+  <p class="success-message">Success!</p>
 {{/if}}
 
-{{#if isEmptyAnswerSet}}
-<p class="error-message">Sorry, no answers were found matching your criteria.</p>
-{{/if}}
 
 {{#each findRecordErrors as |error|}}
   <p class="error-message">{{error}}</p>

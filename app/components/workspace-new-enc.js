@@ -146,7 +146,13 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
     buildCriteria: function() {
       if (!this.get('isFormValid')) {
+        if (this.get('missingRequiredFields')) {
+          console.log('missingRequredFields is already true');
+          $('.error-box').removeClass('fadeIn');
+          $('.error-box').addClass('pulse');
+        }
         this.set('missingRequiredFields', true);
+        $('.error-box').show();
         return;
       }
 
@@ -190,6 +196,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       encWorkspaceRequest.save().then((res) => {
         if (res.get('isEmptyAnswerSet')) {
           this.set('isEmptyAnswerSet', true);
+          $('.error-box').show();
           return;
         }
         if (res.get('createWorkspaceError')) {
@@ -213,6 +220,14 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
         return;
       });
+    },
+    closeError: function (error) {
+      $('.error-box').addClass('fadeOutRight');
+      Ember.run.later(() => {
+        $('.error-box').removeClass('fadeOutRight');
+        $('.error-box').removeClass('pulse');
+        $('.error-box').hide();
+      }, 500);
     },
   }
 });
