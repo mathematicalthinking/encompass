@@ -1,3 +1,4 @@
+const utils = require('./utils');
 module.exports.get = {};
 
 const accessibleSectionsQuery = function(user, ids) {
@@ -47,4 +48,31 @@ const accessibleSectionsQuery = function(user, ids) {
 
 };
 
+const canGetSection = async function(user, sectionId) {
+  if (!user) {
+    return;
+  }
+
+  const { accountType } = user;
+
+  // admins currently can get all sections
+  if (accountType === 'A') {
+    return true;
+  }
+
+  // use accessibleSections criteria to determine access for teachers/pdAdmins
+
+  let criteria = await accessibleSectionsQuery(user, sectionId);
+  let accessibleIds = await utils.getModelIds('Section', criteria);
+
+  // map objectIds to strings to check for existence
+  accessibleIds = accessibleIds.map(id => id.toString());
+
+    if (accessibleIds.includes(sectionId)) {
+      return true;
+    }
+    return false;
+};
+
 module.exports.get.sections = accessibleSectionsQuery;
+module.exports.get.section = canGetSection;
