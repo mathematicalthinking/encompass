@@ -75,7 +75,8 @@ console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
-  pass: dbConf.pass
+  pass: dbConf.pass,
+  useMongoClient: true
 });
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
