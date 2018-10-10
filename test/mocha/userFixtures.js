@@ -24,7 +24,7 @@ const pdAdminDrexel = {
     username: 'sam3',
     accountType: 'S'
   },
-  accessibleUserCount: 24,
+  accessibleUserCount: 25,
 
   accessibleSubmissionCount: 53,
   unaccessibleSubmission: {
@@ -140,7 +140,7 @@ const teacherMT = {
     username: 'tracyc',
     accountType: 'S'
   },
-  accessibleUserCount: 20,
+  accessibleUserCount: 19,
   accessibleSubmissionCount: 18,
   unaccessibleSubmission: {
     _id: "53e1156db48b12793f000417"
