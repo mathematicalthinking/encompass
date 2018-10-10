@@ -76,7 +76,6 @@ console.log(`database name: '${dbConf.name}'`);
 // mongoose.connect(dbConf.host, dbConf.name, {
 //   user: dbConf.user,
 //   pass: dbConf.pass,
-//   useMongoClient: true
 // });
 
 
