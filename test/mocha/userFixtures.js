@@ -91,6 +91,24 @@ const pdAdminDrexel = {
   modifiableFolder: {
     _id: '53e11604b48b12793f0004ee',
     name: 'Correct'
+  },
+  accessibleSectionCount: 2,
+  inaccessibleSection: {
+    _id: '5b9149a32ecaf7c30dd4748f'
+  },
+  accessibleSection: {
+    _id: '5b913e723add43b868ae9804'
+  },
+  validSection: {
+    name: 'A test section',
+    createdBy: '5b7321ee59a672806ec903d5',
+    assignments: [],
+    students: [],
+    teachers: [],
+  },
+  modifiableSection: {
+    _id: '5b913e723add43b868ae9804',
+    name: `Morty's Math 101`
   }
 };
 
@@ -186,6 +204,24 @@ const teacherMT = {
   modifiableFolder: {
     _id: '5bb814d19885323f6d894975',
     name: 'Reasonable'
+  },
+  accessibleSectionCount: 1,
+  inaccessibleSection: {
+    _id: '5b913e723add43b868ae9804'
+  },
+  accessibleSection: {
+    _id: '5b9149a32ecaf7c30dd4748f'
+  },
+  validSection: {
+    name: 'A test section',
+    createdBy: '5b9149552ecaf7c30dd4748e',
+    assignments: [],
+    students: [],
+    teachers: [],
+  },
+  modifiableSection: {
+    _id: '5b9149a32ecaf7c30dd4748f',
+    name: `Summer's Algebra 2 1st Period`
   }
 };
 
@@ -259,6 +295,21 @@ const admin = {
   modifiableFolder: {
     _id: '5bb814d19885323f6d894975',
     name: 'Reasonable'
+  },
+  accessibleSectionCount: 3,
+  accessibleSection: {
+    _id: '5b9149a32ecaf7c30dd4748f',
+  },
+  validSection: {
+    name: 'test section',
+    createdBy: '5b245760ac75842be3189525',
+    assignments: [],
+    students: [],
+    teachers: [],
+  },
+  modifiableSection: {
+    _id: '5b9149a32ecaf7c30dd4748f',
+    name: `Summer's Algebra 2 1st Period`
   }
 };
 
@@ -325,6 +376,21 @@ const studentMT = {
     name: 'test folder',
     createdBy: '5b1e7bf9a5d2157ef4c911a6',
     workspace: '5bb814d19885323f6d894974'
+  },
+  accessibleSectionCount: 1,
+  inaccessibleSection: {
+    _id: '5b1e7b2aa5d2157ef4c91108'
+  },
+  accessibleSection: {
+    _id: '5b9149a32ecaf7c30dd4748f'
+  },
+  validSection: {
+    name: 'test section',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+  },
+  modifiableSection: {
+    _id: '53e11604b48b12793f0004ee',
+    name: 'Correct'
   }
 };
 
@@ -390,6 +456,21 @@ const teacherActingStudent = {
     name: 'test folder',
     createdBy: '5b1e7bf9a5d2157ef4c911a6',
     workspace: '5bb814d19885323f6d894974'
+  },
+  accessibleSectionCount: 1,
+  inaccessibleSection: {
+    _id: '5b913e723add43b868ae9804'
+  },
+  accessibleSection: {
+    _id: '5b9149a32ecaf7c30dd4748f'
+  },
+  validSection: {
+    name: 'test section',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+  },
+  modifiableSection: {
+    _id: '53e11604b48b12793f0004ee',
+    name: 'Correct'
   }
 
 };
