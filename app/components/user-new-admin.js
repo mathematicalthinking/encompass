@@ -82,13 +82,19 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
   actions: {
-    // checkNewOrg: function () {
-    //   if (this.get('orgReq')) {
-    //     this.set('confirmNewOrg', true);
-    //   } else {
-    //     this.send('newUser');
-    //   }
-    // },
+    confirmOrg: function () {
+      let org = this.get('org');
+      if (typeof org === 'string') {
+        this.get('alert').showModal('question', `Are you sure you want to create ${org}`, null, 'Yes').then((result) => {
+          if (result.value) {
+            this.send('newUser');
+          }
+        });
+        this.set('orgReq', org);
+      } else {
+        this.send('newUser');
+      }
+    },
 
     newUser: function () {
       var username = this.get('username');
