@@ -97,7 +97,11 @@ describe('Comment CRUD operations by account type', async function() {
        /** POST **/
 
         describe('/POST valid comment', () => {
-          it('should post a new comment', done => {
+          let msg = 'should post a new comment';
+          if (isStudent) {
+            msg = 'should return 403 error';
+          }
+          it(msg, done => {
             agent
             .post(baseUrl)
             .send({comment: validComment})
