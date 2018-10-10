@@ -80,7 +80,7 @@ async function getSelection(req, res, next) {
 
     let selection = await models.Selection.findById(id);
 
-    if (!selection) { // record not found in db
+    if (!selection || selection.isTrashed) { // record not found in db
       return utils.sendResponse(res, null);
     }
 

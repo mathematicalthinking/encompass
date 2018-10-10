@@ -81,6 +81,9 @@ const getCategory = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    if (!category || category.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
     const data = {'category': category};
     utils.sendResponse(res, data);
     next();

@@ -105,7 +105,7 @@ const canGetUser = async function(user, id, username) {
     requestedUser = await models.User.findOne({username: username}).lean().exec();
   }
 
-  if (!requestedUser || !requestedUser._id) {
+  if (!requestedUser || !requestedUser._id || requestedUser.isTrashed) {
     return {
       doesExist: false,
       hasPermission: null

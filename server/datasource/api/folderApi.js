@@ -34,6 +34,9 @@ function getFolder(req, res, next) {
         return utils.sendError.InternalError(err, res);
       }
 
+      if (!doc || doc.isTrashed) {
+        return utils.sendResponse(res, null);
+      }
       var data = {'folder': doc};
       utils.sendResponse(res, data);
     });
@@ -46,6 +49,15 @@ function getFolder(req, res, next) {
   * @returns {Object} A 'named' hardcoded list *for now*
   */
 function getFolderSets(req, res, next) {
+  let user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+  let { accountType, actingRole } = user;
+  if (accountType === 'S' || actingRole === 'student') {
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
   res.send({folderSet: data.folderSets});
 }
 

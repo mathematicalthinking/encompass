@@ -171,6 +171,15 @@ function getLatestUserSubmission (username, callback) { // eslint-disable-line n
            + The `$` strings refer to nested properties of submission objects
   */
 function getPDSets(req, res, next) {
+  let user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+  let { accountType, actingRole } = user;
+  if (accountType === 'S' || actingRole === 'student') {
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
   models.PDSubmission.aggregate(
     {
       $group: {
@@ -226,7 +235,7 @@ async function getSubmission(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 
-  if (!submission) { // record not found in db
+  if (!submission || submission.isTrashed) { // record not found in db
     return utils.sendResponse(res, null);
   }
 

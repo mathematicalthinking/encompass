@@ -155,6 +155,9 @@ const getProblem = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    if (!problem || problem.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
     const data = {'problem': problem};
     utils.sendResponse(res, data);
     next();

@@ -72,6 +72,9 @@ const getSection = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    if (!section || section.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
     const data = {'section': section};
     utils.sendResponse(res, data);
   });
