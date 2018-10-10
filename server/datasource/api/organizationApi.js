@@ -30,7 +30,7 @@ const getOrganizations = async function(req, res, next) {
   //const user = userAuth.requireUser(req);
   try {
     const sortBy = req.query.sortBy;
-    let organizations = await models.Organization.find({});
+    let organizations = await models.Organization.find({isTrashed: false});
 
 
     if (sortBy === 'members') {
@@ -74,6 +74,9 @@ const getOrganization = (req, res, next) => {
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
+    }
+    if (!organization || organization.isTrashed) {
+      return utils.sendResponse(res, null);
     }
     const data = {'organization': organization};
     utils.sendResponse(res, data);
