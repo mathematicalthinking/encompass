@@ -2,26 +2,37 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 940px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 955px) {
   #al_header {
     #al_nav {
+              font-size: .8em;
       #menu-items {
         display: none;
       }
       #current-username {
-        margin: 0 20px;
+        margin: 0 8px;
       }
       #user-image {
-        margin: 0 30px 0 10px;
+        margin: 0 20px 0 5px;
       }
     }
-      #sidemenu {
-        display: none;
-      }
+    #sidemenu {
+      display: none;
+    }
+    #encompass-logo {
+      width: 75px;
+      height: 80px;
+      display: block;
+      float: left;
+      position: relative;
+      top: -15px;
+      text-indent: -99999px;
+      background: url(images/logo-encompass.gif) 0 0 no-repeat;
+    }
   }
 }
 
-@media screen and (min-width: 941px) and (max-width: 1500px) {
+@media screen and (min-width: 955px) and (max-width: 1500px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
@@ -57,7 +68,7 @@
     display: block;
     float: left;
     position: relative;
-    top: -8px;
+    top: -15px;
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
@@ -74,7 +85,7 @@
     }
     #al_nav {
       li {
-        padding: 0 15px;
+        padding: 0 12px;
       }
     }
     #sidemenu {
@@ -222,6 +233,9 @@
   cursor: pointer;
 }
 
+.hide-menu {
+  display: none;
+}
 
 #al_header .control {
   display: none
@@ -361,16 +375,25 @@ nav.actions>ul {
   }
 }
 
+.hidden {
+  display: none;
+}
+
 .sidemenu-style {
   display: block;
   position: absolute;
   right: 0;
-  top: 90px;
+  top: 75px;
   height: 100vh;
   min-width: 250px;
-  padding-top: 20px;
+  padding-top: 10px;
   background: white;
+  overflow: scroll;
   box-shadow: $box-shadow;
+  ul {
+    overflow: scroll;
+    margin-bottom: 40px;
+  }
   li {
     margin: 40px 20px 40px 30px;
   }
