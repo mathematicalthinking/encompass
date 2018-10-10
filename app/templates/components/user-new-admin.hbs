@@ -80,11 +80,11 @@
   {{/if}}
 
   {{#if missingAccountType}}
-    <p class="error-box animated fadeIn">Missing account type <button class="dismiss" {{action 'closeError'}}>x</button></p>
+    <p class="error-box account animated fadeIn">Missing account type <button class="dismiss" {{action 'closeError' "account"}}>x</button></p>
   {{/if}}
 
   {{#if errorMessage}}
-    <p class="error-box animated fadeIn">Missing required fields <button class="dismiss" {{action 'closeError'}}>x</button></p>
+    <p class="error-box required animated fadeIn">Missing required fields <button class="dismiss" {{action 'closeError' 'required'}}>x</button></p>
   {{/if}}
 
   {{#each createOrgErrors as |error|}}

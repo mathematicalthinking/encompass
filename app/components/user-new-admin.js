@@ -110,6 +110,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
         accountTypeLetter = accountType.charAt(0).toUpperCase();
       } else {
         this.set('missingAccountType', true);
+        $('.account').show();
         return;
       }
       var isAuthorized = this.get('isAuthorized');
@@ -117,6 +118,7 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 
       if (!username || !password) {
         this.set('errorMessage', true);
+        $('.required').show();
         return;
       }
 
@@ -263,10 +265,11 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
      },
 
     closeError: function (error) {
-      $('.error-box').addClass('fadeOutRight');
+      console.log('error clicked on', error);
+      $(`.${error}`).addClass('fadeOutRight');
       Ember.run.later(() => {
-        $('.error-box').removeClass('fadeOutRight');
-        $('.error-box').hide();
+        $(`.${error}`).removeClass('fadeOutRight');
+        $(`.${error}`).hide();
       }, 500);
     },
 
