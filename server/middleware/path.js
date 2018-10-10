@@ -27,7 +27,7 @@ function apiRequest(req) {
   @returns {Array} [0] model [1] id
 */
 function idRequest(req) {
-  var idRegExp = /\/api\/([a-z]*)\/(\w+)/;
+  var idRegExp = /\/api\/([a-z]*)\/(\S+)/;
   return idRegExp.exec(req.path);
 }
 
