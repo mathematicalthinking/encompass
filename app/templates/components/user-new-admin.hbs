@@ -79,8 +79,12 @@
   <p class="error-message">Passwords cannot contain spaces</p>
   {{/if}}
 
+  {{#if missingAccountType}}
+    <p class="error-box animated fadeIn">Missing account type <button class="dismiss" {{action 'closeError'}}>x</button></p>
+  {{/if}}
+
   {{#if errorMessage}}
-    <p class="error-message">Missing required fields</p>
+    <p class="error-box animated fadeIn">Missing required fields <button class="dismiss" {{action 'closeError'}}>x</button></p>
   {{/if}}
 
   {{#each createOrgErrors as |error|}}
