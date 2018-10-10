@@ -75,6 +75,22 @@ const pdAdminDrexel = {
   },
   inaccessibleAssignment: {
     _id: '5b91743a3da5efca74705773'
+  },
+  accessibleFolderCount: 32,
+  inaccessibleFolder: {
+    _id: '5bb814d19885323f6d894975'
+  },
+  accessibleFolder: {
+    _id: '53e11604b48b12793f0004ee'
+  },
+  validFolder: {
+    name: 'test folder',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    workspace: '53e1156db48b12793f000442'
+  },
+  modifiableFolder: {
+    _id: '53e11604b48b12793f0004ee',
+    name: 'Correct'
   }
 };
 
@@ -154,9 +170,23 @@ const teacherMT = {
   },
   inaccessibleAssignment: {
     _id: '5b9146a83add43b868ae9809'
+  },
+  accessibleFolderCount: 31,
+  inaccessibleFolder: {
+    _id: '53e11b0ab48b12793f000ab1'
+  },
+  accessibleFolder: {
+    _id: '5bb814d19885323f6d894975'
+  },
+  validFolder: {
+    name: 'test folder',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    workspace: '5bb814d19885323f6d894974'
+  },
+  modifiableFolder: {
+    _id: '5bb814d19885323f6d894975',
+    name: 'Reasonable'
   }
-
-
 };
 
 const admin = {
@@ -217,6 +247,19 @@ const admin = {
   accessibleAssignment: {
     _id: '5b9146a83add43b868ae9809',
   },
+  accessibleFolderCount: 36,
+  accessibleFolder: {
+    _id: '5bb814d19885323f6d894975'
+  },
+  validFolder: {
+    name: 'test folder',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    workspace: '5bb814d19885323f6d894974'
+  },
+  modifiableFolder: {
+    _id: '5bb814d19885323f6d894975',
+    name: 'Reasonable'
+  }
 };
 
 const studentMT = {
@@ -274,6 +317,14 @@ const studentMT = {
   },
   inaccessibleAssignment: {
     _id: '5b9146a83add43b868ae9809'
+  },
+  inaccessibleFolder: {
+    _id: '53e36cdbb48b12793f000d43'
+  },
+  validFolder: {
+    name: 'test folder',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    workspace: '5bb814d19885323f6d894974'
   }
 };
 
@@ -331,6 +382,14 @@ const teacherActingStudent = {
   },
   inaccessibleAssignment: {
     _id: '5b9146a83add43b868ae9809'
+  },
+  inaccessibleFolder: {
+    _id: '53e36cdbb48b12793f000d43'
+  },
+  validFolder: {
+    name: 'test folder',
+    createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    workspace: '5bb814d19885323f6d894974'
   }
 
 };
@@ -349,6 +408,7 @@ const publicProblem = {
 };
 
 // const accessibleOrgCount = 3;
+// 3;
 
 
 module.exports.users = users;
