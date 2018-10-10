@@ -22,6 +22,7 @@ const access = require('../../middleware/access/workspaces');
 const answerAccess = require('../../middleware/access/answers');
 const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
+mongoose.Promise = global.Promise;
 
 
 module.exports.get = {};
@@ -338,6 +339,7 @@ function updateWorkspaces(workspaces, submissionSet){
  */
 function newFolderStructure(user, ws, folderSetName) {
   var promise = new mongoose.Promise();
+  console.log('inside newFolderStrucuture');
   var tasks = [];
 
   var folders = []; // 'none' and anything else will use the empty set
@@ -356,6 +358,7 @@ function newFolderStructure(user, ws, folderSetName) {
 
   folders.forEach(function(folder){
     var folderPromise = new mongoose.Promise();
+  console.log('inside folders for each');
     var f = new models.Folder({
       //owner: user,
       name: folder.name,
@@ -450,6 +453,7 @@ function newWorkspace(submissionSet, user, folderSetName) {
     isTrashed: false
   });
   var promise = new mongoose.Promise();
+    console.log('inside new workspace promise');
   workspace.save(function(err, ws){
     if (err) {
       return utils.sendError.InternalError(err, res);
@@ -469,6 +473,7 @@ function newWorkspace(submissionSet, user, folderSetName) {
  */
 function handleSubmissionSet(submissionSet, user, folderSetName) {
   var promise = new mongoose.Promise();
+  console.log('inside handel submission set');
   var prefix = 'submissionSet.criteria.';
   var criteria = {'$and': []};
 
