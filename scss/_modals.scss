@@ -27,9 +27,10 @@ p.warning-message {
   border: 1px solid transparent;
   border-color: #ffcccc;
   border-radius: 3px;
-  width: 50%;
+  width: auto;
   position: relative;
   text-indent: 10px;
+  margin-left: 20px;
 }
 
 .error-box:before {
