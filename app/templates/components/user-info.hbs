@@ -217,12 +217,13 @@
     {{#unless isResettingPassword}}
     <div class="button-row">
       <button class='action_button save-user' {{action 'checkOrgExists'}}>Save</button>
-      <button class='action_button cancel-user' {{action 'cancel'}}>Cancel</button>
+      <button class='action_button cancel-button cancel-user' {{action 'cancel'}}>Cancel</button>
     </div>
     {{/unless}}
     {{else}}
     <div class="button-row">
       <button class='action_button edit-user' {{action 'editUser'}}>Edit</button>
+      <button class='action_button delete-button' {{action 'deleteUser'}}>Delete</button>
     </div>
     {{/if}}
   {{else}}
