@@ -33,7 +33,7 @@
         <div class="import-prep-problem">
           <div class="import-select">
            <p>Please select a problem</p>
-                {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+                {{twitter-typeahead limit=10 minLength=0 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
           </div>
         </div>
       {{/unless}}

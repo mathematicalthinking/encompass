@@ -28,7 +28,7 @@
           <p>{{selectedProblem.title}}<i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
         {{else}}
           {{#if addProblemTypeahead}}
-            {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+            {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
             {{#each problemFormErrors as |error|}}
               <p class="error-message">{{error}}</p>
             {{/each}}

@@ -10,7 +10,7 @@
           <li>
             <label for="problem">Problem</label>
               {{#if canEdit}}
-                {{twitter-typeahead minLength=2 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+                {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
               {{else}}
                 <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
               {{/if}}

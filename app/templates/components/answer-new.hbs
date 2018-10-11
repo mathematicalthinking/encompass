@@ -44,7 +44,7 @@
               </ul>
             </div>
           </div>
-          {{twitter-typeahead minLength=1 selectedValue=studentToAdd selectedItems=contributors onSelect="addStudent" dataList=section.students placeholder="username" optionLabelPath="username" allowMultiple=true}}
+          {{twitter-typeahead selectedValue=studentToAdd selectedItems=contributors onSelect="addStudent" dataList=section.students placeholder="username" optionLabelPath="username" allowMultiple=true}}
 
           {{#if addStudentError}}
               <p class="error-message"></p>Sorry, that user is not in your class.

@@ -54,7 +54,7 @@
                 <button {{action 'editOwner' workspace.owner}}> Change owner</button>
               {{/unless}}
               {{#if isChangingOwner}}
-                {{twitter-typeahead minLength=2 sourceFunction=addEditorTypeahead placeholder="username" onSelect="changeOwner" isAsync=true optionLabelPath="username" allowMultiple=true}}
+                {{twitter-typeahead sourceFunction=addEditorTypeahead placeholder="username" onSelect="changeOwner" isAsync=true optionLabelPath="username" allowMultiple=true}}
               {{/if}}
             {{else}}
               <span class="owner username">{{workspace.owner.username}}</span>
@@ -103,7 +103,7 @@
     <div class="half">
       {{#if isEditing}}
       <label>Add Editor</label>
-      {{twitter-typeahead minLength=2 sourceFunction=addEditorTypeahead placeholder="username" onSelect="addEditor" isAsync=true optionLabelPath="username" allowMultiple=true}}
+      {{twitter-typeahead sourceFunction=addEditorTypeahead placeholder="username" onSelect="addEditor" isAsync=true optionLabelPath="username" allowMultiple=true}}
 
       {{else}} {{#if canEdit}}
       <p>
