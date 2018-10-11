@@ -64,6 +64,9 @@
     font-size: 1.5em;
     margin: 20px 0 10px 25px;
   }
+  i {
+    margin: 2px;
+  }
   .action_button {
     margin: 20px 0 50px 25px; ;
   }
@@ -78,7 +81,7 @@
       display: inline-block;
       padding: 12px 0px;
       font-size: 1em;
-      width: 35%;
+      width: 38.5%;
 
       span.twitter-typeahead {
         width:100%;
@@ -112,7 +115,7 @@
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
-        width: 50%;
+        width: 55%;
         // -webkit-appearance:none;
         &::placeholder {
           color: $primary-font-color;
@@ -133,7 +136,7 @@
       margin-top: 40px;
     }
     input[type=date], input[type=text], .workspace-info {
-      width: 35%;
+      width: 38.5%;
       padding: 12px 20px;
       margin: 8px 0;
       font-size: 1em;
