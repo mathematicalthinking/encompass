@@ -1,7 +1,7 @@
 module.exports = {
   general: {
     successMessage: '.success-message',
-    errorMessage: '.error-message',
+    errorMessage: '.error-box',
   },
   topBar: {
     login: 'a.menu.login',
