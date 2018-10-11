@@ -20,10 +20,10 @@ describe('Base API tests by account type', function() {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Base API operations as ${user.testDescriptionTitle}`, function() {
+    describe(`Base API operations as ${user.details.testDescriptionTitle}`, function() {
       this.timeout('20s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole} = user;
+      const { username, password, accountType, actingRole} = user.details;
       const collections = ['answers', 'assignments', 'selections', 'sections', 'problems', 'workspaces', 'submissions', 'taggings', 'organizations', 'comments', 'folders', 'categories', 'responses', 'users', 'images'];
 
       const forbiddenStudentGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];

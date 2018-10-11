@@ -19,10 +19,11 @@ chai.use(chaiHttp);
 
 describe('Section CRUD operations by account type', function() {
   function runTests(user) {
-    describe(`Section CRUD operations as ${user.testDescriptionTitle}`, function() {
+    describe(`Section CRUD operations as ${user.details.testDescriptionTitle}`, function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleSectionCount, accessibleSection, inaccessibleSection, validSection, modifiableSection } = user;
+      const { username, password, accountType, actingRole } = user.details;
+      const { accessibleSectionCount, accessibleSection, inaccessibleSection, validSection, modifiableSection } = user.sections;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 

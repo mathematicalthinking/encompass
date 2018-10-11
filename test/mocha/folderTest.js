@@ -19,10 +19,11 @@ describe('Folder CRUD operations by Account Type',
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Folder CRUD operations as ${user.testDescriptionTitle}`, function(){
+    describe(`Folder CRUD operations as ${user.details.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleFolderCount, inaccessibleFolder,  accessibleFolder, validFolder, modifiableFolder } = user;
+      const { username, password, accountType, actingRole } = user.details;
+      const { accessibleFolderCount, inaccessibleFolder,  accessibleFolder, validFolder, modifiableFolder } = user.folders;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 

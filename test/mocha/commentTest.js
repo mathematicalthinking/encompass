@@ -16,10 +16,11 @@ describe('Comment CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Comment CRUD operations as ${user.testDescriptionTitle}`, function(){
+    describe(`Comment CRUD operations as ${user.details.testDescriptionTitle}`, function(){
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleCommentCount, inaccessibleComment,  accessibleComment, validComment, modifiableComment } = user;
+      const { username, password, accountType, actingRole } = user.details;
+      const { accessibleCommentCount, inaccessibleComment,  accessibleComment, validComment, modifiableComment } = user.comments;
 
       const isStudent = accountType === 'S' || actingRole === 'student';
 

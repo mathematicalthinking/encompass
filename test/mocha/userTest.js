@@ -16,10 +16,11 @@ describe('User CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
 
   async function runTests(user) {
-    await describe(`User CRUD operations as ${user.testDescriptionTitle}` , function() {
+    await describe(`User CRUD operations as ${user.details.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user;
+      const { username, password, accountType, actingRole } = user.details;
+      const { modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user.users;
 
       before(async function(){
         try {
@@ -49,7 +50,7 @@ describe('User CRUD operations by account type', async function() {
           });
         });
       });
-      if (user.accountType !== 'A') {
+      if (accountType !== 'A') {
         /** GET **/
         describe('/GET unaccessible user by username', () => {
           it('should return 404 error', done => {
@@ -184,7 +185,7 @@ describe('User CRUD operations by account type', async function() {
 
         describe('/PUT update user name', () => {
           let description;
-          if (user.accountType === 'S' || user.actingRole === 'student') {
+          if (accountType === 'S' || actingRole === 'student') {
             description = 'should return 403 error';
           } else {
             description = `should change ${modifiableUser.username}'s name from null to test name`;
@@ -204,7 +205,7 @@ describe('User CRUD operations by account type', async function() {
               if (err) {
                 console.error(err);
               }
-              if (user.accountType === 'S' || user.actingRole === 'student') {
+              if (accountType === 'S' || actingRole === 'student') {
                 expect(res).to.have.status(403);
                 done();
                 return;
@@ -232,7 +233,7 @@ describe('User CRUD operations by account type', async function() {
           }
 
           it(description, done => {
-            const url = baseUrl + user._id;
+            const url = baseUrl + user.details._id;
             agent
             .put(url)
             .send({
