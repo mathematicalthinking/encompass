@@ -224,7 +224,11 @@
     <div class="button-row">
       <button class='action_button edit-user' {{action 'editUser'}}>Edit</button>
       {{#if currentUser.isAdmin}}
-        <button class='action_button delete-button' {{action 'deleteUser'}}>Delete</button>
+        {{#if user.isTrashed}}
+          <button class='action_button restore-button' {{action 'restoreUser'}}>Restore User</button>
+        {{else}}
+          <button class='action_button delete-button' {{action 'deleteUser'}}>Delete</button>
+        {{/if}}
       {{/if}}
     </div>
     {{/if}}
