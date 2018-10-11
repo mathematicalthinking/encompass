@@ -71,8 +71,8 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await driver.sleep('500');
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
+        await helpers.waitForSelector(driver, '.error-box');
+        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Missing required fields');
       });
 
       it('should let you create a new unauthorized pdadmin', async function () {
@@ -89,7 +89,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info', 10000);
-        await driver.sleep('1000');
+        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
       });
 
@@ -112,8 +112,8 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Email address has already been used');
+        await helpers.waitForSelector(driver, '.error-box');
+        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Email address has already been used');
         await helpers.clearElement(driver, 'input.user-email');
         await helpers.findInputAndType(driver, 'input.user-email', newEmail);
         await helpers.findAndClickElement(driver, '#new-user-btn');
@@ -136,15 +136,16 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
-        await driver.sleep('1000');
+        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await helpers.waitForSelector(driver, '.error-message');
-        expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Username already exists');
+        await driver.sleep(600);
+        await helpers.waitForSelector(driver, '.error-box');
+        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Username already exists');
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
-        await driver.sleep('1000');
+        await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
-        await driver.sleep('1000');
+        await driver.sleep(1000);
         await helpers.waitForSelector(driver, '#user-info', 7000);
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('newstudent');
       });
@@ -167,7 +168,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.selectOption(driver, 'my-select', 'Admin');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep('100');
+        await driver.sleep(100);
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
@@ -178,8 +179,8 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(2000);
         await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }

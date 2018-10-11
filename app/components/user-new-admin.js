@@ -85,13 +85,19 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
     confirmOrg: function () {
       let org = this.get('org');
       if (typeof org === 'string') {
-        this.get('alert').showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
-        .then((result) => {
-          if (result.value) {
-            this.send('newUser');
-          }
-        });
-        this.set('orgReq', org);
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', org);
+        if (matchingOrg) {
+          this.send('newUser');
+        } else {
+          this.get('alert').showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
+            .then((result) => {
+              if (result.value) {
+                this.send('newUser');
+              }
+            });
+          this.set('orgReq', org);
+        }
       } else {
         this.send('newUser');
       }
