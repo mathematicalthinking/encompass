@@ -26,7 +26,7 @@
               {{#if problem.categories}}
               <ul class="problem-info">
                 {{#each problem.categories as |category|}}
-                  <li><a href="{{category.url}}">{{category.identifier}}</a> <button {{action 'removeCategory' category}}>X</button></li>
+                  <li><a href="{{category.url}}">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
                 {{/each}}
               </ul>
                 {{#unless showCategories}}

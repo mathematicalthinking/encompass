@@ -108,7 +108,20 @@ form#newproblemform {
       font-size: 1em;
     }
   }
-
+  ul {
+    li {
+      button {
+        border: none;
+        margin-bottom: 2px;
+        position: relative;
+        top: -2px;
+        i {
+          color: $primary-font-color;
+          font-size: 1em;
+        }
+      }
+    }
+  }
   #approved-problem {
     color: black;
     width: 70%;

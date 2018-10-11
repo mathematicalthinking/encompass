@@ -225,6 +225,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       }
     },
 
+    removeCategory: function (category) {
+      let categories = this.get('selectedCategories');
+      categories.removeObject(category);
+    },
+
     resetErrors(e) {
       const errors = ['noLegalNotice', 'createProblemErrors', 'imageUploadErrors'];
 
