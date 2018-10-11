@@ -41,31 +41,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
-  insertQuillContent: function() {
-    const isEditing = this.get('isEditing');
-    if (!isEditing) {
-      return;
-    }
-    const options = {
-      debug: 'false',
-      modules: {
-        toolbar: [
-        ['bold', 'italic', 'underline'],
-        ['image'],
-        ]
-      },
-      theme: 'snow'
-    };
-    const that = this;
-    this.$('#editor').ready(function() {
-      const quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
-      let problem = that.get('problem');
-      let text = problem.get('text');
-
-      that.$('.ql-editor').html(text);
-    });
-  }.observes('isEditing'),
-
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
@@ -477,6 +452,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     toAssignmentInfo: function (assignment) {
       this.sendAction('toAssignmentInfo', assignment);
+    },
+    insertQuillContent: function(selector, options) {
+      const isEditing = this.get('isEditing');
+      if (!isEditing) {
+        return;
+      }
+      // eslint-disable-next-line no-unused-vars
+      const quill = new window.Quill(selector, options);
+      let problem = this.get('problem');
+      let text = problem.get('text');
+
+      this.$('.ql-editor').html(text);
+
     },
 
     showAssignment: function () {
