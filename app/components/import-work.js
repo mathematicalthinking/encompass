@@ -77,6 +77,9 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   didReceiveAttrs: function() {
     this.setIsCompDirty();
+    if (this.model.problems) {
+      this.set('syncProblems', this.model.problems);
+    }
     this.setAddProblemFunction('addProblemTypeahead');
 
   },
