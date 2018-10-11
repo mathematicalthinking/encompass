@@ -316,6 +316,20 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         });
       },
 
+      restoreUser: function () {
+        let user = this.get('user');
+        let username = user.get('username');
+        this.get('alert').showModal('question', `Are you sure want to restore ${username}?`, null, 'Yes')
+        .then((result) => {
+          if (result.value) {
+            user.set('isTrashed', false);
+            user.save().then(() => {
+              this.get('alert').showToast('success', `${username} successfully restored`, 'bottom-end', 4000, true, 'Undo');
+            });
+          }
+        });
+      },
+
       cancel: function () {
         this.set('isEditing', false);
         this.set('noOrgModal', false);
