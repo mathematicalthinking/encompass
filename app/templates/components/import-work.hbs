@@ -32,7 +32,7 @@
       {{#unless selectedProblem}}
         <div class="import-prep-problem">
           <div class="import-select">
-           <p>Please select a problem</p>
+           <p class="info">Start typing an existing problem's title and you will see possible problems to choose from. You must select one of the existing problems to move along in the import process. If your problem does not exist yet, please {{#link-to 'problems.new'}}create{{/link-to}} one first.</p>
                 {{twitter-typeahead limit=10 minLength=0 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
           </div>
         </div>
