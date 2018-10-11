@@ -178,7 +178,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
 
   actions: {
-    radioSelect: function (value) {
+    radioSelect: function(value) {
       this.set('privacySetting', value);
     },
 
@@ -210,7 +210,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.createProblem();
     },
 
-    showCategories: function () {
+    showCategories: function() {
       this.get('store').query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
@@ -225,9 +225,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       }
     },
 
-    removeCategory: function (category) {
+    removeCategory: function(category) {
       let categories = this.get('selectedCategories');
       categories.removeObject(category);
+    },
+
+    cancelProblem: function() {
+      this.sendAction('toProblemsHome');
     },
 
     resetErrors(e) {

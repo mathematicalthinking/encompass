@@ -11,6 +11,9 @@ Encompass.ProblemsNewRoute = Encompass.AuthenticatedRoute.extend({
   actions: {
     toProblemInfo: function (problem) {
       this.transitionTo('problem', problem);
+    },
+    toProblemsHome: function () {
+      this.transitionTo('problems.home');
     }
   }
 });
