@@ -1,3 +1,129 @@
+const admin = {
+  details: {
+    _id: '5b245760ac75842be3189525',
+    testDescriptionTitle: 'Admin',
+    username: 'rick',
+    password: 'sanchez',
+    organization: '5b4a64a028e4b75919c28512',
+    accountType: 'A',
+  },
+  users: {
+    accessibleUser: {
+      _id: '5b914a802ecaf7c30dd47493',
+      username: 'teachertaylor',
+      organization: '5b4e4d5f808c7eebc9f9e82c',
+      accountType: 'T',
+      createdBy: '5b245760ac75842be3189525',
+      creatorUsername: 'rick'
+    },
+    modifiableUser: {
+      _id: '5b914a102ecaf7c30dd47492',
+      username: 'tracyc',
+      accountType: 'S'
+    },
+    accessibleUserCount: 37,
+  },
+  submissions: {
+    accessibleSubmissionCount: 54,
+    accessibleSubmission: {
+      _id: "5bb814d19885323f6d894973"
+    },
+  },
+  comments: {
+    accessibleCommentCount: 5,
+    accessibleComment: {
+      _id: "53e12507b48b12793f000b91"
+    },
+    validComment: {
+      label: 'notice',
+      text: 'i wonder if thats the best strategy',
+      selection: '53e37f3cb48b12793f00109a',
+      submission: '53e36522729e9ef59ba7f4d7',
+      workspace: '53e36522b48b12793f000d3b',
+      useForResponse: true,
+      isTrashed: false,
+      createdBy: '5b245760ac75842be3189525',
+    },
+    modifiableComment: {
+      _id: "5bbb9d86c2aa0a1696840ceb",
+      label: "feedback",
+      selection: "5bbb9d57c2aa0a1696840ce9",
+      submission: "5bb814d19885323f6d894973",
+      workspace: "5bb814d19885323f6d894974",
+      createdBy: "5b9149552ecaf7c30dd4748e",
+      text: "I notice that your explanation is vague."
+    },
+  },
+  answers: {
+    accessibleAnswerCount: 3,
+  },
+  selections: {
+    accessibleSelectionCount: 73,
+    accessibleSelection: {
+      _id: '5bbb9d57c2aa0a1696840ce9'
+    },
+  },
+  assignments: {
+    accessibleAssignmentCount: 2,
+    accessibleAssignment: {
+      _id: '5b9146a83add43b868ae9809',
+    },
+  },
+  folders: {
+    accessibleFolderCount: 36,
+    accessibleFolder: {
+      _id: '5bb814d19885323f6d894975'
+    },
+    validFolder: {
+      name: 'test folder',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+      workspace: '5bb814d19885323f6d894974'
+    },
+    modifiableFolder: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
+  },
+  sections: {
+    accessibleSectionCount: 3,
+    accessibleSection: {
+      _id: '5b9149a32ecaf7c30dd4748f',
+    },
+    validSection: {
+      name: 'test section',
+      createdBy: '5b245760ac75842be3189525',
+      assignments: [],
+      students: [],
+      teachers: [],
+    },
+    modifiableSection: {
+      _id: '5b9149a32ecaf7c30dd4748f',
+      name: `Summer's Algebra 2 1st Period`
+    },
+  },
+  problems: {
+    accessibleProblemCount: 7,
+    accessibleProblem: {
+      _id: '5b4e2e56be1e18425515308c',
+    },
+    validProblem: {
+      title: 'test math problem',
+      text: 'This is a problem',
+      categories: [],
+      createdBy: '5b245760ac75842be3189525',
+    },
+    invalidProblem: {
+      title: '',
+      puzzleId: '',
+      text: '',
+      categories: []
+    },
+    modifiableProblem: {
+      _id: '5b4e2e6cbe1e18425515308d'
+    }
+
+  }
+};
 const pdAdminDrexel = {
   details: {
     _id: '5b7321ee59a672806ec903d5',
@@ -128,13 +254,28 @@ const pdAdminDrexel = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 5,
     accessibleProblem: {
       _id: '5b1e7a0ba5d2157ef4c91028',
     },
     inaccessibleProblem: {
-      _id: '5b4e2e56be1e18425515308c'
+      _id: '5b9173e23da5efca74705772'
     },
+    validProblem: {
+      title: 'test math problem',
+      text: 'This is a problem',
+      categories: [],
+      createdBy: '5b7321ee59a672806ec903d5',
+    },
+    invalidProblem: {
+      title: '',
+      puzzleId: '',
+      text: '',
+      categories: []
+    },
+    modifiableProblem: {
+      _id: ''
+    }
   }
 };
 
@@ -270,124 +411,30 @@ const teacherMT = {
   problems: {
     accessibleProblemCount: 4,
     accessibleProblem: {
-      _id: '5b1e7a0ba5d2157ef4c91028',
+      _id: '5ba7c3cb1359dc2f6699f2b3',
     },
     inaccessibleProblem: {
       _id: '5b4e2e56be1e18425515308c'
     },
+    validProblem: {
+      title: 'test math problem',
+      text: 'This is a problem',
+      categories: [],
+      createdBy: '5b9149552ecaf7c30dd4748e',
+    },
+    invalidProblem: {
+      title: '',
+      puzzleId: '',
+      text: '',
+      categories: []
+    },
+    modifiableProblem: {
+      _id: ''
+    }
   }
 };
 
-const admin = {
-  details: {
-    _id: '5b245760ac75842be3189525',
-    testDescriptionTitle: 'Admin',
-    username: 'rick',
-    password: 'sanchez',
-    organization: '5b4a64a028e4b75919c28512',
-    accountType: 'A',
-  },
-  users: {
-    accessibleUser: {
-      _id: '5b914a802ecaf7c30dd47493',
-      username: 'teachertaylor',
-      organization: '5b4e4d5f808c7eebc9f9e82c',
-      accountType: 'T',
-      createdBy: '5b245760ac75842be3189525',
-      creatorUsername: 'rick'
-    },
-    modifiableUser: {
-      _id: '5b914a102ecaf7c30dd47492',
-      username: 'tracyc',
-      accountType: 'S'
-    },
-    accessibleUserCount: 37,
-  },
-  submissions: {
-    accessibleSubmissionCount: 54,
-    accessibleSubmission: {
-      _id: "5bb814d19885323f6d894973"
-    },
-  },
-  comments: {
-    accessibleCommentCount: 5,
-    accessibleComment: {
-      _id: "53e12507b48b12793f000b91"
-    },
-    validComment: {
-      label: 'notice',
-      text: 'i wonder if thats the best strategy',
-      selection: '53e37f3cb48b12793f00109a',
-      submission: '53e36522729e9ef59ba7f4d7',
-      workspace: '53e36522b48b12793f000d3b',
-      useForResponse: true,
-      isTrashed: false,
-      createdBy: '5b245760ac75842be3189525',
-    },
-    modifiableComment: {
-      _id: "5bbb9d86c2aa0a1696840ceb",
-      label: "feedback",
-      selection: "5bbb9d57c2aa0a1696840ce9",
-      submission: "5bb814d19885323f6d894973",
-      workspace: "5bb814d19885323f6d894974",
-      createdBy: "5b9149552ecaf7c30dd4748e",
-      text: "I notice that your explanation is vague."
-    },
-  },
-  answers: {
-    accessibleAnswerCount: 3,
-  },
-  selections: {
-    accessibleSelectionCount: 73,
-    accessibleSelection: {
-      _id: '5bbb9d57c2aa0a1696840ce9'
-    },
-  },
-  assignments: {
-    accessibleAssignmentCount: 2,
-    accessibleAssignment: {
-      _id: '5b9146a83add43b868ae9809',
-    },
-  },
-  folders: {
-    accessibleFolderCount: 36,
-    accessibleFolder: {
-      _id: '5bb814d19885323f6d894975'
-    },
-    validFolder: {
-      name: 'test folder',
-      createdBy: '5b1e7bf9a5d2157ef4c911a6',
-      workspace: '5bb814d19885323f6d894974'
-    },
-    modifiableFolder: {
-      _id: '5bb814d19885323f6d894975',
-      name: 'Reasonable'
-    },
-  },
-  sections: {
-    accessibleSectionCount: 3,
-    accessibleSection: {
-      _id: '5b9149a32ecaf7c30dd4748f',
-    },
-    validSection: {
-      name: 'test section',
-      createdBy: '5b245760ac75842be3189525',
-      assignments: [],
-      students: [],
-      teachers: [],
-    },
-    modifiableSection: {
-      _id: '5b9149a32ecaf7c30dd4748f',
-      name: `Summer's Algebra 2 1st Period`
-    },
-  },
-  problems: {
-    accessibleProblemCount: 7,
-    accessibleProblem: {
-      _id: '5b4e2e56be1e18425515308c',
-    },
-  }
-};
+
 
 const studentMT = {
   details: {
@@ -492,6 +539,18 @@ const studentMT = {
     inaccessibleProblem: {
       _id: '5b4e2e56be1e18425515308c'
     },
+    validProblem: {
+      title: 'test math problem',
+      text: 'This is a problem',
+      categories: [],
+      createdBy: '5b914a102ecaf7c30dd47492',
+    },
+    invalidProblem: {
+      title: '',
+      puzzleId: '',
+      text: '',
+      categories: []
+    }
   }
 };
 
@@ -599,6 +658,20 @@ const teacherActingStudent = {
     inaccessibleProblem: {
       _id: '5b4e2e56be1e18425515308c'
     },
+    validProblem: {
+      title: 'test math problem',
+      text: 'This is a problem',
+      categories: [],
+      createdBy: '5b99146e25b620610ceead75',
+      privacySetting: 'M'
+    },
+    invalidProblem: {
+      title: '',
+      puzzleId: '',
+      text: '',
+      categories: []
+    }
+
   }
 };
 const users = {

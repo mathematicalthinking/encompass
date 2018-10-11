@@ -22,7 +22,7 @@ describe('Problem CRUD operations by account type', function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleProblemCount, accessibleProblem, inaccessibleProblem } = user.problems;
+      const { accessibleProblemCount, accessibleProblem, inaccessibleProblem, validProblem, modifiableProblem } = user.problems;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -55,47 +55,97 @@ describe('Problem CRUD operations by account type', function() {
         });
       });
 
-      /** POST **/
-      xdescribe('/POST problem', () => {
-        it('should post a new problem', done => {
+      if (accountType !== 'A') {
+        describe('/GET inaccessible problem by id', () => {
+          it('should return 403 error', done => {
+            const url = baseUrl + inaccessibleProblem._id;
+            agent
+            .get(url)
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+              }
+              expect(res).to.have.status(403);
+              done();
+            });
+          });
+        });
+      }
+      describe('/GET accessible problem by id', () => {
+        it('should get one problem with matching id', done => {
+          const url = baseUrl + accessibleProblem._id;
           agent
-          .post(baseUrl)
-          .send({problem: fixtures.problem.validProblem})
+          .get(url)
           .end((err, res) => {
             if (err) {
-              console.error(err);
+              console.log(err);
             }
             expect(res).to.have.status(200);
-            expect(res.body.problem).to.have.any.keys('title', 'puzzleId', 'categories');
-            expect(res.body.problem.title).to.eql('test math problem');
+            expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'title', 'text');
+            expect(res.body.problem._id).to.eql(accessibleProblem._id);
             done();
           });
         });
       });
 
-      /** PUT name**/
-      xdescribe('/PUT update problem name', () => {
-        it('should change the title to test science problem', done => {
-          let url = baseUrl + fixtures.problem._id;
+      /** POST **/
+      describe('/POST problem', () => {
+        let newName = validProblem.title;
+        let msg = 'should post a new problem';
+        if (isStudent) {
+          msg = 'should return a 403 error';
+        }
+        it(msg, done => {
           agent
-          .put(url)
-          .send({
-                problem: {
-                  title: 'test science problem',
-                  createdBy: fixtures.problem.validProblem.createdBy,
-                }
-           })
+          .post(baseUrl)
+          .send({problem: validProblem})
           .end((err, res) => {
             if (err) {
               console.error(err);
             }
-            expect(res).to.have.status(200);
-            expect(res.body.problem).to.have.any.keys('puzzleId', 'title', 'categories');
-            expect(res.body.problem.title).to.eql('test science problem');
+            if (isStudent) {
+              expect(res).to.have.status(403);
+              done();
+            } else {
+              expect(res).to.have.status(200);
+            expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'categories');
+            expect(res.body.problem.title).to.eql(newName);
             done();
+            }
           });
         });
       });
+
+      /** PUT name**/
+      if (accountType === 'A' || isStudent) {
+        xdescribe('/PUT update problem name', () => {
+          it('should change the title to test science problem', done => {
+            let url = baseUrl + modifiableProblem._id;
+            agent
+            .put(url)
+            .send({
+                  problem: {
+                    title: 'test science problem',
+                  }
+             })
+            .end((err, res) => {
+              if (err) {
+                console.error(err);
+              }
+              if (isStudent) {
+                expect(res).to.have.status(403);
+                done();
+              } else {
+                expect(res).to.have.status(200);
+                expect(res.body.problem).to.have.any.keys('privacySetting', 'title', 'categories');
+                expect(res.body.problem.title).to.eql('test science problem');
+                done();
+              }
+            });
+          });
+        });
+      }
+
     });
   }
 

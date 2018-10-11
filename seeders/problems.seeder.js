@@ -49,7 +49,8 @@ var data = [
     "categories": [],
     "isPublic": false,
     "privacySetting": 'M',
-    "isTrashed": false
+    "isTrashed": false,
+    "organization": "5b4a64a028e4b75919c28512"
   },
   {
     "_id" : "5b91463c3add43b868ae9808",
@@ -91,6 +92,7 @@ var data = [
   "categories" : [],
   "lastModifiedDate" : null,
   "isTrashed" : false,
+  "isUsed": true,
   "createDate" : "2018-09-06T18:37:22.437Z"
 },
 {
@@ -119,7 +121,7 @@ var data = [
   "isTrashed" : true,
   "createdBy": "5ba7bedd2b7ba22c38a554fc",
   "title": "trashed problem"
-}
+},
 ];
 
 var ProblemsSeeder = Seeder.extend({
