@@ -82,5 +82,32 @@ const accessibleProblemsQuery = async function(user, ids, filterBy) {
   }
 
 };
+const canGetProblem = async function(user, problemId) {
+  if (!user) {
+    return;
+  }
+
+  const { accountType } = user;
+
+  // admins currently can get all problems
+  if (accountType === 'A') {
+    return true;
+  }
+
+  // use accessibleProblems criteria to determine access for teachers/pdAdmins
+
+  let criteria = await accessibleProblemsQuery(user, problemId);
+  let accessibleIds = await utils.getModelIds('Problem', criteria);
+
+  // map objectIds to strings to check for existence
+  accessibleIds = accessibleIds.map(id => id.toString());
+
+    if (accessibleIds.includes(problemId)) {
+      return true;
+    }
+    return false;
+};
+
 
 module.exports.get.problems = accessibleProblemsQuery;
+module.exports.get.problem = canGetProblem;

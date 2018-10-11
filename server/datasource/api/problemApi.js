@@ -142,26 +142,34 @@ const getProblems = async function(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 
-const getProblem = (req, res, next) => {
+const getProblem = async function(req, res, next) {
   const user = userAuth.requireUser(req);
 
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-  // add permissions here
-  models.Problem.findById(req.params.id)
-  .exec((err, problem) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if (!problem || problem.isTrashed) {
-      return utils.sendResponse(res, null);
-    }
-    const data = {'problem': problem};
-    utils.sendResponse(res, data);
-    next();
-  });
+
+  let id = req.params.id;
+
+  let problem = await models.Problem.findById(id);
+
+  // record not found in db or is trashed
+  if (!problem || problem.isTrashed) {
+    return utils.sendResponse(res, null);
+  }
+
+  let canLoadProblem = await access.get.problem(user, id);
+
+  // user does not have permission to access problem
+  if (!canLoadProblem) {
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+  // user has permission; send back record
+  const data = {
+    problem
+  };
+
+  return utils.sendResponse(res, data);
 };
 
 /**
