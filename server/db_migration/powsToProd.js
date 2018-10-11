@@ -305,12 +305,49 @@ async function unusedProblemsPrivate() {
 }
 
 
+async function setUserActingRole() {
+  const users = await models.User.find({}).exec();
+  const usersIds = users.map(u => u._id);
+  let fixedCount = 0;
+  let okCount = 0;
+  let errorCount = 0;
+  for (let id of usersIds) {
+    try {
+      const u = await models.User.find({ _id: id}).exec();
+      const user = u[0];
+      if (user.accountType !== 'S' &&  !['teacher', 'student'].includes(user.actingRole) ) {
+        // invalid acting role for teacher, set it to teacher
+        user.actingRole = 'teacher';
+        try {
+          user.save();
+          fixedCount += 1;
+          console.log (`Fixed ${user.username}`);
+        } catch (e) {
+          console.log (`ERROR fixing ${user.username}`);
+          errorCount += 1;
+        }
+      } else {
+        okCount += 1;
+      }
+    } catch (err) {
+      console.error(`ERROR looping through users`);
+    }
+  }
+  console.log(`Users Acting Role fixed count: ${fixedCount}`);
+  console.log(`Users Acting Role OK count: ${okCount}`);
+  console.log(`Users Acting Role ERROR count: ${errorCount}`);
+}
+
+
 
 async function update() {
   try {
+
+    // // open connection to encompass database (production)
     console.log(`connect to mongo`);
     mongoose.connect('mongodb://localhost:27017/encompass_prod');
 
+    // // open connection to POWs Postgres Database
     // console.log(`postgres client create`)
     // const pgClient = new pg.Client({
     //   user: 'postgres',
@@ -323,25 +360,31 @@ async function update() {
     // console.log(`pg client connected`);
 
     // // Updates Done week of 9/28/2018
-    // // Puzzles added as problems owned by old pows user
+    // // Puzzles added as problems owned by 'old pows user'
     // // Puzzle image sources set as base64 text
     // const errorStream = fs.createWriteStream("errorProblems.txt");
     // await cleanPowUsers();
     // const pows_user = await getOrCreatePowUser();
     // await allPuzzlesLoop(pgClient, pows_user, errorStream);
 
-    // updates for Oct 5?
-    await allPOWsProblemsPrivate();
-    // await listProblemPrivacy();
-    await countProblemPrivacy();
-    await unusedProblemsPrivate();
-    await countProblemPrivacy();
+    // // updates for week of Oct 5
+    // await allPOWsProblemsPrivate();
+    // // await listProblemPrivacy();
+    // await countProblemPrivacy();
+    // await unusedProblemsPrivate();
+    // await countProblemPrivacy();
 
+    // updates for week of Oct 11
+    await setUserActingRole();
+
+    // // close POWs Postgres connection
     // errorStream.end();
     // console.log(`client end`);
     // await pgClient.end()
 
+    // close mongo connection
     mongoose.connection.close();
+
   } catch (err) {
     console.error(`ERROR - ${err}`);
   }
