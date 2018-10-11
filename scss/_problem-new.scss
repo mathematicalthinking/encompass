@@ -16,7 +16,6 @@ form#newproblemform {
     content: '';
     border: 2px solid red !important;
     box-sizing: border-box;
-
   }
   input[type=radio].required-error::after {
     border-radius:100%;
@@ -31,7 +30,9 @@ form#newproblemform {
       min-height: 100px;
     }
   }
-
+  #legal-notice {
+    z-index: 20;
+  }
   input[type=text], select, textarea {
     width: 70%;
     padding: 12px 20px;

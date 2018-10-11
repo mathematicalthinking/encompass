@@ -98,7 +98,7 @@ describe('Problems', function() {
         } else {
           await helpers.findAndClickElement(driver, inputs.justMe);
         }
-        await helpers.findAndClickElement(driver, '#legal-notice');
+        await helpers.findAndClickElement(driver, 'input#legal-notice');
         await helpers.findAndClickElement(driver, css.newProblem.submit);
         await helpers.findAndClickElement(driver, '.swal2-confirm');
       };
