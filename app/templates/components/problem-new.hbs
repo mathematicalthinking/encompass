@@ -22,7 +22,7 @@
             {{#if selectedCategories}}
               <ul class="problem-info">
               {{#each selectedCategories as |category|}}
-                <li><a href="{{category.url}}">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
+                <li><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
               {{/each}}
               </ul>
             {{/if}}
