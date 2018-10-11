@@ -69,7 +69,7 @@ describe('Users', function() {
         let username = `muzzy`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep('500');
+        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
         expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Missing required fields');
@@ -311,7 +311,7 @@ describe('Users', function() {
         let username = `bunny`;
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.selectOption(driver, 'my-select', 'Teacher');
-        await driver.sleep('500');
+        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
         expect(await helpers.findAndGetText(driver, '.error-message')).to.contain('Missing required fields');
@@ -329,7 +329,7 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep('1000');
+        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('bunny');
       });
 
@@ -373,7 +373,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep('100');
+        await driver.sleep(100);
         await helpers.waitForSelector(driver, 'button.edit-user');
       });
     }
@@ -384,7 +384,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep('2000');
+        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
