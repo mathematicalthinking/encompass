@@ -4,11 +4,15 @@
 
   <form class="form-signin">
     <div class="auth-form-input">
+      {{#if missingCredentials}}
+        {{error-box error="Incorrect username or password" showDismiss=true}}
+      {{/if}}
+
       <label for="username">Username:</label>
       {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}}
 
       {{#if incorrectUsername}}
-        <p class="error-message">Incorrect username.</p>
+        {{error-box error="Incorrect Username" showDismiss=true}}
       {{/if}}
     </div>
 
@@ -17,17 +21,14 @@
       {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}}
 
       {{#if incorrectPassword}}
-        <p class="error-message">Incorrect password.</p>
+        {{error-box error="Incorrect Password" showDismiss=true}}
       {{/if}}
 
-      {{#if missingCredentials class="error-message"}}
-        <p class="error-message">Missing Credentials</p>
-      {{/if}}
     </div>
 
     <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
     {{#each postErrors as |error|}}
-      <p class="error-message">{{error}}</p>
+      {{error-box error=error showDismiss=true}}
     {{/each}}
   </form>
 

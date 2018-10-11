@@ -139,6 +139,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     editProblem: function () {
+      console.log('editProblem clicked');
       let problem = this.get('problem');
       let problemId = problem.get('id');
       let currentUserAccountType = this.get('currentUser').get('accountType');

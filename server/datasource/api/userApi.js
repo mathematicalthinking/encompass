@@ -51,10 +51,9 @@ async function sendUsers(req, res, next) {
     return next();
   }
 
-  if(req.query.alias === 'current') {
+  if (req.query.alias === 'current') {
     // if all they wanted was the current user, fine
     return utils.sendResponse(res, {user: [user]});
-
   }
 
   var criteria;
@@ -88,6 +87,8 @@ async function sendUsers(req, res, next) {
     criteria = await access.get.users(user, null, req.query.username);
   } else if (req.query.ids) {
     criteria = await access.get.users(user, req.query.ids, null);
+  } else if (req.query.isTrashed) {
+    criteria = { isTrashed: true };
   } else {
     criteria = await access.get.users(user, null, null);
   }
@@ -227,9 +228,16 @@ function postUser(req, res, next) {
     var shouldSendAuthEmail = req.body.user.shouldSendAuthEmail;
 
     // Should we handle a nonexisting userid separately?
-    if (user.accountType === 'S' || !_.contains(userIds, req.params.id)) {
+    if (user.accountType === 'S') {
       return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
     }
+
+    if (user.accountType !== 'A') {
+      if (!_.contains(userIds, req.params.id)) {
+        return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+      }
+    }
+
     if (user.actingRole === 'student') {
       models.User.findByIdAndUpdate(
         req.params.id,

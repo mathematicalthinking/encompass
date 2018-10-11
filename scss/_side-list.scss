@@ -169,6 +169,16 @@
       }
     }
   }
+  .toggle-button {
+    background-color: white;
+    color: $primary-font-color;
+    padding: 8px 15px;
+    border: 1px solid $input-border;
+    border-radius: 5px;
+    margin: 0 auto;
+    display: block;
+    font-size: .8em;
+  }
 }
 
 

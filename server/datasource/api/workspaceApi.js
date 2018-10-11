@@ -23,7 +23,6 @@ const answerAccess = require('../../middleware/access/answers');
 const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 
-
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
@@ -1051,7 +1050,6 @@ async function postWorkspaceEnc(req, res, next) {
 
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
-    console.log('wsCrit', wsCriteria);
     const answers = await models.Answer.find(wsCriteria);
     console.log('answers are', answers.length);
 

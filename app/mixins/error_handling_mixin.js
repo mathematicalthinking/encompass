@@ -44,7 +44,6 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
     }
   },
   _removeMessages: function(err) {
-    console.log('in _remove', err);
     if (!err) {
       return;
     }

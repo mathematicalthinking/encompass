@@ -82,13 +82,26 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
 // When user hits save button we need to check if the org is a string, if it is then do a modal, else continue
 
   actions: {
-    // checkNewOrg: function () {
-    //   if (this.get('orgReq')) {
-    //     this.set('confirmNewOrg', true);
-    //   } else {
-    //     this.send('newUser');
-    //   }
-    // },
+    confirmOrg: function () {
+      let org = this.get('org');
+      if (typeof org === 'string') {
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', org);
+        if (matchingOrg) {
+          this.send('newUser');
+        } else {
+          this.get('alert').showModal('question', `Are you sure you want to create ${org}`, null, 'Yes')
+            .then((result) => {
+              if (result.value) {
+                this.send('newUser');
+              }
+            });
+          this.set('orgReq', org);
+        }
+      } else {
+        this.send('newUser');
+      }
+    },
 
     newUser: function () {
       var username = this.get('username');
@@ -98,12 +111,20 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
       var organization = this.get('org');
       var location = this.get('location');
       var accountType = this.get('selectedType');
-      var accountTypeLetter = accountType.charAt(0).toUpperCase();
+      var accountTypeLetter;
+      if (accountType) {
+        accountTypeLetter = accountType.charAt(0).toUpperCase();
+      } else {
+        this.set('missingAccountType', true);
+        $('.account').show();
+        return;
+      }
       var isAuthorized = this.get('isAuthorized');
       var currentUserId = this.get('currentUser').get('id');
 
-      if (!username || !password || !accountType) {
+      if (!username || !password) {
         this.set('errorMessage', true);
+        $('.required').show();
         return;
       }
 
@@ -248,6 +269,15 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
          this.set('org', org);
       //  }
      },
+
+    closeError: function (error) {
+      console.log('error clicked on', error);
+      $(`.${error}`).addClass('fadeOutRight');
+      Ember.run.later(() => {
+        $(`.${error}`).removeClass('fadeOutRight');
+        $(`.${error}`).hide();
+      }, 500);
+    },
 
     resetErrors(e) {
       const errors = ['usernameExists', 'emailExistsError', 'errorMessage'];

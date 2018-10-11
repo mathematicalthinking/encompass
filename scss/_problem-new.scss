@@ -16,7 +16,6 @@ form#newproblemform {
     content: '';
     border: 2px solid red !important;
     box-sizing: border-box;
-
   }
   input[type=radio].required-error::after {
     border-radius:100%;
@@ -31,7 +30,9 @@ form#newproblemform {
       min-height: 100px;
     }
   }
-
+  #legal-notice {
+    z-index: 20;
+  }
   input[type=text], select, textarea {
     width: 70%;
     padding: 12px 20px;
@@ -108,7 +109,20 @@ form#newproblemform {
       font-size: 1em;
     }
   }
-
+  ul {
+    li {
+      button {
+        border: none;
+        margin-bottom: 2px;
+        position: relative;
+        top: -2px;
+        i {
+          color: $primary-font-color;
+          font-size: 1em;
+        }
+      }
+    }
+  }
   #approved-problem {
     color: black;
     width: 70%;
@@ -142,6 +156,10 @@ form#newproblemform {
     margin-top: 20px;
   }
 
+  .error-box {
+    margin: 20px 0;
+  }
+
 }
 
 .submit {
@@ -149,6 +167,7 @@ form#newproblemform {
     font-size: .8em;
     border-radius: 3px;
     padding: 10px 15px;
+    margin-bottom: 80px;
     font-weight: $bold-font-weight;
   }
 }

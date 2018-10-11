@@ -52,9 +52,9 @@ const signupErrors = {
 };
 
 const signinErrors = {
-  incomplete: 'Missing Credentials',
-  username: 'Incorrect username',
-  password: 'Incorrect password.'
+  incomplete: 'Incorrect username or password',
+  username: 'Incorrect Username',
+  password: 'Incorrect Password'
 };
 
 const newProblem = {

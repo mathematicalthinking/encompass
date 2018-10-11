@@ -1,8 +1,0 @@
-@import "variables";
-@import "mixins";
-@import "responsive-font-size";
-
-p.warning-message {
-  @include warning-message;
-  margin: 20px 0 20px 0;
-}

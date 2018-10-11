@@ -75,7 +75,11 @@ console.log(`database name: '${dbConf.name}'`);
 
 mongoose.connect(dbConf.host, dbConf.name, {
   user: dbConf.user,
-  pass: dbConf.pass
+  pass: dbConf.pass,
+});
+
+mongoose.connect(`mongodb://${dbConf.host}:27017/${dbConf.name}`, {
+  useMongoClient: true
 });
 
 console.info(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
@@ -243,6 +247,9 @@ server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.ad
 server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
 server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
+
+//ALL DELETE REQUESTS
+server.delete('/api/images/:id', path.validateId(), api.delete.image);
 
 
 let buildDir = 'build';

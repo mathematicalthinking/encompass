@@ -70,7 +70,7 @@
     {{/if}}
     {{#unless user.organizationRequest}}
       <tr>
-        <td>Organization</td>
+        <td>Organization {{#if isEditing}}<span class="required-star">*</span>{{/if}}</td>
       {{#if isEditing}}
         {{#if currentUser.isAdmin}}
           <td>{{twitter-typeahead dataList=orgList selectedValue=user.organization onSelect="setOrg" minLength=0 optionLabelPath='name' setSelectedValueOnChange=true}}</td>
@@ -148,7 +148,7 @@
     </tr>
     {{/if}}
     <tr>
-      <td>Account Type</td>
+      <td>Account Type {{#if isEditing}}<span class="required-star">*</span>{{/if}}</td>
       {{#if isEditing}}
       <td>
         {{#if canEdit}}
@@ -217,12 +217,19 @@
     {{#unless isResettingPassword}}
     <div class="button-row">
       <button class='action_button save-user' {{action 'checkOrgExists'}}>Save</button>
-      <button class='action_button cancel-user' {{action 'cancel'}}>Cancel</button>
+      <button class='action_button cancel-button cancel-user' {{action 'cancel'}}>Cancel</button>
     </div>
     {{/unless}}
     {{else}}
     <div class="button-row">
       <button class='action_button edit-user' {{action 'editUser'}}>Edit</button>
+      {{#if currentUser.isAdmin}}
+        {{#if user.isTrashed}}
+          <button class='action_button restore-button' {{action 'restoreUser'}}>Restore User</button>
+        {{else}}
+          <button class='action_button delete-button' {{action 'deleteUser'}}>Delete</button>
+        {{/if}}
+      {{/if}}
     </div>
     {{/if}}
   {{else}}

@@ -73,7 +73,7 @@
           </span>
           {{#unless isStudentAccount}}
           <li id="role-toggle">
-            <span class="acting-role">Role: {{user.actingRole}}</span>
+            <span class="acting-role">Role: {{user.actingRoleName}}</span>
             <span class="toggle-role" {{action 'showToggleModal'}}>
               <i class="fas fa-sync-alt"></i>
             </span>
@@ -89,14 +89,14 @@
             </li>
           {{/if}}
           <li id="user-image">
-            {{input type="checkbox" id="menu-btn" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
+            {{input type="checkbox" id="menu-button" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
             <img src="./images/profile.png" alt="profile">
           </li>
         </ul>
       </div>
     </nav>
 
-    <div class="sidemenu-style" id="{{unless openMenu 'sidemenu'}}">
+    <div id="hide-menu" class="hidden animated">
       <ul>
         <li>{{#link-to 'index'}}home{{/link-to}}</li>
         {{#unless currentUser.isStudent}}
@@ -149,3 +149,18 @@
 {{!-- {{#if actionToConfirm}}
     {{modal-confirm actionToConfirm=actionToConfirm onConfirm="toggleActingRole" warningMessage="If you are currently modifying or creating a new record, you will lose all unsaved progress."}}
 {{/if}} --}}
+<script>
+  $('#menu-button').click(function (e) {
+    e.stopPropagation();
+    $('#hide-menu').toggleClass('sidemenu-style');
+    $('#hide-menu').addClass('slideInRight');
+  });
+
+  $('#hide-menu').click(function (e) {
+    e.stopPropagation();
+  });
+
+  $('body,html').click(function (e) {
+    $('#hide-menu').removeClass('sidemenu-style');
+  });
+</script>

@@ -22,7 +22,7 @@
             {{#if selectedCategories}}
               <ul class="problem-info">
               {{#each selectedCategories as |category|}}
-                <li><a href="{{category.url}}">{{category.identifier}}</a></li>
+                <li><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
               {{/each}}
               </ul>
             {{/if}}
@@ -76,11 +76,19 @@
         </ol>
       </fieldset>
 
+      {{#each createProblemErrors as |error|}}
+        {{error-box error=error showDismiss=true}}
+      {{/each}}
+      {{#each imageUploadErrors as |error|}}
+        {{error-box error=error showDismiss=true}}
+      {{/each}}
+
       {{#if isMissingRequiredFields}}
-        <p class="error-message">Please provide all required fields.</p>
+        {{error-box error="Please provide all required fields" showDismiss=true}}
       {{/if}}
+
       {{#if noLegalNotice}}
-         <p class="error-message">Please verify that you have permission to post this problem.</p>
+        {{error-box error="Please verify that you have permission to post this problem" showDismiss=true}}
       {{/if}}
     </form>
   </section>
@@ -89,12 +97,8 @@
     <button class="action_button" {{action 'validate'}}>
       Create Problem
     </button>
+    <button class="action_button cancel-button" type="submit" {{action 'cancelProblem'}}>Cancel</button>
   </section>
 
-  {{#each createProblemErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
-  {{#each imageUploadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
+
 

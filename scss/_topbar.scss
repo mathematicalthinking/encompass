@@ -2,26 +2,37 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 940px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 955px) {
   #al_header {
     #al_nav {
+              font-size: .8em;
       #menu-items {
         display: none;
       }
       #current-username {
-        margin: 0 20px;
+        margin: 0 8px;
       }
       #user-image {
-        margin: 0 30px 0 10px;
+        margin: 0 20px 0 5px;
       }
     }
-      #sidemenu {
-        display: none;
-      }
+    #sidemenu {
+      display: none;
+    }
+    #encompass-logo {
+      width: 75px;
+      height: 80px;
+      display: block;
+      float: left;
+      position: relative;
+      top: -15px;
+      text-indent: -99999px;
+      background: url(images/logo-encompass.gif) 0 0 no-repeat;
+    }
   }
 }
 
-@media screen and (min-width: 941px) and (max-width: 1500px) {
+@media screen and (min-width: 955px) and (max-width: 1500px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
@@ -57,7 +68,7 @@
     display: block;
     float: left;
     position: relative;
-    top: -8px;
+    top: -15px;
     text-indent: -99999px;
     background: url(images/logo-encompass.gif) 0 0 no-repeat;
   }
@@ -74,7 +85,7 @@
     }
     #al_nav {
       li {
-        padding: 0 15px;
+        padding: 0 12px;
       }
     }
     #sidemenu {
@@ -96,7 +107,7 @@
   display: block;
   float: left;
   position: relative;
-  top: -8px;
+  top: -15px;
   text-indent: -99999px;
   background: url(images/logo-encompass.gif) 0 0 no-repeat;
 }
@@ -105,7 +116,7 @@
 #topbar-unauth {
   font-weight: $bolder-font-weight;
   float: right;
-  margin-top: 20px;
+  margin-top: 12.5px;
   li {
     line-height: 50px;
     height: 40px;
@@ -134,9 +145,9 @@
   left: 0;
   width: 100vw;
   z-index: 10;
-  margin-bottom: 90px;
+  margin-bottom: 0px;
   font-size: 1em; // margin-bottom: 1px;
-  height: 90px;
+  height: 75px;
   box-shadow: $box-shadow;
   .small {
     height: 20px;
@@ -181,28 +192,26 @@
 }
 
 #al_nav {
-  height: 100px;
+  height: 75px;
   #main-nav {
     float: right;
     margin-top: 20px;
   }
   li {
-    line-height: 50px;
-    height: 40px;
+    line-height: 40px;
+    height: 60px;
     display: inline-block;
     vertical-align: middle;
     text-align: center;
+    width: max-content;
       .active {
         background-color: $accent-yellow;
         padding: 10px 10px;
+        line-height: 20px;
         border-radius: 3px;
         color: $primary-font-color;
         .caret-down {
           margin-right: 7px;
-        }
-        &:hover {
-          color: $primary-font-color;
-          font-weight: $bolder-font-weight;
         }
       }
   }
@@ -224,6 +233,9 @@
   cursor: pointer;
 }
 
+.hide-menu {
+  display: none;
+}
 
 #al_header .control {
   display: none
@@ -280,6 +292,7 @@ nav.actions>ul {
 }
 
 #logout-btn {
+  margin-top: -5px;
   a {
     color: white;
     &:hover {
@@ -289,18 +302,22 @@ nav.actions>ul {
 }
 
 .dropdown {
-  position: right;
+  position: relative;
+  height: 100%;
+  margin: 0;
   overflow: visible;
+  width: max-content;
 }
 
 
 .dropdown-content {
   display: none;
   position: absolute;
-  margin-top: -5px;
-  margin-right: 5px;
+  margin-top: 15px;
   background-color: white;
-  width: 100px;
+  line-height: 40px;
+  width: 100%;
+  // border: 1px solid $input-border;
   box-shadow: $box-shadow;
   z-index: 11;
 }
@@ -315,7 +332,7 @@ nav.actions>ul {
 }
 
 .dropdown-content a:hover {
-  background-color: $accent-yellow;
+  font-weight: $bold-font-weight;
 }
 
 .dropdown:hover .dropdown-content {
@@ -358,16 +375,25 @@ nav.actions>ul {
   }
 }
 
+.hidden {
+  display: none;
+}
+
 .sidemenu-style {
   display: block;
   position: absolute;
   right: 0;
-  top: 90px;
+  top: 75px;
   height: 100vh;
   min-width: 250px;
-  padding-top: 20px;
+  padding-top: 10px;
   background: white;
+  overflow: scroll;
   box-shadow: $box-shadow;
+  ul {
+    overflow: scroll;
+    margin-bottom: 40px;
+  }
   li {
     margin: 40px 20px 40px 30px;
   }

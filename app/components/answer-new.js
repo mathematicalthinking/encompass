@@ -121,6 +121,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
   },
+
   createAnswer: function() {
     const that = this;
     const answer = that.get('answer');
@@ -134,23 +135,32 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       return;
     }
 
+
     return this.handleImage().then((image) => {
+      let imageData = image.get('imageData');
+      let newImage = `<img src='${imageData}'>`;
       const records = students.map((student) => {
         return that.store.createRecord('answer', {
           createdBy: student,
           createDate: new Date(),
           answer: answer,
-          explanation: explanation,
+          explanation: explanation + newImage,
           assignment: that.assignment,
           isSubmitted: true,
           problem: that.problem,
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
-          additionalImage: image
         });
       });
       return Promise.all(records.map((rec) => {
+        let uploadedImages = this.get('uploadResults');
+        uploadedImages.forEach((image) => {
+          this.get('store').findRecord('image', image._id).then((image) => {
+            image.destroyRecord();
+          });
+        });
+
         this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
         return rec.save();
       }))

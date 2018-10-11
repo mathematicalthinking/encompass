@@ -33,7 +33,7 @@
     display: block;
     margin: 0 auto;
     width: 200px;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
   }
   .auth-form-input {
     margin: 0 auto;
@@ -81,6 +81,9 @@
     a {
       @include main-link;
     }
+  }
+  .error-box {
+    margin-bottom: 30px;
   }
 }
 

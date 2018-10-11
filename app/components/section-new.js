@@ -103,6 +103,7 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         for (let key of Object.keys(validation)) {
           let errorProp = `${key}FormErrors`;
           this.set(errorProp, validation[key]);
+          $('#create-class').addClass('animated shake slow');
         }
         return;
       }
@@ -139,6 +140,13 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         that.handleErrors(err, 'createRecordErrors', sectionData);
       });
   },
+
+    closeError: function(error) {
+      $('.error-box').addClass('fadeOutRight');
+      Ember.run.later(() => {
+        $('.error-box').remove();
+      }, 500);
+    },
 
     checkError: function() {
       // if (this.invalidTeacherUsername) {

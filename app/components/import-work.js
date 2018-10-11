@@ -134,10 +134,17 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.set('selectedFiles', null);
         return;
       }
-      this.set(detailName, null);
       if (detailName === 'uploadedFiles') {
+        console.log('clicked the x on uploaded files');
+        let uploadedFiles = this.get('uploadedFiles');
+        uploadedFiles.forEach((image) => {
+          this.get('store').findRecord('image', image._id).then((image) => {
+            image.destroyRecord();
+          });
+        });
         this.set('selectedFiles', null);
       }
+        this.set(detailName, null);
     },
 
     backToPrevStep: function(prevStep) {

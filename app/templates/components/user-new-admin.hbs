@@ -56,49 +56,49 @@
   </table>
 
   {{#if usernameExists}}
-    <p class="error-message">Username already exists</p>
+    {{error-box error="Username already exists" showDismiss=true}}
   {{/if}}
 
   {{#if emailExistsError}}
-    <p class="error-message">Email address has already been used</p>
+    {{error-box error="Email address has already been used" showDismiss=true}}
   {{/if}}
 
   {{#if incorrectEmail}}
-    <p class="error-message">Invalid email address</p>
+    {{error-box error="Invalid email address" showDismiss=true}}
   {{/if}}
 
   {{#if incorrectUsername}}
-    <p class="error-message">Invalid username</p>
+    {{error-box error="Invalid username" showDismiss=true}}
   {{/if}}
 
   {{#if invalidPassword}}
-    <p class="error-message">Password is too short</p>
+    {{error-box error="Password is too short" showDismiss=true}}
   {{/if}}
 
   {{#if noSpacesError}}
-  <p class="error-message">Passwords cannot contain spaces</p>
+    {{error-box error="Passwords cannot contain spaces" showDismiss=true}}
+  {{/if}}
+
+  {{#if missingAccountType}}
+    {{error-box error="Missing account type" showDismiss=true}}
   {{/if}}
 
   {{#if errorMessage}}
-    <p class="error-message">Missing required fields</p>
+    {{error-box error="Missing required fields" showDismiss=true}}
   {{/if}}
 
   {{#each createOrgErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    {{error-box error=error showDismiss=true}}
   {{/each}}
   {{#each createUserErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+    {{error-box error=error showDismiss=true}}
   {{/each}}
 
 
   <div class="button-row">
-    <button class='action_button new-user' id="new-user-btn" {{action 'newUser'}}>Create New User</button>
-    <button class='action_button new-user' {{action 'cancelNew'}}>Cancel</button>
+    <button class='action_button new-user' id="new-user-btn" {{action 'confirmOrg'}}>Create New User</button>
+    <button class='action_button new-user cancel-button' {{action 'cancelNew'}}>Cancel</button>
   </div>
-
-{{#if confirmNewOrg}}
-  {{modal-confirm actionToConfirm=confirmNewOrg onConfirm="newUser" actionName="create a new organization"}}
-{{/if}}
 
 </article>
 

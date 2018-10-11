@@ -65,14 +65,13 @@
 {{!-- submit button to add a new section --}}
 
 <section class="submit">
-  <button class="action_button" {{action 'createSection'}}>Create Class</button>
-  <button class="action_button" {{action 'cancel'}}>
+  <button class="action_button" id="create-class" {{action 'createSection'}}>Create Class</button>
+  <button class="action_button cancel-button" {{action 'cancel'}}>
       Cancel
     </button>
 
 </section>
 
-{{!-- verify if section successfully created --}}
 {{#each createRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
+  <p class="error-box animated fadeInLeft">{{error}} <button class="dismiss" {{action 'closeError'}}>x</button></p>
 {{/each}}

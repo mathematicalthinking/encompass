@@ -129,7 +129,7 @@ describe('Workspaces New', async function() {
                 const submitButton = await driver.findElement(By.css(css.newWorkspaceEnc.create));
                 await submitButton.click();
                 if (shouldFail) {
-                  await helpers.waitForSelector(driver, css.general.errorMessage);
+                  await helpers.waitForSelector(driver, css.general.newErrorMessage);
                 }
 
               }catch(err) {
