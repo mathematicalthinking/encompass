@@ -295,6 +295,27 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
         });
       },
 
+      deleteUser: function () {
+        let user = this.get('user');
+        let username = user.get('username');
+        this.get('alert').showModal('warning', `Are you sure want to delete ${username}?`, 'You can always restore this user later', 'Delete').then((result) => {
+          if (result.value) {
+            user.set('isTrashed', true);
+            user.save().then(() => {
+              this.get('alert').showToast('success', `${username} successfully deleted`, 'bottom-end', 4000, true, 'Undo')
+              .then((result) => {
+                if (result.value) {
+                  user.set('isTrashed', false);
+                  user.save().then(() => {
+                    this.get('alert').showToast('success', `${username} successfully restored`, 'bottom-end', 3000, false, null);
+                  });
+                }
+              });
+            });
+          }
+        });
+      },
+
       cancel: function () {
         this.set('isEditing', false);
         this.set('noOrgModal', false);
