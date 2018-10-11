@@ -1,0 +1,22 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.action_button {
+  background:$accent-yellow;
+  padding: 5px 10px;
+  display: inline-block;
+  zoom: 1;
+  border: 0;
+  border-radius: 3px
+}
+
+.delete-button {
+  background: $error-color;
+  color: white;
+}
+
+.cancel-button {
+  background: $cancel-color;
+  color: $primary-font-color;
+}
