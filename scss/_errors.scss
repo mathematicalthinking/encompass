@@ -20,17 +20,15 @@ p.warning-message {
 }
 
 .error-box {
-  background-color: #FFE0E0;
+  background-color: $error-background-color;
   padding: 10px 20px 10px 30px;
   color: $error-color;
-  // font-weight: #a94442;
   border: 1px solid transparent;
-  border-color: #ffcccc;
+  border-color: $error-border-color;
   border-radius: 3px;
   width: auto;
   position: relative;
   text-indent: 10px;
-  margin-left: 20px;
 }
 
 .error-box:before {
