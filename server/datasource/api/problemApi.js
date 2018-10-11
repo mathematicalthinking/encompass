@@ -89,7 +89,7 @@ const getProblems = async function(req, res, next) {
     const criteria = await access.get.problems(user, ids, filterBy);
 
     const [ results, itemCount ] = await Promise.all([
-      models.Problem.find(criteria).sort({title: 1}).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort({title: 1}).limit(req.query.limit).skip(req.skip).lean().exec(),
       models.Problem.count(criteria)
     ]);
 
