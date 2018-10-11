@@ -123,7 +123,7 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       minLength = 1;
     }
 
-    if (minLength === undefined || minLength === null || typeof limit !== 'number') {
+    if (limit === undefined || limit === null || typeof limit !== 'number') {
       limit = 5;
     }
 

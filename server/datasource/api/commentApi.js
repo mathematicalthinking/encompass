@@ -154,7 +154,7 @@ async function getComment(req, res, next) {
     return utils.sendError.InternalError(null, res);
   }
 
-  if (!comment) { // record not found in db
+  if (!comment || comment.isTrashed) { // record not found in db
     return utils.sendResponse(res, null);
   }
 

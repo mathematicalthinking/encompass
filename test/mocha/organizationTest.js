@@ -18,10 +18,10 @@ describe('Organization CRUD operations by account type', async function() {
   const accessibleOrgCount = 3;
 
   async function runTests(user) {
-    await describe(`Organization CRUD operations as ${user.testDescriptionTitle}` , function() {
+    await describe(`Organization CRUD operations as ${user.details.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password } = user;
+      const { username, password, accountType } = user.details;
 
       before(async function(){
         try {
@@ -54,7 +54,7 @@ describe('Organization CRUD operations by account type', async function() {
 
       describe('/POST valid organization', () => {
         let description;
-          if (user.accountType !== 'A') {
+          if (accountType !== 'A') {
             description = 'should return 403 error';
           } else {
             description = 'should post a new organization';
@@ -66,13 +66,13 @@ describe('Organization CRUD operations by account type', async function() {
           .post(baseUrl)
           .send({organization: {
             name: name,
-            createdBy: user._id
+            createdBy: user.details._id
           }})
           .end((err, res) => {
             if (err) {
               console.error(err);
             }
-            if (user.accountType !== 'A') {
+            if (accountType !== 'A') {
               expect(res).to.have.status(403);
               done();
             } else {

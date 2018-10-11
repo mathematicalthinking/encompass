@@ -46,7 +46,7 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
         let dueDate = start.format('MM/DD/YYYY');
         $('input#dueDate').val(dueDate);
       });
-      $('input[name="daterange"]').attr('placeholder', 'MM/DD/YYYY');
+      $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy');
     });
   },
 

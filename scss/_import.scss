@@ -39,6 +39,17 @@
 
   .import-select{
     margin-bottom: 10px;
+    a {
+      color: $accent-color
+    }
+    p {
+      padding: 5px;
+      margin-left: 10px;
+      line-height: 1.2em;
+    }
+    .twitter-typeahead {
+      margin: 10px;
+    }
 
     #my-select {
       select {

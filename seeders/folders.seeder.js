@@ -398,7 +398,13 @@ var data = [
     "lastModifiedDate" : "2018-10-06T01:44:45.142Z",
     "isTrashed" : false,
     "createDate" : "2018-10-06T01:44:45.142Z"
-  }
+  },
+  {
+    "_id" : "5bbdff5aecd6e597fd8dd0d7",
+    "isTrashed" : true,
+    "name": "trashed folder",
+    "workspace": "5bb814d19885323f6d894974"
+}
 ];
 
 var FoldersSeeder = Seeder.extend({

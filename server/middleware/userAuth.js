@@ -107,7 +107,7 @@ function fetchUser(options) {
           req.mf.auth.user = user.toObject();
           return (next());
         } else {
-          return utils.sendError.InvalidCredentialsError('No user with username' + req.user.username);
+          return utils.sendError.InvalidCredentialsError('No user with username' + req.user.username, res);
         }
       }
     });

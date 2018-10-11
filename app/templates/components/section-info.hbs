@@ -91,7 +91,7 @@
           {{#if isEditingTeachers}}
             <div class="update-teachers">
               <label>Add Teacher<i title="Start typing a teacher's username to see suggestions" class="fas fa-info-circle fa-sm"></i></label>
-                {{twitter-typeahead minLength=2 isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+                {{twitter-typeahead isEditing=isEditingTeachers sourceFunction=addTeacherTypeahead placeholder="username" selectedValue=teacherToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
 
               {{#each updateTeacherErrors as |error|}}
                 <p class="error-message">{{error}}</p>

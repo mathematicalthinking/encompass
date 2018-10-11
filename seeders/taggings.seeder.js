@@ -606,6 +606,11 @@ var data = [
     "lastModifiedDate" : null,
     "isTrashed" : false,
     "createDate" : "2018-10-08T18:09:33.525Z"
+},
+{
+  "_id" : "5bbdfdcdecd6e597fd8da57d",
+  "isTrashed" : true,
+  "createdBy": "5b9149552ecaf7c30dd4748e"
 }
 ];
 

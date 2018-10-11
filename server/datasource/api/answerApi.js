@@ -82,6 +82,9 @@ const getAnswer = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    if (!answer || answer.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
     const data = {'answer': answer};
     utils.sendResponse(res, data);
     next();

@@ -1,23 +1,32 @@
 const utils = require('./utils');
 module.exports.get = {};
 
-async function accessibleAssignments(user) {
+async function accessibleAssignmentsQuery(user, ids) {
   if (!user) {
     return;
   }
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+  const { accountType, actingRole } = user;
+
   let filter = {
     isTrashed: false
   };
+  // ids will either be an array of ids or a single id or null
+  if (ids) {
+    if (Array.isArray(ids)) {
+      filter._id = { $in: ids };
+    } else {
+      filter._id = ids;
+    }
+  }
 
+  // students can get any assignment that has been assigned to them
   if (accountType === 'S' || actingRole === 'student') {
     filter.students = user;
     return filter;
   }
-
+  // teachers can get any assignment they have created or any section where they
   if (accountType === 'T') {
-    const sections = await utils.getTeacherSections(user);
+    const sections = utils.getTeacherSections(user);
     filter.$or = [
       { createdBy: user },
       { section: { $in: sections } }
@@ -40,4 +49,31 @@ async function accessibleAssignments(user) {
   }
 }
 
-module.exports.get.assignments = accessibleAssignments;
+const canGetAssignment = async function(user, assignmentId) {
+  if (!user) {
+    return;
+  }
+
+  const { accountType } = user;
+
+  // admins currently can get all assignments
+  if (accountType === 'A') {
+    return true;
+  }
+
+  // use accessibleAssignments criteria to determine access for teachers/pdAdmins
+
+  let criteria = await accessibleAssignmentsQuery(user, assignmentId);
+  let accessibleIds = await utils.getModelIds('Assignment', criteria);
+
+  // map objectIds to strings to check for existence
+  accessibleIds = accessibleIds.map(id => id.toString());
+
+    if (accessibleIds.includes(assignmentId)) {
+      return true;
+    }
+    return false;
+};
+
+module.exports.get.assignments = accessibleAssignmentsQuery;
+module.exports.get.assignment = canGetAssignment;

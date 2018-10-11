@@ -69,6 +69,9 @@ const getImage = (req, res, next) => {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
+    if (!image || image.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
     const data = {'image': image };
     utils.sendResponse(res, data);
     next();

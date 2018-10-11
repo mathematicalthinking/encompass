@@ -61,16 +61,35 @@ const getAssignments = async function(req, res, next) {
   * @throws {RestError} Something? went wrong
 */
 
-const getAssignment = (req, res, next) => {
-  models.Assignment.findById(req.params.id)
-  .exec((err, assignment) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    const data = {'assignment': assignment};
-    utils.sendResponse(res, data);
-  });
+const getAssignment = async function(req, res, next) {
+  const user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+  }
+
+  let id = req.params.id;
+
+  let assignment = await models.Assignment.findById(id);
+
+  // record not found in db or is trashed
+  if (!assignment || assignment.isTrashed) {
+    return utils.sendResponse(res, null);
+  }
+
+  let canLoadAssignment = await access.get.assignment(user, id);
+
+
+  if (!canLoadAssignment) { // user does not have permission to access assignment
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  }
+
+  const data = { // user has permission; send back record
+    assignment
+  };
+
+  return utils.sendResponse(res, data);
+
 };
 
 /**

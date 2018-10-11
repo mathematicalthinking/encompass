@@ -1,6 +1,6 @@
     <div class="student-search">
      <h3>Add Existing User<i title="Start typing an existing username to see suggestions" class="fas fa-info-circle fa-sm"></i></h3>
-      {{twitter-typeahead minLength=2 selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+      {{twitter-typeahead selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
     </div>
 
     <div class="student-create">

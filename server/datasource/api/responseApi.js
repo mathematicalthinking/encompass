@@ -32,6 +32,9 @@ function getResponse(req, res, next) {
         logger.error(err);
         return utils.sendError.InternalError(err, res);
       }
+      if (!doc || doc.isTrashed) {
+        return utils.sendResponse(res, null);
+      }
 
       var data = {'response': doc};
       utils.sendResponse(res, data);

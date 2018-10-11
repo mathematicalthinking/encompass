@@ -9,7 +9,7 @@ var data = [{
   "students": ["5b368afdca1375a94fabde39"],
   "teachers": ["5b1e7bf9a5d2157ef4c911a6"],
   "assignments": [],
-  "organization": "5b4e4d5f808c7eebc9f9e82c",
+  "organization": "5b4a64a028e4b75919c28512",
   "isTrashed": false,
   "createdBy": "5b245760ac75842be3189525",
 },
@@ -54,6 +54,11 @@ var data = [{
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2018-09-06T15:37:07.827Z"
+},
+{
+  "_id" : "5bbdfaaaecd6e597fd8d3d42",
+  "isTrashed" : true,
+  "createdBy": "5b9149552ecaf7c30dd4748e"
 }
 ];
 

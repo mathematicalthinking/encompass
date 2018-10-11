@@ -31,6 +31,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
         $(this).val('');
       });
+      $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy - mm/dd/yyyy');
     });
   },
 

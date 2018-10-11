@@ -17,10 +17,11 @@ describe('Answer CRUD operations by account type', function() {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Answer CRUD operations as ${user.testDescriptionTitle}`, function() {
+    describe(`Answer CRUD operations as ${user.details.testDescriptionTitle}`, function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole, accessibleAnswerCount } = user;
+      const { username, password, accountType, actingRole } = user.details;
+      const { accessibleAnswerCount, accessibleAnswer, inaccessibleAnswer } = user.answers;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 

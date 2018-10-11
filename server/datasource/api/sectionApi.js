@@ -65,16 +65,41 @@ const getSections = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 
-const getSection = (req, res, next) => {
-  models.Section.findById(req.params.id)
-  .exec((err, section) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+const getSection = async function(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
     }
-    const data = {'section': section};
-    utils.sendResponse(res, data);
-  });
+
+    let id = req.params.id;
+
+    let section = await models.Section.findById(id);
+
+    // record not found in db
+    if (!section || section.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
+
+    let canLoadSection = await access.get.section(user, id);
+
+    // user does not have permission to access section
+    if (!canLoadSection) {
+      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+    }
+
+    // user has permission; send back record
+    const data = {
+      section
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getSection: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 };
 
 /**
