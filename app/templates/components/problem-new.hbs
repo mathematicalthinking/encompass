@@ -78,18 +78,25 @@
               <label class="radio-label">Everyone</label>
           </li>
           <li >
-            <label class="form-label" for="copyright">Copyright Notice:</label>
+            <label class="form-label" for="copyright">
+                <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.copyrightNotice}}> Copyright Notice</span>
+            </label>
             <span id="copyright-container">
               <span id="icon">&copy;</span>
               {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
             </span>
           </li>
           <li>
-            <label class="form-label" for="sharing">Sharing Authorization:</label>
+            <label class="form-label" for="sharing">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.sharingAuth}}> Sharing Authorization</span>
+            </label>
             {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
           </li>
           <li>
-            <label class="form-label" for="legal-notice">Legal Notice <span class="required-star">*</span></label>
+            <label class="form-label" for="legal-notice">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.legalNotice}}> Legal Notice</span>
+              <span class="required-star">*</span>
+              </label>
             {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
             <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
           </li>
