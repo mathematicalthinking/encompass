@@ -8,17 +8,25 @@
       <fieldset>
         <ol>
           <li>
-            <label class="form-label" for="title" id="problemName">Problem Name <span class="required-star">*</span></label>
+            <label class="form-label" for="title" id="problemName">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.name}}>Problem Name </span>
+              <span class="required-star">*</span>
+            </label>
             {{input id="title" required="true" type="text" value=title placeholder="enter problem name" action="resetErrors" on="key-down"}}
           </li>
           <li>
-            <label class="form-label" for="text">Problem Statement <span class="required-star">*</span></label>
+            <label class="form-label" for="text">
+            <span class="label-text simptip-position-right simptip-smooth" data-tooltip="Content of the problem to be completed">Problem Statement </span>
+              <span class="required-star">*</span></label>
             <div class="quill-container">
               <section id="editor"></section>
             </div>
           </li>
           <li>
-            <label class="form-label" for="categories">Problem Categories</label>
+            <label class="form-label" for="categories">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip="Problem Title">Problem Categories </span>
+              <span class="required-star">*</span>
+            </label>
             {{#if selectedCategories}}
               <ul class="problem-info">
               {{#each selectedCategories as |category|}}
