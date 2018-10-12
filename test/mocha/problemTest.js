@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: "off"*/
+
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');

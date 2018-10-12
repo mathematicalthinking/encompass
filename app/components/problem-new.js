@@ -11,7 +11,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   approvedProblem: false,
   noLegalNotice: null,
   showCategories: false,
-  selectedCategories: [],
+
+  init: function () {
+    this._super(...arguments);
+    this.set('selectedCategories', []);
+  },
 
   didInsertElement: function() {
     let formId = 'form#newproblemform';
