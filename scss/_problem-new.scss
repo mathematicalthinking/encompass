@@ -159,6 +159,17 @@ form#newproblemform {
   .error-box {
     margin: 20px 0;
   }
+}
+
+.submit {
+  .action_button {
+    font-size: .8em;
+    border-radius: 3px;
+    padding: 10px 15px;
+    margin-bottom: 80px;
+    font-weight: $bold-font-weight;
+  }
+}
 
   #copyright {
     text-indent: 15px;
@@ -174,15 +185,3 @@ form#newproblemform {
     left: 15px;
     top: 3px;
   }
-
-}
-
-.submit {
-  .action_button {
-    font-size: .8em;
-    border-radius: 3px;
-    padding: 10px 15px;
-    margin-bottom: 80px;
-    font-weight: $bold-font-weight;
-  }
-}
