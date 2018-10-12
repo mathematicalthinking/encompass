@@ -14,6 +14,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   init: function () {
     this._super(...arguments);
+    let tooltips = {
+        name: 'Problem Title',
+        statement: 'Content of the problem to be completed',
+        categories: 'Use category menu to select appropriate common core categories',
+      };
+    this.set('tooltips', tooltips);
     this.set('selectedCategories', []);
   },
 
