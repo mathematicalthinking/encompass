@@ -60,9 +60,12 @@
               {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
               <label class="radio-label">Everyone</label>
           </li>
-          <li>
+          <li >
             <label class="form-label" for="copyright">Copyright Notice:</label>
-            &copy;&nbsp;{{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+            <span id="copyright-container">
+              <span id="icon">&copy;</span>
+              {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+            </span>
           </li>
           <li>
             <label class="form-label" for="sharing">Sharing Authorization:</label>
