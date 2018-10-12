@@ -18,6 +18,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         name: 'Problem Title',
         statement: 'Content of the problem to be completed',
         categories: 'Use category menu to select appropriate common core categories',
+        keywords: 'Add keywords to help other people find this problem',
+        additionalInfo: 'Any additional information desired for the problem',
+        additionalImage: 'You can upload a JPG, PNG or PDF (only the first page is saved)',
+        privacySettings: 'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and public means every user can see your problem',
+        copyrightNotice: 'Add notice if problem contains copyrighted material',
+        sharingAuth: 'If you are posting copyrighted material please note your permission',
+        legalNotice: 'Please verify that the material you are posting is either your own or properly authorized to share',
       };
     this.set('tooltips', tooltips);
     this.set('selectedCategories', []);
