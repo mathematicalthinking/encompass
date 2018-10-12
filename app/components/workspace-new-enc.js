@@ -57,27 +57,29 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       return [currentUser];
     }
 
-    const users = this.get('userList').rejectBy('accountType', 'S');
+    let teachers = this.get('userList').rejectBy('accountType', 'S');
+    let authTeachers = teachers.filterBy('isAuthorized', true);
+    return authTeachers;
 
-    if (accountType === 'P') {
-      let yourUsers = this.get('userList');
-      let yourUserList = [];
+    // if (accountType === 'P') {
+    //   let yourUsers = this.get('userList');
+    //   let yourUserList = [];
+    //   return yourUsers.filterBy('isAuthorized');
+    //   // yourUsers.forEach((user) => {
+    //   //   let yourOrg = currentUser.get('organization').get('id');
+    //   //   let userType = user.get('accountType');
+    //   //   let userOrg = user.get('organization').get('id');
+    //   //   let isAuth = user.get('isAuthorized');
 
-      yourUsers.forEach((user) => {
-        let yourOrg = currentUser.get('organization').get('id');
-        let userType = user.get('accountType');
-        let userOrg = user.get('organization').get('id');
-        let isAuth = user.get('isAuthorized');
-
-        if (yourOrg === userOrg && userType === 'T' && isAuth) {
-          yourUserList.push(user);
-        }
-      });
-      return yourUserList;
-    }
-    if (accountType === 'A') {
-      return users.filterBy('isAuthorized', true);
-    }
+    //   //   if (yourOrg === userOrg && userType === 'T' && isAuth) {
+    //   //     yourUserList.push(user);
+    //   //   }
+    //   // });
+    //   return yourUserList;
+    // }
+    // if (accountType === 'A') {
+    //   return users.filterBy('isAuthorized', true);
+    // }
   },
 
   isDateRangeValid: function() {
