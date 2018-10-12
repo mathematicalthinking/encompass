@@ -254,3 +254,17 @@ nav#with-search-bar {
     }
   }
 }
+#problem-list-container {
+  ul#main-problem-list {
+    .problem-list-item {
+      display: flex;
+      li {
+        display: flex;
+        padding: 6px 0 6px 15px;
+        margin: 0 20px;
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
