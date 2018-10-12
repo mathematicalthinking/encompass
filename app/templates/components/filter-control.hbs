@@ -1,0 +1,20 @@
+
+  <div class= "control-box">
+    <button class="control-drop" {{action "toggleShowMenu"}}>Filter<i class="fas fa-caret-down"></i></button>
+    <ul class="filter-options {{if hideMenu "hidden"}}">
+      <li>
+        {{input type="checkbox" checked=mine}}
+          <label>Mine</label>
+      </li>
+      <li>
+        {{input type="checkbox" checked=public}}
+          <label>Public</label>
+      </li>
+      <li>
+        {{input type="checkbox" checked=organization}}
+          <label>Organization</label>
+      </li>
+
+  </ul>
+  </div>
+
