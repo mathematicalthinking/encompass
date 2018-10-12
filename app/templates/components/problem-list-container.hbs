@@ -1,0 +1,55 @@
+<section class="list-side">
+  <header class="list-header">
+    <h1>Problems</h1>
+    {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span><i class="fas fa-plus"></i>{{/link-to}}
+    {{!-- <i class="fa fa-search main-search" aria-hidden="true"></i> --}}
+
+
+ <div class="search-bar">
+      {{input type="text" placeholder="Search problems"}}
+      <span class="icons">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <i class="fa fa-filter" aria-hidden="true"></i>
+      </span>
+          {{filter-control
+            mine=filter.Mine
+            public=filter.Public
+            organization=filter.Organization
+          }}
+
+    </div>
+    <div class="clear"></div>
+  </header>
+
+<section>
+
+  <nav class="list-box" id="with-search-bar">
+    {{pagination-control
+      filter=filter
+      details=problemsMetadata
+      store=store
+      startPageChange=(action "startPageChange")
+      endPageChange=(action "endPageChange")
+      handleQueryResults=(action "updatePageResults")
+      model="problem"
+    }}
+
+    {{problem-list problems=displayProblems metadata=problemsMetadata}}
+
+    {{pagination-control
+      filter=filter
+      details=problemsMetadata
+      store=store
+      startPageChange=(action "startPageChange")
+      endPageChange=(action "endPageChange")
+      handleQueryResults=(action "updatePageResults")
+      model="problem"
+    }}
+  </nav>
+</section>
+
+
+</section>
+<div class="list-outlet">
+  {{outlet}}
+</div>
