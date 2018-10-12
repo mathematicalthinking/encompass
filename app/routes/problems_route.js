@@ -8,28 +8,12 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
     }
   },
   model: function () {
-    let userId = this.modelFor('application').id;
+    const store = this.get('store');
     return Ember.RSVP.hash({
-      openProblems: this.get('store').query('problem', {
-        filterBy: {
-          privacySetting: 'E',
-          createdBy: { $ne: userId }
-        }
-      }),
-      ownProblems: this.get('store').query('problem', {
-        filterBy: {
-         createdBy: userId
-        }
-      }),
-      organizationProblems: this.get('store').query('problem', {
-        filterBy: {
-          privacySetting: 'O',
-          createdBy: { $ne: userId }
-        }
-      }),
-      organizations: this.get('store').findAll('organization'),
-      sections: this.get('store').findAll('section'),
-      problems: this.get('store').findAll('problem')
+      organizations: store.findAll('organization'),
+      sections: store.findAll('section'),
+      problems: store.query('problem', {}),
+      allProblems: store.findAll('problem')
     });
   },
 

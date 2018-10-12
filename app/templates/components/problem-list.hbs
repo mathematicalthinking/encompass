@@ -1,96 +1,11 @@
-<section class="list-side">
-  <header class="list-header">
-    <h1>Problems</h1>
-    {{#if currentUser.isStudent}}
+<h2>Problems</h2>
+  <ul id="main-problem-list">
+    {{#each problems as |problem|}}
+      {{problem-list-item problem=problem}}
     {{else}}
-      {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span><i class="fas fa-plus"></i>{{/link-to}}
-      {{!-- <i class="fa fa-search main-search" aria-hidden="true"></i>
-      <div class="search-bar">
-        {{input type="text" placeholder="Search problems"}}
-        <span class="icons">
-          <i class="fa fa-search" aria-hidden="true"></i>
-          <i class="fa fa-filter" aria-hidden="true"></i>
-        </span>
-      </div> --}}
-    {{/if}}
-    <div class="clear"></div>
-  </header>
-
-
-
-  <section>
-    <nav class="list-box" id="with-search-bar">
-      <h2 class="your-problems-header">{{currentUser.username}}'s Problems</h2>
-       {{pagination-control details=ownProblemsMetadata store=store filter=privateFilter startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") handleQueryResults=(action "updatePageResults") currentPage=yourPage model="problem"}}
-      <ul class="your-problems">
-      {{#if yourProblems}}
-        {{#each yourProblems as |problem|}}
-          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-        {{/each}}
-      {{else}}
-        <li>You have no problems</li>
-      {{/if}}
-      </ul>
-
-      {{#if currentUser.organization}}
-      <h2>{{currentUser.organization.name}}'s Problems</h2>
-      <ul class="public">
-      {{#if orgProblems}}
-        {{pagination-control startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") details=orgProblemsMetadata store=store filter=orgFilter handleQueryResults=(action "updateOrgPageResults") model="problem"}}
-        {{#each orgProblems as |problem|}}
-          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-        {{/each}}
-      {{else}}
-        <li>Your organization does not have any problems</li>
-      {{/if}}
-      </ul>
-      {{/if}}
-
-      <h2>Public Problems</h2>
-      <div class="search-bar">
-         {{input type=text value=publicSearchText placeholder="Search by title..."}}
-      <button {{action "searchPublic"}}><i class="fas fa-search"></i></button>
-      {{#if publicSearchResults}}
-      <button {{action "clearPublicResults"}}>Clear results</button>
-      <p>{{publicSearchMetadata.total}} results for '{{searchQuery}}'</p>
-
-      {{/if}}
-      </div>
-
-      {{#if publicSearchResults}}
-        {{pagination-control startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
-      {{else}}
-      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") handleQueryResults=(action "updatePublicPageResults") model="problem"}}
-      {{/if}}
-
-
-      <ul class="public">
-        {{#if publicSearchResults}}
-          {{#each publicSearchResults as |problem|}}
-            <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-          {{/each}}
-        {{else}}
-      {{#if publicProblems}}
-        {{#each publicProblems as |problem|}}
-          <li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}</li>
-        {{/each}}
-      {{else}}
-        <li>There are no public problems</li>
-      {{/if}}
-      {{/if}}
-      </ul>
-      {{#if publicSearchResults}}
-        {{pagination-control startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") details=publicSearchMetadata store=store filter=publicFilter queryResults=publicSearchResults model="problem" searchText=searchQuery}}
-      {{else}}
-      {{pagination-control details=publicProblemsMetadata store=store filter=publicFilter startPageChange=(action "startPageChange") endPageChange=(action "endPageChange") handleQueryResults=(action "updatePublicPageResults") model="problem"}}
-      {{/if}}
-    </nav>
-  </section>
-</section>
-
-<div class="list-outlet">
-  {{outlet}}
-</div>
+      <li>Sorry, no matching results found</li>
+    {{/each}}
+  </ul>
 
 
 
