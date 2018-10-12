@@ -31,11 +31,8 @@
       <ul class="listing waiting-auth">
         {{#if unauthUsers}}
           {{#each unauthUsers as |user|}}
-          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+          <li class="simptip-position-right simptip-smooth {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-              <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
           </li>
           {{/each}}
         {{else}}
