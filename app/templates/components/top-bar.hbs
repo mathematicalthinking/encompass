@@ -11,9 +11,9 @@
         <ul id="main-nav">
           <span id="menu-items">
           <li id="home-btn">{{#link-to 'index' classNames='menu home'}}<i class="fas fa-home"></i>{{/link-to}}</li>
-          {{#if notStudent}}
+          {{!-- {{#if notStudent}}
             <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
-          {{/if}}
+          {{/if}} --}}
           {{!-- {{#if isStudent}} --}}
             <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}</li>
           {{!-- {{/if}} --}}
@@ -50,6 +50,9 @@
               {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
+                {{#if notStudent}}
+                  {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
+                {{/if}}
               </div>
             </div>
           </li>
