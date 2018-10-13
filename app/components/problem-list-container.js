@@ -1,11 +1,9 @@
 Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'problem-list-container',
-  filterBy: {
-
-  },
-  sortBy: {
-
-  },
+  searchOptions: ['title', 'text', 'category'],
+  searchCriterion: 'title',
+  sortOptions: ['A-Z', 'Z-A', 'Newest', 'Oldest'],
+  sortCriterion: ['A-Z'],
 
   init: function() {
     this.configureFilter();
@@ -32,20 +30,29 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   configureFilter: function() {
     let filter = {
-
-        mine: true,
-        public: true,
-        organization: true
-
+      mine: false,
+      public: false,
+      organization: false
     };
+
     let isAdmin = this.get('currentUser.isAdmin');
     if (isAdmin) {
-      filter.PoWs = false;
-      filter.private = false;
-      filter.Creator = null;
+      filter.pows =false;
+      filter.private =false;
+      filter.creator ='';
     }
     this.set('filter', filter);
   },
+
+  observeFilter: function() {
+    console.log('filter changed', this.get('filter'));
+    this.getProblems();
+  }.observes('filter.{mine,public,organization}'),
+
+  observeSort: function() {
+    console.log('sort changed');
+    this.getProblems();
+  }.observes('sortCriterion'),
 
   displayProblems: function() {
     let problems = this.get('problems');
@@ -53,6 +60,25 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       return problems.rejectBy('isTrashed');
     }
   }.property('problems.@each.isTrashed'),
+
+  getProblems: function() {
+    let filter = this.get('filter');
+    let searchText = this.get('searchText');
+    let searchCriterion;
+    if (searchText) {
+      searchCriterion = this.get('searchCriterion');
+      filter[searchCriterion] = searchText;
+    }
+    let sort = this.get('sortCriterion');
+
+    this.store.query('problem', {
+      filter,
+      sort
+    }).then((results) => {
+      console.log('results', results);
+      this.set('problems', results);
+    }).catch(console.log);
+  },
 
   // observeNewProblem: function() {
   //   if (this.get('changingPage')) {
@@ -128,6 +154,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     },
     endPageChange() {
       this.set('changingPage', false);
+    },
+    searchProblems() {
+      this.getProblems();
     }
   },
 });

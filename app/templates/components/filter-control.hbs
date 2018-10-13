@@ -1,20 +1,38 @@
 
   <div class= "control-box">
-    <button class="control-drop" {{action "toggleShowMenu"}}>Filter<i class="fas fa-caret-down"></i></button>
-    <ul class="filter-options {{if hideMenu "hidden"}}">
+    {{!-- <button class="control-drop" {{action "toggleShowMenu"}}>Filter<i class="fas fa-caret-down"></i></button> --}}
+    <h5>Filter</h5>
+    <ul class="filter-options">
       <li>
-        {{input type="checkbox" checked=mine}}
-          <label>Mine</label>
+        <label for="mine">Mine</label>
+        {{input id="mine" type="checkbox" checked=filter.mine action="updateFilter"}}
+
       </li>
       <li>
-        {{input type="checkbox" checked=public}}
-          <label>Public</label>
+        <label for="public">Public</label>
+        {{input id="public" checked=filter.public type="checkbox" }}
+
       </li>
       <li>
-        {{input type="checkbox" checked=organization}}
-          <label>Organization</label>
+        <label for="organization">Org</label>
+        {{input id="organization" type="checkbox" checked=filter.organization}}
+
       </li>
 
   </ul>
+  {{!-- <div class="filter-row">
+    <div class="filter-input">
+      <label>Mine</label>
+      {{input type="checkbox" checked=mine}}
+    </div>
+    <div class="filter-input">
+      <label>Public</label>
+      {{input type="checkbox" checked=public}}
+    </div>
+    <div class="filter-input">
+      <label>Org</label>
+      {{input type="checkbox" checked=organization}}
+    </div> --}}
   </div>
+
 

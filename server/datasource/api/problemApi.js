@@ -1,3 +1,4 @@
+/* eslint complexity: 0 */
 /**
   * # Problem API
   * @description This is the API for problem based requests
@@ -60,21 +61,31 @@ module.exports.put = {};
 // ids
 // filterBy
 // sortBy
+
 const getProblems = async function(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
-    let { ids, filterBy, sortBy, page, } = req.query;
+    let { ids, filter, sort, page, } = req.query;
 
-    if (filterBy) {
-      let {title, text } = filterBy;
+    if (filter) {
+      // prune filter to remove any false, or null values
+      for (let key of Object.keys(filter)) {
+        let val = filter[key];
+        console.log(val, typeof val);
+        if (val === 'false' || val === '') {
+          delete filter[key];
+        }
+      }
+
+      let {title, text, category, mine, public, organization, private } = filter;
       if (title) {
         title = title.replace(/\s+/g, "");
         let regex = new RegExp(title.split('').join('\\s*'), 'i');
 
-        filterBy.title = regex;
+        filter.title = regex;
       }
       // currently no front end functionality for searching by text
       // would need to optimize search by ignoring common words
@@ -82,29 +93,61 @@ const getProblems = async function(req, res, next) {
         text = text.replace(/\s+/g, "");
         let regex = new RegExp(text.split('').join('\\s*'), 'i');
 
-        filterBy.text = regex;
+        filter.text = regex;
+      }
+
+      if  (public || organization || private) {
+        filter.privacySetting = [];
+        if (public) {
+          filter.privacySetting.push('E');
+          delete filter.public;
+        }
+        if (organization) {
+          filter.privacySetting.push('O');
+          delete filter.organization;
+        }
+        if (private) {
+          filter.privacySetting.push('M');
+          delete filter.private;
+        }
+      }
+
+      if (mine) {
+        filter.createdBy = user._id;
+        delete filter.mine;
+      }
+    }
+    let sortParam;
+    if (sort) {
+      if (sort === 'A-Z') {
+        sortParam = { title: 1 };
+      } else if (sort === 'Z-A') {
+        sortParam = {title: -1 };
+      } else if (sort === 'Newest') {
+        sortParam = { createDate: 1};
+      } else if (sort === 'Oldest') {
+        sortParam = {createDate: -1};
+      } else {
+        sortParam = {};
       }
     }
 
-    const criteria = await access.get.problems(user, ids, filterBy);
+    const criteria = await access.get.problems(user, ids, filter);
 
-    const [ results, itemCount ] = await Promise.all([
-      models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort({title: 1}).limit(req.query.limit).skip(req.skip).lean().exec(),
-      models.Problem.count(criteria)
-    ]);
-
-
-    // no front end functionality for sending sort query params but we should add that
-    if (sortBy) {
-      // handle sort
-      // default sorting?
+    let results, itemCount;
+    if (sort === 'Z-A' || sort === 'A-Z') {
+       [ results, itemCount ] = await Promise.all([
+        models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.count(criteria)
+      ]);
+    } else {
+      [ results, itemCount ] = await Promise.all([
+        models.Problem.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.count(criteria)
+      ]);
     }
-    // let sorted;
-    // if (!sortBy) {
-    //   sorted = results.sort((a, b) => {
-    //     return b.createDate - a.createDate;
-    //   });
-    // }
+
+
     const pageCount = Math.ceil(itemCount / req.query.limit);
 
     let currentPage = page;

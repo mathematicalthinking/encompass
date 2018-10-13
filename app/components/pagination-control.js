@@ -13,9 +13,13 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
     this.get('startPageChange')();
     let queryParams = {};
 
-    let filterBy = this.get('filter');
-    if (!Ember.isEmpty(filterBy)) {
-      queryParams.filterBy = filterBy;
+    let filter = this.get('filter');
+    let sort = this.get('sort');
+    if (!Ember.isEmpty(filter)) {
+      queryParams.filter = filter;
+    }
+    if (sort) {
+      queryParams.sort = sort;
     }
     if (page) {
       queryParams.page = page;
@@ -52,7 +56,7 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
        return;
      }
      // otherwise user clicked left (-1) or right arrow (1)
-     if (!direction) {
+     if (direction === undefined || direction === null) {
        return;
      }
 

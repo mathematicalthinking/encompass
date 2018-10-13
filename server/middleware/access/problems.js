@@ -16,6 +16,8 @@ const accessibleProblemsQuery = async function(user, ids, filterBy) {
     if (!user) {
       return [];
     }
+
+    console.log('filterBy apq', filterBy);
     const accountType = user.accountType;
     const actingRole = user.actingRole;
 
@@ -23,8 +25,14 @@ const accessibleProblemsQuery = async function(user, ids, filterBy) {
     isTrashed: false
   };
   if (filterBy) {
+
     for (let key of Object.keys(filterBy)) {
-      filter[key] = filterBy[key];
+      if (key === 'privacySetting') {
+        filter[key] = {$in: filterBy[key]};
+      } else {
+        filter[key] = filterBy[key];
+      }
+
     }
   }
 

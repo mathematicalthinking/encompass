@@ -5,48 +5,62 @@
     {{!-- <i class="fa fa-search main-search" aria-hidden="true"></i> --}}
 
 
- <div class="search-bar">
-      {{input type="text" placeholder="Search problems"}}
+    <div class="search-bar">
+      {{input type="text" value=searchText placeholder="Search problems"}}
       <span class="icons">
-        <i class="fa fa-search" aria-hidden="true"></i>
-        <i class="fa fa-filter" aria-hidden="true"></i>
+        <i class="fa fa-search" aria-hidden="true" {{action "searchProblems"}}></i>
+        {{!-- <i class="fa fa-filter" aria-hidden="true"></i> --}}
+        <div class="search-by">
+          <span>By</span>
+          {{my-select content=searchOptions cannotBeNull=true selectedValue=searchCriterion action=(action (mut
+          searchCriterion))}}
+        </div>
       </span>
-          {{filter-control
-            mine=filter.Mine
-            public=filter.Public
-            organization=filter.Organization
-          }}
+
+      <div class="filter-search">
+        {{filter-control
+        filter=filter
+        }}
+        <div class="sort-by">
+          <span>Sort By</span>
+          {{my-select content=sortOptions cannotBeNull=true selectedValue=sortCriterion action=(action (mut
+          sortCriterion))}}
+        </div>
+      </div>
+
 
     </div>
     <div class="clear"></div>
   </header>
 
-<section>
+  <section>
 
-  <nav class="list-box" id="with-search-bar">
-    {{pagination-control
+    <nav class="list-box" id="with-search-bar">
+      {{pagination-control
       filter=filter
+      sort=sortCriterion
       details=problemsMetadata
       store=store
       startPageChange=(action "startPageChange")
       endPageChange=(action "endPageChange")
       handleQueryResults=(action "updatePageResults")
       model="problem"
-    }}
+      }}
+      {{data-fetcher filter=filter sort=sortCriterion searchText= searchText searchCriterion=searchCriterion results=displayProblems triggerFetch=initiateSearch pagination=problemsMetadata}}
+      {{problem-list problems=displayProblems metadata=problemsMetadata}}
 
-    {{problem-list problems=displayProblems metadata=problemsMetadata}}
-
-    {{pagination-control
+      {{pagination-control
       filter=filter
+      sort=sortCriterion
       details=problemsMetadata
       store=store
       startPageChange=(action "startPageChange")
       endPageChange=(action "endPageChange")
       handleQueryResults=(action "updatePageResults")
       model="problem"
-    }}
-  </nav>
-</section>
+      }}
+    </nav>
+  </section>
 
 
 </section>
