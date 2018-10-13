@@ -3,41 +3,15 @@
 @import "responsive-font-size";
 
 #filter-control {
-  margin: 10px;
-    div.control-box {
-      border-radius: 10px;
-      border: 1px solid;
-      width: 25%;
-
-
-      .control-drop {
+  width:65%;
+  margin-left: 20px;
+  div.control-box {
+    width:100%;
+  ul.filter-options {
         display: flex;
         align-items: center;
-        text-align: left;
-        font-size: 1em;
-        border-radius: 10px;
-        width:90%;
-        margin: 5px 3px;
-        i {
-          float: right;
-        }
-      }
+        flex-wrap: wrap;
 
-      ul.filter-options {
-        width: 100%;
-        &.hidden {
-          display: none;
-        }
-        line-height: 10px;
-        li {
-          display: flex;
-          align-items: center;
-          input[type=checkbox] {
-            height: 10px;
-            width: 20%;
-            min-width:20px;
-          }
-        }
       }
 
 

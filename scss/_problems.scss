@@ -266,5 +266,16 @@ nav#with-search-bar {
       }
     }
   }
+  .search-by{
+    width:10%;
+    line-height: normal;
+    display:inline-block;
+  }
+
+  .filter-search {
+    display:flex;
+    align-items: center;
+    line-height: normal;
+  }
 }
 
