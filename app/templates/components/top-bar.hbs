@@ -166,4 +166,11 @@
   $('body,html').click(function (e) {
     $('#hide-menu').removeClass('sidemenu-style');
   });
+
+  $('#hide-menu>li>a').ready(() => {
+    $('#hide-menu').click(function (e) {
+      $('#hide-menu').removeClass('sidemenu-style');
+    });
+  })
+
 </script>
