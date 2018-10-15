@@ -1,4 +1,6 @@
-<li>{{#link-to 'problem' problem classNames='problem'}}{{problem.title}}{{/link-to}}
-  <span>{{problem.privacySetting}}</span>
+<li>{{#link-to 'problem' problem classNames="problem"}}{{problem.title}}{{/link-to}}
+  {{#if isPows}}
+    <span class="pows">PoWs</span>
+  {{/if}}
 </li>
 
