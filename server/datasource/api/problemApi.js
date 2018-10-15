@@ -116,6 +116,7 @@ const getProblems = async function(req, res, next) {
     if (criterion) {
       if (criterion === 'title' || criterion === 'text') {
         query = query.replace(/\s+/g, "");
+        console.log('query', query);
         let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
         searchFilter = {[criterion]: regex};
@@ -139,8 +140,9 @@ const getProblems = async function(req, res, next) {
     }
 
     const criteria = await access.get.problems(user, ids, filter, searchFilter);
-    console.log('crit', JSON.stringify(criteria));
+    console.log('crit', criteria);
     let results, itemCount;
+
     if (doCollate) {
        [ results, itemCount ] = await Promise.all([
         models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
@@ -152,7 +154,6 @@ const getProblems = async function(req, res, next) {
         models.Problem.count(criteria)
       ]);
     }
-
 
     const pageCount = Math.ceil(itemCount / req.query.limit);
 

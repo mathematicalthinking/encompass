@@ -1,10 +1,12 @@
-<h2>Problems</h2>
+
   <ul id="main-problem-list">
-    {{#each problems as |problem|}}
-      {{problem-list-item problem=problem}}
+    {{#if isSearching}}
+      <p class="loading-message">Searching problems...</p>
     {{else}}
-      <li>Sorry, no matching results found</li>
-    {{/each}}
+      {{#each problems as |problem|}}
+        {{problem-list-item problem=problem}}
+      {{/each}}
+    {{/if}}
   </ul>
 
 

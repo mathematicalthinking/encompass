@@ -1,6 +1,6 @@
-Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
-  searchOptions: ['title', 'text', 'category'],
+  searchOptions: ['title', 'text'],
   searchCriterion: 'title',
   sortOptions: ['A-Z', 'Z-A', 'Newest', 'Oldest'],
   sortCriterion: ['A-Z'],
@@ -11,7 +11,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   didReceiveAttrs: function() {
-    console.log('did receive attrs problem-list-container');
     let attributes = ['problems', 'sections', 'organizations'];
 
     for (let attr of attributes) {
@@ -44,13 +43,15 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     this.set('filter', filter);
   },
 
-  observeFilter: function() {
-    console.log('filter changed', this.get('filter'));
-    this.getProblems();
-  }.observes('filter.{mine,public,organization}'),
+  doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
 
+  // fetch problems whenever a filter box is checked or unchecked
+  observeFilter: function() {
+    this.getProblems();
+  }.observes('filter.{mine,public,organization,private,pows}'),
+
+  // fetch problems whenever different sort option is selected
   observeSort: function() {
-    console.log('sort changed');
     this.getProblems();
   }.observes('sortCriterion'),
 
@@ -61,102 +62,77 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
   }.property('problems.@each.isTrashed'),
 
-  getProblems: function() {
-    let filter = this.get('filter');
-    let searchText = this.get('searchText');
-    let searchCriterion;
-    if (searchText) {
-      searchCriterion = this.get('searchCriterion');
-      filter[searchCriterion] = searchText;
-    }
-    let sort = this.get('sortCriterion');
+  getProblems: function(page) {
+    let queryParams = {};
 
-    this.store.query('problem', {
-      filter,
-      sort
-    }).then((results) => {
-      console.log('results', results);
+    // always use filter
+    let filter = this.get('filter');
+    queryParams.filter = filter;
+
+    // page is only passed in when fetch is triggered by page arrow or go to page input
+    if (page) {
+      queryParams.page = page;
+    }
+
+    // always use sort
+    let sortBy= this.get('sortCriterion');
+    queryParams.sortBy = sortBy;
+
+    let searchBy = {};
+
+    // only use search if a new search has been initiated, or currently displaying search
+    // results which are being filter
+    if (this.get('doUseSearchQuery')) {
+      let searchQuery = this.get('searchQuery');
+
+      if (searchQuery) {
+        searchBy.query = searchQuery;
+        searchBy.criterion = this.get('searchCriterion');
+        queryParams.searchBy = searchBy;
+      }
+    }
+
+    this.store.query('problem',
+      queryParams
+    ).then((results) => {
+      this.removeMessages('problemLoadErrors');
       this.set('problems', results);
-    }).catch(console.log);
+      this.set('problemsMetadata', results.get('meta'));
+
+      let isSearching = this.get('isSearchingProblems');
+      if (isSearching) {
+        this.set('isDisplayingSearchResults', true);
+        this.set('isSearchingProblems', false);
+      }
+
+      if (this.get('isChangingPage')) {
+        this.set('isChangingPage', false);
+      }
+    }).catch((err) => {
+      this.handleErrors(err, 'problemLoadErrors');
+    });
   },
 
-  // observeNewProblem: function() {
-  //   if (this.get('changingPage')) {
-  //     return;
-  //   }
-  //   if (this.get('isSearching')) {
-  //     return;
-  //   }
-  //   // all problems in store
-  //   let problems = this.allProblems;
-  //   // all valid problems
-  //   let validProblems = problems.filter((p) => {
-  //     return p.get('isValid');
-  //   });
-
-  //   // current problems being displayed
-  //   // converting to array because cant use addOBject on adapter populated array
-  //   let listProblems = this.get('problems').toArray();
-
-  //   let sortedProblems = validProblems.sortBy('createDate').reverse();
-  //   let mostRecent = sortedProblems.objectAt(0);
-  //   listProblems.addObject(mostRecent);
-  //   this.set('listProblems', listProblems);
-  // }.observes('problems.[]'),
-
   actions: {
-    searchPublic: function() {
-      this.set('isSearching', true);
-      let searchText = this.get('publicSearchText');
-      if (!searchText) {
-        return;
-      }
-      this.set('searchQuery', searchText);
-      let filter = this.get('publicFilter');
-      if (filter) {
-        filter.title = searchText;
-      } else {
-        filter = {
-          title: searchText
-        };
-      }
-
-      this.store.query('problem', {
-       filterBy: filter
-      }).then((results) => {
-        this.set('publicSearchResults', results);
-        this.set('publicSearchMetadata', results.get('meta'));
-      });
-    },
-    clearPublicResults: function() {
-      this.set('isSearching', false);
-      this.set('publicSearchText', null);
+    clearSearchResults: function() {
       this.set('searchQuery', null);
-      this.set('publicSearchResults', null);
-
-      let publicFilter = this.get('publicFilter');
-      if (publicFilter) {
-        delete publicFilter.title;
-      }
-      this.store.query('problem', {}).then((results) => {
-        this.set('publicList', results);
-        this.set('metadata', results.get('meta'));
-      }).catch((err) => {
-        this.handleErrors(err, 'dataLoadErrors');
-      });
+      this.set('searchInputValue', null);
+      this.set('isDisplayingSearchResults', false);
+      this.getProblems();
     },
     updatePageResults(results) {
       this.set('problems', results);
     },
 
-    startPageChange() {
-      this.set('changingPage', true);
-    },
-    endPageChange() {
-      this.set('changingPage', false);
-    },
-    searchProblems() {
+    searchProblems(val, criterion) {
+      this.set('searchQuery', val);
+      this.set('searchCriterion', criterion);
+      this.set('isSearchingProblems', true);
       this.getProblems();
+    },
+    initiatePageChange: function(page) {
+      this.set('isChangingPage', true);
+      this.getProblems(page);
     }
   },
 });

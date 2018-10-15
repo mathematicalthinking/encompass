@@ -1,38 +1,31 @@
+<div class= "control-box">
+  <h5>Filter</h5>
+  <ul class="filter-options">
+    <li>
+      <label for="mine">Mine</label>
+      {{input id="mine" type="checkbox" checked=filter.mine }}
 
-  <div class= "control-box">
-    {{!-- <button class="control-drop" {{action "toggleShowMenu"}}>Filter<i class="fas fa-caret-down"></i></button> --}}
-    <h5>Filter</h5>
-    <ul class="filter-options">
+    </li>
+    <li>
+      <label for="public">Public</label>
+      {{input id="public" checked=filter.public type="checkbox" }}
+
+    </li>
+    <li>
+      <label for="organization">Org</label>
+      {{input id="organization" type="checkbox" checked=filter.organization}}
+    </li>
+    {{#if currentUser.isAdmin}}
       <li>
-        <label for="mine">Mine</label>
-        {{input id="mine" type="checkbox" checked=filter.mine action="updateFilter"}}
-
+        <label for="private">Private</label>
+        {{input id="private" type="checkbox" checked=filter.private}}
       </li>
       <li>
-        <label for="public">Public</label>
-        {{input id="public" checked=filter.public type="checkbox" }}
-
+        <label for="pows">PoWs</label>
+        {{input id="pows" type="checkbox" checked=filter.pows}}
       </li>
-      <li>
-        <label for="organization">Org</label>
-        {{input id="organization" type="checkbox" checked=filter.organization}}
-
-      </li>
-
+    {{/if}}
   </ul>
-  {{!-- <div class="filter-row">
-    <div class="filter-input">
-      <label>Mine</label>
-      {{input type="checkbox" checked=mine}}
-    </div>
-    <div class="filter-input">
-      <label>Public</label>
-      {{input type="checkbox" checked=public}}
-    </div>
-    <div class="filter-input">
-      <label>Org</label>
-      {{input type="checkbox" checked=organization}}
-    </div> --}}
-  </div>
+</div>
 
 

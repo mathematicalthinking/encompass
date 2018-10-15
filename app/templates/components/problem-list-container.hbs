@@ -2,33 +2,27 @@
   <header class="list-header">
     <h1>Problems</h1>
     {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<span>Create New Problem</span><i class="fas fa-plus"></i>{{/link-to}}
-    {{!-- <i class="fa fa-search main-search" aria-hidden="true"></i> --}}
-
 
     <div class="search-bar">
-      {{input type="text" value=searchText placeholder="Search problems"}}
-      <span class="icons">
-        <i class="fa fa-search" aria-hidden="true" {{action "searchProblems"}}></i>
-        {{!-- <i class="fa fa-filter" aria-hidden="true"></i> --}}
-        <div class="search-by">
-          <span>By</span>
-          {{my-select content=searchOptions cannotBeNull=true selectedValue=searchCriterion action=(action (mut
-          searchCriterion))}}
-        </div>
-      </span>
+      {{search-bar
+        onSearch=(action "searchProblems")
+        showFilter=true
+        searchOptions = searchOptions
+        basePlaceholder="Search problems"
+        inputValue=searchInputValue
+      }}
 
       <div class="filter-search">
-        {{filter-control
-        filter=filter
-        }}
+        {{filter-control filter=filter currentUser=currentUser}}
         <div class="sort-by">
           <span>Sort By</span>
-          {{my-select content=sortOptions cannotBeNull=true selectedValue=sortCriterion action=(action (mut
-          sortCriterion))}}
+          {{my-select
+            content=sortOptions
+            cannotBeNull=true
+            selectedValue=sortCriterion
+            action=(action (mut sortCriterion))}}
         </div>
       </div>
-
-
     </div>
     <div class="clear"></div>
   </header>
@@ -36,28 +30,20 @@
   <section>
 
     <nav class="list-box" id="with-search-bar">
-      {{pagination-control
-      filter=filter
-      sort=sortCriterion
-      details=problemsMetadata
-      store=store
-      startPageChange=(action "startPageChange")
-      endPageChange=(action "endPageChange")
-      handleQueryResults=(action "updatePageResults")
-      model="problem"
-      }}
-      {{data-fetcher filter=filter sort=sortCriterion searchText= searchText searchCriterion=searchCriterion results=displayProblems triggerFetch=initiateSearch pagination=problemsMetadata}}
-      {{problem-list problems=displayProblems metadata=problemsMetadata}}
+      <div class="results-info">
+        {{#if isDisplayingSearchResults}}
+          <p>Based off your filter criteria, we found {{problemsMetadata.total}} problems whose {{searchCriterion}} contains "{{searchQuery}}"</p>
+          <button {{action "clearSearchResults"}}>Clear Results</button>
+        {{else}}
+          <p>We found {{problemsMetadata.total}} problems based off of your current filter criteria</p>
+        {{/if}}
+      </div>
+
+      {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
 
       {{pagination-control
-      filter=filter
-      sort=sortCriterion
-      details=problemsMetadata
-      store=store
-      startPageChange=(action "startPageChange")
-      endPageChange=(action "endPageChange")
-      handleQueryResults=(action "updatePageResults")
-      model="problem"
+        details=problemsMetadata
+        initiatePageChange=(action "initiatePageChange")
       }}
     </nav>
   </section>

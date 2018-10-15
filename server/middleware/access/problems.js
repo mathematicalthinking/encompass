@@ -43,6 +43,7 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
   }
 
   if (searchBy) {
+    console.log('searchBy', searchBy);
     filter.$and.push(searchBy);
   }
 
