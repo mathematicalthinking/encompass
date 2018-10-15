@@ -129,7 +129,6 @@ describe('Workspaces New', async function() {
                 let fixed = selectors.fixedInputs.teacher;
                 let clearSelector = css.newWorkspaceEnc.clear;
 
-
                 before(async function() {
                   // teacherInput = await helpers.getWebElements(driver, selector);
                   if (accountType !== 'T') {
@@ -139,9 +138,7 @@ describe('Workspaces New', async function() {
                 });
                 if (accountType === 'A' || accountType === 'P') {
                   it('should contain current user', function() {
-
                     expect(test).to.eql(true);
-
                   });
 
                   it('clicking x button should clear input', async function() {
@@ -154,6 +151,41 @@ describe('Workspaces New', async function() {
                 if (accountType === 'T') {
                   it('should be fixed as current user', async function() {
                     expect(await helpers.isElementVisible(driver, teacherSel)).to.be.false;
+                  let text = await helpers.findAndGetText(driver, fixed);
+                  expect(text).to.eql(username);
+                  });
+
+                }
+              });
+              describe('owner pool', function() {
+                let selectors = css.newWorkspaceEnc.workspaceSettings;
+                let ownerSel = selectors.inputs.owner;
+                let test;
+                let fixed = selectors.fixedInputs.owner;
+                let clearSelector = css.newWorkspaceEnc.clear;
+
+                before(async function() {
+                  // teacherInput = await helpers.getWebElements(driver, selector);
+                  if (accountType !== 'T') {
+                    test = await helpers.selectOption(driver, ownerSel, _id, true);
+                  }
+
+                });
+                if (accountType === 'A' || accountType === 'P') {
+                  it('should contain current user', function() {
+                    expect(test).to.eql(true);
+                  });
+
+                  it('clicking x button should clear input', async function() {
+                    await helpers.findAndClickElement(driver, clearSelector);
+                    let selectText = await helpers.findAndGetText(driver, ownerSel);
+                    await driver.sleep(100);
+                    expect(selectText).to.contain('Please select');
+                  });
+                }
+                if (accountType === 'T') {
+                  it('should be fixed as current user', async function() {
+                    expect(await helpers.isElementVisible(driver, ownerSel)).to.be.false;
                   let text = await helpers.findAndGetText(driver, fixed);
                   expect(text).to.eql(username);
                   });
