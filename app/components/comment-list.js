@@ -144,7 +144,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
       that.set('showLoadingMessage', true);
     }, 500);
-
   }.observes('isLoadingSearchResults'),
 
   actions: {
