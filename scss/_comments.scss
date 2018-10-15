@@ -1,0 +1,62 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#comment-list {
+  table {
+    img {
+      width: 25px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 5px;
+      margin-top: -2px;
+    }
+  }
+  textarea {
+    border-radius: 3px;
+    padding: 5px;
+    height: 20px;
+    transition-property: height;
+    transition-duration: .2s;
+    transition-timing-function: ease;
+    &:focus {
+      height: 60px;
+    }
+  }
+  .error-message {
+    text-align: center;
+  }
+  button {
+    font-size: 1em;
+  }
+  .cancel-button {
+    font-size: 1em;
+    padding: 5px 10px;
+    background-color: white;
+    border-radius: 3px;
+  }
+  .filterControl {
+    border: 1px solid red;
+    margin: 5px 0 0 8px;
+  }
+  .delete_button {
+    position: absolute;
+    top: 50%;
+    right: 45px;
+    margin-top: -6px;
+  }
+  .fa-plus {
+    position: absolute;
+    top: 30%;
+    left: 15px;
+  }
+  .comment-label {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    margin-top: -9px;
+    img {
+      width: 20px;
+    }
+  }
+}
