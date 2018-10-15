@@ -73,7 +73,9 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
 
   if (accountType === 'P') {
     const users = await utils.getPdAdminUsers(user);
-    filter.$or.push({ _id: {$in: users } });
+    if (!_.isEmpty(users)) {
+      filter.$or.push({ _id: {$in: users } });
+    }
 
     return filter;
   }
