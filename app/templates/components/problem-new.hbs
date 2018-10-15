@@ -9,14 +9,14 @@
         <ol>
           <li>
             <label class="form-label" for="title" id="problemName">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.name}}>Problem Name </span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}>Problem Name </span>
               <span class="required-star">*</span>
             </label>
             {{input id="title" required="true" type="text" value=title placeholder="enter problem name" action="resetErrors" on="key-down"}}
           </li>
           <li>
             <label class="form-label" for="text">
-            <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.statement}}>Problem Statement </span>
+            <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.statement}}>Problem Statement </span>
               <span class="required-star">*</span></label>
             <div class="quill-container">
               <section id="editor"></section>
@@ -24,7 +24,7 @@
           </li>
           <li>
             <label class="form-label" for="categories">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.categories}}>Problem Categories </span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.categories}}>Problem Categories </span>
               <span class="required-star">*</span>
             </label>
             {{#if selectedCategories}}
@@ -48,26 +48,26 @@
           </li>
           <li>
             <label class="form-label" for="keywords">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.keywords}}>Keywords</span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.keywords}}>Keywords</span>
               </label>
             {{twitter-typeahead}}
           </li>
           <li>
             <label class="form-label" for="additionalInfo">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.additionalInfo}}>Additional Info</span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalInfo}}>Additional Info</span>
             </label>
             {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
             {{input id="additionalInfo" type="hidden" value=additionalInfo }}
           </li>
           <li>
             <label class="form-label" for="imageUrl">
-            <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.additionalImage}}> Additional Image</span>
+            <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalImage}}> Additional Image</span>
             </label>
             {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
           </li>
           <li class="privacy-settings">
             <label class="form-label">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.privacySettings}}> Privacy Settings</span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}> Privacy Settings</span>
               <span class="required-star">*</span>
             </label>
               {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'M')}}
@@ -79,7 +79,7 @@
           </li>
           <li >
             <label class="form-label" for="copyright">
-                <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.copyrightNotice}}> Copyright Notice</span>
+                <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.copyrightNotice}}> Copyright Notice</span>
             </label>
             <span id="copyright-container">
               <span id="icon">&copy;</span>
@@ -88,13 +88,13 @@
           </li>
           <li>
             <label class="form-label" for="sharing">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.sharingAuth}}> Sharing Authorization</span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.sharingAuth}}> Sharing Authorization</span>
             </label>
             {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
           </li>
           <li>
             <label class="form-label" for="legal-notice">
-              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.legalNotice}}> Legal Notice</span>
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.legalNotice}}> Legal Notice</span>
               <span class="required-star">*</span>
               </label>
             {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
