@@ -9,7 +9,9 @@
       <fieldset>
         <ol>
           <li>
-            <label for="section">Class <span class="required-star">*</span></label>
+            <label for="section">
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.class}}>Class </span> <span class="required-star">*</span>
+            </label>
             <div class="flex-input">
               {{my-select cannotBeNull=fromSectionInfo selectedValue=selectedSection prompt="Select a class." content=sectionList optionLabelPath="name" action=(action (mut selectedSection))}}
             {{input required=true type="hidden" value=selectedSection}}
@@ -20,9 +22,10 @@
 
           </li>
           <li class="problem">
-            <label for="text">Problem <span class="required-star">*</span></label>
+            <label for="text">
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.problem}}>Problem </span> <span class="required-star">*</span>
+            </label>
             {{#if selectedProblem}}
-
               {{#if fromProblemInfo}}
                 <p>{{selectedProblem.title}}</p>
               {{else}}
@@ -43,7 +46,9 @@
 
           </li>
           <li>
-            <label for="assignedDate">Date Assigned <span class="required-star">*</span></label>
+            <label for="assignedDate">
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.dateAssigned}}>Date Assigned </span> <span class="required-star">*</span>
+            </label>
             <div class="flex-input">
               {{input id="assignedDate" name="daterange" type="text" value=assignedDate required=true}}
             {{#each assignedDateFormErrors as |error|}}
@@ -54,7 +59,9 @@
           </li>
 
           <li>
-            <label for="dueDate">Due Date <span class="required-star">*</span></label>
+            <label for="dueDate">
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.dueDate}}>Due Date </span> <span class="required-star">*</span>
+            </label>
             <div class="flex-input">
               {{input id="dueDate" name="daterange" type="text" value=dueDate required=true}}
             {{#each dueDateFormErrors as |error|}}
@@ -64,7 +71,9 @@
 
           </li>
           <li>
-            <label for="name">Assignment Name</label>
+            <label for="name">
+              <span class="label-text simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}>Assignment Name</span>
+            </label>
             <div class="flex-input">
               {{input type="text" placeholder="Give your assignment a name (optional)" value=name}}
             {{#each nameFormErrors as |error|}}

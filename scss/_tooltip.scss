@@ -32,6 +32,11 @@
 // ducoment: http://arashm.net/lab/simptip/
 // by @ArashManteghi - http://arashm.net */
 /********************************* Core ******************************/
+
+.label-text {
+  border-bottom: 1px dotted black;
+}
+
 [data-tooltip] {
   position: relative;
   display: inline-block;
