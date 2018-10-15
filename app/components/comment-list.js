@@ -11,6 +11,7 @@
  *   - Test the hashtag stuff to see if that is still working.
  */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
@@ -129,7 +130,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   canComment: function() {
     let ws = this.currentWorkspace;
     return this.get('permissions').canEdit(ws);
-    // return (this.get('onSelection') && this.get('allowedToComment'));
   }.property('onSelection', 'allowedToComment'),
 
   handleLoadingMessage: function() {
@@ -152,6 +152,14 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.clearCommentParent();
       this.set('newComment', '');
       this.sendAction('resetComment');
+    },
+
+    madeSelection: function() {
+      if (this.get('onSelection')) {
+        this.send('createComment');
+      } else {
+        this.get('alert').showToast('error', 'Please choose a selection first', 'bottom-end', 3000, false, null);
+      }
     },
 
     createComment: function() {
