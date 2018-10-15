@@ -33,11 +33,8 @@
       <ul class="listing waiting-auth">
         {{#if unauthUsers}}
           {{#each unauthUsers as |user|}}
-            <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+            <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}} {{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-                <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
             </li>
           {{/each}}
         {{else}}
@@ -49,11 +46,8 @@
       <ul class="listing teacher-users">
         {{#if teacherUsers}}
           {{#each teacherUsers as |user|}}
-          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}">
+          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}{{unless user.isEmailConfirmed 'is-unconfirmed'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-              <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
           </li>
           {{/each}}
         {{else}}
@@ -64,11 +58,8 @@
       <h2>Students</h2>
       <ul class="listing student-users">
         {{#if studentUsers}} {{#each studentUsers as |user|}}
-        <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+        <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
           {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-            {{#if user.name}}
-            <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-            {{/if}}
         </li>
         {{/each}} {{else}}
         <li>There are no students yet</li>
