@@ -36,8 +36,48 @@
     border-radius: 3px;
   }
   .filterControl {
-    border: 1px solid red;
-    margin: 5px 0 0 8px;
+    margin: 12px 0 0 8px;
+    font-size: 1em;
+    .filter {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .search {
+      cursor: pointer;
+      margin-left: 10px;
+    }
+  }
+  .filter-options {
+    margin: 0 0px 10px 10px;
+    label {
+      margin: 0 5px;
+    }
+  }
+  .search-options {
+    margin: 0 0px 10px 10px;
+    p {
+      margin: 5px 0;
+      input[type=text] {
+        padding: 10px 5px;
+        background-color: white;
+        border: .5px solid $input-border;
+        border-radius: 3px;
+        text-indent: 5px;
+        width: 90%;
+      }
+    }
+  }
+  .comment-text {
+    color: black;
+    margin-bottom: 2px;
+  }
+  .label-list {
+    cursor: pointer;
+  }
+  .active {
+    background-color: $background-color;
+    padding: 2px 5px;
+    border-radius: 3px;
   }
   .delete_button {
     position: absolute;
