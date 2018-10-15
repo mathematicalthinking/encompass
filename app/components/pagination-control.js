@@ -8,37 +8,8 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
   init: function() {
     this._super(...arguments);
   },
-
-  getResultsByPage: function(model, page, limit=null) {
-    this.get('startPageChange')();
-    let queryParams = {};
-
-    let filter = this.get('filter');
-    let sort = this.get('sort');
-    if (!Ember.isEmpty(filter)) {
-      queryParams.filter = filter;
-    }
-    if (sort) {
-      queryParams.sort = sort;
-    }
-    if (page) {
-      queryParams.page = page;
-    }
-
-    this.store.query(model, queryParams).then((results) => {
-      this.get('endPageChange')();
-      this.set('queryResults', results);
-      this.set('details', results.get('meta'));
-      if (this.get('handleQueryResults')) {
-        this.get('handleQueryResults')(results);
-      }
-    }).catch((err) => {
-      this.handleErrors(err, 'dataLoadError');
-    });
-  },
   actions: {
     getPage: function(direction, gotoPage=null) {
-      let model = this.get('model');
       let currentPage = this.get('details.currentPage');
       let maxPage = this.get('details.pageCount');
       // if user directly inputs a number in go to page input and clicks go
@@ -52,7 +23,7 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
         gotoPage = 1;
       }
 
-      this.getResultsByPage(model, gotoPage);
+      this.get('initiatePageChange')(gotoPage);
        return;
      }
      // otherwise user clicked left (-1) or right arrow (1)
@@ -78,7 +49,8 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
           pageToLoad = currentPage + 1;
         }
       }
-      this.getResultsByPage(model, pageToLoad);
+      this.get('initiatePageChange')(pageToLoad);
+      return;
 
     },
   }
