@@ -24,6 +24,16 @@ Encompass.SectionNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     }
   },
 
+  init: function () {
+    this._super(...arguments);
+    let tooltips = {
+      name: 'Please give your class a name',
+      leader: 'The main owner of this class',
+      organization: 'The organization of this class is the same as the leader\'s',
+    };
+    this.set('tooltips', tooltips);
+  },
+
   didReceiveAttrs: function() {
     let users = this.users;
     let userList = this.get('userList');
