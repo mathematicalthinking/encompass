@@ -15,7 +15,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   init: function () {
     this._super(...arguments);
     let tooltips = {
-        name: 'Problem Title',
+        name: 'Please try and give all your problems a unique name',
         statement: 'Content of the problem to be completed',
         categories: 'Use category menu to select appropriate common core categories',
         keywords: 'Add keywords to help other people find this problem',
