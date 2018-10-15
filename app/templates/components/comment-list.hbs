@@ -1,11 +1,10 @@
 <header class="{{newCommentLabel}} {{if canComment can-comment}}">
 	<table>
 		<tr>
-			<td id="noticeTab" class="notice" {{action "setCommentLabel" 'notice'}}><span class="al_sprite al_notice"></span>I NOTICE</td>
-
-			<td id="wonderTab" class="wonder" {{action "setCommentLabel" 'wonder'}}><span class="al_sprite al_wonder"></span>I WONDER</td>
-
-			<td id="feedbackTab" class="feedback" {{action "setCommentLabel" 'feedback'}}><span class="al_sprite al_feedback"></span>FEEDBACK</td>
+			<td id="noticeTab" class="notice" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt="">  I NOTICE</td>
+			<td id="wonderTab" class="wonder" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt="">
+      I WONDER</td>
+			<td id="feedbackTab" class="feedback" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt="">FEEDBACK</td>
 
 		</tr>
 	</table>
@@ -15,6 +14,8 @@
 	<form id="newForm">
     {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    {{else}}
+      <p class="error-message">You do not have permisssion to make comments for this workspace</p>
     {{/if}}
     <div class="filterControl meta">
       <a {{action 'toggleFilter'}}>
@@ -26,14 +27,13 @@
     </div>
 		<div class="al_controller">
       {{#if canComment}}
-          <span class="meta">
-          {{#if newCommentParent}}*{{/if}}
-          {{#if doSearch}}+{{/if}}
-          {{#if searching}}...{{/if}}
-          </span>
-          <a class="al_popup_close" {{action "cancelComment"}}>CANCEL</a>
-          |
-		    	<button class="action_button comment save" tabindex=2 {{action "createComment"}}>SAVE</button>
+        <span class="meta">
+        {{#if newCommentParent}}*{{/if}}
+        {{#if doSearch}}+{{/if}}
+        {{#if searching}}...{{/if}}
+        </span>
+        <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
+        <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
       {{/if}}
 		</div>
 	</form>
