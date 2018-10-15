@@ -108,6 +108,7 @@ module.exports = {
   newWorkspaceEnc: {
     form: '#encImportForm',
     create: 'button.create-ws',
+    clear: 'i.fa.fa-times',
     filterCriteria: {
       list: 'ol.filter-criteria',
       inputs: {

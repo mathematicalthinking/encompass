@@ -187,13 +187,19 @@ const findInputAndType = async function (webDriver, selector, text) {
   return;
 };
 
- const selectOption = async function (webDriver, selector, item) {
+ const selectOption = async function (webDriver, selector, item, isByCss) {
    try {
-    let selectList = await webDriver.findElement(By.id(selector));
+     let selectList;
+     if (isByCss) {
+       selectList = await webDriver.findElement(By.css(selector));
+     } else {
+      selectList = await webDriver.findElement(By.id(selector));
+
+     }
     await selectList.click();
     let el = await selectList.findElement(By.css(`option[value="${item}"]`));
     await el.click();
-     return;
+     return true;
    } catch (err) {
      console.log(err);
    }
