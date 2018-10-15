@@ -258,13 +258,41 @@ nav#with-search-bar {
   ul#main-problem-list {
     .problem-list-item {
       display: flex;
+      align-items: center;
       li {
-        display: flex;
+        width:100%;
         padding: 6px 0 6px 15px;
         margin: 0 20px;
         border-radius: 5px;
+        .pows {
+          background-color: $accent-yellow;
+          color:white;
+          padding: 2px;
+        }
+      }
+      &.is-public::after {
+        content: "P";
+        color: $accent-color;
+
+      }
+      &.is-org::after {
+        content: "O";
+        color: $warning-color;
+      }
+      &.is-private::after {
+        content: "M";
+        color: $error-color;
       }
     }
+  }
+  .search-row {
+    display: flex;
+    align-items: center;
+  }
+  .results-info {
+    margin-left:20px;
+    margin-bottom: 10px;
+    margin-top: 20px;
   }
   .search-by{
     width:10%;

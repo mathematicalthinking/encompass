@@ -1,0 +1,41 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.search-bar-comp {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-left: 20px;
+  justify-content: space-between;
+
+  .criterion {
+    h5 {
+      line-height: 0;
+    }
+   flex: 0 0 auto;
+   width: 85px;
+   #my-select {
+     select {
+       width: 100%;
+     }
+   }
+  }
+  div.input-field {
+    flex: 2.5 1 auto;
+    margin-right: 5px;
+    input[type=text].search-field {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 5px;
+    }
+  }
+  .submit {
+    flex: 1 0 auto;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+
+
+}
