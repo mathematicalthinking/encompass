@@ -3,18 +3,49 @@
 @import "responsive-font-size";
 
 #filter-control {
-  width:65%;
+  width:100%;
   margin-left: 20px;
   div.control-box {
     width:100%;
-  ul.filter-options {
+    display:flex;
+    div.filter-by {
+      margin-right: 10px;
+      ul.filter-options {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-
+      }
+    }
+  }
+  .cat-filter {
+    margin-top: 10px;
+    margin-right: 5px;
+    max-width:200px;
+    div.twitter-typeahead {
+      span.twitter-typeahead {
+        width:100%;
       }
 
+      input.typeahead {
+        width: 100%;
+        height: 30px;
+        margin-left: 0;
+        text-indent: 5px;
+        padding: 0;
+      }
+    }
+    ul.cat-filter-list {
+      margin-top: 10px;
+      li {
+        display: flex;
+        align-items: center;
 
+        i {
+          cursor: pointer;
+          margin-left:5px;
+        }
+      }
+    }
   }
 
 
