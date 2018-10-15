@@ -1,6 +1,7 @@
 module.exports = {
   pdAdminDrexel: {
     testDescriptionTitle: 'PD Admin',
+    _id: '5b7321ee59a672806ec903d5',
     username: 'pdadmin',
     password: 'pdadmin',
     accountType: 'P',
@@ -31,6 +32,7 @@ module.exports = {
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
+    _id: '5b9149552ecaf7c30dd4748e',
     username: 'ssmith',
     password: 'ssmith',
     accountType: 'T',
@@ -55,6 +57,7 @@ module.exports = {
 
   admin: {
     testDescriptionTitle: 'Admin',
+    _id: '5b245760ac75842be3189525',
     username: 'rick',
     password: 'sanchez',
     accountType: 'A',
@@ -82,6 +85,7 @@ module.exports = {
 
   studentMT: {
     testDescriptionTitle: 'Student',
+    _id: '5b914a102ecaf7c30dd47492',
     username: 'tracyc',
     password: 'tracyc',
     organization: 'Mathematical Thinking',
@@ -106,6 +110,7 @@ module.exports = {
 
   teacherActingStudent: {
     testDescriptionTitle: 'Teacher acting as Student',
+    _id: '5b99146e25b620610ceead75',
     username: 'actingstudent',
     password: 'allison',
     accountType: 'T',
