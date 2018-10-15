@@ -13,15 +13,11 @@
       }}
 
       <div class="filter-search">
-        {{filter-control filter=filter currentUser=currentUser}}
-        <div class="sort-by">
-          <h5>Sort By</h5>
-          {{my-select
-            content=sortOptions
-            cannotBeNull=true
-            selectedValue=sortCriterion
-            action=(action (mut sortCriterion))}}
-        </div>
+        {{filter-control doFilterByCategories=doFilterByCategories addCategory="addCategory" filter=filter currentUser=currentUser addCategoriesTypeahead=addCategoriesTypeahead removeCategory=(action "removeCategory")
+        sortOptions=sortOptions
+        sortCriterion=sortCriterion
+        }}
+
       </div>
     </div>
     <div class="clear"></div>

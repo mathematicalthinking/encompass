@@ -25,13 +25,18 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         }
       }
     }
+    if (!this.get('addCategoriesTypeahead')) {
+      this.set('addCategoriesTypeahead', this.getAddableCategories.call(this));
+
+    }
   },
 
   configureFilter: function() {
     let filter = {
       mine: false,
       public: false,
-      organization: false
+      organization: false,
+      categories: []
     };
 
     let isAdmin = this.get('currentUser.isAdmin');
@@ -48,7 +53,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   // fetch problems whenever a filter box is checked or unchecked
   observeFilter: function() {
     this.getProblems();
-  }.observes('filter.{mine,public,organization,private,pows}'),
+  }.observes('filter.{mine,public,organization,private,pows}','filter.categories.[]', 'doFilterByCategories'),
 
   // fetch problems whenever different sort option is selected
   observeSort: function() {
@@ -67,8 +72,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     // always use filter
     let filter = this.get('filter');
-    queryParams.filter = filter;
 
+    let doFilterByCategories = this.get('doFilterByCategories');
+    if (!doFilterByCategories) {
+     delete filter.categories;
+    }
+    queryParams.filter = filter;
     // page is only passed in when fetch is triggered by page arrow or go to page input
     if (page) {
       queryParams.page = page;
@@ -109,8 +118,32 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         this.set('isChangingPage', false);
       }
     }).catch((err) => {
+      console.log('err', err);
       this.handleErrors(err, 'problemLoadErrors');
     });
+  },
+  getAddableCategories: function() {
+    const store = this.get('store');
+    const syncCategories = this.get('syncCategories');
+    let ret = function (query, syncCb, asyncCb) {
+      if (query.length === 0 && syncCategories) {
+        return asyncCb(syncCategories.toArray());
+      }
+      let text = query.replace(/\s+/g, "");
+
+      return store.query('category', {
+        searchBy: {
+          identifier: text
+        }
+      }).then((categories) => {
+          return asyncCb(categories.toArray());
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'queryErrors');
+        });
+    };
+    return ret.bind(this);
+
   },
 
   actions: {
@@ -133,6 +166,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
       this.getProblems(page);
+    },
+    addCategory: function(cat) {
+      let filterCategories = this.get('filter.categories');
+      filterCategories.addObject(cat);
+    },
+    removeCategory: function(cat) {
+      let filterCategories = this.get('filter.categories');
+      filterCategories.removeObject(cat);
     }
   },
 });

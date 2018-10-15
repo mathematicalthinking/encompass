@@ -1,5 +1,6 @@
 <div class= "control-box">
-  <h5>Filter</h5>
+  <div class="filter-by">
+    <h5>Filter</h5>
   <ul class="filter-options">
     <li>
       <label for="mine">Mine</label>
@@ -15,6 +16,10 @@
       <label for="organization">Org</label>
       {{input id="organization" type="checkbox" checked=filter.organization}}
     </li>
+    <li>
+      <label for="categories-toggle">Categories</label>
+      {{input id="categories-toggle" type="checkbox" checked=doFilterByCategories}}
+    </li>
     {{#if currentUser.isAdmin}}
       <li>
         <label for="private">Private</label>
@@ -26,6 +31,29 @@
       </li>
     {{/if}}
   </ul>
+  </div>
+
+  <div class="sort-by">
+    <h5>Sort By</h5>
+    {{my-select
+      content=sortOptions
+      cannotBeNull=true
+      selectedValue=sortCriterion
+      action=(action (mut sortCriterion))
+    }}
+  </div>
+
 </div>
+{{#if doFilterByCategories}}
+  <div class="cat-filter">
+    <h5>Add Categories</h5>
+    {{twitter-typeahead onSelect="addCategory" selectedItems=selectedCategories optionLabelPath="identifier" allowMultiple=true placeholder="Identifier..." isAsync=true sourceFunction=addCategoriesTypeahead}}
+    <ul class="cat-filter-list">
+      {{#each selectedCategories as |category|}}
+        <li><p>{{category.identifier}}</p><i {{action "removeCategory" category}} class="far fa-times-circle"></i></li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
 
 
