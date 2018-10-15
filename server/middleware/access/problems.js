@@ -1,5 +1,6 @@
 const utils = require('./utils');
 const models = require('../../datasource/schemas');
+const _ = require('underscore');
 
 module.exports.get = {};
 
@@ -11,46 +12,48 @@ async function getStudentProblems(user) {
 }
 
 
-const accessibleProblemsQuery = async function(user, ids, filterBy) {
+const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
   try {
     if (!user) {
       return [];
     }
+    let filter = {
+      $and: []
+    };
 
-    console.log('filterBy apq', filterBy);
     const accountType = user.accountType;
     const actingRole = user.actingRole;
 
-    let filter = {
-    isTrashed: false
-  };
-  if (filterBy) {
-
-    for (let key of Object.keys(filterBy)) {
-      if (key === 'privacySetting') {
-        filter[key] = {$in: filterBy[key]};
-      } else {
-        filter[key] = filterBy[key];
-      }
-
-    }
-  }
+    filter.$and.push({isTrashed: false});
 
   if (ids) {
-    filter._id = {$in : ids};
+    filter.$and.push({_id: {$in : ids } });
   }
+  if (!_.isEmpty(filterBy)) {
+    let filterByCrit = {$or: []};
+
+    for (let field of Object.keys(filterBy)) {
+      if (field === 'privacySetting') {
+        filterByCrit.$or.push({privacySetting: {$in: filterBy[field]}});
+      } else {
+        filterByCrit.$or.push({[field]: filterBy[field]});
+      }
+    }
+    filter.$and.push(filterByCrit);
+  }
+
+  if (searchBy) {
+    filter.$and.push(searchBy);
+  }
+
+  let accessCrit = {$or: []};
 
   if (actingRole === 'student' || accountType === 'S') {
     const studentProblems = await getStudentProblems(user);
-      filter.$or = [
-        { privacySetting: "E" },
-        { $and: [
-          { organization: user.organization },
-          { privacySetting: "O" }
-        ]},
-        {_id: { $in: studentProblems } },
-      ];
-
+      accessCrit.$or.push({ privacySetting: "E" });
+      accessCrit.$or.push({ $and: [{ organization: user.organization },{ privacySetting: "O" }]});
+      accessCrit.$or.push({_id: { $in: studentProblems } });
+    filter.$and.push(accessCrit);
     return filter;
   }
 
@@ -61,29 +64,31 @@ const accessibleProblemsQuery = async function(user, ids, filterBy) {
 
   if (accountType === 'P') {
     const problems = await utils.getAssignmentProblems(user);
-    filter.$or = [
-      { privacySetting: "E" },
-      { createdBy: user },
-      { _id: { $in: problems }},
-      { organization: user.organization }
-    ];
+      accessCrit.$or.push({ privacySetting: "E" });
+      accessCrit.$or.push({ createdBy: user._id });
+      if (!_.isEmpty(problems)) {
+        accessCrit.$or.push({ _id: { $in: problems }});
+      }
 
+      accessCrit.$or.push({ organization: user.organization });
+
+      filter.$and.push(accessCrit);
     return filter;
   }
 
   if (accountType === 'T') {
     const problems = await utils.getAssignmentProblems(user);
-    filter.$or = [
-      { privacySetting: "E" },
-      { createdBy: user },
-      { _id: { $in: problems }},
-      { $and: [
-        { organization: user.organization },
-        { privacySetting: "O" }
-      ]},
-    ];
 
-    return filter;
+      accessCrit.$or.push({ privacySetting: "E" });
+      accessCrit.$or.push({ createdBy: user._id });
+      if (!_.isEmpty(problems)) {
+        accessCrit.$or.push({ _id: { $in: problems }});
+      }
+
+      accessCrit.$or.push({ $and: [{ organization: user.organization }, { privacySetting: "O" }]});
+
+      filter.$and.push(accessCrit);
+      return filter;
   }
   }catch(err) {
     console.log('err', err);

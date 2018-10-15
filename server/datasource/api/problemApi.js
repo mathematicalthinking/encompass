@@ -68,7 +68,7 @@ const getProblems = async function(req, res, next) {
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
-    let { ids, filter, sort, page, } = req.query;
+    let { ids, filter, sortBy, searchBy, page, } = req.query;
 
     if (filter) {
       // prune filter to remove any false, or null values
@@ -80,21 +80,8 @@ const getProblems = async function(req, res, next) {
         }
       }
 
-      let {title, text, category, mine, public, organization, private } = filter;
-      if (title) {
-        title = title.replace(/\s+/g, "");
-        let regex = new RegExp(title.split('').join('\\s*'), 'i');
+      let {mine, public, organization, private, pows } = filter;
 
-        filter.title = regex;
-      }
-      // currently no front end functionality for searching by text
-      // would need to optimize search by ignoring common words
-      if (text) {
-        text = text.replace(/\s+/g, "");
-        let regex = new RegExp(text.split('').join('\\s*'), 'i');
-
-        filter.text = regex;
-      }
 
       if  (public || organization || private) {
         filter.privacySetting = [];
@@ -116,26 +103,45 @@ const getProblems = async function(req, res, next) {
         filter.createdBy = user._id;
         delete filter.mine;
       }
+
+      if (pows) {
+        filter.puzzleId = { $exists: true, $ne: null };
+        delete filter.pows;
+      }
     }
-    let sortParam;
-    if (sort) {
-      if (sort === 'A-Z') {
-        sortParam = { title: 1 };
-      } else if (sort === 'Z-A') {
+    let searchFilter;
+
+    if (searchBy) {
+      let { query, criterion } = searchBy;
+    if (criterion) {
+      if (criterion === 'title' || criterion === 'text') {
+        query = query.replace(/\s+/g, "");
+        let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+        searchFilter = {[criterion]: regex};
+      }
+    }
+    }
+
+    let sortParam = {title: 1};
+    let doCollate = true;
+
+    if (sortBy) {
+      if (sortBy === 'Z-A') {
         sortParam = {title: -1 };
-      } else if (sort === 'Newest') {
-        sortParam = { createDate: 1};
-      } else if (sort === 'Oldest') {
-        sortParam = {createDate: -1};
-      } else {
-        sortParam = {};
+      } else if (sortBy === 'Newest') {
+        sortParam = { createDate: -1};
+        doCollate = false;
+      } else if (sortBy === 'Oldest') {
+        sortParam = {createDate: 1};
+        doCollate = false;
       }
     }
 
-    const criteria = await access.get.problems(user, ids, filter);
-
+    const criteria = await access.get.problems(user, ids, filter, searchFilter);
+    console.log('crit', JSON.stringify(criteria));
     let results, itemCount;
-    if (sort === 'Z-A' || sort === 'A-Z') {
+    if (doCollate) {
        [ results, itemCount ] = await Promise.all([
         models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
         models.Problem.count(criteria)
