@@ -4,7 +4,9 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 859px) {
   .list-side {
+    width: 35%;
     .list-header {
+      width: 35%;
       h1 {
         font-size: 1.2em;
       }
@@ -19,11 +21,17 @@
       }
     }
   }
+  .list-outlet {
+    width: 64%;
+    margin-left: 35%;
+  }
 }
 
 @media screen and (min-width: 860px) and (max-width: 1319px) {
   .list-side {
+    width: 35%;
     .list-header {
+      width: 35%;
       h1 {
         font-size: 1.5em;
       }
@@ -37,6 +45,10 @@
         }
       }
     }
+  }
+  .list-outlet {
+    width: 64%;
+    margin-left: 35%;
   }
 }
 
@@ -53,7 +65,9 @@
 
 @media screen and (min-width: 1320px) and (max-width: 10000px) {
   .list-side {
+    width: 25%;
     .list-header {
+      width: 25%;
       h1 {
         font-size: 1.7em;
       }
@@ -68,10 +82,13 @@
       }
     }
   }
+  .list-outlet {
+    width: 74%;
+    margin-left: 25%;
+  }
 }
 
 .list-side {
-  width: 25%;
   height: 100%;
   position: fixed;
   overflow: auto;
@@ -82,7 +99,6 @@
     position: fixed;
     height: 70px;
     background-color: white;
-    width: 25%;
     z-index: 2;
     // border-right: .5px solid $primary-font-color;
     box-shadow: $box-shadow;
@@ -157,9 +173,11 @@
     }
 
     li {
-      padding: 6px 0 6px 15px;
+      padding: 6px 10px 6px 10px;
       margin: 0 20px;
       border-radius: 5px;
+      display: block;
+      width: max-content;
       &:last-child {
         margin-bottom: 30px;
       }
@@ -183,8 +201,6 @@
 
 
 .list-outlet {
-  width: 74%;
-  margin-left: 25%;
   float: left;
   padding: 10px 5px 5px 10px;
 }

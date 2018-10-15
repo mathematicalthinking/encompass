@@ -1,12 +1,9 @@
 <header class="{{newCommentLabel}} {{if canComment can-comment}}">
 	<table>
 		<tr>
-			<td id="noticeTab" class="notice" {{action "setCommentLabel" 'notice'}}><span class="al_sprite al_notice"></span>I NOTICE</td>
-
-			<td id="wonderTab" class="wonder" {{action "setCommentLabel" 'wonder'}}><span class="al_sprite al_wonder"></span>I WONDER</td>
-
-			<td id="feedbackTab" class="feedback" {{action "setCommentLabel" 'feedback'}}><span class="al_sprite al_feedback"></span>FEEDBACK</td>
-
+			<td id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</td>
+			<td id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</td>
+			<td id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</td>
 		</tr>
 	</table>
 </header>
@@ -15,25 +12,26 @@
 	<form id="newForm">
     {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    {{else}}
+      <p class="error-message">You do not have permisssion to make comments for this workspace</p>
     {{/if}}
     <div class="filterControl meta">
-      <a {{action 'toggleFilter'}}>
+      <a class="filter" {{action 'toggleFilter'}}>
         <i class="fas fa-filter"></i> filter
       </a>
-      <a {{action 'toggleSearch'}}>
+      <a class="search" {{action 'toggleSearch'}}>
         <i class="fas fa-search"></i> search
       </a>
     </div>
 		<div class="al_controller">
       {{#if canComment}}
-          <span class="meta">
-          {{#if newCommentParent}}*{{/if}}
-          {{#if doSearch}}+{{/if}}
-          {{#if searching}}...{{/if}}
-          </span>
-          <a class="al_popup_close" {{action "cancelComment"}}>CANCEL</a>
-          |
-		    	<button class="action_button comment save" tabindex=2 {{action "createComment"}}>SAVE</button>
+        <span class="meta">
+        {{!-- {{#if newCommentParent}}*{{/if}} --}}
+        {{#if doSearch}}+{{/if}}
+        {{#if searching}}...{{/if}}
+        </span>
+        <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
+        <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
       {{/if}}
 		</div>
 	</form>
@@ -54,7 +52,7 @@
 </div>
 
 {{#if showFilter}}
-  <div class="filter">
+  <div class="filter-options">
     {{!-- <p>
     <label>{{input type="checkbox" checked=isSearching}} Search all comments</label>
     {{#if isSearching}}
@@ -70,18 +68,15 @@
 {{/if}}
 
 {{#if isSearching}}
-  <div class="search">
+  <div class="search-options">
     <p>
       <label>Search comments</label>
       {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
-
-
     </p>
     <p>
     {{!-- <label>{{input type="checkbox" checked=thisWorkspaceOnly}} this workspace only</label> --}}
     {{!-- <label>{{input type="checkbox" checked=thisSubmissionOnly}} this submission only</label> --}}
     <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
-
     </p>
     <p>
       <label>Since</label>

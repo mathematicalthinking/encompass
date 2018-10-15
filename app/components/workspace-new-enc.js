@@ -16,6 +16,18 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
   init: function() {
     this._super(...arguments);
     this.set('userList', this.model.users);
+    let tooltips = {
+      teacher: 'Find all work related to this teacher',
+      assignment: 'Find all work related to this assignment',
+      problem: 'Find all accessibile work related to this problem',
+      class: 'Find all work completed by this class',
+      dateRange: 'Find all accessibile work for this date range',
+      owner: 'Who will have ownership of this workspace',
+      name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
+      folders: 'Choose a starter folder set, you can create your own later',
+      privacy: 'Private workspaces are only visibile by the owner and editors. Public workspaces are visibile to all users',
+    };
+    this.set('tooltips', tooltips);
     $(function () {
       $('input[name="daterange"]').daterangepicker({
         autoUpdateInput: false,

@@ -29,6 +29,14 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   init: function() {
     this._super(...arguments);
+    let tooltips = {
+      class: 'Select which class you want to assign the problem',
+      problem: 'Select which problem you want to assign',
+      dateAssigned: 'This is when students will be able to respond the the assignment',
+      dueDate: 'This is when students will no longer be able to respond',
+      name: 'Give your assignment a specific name if not assignment names are the name of the problem followed by the assign date',
+    };
+    this.set('tooltips', tooltips);
     $(function () {
       $('input#assignedDate').daterangepicker({
         singleDatePicker: true,

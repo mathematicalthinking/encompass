@@ -5,7 +5,7 @@
 @media screen and (min-width: $screen-xs-min) and (max-width: 955px) {
   #al_header {
     #al_nav {
-              font-size: .8em;
+      font-size: .8em;
       #menu-items {
         display: none;
       }
@@ -32,7 +32,7 @@
   }
 }
 
-@media screen and (min-width: 955px) and (max-width: 1500px) {
+@media screen and (min-width: 955px) and (max-width: 1399px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
@@ -74,7 +74,7 @@
   }
 }
 
-@media screen and (min-width: 1499px) and (max-width: 10000px) {
+@media screen and (min-width: 1400px) and (max-width: 10000px) {
   #al_header {
     #menu-toggle {
       // background-color: yellow;
@@ -85,7 +85,7 @@
     }
     #al_nav {
       li {
-        padding: 0 12px;
+        padding: 0 13px;
       }
     }
     #sidemenu {
@@ -282,7 +282,7 @@ nav.actions>ul {
 // LOGOUT BUTTON
 .logout {
   font-weight: $bolder-font-weight;
-  padding: 10px 20px;
+  padding: 8px 15px;
   color: white;
   background: $primary-button;
   border-radius: 3px;
@@ -315,7 +315,7 @@ nav.actions>ul {
   position: absolute;
   margin-top: 15px;
   background-color: white;
-  line-height: 40px;
+  line-height: 45px;
   width: 100%;
   // border: 1px solid $input-border;
   box-shadow: $box-shadow;

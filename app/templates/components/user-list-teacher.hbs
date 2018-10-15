@@ -16,11 +16,8 @@
       <ul class="listing waiting-auth">
         {{#if yourStudents}}
           {{#each yourStudents as |user|}}
-          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-              <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
           </li>
           {{/each}}
         {{else}}
@@ -32,11 +29,8 @@
       <ul class="listing your-users">
         {{#if yourUsers}}
           {{#each yourUsers as |user|}}
-          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-              <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
           </li>
           {{/each}}
         {{else}}
@@ -48,11 +42,8 @@
       <ul class="listing org-users">
         {{#if orgUsers}}
           {{#each orgUsers as |user|}}
-          <li class="tooltip {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}">
+          <li class="{{if user.name 'simptip-position-right simptip-smooth'}} {{if user.isAuthorized 'is-authorized'}} {{if user.isAdmin 'is-admin'}}" data-tooltip={{user.name}}>
             {{#link-to 'user' user classNames='user'}}{{user.username}}{{/link-to}}
-              {{#if user.name}}
-              <span class="tooltiptext"><strong>Name: </strong>{{user.name}}</span>
-              {{/if}}
           </li>
           {{/each}}
         {{else}}

@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: "off"*/
+
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -10,6 +12,7 @@ const userFixtures = require('./userFixtures');
 const expect = chai.expect;
 const host = helpers.host;
 const baseUrl = "/api/answers/";
+
 
 chai.use(chaiHttp);
 

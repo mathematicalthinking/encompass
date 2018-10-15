@@ -1,15 +1,16 @@
-<h2>Create a Workspace from EnCoMPASS Submissions</h2>
+{{!-- <h2>Create a Workspace from EnCoMPASS Submissions</h2> --}}
 
-<form id='encImportForm' class='properForm'>
-  <fieldset>
-    <div class="heading">
+<form class="flex-container workspace-form properForm" id='encImportForm'>
+  <div class="flex-item">
+    <div>
       <h4>Filter Criteria <span class="required-star">*</span></h4>
-      <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to
-        create a workspace.</p>
+      <p class="info">We either need a date range or at least one of teacher, assignment, problem, or class in order to create a workspace.</p>
     </div>
     <ol class="filter-criteria">
       <li class="ws-filter teacher">
-        <label for="teacher">Teacher</label>
+        <label for="teacher">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.teacher}}>Teacher </span>
+        </label>
         {{#if currentUser.isTeacher}}
         <p class="workspace-info">{{currentUser.username}}</p>
         {{else}}
@@ -18,45 +19,54 @@
         {{/if}}
       </li>
       <li class="ws-filter assignment">
-        <label for="assignment">Assignment</label>
+        <label for="assignment">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.assignment}}>Assignment </span>
+        </label>
         {{my-select content=model.assignments optionLabelPath="problem.title" prompt="Please select an assignment"
         action=(action (mut selectedAssignment))}}
       </li>
       <li class="ws-filter problem">
-        <label for="problem">Problem</label>
+        <label for="problem">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.problem}}>Problem </span>
+        </label>
         {{#if selectedProblem}}
-          <p>{{selectedProblem.title}} <i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
+        <p>{{selectedProblem.title}} <i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
         {{else}}
-          {{#if addProblemTypeahead}}
-            {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
-            {{#each problemFormErrors as |error|}}
-              <p class="error-message">{{error}}</p>
-            {{/each}}
-          {{/if}}
+        {{#if addProblemTypeahead}}
+        {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..."
+        selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+        {{#each problemFormErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+        {{/each}}
+        {{/if}}
         {{/if}}
       </li>
       <li class="ws-filter section">
-        <label for="section">Class</label>
+        <label for="section">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.class}}>Class </span>
+        </label>
         {{my-select content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut
         selectedSection))}}
       </li>
       <li class="ws-filter date">
-        <label for="startDate">Date Range</label>
+        <label for="startDate">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.dateRange}}>Date Range</span>
+        </label>
         {{input id="dateRange" name="daterange" type="text" value=dateRange}}
       </li>
-      {{!-- <li>
-        <label for="endDate">End Date</label>
-        {{input id="endDate" name="daterange" type="text" value=endDate}}
-      </li> --}}
     </ol>
-    <div class="heading spacing">
+  </div>
+
+  <div class="flex-item">
+    <div>
       <h4>Workspace Settings</h4>
-      <p class="info">Workspace settings can always be changed after creation from the workspace
-        info page.</p>
+      <p class="info">Workspace settings can always be changed after creation from the workspace info page.</p>
     </div>
     <ol class="workspace-settings">
       <li class="ws-settings owner">
-        <label for="owner">Owner <span class="required-star">*</span></label>
+        <label for="owner">
+          <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.owner}}>Owner</span> <span class="required-star">*</span>
+        </label>
         {{#if currentUser.isTeacher}}
         <p class="workspace-info">{{currentUser.username}}</p>
         {{else}}
@@ -65,33 +75,45 @@
         {{/if}}
       </li>
       <li class="ws-settings name">
-        <label for="name">Workspace Name<i title="Workspace name will be automatically generated if not provided." class="fas fa-info-circle"></i></label>
+        <label for="name">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.name}}>Workspace Name </span>
+        </label>
         {{input id="requestedName" type="text" value=requestedName placeholder="Give your workspace a name (optional)"}}
       </li>
+
       <li class="ws-settings folders">
-        <label for="folders">Folders</label>
+        <label for="folders">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.folders}}>Folders</span>
+        </label>
         {{my-select content=model.folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
         (mut selectedFolderSet))}}
       </li>
 
       <li class="mode">
-        <label>Privacy Setting <span class="required-star">*</span></label>
+        <label for="privacy">
+          <span class="label-text simptip-position-right simptip-smooth simptip-multiline" data-tooltip={{tooltips.privacy}}>Privacy Setting </span> <span class="required-star">*</span>
+        </label>
         <input type="radio" checked={{is-equal mode "private"}} required="true" name="mode" value="private" onclick={{action "radioSelect" "private"}}>
         <label class="radio-label">Private</label>
         <input type="radio" checked={{is-equal mode "public"}} required="true" name="mode" value="public" onclick={{action "radioSelect" "public"}}>
         <label class="radio-label">Public</label>
       </li>
     </ol>
-  </fieldset>
-  {{#if missingRequiredFields}}
-    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss" {{action 'closeError'}}>x</button></p>
-  {{/if}}
-  {{#if isEmptyAnswerSet}}
-    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss" {{action 'closeError'}}>x</button></p>
-  {{/if}}
+  </div>
 
 </form>
 
+  <div class="error-messages">
+    {{#if missingRequiredFields}}
+    <p class="error-box animated fadeIn">Please fill in all required fields <button class="dismiss"
+        {{action 'closeError'}}>x</button></p>
+    {{/if}}
+
+    {{#if isEmptyAnswerSet}}
+    <p class="error-box animated fadeIn">Sorry, no answers were found matching your criteria <button class="dismiss"
+        {{action 'closeError'}}>x</button></p>
+    {{/if}}
+  </div>
 
 {{#if createdWorkspace}}
   <p class="success-message">Success!</p>

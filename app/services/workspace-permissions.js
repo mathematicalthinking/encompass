@@ -31,14 +31,14 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   isInPdAdminDomain: function(ws) {
-    let owner = ws.get('owner');
     let user = this.get('currentUser');
-    if (!owner || !user.accountType === 'P') {
-      return;
+    let type = user.get('accountType');
+    if (type !== 'P') {
+      return false;
     }
-    let ownerOrg = owner.get('organization.content');
-    let pdAdminOrg = user.get('organization.content');
-    return Ember.isEqual(ownerOrg, pdAdminOrg);
+    let userOrg = user.get('organization.content');
+    let ownerOrg = ws.get('owner.organization.content');
+    return Ember.isEqual(ownerOrg, userOrg);
   },
 
   canEdit: function (ws) {

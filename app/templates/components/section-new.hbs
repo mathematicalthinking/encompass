@@ -16,7 +16,9 @@
       <form id='newsectionform' class='properForm'>
         <fieldset>
           <div class="section-new-input">
-            <label for="title">Class Name <span class="required-star">*</span></label>
+            <label for="title">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.name}}>Class Name </span> <span class="required-star">*</span>
+            </label>
             {{input id="newSectionName" required="true" type="text" value=newSectionName placeholder="Enter class name" action="checkError" on="key-down"}}
             {{#each nameFormErrors as |error|}}
               <p class="error-message">{{error}}</p>
@@ -24,7 +26,9 @@
           </div>
 
           <div class="section-new-input">
-              <label for="teacher">Teacher/Leader <span class="required-star">*</span></label>
+              <label for="teacher">
+                <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.leader}}>Teacher/Leader </span> <span class="required-star">*</span>
+              </label>
                 {{#if currentUser.isTeacher}}
                 <p class="section-new-info teacher">{{teacher.username}}</p>
                 {{else}}
@@ -35,7 +39,9 @@
               <p class="error-message">{{error}}</p>
             {{/each}}
             <div class="section-new-input">
-            <label for="organization">Organization</label>
+            <label for="organization">
+              <span class="label-text simptip-position-right simptip-smooth" data-tooltip={{tooltips.organization}}>Organization </span>
+            </label>
             {{#if currentUser.isAdmin}}
               {{#if validTeacher}}
                 {{#if organization}}
