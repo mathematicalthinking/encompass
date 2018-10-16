@@ -33,8 +33,8 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
     let filterByCrit = {$or: []};
 
     for (let field of Object.keys(filterBy)) {
-      if (field === 'privacySetting') {
-        filterByCrit.$or.push({privacySetting: {$in: filterBy[field]}});
+      if (field === 'privatePows') {
+        filterByCrit.$or.push(filterBy.privatePows);
       } else if (field === 'categories') {
         filter.$and.push({categories:{ $elemMatch: { $in: filterBy.categories} }});
       } else {
@@ -48,7 +48,6 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
   }
 
   if (searchBy) {
-    console.log('searchBy', searchBy);
     filter.$and.push(searchBy);
   }
 

@@ -68,47 +68,19 @@ const getProblems = async function(req, res, next) {
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
-    let { ids, filter, sortBy, searchBy, page, } = req.query;
+    let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
-    if (filter) {
-      // prune filter to remove any false, or null values
-      for (let key of Object.keys(filter)) {
-        let val = filter[key];
-        console.log(val, typeof val);
-        if (val === 'false' || val === '') {
-          delete filter[key];
-        }
+    if (filterBy) {
+      let { privatePows } = filterBy;
+      if (privatePows) {
+        filterBy.privatePows = {$and: [
+          { puzzleId: { $exists: true, $ne: null } },
+          { privacySetting: 'M'}
+         ]};
+
       }
 
-      let {mine, public, organization, private, pows } = filter;
-
-
-      if  (public || organization || private) {
-        filter.privacySetting = [];
-        if (public) {
-          filter.privacySetting.push('E');
-          delete filter.public;
-        }
-        if (organization) {
-          filter.privacySetting.push('O');
-          delete filter.organization;
-        }
-        if (private) {
-          filter.privacySetting.push('M');
-          delete filter.private;
-        }
-      }
-
-      if (mine) {
-        filter.createdBy = user._id;
-        delete filter.mine;
-      }
-
-      if (pows) {
-        filter.puzzleId = { $exists: true, $ne: null };
-        delete filter.pows;
-      }
-    }
+     }
     let searchFilter;
 
     if (searchBy) {
@@ -116,7 +88,6 @@ const getProblems = async function(req, res, next) {
     if (criterion) {
       if (criterion === 'title' || criterion === 'text') {
         query = query.replace(/\s+/g, "");
-        console.log('query', query);
         let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
         searchFilter = {[criterion]: regex};
@@ -128,19 +99,12 @@ const getProblems = async function(req, res, next) {
     let doCollate = true;
 
     if (sortBy) {
-      if (sortBy === 'Z-A') {
-        sortParam = {title: -1 };
-      } else if (sortBy === 'Newest') {
-        sortParam = { createDate: -1};
-        doCollate = false;
-      } else if (sortBy === 'Oldest') {
-        sortParam = {createDate: 1};
-        doCollate = false;
-      }
+      sortParam = sortBy.sortParam;
+      doCollate = sortBy.doCollate;
     }
 
-    const criteria = await access.get.problems(user, ids, filter, searchFilter);
-    console.log('crit', criteria);
+    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
+    console.log('crit', JSON.stringify(criteria));
     let results, itemCount;
 
     if (doCollate) {
