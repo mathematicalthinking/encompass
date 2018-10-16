@@ -2,8 +2,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   elementId: 'problem-list-container',
   searchOptions: ['title', 'text'],
   searchCriterion: 'title',
-  sortOptions: ['A-Z', 'Z-A', 'Newest', 'Oldest'],
-  sortCriterion: ['A-Z'],
+  sortCriterion: { id: 1, name: 'A-Z', sortParam: { title: 1 } },
+  sortOptions: [
+    {id: 1, name: 'A-Z', sortParam: { title: 1 }, doCollate: true },
+    {id: 2, name: 'Z-A', sortParam: { title: -1 }, doCollate: true },
+    {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false },
+    {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false }
+  ],
 
   init: function() {
     this.configureFilter();
@@ -33,29 +38,115 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   configureFilter: function() {
     let filter = {
-      mine: false,
-      public: false,
-      organization: false,
-      categories: []
+      everyone: true,
+      organization: true,
+      mine: true,
+      creator: ''
     };
 
     let isAdmin = this.get('currentUser.isAdmin');
+    let isPdAdmin = this.get('currentUser.isPdAdmin');
+
+    if (isPdAdmin) {
+      filter.unshared = false;
+      this.set('filter', filter);
+      return;
+    }
+
     if (isAdmin) {
-      filter.pows =false;
-      filter.private =false;
-      filter.creator ='';
+      filter.privatePows = false;
+      filter.unshared = false;
+      filter.creator = '';
     }
     this.set('filter', filter);
   },
 
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
 
-  // fetch problems whenever a filter box is checked or unchecked
-  observeFilter: function() {
-    this.getProblems();
-  }.observes('filter.{mine,public,organization,private,pows}','filter.categories.[]', 'doFilterByCategories'),
+  buildPrivacySettingFilter: function() {
+    if (!this.get('filter')) {
+      return;
+    }
+    let filter = this.get('filter');
 
-  // fetch problems whenever different sort option is selected
+    let { everyone, organization, unshared } = filter;
+    if (!everyone && !organization && !unshared) {
+      return {$nin: ['E', 'O', 'M']};
+    }
+
+    let included = [];
+
+    if (everyone) {
+      included.push('E');
+    }
+    if (organization) {
+      included.push('O');
+    }
+    if (unshared) {
+      included.push('M');
+    }
+    return {$in: included};
+  },
+
+  buildCreatedByFilter: function() {
+    if (!this.get('filter')) {
+      return;
+    }
+
+    let filter = this.get('filter');
+    let { mine, creator } = filter;
+
+    //should these be either or?
+    if (mine) {
+      let id = this.get('currentUser.id');
+      return id;
+    }
+    // if (creator) {
+
+    // }
+  },
+
+  buildSortBy: function() {
+    let criterion = this.get('sortCriterion');
+    if (!criterion) {
+      return { title: 1, doCollate: true };
+    }
+    let { sortParam, doCollate } = criterion;
+    return {
+      sortParam,
+      doCollate
+    };
+
+  },
+
+  buildSearchBy: function() {
+    let criterion = this.get('searchCriterion');
+    let query = this.get('searchQuery');
+    return {
+      criterion,
+      query
+    };
+  },
+
+  buildFilterBy: function() {
+    let filter = this.get('filter');
+    let privacySetting = this.buildPrivacySettingFilter();
+    let createdByFilter = this.buildCreatedByFilter();
+    let privatePows = filter.privatePows;
+    let filterBy = {
+      privacySetting
+    };
+    if (createdByFilter) {
+      filterBy.createdBy = createdByFilter;
+    }
+
+    if (privatePows) {
+      filterBy.privatePows = true;
+    }
+    return filterBy;
+
+  },
+
   observeSort: function() {
     this.getProblems();
   }.observes('sortCriterion'),
@@ -67,39 +158,34 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
   }.property('problems.@each.isTrashed'),
 
-  getProblems: function(page) {
-    let queryParams = {};
+  buildQueryParams: function(page) {
+    let sortBy = this.buildSortBy();
+    let filterBy = this.buildFilterBy();
 
-    // always use filter
-    let filter = this.get('filter');
+    let params = {
+      sortBy,
+      filterBy
+    };
 
-    let doFilterByCategories = this.get('doFilterByCategories');
-    if (!doFilterByCategories) {
-     delete filter.categories;
-    }
-    queryParams.filter = filter;
-    // page is only passed in when fetch is triggered by page arrow or go to page input
-    if (page) {
-      queryParams.page = page;
-    }
-
-    // always use sort
-    let sortBy= this.get('sortCriterion');
-    queryParams.sortBy = sortBy;
-
-    let searchBy = {};
-
-    // only use search if a new search has been initiated, or currently displaying search
-    // results which are being filter
     if (this.get('doUseSearchQuery')) {
-      let searchQuery = this.get('searchQuery');
-
-      if (searchQuery) {
-        searchBy.query = searchQuery;
-        searchBy.criterion = this.get('searchCriterion');
-        queryParams.searchBy = searchBy;
-      }
+      let searchBy = this.buildSearchBy();
+      params.searchBy = searchBy;
     }
+
+    if (page) {
+      params.page = page;
+    }
+
+    return params;
+  },
+
+  getProblems: function(page) {
+    let queryParams = this.buildQueryParams(page);
+
+    // let doFilterByCategories = this.get('doFilterByCategories');
+    // if (!doFilterByCategories) {
+    //  delete filter.categories;
+    // }
 
     this.store.query('problem',
       queryParams
@@ -118,7 +204,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         this.set('isChangingPage', false);
       }
     }).catch((err) => {
-      console.log('err', err);
       this.handleErrors(err, 'problemLoadErrors');
     });
   },
@@ -174,6 +259,15 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     removeCategory: function(cat) {
       let filterCategories = this.get('filter.categories');
       filterCategories.removeObject(cat);
+    },
+    updateFilter: function(id, checked) {
+      let filter = this.get('filter');
+      let keys = Object.keys(filter);
+      if (!keys.includes(id)) {
+        return;
+      }
+      filter[id] = checked;
+      this.getProblems();
     }
   },
 });
