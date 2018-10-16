@@ -14,7 +14,20 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        li {
+          display: flex;
+          input[type=checkbox] {
+            order: 1
+          }
+          label {
+            order: 2
+          }
+        }
+
       }
+    }
+    div.sort-by {
+      margin-right: 20px;
     }
   }
   .cat-filter {
