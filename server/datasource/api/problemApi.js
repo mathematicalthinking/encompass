@@ -12,6 +12,7 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/problems');
+const accessUtils = require('../../middleware/access/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -86,7 +87,10 @@ const getProblems = async function(req, res, next) {
     if (searchBy) {
       let { query, criterion } = searchBy;
     if (criterion) {
-      if (criterion === 'title' || criterion === 'text') {
+      if (criterion === 'category') {
+        let matches = await accessUtils.getProblemsByCategory(query);
+        searchFilter = { _id: { $in: matches } };
+      } else {
         query = query.replace(/\s+/g, "");
         let regex = new RegExp(query.split('').join('\\s*'), 'i');
 

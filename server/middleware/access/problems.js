@@ -36,7 +36,8 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
       if (field === 'privatePows') {
         filterByCrit.$or.push(filterBy.privatePows);
       } else if (field === 'categories') {
-        filter.$and.push({categories:{ $elemMatch: { $in: filterBy.categories} }});
+        //filter.$and.push({categories:{ $elemMatch: { $in: filterBy.categories} }});
+        filter.$and.push({categories: filterBy.categories });
       } else {
         filterByCrit.$or.push({[field]: filterBy[field]});
       }
