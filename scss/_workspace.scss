@@ -176,7 +176,7 @@
 #workspace-info {
   header {
     padding: 0px 10px;
-    background: $header-background;
+    background: $background-color;
     span {
       display: inline-block;
     }
@@ -200,7 +200,7 @@
 #workspace-new {
   header {
     padding: 0px 10px;
-    background: $header-background;
+    background: $background-color;
     span {
       display: inline-block;
     }
@@ -319,7 +319,7 @@
 }
 
 .workspace-listing-header {
-  background: $header-background;
+  background: $background-color;
   padding: 7px 0px;
   position: fixed;
   width: 100%;
