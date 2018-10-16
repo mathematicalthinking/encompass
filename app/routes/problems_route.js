@@ -13,7 +13,6 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
       organizations: store.findAll('organization'),
       sections: store.findAll('section'),
       problems: store.query('problem', {}),
-      allProblems: store.findAll('problem')
     });
   },
 
