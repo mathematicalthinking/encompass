@@ -4,30 +4,26 @@
   <ul class="filter-options">
     <li>
       <label for="mine">Mine</label>
-      {{input id="mine" type="checkbox" checked=filter.mine }}
+      {{input id="mine" type="checkbox" checked=filter.mine change=(action "updateFilter")}}
 
     </li>
     <li>
-      <label for="public">Public</label>
-      {{input id="public" checked=filter.public type="checkbox" }}
+      <label for="everyone">Public</label>
+      {{input id="everyone" checked=filter.everyone change=(action "updateFilter") type="checkbox" }}
 
     </li>
     <li>
       <label for="organization">Org</label>
-      {{input id="organization" type="checkbox" checked=filter.organization}}
-    </li>
-    <li>
-      <label for="categories-toggle">Categories</label>
-      {{input id="categories-toggle" type="checkbox" checked=doFilterByCategories}}
+      {{input id="organization" type="checkbox" checked=filter.organization change=(action "updateFilter")}}
     </li>
     {{#if currentUser.isAdmin}}
       <li>
-        <label for="private">Private</label>
-        {{input id="private" type="checkbox" checked=filter.private}}
+        <label for="unshared">Private</label>
+        {{input id="unshared" type="checkbox" checked=filter.unshared change=(action "updateFilter")}}
       </li>
       <li>
-        <label for="pows">PoWs</label>
-        {{input id="pows" type="checkbox" checked=filter.pows}}
+        <label for="private-pows">Private PoWs</label>
+        {{input id="privatePows" type="checkbox" checked=filter.privatePows change=(action "updateFilter")}}
       </li>
     {{/if}}
   </ul>
@@ -37,14 +33,15 @@
     <h5>Sort By</h5>
     {{my-select
       content=sortOptions
+      optionLabelPath="name"
       cannotBeNull=true
       selectedValue=sortCriterion
-      action=(action (mut sortCriterion))
+      action=(action "updateSortCriterion")
     }}
   </div>
 
 </div>
-{{#if doFilterByCategories}}
+{{!-- {{#if doFilterByCategories}}
   <div class="cat-filter">
     <h5>Add Categories</h5>
     {{twitter-typeahead onSelect="addCategory" selectedItems=selectedCategories optionLabelPath="identifier" allowMultiple=true placeholder="Identifier..." isAsync=true sourceFunction=addCategoriesTypeahead}}
@@ -54,6 +51,6 @@
       {{/each}}
     </ul>
   </div>
-  {{/if}}
+  {{/if}} --}}
 
 

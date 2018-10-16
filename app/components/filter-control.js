@@ -4,10 +4,6 @@ Encompass.FilterControlComponent = Ember.Component.extend({
   selectedCategories: [],
 
   actions:{
-    toggleShowMenu: function() {
-      let hideMenu = this.get('hideMenu');
-      this.set('hideMenu', !hideMenu);
-    },
     addCategory: function(cat) {
       this.get('selectedCategories').addObject(cat);
       this.sendAction('addCategory', cat.id);
@@ -15,6 +11,13 @@ Encompass.FilterControlComponent = Ember.Component.extend({
     removeCategory: function(cat) {
       this.get('selectedCategories').removeObject(cat);
       this.get('removeCategory')(cat.id);
+    },
+    updateFilter(e) {
+      let {id, checked} = e.target;
+      this.get('updateFilter')(id, checked);
+    },
+    updateSortCriterion(criterion) {
+      this.get('updateSortCriterion')(criterion);
     }
   }
 });
