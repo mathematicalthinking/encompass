@@ -1,6 +1,6 @@
 Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
-  searchOptions: ['title', 'text'],
+  searchOptions: ['title', 'text', 'category'],
   searchCriterion: 'title',
   sortCriterion: { id: 1, name: 'A-Z', sortParam: { title: 1 } },
   sortOptions: [
@@ -9,6 +9,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false },
     {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false }
   ],
+  selectedCreators: [],
 
   init: function() {
     this.configureFilter();
@@ -32,7 +33,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
     if (!this.get('addCategoriesTypeahead')) {
       this.set('addCategoriesTypeahead', this.getAddableCategories.call(this));
-
+    }
+    if (!this.get('addUserTypeahead')) {
+      this.set('addUserTypeahead', this.getAddableUsers.call(this));
     }
   },
 
@@ -224,6 +227,37 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     };
     return ret.bind(this);
 
+  },
+  getAddableUsers: function () {
+    const store = this.get('store');
+
+    let ret = function (query, syncCb, asyncCb) {
+      // if (doGetTeachers) {
+      //   selectedUsers = this.get('teacherList');
+      // } else {
+      //   selectedUsers = this.get('studentList');
+      // }
+      let selectedUsers = this.get('selectedCreators');
+      let text = query.replace(/\W+/g, "");
+      return store.query('user', {
+          usernameSearch: text,
+        }).then((users) => {
+          if (!users) {
+            return [];
+          }
+          // if (doGetTeachers) {
+          //   users = users.rejectBy('accountType', 'S');
+          // }
+          let filtered = users.filter((user) => {
+            return !selectedUsers.includes(user);
+          });
+          return asyncCb(filtered.toArray());
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'queryErrors');
+        });
+    };
+    return ret.bind(this);
   },
 
   actions: {
