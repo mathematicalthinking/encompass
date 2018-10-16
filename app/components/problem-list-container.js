@@ -10,6 +10,22 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false }
   ],
   selectedCreators: [],
+  topLevel: Ember.computed.alias('filter.topLevel'),
+  secondLevel: Ember.computed.alias('filter.secondLevel'),
+  topLevelValue: Ember.computed.alias('filter.topLevel.selectedValue'),
+  secondLevelSelectedValues: function() {
+    let topLevelValue = this.get('topLevelValue');
+    let secondLevel = this.get('secondLevel');
+
+    if (!topLevelValue || !secondLevel) {
+      return;
+    }
+    let current = secondLevel[topLevelValue];
+    if (current) {
+      return current.selectedValues;
+    }
+
+  }.property('topLevelValue'),
 
   init: function() {
     this.configureFilter();
@@ -41,25 +57,58 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   configureFilter: function() {
     let filter = {
-      everyone: true,
-      organization: true,
-      mine: true,
-      creator: ''
+      topLevel: {
+        selectedValue: "mine",
+        inputs: [
+          {label: 'Mine', value: 'mine', isChecked: true},
+          {label: 'Org', value: 'organization', isChecked: false},
+          {label: 'Public', value: 'everyone', isChecked: false}
+        ],
+      },
+      secondLevel: {
+        mine: {
+          selectedValues: ['everyone', 'unshared'], // checkboxes
+          inputs: [
+            {label: 'Public', value: 'everyone', isChecked: true},
+            {label: 'Private', value: 'unshared', isChecked: true},
+          ]
+        },
+        organization: {
+          selectedValues: ['recommended', 'fromOrg'], // checkboxes
+          inputs: [
+            {label: 'Recommended', value: 'recommended', isChecked: true},
+            {label: 'Ours', value: 'fromOrg', isChecked: true},
+          ]
+        }
+      }
     };
+     let isPdAdmin = this.get('currentUser.isPdAdmin');
+     let isAdmin = this.get('currentUser.isAdmin');
 
-    let isAdmin = this.get('currentUser.isAdmin');
-    let isPdAdmin = this.get('currentUser.isPdAdmin');
+     let secondLevelOrg = filter.secondLevel.organization;
 
-    if (isPdAdmin) {
-      filter.unshared = false;
-      this.set('filter', filter);
-      return;
-    }
+     if (isAdmin) {
+      secondLevelOrg.inputs.push(
+        { label: 'Private', value: 'privateOrg', isChecked: true },
+      );
+     }
+     if (isPdAdmin) {
+      secondLevelOrg.inputs.push(
+        { label: 'Public', value: 'publicOrg', isChecked: true}
+      );
+     }
 
     if (isAdmin) {
-      filter.privatePows = false;
-      filter.unshared = false;
-      filter.creator = '';
+      filter.topLevel.selectedValue="all";
+      filter.topLevel.inputs = [
+        { label: 'All', value:'all', isChecked: true },
+        { label: 'Mine', value: 'mine', isChecked: false },
+        { label: 'My Org', value: 'organization', isChecked: false },
+        { label: 'Public', value: 'everyone', isChecked: false },
+        { label: 'Pending', value: 'pending', isChecked: false }
+
+      ];
+
     }
     this.set('filter', filter);
   },
@@ -148,6 +197,42 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     return filterBy;
 
   },
+  buildFilterRadio() {
+    let topLevelValue = this.get('topLevelValue');
+    let createdBy;
+    let privacySetting;
+    let currentUserId = this.get('currentUser').id;
+
+    if (topLevelValue === 'mine') {
+      createdBy = currentUserId;
+
+      let options = this.get('secondLevelSelectedValues');
+      let [ everyone, unshared ] = options;
+      console.log(everyone, unshared);
+
+      if (!everyone && !unshared) { // all filters unchecked - return nothing
+        privacySetting = { $nin: ['M', 'O', 'E'] };
+        return {
+          privacySetting,
+          createdBy
+        };
+      }
+      privacySetting = { $in: [] };
+      if (everyone) {
+        privacySetting.$in.push('E');
+        privacySetting.$in.push('O');
+      }
+      if (unshared) {
+        privacySetting.$in.push('M');
+      }
+      return {
+        $and: [
+          { privacySetting },
+          { createdBy }
+        ]
+      };
+    }
+  },
 
   displayProblems: function() {
     let problems = this.get('problems');
@@ -158,7 +243,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   buildQueryParams: function(page) {
     let sortBy = this.buildSortBy();
-    let filterBy = this.buildFilterBy();
+    // let filterBy = this.buildFilterBy();
+    let filterBy = this.buildFilterRadio();
 
     let params = {
       sortBy,
@@ -301,6 +387,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     updateSortCriterion(criterion) {
       console.log('crit', criterion);
       this.set('sortCriterion', criterion);
+      this.getProblems();
+    },
+    triggerFetch() {
       this.getProblems();
     }
   }
