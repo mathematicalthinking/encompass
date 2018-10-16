@@ -267,16 +267,6 @@ module.exports = (passport) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
  /* This is the Google Strategy for login and signup
   * It first checks to see if the user has already loggedin with Google
   * If this is the first time it then creates a new User with:
