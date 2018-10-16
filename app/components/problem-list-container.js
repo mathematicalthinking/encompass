@@ -94,16 +94,15 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
 
     let filter = this.get('filter');
-    let { mine, creator } = filter;
+    let { mine } = filter;
 
     //should these be either or?
     if (mine) {
       let id = this.get('currentUser.id');
       return id;
     }
-    // if (creator) {
 
-    // }
+    // TODO: add creator filter
   },
 
   buildSortBy: function() {
@@ -146,10 +145,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     return filterBy;
 
   },
-
-  observeSort: function() {
-    this.getProblems();
-  }.observes('sortCriterion'),
 
   displayProblems: function() {
     let problems = this.get('problems');
@@ -268,6 +263,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       }
       filter[id] = checked;
       this.getProblems();
+    },
+    updateSortCriterion(criterion) {
+      console.log('crit', criterion);
+      this.set('sortCriterion', criterion);
+      this.getProblems();
     }
-  },
+  }
 });
