@@ -252,6 +252,29 @@ const getCreatorIds = async function(model, crit={}) {
   }
 };
 
+getProblemsByCategory = async function(query) {
+  try {
+    let queryLower = query.toLowerCase();
+    let problems = await models.Problem.find({categories: {$ne: []}}, {categories: 1}).populate('categories').lean().exec();
+    let results;
+
+    results = problems.filter((p) => {
+      let identifiers = p.categories.map(c => c.identifier);
+      for (let identifier of identifiers) {
+
+        let identifierLower = identifier.toLowerCase();
+        if (identifierLower.includes(queryLower)) {
+          return true;
+        }
+      }
+    });
+    return results.map(p => p._id);
+  }catch(err) {
+    console.error('error getProblemsByCategory', err);
+    console.trace();
+  }
+};
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -266,4 +289,5 @@ module.exports.getTeacherSectionsById = getTeacherSectionsById;
 module.exports.getOrgSections = getOrgSections;
 module.exports.getAssignmentProblems = getAssignmentProblems;
 module.exports.getCreatorIds = getCreatorIds;
+module.exports.getProblemsByCategory = getProblemsByCategory;
 /* jshint ignore:end */
