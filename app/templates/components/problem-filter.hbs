@@ -1,18 +1,18 @@
 <div class="flex-container">
   <div class="top-level-filters flex-item">
-    <h5>Top Level Filters</h5>
-    {{#each topLevel.inputs as |input|}}
+    <h5>Primary Filters</h5>
+    {{#each primaryFilterOptions as |input|}}
       {{radio-filter isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
     {{/each}}
   </div>
 </div>
-{{#if currentSecondLevel}}
+{{#if secondaryFilterOptions}}
   <div class="flex-container">
     <div class="second-level-filters flex-item">
       <h5>Second Level Filters</h5>
-        {{#each currentSecondLevel.inputs as |input|}}
-          {{input id=input.value type="checkbox" checked=input.isChecked change=(action "updateSecondLevel")}}
-          <label for={{input.label}}>{{input.value}}</label>
+        {{#each secondaryFilterOptions as |input|}}
+          {{input id=input.value type="checkbox" checked=input.isApplied change=(action "updateSecondLevel")}}
+          <label for={{input.value}}>{{input.label}}</label>
         {{/each}}
     </div>
   </div>

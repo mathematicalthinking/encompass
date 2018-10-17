@@ -1,56 +1,57 @@
 Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  // radioInputs: Ember.computed.alias('filter.topLevel.radioInputs'),
   elementId: 'problem-filter',
-  topLevel: Ember.computed.alias('filter.topLevel'),
-  topLevelValue: Ember.computed.alias('filter.topLevel.selectedValue'),
-  secondLevel: Ember.computed.alias('filter.secondLevel'),
+  primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
+  primaryFilterInputs: Ember.computed.alias('filter.primaryFilters.inputs'),
+  secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),
 
-  currentSecondLevel: function() {
-    let topLevelValue = this.get('topLevelValue');
-    let secondLevel = this.get('secondLevel');
-    return secondLevel[topLevelValue];
+  primaryFilterOptions: function() {
+    let mapped = _.map(this.get('primaryFilterInputs'), (val, key) => {
+      return val;
+    });
+    return _.sortBy(mapped, 'label');
+  }.property('filter'),
 
-  }.property('topLevelValue'),
+  secondaryFilterOptions: function() {
+    return _.map(this.get('primaryFilter.secondaryFilters.inputs'), (val, key) => {
+      return val;
+    });
+  }.property('primaryFilter'),
 
-  didReceiveAttrs() {
-    // if (this.filter) {
-    //   let topLevel = filter.topLevel;
-    //   let radioOptions = topLevel.radioOptions;
-    //   this.set('radioOp')
-
-
-    // }
-    this._super(...arguments);
-  },
   actions: {
     updateTopLevel(val) {
       // need to set filter[val] : true
       // but also need to make sure the current selected item is now false
-      let currentValue = this.get('topLevelValue');
+      let currentValue = this.get('primaryFilterValue');
       if (!Ember.isEqual(currentValue, val)) {
-        this.set('topLevelValue', val);
+        let newPrimaryFilter = this.get('primaryFilterInputs')[val];
+        this.set('primaryFilter', newPrimaryFilter);
         if (this.get('onUpdate')) {
           this.get('onUpdate')();
         }
       }
-      // handle showing secondary menu
     },
     updateSecondLevel(e) {
-      let { id, checked } = e.target;
-      console.log('id, checked', id, checked);
+      let { id } = e.target;
+      let secondaryFilter = this.get('secondaryFilter');
 
-      let currentSecondLevel = this.get('currentSecondLevel');
-      let selectedValues = currentSecondLevel.selectedValues;
-      let validOptions = currentSecondLevel.inputs.map(i => i.value);
-
-      if (!validOptions.includes(id)) {
+      let targetInput = secondaryFilter.inputs[id];
+      if (!targetInput) {
+        // not a valid option
         return;
       }
-      if (checked === true) {
-        selectedValues.addObject(id);
-      } else if (checked === false) {
-        selectedValues.removeObject(id);
-      }
+      // valid option, toggle the inputs isApplied value
+      targetInput.isApplied = !targetInput.isApplied;
+
+      // filter for inputs who are currently applied
+      let appliedInputs = _.filter(secondaryFilter.inputs, (input) => {
+        return input.isApplied;
+      });
+
+      let appliedValues = _.map(appliedInputs, input => input.value);
+
+      // update selectedValues on secondaryFilter
+
+      secondaryFilter.selectedValues = appliedValues;
       if (this.get('onUpdate')) {
         this.get('onUpdate')();
       }
