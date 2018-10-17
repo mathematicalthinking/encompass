@@ -339,6 +339,62 @@ async function setUserActingRole() {
 }
 
 
+async function setProblemAuthor(pgClient) {
+    console.log(`Starting setProblemAuthor `);
+    try {
+      // try does not catch postgres server not running
+      // ToDo - try .then() to catch promise
+      const res = await pgClient.query('SELECT * FROM pow_puzzles;');
+      // get pow puzzle ids for looping (with multiple promises).
+      const resIds = res.rows.map(d => d.id)
+      console.log(`There are ${resIds.length} resIds`)
+      for (let id of resIds) {
+        console.log(`------------------------------`);
+        console.log(`allPuzzlesLoop pow id: ${id}`);
+        const pows_problem = await pgClient.query(`select pz.title as title, u.first_name as fname, u.last_name as lname from pow_puzzles pz left join dir_users u on u.id = pz.creator where pz.id = ${id}`);
+        const pow = pows_problem.rows[0];
+      // find existing encompass problem, else create new one from pow record
+        const problems = await models.Problem.find({puzzleId: id}).exec();
+        let problem;
+        if (problems.length > 0) {
+          problem = problems[0];
+          // console.log(`found problem in encompass: ${problem.title}, puzzleId: ${problem.puzzleId}`);
+          // update values in problems (e.g. images, category, etc)
+          let auth = '';
+          if (pow.fname) {
+            auth = pow.fname;
+            if (pow.lname){
+              auth += ` ${pow.lname}`;
+            }
+          } else if (pow.lname) {
+            auth = pow.lname;
+          } else {
+            auth = 'Guest';
+          }
+          problem.author = auth;
+          console.log(`problem: ${pow.title}, author: ${auth}`);
+          // save updated values into encompass problems (as obtained)
+          try {
+            await problem.save();
+            console.log(`Saved ${problem.title}`);
+          } catch (err) {
+            console.error(`ERROR saving ${prob.title} - ${err}`);
+          }
+        } else if (pow.title.includes("KenKen")) {
+          // ignore KenKen problems
+          console.log (`Ignore KenKen problem`);
+        } else {
+          console.error(`ERROR - Missing problem: ${problem._id} ${problem.title}`)
+        }
+      }
+    } catch (err) {
+      console.log(`setProblemAuthor query error stack: ${err.stack}`);
+    }
+    console.log(`done running setProblemAuthor`);
+    console.log(`-------------------`);
+  }
+
+
 
 async function update() {
   try {
@@ -347,22 +403,24 @@ async function update() {
     console.log(`connect to mongo`);
     mongoose.connect('mongodb://localhost:27017/encompass_prod');
 
-    // // open connection to POWs Postgres Database
-    // console.log(`postgres client create`)
-    // const pgClient = new pg.Client({
-    //   user: 'postgres',
-    //   host: 'localhost',
-    //   database: 'POWS',
-    //   password: '',
-    //   port: 5432,
-    // });
-    // pgClient.connect();
-    // console.log(`pg client connected`);
+    // open connection to POWs Postgres Database
+    console.log(`postgres client create`)
+    const pgClient = new pg.Client({
+      user: 'postgres',
+      host: 'localhost',
+      database: 'POWS',
+      password: '',
+      port: 5432,
+    });
+    pgClient.connect();
+    console.log(`pg client connected`);
+
+    // // create error stream
+    // const errorStream = fs.createWriteStream("errorProblems.txt");
 
     // // Updates Done week of 9/28/2018
     // // Puzzles added as problems owned by 'old pows user'
     // // Puzzle image sources set as base64 text
-    // const errorStream = fs.createWriteStream("errorProblems.txt");
     // await cleanPowUsers();
     // const pows_user = await getOrCreatePowUser();
     // await allPuzzlesLoop(pgClient, pows_user, errorStream);
@@ -374,13 +432,18 @@ async function update() {
     // await unusedProblemsPrivate();
     // await countProblemPrivacy();
 
-    // updates for week of Oct 11
-    await setUserActingRole();
+    // // updates for week of Oct 11
+    // await setUserActingRole();
 
-    // // close POWs Postgres connection
+    // updates for week of Oct 16
+    await setProblemAuthor(pgClient);
+
+    // // close error stream
     // errorStream.end();
-    // console.log(`client end`);
-    // await pgClient.end()
+
+    // close POWs Postgres connection
+    console.log(`client end`);
+    await pgClient.end()
 
     // close mongo connection
     mongoose.connection.close();

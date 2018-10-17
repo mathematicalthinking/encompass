@@ -370,6 +370,10 @@
               {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
             </li>
             <li>
+              <label class="form-label" for="author">Author:</label>
+              {{input name="author" id="author" type="text" value=author}}
+            </li>
+            <li>
               <label class="form-label" for="imagedata">Problem Image:</label>
               {{#if problem.image}}
                   <a {{action 'toggleImageSize'}} >
@@ -442,6 +446,12 @@
           <li>
             <label class="form-label" for="sharing">Sharing Authorization:</label>
             <p class="problem-info">{{problem.sharingAuth}}</p>
+          </li>
+          {{/if}}
+          {{#if problem.author}}
+          <li>
+            <label class="form-label" for="author">Author:</label>
+            <p class="problem-info">{{problem.author}}</p>
           </li>
           {{/if}}
           <li>

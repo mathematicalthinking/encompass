@@ -28,6 +28,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         privacySettings: 'Just Me makes your problem private, My Organization allows your problem to be seen by all members in your organization, and Public means every user can see your problem',
         copyrightNotice: 'Add notice if problem contains copyrighted material',
         sharingAuth: 'If you are posting copyrighted material please note your permission',
+        author: 'Name of the person who wrote this problem (is the author)',
         legalNotice: 'Please verify that the material you are posting is either your own or properly authorized to share',
       };
     this.set('tooltips', tooltips);
@@ -96,6 +97,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     let copyrightNotice = that.get('copyrightNotice');
     let sharingAuth = that.get('sharingAuth');
     let additionalImage = that.get('additionalImage');
+    var author = that.get('author');
 
     if (!this.get('approvedProblem')) {
       this.set('noLegalNotice', true);
@@ -130,7 +132,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       organization: organization,
       status: status,
       copyrightNotice: copyrightNotice,
-      sharingAuth: sharingAuth
+      sharingAuth: sharingAuth,
+      author: author
     });
 
     if (additionalImage) {

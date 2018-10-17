@@ -196,6 +196,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let isAdmin = currentUserAccountType === "A";
       this.set('copyrightNotice', problem.get('copyrightNotice'));
       this.set('sharingAuth', problem.get('sharingAuth'));
+      this.set('author', problem.get('author'));
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
       this.set('organization', problem.get('organization'));
@@ -205,6 +206,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
       this.set('privacySettingIcon', problem.get('privacySetting'));
+
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -321,6 +323,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       let problemStatus = status;
+      let author = this.get('author');
 
 
       if (!title || !isQuillValid|| !privacy) {
@@ -342,6 +345,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
       problem.set('status', problemStatus);
+      problem.set('author', author);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
