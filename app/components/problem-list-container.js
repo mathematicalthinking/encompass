@@ -9,26 +9,29 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false },
     {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false }
   ],
-  selectedCreators: [],
-  topLevel: Ember.computed.alias('filter.topLevel'),
-  secondLevel: Ember.computed.alias('filter.secondLevel'),
-  topLevelValue: Ember.computed.alias('filter.topLevel.selectedValue'),
-  secondLevelSelectedValues: function() {
-    let topLevelValue = this.get('topLevelValue');
-    let secondLevel = this.get('secondLevel');
+  privacySettingOptions: [
+    {id: 1, name: 'All', value: ['M', 'O', 'E']},
+    {id: 2, name: 'Public', value: ['O', 'E']},
+    {id: 3, name: 'Private', value: ['M']},
+  ],
 
-    if (!topLevelValue || !secondLevel) {
-      return;
-    }
-    let current = secondLevel[topLevelValue];
-    if (current) {
-      return current.selectedValues;
-    }
+  primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
+  currentUserOrgName: Ember.computed.alias('currentUser.organization.name'),
+  doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
+  selectedPrivacySetting: ['M', 'O', 'E'],
+  selectedCategoryFilter: null,
 
-  }.property('topLevelValue'),
+
+  privacySettingFilter: function() {
+    return {
+     $in: this.get('selectedPrivacySetting')
+    };
+  }.property('selectedPrivacySetting'),
+
 
   init: function() {
     this.configureFilter();
+    this.configurePrimaryFilter();
     this._super(...arguments);
   },
 
@@ -56,106 +59,149 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   configureFilter: function() {
+    let currentUserOrgName = this.get('currentUserOrgName');
+
     let filter = {
-      topLevel: {
-        selectedValue: "mine",
-        inputs: [
-          {label: 'Mine', value: 'mine', isChecked: true},
-          {label: 'Org', value: 'organization', isChecked: false},
-          {label: 'Public', value: 'everyone', isChecked: false}
-        ],
-      },
-      secondLevel: {
-        mine: {
-          selectedValues: ['everyone', 'unshared'], // checkboxes
-          inputs: [
-            {label: 'Public', value: 'everyone', isChecked: true},
-            {label: 'Private', value: 'unshared', isChecked: true},
-          ]
-        },
-        organization: {
-          selectedValues: ['recommended', 'fromOrg'], // checkboxes
-          inputs: [
-            {label: 'Recommended', value: 'recommended', isChecked: true},
-            {label: 'Ours', value: 'fromOrg', isChecked: true},
-          ]
+      primaryFilters: {
+        selectedValue: 'mine',
+        inputs: {
+          mine: {
+            label: 'Mine',
+            value: 'mine',
+            isChecked: true,
+          },
+          myOrg: {
+            label: 'My Org',
+            value: 'myOrg',
+            isChecked: false,
+            secondaryFilters: {
+              selectedValues: ['recommended', 'fromOrg'],
+              inputs: {
+                recommended: {
+                  label: 'Recommended',
+                  value: 'recommended',
+                  isChecked: true,
+                  isApplied: true,
+                },
+                fromOrg: {
+                  label: `Created by ${currentUserOrgName} Members`,
+                  value: 'fromOrg',
+                  isChecked: true,
+                  isApplied: true,
+                }
+              }
+            }
+          },
+          everyone: {
+            label: 'Public',
+            value: 'everyone',
+            isChecked: false,
+          }
         }
       }
     };
-     let isPdAdmin = this.get('currentUser.isPdAdmin');
-     let isAdmin = this.get('currentUser.isAdmin');
-
-     let secondLevelOrg = filter.secondLevel.organization;
-
-     if (isAdmin) {
-      secondLevelOrg.inputs.push(
-        { label: 'Private', value: 'privateOrg', isChecked: true },
-      );
-     }
-     if (isPdAdmin) {
-      secondLevelOrg.inputs.push(
-        { label: 'Public', value: 'publicOrg', isChecked: true}
-      );
-     }
+    let isAdmin = this.get('currentUser.isAdmin');
 
     if (isAdmin) {
-      filter.topLevel.selectedValue="all";
-      filter.topLevel.inputs = [
-        { label: 'All', value:'all', isChecked: true },
-        { label: 'Mine', value: 'mine', isChecked: false },
-        { label: 'My Org', value: 'organization', isChecked: false },
-        { label: 'Public', value: 'everyone', isChecked: false },
-        { label: 'Pending', value: 'pending', isChecked: false }
-
-      ];
-
+      filter.primaryFilters.inputs.mine.isChecked = false;
+      filter.primaryFilters.inputs.all = {
+        label: 'All',
+        value:'all',
+        isChecked: true
+      };
     }
     this.set('filter', filter);
   },
+  configurePrimaryFilter() {
+    let primaryFilters = this.get('filter.primaryFilters');
+    if (this.get('currentUser.isAdmin')) {
+      primaryFilters.selectedValue = 'all';
+      this.set('primaryFilter', primaryFilters.all);
+      return;
+    }
+    this.set('primaryFilter', primaryFilters.mine);
+  },
+  buildMineFilter() {
+    let filter = {};
+    let userId = this.get('currentUser.id');
 
-  doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
+    filter.createdBy = userId;
+
+    return filter;
+  },
+  buildPublicFilter() {
+    let filter = {};
+
+    filter.privacySetting = 'E';
+
+    return filter;
+  },
+
+  buildMyOrgFilter() {
+    let filter = {};
+
+    // 2 options : recommended, fromOrg
+    let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
+
+    let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
+    let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+
+    // immediately return 0 results
+    if (!includeRecommended && !includeFromOrg) {
+      this.set('criteriaTooExclusive', true);
+      return;
+    }
+
+    filter.$or = [];
+
+    if (includeRecommended) {
+      let recommendedProblems = this.get('currentUser.organization.recommendedProblems');
+      let ids = recommendedProblems.mapBy('id');
+
+      if (!_.isEmpty(ids)) {
+        filter.$or.push({_id: {$in: ids}});
+      } else {
+        if (!includeFromOrg) {
+          // rec only request, but no recs; immediately return nothing;
+          this.set('areNoRecommendedProblems', true);
+          this.set('problems', []);
+          this.set('problemsMetadata', null);
+          return;
+        }
+      }
+    }
+
+    if (includeFromOrg) {
+      filter.$or.push({organization: this.get('currentUser.organization.id') });
+    }
+
+    return filter;
+  },
 
   buildPrivacySettingFilter: function() {
-    if (!this.get('filter')) {
-      return;
-    }
-    let filter = this.get('filter');
-
-    let { everyone, organization, unshared } = filter;
-    if (!everyone && !organization && !unshared) {
-      return {$nin: ['E', 'O', 'M']};
-    }
-
-    let included = [];
-
-    if (everyone) {
-      included.push('E');
-    }
-    if (organization) {
-      included.push('O');
-    }
-    if (unshared) {
-      included.push('M');
-    }
-    return {$in: included};
+    //privacy setting determined from privacy drop down on main display
+    let privacySetting = this.get('privacySettingFilter');
+    return {
+       $in: privacySetting
+    };
   },
 
-  buildCreatedByFilter: function() {
-    if (!this.get('filter')) {
-      return;
-    }
+  // buildCreatedByFilter: function() {
+  //   if (!this.get('filter')) {
+  //     return;
+  //   }
 
-    let filter = this.get('filter');
-    let { mine } = filter;
+  //   let filter = this.get('filter');
+  //   let { mine } = filter;
 
-    //should these be either or?
-    if (mine) {
-      let id = this.get('currentUser.id');
-      return id;
-    }
+  //   //should these be either or?
+  //   if (mine) {
+  //     let id = this.get('currentUser.id');
+  //     return id;
+  //   }
 
-    // TODO: add creator filter
-  },
+  //   // TODO: add creator filter
+  // },
 
   buildSortBy: function() {
     let criterion = this.get('sortCriterion');
@@ -167,7 +213,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       sortParam,
       doCollate
     };
-
   },
 
   buildSearchBy: function() {
@@ -180,58 +225,33 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   buildFilterBy: function() {
-    let filter = this.get('filter');
-    let privacySetting = this.buildPrivacySettingFilter();
-    let createdByFilter = this.buildCreatedByFilter();
-    let privatePows = filter.privatePows;
-    let filterBy = {
-      privacySetting
-    };
-    if (createdByFilter) {
-      filterBy.createdBy = createdByFilter;
+    let primaryFilterValue = this.get('primaryFilterValue');
+    let filterBy;
+
+    if (primaryFilterValue === 'mine') {
+      filterBy = this.buildMineFilter();
     }
 
-    if (privatePows) {
-      filterBy.privatePows = true;
+    if (primaryFilterValue === 'everyone') {
+      filterBy = this.buildPublicFilter();
+    }
+
+    if (primaryFilterValue === 'myOrg') {
+      filterBy = this.buildMyOrgFilter();
+    }
+    if (!filterBy) {
+      return;
+    }
+
+    let privacySetting = this.get('privacySettingFilter');
+    filterBy.privacySetting = privacySetting;
+
+    let selectedCategoryFilter = this.get('selectedCategoryFilter');
+
+    if (selectedCategoryFilter) {
+      filterBy.categories = selectedCategory;
     }
     return filterBy;
-
-  },
-  buildFilterRadio() {
-    let topLevelValue = this.get('topLevelValue');
-    let createdBy;
-    let privacySetting;
-    let currentUserId = this.get('currentUser').id;
-
-    if (topLevelValue === 'mine') {
-      createdBy = currentUserId;
-
-      let options = this.get('secondLevelSelectedValues');
-      let [ everyone, unshared ] = options;
-      console.log(everyone, unshared);
-
-      if (!everyone && !unshared) { // all filters unchecked - return nothing
-        privacySetting = { $nin: ['M', 'O', 'E'] };
-        return {
-          privacySetting,
-          createdBy
-        };
-      }
-      privacySetting = { $in: [] };
-      if (everyone) {
-        privacySetting.$in.push('E');
-        privacySetting.$in.push('O');
-      }
-      if (unshared) {
-        privacySetting.$in.push('M');
-      }
-      return {
-        $and: [
-          { privacySetting },
-          { createdBy }
-        ]
-      };
-    }
   },
 
   displayProblems: function() {
@@ -243,9 +263,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   buildQueryParams: function(page) {
     let sortBy = this.buildSortBy();
-    // let filterBy = this.buildFilterBy();
-    let filterBy = this.buildFilterRadio();
+    let filterBy = this.buildFilterBy();
 
+    if (this.get('criteriaTooExclusive' || this.get('areNoRecommendedProblems')) ) {
+      // display message or just 0 results
+      this.set('problems', []);
+      this.set('problemsMetadata', null);
+      return;
+    }
+    // let filterBy = this.buildFilterRadio();
+    console.log('filterBy buildQueryParams', filterBy);
     let params = {
       sortBy,
       filterBy
@@ -266,10 +293,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   getProblems: function(page) {
     let queryParams = this.buildQueryParams(page);
 
-    // let doFilterByCategories = this.get('doFilterByCategories');
-    // if (!doFilterByCategories) {
-    //  delete filter.categories;
-    // }
+    if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
+      return;
+    }
 
     this.store.query('problem',
       queryParams
@@ -279,6 +305,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('problemsMetadata', results.get('meta'));
 
       let isSearching = this.get('isSearchingProblems');
+
       if (isSearching) {
         this.set('isDisplayingSearchResults', true);
         this.set('isSearchingProblems', false);
@@ -385,11 +412,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.getProblems();
     },
     updateSortCriterion(criterion) {
-      console.log('crit', criterion);
       this.set('sortCriterion', criterion);
       this.getProblems();
     },
     triggerFetch() {
+      for (let prop of ['criteriaTooExclusive', 'areNoRecommendedProblems']) {
+        if (this.get(prop)) {
+          this.set(prop, null);
+        }
+      }
+
       this.getProblems();
     }
   }

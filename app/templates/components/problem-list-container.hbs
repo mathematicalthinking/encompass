@@ -21,7 +21,7 @@
 
       </div>
     </div>
-    {{problem-filter onUpdate=(action "triggerFetch") filter=filter}}
+    {{problem-filter onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter}}
     <div class="clear"></div>
   </header>
 
@@ -29,7 +29,11 @@
 
     <nav class="list-box" id="with-search-bar">
       <div class="results-info">
-        {{#if isDisplayingSearchResults}}
+        {{#if criteriaTooExclusive}}
+          <p>No results found. Please try expanding your filter criteria.</p>
+        {{else if areNoRecommendedProblems}}
+          <p>There are currently no recommended problems for {{currentUserOrgName}}.</p>
+        {{else if isDisplayingSearchResults}}
           <p>Based off your filter criteria, we found {{problemsMetadata.total}} problems whose {{searchCriterion}} contains "{{searchQuery}}"</p>
           <button {{action "clearSearchResults"}}>Clear Results</button>
         {{else}}
