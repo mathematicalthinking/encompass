@@ -19,7 +19,8 @@ var OrganizationSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String, required: true }
+  name: { type: String, required: true },
+  recommendedProblems: [{type: ObjectId, ref: 'Problem'}]
 }, { versionKey: false });
 
 OrganizationSchema.methods.getMemberCount = function(id) {
