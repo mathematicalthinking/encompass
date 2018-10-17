@@ -350,10 +350,10 @@ async function setProblemAuthor(pgClient) {
       console.log(`There are ${resIds.length} resIds`)
       for (let id of resIds) {
         console.log(`------------------------------`);
-        console.log(`allPuzzlesLoop pow id: ${id}`);
+        console.log(`setProblemAuthor pow id: ${id}`);
         const pows_problem = await pgClient.query(`select pz.title as title, u.first_name as fname, u.last_name as lname from pow_puzzles pz left join dir_users u on u.id = pz.creator where pz.id = ${id}`);
         const pow = pows_problem.rows[0];
-      // find existing encompass problem, else create new one from pow record
+        // find existing encompass problem, else create new one from pow record
         const problems = await models.Problem.find({puzzleId: id}).exec();
         let problem;
         if (problems.length > 0) {
@@ -394,6 +394,165 @@ async function setProblemAuthor(pgClient) {
     console.log(`-------------------`);
   }
 
+  function insertImagesIntoText2(text, errorStream, probTitle) {
+    // console.log(`\n--------------\nOriginal HTML: ${text}`)
+    result = [];
+    let imgSrc = 0;
+    var parser = new htmlparser.Parser({
+      onopentag: function(name, attribs){
+        result.push('<' + name + '>');
+      },
+      onattribute: function(name, value) {
+        const origUrl = value;
+        let imageFilePath;
+        if (name == 'src') {
+          imgSrc += 1;
+          // console.log(`url: ${origUrl}`)
+          if (origUrl.substring(0, 21) === 'data:image/png;base64') {
+            // console.log (`Img already converted`);
+            // imageFilePath = imgDirRoot + origUrl.substring(22);
+            result.push('Image already converted')
+          } else if (origUrl.length === 0) {
+            console.log (`ERROR image blanked out`);
+            // imageFilePath = imgDirRoot + origUrl.substring(22);
+            result.push('ERROR image blanked out')
+          } else {
+            urlParts = origUrl.split('/');
+            justFileName = urlParts[urlParts.length - 1];
+            imageFilePath = imgDirRoot + 'missing/' + justFileName;
+            value = imageFileToBase64(imageFilePath);
+            // console.log(`urlParts: ${urlParts}, justFileName: ${justFileName}, img length: ${value.length}`);
+            if (value !== '') {
+              result.push(`Update image for ${origUrl}`);
+            } else {
+              result.push(`Ignore no matching missing image ${probTitle} for ${origUrl}`)
+            }
+          }
+        }
+        result.push(' ' + name + '="' + value + '"');
+      },
+      ontext: function(text){
+        result.push('T' + text)
+      },
+      onclosetag: function(tagname){
+        result.push('</' + tagname + '>');
+      }
+    }, {decodeEntities: true});
+    try {
+      parser.write(text);
+      parser.end();
+      let imgErrs = 0;
+      let imgIgnores = 0;
+      let outStr = '';
+      let saveAttrs = '';
+      result.forEach ( (elem) => {
+        switch (elem[0] ) {
+          case '<':
+            if (saveAttrs.length > 0) {
+              outStr += elem.substring(0, elem.length - 1) + saveAttrs + '>';
+              saveAttrs = '';
+            } else {
+              outStr += elem;
+            }
+            break;
+          case ' ':
+            saveAttrs += elem;
+            break;
+          case 'T':
+            outStr +=  elem.substring(1);
+            break;
+          case 'E':
+            // print missing images in error stream file
+            console.log(`Reconstitute Error ${elem}`);
+            errorStream.write(elem);
+            imgErrs += 1;
+            break;
+          case 'K':
+            // // dont print kenken in error stream file
+            // console.log(elem);
+            // // errorStream.write(elem);
+            // imgErrs += 1;
+            imgIgnores += 1;
+            break;
+          case 'I':
+            imgIgnores += 1;
+            // console.log(`Reconstitute Ignore ${elem}`)
+            break;
+          case 'U':
+            console.log(`${probTitle} - ${elem}`)
+            break;
+          default:
+          imgErrs += 1;
+          console.log(`Reconstitute ERROR: invalid stack element ${elem}`);
+            break;
+        }
+      });
+      if (imgErrs > 0 ) {
+        console.error(`ERROR: missing image(s)`)
+        return ''; // missing images error
+      } else if (imgIgnores > 0) {
+        return ''; // Ignore these problems
+      } else if (imgSrc === 0) {
+        return ''; // Ignore problems with no image sources
+      } else {
+        // console.log(`\n--------------\nFinal HTML: ${outStr}`)
+        return outStr; // no errors
+      }
+    } catch (e) {
+      console.error(`ERROR: ${e}`);
+      return ''; // have errors
+    }
+  }
+
+
+  async function updateMiscPics(pgClient, pows_user, errorStream) {
+    console.log(`Starting updateMiscPics `);
+    let updateCount = 0;
+    try {
+      // try does not catch postgres server not running
+      // ToDo - try .then() to catch promise
+      const res = await pgClient.query('SELECT * FROM pow_puzzles;');
+      // get pow puzzle ids for looping (with multiple promises).
+      const resIds = res.rows.map(d => d.id)
+      console.log(`There are ${resIds.length} resIds`)
+      for (let id of resIds) {
+        // console.log(`------------------------------`);
+        // console.log(`setProblemAuthor pow id: ${id}`);
+        const pows_problem = await pgClient.query(`select pz.title as title, u.first_name as fname, u.last_name as lname from pow_puzzles pz left join dir_users u on u.id = pz.creator where pz.id = ${id}`);
+        const pow = pows_problem.rows[0];
+        // find existing encompass problem, else create new one from pow record
+        const problems = await models.Problem.find({puzzleId: id}).exec();
+        let problem;
+        if (problems.length > 0) {
+          problem = problems[0];
+          newText = insertImagesIntoText2(problem.text, errorStream, problem.title);
+          if (newText.length > 0) {
+            // console.log(`Update ${problem.title}`);
+            // console.log(`found problem in encompass: ${problem.title}, puzzleId: ${problem.puzzleId}`);
+            problem.text = newText;
+            // save updated values into encompass problems (as obtained)
+            try {
+              await problem.save();
+              // console.log(`Saved ${problem.title}, ${problem.text}`);
+              updateCount += 1
+            } catch (err) {
+              console.error(`ERROR saving ${problem.title} - ${err}`);
+            }
+          } else {
+            // console.log(`Ignore - not missing image: ${problem._id} ${problem.title}`)
+          }
+        } else {
+          if (!pow.title.includes("KenKen")) {
+            console.error(`Error?? Missing Problem??`)
+          }
+        }
+      }
+    } catch (err) {
+      console.log(`updateMiscPics query error stack: ${err.stack}`);
+    }
+    console.log(`done running updateMiscPics with ${updateCount} updates`);
+    console.log(`-------------------`);
+  }
 
 
 async function update() {
@@ -415,15 +574,19 @@ async function update() {
     pgClient.connect();
     console.log(`pg client connected`);
 
-    // // create error stream
-    // const errorStream = fs.createWriteStream("errorProblems.txt");
+    // create error stream
+    const errorStream = fs.createWriteStream("errorProblems.txt");
+
+    // create pows_user
+    const pows_user = await getOrCreatePowUser();
+
+    // // original conversions code here
+    // await allPuzzlesLoop(pgClient, pows_user, errorStream);
 
     // // Updates Done week of 9/28/2018
     // // Puzzles added as problems owned by 'old pows user'
     // // Puzzle image sources set as base64 text
     // await cleanPowUsers();
-    // const pows_user = await getOrCreatePowUser();
-    // await allPuzzlesLoop(pgClient, pows_user, errorStream);
 
     // // updates for week of Oct 5
     // await allPOWsProblemsPrivate();
@@ -436,16 +599,17 @@ async function update() {
     // await setUserActingRole();
 
     // updates for week of Oct 16
-    await setProblemAuthor(pgClient);
+    // await setProblemAuthor(pgClient);
+    await updateMiscPics(pgClient, pows_user, errorStream);
 
-    // // close error stream
-    // errorStream.end();
+    // close error stream
+    errorStream.end();
 
     // close POWs Postgres connection
     console.log(`client end`);
     await pgClient.end()
 
-    // close mongo connection
+    // close mongo connection to encompass
     mongoose.connection.close();
 
   } catch (err) {
