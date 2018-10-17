@@ -30,22 +30,7 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
     filter.$and.push({_id: {$in : ids } });
   }
   if (!_.isEmpty(filterBy)) {
-    let filterByCrit = {$or: []};
-
-    for (let field of Object.keys(filterBy)) {
-      if (field === 'privatePows') {
-        filterByCrit.$or.push(filterBy.privatePows);
-      } else if (field === 'categories') {
-        //filter.$and.push({categories:{ $elemMatch: { $in: filterBy.categories} }});
-        filter.$and.push({categories: filterBy.categories });
-      } else {
-        filterByCrit.$or.push({[field]: filterBy[field]});
-      }
-    }
-    if (!_.isEmpty(filterByCrit.$or)) {
-      filter.$and.push(filterByCrit);
-    }
-
+    filter.$and.push(filterBy);
   }
 
   if (searchBy) {

@@ -6,6 +6,7 @@
 /* jshint ignore:start */
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -17,6 +18,22 @@ const accessUtils = require('../../middleware/access/utils');
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+// eslint-disable-next-line no-unused-vars
+async function getOrgRecommendedProblems(user, orgId, isIdOnly) {
+  try {
+    let org = await models.Organization.findById(orgId).lean().exec();
+    if (!org) {
+      return [];
+    }
+    let problems = org.recommendedProblems;
+    if (isIdOnly) {
+      return _.map(problems, p => p._id);
+    }
+    return problems;
+  } catch(err) {
+    console.error(`Error getOrgRecommendedProblems: `, err);
+  }
+}
 
 /**
   * @public
@@ -28,36 +45,6 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
-// This only returns problems that are public or belong to you
-// Needd to update to handle problems you participate in
-// function accessibleProblems(user) {
-//   let studentProblems = [];
-
-//   return models.Assignment.find({'_id': {$in: user.assignments}}).then((assignments) => {
-//       assignments.forEach((assn) => {
-//         studentProblems.push(assn.problem);
-//       });
-//       return studentProblems;
-//   })
-//   .then((probs) => {
-//     return {
-//       $or: [
-//         { createdBy: user },
-//         { privacySetting: "E" },
-//         { $and: [
-//           { organization: user.organization },
-//           { privacySetting: "O" }
-//         ]},
-//         {_id: {$in: probs}},
-//       ],
-//       isTrashed: false
-//     };
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
-// }
 // query params support:
 // ids
 // filterBy
@@ -72,16 +59,15 @@ const getProblems = async function(req, res, next) {
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
     if (filterBy) {
-      let { privatePows } = filterBy;
+      console.log('filterBy problem API:', JSON.stringify(filterBy));
+      let { privatePows, } = filterBy;
       if (privatePows) {
         filterBy.privatePows = {$and: [
           { puzzleId: { $exists: true, $ne: null } },
           { privacySetting: 'M'}
          ]};
-
+        }
       }
-
-     }
     let searchFilter;
 
     if (searchBy) {
