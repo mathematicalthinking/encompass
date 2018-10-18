@@ -4,7 +4,7 @@
   <ul>
     {{#each primaryFilterOptions as |input|}}
       <li>
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
+        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
             {{selectize-input
@@ -24,9 +24,12 @@
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
-              <li>
-                {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
-                <label for={{option.value}}>{{option.label}}</label>
+              <li class="checkbox-content">
+                <label for={{option.value}} class="checkbox-label {{if isSelected 'is-selected'}}">
+                  <i class="checkbox-icon {{option.icon}}"></i>
+                  <span class="checkbox-text">{{option.label}}</span>
+                  {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+                </label>
               </li>
             {{/each}}
           </ul>
@@ -38,7 +41,3 @@
   </ul>
 
 </div>
-
-
-
-
