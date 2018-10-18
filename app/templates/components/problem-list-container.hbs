@@ -1,6 +1,9 @@
 <div class="flex-container wrapper">
   <div class="flex-item filter-options">
-    {{problem-filter store=store onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter}}
+    {{problem-filter
+      store=store
+      onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter
+    }}
   </div>
 
   <div class="flex-item list-view">
@@ -15,16 +18,7 @@
 
 
     <div class="results-info">
-        {{#if criteriaTooExclusive}}
-          <p>No results found. Please try expanding your filter criteria.</p>
-        {{else if areNoRecommendedProblems}}
-          <p>There are currently no recommended problems for {{currentUserOrgName}}.</p>
-        {{else if isDisplayingSearchResults}}
-          <p>Based off your filter criteria, we found {{problemsMetadata.total}} problems whose {{searchCriterion}} contains "{{searchQuery}}"</p>
-          <button {{action "clearSearchResults"}}>Clear Results</button>
-        {{else}}
-          <p>We found {{problemsMetadata.total}} problems based off of your current filter criteria</p>
-        {{/if}}
+        {{listResultsMessage}}
     </div>
 
 
