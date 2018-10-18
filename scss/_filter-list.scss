@@ -1,0 +1,58 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+.flex-container-full {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  align-items: stretch;
+  height: 100%;
+  margin-bottom: auto;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: space-between;
+  -webkit-align-content: center;
+  -ms-flex-line-pack: center;
+  align-content: center;
+  -webkit-align-items: flex-stretch;
+  -ms-flex-align: stretch;
+  overflow: hidden;
+}
+
+  .flex-container-full {
+    .flex-item-full {
+      padding: 20px;
+      &.filter-options {
+        -webkit-order: 1;
+        -ms-flex-order: 1;
+        order: 1;
+        -webkit-flex: 1 0 auto;
+        -ms-flex: 1 0 auto;
+        flex: 1 0 auto;
+        -webkit-align-self: auto;
+        -ms-flex-item-align: auto;
+        align-self: auto;
+        background-color:$filter-list-background-color;
+      }
+      &.list-view {
+        -webkit-order: 2;
+        -ms-flex-order: 2;
+        order: 2;
+        -webkit-flex: 4 1 auto;
+        -webkit-flex: 4 1 auto;
+        -ms-flex: 4 1 auto;
+        flex: 4 1 auto;
+        -webkit-align-self: auto;
+        -ms-flex-item-align: auto;
+        align-self: auto;
+        overflow-y: auto;
+      }
+    }
+  }
