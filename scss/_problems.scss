@@ -8,14 +8,6 @@
   height: 100%;
   box-sizing: border-box;
   margin-top: .8vh;
-  .top-level-filters {
-    margin-top: 20px;
-    h2 {
-      font-size: 1.8em;
-      font-weight: $main-font-weight;
-      margin-bottom: 40px;
-    }
-  }
   ul#main-problem-list {
     .problem-list-item {
       display: flex;

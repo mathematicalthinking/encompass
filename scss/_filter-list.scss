@@ -26,33 +26,77 @@
   overflow: hidden;
 }
 
-  .flex-container-full {
-    .flex-item-full {
-      padding: 20px;
-      &.filter-options {
-        -webkit-order: 1;
-        -ms-flex-order: 1;
-        order: 1;
-        -webkit-flex: 1 0 auto;
-        -ms-flex: 1 0 auto;
-        flex: 1 0 auto;
-        -webkit-align-self: auto;
-        -ms-flex-item-align: auto;
-        align-self: auto;
-        background-color:$filter-list-background-color;
-      }
-      &.list-view {
-        -webkit-order: 2;
-        -ms-flex-order: 2;
-        order: 2;
-        -webkit-flex: 4 1 auto;
-        -webkit-flex: 4 1 auto;
-        -ms-flex: 4 1 auto;
-        flex: 4 1 auto;
-        -webkit-align-self: auto;
-        -ms-flex-item-align: auto;
-        align-self: auto;
-        overflow-y: auto;
+.flex-container-full {
+  .flex-item-full {
+    &.filter-options {
+      -webkit-order: 1;
+      -ms-flex-order: 1;
+      order: 1;
+      -webkit-flex: 1 0 auto;
+      -ms-flex: 1 0 auto;
+      flex: 1 0 auto;
+      -webkit-align-self: auto;
+      -ms-flex-item-align: auto;
+      align-self: auto;
+      background-color:$filter-list-background-color;
+      max-width: 400px;
+      .filter-items {
+        margin-top: 20px;
+        h2 {
+          font-size: 1.8em;
+          font-weight: $main-font-weight;
+          margin-bottom: 50px;
+          margin-left: 20px;
+        }
+        h3 {
+          font-size: 1em;
+          text-transform: uppercase;
+          font-weight: $main-font-weight;
+          margin-bottom: 15px;
+          margin-left: 20px;
+        }
+        .radio-filter {
+          width: 100%;
+          .is-selected {
+            background: $background-body;
+            color: $accent-color;
+          }
+          label {
+            display: block;
+            height: 50px;
+            width: 100%;
+            position: relative;
+            .radio-content {
+              position: relative;
+              top: 1em;
+              .radio-icon {
+                margin: 0;
+                padding: 0;
+                text-indent: 20px;
+              }
+              .radio-text {
+                margin-left: 10px;
+              }
+            }
+            input[type=radio] {
+              visibility: hidden;
+            }
+          }
+        }
       }
     }
+    &.list-view {
+      -webkit-order: 2;
+      -ms-flex-order: 2;
+      order: 2;
+      -webkit-flex: 4 1 auto;
+      -webkit-flex: 4 1 auto;
+      -ms-flex: 4 1 auto;
+      flex: 4 1 auto;
+      -webkit-align-self: auto;
+      -ms-flex-item-align: auto;
+      align-self: auto;
+      overflow-y: auto;
+    }
   }
+}
