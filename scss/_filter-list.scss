@@ -85,7 +85,10 @@
         }
         .secondary-filter-options {
           font-size: .9em;
-          background-color: $background-body;
+          .is-selected {
+            background: $background-body;
+            color: $accent-color;
+          }
           .checkbox-content {
             .checkbox-label {
               width: 100%;
