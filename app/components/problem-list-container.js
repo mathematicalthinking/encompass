@@ -20,7 +20,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
-  currentUserOrgName: Ember.computed.alias('currentUser.organization.content.name'),
+  currentUserOrgName: Ember.computed.alias('currentUser.organization.content'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
   selectedCategoryFilter: null,
