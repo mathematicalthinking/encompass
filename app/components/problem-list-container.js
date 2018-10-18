@@ -116,10 +116,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     let primaryFilters = this.get('filter.primaryFilters');
     if (this.get('currentUser.isAdmin')) {
       primaryFilters.selectedValue = 'all';
-      this.set('primaryFilter', primaryFilters.all);
+      this.set('primaryFilter', primaryFilters.inputs.all);
       return;
     }
-    this.set('primaryFilter', primaryFilters.mine);
+    this.set('primaryFilter', primaryFilters.inputs.mine);
   },
   buildMineFilter() {
     let filter = {};
@@ -242,9 +242,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     if (!filterBy) {
       return;
     }
+    // primary public filter should disable privacy setting dropdown?
+    if (primaryFilterValue === 'everyone') {
+      filterBy.privacySetting = {$in: ['E']};
+    } else {
+      let privacySetting = this.get('privacySettingFilter');
+      filterBy.privacySetting = privacySetting;
+    }
 
-    let privacySetting = this.get('privacySettingFilter');
-    filterBy.privacySetting = privacySetting;
 
     let selectedCategoryFilter = this.get('selectedCategoryFilter');
 

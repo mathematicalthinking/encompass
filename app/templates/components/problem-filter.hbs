@@ -1,22 +1,48 @@
 <div class="flex-container">
   <div class="top-level-filters flex-item">
     <h5>Primary Filters</h5>
-    {{#each primaryFilterOptions as |input|}}
-      {{radio-filter isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
-    {{/each}}
+    <ul>
+      {{#each primaryFilterOptions as |input|}}
+        <li>
+          {{radio-filter groupValue=primaryFilterValue secondaryInputs = input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
+          {{#if (is-equal primaryFilterValue input.value)}}
+            {{#if showAdminFilters}}
+              <h5>Admin Filters</h5>
+            {{selectize-input
+              store=store
+              inputId="creator-filter"
+              valueField="id"
+              labelField="username"
+              searchField="username"
+              onItemAdd=(action "addCreator")
+              onItemRemove=(action "removeCreator")
+              isAsync=true
+              maxItems=3
+              placeholder="Select up to 3 creators"
+              model="user"
+              queryParamsKey="usernameSearch"
+            }}
+
+            {{else}}
+            <ul>
+              {{#each secondaryFilterOptions as |option|}}
+                <li>
+                  {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+                  <label for={{option.value}}>{{option.label}}</label>
+                </li>
+              {{/each}}
+            </ul>
+            {{/if}}
+
+
+
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+
   </div>
 </div>
-{{#if secondaryFilterOptions}}
-  <div class="flex-container">
-    <div class="second-level-filters flex-item">
-      <h5>Second Level Filters</h5>
-        {{#each secondaryFilterOptions as |input|}}
-          {{input id=input.value type="checkbox" checked=input.isApplied change=(action "updateSecondLevel")}}
-          <label for={{input.value}}>{{input.label}}</label>
-        {{/each}}
-    </div>
-  </div>
- {{/if}}
 
 
 

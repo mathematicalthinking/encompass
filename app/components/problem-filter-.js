@@ -3,6 +3,7 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   primaryFilterInputs: Ember.computed.alias('filter.primaryFilters.inputs'),
   secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),
+  showAdminFilters: Ember.computed.equal('primaryFilter.value', 'all'),
 
   primaryFilterOptions: function() {
     let mapped = _.map(this.get('primaryFilterInputs'), (val, key) => {
@@ -55,6 +56,13 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       if (this.get('onUpdate')) {
         this.get('onUpdate')();
       }
+    },
+    addCreator(val, $item) {
+      console.log('added creator', val, $item);
+
+    },
+    removeCreator(val) {
+      console.log('removed creator', val);
     }
   }
 });
