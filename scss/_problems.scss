@@ -255,6 +255,32 @@ nav#with-search-bar {
   }
 }
 #problem-list-container {
+  .flex-container.wrapper{
+    border: 1px solid green;
+    .flex-item {
+      &.filter-options {
+        flex: 1 1 auto;
+        border: 1px solid red;
+        #problem-filter {
+          margin-left: 20px;
+        }
+      }
+      &.list-view {
+        border: 1px solid blue;
+        flex: 4 1 auto;
+        .search-bar-comp {
+          width:40%;
+          float: right;
+          border: 1px solid orange;
+        }
+        .new-link-btn {
+          float: right;
+        }
+      }
+    }
+  }
+
+
   ul#main-problem-list {
     .problem-list-item {
       display: flex;
@@ -283,6 +309,24 @@ nav#with-search-bar {
         content: "M";
         color: $error-color;
       }
+    }
+  }
+  .new-link-btn {
+    color: white;
+    background: $accent-color;
+    font-weight: $main-font-weight;
+    font-family: $primary-font;
+    border-radius: 3px;
+    padding: 0px 15px;
+    margin-left: 10px;
+    display: inline-block;
+    position: relative;
+    top: -4px;
+    line-height: 40px;
+    &:hover {
+      font-weight: $bold-font-weight;
+      cursor: pointer;
+      background: darken($accent-color, 10%);
     }
   }
   .search-row {
