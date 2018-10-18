@@ -1,27 +1,26 @@
-<div class="top-level-filters">
-  <h5>Primary Filters</h5>
+<div class="filter-items">
+  <h2>Filter Options</h2>
+  <h3>Primary Filters</h3>
   <ul>
     {{#each primaryFilterOptions as |input|}}
       <li>
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs = input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
+        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
-            <h5>Admin Filters</h5>
-          {{selectize-input
-            store=store
-            inputId="creator-filter"
-            valueField="id"
-            labelField="username"
-            searchField="username"
-            onItemAdd=(action "addCreator")
-            onItemRemove=(action "removeCreator")
-            isAsync=true
-            maxItems=3
-            placeholder="Select up to 3 creators"
-            model="user"
-            queryParamsKey="usernameSearch"
-          }}
-
+            {{selectize-input
+              store=store
+              inputId="creator-filter"
+              valueField="id"
+              labelField="username"
+              searchField="username"
+              onItemAdd=(action "addCreator")
+              onItemRemove=(action "removeCreator")
+              isAsync=true
+              maxItems=3
+              placeholder="Select up to 3 creators"
+              model="user"
+              queryParamsKey="usernameSearch"
+            }}
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
@@ -32,8 +31,6 @@
             {{/each}}
           </ul>
           {{/if}}
-
-
 
         {{/if}}
       </li>
