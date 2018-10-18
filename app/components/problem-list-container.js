@@ -14,12 +14,35 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {id: 2, name: 'Public', value: ['O', 'E']},
     {id: 3, name: 'Private', value: ['M']},
   ],
+  adminFilterSelect:  {
+    defaultValue: 'organization',
+    options: ['organization', 'creator', 'author']
+  },
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   currentUserOrgName: Ember.computed.alias('currentUser.organization.name'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
   selectedCategoryFilter: null,
+
+  listResultsMessage: function() {
+    let msg;
+    if (this.get('criteriaTooExclusive')) {
+      msg = 'No results found. Please try expanding your filter criteria.';
+      return msg;
+    }
+    if (this.get('areNoRecommendedProblems')) {
+      msg = `There are currently no recommended problems for ${this.get('currentUserOrgName')}.`;
+      return msg;
+    }
+    if (this.get('isDisplayingSearchResults')) {
+      msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} problems whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
+      return;
+    }
+    msg = `We found ${this.get('problemsMetadata.total')} problems based off of your current filter criteria.`;
+    return msg;
+
+  }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed'),
 
 
   privacySettingFilter: function() {
