@@ -92,11 +92,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
             label: 'Mine',
             value: 'mine',
             isChecked: true,
+            icon: 'fas fa-user'
           },
           myOrg: {
             label: 'My Org',
             value: 'myOrg',
             isChecked: false,
+            icon: 'fas fa-university',
             secondaryFilters: {
               selectedValues: ['recommended', 'fromOrg'],
               inputs: {
@@ -105,12 +107,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                   value: 'recommended',
                   isChecked: true,
                   isApplied: true,
+                  icon: 'fas fa-lightbulb'
                 },
                 fromOrg: {
                   label: `Created by ${currentUserOrgName} Members`,
                   value: 'fromOrg',
                   isChecked: true,
                   isApplied: true,
+                  icon: 'fas fa-users'
                 }
               }
             }
@@ -119,6 +123,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
             label: 'Public',
             value: 'everyone',
             isChecked: false,
+            icon: 'fas fa-globe'
           }
         }
       }
