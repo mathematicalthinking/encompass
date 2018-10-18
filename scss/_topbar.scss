@@ -143,12 +143,12 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   z-index: 10;
   margin-bottom: 0px;
   font-size: 1em; // margin-bottom: 1px;
   height: 75px;
-  box-shadow: $box-shadow;
+  // box-shadow: $box-shadow;
   .small {
     height: 20px;
     overflow: hidden;
@@ -192,7 +192,6 @@
 }
 
 #al_nav {
-  height: 75px;
   #main-nav {
     float: right;
     margin-top: 20px;
