@@ -14,6 +14,9 @@ var data = [
     "categories": [],
     "isPublic": true,
     "privacySetting" : 'E',
+    "copyrightNotice": "Apple Corps.",
+    "sharingAuth": "stolen goods",
+    "author": "Paul McCartney",
     "isTrashed": false,
   }, {
     "_id": "5b4e2e56be1e18425515308c",
@@ -27,6 +30,9 @@ var data = [
     "categories": [],
     "isPublic": false,
     "privacySetting": 'M',
+    "copyrightNotice": "Apple Corps.",
+    "sharingAuth": "stolen goods",
+    "author": "Steve Jobs",
     "isTrashed": false,
   }, {
     "_id": "5b4e2e6cbe1e18425515308d",

@@ -63,6 +63,9 @@ const newProblem = {
     question: 'What is it?',
     category: '',
     additionalInfo: 'Be careful!',
+    copyrightNotice: "Apple Computer Co",
+    sharingAuth: "So Sue Me",
+    author: "Steve Jobs",
   },
   privacySetting: 'E',
   imageUrl: ''
