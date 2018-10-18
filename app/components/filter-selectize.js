@@ -5,7 +5,7 @@ didReceiveAttrs() {
   let modelName = this.get('modelName');
 
   if (selectedAttribute) {
-    let label = `Filter ${modelName}s by`
+    let label = `Filter ${modelName}s by`;
     this.set('selectLabel', label);
   }
   this._super(...arguments);
