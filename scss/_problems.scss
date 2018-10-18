@@ -263,6 +263,12 @@ nav#with-search-bar {
         border: 1px solid red;
         #problem-filter {
           margin-left: 20px;
+          ul.secondary-filter-options {
+
+            li {
+              margin-left: 20px;
+            }
+          }
         }
       }
       &.list-view {
