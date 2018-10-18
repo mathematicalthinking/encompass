@@ -1,12 +1,9 @@
-<div class="flex-container wrapper">
-  <div class="flex-item filter-options">
-    {{problem-filter
-      store=store
-      onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter
-    }}
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options">
+    {{problem-filter store=store onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter}}
   </div>
 
-  <div class="flex-item list-view">
+  <div class="flex-item-full list-view">
     {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<i class="fas fa-plus"></i>{{/link-to}}
     {{search-bar
       onSearch=(action "searchProblems")
