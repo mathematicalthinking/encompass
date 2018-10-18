@@ -16,9 +16,17 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {id: 3, name: 'Private', value: ['M']},
   ],
   adminFilterSelect:  {
-    defaultValue: 'organization',
-    options: ['organization', 'creator', 'author']
+    defaultValue: ['organization'],
+    options: [
+      { label: 'organization'},
+      { label: 'creator'},
+      { label: 'author'}
+    ]
   },
+
+  creatorFilter: [],
+  authorFilter: [],
+  orgFilter: [],
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   currentUserOrgName: Ember.computed.alias('currentUser.organization.content'),

@@ -1,6 +1,13 @@
 <div class="flex-container-full">
   <div class="flex-item-full filter-options">
-    {{problem-filter store=store onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter}}
+    {{problem-filter
+      store=store
+      onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter
+      adminFilterSelect=adminFilterSelect
+      orgs=model.organizations
+      authorFilter=authorFilter
+      creatorFilter=creatorFilter
+      orgFilter=orgFilter}}
   </div>
 
   <div class="flex-item-full list-view">
