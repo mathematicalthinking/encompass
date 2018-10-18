@@ -28,16 +28,12 @@ textarea {
 }
 
 #al_body {
-  font: $primary-font;
-}
-
-
-#al_body {
   position: absolute;
-  margin-top: 1px;
+  box-sizing: border-box;
   top: 75px;
   left: 0;
   width: 100%;
+  height: 91vh;
   font: $primary-font;
 }
 
