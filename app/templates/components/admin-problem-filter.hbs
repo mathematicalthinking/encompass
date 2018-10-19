@@ -1,21 +1,18 @@
+<div class="choose-filter-admin">
+  <span class="filter-text">Find Problems by</span>
+    {{selectize-input
+    inputId="admin-filter-select"
+    initialOptions=mainOptions
+    initialItems=secondaryFilter.initialItems
+    onItemAdd=(action "setMainFilter")
+    maxItems=1
+    labelField="label"
+    valueField="value"}}
+</div>
 
-    <div class="choose-filter-admin">
-      <span>Find Problems by</span>
-      {{selectize-input
-        inputId="admin-filter-select"
-        initialOptions=mainOptions
-        initialItems=secondaryFilter.initialItems
-        onItemAdd=(action "setMainFilter")
-        maxItems=1
-        labelField="label"
-        valueField="value"
-      }}
-    </div>
-
-  {{#if showOrgFilter}}
-  <div class="org-filter-admin">
-  <h5>Filter by Org</h5>
-  {{selectize-input
+{{#if showOrgFilter}}
+  <div class="filter-admin">
+    {{selectize-input
     inputId="all-org-filter"
     initialOptions=orgOptions
     onItemAdd=(action "updateMultiSelect")
@@ -24,12 +21,13 @@
     labelField="name"
     valueField="id"
     searchField="name"
-    propToUpdate="selectedValues"
-  }}
-</div>
+    propToUpdate="selectedValues"}}
+  </div>
 {{/if}}
+
 {{#if showUserFilter}}
-  {{selectize-input
+  <div class="filter-admin">
+    {{selectize-input
     store=store
     inputId="all-user-filter"
     onItemAdd=(action "updateMultiSelect")
@@ -41,21 +39,20 @@
     model="user"
     queryParamsKey="usernameSearch"
     propToUpdate="selectedValues"
-    isAsync=true
-  }}
+    isAsync=true}}
+  </div>
 {{/if}}
+
 {{#if showPowsFilter}}
   <ul class="secondary-filter-options">
     {{#each powsFilterOptions as |option|}}
-      <li class="checkbox-content {{if (is-in selectedValues option.value) 'is-selected'}}">
-        <label for={{option.value}} class="checkbox-label">
-          <i class="checkbox-icon {{option.icon}}"></i>
-          <span class="checkbox-text">{{option.label}}</span>
-          {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
-        </label>
-      </li>
+    <li class="checkbox-content {{if (is-in selectedValues option.value) 'is-selected'}}">
+      <label for={{option.value}} class="checkbox-label">
+        <i class="checkbox-icon {{option.icon}}"></i>
+        <span class="checkbox-text">{{option.label}}</span>
+        {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+      </label>
+    </li>
     {{/each}}
   </ul>
 {{/if}}
-
-
