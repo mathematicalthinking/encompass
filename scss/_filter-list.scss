@@ -31,6 +31,10 @@
       &.description {
         display: none;
       }
+      &.status {
+        @include flex-item(5, center, .04 0 auto);
+        width: 4%;
+      }
     }
   }
   .item-container {
@@ -41,6 +45,7 @@
       &.status {
         @include flex-item(5, center, .04 0 auto);
         width: 4%;
+        text-align: center;
         .status-text {
           display: none;
         }
@@ -267,6 +272,10 @@
               &.description {
                 @include flex-item(3, center, .26 0 auto);
                 width: 26%;
+                &:hover {
+                  color: $primary-font-color;
+                  cursor: default;
+                }
               }
               &.date {
                 @include flex-item(4, center, .07 0 auto);
@@ -275,7 +284,6 @@
               &.status {
                 @include flex-item(5, center, .08 0 auto);
                 width: 8%;
-                text-indent: 15px;
                 &:hover {
                   .hover-menu {
                     display: inline;
@@ -370,9 +378,6 @@
       margin-right: 10px;
       font-size: 1.2em;
     }
-  }
-  &.checkbox {
-    padding-left: 0px;
   }
 }
 
