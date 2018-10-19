@@ -6,13 +6,42 @@
   .filter-options {
     display: none;
   }
+  .sort-bar {
+    .sort-bar-item {
+      &.action {
+        display: none;
+      }
+    }
+  }
+  .item-container {
+    .item-section {
+      &.action {
+        display: none;
+      }
+    }
+  }
 }
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1100px) {
   .sort-bar {
     .sort-bar-item {
+      .fa-filter {
+        display: none
+      }
       &.description {
         display: none;
+      }
+    }
+  }
+  .item-container {
+    .item-section {
+      &.description {
+        display: none;
+      }
+      &.status {
+        .status-text {
+          display: none;
+        }
       }
     }
   }
@@ -118,7 +147,6 @@
           }
           .checkbox-content {
             .checkbox-label {
-              width: 100%;
               display: block;
               padding: 10px 0;
               .checkbox-icon {
@@ -128,6 +156,8 @@
               }
               .checkbox-text {
                 margin-left: 10px;
+                display: inline-block;
+                max-width: 250px;
               }
             }
             input[type=checkbox] {
@@ -201,14 +231,10 @@
         }
         .results-items {
           margin-top: 10px;
-          border: 1px solid blue;
           .sort-bar {
             background-color: $filter-list-background-color;
-            padding: 0 15px;
             @include flex-container(100%, auto, row, no-wrap, space-between, center, stretch);
-            padding-right: 125px;
             .sort-bar-item {
-              // border: 1px solid red;
               text-transform: uppercase;
               margin-top: 2px;
               font-size: .9em;
@@ -222,7 +248,9 @@
                 margin-left: 5px;
               }
               &.privacy {
-                @include flex-item(1, center, 1 0 auto);
+                padding-left: 15px;
+                @include flex-item(1, center, .07 0 auto);
+                width: 7%;
                 &:hover {
                   .hover-menu {
                     display: inline;
@@ -230,20 +258,75 @@
                 }
               }
               &.name {
-                @include flex-item(2, center, 3 0 auto);
+                @include flex-item(2, center, .2 0 auto);
+                width: 20%;
               }
               &.description {
-                @include flex-item(3, center, 4 0 auto);
+                @include flex-item(3, center, .26 0 auto);
+                width: 26%;
               }
               &.date {
-                @include flex-item(4, center, 1 0 auto);
+                @include flex-item(4, center, .07 0 auto);
+                width: 7%;
               }
               &.status {
-                @include flex-item(5, center, 1 0 auto);
+                @include flex-item(5, center, .09 0 auto);
+                width: 9%;
+                text-indent: 15px;
                 &:hover {
                   .hover-menu {
                     display: inline;
                   }
+                }
+              }
+              &.action {
+                @include flex-item(6, center, .04 0 auto);
+                width: 4%;
+              }
+              &.more {
+                @include flex-item(7, center, .01 0 auto);
+                width: 1%;
+              }
+            }
+          }
+          .main-list {
+            .item-container {
+              border-bottom: .5px solid $filter-list-border-color;
+              padding: 25px 0;
+              display: inline-block;
+              @include flex-container(100%, null, row, wrap, space-between, center, stretch);
+              .item-section {
+                &.privacy {
+                  @include flex-item(1, center, .07 0 auto);
+                  width: 7%;
+                  padding-left: 15px;
+                  text-indent: 20px;
+                }
+                &.name {
+                  @include flex-item(2, center, .2 0 auto);
+                  width: 20%;
+                  overflow: hidden;
+                }
+                &.description {
+                  @include flex-item(3, center, .26 0 auto);
+                  width: 26%;
+                  overflow: hidden;
+                }
+                &.date {
+                  @include flex-item(4, center, .07 0 auto);
+                  width: 7%;
+                }
+                &.status {
+                  @include flex-item(5, center, .09 0 auto);
+                  width: 9%;
+                }
+                &.action {
+                  @include flex-item(6, center, .04 0 auto);
+                  width: 4%;
+                }
+                &.more {
+                  @include flex-item(7, center, .01 0 auto);
+                  width: 1%;
                 }
               }
             }
