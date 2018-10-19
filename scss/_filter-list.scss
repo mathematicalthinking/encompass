@@ -95,7 +95,6 @@
       padding: 20px;
       overflow: auto;
       .list-container {
-        border: 1px solid black;
         height: 60px;
         @include flex-container(auto, hidden, row, wrap, center, center, stretch);
         h1 {
@@ -110,7 +109,6 @@
         }
         .searchbar {
           @include flex-item(2, auto, 4 1 auto);
-          border: 1px solid blue;
           #problem-new-link {
             float: right;
             height: 40px;
