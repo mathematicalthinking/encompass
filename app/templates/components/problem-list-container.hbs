@@ -22,16 +22,31 @@
     </div>
     <div class="results-list">
       <div class="results-info">
-        {{listResultsMessage}}
+        <div class="results-message">
+          {{listResultsMessage}}
+        </div>
         <div class="layout-icons" >
-          <img src="/images/grid.svg" alt="grid">
-          <img src="/images/list-active.svg" alt="list">
+          {{#if showList}}
+            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}}>
+            <img src="/images/list-active.svg" alt="list" {{action 'setList'}}>
+          {{/if}}
+          {{#if showGrid}}
+            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}}>
+            <img src="/images/list.svg" alt="list" {{action 'setList'}}>
+          {{/if}}
         </div>
       </div>
+      <div class="results-items">
+        {{#if showList}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
+        {{/if}}
+        {{#if showGrid}}
+          <p>grid view</p>
+          {{!-- {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}} --}}
+        {{/if}}
 
-      {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
-
-      {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
+        {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
+      </div>
     </div>
   </div>
 </div>
