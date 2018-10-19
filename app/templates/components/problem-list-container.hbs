@@ -19,14 +19,19 @@
         {{/link-to}}
       </div>
     </div>
-
-    <div class="results-info">
+    <div class="results-list">
+      <div class="results-info">
         {{listResultsMessage}}
+        <div class="layout-icons" >
+          <img src="/images/grid.svg" alt="grid">
+          <img src="/images/list-active.svg" alt="list">
+        </div>
+      </div>
+
+      {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
+
+      {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
     </div>
-
-    {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
-
-    {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
   </div>
 </div>
 
