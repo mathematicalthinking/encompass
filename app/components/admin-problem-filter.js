@@ -38,10 +38,11 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
       if (!val) {
         return;
       }
-      // clear state for all other filters
-      // refetch
+      // clear state unless current filter is pows
+      if (this.get('mainFilter') !== 'pows') {
+        this.clearSelectedValues();
+      }
       this.set('mainFilter', val);
-      this.clearSelectedValues();
     },
     updateSecondLevel(e) {
       let { id } = e.target;

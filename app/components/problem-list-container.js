@@ -203,6 +203,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
               value: "pows",
               selectedValues: ['shared', 'unshared'],
               secondaryFilters: {
+                selectedValues: ['shared', 'unshared'],
                 inputs: {
                   unshared: {
                     label: "Private",
