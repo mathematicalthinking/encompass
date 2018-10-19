@@ -48,5 +48,12 @@
       color: lighten($primary-font-color, 20%);
     }
   }
-
+  .error-messages {
+    @include flex-item(4, center, 100% 0 100%);
+    position: absolute;
+    width: fit-content;
+    top: 80px;
+    right: 10px;
+    z-index: 10;
+   }
 }
