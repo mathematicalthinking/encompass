@@ -49,6 +49,28 @@
         <div class="sort-bar">
           <div class="sort-bar-item privacy">
             Privacy <i class="fas fa-filter sort-icon"></i>
+            <span class="hover-menu">
+              <ul>
+                <li>
+                  <label>
+                    <input type="radio" checked={{isChecked}} name="privacy" value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><i class="fas fa-list"></i> <span class="radio-text">All</span></span>
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="radio" checked={{isChecked}} name="privacy" value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><i class="fas fa-globe-americas"></i> <span class="radio-text">Public</span></span>
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="radio" checked={{isChecked}} name='privacy' value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><i class="fas fa-lock"></i> <span class="radio-text">Private</span></span>
+                  </label>
+                </li>
+              </ul>
+            </span>
           </div>
           <div class="sort-bar-item name">
             Problem Name <i class="fas fa-sort-alpha-down sort-icon"></i>
@@ -61,6 +83,28 @@
           </div>
           <div class="sort-bar-item status">
             Status <i class="fas fa-filter sort-icon"></i>
+            <span class="hover-menu">
+              <ul>
+                <li>
+                  <label>
+                    <input type="checkbox" checked={{isChecked}} name="status" value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><span class="radio-text">Approved</span></span>
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" checked={{isChecked}} name="status" value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><span class="radio-text">Pending</span></span>
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" checked={{isChecked}} name='status' value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <span><span class="radio-text">Flagged</span></span>
+                  </label>
+                </li>
+              </ul>
+            </span>
           </div>
         </div>
         {{#if showList}}

@@ -13,6 +13,21 @@
 }
 
 
+.hover-menu {
+  position: absolute;
+  z-index: 100;
+  padding: 10px 20px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  display: none;
+  border-radius: 5px;
+  li {
+    padding: 10px 0;
+    text-transform: capitalize;
+    color: $primary-font-color;
+  }
+}
+
 .flex-container-full {
   @include flex-container(100%, hidden, row, wrap, center, center, stretch);
   .flex-item-full {
@@ -169,6 +184,11 @@
               }
               &.privacy {
                 @include flex-item(1, center, 1 0 auto);
+                &:hover {
+                  .hover-menu {
+                    display: inline;
+                  }
+                }
               }
               &.name {
                 @include flex-item(2, center, 3 0 auto);
@@ -181,6 +201,11 @@
               }
               &.status {
                 @include flex-item(5, center, 1 0 auto);
+                &:hover {
+                  .hover-menu {
+                    display: inline;
+                  }
+                }
               }
             }
           }
