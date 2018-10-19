@@ -27,12 +27,28 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   creatorFilter: [],
   authorFilter: [],
   orgFilter: [],
+  powsFilter: {
+    selectedValues: ['shared', 'unshared'],
+    inputs: {
+      shared: {
+        label: 'Public',
+        value: 'shared',
+        icon: ''
+      },
+      unshared: {
+        label: 'Private',
+        value: 'unshared',
+        icon: ''
+      }
+    }
+  },
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   currentUserOrgName: Ember.computed.alias('currentUser.organization.content'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
   selectedCategoryFilter: null,
+  adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
   listResultsMessage: function() {
     let msg;
@@ -92,50 +108,49 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   configureFilter: function() {
     let currentUserOrgName = this.get('currentUserOrgName.content');
+
     let filter = {
-      primaryFilters: {
-        selectedValue: "mine",
-        inputs: {
-          mine: {
-            label: "Mine",
-            value: "mine",
-            isChecked: true,
-            icon: "fas fa-user"
-          },
-          myOrg: {
-            label: "My Org",
-            value: "myOrg",
-            isChecked: false,
-            icon: "fas fa-university",
-            secondaryFilters: {
-              selectedValues: ["recommended", "fromOrg"],
-              inputs: {
-                recommended: {
-                  label: "Recommended",
-                  value: "recommended",
-                  isChecked: true,
-                  isApplied: true,
-                  icon: "fas fa-lightbulb"
+      primaryFilters:
+        {
+          selectedValue: "mine",
+          inputs: {
+            mine: {
+              label: "Mine", value: "mine", isChecked: true, icon: "fas fa-user"
+            },
+              myOrg: {
+                label: "My Org",
+                value: "myOrg",
+                isChecked: false,
+                icon: "fas fa-university",
+                secondaryFilters: {
+                  selectedValues: ["recommended", "fromOrg"],
+                  inputs: {
+                    recommended: {
+                      label: "Recommended",
+                      value: "recommended",
+                      isChecked: true,
+                      isApplied: true,
+                      icon: "fas fa-lightbulb"
+                    },
+                      fromOrg: {
+                        label: `Created by ${currentUserOrgName} Members`,
+                        value: "fromOrg",
+                        isChecked: true,
+                        isApplied: true,
+                        icon: "fas fa-users"
+                      }
+                    }
+                  }
                 },
-                fromOrg: {
-                  label: `Created by ${currentUserOrgName} Members`,
-                  value: "fromOrg",
-                  isChecked: true,
-                  isApplied: true,
-                  icon: "fas fa-users"
-                }
+              everyone: {
+                label: "Public",
+                value: "everyone",
+                isChecked: false,
+                icon: "fas fa-globe",
               }
             }
-          },
-          everyone: {
-            label: "Public",
-            value: "everyone",
-            isChecked: false,
-            icon: "fas fa-globe"
           }
-        }
-      }
-    };
+        };
     let isAdmin = this.get('currentUser.isAdmin');
 
     if (isAdmin) {
@@ -143,8 +158,34 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       filter.primaryFilters.inputs.all = {
         label: 'All',
         value:'all',
+        icon: "fas fa-infinity",
         isChecked: true,
-        icon: "fas fa-infinity"
+        secondaryFilters: {
+          selectedValue: 'org',
+          initialItems: ['org'],
+          inputs: {
+            org: {
+              label: "Organization",
+              value: "org",
+              selectedValues: []
+            },
+            creator: {
+              label: "Creator",
+              value: "creator",
+              selectedValues: []
+            },
+            author: {
+              label: "Author",
+              value: "author",
+              selectedValues: []
+            },
+            pows: {
+              label: "PoWs",
+              value: "pows",
+              selectedValues: []
+            }
+          }
+        }
       };
     }
     this.set('filter', filter);
@@ -215,6 +256,107 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     return filter;
   },
 
+  buildAllFilter() {
+    let filter = {};
+    let adminFilter = this.get('adminFilter');
+    let currentVal = adminFilter.secondaryFilters.selectedValue;
+    let selectedValues = adminFilter.secondaryFilters.inputs[currentVal].selectedValues;
+    console.log('selectedValues');
+
+    let isEmpty = _.isEmpty(selectedValues);
+
+
+
+    // let orgFilter = this.get('orgFilter');
+    // let creatorFilter = this.get('creatorFilter');
+    // let authorFilter = this.get('authorFilter');
+    // let powsFilter = this.get('powsFilter');
+
+    // if empty, do nothing - means include all orgs
+    if (currentVal === 'org') {
+      if (!isEmpty) {
+        filter.organization = { $in: selectedValues };
+      }
+    }
+
+    if (currentVal === 'creator') {
+      if (!isEmpty) {
+        filter.createdBy = { $in: selectedValues };
+      }
+    }
+
+    if (currentVal === 'author') {
+      if (!isEmpty) {
+        filter.author = { $in: selectedValues};
+      }
+    }
+    if (currentVal === 'pows') {
+
+
+    // public box is checked
+    let doShared = _.indexOf(selectedValues, 'shared') !== -1;
+
+    // private box is checked
+    let doUnshared = _.indexOf(selectedValues, 'unshared') !== -1;
+
+    // filter.pows = {
+    //   private: doUnshared,
+    //   public: doShared
+    // };
+
+    if (_.isEmpty(selectedValues)) {
+      filter.pows="none";
+    }
+    if (doShared && !doUnshared) {
+      filter.pows="publicOnly";
+    }
+    if (!doShared && doUnshared) {
+      filter.pows="privateOnly";
+    }
+  }
+
+    // otherwise both checked, no restrictions
+
+
+
+
+
+    // if (_.isEmpty(selectedPows)) {
+    //   filter.puzzleId = { $or: [
+    //     {$exists: false},
+    //     { $eq: null }
+    //   ]};
+    // }
+    // if (!filter.$or) {
+    //   filter.$or = [];
+    // }
+
+    // filter.$or.push({
+    //   puzzleId : {
+    //     $exists: true,
+    //     $ne: null,
+    //   }
+    // });
+
+
+    // if (selectedPows.length === 1) {
+    //   // only public
+    //   if (doShared) {
+    //     filter.$or.push({
+    //       privacySetting: 'E'
+    //     });
+    //     // only private
+    //   } else {
+    //     filter.$or.push({
+    //       privacySetting: 'M'
+    //     });
+    //   }
+
+    // }
+
+    return filter;
+  },
+
   buildPrivacySettingFilter: function() {
     //privacy setting determined from privacy drop down on main display
     let privacySetting = this.get('privacySettingFilter');
@@ -275,6 +417,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     if (primaryFilterValue === 'myOrg') {
       filterBy = this.buildMyOrgFilter();
+    }
+
+    if (primaryFilterValue === 'all') {
+      filterBy = this.buildAllFilter();
     }
     if (!filterBy) {
       return;

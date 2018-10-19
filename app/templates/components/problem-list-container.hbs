@@ -2,7 +2,9 @@
   <div class="flex-item-full filter-options">
     {{problem-filter
       store=store
-      onUpdate=(action "triggerFetch") filter=filter primaryFilter=primaryFilter
+      onUpdate=(action "triggerFetch")
+      filter=filter
+      primaryFilter=primaryFilter
       adminFilterSelect=adminFilterSelect
       orgs=model.organizations
       authorFilter=authorFilter

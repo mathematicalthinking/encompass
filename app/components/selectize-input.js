@@ -3,63 +3,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
   didReceiveAttrs() {
     console.log('did receive attrs sel-inpt');
-    let currentInputId = this.get('currentInputId');
-    let attrInputId = this.get('inputId');
-
-    let didIdChange = currentInputId !== attrInputId;
-    console.log('didId change', didIdChange);
-
-    let currentPropToUpdate = this.get('currentPropToUpdate');
-    let attrProp = this.get('propToUpdate');
-    let didPropChange = currentPropToUpdate !== attrProp;
-    console.log('did prop change', didPropChange);
-
-
-    if (!currentInputId) {
-      this.set('currentInputId', attrInputId);
-    }  else if (didIdChange) {
-    console.log('new id!');
-    this.set('currentInputId', attrInputId);
-    let current = this.$('select')[0].selectize;
-    current.clear();
-    current.clearOptions();
-    current.destroy();
-
-    let newId = `#${attrInputId}`;
-    // newSelect = this.$(`select${newId}`);
-      let that = this;
-    this.$(newId).ready(function() {
-      let newSelect = that.$('select')[0];
-      console.log('newSelect', newSelect);
-      let options = that.get('initialOptions');
-    let items = that.get('initialItems');
-
-    that.set('options', options);
-    that.set('items', items);
-
-    let hash = that.configureOptionsHash();
-    that.set('optionsHash', hash);
-
-    if (!that.placeholder) {
-      that.set('placeholder', 'Start typing...');
-    }
-
-      let propsToMap = [];
-      propsToMap.addObject(that.get('labelField'));
-      propsToMap.addObject(that.get('valueField'));
-      that.set('propsToMap', propsToMap);
-
-        // reinit selectize
-        let newOptions = that.get('optionsHash');
-        that.$(`#${attrInputId}`).selectize(newOptions);
-    });
-
-    } else if (didPropChange) {
-      let selectize = this.$(`#${currentInputId}`)[0].selectize;
-      selectize.clear();
-      selectize.clearOptions();
-      return;
-    }
     let options = this.get('initialOptions');
     let items = this.get('initialItems');
 
@@ -72,11 +15,13 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     if (!this.placeholder) {
       this.set('placeholder', 'Start typing...');
     }
+      if (!this.propsToMap) {
+        let propsToMap = [];
+        propsToMap.addObject(this.get('labelField'));
+        propsToMap.addObject(this.get('valueField'));
+        this.set('propsToMap', propsToMap);
+      }
 
-      let propsToMap = [];
-      propsToMap.addObject(this.get('labelField'));
-      propsToMap.addObject(this.get('valueField'));
-      this.set('propsToMap', propsToMap);
 
     this._super(...arguments);
   },
@@ -101,8 +46,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   didInsertElement() {
     console.log('did Insert Element sel-inpt');
     let options = this.get('optionsHash');
-    let selector = `#${this.inputId}`;
-    this.$(selector).selectize(options);
+    let id = this.get('inputId');
+    this.$(`#${id}`).selectize(options);
     this._super(...arguments);
   },
 
@@ -118,17 +63,15 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     };
 
     let that = this;
+    let propToUpdate = this.get('propToUpdate');
 
     if (this.onItemAdd) {
-      let propToUpdate = this.get('propToUpdate');
-
       hash.onItemAdd = function(value, $item) {
         that.get('onItemAdd')(value, $item, propToUpdate);
       };
     }
 
     if (this.onItemRemove) {
-      let propToUpdate = this.get('propToUpdate');
       hash.onItemRemove = function(value) {
         that.get('onItemRemove')(value, null, propToUpdate);
       };
@@ -143,17 +86,14 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
   addItemsSelectize: function(query, callback) {
     let queryParams = {};
-    let allowEmpty = this.get('allowEmptyQuery');
     if (!query.length) {
-      if (!allowEmpty) {
-        return callback();
-      }
+      return callback();
     }
     console.log('query', query);
-    if (query.length > 0) {
+
       let key = this.get('queryParamsKey');
       queryParams[key] = query;
-    }
+
     let model = this.get('model');
 
     this.store.query(model, queryParams)

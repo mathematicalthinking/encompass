@@ -60,12 +60,29 @@ const getProblems = async function(req, res, next) {
 
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
-      let { privatePows, } = filterBy;
-      if (privatePows) {
-        filterBy.privatePows = {$and: [
-          { puzzleId: { $exists: true, $ne: null } },
-          { privacySetting: 'M'}
-         ]};
+      let { pows } = filterBy;
+      if (pows === 'none') {
+        filter.puzzleId = { $or: [
+          {$exists: false},
+            { $eq: null }
+          ]};
+          delete filterBy.pows;
+        } else if (pows === "privateOnly") {
+         // exclude public pows
+          if (!filterBy.$and) {
+            filterBy.$and = [];
+            filterBy.$and.push(
+              {
+                $and: [
+                  { puzzleId: { $exists: true, $ne: null } },
+                  { privacySetting: 'M'}
+                ]
+              }
+            );
+            delete filterBy.pows;
+          }
+        } else if (pows === 'publicOnly') {
+          // exclude private pows
         }
       }
     let searchFilter;

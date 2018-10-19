@@ -1,0 +1,47 @@
+<div class="choose-filter-admin">
+  <span>Find Problems by</span>
+  {{selectize-input
+    inputId="admin-filter-select"
+    initialOptions=mainOptions
+    initialItems=secondaryFilter.initialItems
+    onItemAdd=(action "setMainFilter")
+    maxItems=1
+    labelField="label"
+    valueField="value"
+  }}
+</div>
+{{#if showOrgFilter}}
+  <div class="org-filter-admin">
+  <h5>Filter by Org</h5>
+  {{selectize-input
+    inputId="all-org-filter"
+    initialOptions=orgOptions
+    onItemAdd=(action "updateMultiSelect")
+    onItemRemove=(action "updateMultiSelect")
+    maxItems=3
+    labelField="name"
+    valueField="id"
+    searchField="name"
+    propToUpdate="selectedValues"
+  }}
+</div>
+{{/if}}
+{{#if showUserFilter}}
+  {{selectize-input
+    store=store
+    inputId="all-user-filter"
+    onItemAdd=(action "updateMultiSelect")
+    onItemRemove=(action "updateMultiSelect")
+    maxItems=3
+    labelField="username"
+    valueField="id"
+    searchField="username"
+    model="user"
+    queryParamsKey="usernameSearch"
+    propToUpdate="selectedValues"
+    isAsync=true
+  }}
+{{/if}}
+{{#if showPowsFilter}}
+
+{{/if}}

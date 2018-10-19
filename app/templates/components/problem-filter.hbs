@@ -7,37 +7,15 @@
         {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
-            <div class="choose-filter-admin">
-              <span>Find Problems by</span>
-              {{selectize-input
-                inputId="all-filter-select"
-                initialOptions=adminFilterSelect.options
-                initialItems=adminFilterSelect.defaultValue
-                onItemAdd=(action "setAllFilter")
-                maxItems=1
-                labelField="label"
-                valueField="label"
-              }}
-            </div>
-            <div class="filter-typeahead">
-                {{selectize-input
-                store=store
-                inputId=allSelectOptions.inputId
-                onItemAdd=(action "updateAllFilter")
-                onItemRemove=(action "updateAllFilter")
-                initialOptions=allSelectOptions.initialOptions
-                maxItems = allSelectOptions.maxItems
-                labelField=allSelectOptions.labelField
-                valueField=allSelectOptions.valueField
-                searchField=allSelectOptions.searchField
-                model=allSelectOptions.model
-                queryParamsKey=allSelectOptions.queryParamsKey
-                isAsync=allSelectOptions.isAsync
-                propToUpdate=allSelectOptions.propToUpdate
+            {{admin-problem-filter
+              filter=adminFilter
+              mainOptions=secondaryFilterOptions
+              secondaryFilter=secondaryFilter
+              onUpdate=(action "onUpdate")
+              orgOptions=orgOptions
+              store=store
+            }}
 
-              }}
-
-            </div>
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
