@@ -49,6 +49,10 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   },
 
   actions: {
+    clearResults: function () {
+      this.get('clearSearchResults')();
+    },
+
     validate: function() {
       let val = this.get('inputStringValue');
       let values = { query: val };
@@ -69,6 +73,9 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       if (this.get('queryErrors')) {
         this.set('queryErrors', null);
       }
-    }
+    },
+    searchAction: function () {
+      this.send('validate');
+    },
   }
 });
