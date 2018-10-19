@@ -4,29 +4,29 @@
   </div>
 
   <div class="flex-item-full list-view">
-    {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}<i class="fas fa-plus"></i>{{/link-to}}
-    {{search-bar
-      onSearch=(action "searchProblems")
-      showFilter=true
-      searchOptions = searchOptions
-      basePlaceholder="Search problems"
-      inputValue=searchInputValue
-      }}
+    <div class="list-container">
+      <h1>Problems</h1>
+      <div class="searchbar">
+        {{search-bar
+        onSearch=(action "searchProblems")
+        showFilter=true
+        searchOptions = searchOptions
+        basePlaceholder="Search problems"
+        inputValue=searchInputValue}}
 
+        {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}
+          <i class="fas fa-plus"></i>
+        {{/link-to}}
+      </div>
+    </div>
 
     <div class="results-info">
         {{listResultsMessage}}
     </div>
 
-
     {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
 
-      {{pagination-control
-        details=problemsMetadata
-        initiatePageChange=(action "initiatePageChange")
-      }}
-
-
+    {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
   </div>
 </div>
 
