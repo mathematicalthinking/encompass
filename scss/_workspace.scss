@@ -93,34 +93,8 @@
   color: $error-color;
 }
 
-// .flex-parent {
-//   border: 1px solid red;
-// }
-
-// .flex-container {
-//   border: 1px solid green;
-// }
-
-
 .flex-container {
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: space-between;
-  -webkit-align-content: center;
-  -ms-flex-line-pack: center;
-  align-content: center;
-  -webkit-align-items: flex-start;
-  -ms-flex-align: start;
-  align-items: flex-start;
+  @include flex-container(null, null, row, center, center, start, null);
 }
 
 .flex-item {
@@ -133,44 +107,20 @@
 }
 
 .flex-item:nth-child(1) {
-  -webkit-order: 1;
-  -ms-flex-order: 1;
-  order: 1;
-  -webkit-flex: 1 0 0;
-  -ms-flex: 1 0 0;
-  flex: 1 0 0;
-  -webkit-align-self: auto;
-  -ms-flex-item-align: auto;
-  align-self: auto;
+  @include flex-item(1, auto, 1 0 0);
 }
 
 .flex-item:nth-child(2) {
-  -webkit-order: 2;
-  -ms-flex-order: 2;
-  order: 2;
-  -webkit-flex: 1 0 0;
-  -ms-flex: 1 0 0;
-  flex: 1 0 0;
-  -webkit-align-self: auto;
-  -ms-flex-item-align: auto;
-  align-self: auto;
+  @include flex-item(2, auto, 1 0 0);
   padding-bottom: 10px;
 }
 
 .flex-item:nth-child(3) {
+  @include flex-item(3, auto, .5 0 0);
   padding: 0;
   box-shadow: none;
   border: none;
   margin: 0 0 0 7px;
-  -webkit-order: 3;
-  -ms-flex-order: 3;
-  order: 3;
-  -webkit-flex: 1 0 0;
-  -ms-flex: 1 0 0;
-  flex: .5 0 0;
-  -webkit-align-self: auto;
-  -ms-flex-item-align: auto;
-  align-self: auto;
 }
 
 #workspace-info {
