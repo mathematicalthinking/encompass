@@ -197,7 +197,7 @@
           border: 1px solid blue;
           .sort-bar {
             background-color: $filter-list-background-color;
-            padding: 15px;
+            padding: 0 15px;
             @include flex-container(100%, auto, row, no-wrap, space-between, center, stretch);
             padding-right: 125px;
             .sort-bar-item {
@@ -206,6 +206,7 @@
               margin-top: 2px;
               font-size: .9em;
               text-align: left;
+              padding: 15px 0;
               &:hover {
                 color: black;
                 cursor: pointer;
