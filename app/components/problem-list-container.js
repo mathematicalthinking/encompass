@@ -1,5 +1,6 @@
 Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
+  showList: true,
   searchOptions: ['title', 'text', 'category'],
   searchCriterion: 'title',
   sortCriterion: { id: 1, name: 'A-Z', sortParam: { title: 1 } },
@@ -39,7 +40,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} problems whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
       return;
     }
-    msg = `We found ${this.get('problemsMetadata.total')} problems based off of your current filter criteria.`;
+    msg = `${this.get('problemsMetadata.total')} problems found`;
     return msg;
 
   }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed'),
@@ -456,6 +457,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       }
 
       this.getProblems();
+    },
+    setGrid: function () {
+      this.set('showGrid', true);
+      this.set('showList', false);
+    },
+    setList: function() {
+      this.set('showList', true);
+      this.set('showGrid', false);
     }
   }
 });
