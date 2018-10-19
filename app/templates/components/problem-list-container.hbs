@@ -60,10 +60,8 @@
                     isChecked=option.isChecked
                     groupName="privacy"
                     onClick=(action "updatePrivacySetting")
-                    groupValue=selectedPrivacySetting
-                  }}
+                    groupValue=selectedPrivacySetting}}
                 </li>
-
                 {{/each}}
               </ul>
             </span>
@@ -76,8 +74,7 @@
             label="Title"
             parentProp=sortCriterion
             type="title"
-            activeType=sortCriterion.type
-            }}
+            activeType=sortCriterion.type}}
           <div class="sort-bar-item description">
             Description
           </div>
@@ -92,7 +89,7 @@
             }}
           <div class="sort-bar-item status">
             Status <i class="fas fa-filter sort-icon"></i>
-            <span class="hover-menu">
+            <span class="hover-menu checkbox">
               <ul>
                 <li>
                   <label>

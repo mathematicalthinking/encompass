@@ -90,7 +90,6 @@
               .radio-icon {
                 margin: 0;
                 padding: 0;
-                text-indent: 25px;
               }
               .radio-text {
                 margin-left: 20px;
@@ -173,9 +172,11 @@
       overflow: auto;
       .fa-globe-americas {
         color: $accent-color;
+        font-size: 1.5em;
       }
       .fa-lock {
         color: $error-color;
+        font-size: 1.5em;
       }
       .list-container {
         height: 60px;
@@ -291,7 +292,7 @@
           }
           .main-list {
             .item-container {
-              border-bottom: .5px solid $filter-list-border-color;
+              border-bottom: .5px solid $input-border;
               padding: 25px 0;
               display: inline-block;
               @include flex-container(100%, null, row, wrap, space-between, center, stretch);
@@ -300,7 +301,7 @@
                   @include flex-item(1, center, .07 0 auto);
                   width: 7%;
                   padding-left: 15px;
-                  text-indent: 20px;
+                  text-indent: 12px;
                 }
                 &.name {
                   @include flex-item(2, center, .2 0 auto);
@@ -362,6 +363,9 @@
       margin-right: 10px;
       font-size: 1.2em;
     }
+  }
+  &.checkbox {
+    padding-left: 0px;
   }
 }
 
