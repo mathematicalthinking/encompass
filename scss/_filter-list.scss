@@ -110,28 +110,45 @@
         .searchbar {
           @include flex-item(2, auto, 4 1 auto);
           #problem-new-link {
+            color: white;
+            background: $accent-color;
             float: right;
-            height: 40px;
             border-radius: 50%;
-            margin-top: -44px;
+            text-align: center;
+            margin-top: -46px;
+            line-height: 42px;
+            height: 40px;
+            width: 40px;
+            &:hover {
+              cursor: pointer;
+              background: lighten($accent-color, 10%);
+            }
           }
         }
       }
       .results-list {
         border: 1px solid green;
+        margin-top: 15px;
         .results-info {
-          border: 1px solid red;
+          @include flex-container(100%, hidden, row, wrap, space-between, center, stretch);
+          margin-left: 0;
+          .results-message {
+            @include flex-item(1, center, .95 0 auto);
+            width: fit-content;
+            font-weight: $light-font-weight;
+          }
           .layout-icons {
-            border: 1px solid gold;
-            float: right;
+            @include flex-item(2, center, .05 0 auto);
             width: 100px;
             text-align: right;
+            margin-left: auto;
             img {
               margin-left: 10px;
             }
           }
         }
-        .problem-list {
+        .results-items {
+          margin-top: 10px;
           border: 1px solid blue;
         }
       }
