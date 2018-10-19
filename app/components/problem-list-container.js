@@ -202,13 +202,15 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                     label: "Private",
                     value: "unshared",
                     isChecked: true,
-                    isApplied: true
+                    isApplied: true,
+                    icon: 'fas fa-lock',
                   },
                   shared: {
                     label: "Public",
                     value: "shared",
                     isChecked: true,
-                    isApplied: true
+                    isApplied: true,
+                    icon: 'fas fa-globe-americas',
                   }
                 }
               }
