@@ -10,6 +10,6 @@
 
 <div class="error-messages">
   {{#each queryErrors as |error|}}
-    <p class="error-box animated fadeIn">{{error}}</p>
+    {{error-box error=error showDismiss=true}}
   {{/each}}
 </div>
