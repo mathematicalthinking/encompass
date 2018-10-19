@@ -1,14 +1,12 @@
 {{#if showFilter}}
-  <div class="criterion">
+<div class="select-bar">
     {{my-select content=searchOptions cannotBeNull=true selectedValue=criterion action=(action (mut criterion))}}
-  </div>
-{{/if}}
-<div class="input-field">
-  {{input class="search-field" type="text" key-press=(action "clearErrors") value=inputValue placeholder=placeholder }}
 </div>
+{{/if}}
+  {{input class="search-field" type="text" key-press=(action "clearErrors") value=inputValue placeholder=placeholder }}
 <div class="submit">
   <i class="fa fa-search" aria-hidden="true" {{action "validate"}}></i>
 </div>
-{{#each queryErrors as |error|}}
+{{!-- {{#each queryErrors as |error|}}
   <p class="error-message">{{error}}</p>
-{{/each}}
+{{/each}} --}}

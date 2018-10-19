@@ -2,39 +2,36 @@
 @import "mixins";
 @import "responsive-font-size";
 
-.search-bar-comp {
-  display:flex;
-  align-items:center;
-  margin-left: 20px;
-  justify-content: space-between;
 
-  .criterion {
-    h5 {
-      line-height: 0;
-    }
-   flex: 0 0 auto;
-   width: 85px;
-   #my-select {
-     select {
-       width: 100%;
-     }
-   }
+.search-bar-comp {
+  border: 1px solid green;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  margin-right: 50px;
+  text-align: right;
+  @include flex-container(40px, null, row, no-wrap, flex-end, flex-end, stretch);
+  .select-bar {
+    @include flex-item(1, center, .3 0 auto);
+     border: 1px solid gold;
   }
-  div.input-field {
-    flex: 2.5 1 auto;
-    margin-right: 5px;
-    input[type=text].search-field {
-      width: 100%;
-      margin-left: 0;
-      margin-right: 5px;
-    }
+  .search-field {
+   @include flex-item(2, center, .6 0 auto);
+    height: 35px;
+    border-radius: 5px;
+    border: 1px solid $input-border;
+    background: white;
+    text-indent: 10px;
+    font-size: .8em;
   }
   .submit {
-    flex: 1 0 auto;
-    margin-left: 5px;
-    margin-right: 5px;
+    @include flex-item(3, center, .1 0 auto);
     cursor: pointer;
+    font-size: 1.3em;
+    margin-left: 10px;
+    text-align: left;
+    &:hover {
+      color: lighten($primary-font-color, 20%);
+    }
   }
-
 
 }
