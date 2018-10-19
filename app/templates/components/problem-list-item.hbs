@@ -1,2 +1,30 @@
-<li>{{#link-to 'problem' problem classNames="problem"}}{{problem.title}}{{/link-to}}</li>
+<div class="item-container">
+  <div class="item-section privacy">
+    {{problem.privacySetting}}
+  </div>
+  <div class="item-section name">
+    {{problem.title}}
+  </div>
+  <div class="item-section description">
+    {{{problem.text}}}
+  </div>
+  <div class="item-section date">
+    {{format-date problem.createDate 'MM/DD/YY'}}
+  </div>
+  <div class="item-section status">
+    <svg height="20" width="20">
+      <circle cx="10" cy="15" r="5" fill="#35A853" />
+    </svg>
+    <span class="status-text">
+      Approved
+    </span>
+  </div>
+  <div class="item-section action">
+    <button class="primary-button">Flag</button>
+  </div>
+  <div class="item-section more">
+    <i class="fas fa-ellipsis-v more-menu"></i>
+  </div>
+</div>
+
 
