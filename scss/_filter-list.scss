@@ -2,46 +2,26 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
-.flex-container-full {
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  align-items: stretch;
-  height: 100%;
-  margin-bottom: auto;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: space-between;
-  -webkit-align-content: center;
-  -ms-flex-line-pack: center;
-  align-content: center;
-  -webkit-align-items: flex-stretch;
-  -ms-flex-align: stretch;
-  overflow: hidden;
+@media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
+  .filter-options {
+    display: none;
+  }
 }
 
+@media screen and (min-width: 901px) and (max-width: 100000px) {
+
+}
+
+
 .flex-container-full {
+  @include flex-container(100%, hidden, row, wrap, center, center, stretch);
   .flex-item-full {
     &.filter-options {
-      -webkit-order: 1;
-      -ms-flex-order: 1;
-      order: 1;
-      -webkit-flex: 1 0 auto;
-      -ms-flex: 1 0 auto;
-      flex: 1 0 auto;
-      -webkit-align-self: auto;
-      -ms-flex-item-align: auto;
-      align-self: auto;
+      @include flex-item(1, auto, 1 0 auto);
       background-color:$filter-list-background-color;
       max-width: 400px;
       .filter-items {
-        margin-top: 25px;
+        margin-top: 35px;
         h2 {
           font-size: 1.8em;
           font-weight: $main-font-weight;
@@ -111,17 +91,34 @@
       }
     }
     &.list-view {
-      -webkit-order: 2;
-      -ms-flex-order: 2;
-      order: 2;
-      -webkit-flex: 4 1 auto;
-      -webkit-flex: 4 1 auto;
-      -ms-flex: 4 1 auto;
-      flex: 4 1 auto;
-      -webkit-align-self: auto;
-      -ms-flex-item-align: auto;
-      align-self: auto;
-      overflow-y: auto;
+      @include flex-item(2, auto, 4 1 auto);
+      padding: 20px;
+      overflow: auto;
+      .list-container {
+        border: 1px solid black;
+        height: 60px;
+        @include flex-container(auto, hidden, row, wrap, center, center, stretch);
+        h1 {
+          @include flex-item(1, auto, 1 0 auto);
+          font-size: 2em;
+          color: $dark-font-color;
+          font-weight: $main-font-weight;
+          margin-top: 10px;
+          width: fit-content;
+          height: fit-content;
+          margin-top: 12px;
+        }
+        .searchbar {
+          @include flex-item(2, auto, 4 1 auto);
+          border: 1px solid blue;
+          #problem-new-link {
+            float: right;
+            height: 40px;
+            border-radius: 50%;
+            margin-top: -44px;
+          }
+        }
+      }
     }
   }
 }
