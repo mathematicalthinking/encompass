@@ -1,6 +1,22 @@
 Encompass.SelectizeInputComponent = Ember.Component.extend({
   showInput: true,
 
+  didUpdateAttrs() {
+    let newPropName = this.propName;
+    let oldPropName = this.get('currentPropName');
+
+    if (_.isUndefined(oldPropName)) {
+      this.set('currentPropName', newPropName);
+    } else {
+      if (!_.isEqual(newPropName, oldPropName)) {
+        // new id, need to clear inputs
+        this.$('select')[0].selectize.clear(true);
+        this.set('currentPropName', newPropName);
+      }
+    }
+    this._super(...arguments);
+  },
+
   didReceiveAttrs() {
     console.log('did receive attrs sel-inpt');
     let options = this.get('initialOptions');
@@ -8,6 +24,10 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
     this.set('options', options);
     this.set('items', items);
+
+    if (_.isUndefined(this.get('currentPropName'))) {
+      this.set('currentPropName', this.propName);
+    }
 
     let hash = this.configureOptionsHash();
     this.set('optionsHash', hash);

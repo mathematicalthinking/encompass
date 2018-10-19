@@ -28,12 +28,20 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
     return this.get('currentSecondaryFilter.selectedValues');
   }.property('currentSecondaryFilter.selectedValues.[]'),
 
+  clearSelectedValues: function() {
+    this.set('currentSecondaryFilter.selectedValues', []);
+    this.get('onUpdate')();
+  },
+
   actions: {
     setMainFilter(val, $item) {
       if (!val) {
         return;
       }
+      // clear state for all other filters
+      // refetch
       this.set('mainFilter', val);
+      this.clearSelectedValues();
     },
     updateSecondLevel(e) {
       let { id } = e.target;
