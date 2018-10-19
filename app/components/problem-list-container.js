@@ -3,17 +3,23 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   showList: true,
   searchOptions: ['title', 'text', 'category'],
   searchCriterion: 'title',
-  sortCriterion: { id: 1, name: 'A-Z', sortParam: { title: 1 } },
-  sortOptions: [
-    {id: 1, name: 'A-Z', sortParam: { title: 1 }, doCollate: true },
-    {id: 2, name: 'Z-A', sortParam: { title: -1 }, doCollate: true },
-    {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false },
-    {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false }
-  ],
+  sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
+  sortOptions: {
+    title: [
+      {sortParam: null, icon: 'fas fa-minus'},
+      { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'title' },
+      { name: 'Z-A', sortParam: { title: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'title' },
+    ],
+    createDate: [
+      { sortParam: null, icon: 'fas fa-minus'},
+      {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'date' },
+      {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'date'}
+    ]
+    },
   privacySettingOptions: [
-    {id: 1, name: 'All', value: ['M', 'O', 'E']},
-    {id: 2, name: 'Public', value: ['O', 'E']},
-    {id: 3, name: 'Private', value: ['M']},
+    {id: 1, label: 'All', value: ['M', 'O', 'E'], isChecked: true, icon: 'fas fa-list'},
+    {id: 2, label: 'Public', value: ['O', 'E'], isChecked: false, icon: 'fas fa-globe-americas'},
+    {id: 3, label: 'Private', value: ['M'], isChecked: false, icon: 'fas fa-lock'},
   ],
   adminFilterSelect:  {
     defaultValue: ['organization'],
@@ -57,7 +63,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       return msg;
     }
     if (this.get('areNoRecommendedProblems')) {
-      msg = `There are currently no recommended problems for ${this.get('userOrgName')}.`;
+      msg = `There are currently no recommended problems for ${userOrgName}.`;
       return msg;
     }
     if (this.get('isDisplayingSearchResults')) {
@@ -632,6 +638,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     },
     updateSortCriterion(criterion) {
       this.set('sortCriterion', criterion);
+      console.log('criterion.value', criterion);
       this.getProblems();
     },
     triggerFetch() {
@@ -650,6 +657,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     setList: function() {
       this.set('showList', true);
       this.set('showGrid', false);
+    },
+    updatePrivacySetting(val) {
+      if (!val) {
+        return;
+      }
+      this.set('selectedPrivacySetting', val);
+      this.getProblems();
     }
   }
 });

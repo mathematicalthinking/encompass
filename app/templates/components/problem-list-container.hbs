@@ -51,36 +51,45 @@
             Privacy <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu">
               <ul>
+                {{#each privacySettingOptions as |option|}}
                 <li>
-                  <label>
-                    <input type="radio" checked={{isChecked}} name="privacy" value={{inputValue}} onclick={{action "onClick" inputValue}}>
-                    <span><i class="fas fa-list"></i> <span class="radio-text">All</span></span>
-                  </label>
+                  {{radio-filter
+                    labelName=option.label
+                    labelIcon=option.icon
+                    inputValue=option.value
+                    isChecked=option.isChecked
+                    groupName="privacy"
+                    onClick=(action "updatePrivacySetting")
+                    groupValue=selectedPrivacySetting
+                  }}
                 </li>
-                <li>
-                  <label>
-                    <input type="radio" checked={{isChecked}} name="privacy" value={{inputValue}} onclick={{action "onClick" inputValue}}>
-                    <span><i class="fas fa-globe-americas"></i> <span class="radio-text">Public</span></span>
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input type="radio" checked={{isChecked}} name='privacy' value={{inputValue}} onclick={{action "onClick" inputValue}}>
-                    <span><i class="fas fa-lock"></i> <span class="radio-text">Private</span></span>
-                  </label>
-                </li>
+
+                {{/each}}
               </ul>
             </span>
           </div>
-          <div class="sort-bar-item name">
-            Problem Name <i class="fas fa-sort-alpha-down sort-icon"></i>
-          </div>
+          {{toggle-control
+            classToAdd="sort-bar-item name"
+            onUpdate=(action "updateSortCriterion")
+            initialState=1
+            options=sortOptions.title
+            label="Title"
+            parentProp=sortCriterion
+            type="title"
+            activeType=sortCriterion.type
+            }}
           <div class="sort-bar-item description">
             Description
           </div>
-          <div class="sort-bar-item date">
-            Date <i class="fas fa-arrow-down sort-icon"></i>
-          </div>
+          {{toggle-control
+            classToAdd="sort-bar-item date"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.createDate
+            label="Date"
+            type="date"
+            activeType=sortCriterion.type
+            }}
           <div class="sort-bar-item status">
             Status <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu">
