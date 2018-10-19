@@ -11,6 +11,18 @@
   border-radius: 3px
 }
 
+.primary-button {
+  background: $accent-color;
+  color: white;
+  padding: 10px 20px;
+  display: inline-block;
+  zoom: 1;
+  border: 0;
+  font-size: .8em;
+  border-radius: 3px;
+  font-weight: $bold-font-weight;
+}
+
 .delete-button {
   background: $error-color;
   color: white;
