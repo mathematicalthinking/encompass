@@ -28,6 +28,7 @@
         background: url(/images/caret-down.svg) no-repeat right;
         background-size: 12px;
         -webkit-appearance: none;
+        -moz-appearance: none;
         &:focus {
           outline: none;
         }
@@ -43,14 +44,31 @@
     text-indent: 10px;
     font-size: .8em;
   }
+  .clear-field {
+    font-size: .8em;
+    position: relative;
+    right: 35px;
+    top: 0px;
+    cursor: pointer;
+    .clear {
+      width: 15px;
+      height: 15px;
+      fill: $filter-list-border-color;
+      &:hover {
+        fill: $primary-font-color;
+      }
+    }
+  }
   .submit {
     @include flex-item(3, center, .1 0 auto);
     cursor: pointer;
     font-size: 1.3em;
     margin-left: 10px;
     text-align: left;
-    &:hover {
-      color: lighten($primary-font-color, 20%);
+    i {
+      &:hover {
+        color: lighten($primary-font-color, 20%);
+      }
     }
   }
   .error-messages {
