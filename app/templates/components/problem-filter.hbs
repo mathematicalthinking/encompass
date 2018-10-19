@@ -14,12 +14,12 @@
               onUpdate=(action "onUpdate")
               orgOptions=orgOptions
               store=store
+              updateSecondLevel=(action "updateSecondLevel")
             }}
-
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if isChecked 'is-selected'}}">
+              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}}">
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>

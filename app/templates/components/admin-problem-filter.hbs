@@ -1,16 +1,18 @@
-<div class="choose-filter-admin">
-  <span>Find Problems by</span>
-  {{selectize-input
-    inputId="admin-filter-select"
-    initialOptions=mainOptions
-    initialItems=secondaryFilter.initialItems
-    onItemAdd=(action "setMainFilter")
-    maxItems=1
-    labelField="label"
-    valueField="value"
-  }}
-</div>
-{{#if showOrgFilter}}
+
+    <div class="choose-filter-admin">
+      <span>Find Problems by</span>
+      {{selectize-input
+        inputId="admin-filter-select"
+        initialOptions=mainOptions
+        initialItems=secondaryFilter.initialItems
+        onItemAdd=(action "setMainFilter")
+        maxItems=1
+        labelField="label"
+        valueField="value"
+      }}
+    </div>
+
+  {{#if showOrgFilter}}
   <div class="org-filter-admin">
   <h5>Filter by Org</h5>
   {{selectize-input
@@ -43,5 +45,17 @@
   }}
 {{/if}}
 {{#if showPowsFilter}}
-
+  <ul class="secondary-filter-options">
+    {{#each powsFilterOptions as |option|}}
+      <li class="checkbox-content {{if (is-in selectedValues option.value) 'is-selected'}}">
+        <label for={{option.value}} class="checkbox-label">
+          <i class="checkbox-icon {{option.icon}}"></i>
+          <span class="checkbox-text">{{option.label}}</span>
+          {{input id=option.value type="checkbox" checked=option.isApplied change=(action "updateSecondLevel")}}
+        </label>
+      </li>
+    {{/each}}
+  </ul>
 {{/if}}
+
+

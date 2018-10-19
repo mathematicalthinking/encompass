@@ -44,7 +44,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
-  currentUserOrgName: Ember.computed.alias('currentUser.organization.content'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
   selectedCategoryFilter: null,
@@ -52,12 +51,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   listResultsMessage: function() {
     let msg;
+    let userOrgName = this.get('userOrgName');
     if (this.get('criteriaTooExclusive')) {
       msg = 'No results found. Please try expanding your filter criteria.';
       return msg;
     }
     if (this.get('areNoRecommendedProblems')) {
-      msg = `There are currently no recommended problems for ${this.get('currentUserOrgName')}.`;
+      msg = `There are currently no recommended problems for ${this.get('userOrgName')}.`;
       return msg;
     }
     if (this.get('isDisplayingSearchResults')) {
@@ -78,9 +78,22 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
 
   init: function() {
-    this.configureFilter();
-    this.configurePrimaryFilter();
+
+    this.getUserOrg()
+    .then((name) => {
+      this.set('userOrgName', name );
+      this.configureFilter();
+      this.configurePrimaryFilter();
+    });
+
+
     this._super(...arguments);
+  },
+
+  getUserOrg () {
+    return this.get('currentUser.organization').then((org) => {
+      return org.get('name');
+    });
   },
 
   didReceiveAttrs: function() {
@@ -107,7 +120,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   configureFilter: function() {
-    let currentUserOrgName = this.get('currentUserOrgName.content');
+    let currentUserOrgName = this.get('userOrgName');
 
     let filter = {
       primaryFilters:
@@ -182,7 +195,23 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
             pows: {
               label: "PoWs",
               value: "pows",
-              selectedValues: []
+              selectedValues: ['shared', 'unshared'],
+              secondaryFilters: {
+                inputs: {
+                  unshared: {
+                    label: "Private",
+                    value: "unshared",
+                    isChecked: true,
+                    isApplied: true
+                  },
+                  shared: {
+                    label: "Public",
+                    value: "shared",
+                    isChecked: true,
+                    isApplied: true
+                  }
+                }
+              }
             }
           }
         }

@@ -35,6 +35,20 @@ async function getOrgRecommendedProblems(user, orgId, isIdOnly) {
   }
 }
 
+async function getPowsProblems(criteria, isIdOnly) {
+  try {
+    let problems;
+    if (isIdOnly) {
+      problems = await models.Problem.find(criteria, {_id: 1}).lean().exec();
+      return _.map(problems, p => p._id);
+    }
+    return await models.Problem.find(criteria).lean().exec();
+
+  }catch(err) {
+    console.error(`Error getPowsProblems: ${err}`);
+  }
+}
+
 /**
   * @public
   * @method getProblems
@@ -61,29 +75,59 @@ const getProblems = async function(req, res, next) {
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
       let { pows } = filterBy;
+      let powIds;
+      let criteria;
+
       if (pows === 'none') {
-        filter.puzzleId = { $or: [
-          {$exists: false},
-            { $eq: null }
-          ]};
+        criteria = {
+          puzzleId: {
+             $or: [
+              {$exists: false},
+                { $eq: null }
+              ]
+          },
+          isTrashed: false
+        };
+
           delete filterBy.pows;
+          if (!_.isEmpty(powIds)) {
+            if (!filterBy.$and) {
+              filterBy.$and = [];
+            }
+            filterBy.$and.push({_id: powIds});
+          }
+
         } else if (pows === "privateOnly") {
          // exclude public pows
           if (!filterBy.$and) {
-            filterBy.$and = [];
-            filterBy.$and.push(
-              {
+              criteria = {
                 $and: [
                   { puzzleId: { $exists: true, $ne: null } },
-                  { privacySetting: 'M'}
+                  { privacySetting: 'M'},
+                  {isTrashed: false}
                 ]
-              }
-            );
-            delete filterBy.pows;
+              };
           }
         } else if (pows === 'publicOnly') {
-          // exclude private pows
+          criteria = {
+            $and: [
+              { puzzleId: { $exists: true, $ne: null } },
+              { privacySetting: 'E'},
+              {isTrashed: false}
+            ]
+          };
+
         }
+        powIds = await getPowsProblems(criteria, true);
+
+        if (!_.isEmpty(powIds)) {
+          if (!filterBy.$and) {
+            filterBy.$and = [];
+          }
+          filterBy.$and.push({_id: { $in: powIds }});
+        }
+        delete filterBy.pows;
+
       }
     let searchFilter;
 

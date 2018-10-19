@@ -7,6 +7,11 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   showTypeahead: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
+  currentValues: function() {
+    return this.get('secondaryFilter.selectedValues');
+  }.property('secondaryFilter.selectedValues.[]'),
+
+
   orgOptions: function() {
     let orgs = this.get('orgs');
     let toArray = orgs.toArray();
@@ -117,7 +122,8 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
 
       // update selectedValues on secondaryFilter
 
-      secondaryFilter.selectedValues = appliedValues;
+      this.set('secondaryFilter.selectedValues', appliedValues);
+
       if (this.get('onUpdate')) {
         this.get('onUpdate')();
       }

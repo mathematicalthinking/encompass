@@ -3,6 +3,19 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   mainFilter: Ember.computed.alias('secondaryFilter.selectedValue'),
   showOrgFilter: Ember.computed.equal('mainFilter', 'org'),
   showPowsFilter: Ember.computed.equal('mainFilter', 'pows'),
+  powsFilter: Ember.computed.alias('secondaryFilter.inputs.pows'),
+
+  currentSecondaryFilter: function() {
+    let inputs = this.get('secondaryFilter.inputs');
+    let mainFilter = this.get('mainFilter');
+    return inputs[mainFilter];
+  }.property('mainFilter'),
+
+  powsFilterOptions: function() {
+    return _.map(this.get('powsFilter.secondaryFilters.inputs'), (val, key) => {
+      return val;
+    });
+  }.property('powsFilter'),
 
   showUserFilter: function() {
     let val = this.get('mainFilter');
@@ -10,10 +23,10 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   }.property('mainFilter'),
 
   selectedValues: function() {
-    let mainFilter = this.get('mainFilter');
-    let secondaryFilter = this.get('secondaryFilter');
-    return secondaryFilter.inputs[mainFilter].selectedValues;
-  }.property('mainFilter'),
+    // let mainFilter = this.get('mainFilter');
+    // let secondaryFilter = this.get('secondaryFilter');
+    return this.get('currentSecondaryFilter.selectedValues');
+  }.property('currentSecondaryFilter.selectedValues.[]'),
 
   actions: {
     setMainFilter(val, $item) {
@@ -22,24 +35,37 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
       }
       this.set('mainFilter', val);
     },
-    // updateOrgFilter(val, $item) {
-    //   if (!val) {
-    //     return;
-    //   }
-    //   let isRemoval = _.isNull($item);
-    //   let orgFilter = this.get('orgFilter');
-    //   if (isRemoval) {
-    //     orgFilter.removeObject(val);
-    //     if (this.get('onUpdate')) {
-    //       this.get('onUpdate')();
-    //     }
-    //     return;
-    //   }
-    //   orgFilter.addObject(val);
-    //   if (this.get('onUpdate')) {
-    //     this.get('onUpdate')();
-    //   }
-    // }
+    updateSecondLevel(e) {
+      let { id } = e.target;
+      let secondaryFilter = this.get('powsFilter.secondaryFilters');
+
+      let targetInput = secondaryFilter.inputs[id];
+      if (!targetInput) {
+        // not a valid option
+        return;
+      }
+      // valid option, toggle the inputs isApplied value
+      targetInput.isApplied = !targetInput.isApplied;
+
+      // filter for inputs who are currently applied
+      let appliedInputs = _.filter(secondaryFilter.inputs, (input) => {
+        return input.isApplied;
+      });
+
+      let appliedValues = _.map(appliedInputs, input => input.value);
+
+      // update selectedValues on secondaryFilter
+      //
+      secondaryFilter.selectedValues = appliedValues;
+      if (this.get('mainFilter') === 'pows') {
+      //  let powSelectedValues = this.get('powsFilter.selectedValues');
+       this.set('powsFilter.selectedValues', appliedValues);
+      }
+
+      if (this.get('onUpdate')) {
+        this.get('onUpdate')();
+      }
+    },
 
     // $item is null if removal
     // propToUpdate should be sring prop
