@@ -83,16 +83,59 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   configureFilter: function() {
     let currentUserOrgName = this.get('currentUserOrgName.content');
-
-    let filter = { primaryFilters: { selectedValue: "mine", inputs: { mine: { label: "Mine", value: "mine", isChecked: true, icon: "fas fa-user" }, myOrg: { label: "My Org", value: "myOrg", isChecked: false, icon: "fas fa-university", secondaryFilters: { selectedValues: ["recommended", "fromOrg"], inputs: { recommended: { label: "Recommended", value: "recommended", isChecked: true, isApplied: true, icon: "fas fa-lightbulb" }, fromOrg: { label: `Created by ${currentUserOrgName} Members`, value: "fromOrg", isChecked: true, isApplied: true, icon: "fas fa-users" } } } }, everyone: { label: "Public", value: "everyone", isChecked: false, icon: "fas fa-globe" } } } };
-    let isAdmin = this.get('currentUser.isAdmin');
+let filter = {
+  primaryFilters: {
+    selectedValue: "mine",
+    inputs: {
+      mine: {
+        label: "Mine",
+        value: "mine",
+        isChecked: true,
+        icon: "fas fa-user"
+      },
+      myOrg: {
+        label: "My Org",
+        value: "myOrg",
+        isChecked: false,
+        icon: "fas fa-university",
+        secondaryFilters: {
+          selectedValues: ["recommended", "fromOrg"],
+          inputs: {
+            recommended: {
+              label: "Recommended",
+              value: "recommended",
+              isChecked: true,
+              isApplied: true,
+              icon: "fas fa-lightbulb"
+            },
+            fromOrg: {
+              label: `Created by ${currentUserOrgName} Members`,
+              value: "fromOrg",
+              isChecked: true,
+              isApplied: true,
+              icon: "fas fa-users"
+            }
+          }
+        }
+      },
+      everyone: {
+        label: "Public",
+        value: "everyone",
+        isChecked: false,
+        icon: "fas fa-globe"
+      }
+    }
+  }
+};
+let isAdmin = this.get('currentUser.isAdmin');
 
     if (isAdmin) {
       filter.primaryFilters.inputs.mine.isChecked = false;
       filter.primaryFilters.inputs.all = {
         label: 'All',
         value:'all',
-        isChecked: true
+        isChecked: true,
+        icon: "fas fa-infinity"
       };
     }
     this.set('filter', filter);
