@@ -25,6 +25,16 @@
     padding: 10px 0;
     text-transform: capitalize;
     color: $primary-font-color;
+    label {
+      cursor: pointer;
+    }
+    input[type=radio] {
+      margin-right: 15px;
+    }
+    i {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
   }
 }
 
@@ -109,6 +119,12 @@
       @include flex-item(2, auto, 4 1 auto);
       padding: 20px;
       overflow: auto;
+      .fa-globe-americas {
+        color: $accent-color;
+      }
+      .fa-lock {
+        color: $error-color;
+      }
       .list-container {
         height: 60px;
         @include flex-container(auto, hidden, row, wrap, center, center, stretch);
