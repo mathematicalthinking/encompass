@@ -1,3 +1,4 @@
 <label class="radio-label" class={{if isSelected 'is-selected'}}>
-  <span class="radio-content"><i class="radio-icon {{labelIcon}}"></i><span class="radio-text">{{labelName}}</span></span> <input type="radio" checked={{isChecked}} name={{groupName}} value={{inputValue}} onclick={{action "onClick" inputValue}}>
+<input type="radio" checked={{isChecked}} name={{groupName}} value={{inputValue}} onclick={{action "onClick" inputValue}}>
+<span class="radio-content"><i class="radio-icon {{labelIcon}}"></i><span class="radio-text">{{labelName}}</span></span>
 </label>
