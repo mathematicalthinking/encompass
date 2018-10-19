@@ -39,6 +39,8 @@
         display: none;
       }
       &.status {
+        @include flex-item(5, center, .04 0 auto);
+        width: 4%;
         .status-text {
           display: none;
         }
@@ -271,8 +273,8 @@
                 width: 7%;
               }
               &.status {
-                @include flex-item(5, center, .09 0 auto);
-                width: 9%;
+                @include flex-item(5, center, .08 0 auto);
+                width: 8%;
                 text-indent: 15px;
                 &:hover {
                   .hover-menu {
@@ -285,8 +287,8 @@
                 width: 4%;
               }
               &.more {
-                @include flex-item(7, center, .01 0 auto);
-                width: 1%;
+                @include flex-item(7, center, .02 0 auto);
+                width: 2%;
               }
             }
           }
@@ -312,22 +314,25 @@
                   @include flex-item(3, center, .26 0 auto);
                   width: 26%;
                   overflow: hidden;
+                  max-height: 35px;
                 }
                 &.date {
                   @include flex-item(4, center, .07 0 auto);
                   width: 7%;
                 }
                 &.status {
-                  @include flex-item(5, center, .09 0 auto);
-                  width: 9%;
+                  @include flex-item(5, center, .08 0 auto);
+                  width: 8%;
                 }
                 &.action {
                   @include flex-item(6, center, .04 0 auto);
                   width: 4%;
                 }
                 &.more {
-                  @include flex-item(7, center, .01 0 auto);
-                  width: 1%;
+                  @include flex-item(7, center, .02 0 auto);
+                  width: 2%;
+                  text-align: right;
+                  padding-right: 10px;
                 }
               }
             }
