@@ -313,7 +313,9 @@
                 &.description {
                   @include flex-item(3, center, .26 0 auto);
                   width: 26%;
-                  overflow: hidden;
+                  max-width: 500px;
+                  overflow-y: hidden;
+                  overflow-x: hidden;
                   max-height: 35px;
                 }
                 &.date {
