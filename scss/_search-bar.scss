@@ -2,7 +2,6 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
 .search-bar-comp {
   margin-top: 8px;
   margin-bottom: 5px;
@@ -18,14 +17,20 @@
         height: 30px;
         font-size: 1em;
         border: none;
+        text-indent: 5px;
         background: none;
         width: 100%;
         max-width: 100px;
-        text-align-last: center;
+        text-align-last: left;
         margin: 0 auto;
         text-transform: capitalize;
         color: black;
-
+        background: url(/images/caret-down.svg) no-repeat right;
+        background-size: 12px;
+        -webkit-appearance: none;
+        &:focus {
+          outline: none;
+        }
       }
     }
   }
