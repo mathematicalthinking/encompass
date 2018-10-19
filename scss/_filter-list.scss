@@ -117,6 +117,24 @@
           }
         }
       }
+      .results-list {
+        border: 1px solid green;
+        .results-info {
+          border: 1px solid red;
+          .layout-icons {
+            border: 1px solid gold;
+            float: right;
+            width: 100px;
+            text-align: right;
+            img {
+              margin-left: 10px;
+            }
+          }
+        }
+        .problem-list {
+          border: 1px solid blue;
+        }
+      }
     }
   }
 }
