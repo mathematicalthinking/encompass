@@ -346,6 +346,9 @@
               padding: 25px 0;
               display: inline-block;
               @include flex-container(100%, null, row, wrap, space-between, center, stretch);
+              &:hover {
+                background-color: #f9fcff;
+              }
               .item-section {
                 &.privacy {
                   @include flex-item(1, center, .07 0 auto);
