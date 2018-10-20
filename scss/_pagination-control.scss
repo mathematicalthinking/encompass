@@ -3,18 +3,18 @@
 @import "responsive-font-size";
 
 #pagination-control{
-  margin: 0 20px;
-  width: 70%;
+  margin: 0;
+  margin-top: 20px;
+  width: 100%;
   .flex {
     display: flex;
     align-items: center;
   }
-
   i {
-    font-size: 2em;
-    padding: 2px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 0 10px;
   }
-
   .nav-arrows {
     display: flex;
     align-items: center;
@@ -23,17 +23,19 @@
       margin: 0 3px;
     }
   }
-
   .nav-goto {
     margin-left: 10px;
     padding: 2px;
-
     input {
       width: 10%;
-      min-width: 35px;
-      max-width:50px;
+      width: 35px;
+      line-height: 1.2em;
+      font-size: .8em;
+      text-align: center;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid $input-border;
     }
 
   }
-
 }

@@ -134,8 +134,8 @@
           {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
         {{/if}}
         {{#if showGrid}}
-          <p>Add grid view</p>
-          {{!-- {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}} --}}
+          {{!-- <p>Add grid view</p> --}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
         {{/if}}
 
         {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}
