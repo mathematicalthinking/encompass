@@ -4,10 +4,19 @@
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
   .filter-options {
-    display: none;
+    position: absolute;
+    z-index: 200;
+    height: 100%;
+    width: 80%;
+    left: 0px;
+    box-shadow: $box-shadow;
+    &.collapse {
+      display: none;
+    }
   }
   .toggle-filter-menu {
     display: unset;
+    z-index: 205;
   }
   .sort-bar {
     .sort-bar-item {
@@ -24,6 +33,7 @@
     }
   }
 }
+
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
   .sort-bar {
@@ -67,7 +77,7 @@
 .toggle-filter-menu {
   position: absolute;
   left: 0px;
-  top: 0px;
+  top: 25px;
   button {
     height: 50px;
     background-color: $filter-list-background-color;

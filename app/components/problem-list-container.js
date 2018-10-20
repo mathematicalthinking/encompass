@@ -1,6 +1,7 @@
 Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
   showList: true,
+  menuClosed: true,
   searchOptions: ['title', 'text', 'category'],
   searchCriterion: 'title',
   sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
@@ -665,6 +666,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       }
       this.set('selectedPrivacySetting', val);
       this.getProblems();
+    },
+    toggleMenu: function() {
+      console.log('toggle menu clicked');
+      this.set('menuClosed', !this.get('menuClosed'));
+      $('#filter-list-side').toggleClass('collapse');
+      $('#filter-list-side').addClass('animated slideInLeft');
     }
   }
 });
