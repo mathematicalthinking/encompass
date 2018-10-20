@@ -58,6 +58,27 @@
 
 // }
 
+        // .toggle-filter-options {
+        //   float: right;
+        //   position: absolute;
+        //   left: 8px;
+        //   top: 0px;
+        //   height: 60px;
+        //   background-color: $filter-list-background-color;
+        //   border-radius: 0 5px 5px 0;
+
+        //   &:focus {
+        //     outline: none;
+        //   }
+        // }
+
+// <div class="filter-items-side">
+//   <div class="heading-toggle">
+//     <button class="toggle-filter-options"><i class="fas fa-chevron-right"></i></button>
+//   </div>
+// </div>
+
+
 .flex-container-full {
   @include flex-container(100%, hidden, row, wrap, center, center, stretch);
   .flex-item-full {
@@ -234,6 +255,9 @@
             margin-left: auto;
             img {
               margin-left: 10px;
+              &:hover {
+                cursor: pointer;
+              }
             }
           }
         }
@@ -248,10 +272,6 @@
               font-size: .9em;
               text-align: left;
               padding: 15px 0;
-              &:hover {
-                color: black;
-                cursor: pointer;
-              }
               .sort-icon {
                 margin-left: 5px;
               }
@@ -260,6 +280,8 @@
                 @include flex-item(1, center, .07 0 auto);
                 width: 7%;
                 &:hover {
+                  cursor: pointer;
+                  color: black;
                   .hover-menu {
                     display: inline;
                   }
@@ -268,23 +290,29 @@
               &.name {
                 @include flex-item(2, center, .2 0 auto);
                 width: 20%;
+                &:hover {
+                  cursor: pointer;
+                  color: black;
+                }
               }
               &.description {
                 @include flex-item(3, center, .26 0 auto);
                 width: 26%;
-                &:hover {
-                  color: $primary-font-color;
-                  cursor: default;
-                }
               }
               &.date {
                 @include flex-item(4, center, .07 0 auto);
                 width: 7%;
+                &:hover {
+                  cursor: pointer;
+                  color: black;
+                }
               }
               &.status {
                 @include flex-item(5, center, .08 0 auto);
                 width: 8%;
                 &:hover {
+                  cursor: pointer;
+                  color: black;
                   .hover-menu {
                     display: inline;
                   }
