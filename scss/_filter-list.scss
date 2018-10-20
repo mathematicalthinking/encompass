@@ -6,6 +6,9 @@
   .filter-options {
     display: none;
   }
+  .toggle-filter-menu {
+    display: unset;
+  }
   .sort-bar {
     .sort-bar-item {
       &.action {
@@ -54,19 +57,21 @@
   }
 }
 
-// @media screen and (min-width: 901px) and (max-width: 100000px) {
-
-// }
+@media screen and (min-width: 901px) and (max-width: 100000px) {
+  .toggle-filter-menu {
+    display: none;
+  }
+}
 
 
 .toggle-filter-menu {
   position: absolute;
-  left: 8px;
+  left: 0px;
   top: 0px;
   button {
-    height: 60px;
+    height: 50px;
     background-color: $filter-list-background-color;
-    border: .5px solid $input-border;
+    border: none;
     border-radius: 0 5px 5px 0;
     color: lighten($primary-font-color, 20%);
     &:focus {
