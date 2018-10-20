@@ -22,7 +22,7 @@
   }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 1100px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
   .sort-bar {
     .sort-bar-item {
       .fa-filter {
@@ -58,25 +58,22 @@
 
 // }
 
-        // .toggle-filter-options {
-        //   float: right;
-        //   position: absolute;
-        //   left: 8px;
-        //   top: 0px;
-        //   height: 60px;
-        //   background-color: $filter-list-background-color;
-        //   border-radius: 0 5px 5px 0;
 
-        //   &:focus {
-        //     outline: none;
-        //   }
-        // }
-
-// <div class="filter-items-side">
-//   <div class="heading-toggle">
-//     <button class="toggle-filter-options"><i class="fas fa-chevron-right"></i></button>
-//   </div>
-// </div>
+.toggle-filter-menu {
+  position: absolute;
+  left: 8px;
+  top: 0px;
+  button {
+    height: 60px;
+    background-color: $filter-list-background-color;
+    border: .5px solid $input-border;
+    border-radius: 0 5px 5px 0;
+    color: lighten($primary-font-color, 20%);
+    &:focus {
+      outline: none;
+    }
+  }
+}
 
 
 .flex-container-full {
