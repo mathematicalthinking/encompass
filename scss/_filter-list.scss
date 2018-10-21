@@ -2,6 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
+
 @media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
   .filter-options {
     position: absolute;
@@ -30,9 +31,13 @@
       &.action {
         display: none;
       }
+      &.privacy {
+        padding-left: 0;
+      }
     }
   }
 }
+
 
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
@@ -58,7 +63,9 @@
       &.status {
         @include flex-item(5, center, .04 0 auto);
         width: 4%;
-        text-align: center;
+        text-align: left;
+        text-indent: 3%;
+        padding-bottom: 8px;
         .status-text {
           display: none;
         }
@@ -354,7 +361,7 @@
                   @include flex-item(1, center, .07 0 auto);
                   width: 7%;
                   padding-left: 15px;
-                  text-indent: 12px;
+                  text-indent: 2%;
                 }
                 &.name {
                   @include flex-item(2, center, .2 0 auto);
