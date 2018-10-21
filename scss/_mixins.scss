@@ -23,13 +23,13 @@
 
 @mixin flex-container($height, $overflow, $direction, $wrap, $justify, $align, $align-h) {
   height: $height;
+  overflow: $overflow;
   @include flexbox;
   @include flex-direction($direction);
   @include flex-wrap($wrap);
   @include justify-content($justify);
   @include align-content($align);
   @include align-items($align-h);
-  overflow: $overflow;
 }
 
 @mixin flex-item($order, $align, $values) {
