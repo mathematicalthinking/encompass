@@ -45,7 +45,7 @@
           {{/if}}
         </div>
       </div>
-      <div class="results-items">
+      <div class="results-items" id="layout-view">
         <div class="sort-bar">
           <div class="sort-bar-item privacy">
             Privacy <i class="fas fa-filter sort-icon"></i>
@@ -134,7 +134,6 @@
           {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
         {{/if}}
         {{#if showGrid}}
-          {{!-- <p>Add grid view</p> --}}
           {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata}}
         {{/if}}
 

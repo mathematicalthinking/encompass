@@ -653,10 +653,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.getProblems();
     },
     setGrid: function () {
+      $('#layout-view').addClass('grid-view');
       this.set('showGrid', true);
       this.set('showList', false);
     },
     setList: function() {
+      $('#layout-view').removeClass('grid-view');
       this.set('showList', true);
       this.set('showGrid', false);
     },
@@ -668,7 +670,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.getProblems();
     },
     toggleMenu: function() {
-      console.log('toggle menu clicked');
       this.set('menuClosed', !this.get('menuClosed'));
       $('#filter-list-side').toggleClass('collapse');
       $('#filter-list-side').addClass('animated slideInLeft');
