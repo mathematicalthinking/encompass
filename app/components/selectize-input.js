@@ -18,7 +18,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   didReceiveAttrs() {
-    console.log('did receive attrs sel-inpt');
     let options = this.get('initialOptions');
     let items = this.get('initialItems');
 
@@ -64,7 +63,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   // useEmberObjectsAsync
 
   didInsertElement() {
-    console.log('did Insert Element sel-inpt');
     let options = this.get('optionsHash');
     let id = this.get('inputId');
     this.$(`#${id}`).selectize(options);
