@@ -147,7 +147,7 @@
 
 
 .flex-container-full {
-  @include flex-container(100%, hidden, row, wrap, center, center, stretch);
+  @include flex-container(auto, auto, row, wrap, center, center, stretch);
   .flex-item-full {
     &.filter-options {
       @include flex-item(1, auto, 1 0 auto);
