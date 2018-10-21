@@ -103,24 +103,22 @@
       }
     }
     .problem-list {
-      @include flex-container(null, null, row, wrap, center, center, flex-start);
-      border: 1px sold red;
+      width: inherit;
       .main-list {
-        width: 100%;
-        border: 1px sold green;
+        width: inherit;
+        @include flex-container(null, null, row, wrap, center, center, flex-end);
       }
       .problem-list-item {
         @include flex-item(1, auto, 1 1 auto);
-        border: 1px solid blue;
+        width: 350px;
         .item-container {
-          border: .5px solid $input-border;
+          // border: .5px solid $input-border;
+          margin: 10px;
           box-shadow: $box-shadow;
           border-radius: 5px;
           padding: 10px;
           display: block;
-          height: 275px;
-          max-width: 450px;
-          border: 1px solid yellow;
+          min-height: 200px;
           &:hover {
             background-color: #f9fcff;
           }
@@ -155,6 +153,7 @@
       @include flex-item(1, auto, 1 0 auto);
       background-color:$filter-list-background-color;
       max-width: 400px;
+      min-width: 300px;
       .filter-items {
         margin-top: 35px;
         h2 {
