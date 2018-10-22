@@ -126,17 +126,16 @@
           border-radius: 5px;
           padding: 10px;
           display: block;
-          min-height: 280px;
+          @include flex-container(300px, hidden, column, wrap, center, stretch, stretch);
           &:hover {
             background-color: #f9fcff;
           }
           .item-card {
-            // @include flex-container(auto, auto, row, wrap, center, center, center);
             &.row-1 {
+              @include flex-item(1, auto, 1 0 auto);
               border: 1px solid green;
-              height: 25px;
-              // @include flex-container(auto, auto, row, wrap, center, center, center);
               padding: 10px;
+              max-height: 25px;
               .privacy {
                 text-align: left;
                 float: left;
@@ -156,16 +155,32 @@
               }
             }
             &.row-2 {
-              padding: 10px;
+              @include flex-item(2, auto, 1 0 auto);
+              padding: 15px 10px 10px 15px;
               border: 1px solid red;
+              color: black;
+              text-transform: capitalize;
             }
             &.row-3 {
+              @include flex-item(3, auto, 1 0 auto);
               border: 1px solid blue;
               padding: 10px;
+              overflow: hidden;
             }
             &.row-4 {
+              @include flex-item(4, auto, 1 0 auto);
               border: 1px solid orange;
               padding: 10px;
+              max-height: 25px;
+              .status {
+                float: left;
+                position: relative;
+                margin-top: 5px;
+              }
+              .action {
+                float: right;
+                margin-right: -5px;
+              }
             }
           }
         }
