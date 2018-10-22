@@ -469,7 +469,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let text = problem.get('text');
 
       this.$('.ql-editor').html(text);
-
     },
 
     showAssignment: function () {
@@ -478,6 +477,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       Ember.run.later(() => {
         $('html, body').animate({scrollTop: $(document).height()});
       }, 100);
-    }
+    },
+
+    hideInfo: function () {
+      $('.list-outlet').addClass('hidden');
+    },
   }
 });
