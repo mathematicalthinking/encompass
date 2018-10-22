@@ -19,19 +19,6 @@
 }
 
 
-#problem-info {
-  border: 1px solid green;
-  margin-top: 80px;
-  .remove-icon {
-    position: absolute;
-    font-size: 1.2em;
-    top: 85px;
-    right: 15px;
-    cursor: pointer;
-  }
-}
-
-
 #problem-list-container {
   width: 100%;
   height: 100%;
@@ -49,41 +36,20 @@
       display: none;
     }
   }
-  ul#main-problem-list {
-    .problem-list-item {
-      display: flex;
-      align-items: center;
-      li {
-        width:100%;
-        padding: 6px 0 6px 15px;
-        margin: 0 20px;
-        border-radius: 5px;
-        .pows {
-          background-color: $accent-yellow;
-          color:white;
-          padding: 2px;
-        }
-      }
-      &.is-public::after {
-        content: "P";
-        color: $accent-color;
-
-      }
-      &.is-org::after {
-        content: "O";
-        color: $warning-color;
-      }
-      &.is-private::after {
-        content: "M";
-        color: $error-color;
-      }
-    }
-  }
 }
 
 
 
 #problem-info {
+   border: 1px solid green;
+  margin-top: 80px;
+  .remove-icon {
+    position: absolute;
+    font-size: 1.2em;
+    top: 85px;
+    right: 15px;
+    cursor: pointer;
+  }
   section.problemdetails {
     #probleminfoform {
       textarea, input[type=text], select {

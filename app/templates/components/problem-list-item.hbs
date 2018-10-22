@@ -1,10 +1,11 @@
 {{#if isList}}
+  {{#link-to 'problem' problem class="problem-title"}}
   <div class="item-container" id="container">
     <div class="item-section privacy">
       {{{public-private problem.privacySetting}}}
     </div>
     <div class="item-section name">
-      {{#link-to 'problem' problem class="problem-title"}}{{problem.title}}{{/link-to}}
+      {{problem.title}}
     </div>
     <div class="item-section description">
       {{{problem.text}}}
@@ -27,9 +28,11 @@
       <i class="fas fa-ellipsis-v more-menu"></i>
     </div>
   </div>
+  {{/link-to}}
 {{/if}}
 
 {{#if isGrid}}
+  {{#link-to 'problem' problem class="problem-title"}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
@@ -42,7 +45,7 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        {{#link-to 'problem' problem class="problem-title"}}{{problem.title}}{{/link-to}}
+        {{problem.title}}
       </div>
     </div>
     <div class="item-card row-3">
@@ -64,6 +67,7 @@
       </div>
     </div>
   </div>
+  {{/link-to}}
 {{/if}}
 
 <script>
