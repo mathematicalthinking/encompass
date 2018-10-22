@@ -4,7 +4,7 @@
       <p class="loading-message">Searching problems...</p>
     {{else}}
       {{#each problems as |problem|}}
-        {{problem-list-item problem=problem}}
+        {{problem-list-item problem=problem isList=isList isGrid=isGrid}}
       {{/each}}
     {{/if}}
   </div>
