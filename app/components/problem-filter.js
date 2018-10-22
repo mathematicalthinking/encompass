@@ -1,17 +1,24 @@
+// attrs passed in by parent
+// store
+// onUpdate
+// primaryFilter
+// orgs
+
 Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'problem-filter',
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   primaryFilterInputs: Ember.computed.alias('filter.primaryFilters.inputs'),
   secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),
   showAdminFilters: Ember.computed.equal('primaryFilter.value', 'all'),
-  showTypeahead: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
+  // current subFilter selected values
   currentValues: function() {
     return this.get('secondaryFilter.selectedValues');
   }.property('secondaryFilter.selectedValues.[]'),
 
-
+  // used for populating the selectize instance
+  // orgs passed in from parent are all orgs from db
   orgOptions: function() {
     let orgs = this.get('orgs');
     let toArray = orgs.toArray();
@@ -25,52 +32,6 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
     return mapped;
   }.property('orgs.[]'),
 
-  didReceiveAttrs() {
-    let selectedAllFilter = this.get('selectedAllFiler');
-    if (!selectedAllFilter) {
-      let defaultValue = this.get('adminFilterSelect.defaultValue');
-      if (_.isArray(defaultValue)) {
-        defaultValue = defaultValue[0];
-      }
-      this.set('selectedAllFilter', defaultValue);
-    }
-
-    this._super(...arguments);
-  },
-
-  allSelectOptions: function() {
-    let value = this.get('selectedAllFilter');
-    let options = {};
-    if (value === 'organization') {
-      options.inputId ='filter-select-org';
-      options.labelField = 'name';
-      options.valueField='id';
-      options.maxItems=3;
-      options.initialOptions = this.get('orgOptions');
-      options.isAsync=false;
-      options.propToUpdate = 'orgFilter';
-      return options;
-    }
-
-    if (value === 'creator' || value === 'author') {
-      options.maxItems=3;
-      options.isAsync=true;
-      options.valueField='id';
-      options.model='user';
-      options.queryParamsKey = 'usernameSearch';
-      options.inputId='filter-select-user';
-      options.labelField = 'username';
-      options.searchField = 'username';
-
-      if (value === 'creator') {
-        options.propToUpdate='creatorFilter';
-      }
-      options.propToUpdate = 'authorFilter';
-    }
-
-  }.property('selectedAllFilter', 'showTypeahead'),
-
-
   primaryFilterOptions: function() {
     let mapped = _.map(this.get('primaryFilterInputs'), (val, key) => {
       return val;
@@ -83,10 +44,6 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       return val;
     });
   }.property('primaryFilter'),
-
-  test() {
-    this.set('showTypeahead', true);
-  },
 
   actions: {
     updateTopLevel(val) {
@@ -129,36 +86,32 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     },
 
-    updateAllFilter(val, $item, prop) {
-      console.log('updated all filter', val, $item);
-      let isRemoval;
-      if (!val) {
-        return;
-      }
+    // updateAllFilter(val, $item, prop) {
+    //   console.log('updated all filter', val, $item);
+    //   let isRemoval;
+    //   if (!val) {
+    //     return;
+    //   }
 
-      if (_.isNull($item)) {
-        isRemoval = true;
-      }
+    //   if (_.isNull($item)) {
+    //     isRemoval = true;
+    //   }
 
-      let currentFilter = this.get(prop);
-      if (!currentFilter) {
-        this.set(currentFilter, []);
-      }
+    //   let currentFilter = this.get(prop);
+    //   if (!currentFilter) {
+    //     this.set(currentFilter, []);
+    //   }
 
-      if (isRemoval) {
-        currentFilter.removeObject(val);
-      } else {
-        currentFilter.addObject(val);
-      }
-      if (this.get('onUpdate')) {
-        this.get('onUpdate')();
-      }
+    //   if (isRemoval) {
+    //     currentFilter.removeObject(val);
+    //   } else {
+    //     currentFilter.addObject(val);
+    //   }
+    //   if (this.get('onUpdate')) {
+    //     this.get('onUpdate')();
+    //   }
 
-    },
-    setAllFilter(val, $item) {
-      this.set('selectedAllFilter', val);
-      console.log('val', val);
-    },
+    // },
 
     onUpdate() {
       this.get('onUpdate')();

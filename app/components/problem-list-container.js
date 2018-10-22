@@ -16,7 +16,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'date' },
       {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'date'}
     ]
-    },
+  },
   privacySettingOptions: [
     {id: 1, label: 'All', value: ['M', 'O', 'E'], isChecked: true, icon: 'fas fa-list'},
     {id: 2, label: 'Public', value: ['O', 'E'], isChecked: false, icon: 'fas fa-globe-americas'},
