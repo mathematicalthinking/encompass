@@ -497,14 +497,19 @@
                   @include flex-item(2, center, .2 0 auto);
                   width: 20%;
                   overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  max-height: 48px;
                 }
                 &.description {
                   @include flex-item(3, center, .26 0 auto);
                   width: 26%;
-                  max-width: 500px;
-                  overflow-y: hidden;
-                  overflow-x: hidden;
-                  max-height: 35px;
+                  // max-width: 500px;
+                  overflow: hidden;
+                  // text-overflow: ellipsis;
+                  // white-space: nowrap;
+                  max-height: 48px;
+                  word-break: break-all;
                 }
                 &.date {
                   @include flex-item(4, center, .07 0 auto);

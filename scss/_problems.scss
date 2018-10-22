@@ -2,7 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 800px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 1100px) {
   #problem-list-container {
     .list-outlet {
       width: 80%;
@@ -10,7 +10,7 @@
   }
 }
 
-@media screen and (min-width: 801px) and (max-width: 100000px) {
+@media screen and (min-width: 1101px) and (max-width: 100000px) {
   #problem-list-container {
     .list-outlet {
       width: 50%;
@@ -20,6 +20,7 @@
 
 
 #problem-list-container {
+  z-index: 500;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -30,7 +31,6 @@
     right: 0;
     height: 100%;
     background: $background-body;
-    // width: 50%;
     overflow: auto;
     &.hidden {
       display: none;
@@ -41,16 +41,15 @@
 
 
 #problem-info {
-   border: 1px solid green;
   margin-top: 80px;
-  .remove-icon {
-    position: absolute;
-    font-size: 1.2em;
-    top: 85px;
-    right: 15px;
-    cursor: pointer;
+  padding: 10px;
+  .info-header {
+    border: none;
   }
-  section.problemdetails {
+  .problem-details {
+    fieldset {
+      border: none;
+    }
     #probleminfoform {
       textarea, input[type=text], select {
         font-size: 1em;
@@ -60,7 +59,7 @@
         padding: 12px 20px;
         margin: 8px 0px;
         display: inline-block;
-        border: 1px solid #ccc;
+        border: 1px solid transparent;
         border-radius: 4px;
         box-sizing: border-box;
         background: none;
