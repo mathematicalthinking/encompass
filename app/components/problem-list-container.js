@@ -31,25 +31,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     ]
   },
 
-  creatorFilter: [],
-  authorFilter: [],
-  orgFilter: [],
-  powsFilter: {
-    selectedValues: ['shared', 'unshared'],
-    inputs: {
-      shared: {
-        label: 'Public',
-        value: 'shared',
-        icon: ''
-      },
-      unshared: {
-        label: 'Private',
-        value: 'unshared',
-        icon: ''
-      }
-    }
-  },
-
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
@@ -85,14 +66,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
 
   init: function() {
-
     this.getUserOrg()
     .then((name) => {
       this.set('userOrgName', name );
       this.configureFilter();
       this.configurePrimaryFilter();
     });
-
 
     this._super(...arguments);
   },
@@ -117,12 +96,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
           this.set(metaPropName, meta);
         }
       }
-    }
-    if (!this.get('addCategoriesTypeahead')) {
-      this.set('addCategoriesTypeahead', this.getAddableCategories.call(this));
-    }
-    if (!this.get('addUserTypeahead')) {
-      this.set('addUserTypeahead', this.getAddableUsers.call(this));
     }
   },
 
@@ -313,31 +286,26 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     return filter;
   },
-
+  // eslint-disable-next-line complexity
   buildAllFilter() {
     let filter = {};
     let adminFilter = this.get('adminFilter');
     let currentVal = adminFilter.secondaryFilters.selectedValue;
     let selectedValues = adminFilter.secondaryFilters.inputs[currentVal].selectedValues;
-    console.log('selectedValues');
 
     let isEmpty = _.isEmpty(selectedValues);
 
-
-
-    // let orgFilter = this.get('orgFilter');
-    // let creatorFilter = this.get('creatorFilter');
-    // let authorFilter = this.get('authorFilter');
-    // let powsFilter = this.get('powsFilter');
-
     // if empty, do nothing - means include all orgs
     if (currentVal === 'org') {
-      let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
-      //
-      // if (!isEmpty) {
-      //   filter.organization = { $in: selectedValues };
-      // }
+      // no org selected yet, so no filter applied yet
+      if (isEmpty) {
+        return {};
+      }
 
+
+
+      // recommended, fromOrg
+      let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
 
       let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
       let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
@@ -347,44 +315,22 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         this.set('criteriaTooExclusive', true);
         return;
       }
+      filter.all = {};
+      filter.all.org = {};
 
-      filter.$or = [];
-
-      if (includeRecommended) {
-        // return Promise.all(_.map(selectedValues, (id => {
-        //   return this.store.findRecord('organization', id)
-        //   .then(org => org.get('recommendedProblems'))
-        //   .catch(console.log);
-        // })))
-        // .then((probs) => {
-        //   let ids = probs.mapBy('id');
-        //   console.log('ids', ids);
-        //   if (!_.isEmpty(ids)) {
-        //     filter.$or.push({_id: {$in: ids}});
-        //   } else {
-        //     if (!includeFromOrg) {
-        //       // rec only request, but no recs; immediately return nothing;
-        //       this.set('areNoRecommendedProblems', true);
-        //       this.set('problems', []);
-        //       this.set('problemsMetadata', null);
-        //       return;
-        //     }
-        //     filter.$or.push({organization: {$in: selectedValues}});
-        //     return filter;
-        //   }
-
-        // }).catch(console.log);
-
-        // get all recommended problems for all selected orgs
-        // let recommendedProblems = this.get('currentUser.organization.recommendedProblems');
-        filter.$or.push({recommended: true});
-
-
-
-      } else if (includeFromOrg) {
-        filter.$or.push({organization: {$in: selectedValues}});
+      //fromOrg only
+      if (includeFromOrg && !includeRecommended) {
+        filter.all.org.organizations = selectedValues;
+      }
+      // recommendedOnly
+      if (includeRecommended && !includeFromOrg) {
+        filter.all.org.recommended = selectedValues;
       }
 
+      if (includeRecommended && includeFromOrg) {
+        filter.all.org.organizations = selectedValues;
+        filter.all.org.recommended = selectedValues;
+      }
     }
 
     if (currentVal === 'creator') {
@@ -399,68 +345,25 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       }
     }
     if (currentVal === 'pows') {
+      // public box is checked
+      let doShared = _.indexOf(selectedValues, 'shared') !== -1;
 
+      // private box is checked
+      let doUnshared = _.indexOf(selectedValues, 'unshared') !== -1;
 
-    // public box is checked
-    let doShared = _.indexOf(selectedValues, 'shared') !== -1;
+      if (_.isEmpty(selectedValues)) {
+        filter.pows="none";
+      }
+      if (doShared && !doUnshared) {
+        filter.pows="publicOnly";
+      }
+      if (!doShared && doUnshared) {
+        filter.pows="privateOnly";
+      }
 
-    // private box is checked
-    let doUnshared = _.indexOf(selectedValues, 'unshared') !== -1;
-
-    // filter.pows = {
-    //   private: doUnshared,
-    //   public: doShared
-    // };
-
-    if (_.isEmpty(selectedValues)) {
-      filter.pows="none";
+      // otherwise both checked, no restrictions
+      // should this only show PoWs problems? currently showing all
     }
-    if (doShared && !doUnshared) {
-      filter.pows="publicOnly";
-    }
-    if (!doShared && doUnshared) {
-      filter.pows="privateOnly";
-    }
-  }
-
-    // otherwise both checked, no restrictions
-
-
-
-
-
-    // if (_.isEmpty(selectedPows)) {
-    //   filter.puzzleId = { $or: [
-    //     {$exists: false},
-    //     { $eq: null }
-    //   ]};
-    // }
-    // if (!filter.$or) {
-    //   filter.$or = [];
-    // }
-
-    // filter.$or.push({
-    //   puzzleId : {
-    //     $exists: true,
-    //     $ne: null,
-    //   }
-    // });
-
-
-    // if (selectedPows.length === 1) {
-    //   // only public
-    //   if (doShared) {
-    //     filter.$or.push({
-    //       privacySetting: 'E'
-    //     });
-    //     // only private
-    //   } else {
-    //     filter.$or.push({
-    //       privacySetting: 'M'
-    //     });
-    //   }
-
-    // }
 
     return filter;
   },
@@ -472,23 +375,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
        $in: privacySetting
     };
   },
-
-  // buildCreatedByFilter: function() {
-  //   if (!this.get('filter')) {
-  //     return;
-  //   }
-
-  //   let filter = this.get('filter');
-  //   let { mine } = filter;
-
-  //   //should these be either or?
-  //   if (mine) {
-  //     let id = this.get('currentUser.id');
-  //     return id;
-  //   }
-
-  //   // TODO: add creator filter
-  // },
 
   buildSortBy: function() {
     let criterion = this.get('sortCriterion');
@@ -530,8 +416,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     if (primaryFilterValue === 'all') {
       filterBy = this.buildAllFilter();
     }
-    if (!filterBy) {
-      return;
+    if (_.isUndefined(filterBy) || _.isNull(filterBy)) {
+      filterBy = {};
     }
     // primary public filter should disable privacy setting dropdown?
     if (primaryFilterValue === 'everyone') {
@@ -567,8 +453,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('problemsMetadata', null);
       return;
     }
-    // let filterBy = this.buildFilterRadio();
-    console.log('filterBy buildQueryParams', filterBy);
     let params = {
       sortBy,
       filterBy
@@ -613,60 +497,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }).catch((err) => {
       this.handleErrors(err, 'problemLoadErrors');
     });
-  },
-  getAddableCategories: function() {
-    const store = this.get('store');
-    const syncCategories = this.get('syncCategories');
-    let ret = function (query, syncCb, asyncCb) {
-      if (query.length === 0 && syncCategories) {
-        return asyncCb(syncCategories.toArray());
-      }
-      let text = query.replace(/\s+/g, "");
-
-      return store.query('category', {
-        searchBy: {
-          identifier: text
-        }
-      }).then((categories) => {
-          return asyncCb(categories.toArray());
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'queryErrors');
-        });
-    };
-    return ret.bind(this);
-
-  },
-  getAddableUsers: function () {
-    const store = this.get('store');
-
-    let ret = function (query, syncCb, asyncCb) {
-      // if (doGetTeachers) {
-      //   selectedUsers = this.get('teacherList');
-      // } else {
-      //   selectedUsers = this.get('studentList');
-      // }
-      let selectedUsers = this.get('selectedCreators');
-      let text = query.replace(/\W+/g, "");
-      return store.query('user', {
-          usernameSearch: text,
-        }).then((users) => {
-          if (!users) {
-            return [];
-          }
-          // if (doGetTeachers) {
-          //   users = users.rejectBy('accountType', 'S');
-          // }
-          let filtered = users.filter((user) => {
-            return !selectedUsers.includes(user);
-          });
-          return asyncCb(filtered.toArray());
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'queryErrors');
-        });
-    };
-    return ret.bind(this);
   },
 
   actions: {

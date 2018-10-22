@@ -28,7 +28,7 @@
   {{#if areCurrentSelections}}
     <ul class="secondary-filter-options">
       {{#each orgFilterSubOptions as |option|}}
-        <li class="checkbox-content {{if (is-in orgFilter.subFilters.selectedValues option.value) 'is-selected'}}">
+        <li class="checkbox-content {{if (is-in selectedOrgSubFilters option.value) 'is-selected'}}">
           <label for={{option.value}} class="checkbox-label">
             <i class="checkbox-icon {{option.icon}}"></i>
             <span class="checkbox-text">{{option.label}}</span>

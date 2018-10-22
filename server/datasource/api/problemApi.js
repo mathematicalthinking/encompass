@@ -19,16 +19,18 @@ module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
 // eslint-disable-next-line no-unused-vars
-async function getOrgRecommendedProblems(user, orgId, isIdOnly) {
+async function getOrgRecommendedProblems(user, orgIds, isIdOnly=true) {
   try {
-    let org = await models.Organization.findById(orgId).lean().exec();
-    if (!org) {
+    let orgs = await models.Organization.find({_id: {$in: orgIds}}).lean().exec();
+    if (!orgs) {
       return [];
     }
-    let problems = org.recommendedProblems;
+    let problems = _.map(orgs, org => org.recommendedProblems);
+    problems = _.without(problems, undefined, null);
     if (isIdOnly) {
-      return _.map(problems, p => p._id);
+      return problems;
     }
+
     return problems;
   } catch(err) {
     console.error(`Error getOrgRecommendedProblems: `, err);
@@ -47,6 +49,45 @@ async function getPowsProblems(criteria, isIdOnly) {
   }catch(err) {
     console.error(`Error getPowsProblems: ${err}`);
   }
+}
+
+async function buildPowsFilterBy(pows) {
+  let filter = {};
+  let powIds;
+
+  if (pows === 'none') {
+    criteria = {
+      puzzleId: null,
+      isTrashed: false
+    };
+  } else if (pows === "privateOnly") {
+     // exclude public pows
+          criteria = {
+            $and: [
+              { puzzleId: { $exists: true, $ne: null } },
+              { privacySetting: 'M'},
+              {isTrashed: false}
+            ]
+          };
+
+    } else if (pows === 'publicOnly') {
+      criteria = {
+        $and: [
+          { puzzleId: { $exists: true, $ne: null } },
+          { privacySetting: 'E'},
+          {isTrashed: false}
+        ]
+      };
+
+    }
+    powIds = await getPowsProblems(criteria, true);
+
+    if (!_.isEmpty(powIds)) {
+
+      filter._id = { $in: powIds };
+    }
+    console.log('filter', filter);
+    return filter;
 }
 
 /**
@@ -72,63 +113,58 @@ const getProblems = async function(req, res, next) {
     }
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
+    let filter = {};
+
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
-      let { pows } = filterBy;
-      let powIds;
-      let criteria;
+      let { pows, all } = filterBy;
 
-      if (pows === 'none') {
-        criteria = {
-          puzzleId: {
-             $or: [
-              {$exists: false},
-                { $eq: null }
-              ]
-          },
-          isTrashed: false
-        };
+      if (pows) {
+        filter = await buildPowsFilterBy(pows);
+      } else if (all) {
+        let { org } = all;
+        if (org) {
+          let { recommended, organizations } = org;
 
-          delete filterBy.pows;
-          if (!_.isEmpty(powIds)) {
-            if (!filterBy.$and) {
-              filterBy.$and = [];
+          let recommendedProblems;
+          if (recommended) {
+            recommendedProblems = await getOrgRecommendedProblems(user, recommended , true);
+            console.log('recommendedProblems', recommendedProblems);
+          }
+
+          if (!_.isEmpty(recommendedProblems)) {
+            if (!filter.$or) {
+              filter.$or = [];
             }
-            filterBy.$and.push({_id: powIds});
-          }
+            filter.$or.push({_id: {$in: recommendedProblems}});
 
-        } else if (pows === "privateOnly") {
-         // exclude public pows
-          if (!filterBy.$and) {
-              criteria = {
-                $and: [
-                  { puzzleId: { $exists: true, $ne: null } },
-                  { privacySetting: 'M'},
-                  {isTrashed: false}
-                ]
-              };
+         }
+         if (organizations) {
+          if (!filter.$or) {
+            filter.$or = [];
           }
-        } else if (pows === 'publicOnly') {
-          criteria = {
-            $and: [
-              { puzzleId: { $exists: true, $ne: null } },
-              { privacySetting: 'E'},
-              {isTrashed: false}
-            ]
-          };
+           filter.$or.push({organization: {$in: organizations}});
+         }
+
+         if (_.isEmpty(recommendedProblems) && !organizations) {
+          console.log('empty and recommended only');
+          // recommended only but no recommendations; return immediately
+           const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+         }
 
         }
-        powIds = await getPowsProblems(criteria, true);
-
-        if (!_.isEmpty(powIds)) {
-          if (!filterBy.$and) {
-            filterBy.$and = [];
-          }
-          filterBy.$and.push({_id: { $in: powIds }});
-        }
-        delete filterBy.pows;
-
+      } else {
+        filter = filterBy;
       }
+    }
     let searchFilter;
 
     if (searchBy) {
@@ -153,9 +189,7 @@ const getProblems = async function(req, res, next) {
       sortParam = sortBy.sortParam;
       doCollate = sortBy.doCollate;
     }
-
-    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
-    console.log('crit', JSON.stringify(criteria));
+    const criteria = await access.get.problems(user, ids, filter, searchFilter);
     let results, itemCount;
 
     if (doCollate) {

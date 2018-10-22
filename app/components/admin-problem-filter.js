@@ -5,6 +5,7 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   showPowsFilter: Ember.computed.equal('mainFilter', 'pows'),
   powsFilter: Ember.computed.alias('secondaryFilter.inputs.pows'),
   orgFilter: Ember.computed.alias('secondaryFilter.inputs.org'),
+  selectedOrgSubFilters: Ember.computed.alias('secondaryFilter.inputs.org.subFilters.selectedValues'),
 
   orgFilterSubOptions: function() {
     return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
@@ -34,14 +35,12 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   }.property('mainFilter'),
 
   selectedValues: function() {
-    // let mainFilter = this.get('mainFilter');
-    // let secondaryFilter = this.get('secondaryFilter');
     return this.get('currentSecondaryFilter.selectedValues');
   }.property('currentSecondaryFilter.selectedValues.[]'),
 
   clearSelectedValues: function() {
     this.set('currentSecondaryFilter.selectedValues', []);
-    this.get('onUpdate')();
+    // this.get('onUpdate')();
   },
 
   actions: {
@@ -54,6 +53,7 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
         this.clearSelectedValues();
       }
       this.set('mainFilter', val);
+      this.get('onUpdate')();
     },
     updateSecondLevel(e) {
       let { id } = e.target;
@@ -107,7 +107,7 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
 
       // update selectedValues on subFilters
       //
-      subFilters.selectedValues = appliedValues;
+      // subFilters.selectedValues = appliedValues;
       this.set('orgFilter.subFilters.selectedValues', appliedValues);
 
 
