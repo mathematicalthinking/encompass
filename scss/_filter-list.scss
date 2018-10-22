@@ -3,14 +3,17 @@
 @import "responsive-font-size";
 
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 600px) {
-  h3 {
-    text-indent: 10px;
-  }
+@media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
   .problem-list {
     .problem-list-item {
       width: 350px;
     }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 600px) {
+  h3 {
+    text-indent: 10px;
   }
 }
 
@@ -160,20 +163,23 @@
             }
             &.row-2 {
               @include flex-item(2, auto, 1 0 auto);
-              padding: 15px 10px 10px 10px;
+              padding: 15px 12px 10px 12px;
               color: black;
               text-transform: capitalize;
-              max-height: 25px;
+              max-height: 22px;
+              overflow-y: hidden;
+              // max-width: 450px;
             }
             &.row-3 {
               @include flex-item(3, auto, 1 0 auto);
-              padding: 15px 10px 10px 10px;
+              padding: 15px 12px 10px 12px;
               overflow: hidden;
-              max-height: 100px;
+              max-height: 86px;
+              // max-width: 450px;
             }
             &.row-4 {
               @include flex-item(4, auto, 1 0 auto);
-              padding: 10px;
+              padding: 10px 10px 15px 10px;
               max-height: 25px;
               .status {
                 float: left;
