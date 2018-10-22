@@ -1,16 +1,63 @@
-<header class="info-header">
-  {{#if isEditing}}
-    <h2>Editing Problem</h2>
-  {{else}}
-    <h2>Problem Details</h2>
-  {{/if}}
-    <span class="remove-icon" {{action 'hideInfo'}}>
-      <i class="fas fa-times"></i>
-    </span>
+{{!-- <header class="info-header">
+  <span class="top-left-icon">
+    {{{public-private problem.privacySetting}}}
+  </span>
+  <span class="remove-icon" {{action 'hideInfo'}}>
+    <i class="fas fa-times"></i>
+  </span>
   <div class="clear"></div>
 </header>
 
-<section class="problemdetails">
+<section class="info-details">
+  <div class="info-main">
+    <div class="heading">{{problem.title}}</div>
+    <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
+  </div>
+  <div class="info-menu">
+    <div>GENERAL CATEGORIES ADDITIONAL LEGAL</div>
+  </div>
+  <div class="info-content">
+    <p class="info-content-label">Problem Statement</p>
+    <div class="info-content-block">
+      {{{problem.text}}}
+    </div>
+    {{#if currentUser.isAdmin}}
+    <p class="info-content-label">Organization</p>
+    <div class="info-content-block">
+      {{problem.organization.name}}
+    </div>
+    {{/if}}
+    <p class="info-content-label">Problem Status</p>
+    <div class="info-content-block">
+      Approved
+    </div>
+  </div>
+  <div class="info-actions">
+    <span class="left-buttons">
+      <button><i class="far fa-edit"></i></button>
+      <button><i class="far fa-copy"></i></button>
+    </span>
+    <span class="right-buttons">
+      <button class="primary-button">Assign</button>
+    </span>
+  </div>
+</section> --}}
+
+
+
+<header class="info-header">
+  {{#if isEditing}}
+  <h2 class="info-title">Editing Problem</h2>
+  {{else}}
+  <h2 class="info-title">Problem Details</h2>
+  {{/if}}
+  <span class="remove-icon" {{action 'hideInfo'}}>
+    <i class="fas fa-times"></i>
+  </span>
+  <div class="clear"></div>
+</header>
+
+<section class="problem-details">
 
   {{#if isEditing}}
       <form id='probleminfoform' class='properForm'>
@@ -97,7 +144,7 @@
                     <img src="{{problem.image.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
                   </a>
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
-                  {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
+                   {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
               {{else}}
                   {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
               {{/if}}
