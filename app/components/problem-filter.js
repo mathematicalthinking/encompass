@@ -86,37 +86,8 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     },
 
-    // updateAllFilter(val, $item, prop) {
-    //   console.log('updated all filter', val, $item);
-    //   let isRemoval;
-    //   if (!val) {
-    //     return;
-    //   }
-
-    //   if (_.isNull($item)) {
-    //     isRemoval = true;
-    //   }
-
-    //   let currentFilter = this.get(prop);
-    //   if (!currentFilter) {
-    //     this.set(currentFilter, []);
-    //   }
-
-    //   if (isRemoval) {
-    //     currentFilter.removeObject(val);
-    //   } else {
-    //     currentFilter.addObject(val);
-    //   }
-    //   if (this.get('onUpdate')) {
-    //     this.get('onUpdate')();
-    //   }
-
-    // },
-
     onUpdate() {
       this.get('onUpdate')();
     }
-
-
   }
 });

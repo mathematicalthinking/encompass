@@ -50,7 +50,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
     if (this.get('isDisplayingSearchResults')) {
       msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} problems whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
-      return;
+      return msg;
     }
     msg = `${this.get('problemsMetadata.total')} problems found`;
     return msg;
