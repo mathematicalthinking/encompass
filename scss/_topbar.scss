@@ -2,7 +2,38 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 955px) {
+@media screen and (min-width: 0) and (max-width: 349px) {
+  #al_header {
+    #al_nav {
+      font-size: .8em;
+      overflow: auto;
+      #menu-items {
+        display: none;
+      }
+      #current-username {
+        margin: 0 5px;
+      }
+      #user-image {
+        margin: 0 10px 0 0;
+      }
+    }
+    #sidemenu {
+      display: none;
+    }
+    #encompass-logo {
+      width: 75px;
+      height: 80px;
+      display: block;
+      float: left;
+      position: relative;
+      top: -15px;
+      text-indent: -99999px;
+      background: url(images/logo-encompass.gif) 0 0 no-repeat;
+    }
+  }
+}
+
+@media screen and (min-width: 350px) and (max-width: 955px) {
   #al_header {
     #al_nav {
       font-size: .8em;

@@ -7,6 +7,11 @@
   h3 {
     text-indent: 10px;
   }
+  .problem-list {
+    .problem-list-item {
+      width: 350px;
+    }
+  }
 }
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
@@ -126,14 +131,13 @@
           border-radius: 5px;
           padding: 10px;
           display: block;
-          @include flex-container(300px, hidden, column, wrap, center, stretch, stretch);
+          @include flex-container(275px, hidden, column, wrap, space-between, stretch, stretch);
           &:hover {
             background-color: #f9fcff;
           }
           .item-card {
             &.row-1 {
               @include flex-item(1, auto, 1 0 auto);
-              border: 1px solid green;
               padding: 10px;
               max-height: 25px;
               .privacy {
@@ -156,20 +160,19 @@
             }
             &.row-2 {
               @include flex-item(2, auto, 1 0 auto);
-              padding: 15px 10px 10px 15px;
-              border: 1px solid red;
+              padding: 15px 10px 10px 10px;
               color: black;
               text-transform: capitalize;
+              max-height: 25px;
             }
             &.row-3 {
               @include flex-item(3, auto, 1 0 auto);
-              border: 1px solid blue;
-              padding: 10px;
+              padding: 15px 10px 10px 10px;
               overflow: hidden;
+              max-height: 100px;
             }
             &.row-4 {
               @include flex-item(4, auto, 1 0 auto);
-              border: 1px solid orange;
               padding: 10px;
               max-height: 25px;
               .status {
