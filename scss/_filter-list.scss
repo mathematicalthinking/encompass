@@ -126,6 +126,12 @@
         @include flex-container(auto, auto, row, wrap, center, center, center);
       }
       .problem-list-item {
+        a {
+          &.active {
+            background-color: $background-body;
+            font-weight: $bolder-font-weight;
+          }
+        }
         @include flex-item(1, auto, 1 1 auto);
         width: 450px;
         .item-card-container {
@@ -477,6 +483,14 @@
             }
           }
           .main-list {
+            .problem-list-item {
+              a {
+                &.active {
+                  background-color: $background-body;
+                  font-weight: $bolder-font-weight;
+                }
+              }
+            }
             .item-container {
               border-bottom: .5px solid $input-border;
               padding: 25px 0;

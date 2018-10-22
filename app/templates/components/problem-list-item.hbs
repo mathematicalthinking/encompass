@@ -4,7 +4,7 @@
       {{{public-private problem.privacySetting}}}
     </div>
     <div class="item-section name">
-      {{problem.title}}
+      {{#link-to 'problem' problem class="problem-title"}}{{problem.title}}{{/link-to}}
     </div>
     <div class="item-section description">
       {{{problem.text}}}
@@ -42,7 +42,7 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        {{problem.title}}
+        {{#link-to 'problem' problem class="problem-title"}}{{problem.title}}{{/link-to}}
       </div>
     </div>
     <div class="item-card row-3">
@@ -65,5 +65,14 @@
     </div>
   </div>
 {{/if}}
+
+<script>
+  $('.problem-title').click(function (e) {
+    $('.list-outlet').removeClass('hidden');
+    $('.list-outlet').addClass('animated slideInRight');
+  });
+
+
+</script>
 
 
