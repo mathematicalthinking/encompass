@@ -1,29 +1,69 @@
-<div class="item-container">
-  <div class="item-section privacy">
-    {{{public-private problem.privacySetting}}}
+{{#if isList}}
+  <div class="item-container">
+    <div class="item-section privacy">
+      {{{public-private problem.privacySetting}}}
+    </div>
+    <div class="item-section name">
+      {{problem.title}}
+    </div>
+    <div class="item-section description">
+      {{{problem.text}}}
+    </div>
+    <div class="item-section date">
+      {{format-date problem.createDate 'MM/DD/YY'}}
+    </div>
+    <div class="item-section status">
+      <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#35A853" />
+      </svg>
+      <span class="status-text">
+        Approved
+      </span>
+    </div>
+    <div class="item-section action">
+      <button class="primary-button">Flag</button>
+    </div>
+    <div class="item-section more">
+      <i class="fas fa-ellipsis-v more-menu"></i>
+    </div>
   </div>
-  <div class="item-section name">
-    {{problem.title}}
+{{/if}}
+
+{{#if isGrid}}
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">{{{public-private problem.privacySetting}}}</span>
+        <span class="date">{{format-date problem.createDate 'MM/DD/YY'}}</span>
+      </div>
+      <div class="item-card more">
+        <i class="fas fa-ellipsis-v more-menu"></i>
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        {{problem.title}}
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        {{{problem.text}}}
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <svg height="20" width="20">
+          <circle cx="10" cy="15" r="5" fill="#35A853" />
+        </svg>
+        <span class="status-text">
+          Approved
+        </span>
+      </div>
+      <div class="item-card action">
+        <button class="primary-button">Flag</button>
+      </div>
+    </div>
   </div>
-  <div class="item-section description">
-    {{{problem.text}}}
-  </div>
-  <div class="item-section date">
-    {{format-date problem.createDate 'MM/DD/YY'}}
-  </div>
-  <div class="item-section status">
-    <svg height="20" width="20">
-      <circle cx="10" cy="15" r="5" fill="#35A853" />
-    </svg>
-    <span class="status-text">
-      Approved
-    </span>
-  </div>
-  <div class="item-section action">
-    <button class="primary-button">Flag</button>
-  </div>
-  <div class="item-section more">
-    <i class="fas fa-ellipsis-v more-menu"></i>
-  </div>
-</div>
+{{/if}}
+
 
