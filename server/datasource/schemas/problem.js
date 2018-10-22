@@ -32,6 +32,7 @@ var ProblemSchema = new Schema({
   categories: [{ type: ObjectId, ref: 'Category' }],
   keywords: [{ type: String }],
   isUsed: { type: Boolean, 'default': false },
+  status: {type: String, enum: ['approved', 'pending', 'flagged']},
 }, { versionKey: false });
 
 
