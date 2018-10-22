@@ -40,6 +40,9 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
 
   clearSelectedValues: function() {
     this.set('currentSecondaryFilter.selectedValues', []);
+
+    // reset org sub filters to default both checked
+    this.set('selectedOrgSubFilters', ['recommended', 'fromOrg']);
     // this.get('onUpdate')();
   },
 
