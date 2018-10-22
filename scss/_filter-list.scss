@@ -483,7 +483,7 @@
             }
           }
           .main-list {
-            .problem-list-item {
+            #container {
               a {
                 &.active {
                   background-color: $background-body;
@@ -496,6 +496,7 @@
               padding: 25px 0;
               display: inline-block;
               @include flex-container(100%, null, row, wrap, space-between, center, stretch);
+
               &:hover {
                 background-color: #f9fcff;
               }
@@ -510,6 +511,11 @@
                   @include flex-item(2, center, .2 0 auto);
                   width: 20%;
                   overflow: hidden;
+                  .problem-title {
+                    &.active {
+                      font-weight: $bolder-font-weight;
+                    }
+                  }
                 }
                 &.description {
                   @include flex-item(3, center, .26 0 auto);
