@@ -91,7 +91,6 @@
       max-width: 600px;
       .sort-bar-item {
         &.privacy {
-          padding-left: 0px;
           @include flex-item(1, center, .25 0 auto);
           width: 10%;
         }
@@ -120,23 +119,53 @@
       }
       .problem-list-item {
         @include flex-item(1, auto, 1 1 auto);
-        width: 350px;
-        .item-container {
-          // border: .5px solid $input-border;
-          margin: 10px;
+        width: 450px;
+        .item-card-container {
+          margin: 5px;
           box-shadow: $box-shadow;
           border-radius: 5px;
           padding: 10px;
           display: block;
-          min-height: 200px;
+          min-height: 280px;
           &:hover {
             background-color: #f9fcff;
           }
-          .item-section {
-            &.privacy {
-              padding-left: 10px;
-              padding-top: 8px;
-              text-indent: 0px;
+          .item-card {
+            // @include flex-container(auto, auto, row, wrap, center, center, center);
+            &.row-1 {
+              border: 1px solid green;
+              height: 25px;
+              // @include flex-container(auto, auto, row, wrap, center, center, center);
+              padding: 10px;
+              .privacy {
+                text-align: left;
+                float: left;
+                .privacy-icon {
+                  margin-right: 5px;
+                  font-size: 1.2em;
+                }
+                .date {
+                  margin-left: 10px;
+                  position: relative;
+                  top: -3px;
+                }
+              }
+              .more {
+                float: right;
+                margin-top: 5px;
+              }
+            }
+            &.row-2 {
+              padding: 10px;
+              border: 1px solid red;
+            }
+            &.row-3 {
+              border: 1px solid blue;
+              padding: 10px;
+            }
+            &.row-4 {
+              border: 1px solid orange;
+              padding: 10px;
             }
           }
         }
