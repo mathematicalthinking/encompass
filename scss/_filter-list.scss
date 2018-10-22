@@ -77,7 +77,7 @@
 @media screen and (min-width: 901px) and (max-width: 100000px) {
   .flex-container-full {
     display: grid;
-    grid-template-columns: auto auto auto auto auto;
+    grid-template-columns: 350px auto auto auto auto;
   }
   .toggle-filter-menu {
     display: none;
