@@ -4,6 +4,17 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   showOrgFilter: Ember.computed.equal('mainFilter', 'org'),
   showPowsFilter: Ember.computed.equal('mainFilter', 'pows'),
   powsFilter: Ember.computed.alias('secondaryFilter.inputs.pows'),
+  orgFilter: Ember.computed.alias('secondaryFilter.inputs.org'),
+
+  orgFilterSubOptions: function() {
+    return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
+      return val;
+    });
+  }.property('orgFilter'),
+
+  areCurrentSelections: function() {
+    return !_.isEmpty(this.get('selectedValues'));
+  }.property('selectedValues'),
 
   currentSecondaryFilter: function() {
     let inputs = this.get('secondaryFilter.inputs');
@@ -70,6 +81,35 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
       //  let powSelectedValues = this.get('powsFilter.selectedValues');
        this.set('powsFilter.selectedValues', appliedValues);
       }
+
+      if (this.get('onUpdate')) {
+        this.get('onUpdate')();
+      }
+    },
+    updateOrgSubFilters(e) {
+      let { id } = e.target;
+      let subFilters = this.get('orgFilter.subFilters');
+
+      let targetInput = subFilters.inputs[id];
+      if (!targetInput) {
+        // not a valid option
+        return;
+      }
+      // valid option, toggle the inputs isApplied value
+      targetInput.isApplied = !targetInput.isApplied;
+
+      // filter for inputs who are currently applied
+      let appliedInputs = _.filter(subFilters.inputs, (input) => {
+        return input.isApplied;
+      });
+
+      let appliedValues = _.map(appliedInputs, input => input.value);
+
+      // update selectedValues on subFilters
+      //
+      subFilters.selectedValues = appliedValues;
+      this.set('orgFilter.subFilters.selectedValues', appliedValues);
+
 
       if (this.get('onUpdate')) {
         this.get('onUpdate')();

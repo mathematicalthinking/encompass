@@ -187,7 +187,26 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
             org: {
               label: "Organization",
               value: "org",
-              selectedValues: []
+              selectedValues: [],
+              subFilters: {
+                selectedValues: ["recommended", "fromOrg"],
+                inputs: {
+                  recommended: {
+                    label: "Recommended",
+                    value: "recommended",
+                    isChecked: true,
+                    isApplied: true,
+                    icon: "fas fa-lightbulb"
+                  },
+                    fromOrg: {
+                      label: `Created by Members`,
+                      value: "fromOrg",
+                      isChecked: true,
+                      isApplied: true,
+                      icon: "fas fa-users"
+                    }
+                  }
+                }
             },
             creator: {
               label: "Creator",
@@ -313,9 +332,59 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     // if empty, do nothing - means include all orgs
     if (currentVal === 'org') {
-      if (!isEmpty) {
-        filter.organization = { $in: selectedValues };
+      let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
+      //
+      // if (!isEmpty) {
+      //   filter.organization = { $in: selectedValues };
+      // }
+
+
+      let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
+      let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+
+      // immediately return 0 results
+      if (!includeRecommended && !includeFromOrg) {
+        this.set('criteriaTooExclusive', true);
+        return;
       }
+
+      filter.$or = [];
+
+      if (includeRecommended) {
+        // return Promise.all(_.map(selectedValues, (id => {
+        //   return this.store.findRecord('organization', id)
+        //   .then(org => org.get('recommendedProblems'))
+        //   .catch(console.log);
+        // })))
+        // .then((probs) => {
+        //   let ids = probs.mapBy('id');
+        //   console.log('ids', ids);
+        //   if (!_.isEmpty(ids)) {
+        //     filter.$or.push({_id: {$in: ids}});
+        //   } else {
+        //     if (!includeFromOrg) {
+        //       // rec only request, but no recs; immediately return nothing;
+        //       this.set('areNoRecommendedProblems', true);
+        //       this.set('problems', []);
+        //       this.set('problemsMetadata', null);
+        //       return;
+        //     }
+        //     filter.$or.push({organization: {$in: selectedValues}});
+        //     return filter;
+        //   }
+
+        // }).catch(console.log);
+
+        // get all recommended problems for all selected orgs
+        // let recommendedProblems = this.get('currentUser.organization.recommendedProblems');
+        filter.$or.push({recommended: true});
+
+
+
+      } else if (includeFromOrg) {
+        filter.$or.push({organization: {$in: selectedValues}});
+      }
+
     }
 
     if (currentVal === 'creator') {
