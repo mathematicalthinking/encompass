@@ -148,6 +148,7 @@
   font-weight: $bolder-font-weight;
   float: right;
   margin-top: 12.5px;
+  background-color: $background-body;
   li {
     line-height: 50px;
     height: 40px;
@@ -170,7 +171,7 @@
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
-  background-color: white;
+  background-color: $background-body;
   position: fixed;
   top: 0;
   left: 0;
