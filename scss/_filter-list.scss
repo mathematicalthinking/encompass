@@ -521,6 +521,9 @@
                 &.status {
                   @include flex-item(5, center, .08 0 auto);
                   width: 8%;
+                  .status-text{
+                    text-transform: capitalize;
+                  }
                 }
                 &.action {
                   @include flex-item(6, center, .04 0 auto);
@@ -579,4 +582,31 @@
   content: "";
   position: absolute;
   right: 32%;
+}
+
+.click-menu {
+  position: absolute;
+  z-index: 100;
+  margin-top: 28px;
+  margin-left: -100px;
+  padding: 10px 20px;
+  background-color: white;
+  box-shadow: $box-shadow;
+  border-radius: 5px;
+  li {
+    padding: 8px 0;
+    text-transform: capitalize;
+    color: $primary-font-color;
+    label {
+      // cursor: pointer;
+      padding-right: 5px;
+    }
+    input[type=radio] {
+      margin-right: 15px;
+    }
+    i {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+  }
 }

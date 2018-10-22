@@ -89,39 +89,19 @@
             Status <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu checkbox">
               <ul>
-                <li>
+                {{#each statusOptions as |option|}}
+                  <li>
                   <label>
-                    <input type="checkbox" checked={{isChecked}} name="status" value={{inputValue}} onclick={{action "onClick" inputValue}}>
+                    <input type="checkbox" checked={{option.isChecked}} name={{option.name}} value={{option.value}} onclick={{action "updateStatusFilter" option.value}}>
                     <span>
                       <svg height="20" width="20">
-                        <circle cx="10" cy="15" r="5" fill="#35A853" />
+                        <circle cx="10" cy="15" r="5" fill={{option.fill}} />
                       </svg>
-                      <span class="radio-text">Approved</span>
+                      <span class="radio-text">{{option.text}}</span>
                     </span>
                   </label>
                 </li>
-                <li>
-                  <label>
-                    <input type="checkbox" checked={{isChecked}} name="status" value={{inputValue}} onclick={{action "onClick" inputValue}}>
-                    <span>
-                      <svg height="20" width="20">
-                        <circle cx="10" cy="15" r="5" fill="#FFD204" />
-                      </svg>
-                      <span class="radio-text">Pending</span>
-                    </span>
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input type="checkbox" checked={{isChecked}} name='status' value={{inputValue}} onclick={{action "onClick" inputValue}}>
-                    <span>
-                      <svg height="20" width="20">
-                        <circle cx="10" cy="15" r="5" fill="#EB5757"/>
-                      </svg>
-                      <span class="radio-text">Flagged</span>
-                    </span>
-                  </label>
-                </li>
+                {{/each}}
               </ul>
             </span>
           </div>
@@ -129,7 +109,7 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if showList}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions}}
         {{/if}}
         {{#if showGrid}}
           {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=false isGrid=true}}

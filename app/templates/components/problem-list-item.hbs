@@ -15,17 +15,37 @@
     </div>
     <div class="item-section status">
       <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#35A853" />
+        <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
       </svg>
       <span class="status-text">
-        Approved
+        {{problem.status}}
       </span>
     </div>
     <div class="item-section action">
-      <button class="primary-button">Flag</button>
+      {{#if currentUser.isAdmin}}
+        {{#if (is-equal problem.status 'approved')}}
+          <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
+          {{else}}
+          <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button">Approve</button>
+        {{/if}}
+      {{else}}
+        <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+      {{/if}}
     </div>
     <div class="item-section more">
-      <i class="fas fa-ellipsis-v more-menu"></i>
+      <i {{action "toggleShowMoreMenu" }} class="fas fa-ellipsis-v more-menu"></i>
+      {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#each ellipsisMenuOptions as |option|}}
+            <li>
+              <label>{{option.label}}</label>
+              <i {{action option.action}} class={{option.icon}}></i>
+            </li>
+            {{/each}}
+          </ul>
+        </span>
+      {{/if}}
     </div>
   </div>
   {{/link-to}}

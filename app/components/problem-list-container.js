@@ -30,6 +30,19 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       { label: 'author'}
     ]
   },
+  statusOptions: [
+    { name: 'status', value: 'approved', fill: '#35A853', text: 'Approved', isChecked: true },
+    { name: 'status', value: 'pending', fill: '#FFD204', text: 'Pending', isChecked: true },
+    { name: 'status', value: 'flagged', fill: '#EB5757', text: 'Flagged', isChecked: true },
+  ],
+  moreMenuOptions: [
+    {label: 'Edit', value:'edit', action: 'editProblem', icon: 'far fa-edit'},
+    {label: 'Assign', value: 'assign', action: 'assignProblem', icon: 'fas fa-list-ul'},
+    {label: 'Delete', value: 'delete', action: 'deleteProblem', icon: 'fas fa-trash'},
+    {label: 'Report', value: 'flag', action: 'reportProblem', icon: 'fas fa-exclamation-circle'},
+    {label: 'Pend', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true}
+  ],
+  statusFilter: ['approved', 'pending', 'flagged'],
 
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
@@ -433,6 +446,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     if (selectedCategoryFilter) {
       filterBy.categories = selectedCategory;
     }
+
+    let statusFilter = this.get('statusFilter');
+
+    if (!_.isEmpty(statusFilter)) {
+      filterBy.status = { $in: statusFilter };
+    }
     return filterBy;
   },
 
@@ -572,6 +591,22 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('menuClosed', !this.get('menuClosed'));
       $('#filter-list-side').toggleClass('collapse');
       $('#filter-list-side').addClass('animated slideInLeft');
+    },
+
+    updateStatusFilter: function(status) {
+      let allowedValues = ['approved', 'pending', 'flagged'];
+      if (!_.contains(allowedValues, status)) {
+        return;
+      }
+      let statusFilter = this.get('statusFilter');
+
+      if (_.contains(statusFilter, status)) {
+        statusFilter.removeObject(status);
+      } else {
+        statusFilter.addObject(status);
+      }
+      this.getProblems();
+
     }
   }
 });
