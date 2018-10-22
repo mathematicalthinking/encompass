@@ -113,17 +113,22 @@ const getProblems = async function(req, res, next) {
     }
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
-    let filter = {};
-
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
       let { pows, all } = filterBy;
 
       if (pows) {
-        filter = await buildPowsFilterBy(pows);
+        if (!filterBy.$and) {
+          filterBy.$and = [];
+        }
+        filterBy.$and.push(await buildPowsFilterBy(pows));
+
+        delete filterBy.pows;
+        // filter = await buildPowsFilterBy(pows);
       } else if (all) {
         let { org } = all;
         if (org) {
+          let crit = {};
           let { recommended, organizations } = org;
 
           let recommendedProblems;
@@ -133,17 +138,17 @@ const getProblems = async function(req, res, next) {
           }
 
           if (!_.isEmpty(recommendedProblems)) {
-            if (!filter.$or) {
-              filter.$or = [];
+            if (!crit.$or) {
+              crit.$or = [];
             }
-            filter.$or.push({_id: {$in: recommendedProblems}});
+            crit.$or.push({_id: {$in: recommendedProblems}});
 
          }
          if (organizations) {
-          if (!filter.$or) {
-            filter.$or = [];
+          if (!crit.$or) {
+            crit.$or = [];
           }
-           filter.$or.push({organization: {$in: organizations}});
+           crit.$or.push({organization: {$in: organizations}});
          }
 
          if (_.isEmpty(recommendedProblems) && !organizations) {
@@ -159,10 +164,12 @@ const getProblems = async function(req, res, next) {
         };
           return utils.sendResponse(res, data);
          }
-
+         if (!filterBy.$and) {
+           filterBy.$and = [];
+         }
+         filterBy.$and.push(crit);
+         delete filterBy.all;
         }
-      } else {
-        filter = filterBy;
       }
     }
     let searchFilter;
@@ -189,7 +196,8 @@ const getProblems = async function(req, res, next) {
       sortParam = sortBy.sortParam;
       doCollate = sortBy.doCollate;
     }
-    const criteria = await access.get.problems(user, ids, filter, searchFilter);
+    console.log('filterBy before crit', filterBy);
+    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
     let results, itemCount;
 
     if (doCollate) {
