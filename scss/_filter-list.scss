@@ -46,7 +46,7 @@
 
 
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 1300px) {
   .sort-bar {
     .sort-bar-item {
       .fa-filter {
@@ -75,6 +75,10 @@
 }
 
 @media screen and (min-width: 901px) and (max-width: 100000px) {
+  .flex-container-full {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+  }
   .toggle-filter-menu {
     display: none;
   }
@@ -111,8 +115,8 @@
     .problem-list {
       width: inherit;
       .main-list {
-        width: inherit;
-        @include flex-container(null, null, row, wrap, center, center, flex-end);
+        width: auto;
+        @include flex-container(auto, auto, row, wrap, center, center, center);
       }
       .problem-list-item {
         @include flex-item(1, auto, 1 1 auto);
@@ -164,13 +168,18 @@
 
 
 .flex-container-full {
-  @include flex-container(auto, auto, row, wrap, center, center, stretch);
+  // display: grid;
+  // grid-template-columns: auto auto auto auto auto;
+  // @include flex-container(auto, auto, row, wrap, center, center, stretch);
   .flex-item-full {
     &.filter-options {
-      @include flex-item(1, auto, 1 0 auto);
+      // @include flex-item(1, auto, 1 0 auto);
+      grid-column-start: 0;
+      grid-column-end: 2;
       background-color:$filter-list-background-color;
       max-width: 400px;
       min-width: 300px;
+      // width: 350px;
       .filter-items {
         margin-top: 35px;
         h2 {
@@ -215,7 +224,6 @@
         }
         #admin-problem-filter {
           background-color: $background-body;
-          // border: 1px solid red;
           padding: 10px 0 20px 20px;
           .choose-filter-admin {
             .filter-text {
@@ -280,7 +288,9 @@
       }
     }
     &.list-view {
-      @include flex-item(2, auto, 4 1 auto);
+      grid-column-start: 2;
+      grid-column-end: 7;
+      justify-content: left;
       padding: 20px;
       overflow: auto;
       .fa-globe-americas {

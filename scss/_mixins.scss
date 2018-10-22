@@ -32,6 +32,17 @@
   @include align-items($align-h);
 }
 
+@mixin flex-inline-container($height, $overflow, $direction, $wrap, $justify, $align, $align-h) {
+  height: $height;
+  overflow: $overflow;
+  @include inline-flex();
+  @include flex-direction($direction);
+  @include flex-wrap($wrap);
+  @include justify-content($justify);
+  @include align-content($align);
+  @include align-items($align-h);
+}
+
 @mixin flex-item($order, $align, $values) {
   @include order($order);
   @include align-self($align);
@@ -134,7 +145,7 @@
 // <flex-direction> || <flex-wrap>
 @mixin flex-flow($flow) {
   -webkit-flex-flow: $flow;
-  // -moz-flex-flow: $flow;
+  -moz-flex-flow: $flow;
   -ms-flex-flow: $flow;
   flex-flow: $flow;
 }
@@ -157,7 +168,7 @@
   -webkit-box-flex: $grow;
   -moz-box-flex: $grow;
   -webkit-flex-grow: $grow;
-  // -moz-flex-grow: $grow;
+  -moz-flex-grow: $grow;
   -ms-flex-grow: $grow;
   flex-grow: $grow;
 }
@@ -178,7 +189,7 @@
 // <width>
 @mixin flex-basis($width) {
   -webkit-flex-basis: $width;
-  // -moz-flex-basis: $width;
+  -moz-flex-basis: $width;
   -ms-flex-basis: $width;
   flex-basis: $width;
 }
@@ -199,7 +210,7 @@
 // flex-start | flex-end | center | space-between | space-around | stretch
 @mixin align-content($align) {
   -webkit-align-content: $align;
-  // -moz-align-content: $align;
+  -moz-align-content: $align;
   -ms-align-content: $align;
   align-content: $align;
 }
@@ -220,7 +231,7 @@
 // auto | flex-start | flex-end | center | baseline | stretch
 @mixin align-self($align) {
   -webkit-align-self: $align;
-  // -moz-align-self: $align;
+  -moz-align-self: $align;
   -ms-align-self: $align;
   align-self: $align;
 }
