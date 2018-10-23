@@ -470,9 +470,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
 
     let statusFilter = this.get('statusFilter');
-
     if (!_.isEmpty(statusFilter)) {
       filterBy.status = { $in: statusFilter };
+    } else {
+      this.set('criteriaTooExclusive', true);
+      return;
     }
     return filterBy;
   },
@@ -603,7 +605,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     },
     updateSortCriterion(criterion) {
       this.set('sortCriterion', criterion);
-      console.log('criterion.value', criterion);
       this.getProblems();
     },
     triggerFetch() {
@@ -650,7 +651,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       } else {
         statusFilter.addObject(status);
       }
-      this.getProblems();
+      this.send('triggerFetch');
 
     }
   }

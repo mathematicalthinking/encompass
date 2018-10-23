@@ -130,7 +130,6 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
                   this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
                   .then((result) => {
                     if (result.value) {
-                      console.log('other value', result.value);
                       this.send('updateStatus', record, value, displayKey, result.value);
 
                     }
@@ -207,13 +206,11 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       });
     },
     assignProblem() {
-      console.log('assignProblem action');
       // this.set('creatingAssignment', true);
       // send to parent to handle?
       this.get('assignProblem')(this.get('problem'));
     },
     editProblem() {
-      console.log('edit problem');
       // send to parent to handle?
       this.get('editProblem')(this.get('problem'));
     },
