@@ -143,12 +143,15 @@
       </div> --}}
 
 
-<div class="list-outlet hidden">
+<div class="list-outlet hidden" id="outlet">
   {{outlet}}
 </div>
 
 <script>
   $('.list-view').click(function (e) {
     $('#filter-list-side').addClass('collapse');
+  });
+  $('#problem-new-link').click(function (e) {
+    $('#outlet').removeClass('hidden');
   });
 </script>
