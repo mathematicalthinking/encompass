@@ -230,10 +230,13 @@
       grid-column-start: 0;
       grid-column-end: 2;
       background-color:$filter-list-background-color;
-      max-width: 400px;
-      min-width: 300px;
+      position: fixed;
+      width: 350px;
+      height: 100%;
+      // min-width: 300px;
       // width: 350px;
       .filter-items {
+        width: inherit;
         margin-top: 35px;
         h2 {
           font-size: 1.8em;
