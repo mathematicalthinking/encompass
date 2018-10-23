@@ -220,13 +220,18 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let currentUser = this.get('currentUser');
       let title = this.get('problemName');
       const quillContent = this.$('.ql-editor').html();
-      let text = quillContent.replace(/["]/g, "'");
+      let text;
+      let isQuillValid;
+
+      if (quillContent) {
+        text = quillContent.replace(/["]/g, "'");
+        isQuillValid = this.isQuillValid();
+      }
       let privacy = this.get('privacySetting');
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
 
-      let isQuillValid = this.isQuillValid();
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
