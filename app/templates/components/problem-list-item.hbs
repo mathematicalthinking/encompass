@@ -60,7 +60,19 @@
         <span class="date">{{format-date problem.createDate 'MM/DD/YY'}}</span>
       </div>
       <div class="item-card more">
-        <i class="fas fa-ellipsis-v more-menu"></i>
+        <i {{action "toggleShowMoreMenu"}} class="fas fa-ellipsis-v more-menu"></i>
+        {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#each ellipsisMenuOptions as |option|}}
+            <li>
+              <label>{{option.label}}</label>
+              <i {{action option.action}} class={{option.icon}}></i>
+            </li>
+            {{/each}}
+          </ul>
+        </span>
+        {{/if}}
       </div>
     </div>
     <div class="item-card row-2">

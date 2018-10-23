@@ -40,7 +40,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     {label: 'Assign', value: 'assign', action: 'assignProblem', icon: 'fas fa-list-ul', adminOnly: true},
     {label: 'Delete', value: 'delete', action: 'deleteProblem', icon: 'fas fa-trash'},
     {label: 'Report', value: 'flag', action: 'reportProblem', icon: 'fas fa-exclamation-circle'},
-    {label: 'Pend', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true}
+    {label: 'Pending', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true}
   ],
   statusFilter: ['approved', 'pending', 'flagged'],
 
