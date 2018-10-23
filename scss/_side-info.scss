@@ -3,8 +3,32 @@
 @import "responsive-font-size";
 
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 400px) {
+  .side-info {
+    .info-menu {
+      .tab-link {
+        margin: 0 0px;
+        font-size: .7em;
+        padding: 10px;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 401px) and (max-width: 100000px) {
+  .side-info {
+    .info-menu {
+      .tab-link {
+        margin: 0 10px;
+        font-size: .9em;
+        padding: 10px 20px;
+      }
+    }
+  }
+}
+
+
 .side-info {
-  height: 100vh;
   .fa-globe-americas {
     color: $accent-color;
   }
@@ -12,10 +36,10 @@
     color: $error-color;
   }
   .top-left-icon {
-    font-size: 1.2em;
+    font-size: 1.5em;
     position: absolute;
     left: 20px;
-    top: 75px;
+    top: 85px;
   }
   .remove-icon {
     position: absolute;
@@ -27,53 +51,66 @@
   .info-header {
     border: none;
   }
-  .info-details {
-    border: 1px solid red;
-    margin: 30px 0;
-    .info-main {
-      border: 1px solid green;
-      text-align: center;
-      .heading {
-        font-size: 1.6em;
-        color: black;
-        padding: 10px 0;
+  .side-info-menu {
+    position: relative;
+    .info-details {
+      position: relative;
+      border: 1px solid red;
+      margin: 30px 0;
+      .info-main {
+        border: 1px solid green;
+        text-align: center;
+        .heading {
+          font-size: 1.4em;
+          color: black;
+          padding: 10px 0;
+        }
+        .subheading {
+          padding: 10px 0;
+          font-weight: $light-font-weight;
+          font-size: 1.1em;
+        }
       }
-      .subheading {
-        padding: 10px 0;
-        font-weight: $light-font-weight;
-        font-size: 1.1em;
+      .info-menu {
+        text-align: center;
+        padding-top: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        .tab-link {
+          background-color: $background-body;
+          font-weight: $main-font-weight;
+          text-transform: uppercase;
+          border: none;
+          color: $primary-font-color;
+          &.active-btn {
+            border-bottom: 3px solid $accent-color;
+            color: $accent-color;
+            font-weight: $bolder-font-weight;
+          }
+        }
       }
-    }
-    .info-menu {
-      border: 1px solid purple;
-      height: 50px;
-      text-align: center;
-      padding-top: 20px;
-      border-bottom: 1px solid $input-border;
-    }
-    .info-content {
-      padding-top: 15px;
-      border: 1px solid gold;
-      .info-content-block {
-        overflow-y: scroll;
-        max-height: 240px;
-        margin: 15px 0 30px 0;
-      }
-      .info-content-label {
-        font-size: 1.2em;
-        color: black;
-        margin: 15px 0;
+      .info-content {
+        padding-top: 15px;
+        border: 1px solid gold;
+        .info-content-block {
+          overflow-y: scroll;
+          max-height: 240px;
+          margin: 15px 0 30px 0;
+        }
+        .info-content-label {
+          font-size: 1.2em;
+          color: black;
+          margin: 15px 0;
+        }
       }
     }
     .info-actions {
       height: 35px;
-      border: 1px solid orange;
-      position: absolute;
-      bottom: 20px;
-      width: 96%;
+      margin-bottom: 15px;
       .left-buttons {
-        float: left;
-        height: 100%;
+        position: absolute;
+        left: 0;
+        bottom: 0%;
         button {
           border: none;
           background: none;
@@ -85,7 +122,9 @@
         }
       }
       .right-buttons {
-        float: right;
+        position: absolute;
+        right: 0;
+        bottom: 0%;
         .primary-button {
           font-weight: $bolder-font-weight;
         }
