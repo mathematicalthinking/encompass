@@ -1,4 +1,4 @@
-{{!-- <header class="info-header">
+<header class="info-header">
   <span class="top-left-icon">
     {{{public-private problem.privacySetting}}}
   </span>
@@ -8,42 +8,83 @@
   <div class="clear"></div>
 </header>
 
-<section class="info-details">
-  <div class="info-main">
-    <div class="heading">{{problem.title}}</div>
-    <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
-  </div>
-  <div class="info-menu">
-    <div>GENERAL CATEGORIES ADDITIONAL LEGAL</div>
-  </div>
-  <div class="info-content">
-    <p class="info-content-label">Problem Statement</p>
-    <div class="info-content-block">
-      {{{problem.text}}}
+<div class="side-info-menu">
+  <section class="info-details">
+    <div class="info-main">
+      <div class="heading">{{problem.title}}</div>
+      <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
     </div>
-    {{#if currentUser.isAdmin}}
-    <p class="info-content-label">Organization</p>
-    <div class="info-content-block">
-      {{problem.organization.name}}
+    <div class="info-menu">
+      <button class="tab-link active-btn" {{action 'showGeneral'}}>General</button>
+      <button class="tab-link" {{action 'showCats'}}>Categories</button>
+      <button class="tab-link" {{action 'showAdditional'}}>Additional</button>
+      <button class="tab-link" {{action 'showLegal'}}>Legal</button>
     </div>
-    {{/if}}
-    <p class="info-content-label">Problem Status</p>
-    <div class="info-content-block">
-      Approved
+    <div class="info-content">
+      {{#if showGeneral}}
+        <p class="info-content-label">Problem Statement</p>
+        <div class="info-content-block">
+          {{{problem.text}}}
+        </div>
+        {{#if currentUser.isAdmin}}
+        <p class="info-content-label">Organization</p>
+        <div class="info-content-block">
+          {{problem.organization.name}}
+        </div>
+        {{/if}}
+        <p class="info-content-label">Problem Status</p>
+        <div class="info-content-block">
+          Approved
+        </div>
+      {{/if}}
+
+      {{#if showCats}}
+        <p class="info-content-label">Problem Categories</p>
+        <div class="info-content-block">
+          problem categories
+        </div>
+        <p class="info-content-label">Problem Keywords</p>
+        <div class="info-content-block">
+          problem keywords
+        </div>
+      {{/if}}
+
+      {{#if showAdditional}}
+        <p class="info-content-label">Problem Categories</p>
+        <div class="info-content-block">
+          {{{problem.additionalInfo}}}
+        </div>
+        <p class="info-content-label">Problem Keywords</p>
+        <div class="info-content-block">
+          problem additional info
+        </div>
+      {{/if}}
+
+      {{#if showLegal}}
+        <p class="info-content-label">Problem Categories</p>
+        <div class="info-content-block">
+          problem copyright
+        </div>
+        <p class="info-content-label">Problem Keywords</p>
+        <div class="info-content-block">
+          problem sharingAuth
+        </div>
+      {{/if}}
     </div>
-  </div>
-  <div class="info-actions">
+  </section>
+
+  <footer class="info-actions">
     <span class="left-buttons">
       <button><i class="far fa-edit"></i></button>
       <button><i class="far fa-copy"></i></button>
     </span>
     <span class="right-buttons">
-      <button class="primary-button">Assign</button>
+      <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
     </span>
-  </div>
-</section> --}}
+  </footer>
+</div>
 
-
+{{!--
 
 <header class="info-header">
   {{#if isEditing}}
@@ -144,7 +185,6 @@
                     <img src="{{problem.image.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
                   </a>
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
-                   {{!-- <button class="edit-image-btn" {{action 'addImage'}}>Add</button> --}}
               {{else}}
                   {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
               {{/if}}
@@ -257,7 +297,7 @@
 
   {{/if}}
 
-</section>
+</section> --}}
 
 {{#if isMissingRequiredFields}}
   <p class="error-message">Please fill in all required fields.</p>
