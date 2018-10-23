@@ -2,6 +2,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   elementId: 'problem-info',
   classNames: ['side-info'],
   isEditing: false,
+  showGeneral: true,
   problemName: null,
   problemText: null,
   problemPublic: true,
@@ -476,12 +477,40 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
       Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+        $('html>body>#problem-info').animate({scrollTop: $(document).height()});
       }, 100);
     },
 
     hideInfo: function () {
       $('.list-outlet').addClass('hidden');
+    },
+
+    showGeneral: function () {
+      this.set('showGeneral', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showCats: function () {
+      this.set('showCats', true);
+      this.set('showGeneal', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showAdditional: function () {
+      this.set('showAdditional', true);
+      this.set('showCats', false);
+      this.set('showGeneral', false);
+      this.set('showLegal', false);
+    },
+
+    showLegal: function () {
+      this.set('showLegal', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showGeneral', false);
     },
   }
 });
