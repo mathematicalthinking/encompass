@@ -112,7 +112,7 @@
           {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions}}
         {{/if}}
         {{#if showGrid}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=false isGrid=true}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions}}
         {{/if}}
 
         {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}

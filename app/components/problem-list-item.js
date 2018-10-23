@@ -82,6 +82,13 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       });
     }
 
+    if (status === 'flagged') {
+      // dont show pend option if status is already pending
+      options = _.filter(options, (option) => {
+        return option.value !== 'flag';
+      });
+    }
+
     return options;
   }.property('problem.id', 'problem.status'),
 
