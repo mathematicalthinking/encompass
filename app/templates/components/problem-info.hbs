@@ -1,11 +1,10 @@
 <header class="info-header">
-  <span class="top-left-icon">
+  <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting problem.privacySetting}}>
     {{{public-private problem.privacySetting}}}
   </span>
   <span class="remove-icon" {{action 'hideInfo'}}>
     <i class="fas fa-times"></i>
   </span>
-  <div class="clear"></div>
 </header>
 
 <div class="side-info-menu">
@@ -41,11 +40,31 @@
       {{#if showCats}}
         <p class="info-content-label">Problem Categories</p>
         <div class="info-content-block">
-          problem categories
+          {{#if problem.categories}}
+            <ul>
+              {{#each problem.categories as |category|}}
+              <li>
+                <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
+              </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            No Problem Categories
+          {{/if}}
         </div>
         <p class="info-content-label">Problem Keywords</p>
         <div class="info-content-block">
-          problem keywords
+          {{#if problem.keywords}}
+            <ul>
+              {{#each problem.keywords as |keyword|}}
+              <li>
+                {{keyword}}
+              </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            No Problem Keywords
+          {{/if}}
         </div>
       {{/if}}
 
@@ -61,28 +80,40 @@
         <p class="info-content-label">Additional Image</p>
         <div class="info-content-block">
           {{#if problem.image}}
-            {{problem.image}}
+            <a {{action 'toggleImageSize'}}>
+              <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
+            </a>
           {{else}}
             No Additional Image
           {{/if}}
         </div>
+        {{#if problem.origin}}
+          <p class="info-content-label">Problem Origin</p>
+          <div class="info-content-block">
+            <p>{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
+          </div>
+        {{/if}}
       {{/if}}
 
       {{#if showLegal}}
         <p class="info-content-label">Copyright Notice</p>
         <div class="info-content-block">
           {{#if problem.copyrightNotice}}
-            {{problem.copyrightNotice}}
+            <p>&copy; {{problem.copyrightNotice}}</p>
           {{else}}
             No Copyright Notice
           {{/if}}
         </div>
         <p class="info-content-label">Sharing Authorization</p>
         <div class="info-content-block">
-          {{#if problem.sharingAuth}}
-            {{problem.sharingAuth}}
+          {{#if isEditing}}
+            {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
           {{else}}
-            No Ssharing Authorization
+            {{#if problem.sharingAuth}}
+              {{problem.sharingAuth}}
+            {{else}}
+              No Sharing Authorization
+            {{/if}}
           {{/if}}
         </div>
       {{/if}}
@@ -91,18 +122,28 @@
 
   <footer class="info-actions">
     <span class="left-buttons">
-      <button><i class="far fa-edit"></i></button>
-      <button><i class="far fa-copy"></i></button>
+      {{#if isEditing}}
+        <button><i class="fas fa-trash" {{action 'deleteProblem'}}></i></button>
+      {{else}}
+        <button><i class="far fa-edit" {{action 'editProblem'}}></i></button>
+        <button><i class="far fa-copy" {{action 'addToMyProblems'}}></i></button>
+      {{/if}}
     </span>
     <span class="right-buttons">
-      <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+      {{#if isEditing}}
+        <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
+        <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
+      {{else}}
+        <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+      {{/if}}
     </span>
   </footer>
 </div>
 
-{{!--
 
-<header class="info-header">
+
+
+{{!-- <header class="info-header">
   {{#if isEditing}}
   <h2 class="info-title">Editing Problem</h2>
   {{else}}
@@ -112,9 +153,9 @@
     <i class="fas fa-times"></i>
   </span>
   <div class="clear"></div>
-</header>
+</header> --}}
 
-<section class="problem-details">
+{{!-- <section class="problem-details">
 
   {{#if isEditing}}
       <form id='probleminfoform' class='properForm'>
@@ -314,6 +355,7 @@
   {{/if}}
 
 </section> --}}
+
 
 {{#if isMissingRequiredFields}}
   <p class="error-message">Please fill in all required fields.</p>
