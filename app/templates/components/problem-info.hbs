@@ -15,15 +15,15 @@
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
     </div>
     <div class="info-menu">
-      <button class="tab-link active-btn" {{action 'showGeneral'}}>General</button>
-      <button class="tab-link" {{action 'showCats'}}>Categories</button>
-      <button class="tab-link" {{action 'showAdditional'}}>Additional</button>
-      <button class="tab-link" {{action 'showLegal'}}>Legal</button>
+      <button class="tab-link {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
+      <button class="tab-link {{if showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
+      <button class="tab-link {{if showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
+      <button class="tab-link {{if showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
     </div>
     <div class="info-content">
       {{#if showGeneral}}
         <p class="info-content-label">Problem Statement</p>
-        <div class="info-content-block">
+        <div class="info-content-block large-content">
           {{{problem.text}}}
         </div>
         {{#if currentUser.isAdmin}}
@@ -52,22 +52,38 @@
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
         <div class="info-content-block">
-          {{{problem.additionalInfo}}}
+          {{#if problem.additionalInfo}}
+            {{{problem.additionalInfo}}}
+          {{else}}
+            No Additional Info
+          {{/if}}
         </div>
         <p class="info-content-label">Additional Image</p>
         <div class="info-content-block">
-          problem additional image
+          {{#if problem.image}}
+            {{problem.image}}
+          {{else}}
+            No Additional Image
+          {{/if}}
         </div>
       {{/if}}
 
       {{#if showLegal}}
         <p class="info-content-label">Copyright Notice</p>
         <div class="info-content-block">
-          problem copyright
+          {{#if problem.copyrightNotice}}
+            {{problem.copyrightNotice}}
+          {{else}}
+            No Copyright Notice
+          {{/if}}
         </div>
         <p class="info-content-label">Sharing Authorization</p>
         <div class="info-content-block">
-          problem sharingAuth
+          {{#if problem.sharingAuth}}
+            {{problem.sharingAuth}}
+          {{else}}
+            No Ssharing Authorization
+          {{/if}}
         </div>
       {{/if}}
     </div>
