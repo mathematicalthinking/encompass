@@ -92,6 +92,10 @@
   }
 }
 
+.status-text {
+  text-transform: capitalize;
+}
+
 #layout-view {
   &.grid-view {
     .sort-bar {
@@ -186,9 +190,6 @@
                 float: left;
                 position: relative;
                 margin-top: 5px;
-                .status-text {
-                  text-transform: capitalize;
-                }
               }
               .action {
                 float: right;
