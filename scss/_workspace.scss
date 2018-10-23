@@ -94,7 +94,7 @@
 }
 
 .flex-container {
-  @include flex-container(null, null, row, center, center, start, null);
+  @include flex-container(null, null, row, wrap, center, center, stretch);
 }
 
 .flex-item {
