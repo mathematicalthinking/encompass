@@ -494,7 +494,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     showCats: function () {
       this.set('showCats', true);
-      this.set('showGeneal', false);
+      this.set('showGeneral', false);
       this.set('showAdditional', false);
       this.set('showLegal', false);
     },
