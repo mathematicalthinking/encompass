@@ -34,15 +34,17 @@
         <button class="primary-button" {{action "create Assignment"}}>Assign</button>
       {{/if}}
     </div>
-    <div class="item-section more">
-      <i {{action "toggleShowMoreMenu"}} class="fas fa-ellipsis-v more-menu"></i>
+    <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+      <i class="fas fa-ellipsis-v more-menu"></i>
       {{#if showMoreMenu}}
         <span class="click-menu">
           <ul>
             {{#each ellipsisMenuOptions as |option|}}
             <li>
-              <label>{{option.label}}</label>
-              <i {{action option.action}} class={{option.icon}}></i>
+              <label {{action option.action}}>
+                {{option.label}}
+                <i class={{option.icon}}></i>
+              </label>
             </li>
             {{/each}}
           </ul>
@@ -59,15 +61,17 @@
         <span class="privacy-icon">{{{public-private problem.privacySetting}}}</span>
         <span class="date">{{format-date problem.createDate 'MM/DD/YY'}}</span>
       </div>
-      <div class="item-card more">
-        <i {{action "toggleShowMoreMenu"}} class="fas fa-ellipsis-v more-menu"></i>
+      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
+        <i class="fas fa-ellipsis-v more-menu"></i>
         {{#if showMoreMenu}}
         <span class="click-menu">
           <ul>
             {{#each ellipsisMenuOptions as |option|}}
             <li>
-              <label>{{option.label}}</label>
-              <i {{action option.action}} class={{option.icon}}></i>
+              <label {{action option.action}}>
+                {{option.label}}
+                <i class={{option.icon}}></i>
+              </label>
             </li>
             {{/each}}
           </ul>

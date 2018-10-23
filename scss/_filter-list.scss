@@ -609,11 +609,11 @@
     left: 4px;
   }
   li {
-    padding: 8px 0;
+    padding: 10px 0;
     text-transform: capitalize;
     color: $primary-font-color;
     label {
-      // cursor: pointer;
+      cursor: pointer;
       padding-right: 5px;
     }
     input[type=radio] {
