@@ -121,7 +121,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       .then((result) => {
         if (result.value) {
           problem.set('isTrashed', true);
-          this.sendAction('toProblemList');
+          // this.sendAction('toProblemList');
           problem.save().then((problem) => {
             this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
             .then((result) => {
@@ -129,7 +129,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                 problem.set('isTrashed', false);
                 problem.save().then(() => {
                   this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-                  window.history.back();
+                  // window.history.back();
                 });
               }
             });
@@ -362,41 +362,41 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         });
     },
 
-    duplicateProblem: function () {
-      let problem = this.get('problem');
-      let originalTitle = problem.get('title');
-      let title = 'Copy of ' + originalTitle;
-      let text = problem.get('text');
-      let additionalInfo = problem.get('additionalInfo');
-      let isPublic = problem.get('isPublic');
-      let imageUrl = problem.get('imageUrl');
-      let image = problem.get('image');
-      let categories = problem.get('categories');
-      let createdBy = this.get('currentUser');
+    // duplicateProblem: function () {
+    //   let problem = this.get('problem');
+    //   let originalTitle = problem.get('title');
+    //   let title = 'Copy of ' + originalTitle;
+    //   let text = problem.get('text');
+    //   let additionalInfo = problem.get('additionalInfo');
+    //   let isPublic = problem.get('isPublic');
+    //   let imageUrl = problem.get('imageUrl');
+    //   let image = problem.get('image');
+    //   let categories = problem.get('categories');
+    //   let createdBy = this.get('currentUser');
 
-      let newProblem = this.store.createRecord('problem', {
-        title: title,
-        text: text,
-        additionalInfo: additionalInfo,
-        imageUrl: imageUrl,
-        isPublic: isPublic,
-        image: image,
-        origin: problem,
-        categories: categories,
-        privacySetting: "M",
-        createdBy: createdBy,
-        createDate: new Date()
-      });
+    //   let newProblem = this.store.createRecord('problem', {
+    //     title: title,
+    //     text: text,
+    //     additionalInfo: additionalInfo,
+    //     imageUrl: imageUrl,
+    //     isPublic: isPublic,
+    //     image: image,
+    //     origin: problem,
+    //     categories: categories,
+    //     privacySetting: "M",
+    //     createdBy: createdBy,
+    //     createDate: new Date()
+    //   });
 
-      newProblem.save()
-        .then((problem) => {
-          let name = problem.get('title');
-          this.set('savedProblem', problem);
-          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-      }).catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', newProblem);
-      });
-    },
+    //   newProblem.save()
+    //     .then((problem) => {
+    //       let name = problem.get('title');
+    //       this.set('savedProblem', problem);
+    //       this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+    //   }).catch((err) => {
+    //     this.handleErrors(err, 'createRecordErrors', newProblem);
+    //   });
+    // },
 
     toggleImageSize: function () {
       this.toggleProperty('isWide');
