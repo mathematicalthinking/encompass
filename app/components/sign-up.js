@@ -1,3 +1,4 @@
+/* eslint-disable */
 Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['signup-page'],
   usernameExists: false,
@@ -10,6 +11,8 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   emailExistsError: null,
   org: null,
   postErrors: [],
+  similarity: Ember.inject.service('string-similarity'),
+  alert: Ember.inject.service('sweet-alert'),
 
   init: function() {
     this._super(...arguments);
@@ -90,6 +93,27 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       });
     });
   },
+  getSimilarOrgs(org) {
+    let orgs = this.get('organizations').toArray();
+    // let requestedOrgName = this.get('org');
+    let similarOrgs = _.filter(orgs, (org => {
+      let name = org.get('name');
+      let score = this.get('similarity').compareTwoStrings('name', org);
+      return score > 0.2;
+    }));
+  },
+
+  testSS: function() {
+    let org = this.get('org');
+    console.log('org', org);
+    if (!org) {
+      org = '';
+    }
+    let similarity = this.get('similarity');
+    return similarity.compareTwoStrings('Drexel University', org);
+    // return this.get('similarity.compareTwoStrings')('Drexel University', org);
+
+  }.property('org'),
 
   actions: {
     signup: function () {
@@ -111,6 +135,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       var requestReason = that.get('requestReason');
       var doPasswordsMatch = that.get('doPasswordsMatch');
       var doEmailsMatch = that.get('doEmailsMatch');
+
 
 
       if (!name || !email || !organization || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
@@ -152,12 +177,22 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       }
 
       if (orgRequest) {
-        createUserData.organizationRequest = orgRequest;
-      } else {
-        createUserData.organization = organization.id;
-      }
+        let similarOrgs = this.getSimilarOrgs(orgRequest);
+        if (!_.isEmpty(similarOrgs)) {
+          console.log('similarORgs!', similarOrgs);
+          let bestMatch = this.get('similarity').findBestMatch(orgRequest, similarOrgs.map(o => o.get('name')));
+          this.get('alert').showModal('question', `Are you sure you want to create the new organization "${orgRequest}"? `, `There is at least one existing organization with a similar name: ${bestMatch}`, 'Yes')
+            .then((result) => {
+          if (!result.value) {
+            return;
+          }
 
-      return that.createUser(createUserData)
+        });
+          // this.set('similarOrgs', similarOrgs);
+          // return;
+        }
+        createUserData.organizationRequest = orgRequest;
+        return that.createUser(createUserData)
         .then((res) => {
           if (res.message === 'Username already exists') {
             that.set('usernameExists', true);
@@ -170,6 +205,22 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         .catch((err) => {
           this.handleErrors(err, 'postErrors');
         });
+      } else {
+        createUserData.organization = organization.id;
+        return that.createUser(createUserData)
+        .then((res) => {
+          if (res.message === 'Username already exists') {
+            that.set('usernameExists', true);
+          } else if (res.message === 'There already exists a user with that email address.') {
+            that.set('emailExistsError', res.message);
+          } else {
+            that.sendAction('toHome');
+          }
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'postErrors');
+        });
+      }
     },
 
     resetErrors(e) {
