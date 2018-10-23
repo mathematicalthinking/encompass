@@ -17,5 +17,6 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   sharingAuth: DS.attr('string'),
   error: DS.attr('string'),
   isUsed: DS.attr('boolean'),
-  status: DS.attr('string')
+  status: DS.attr('string'),
+  flagReason: DS.attr('string')
 });
