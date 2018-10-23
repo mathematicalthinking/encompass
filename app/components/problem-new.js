@@ -260,6 +260,10 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         }
       }
     },
+
+    hideInfo: function () {
+      $('.list-outlet').addClass('hidden');
+    },
   }
 });
 
