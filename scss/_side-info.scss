@@ -133,6 +133,12 @@
         .large-content {
           overflow-y: auto;
           max-height: 325px;
+          p {
+            margin: 15px 0;
+          }
+          img {
+            margin-bottom: 15px;
+          }
         }
         .info-content-label {
           font-size: 1.2em;
