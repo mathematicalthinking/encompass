@@ -18,6 +18,9 @@ error.out
 server.out
 prod.zip
 staging.zip
+prod_env
+staging_env
+error*.txt
 
 # conversion files
 errorProblems.txt

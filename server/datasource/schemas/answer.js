@@ -22,9 +22,12 @@ var AnswerSchema = new Schema({
   explanationImage: { type: ObjectId, ref: 'Image' }, // image from upload process
   section: { type: ObjectId, ref: 'Section' },
   students: [{ type: ObjectId, ref: 'User'}],
+  studentNames: [ { type: String}],
   additionalImage: { type: ObjectId, ref: 'Image' },
   priorAnswer: { type: ObjectId, ref: 'Answer' },
-  isSubmitted: { type: Boolean, default: true }
+  isSubmitted: { type: Boolean, default: true },
+  notes: { type: String },
+  powsSubmId: { type: Number }, // old POWs submission ID
 }, { versionKey: false });
 
 /**

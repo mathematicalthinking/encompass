@@ -8,6 +8,7 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   section: DS.belongsTo('section'),
   isSubmitted: DS.attr('boolean'),
   students: DS.hasMany('users', { inverse: null }),
+  studentNames: DS.attr(),
   priorAnswer: DS.belongsTo('answer'),
   assignment: DS.belongsTo('assignment', { async: true }),
   additionalImage: DS.belongsTo('image', { inverse: null }),
