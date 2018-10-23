@@ -54,7 +54,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     let msg;
     let userOrgName = this.get('userOrgName');
     if (this.get('isFetchingProblems')) {
-      msg = 'Loading results... Thank you for your patience.';
+      if (this.get('showLoadingMessage')) {
+        msg = 'Loading results... Thank you for your patience.';
+
+      } else {
+        msg = '';
+      }
       return msg;
     }
     if (this.get('criteriaTooExclusive')) {
@@ -77,7 +82,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     msg = `${this.get('problemsMetadata.total')} problems found`;
     return msg;
 
-  }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems'),
+  }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems', 'showLoadingMessage'),
 
 
   privacySettingFilter: function() {
@@ -506,15 +511,31 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     return params;
   },
+  handleLoadingMessage: function() {
+    const that = this;
+    if (!this.get('isFetchingProblems')) {
+      this.set('showLoadingMessage', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying || !that.get('isFetchingProblems')) {
+        return;
+      }
+      that.set('showLoadingMessage', true);
+    }, 300);
+  }.observes('isFetchingProblems'),
 
   getProblems: function(page) {
-    // if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
-    //   return;
-    // }
+
     this.set('isFetchingProblems', true);
     let queryParams = this.buildQueryParams(page);
 
-
+    if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
+      if (this.get('isFetchingProblems')) {
+        this.set('isFetchingProblems', false);
+      }
+      return;
+    }
 
     this.store.query('problem',
       queryParams
