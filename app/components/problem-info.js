@@ -22,6 +22,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingRequiredFields: null,
   showCategories: false,
   alert: Ember.inject.service('sweet-alert'),
+  iconFillOptions: {
+    approved: '#35A853',
+    pending: '#FFD204',
+    flagged: '#EB5757'
+  },
 
   init: function () {
     this._super(...arguments);
@@ -42,6 +47,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.handleErrors(err, 'findRecordErrors');
     });
   },
+
+  statusIconFill: function () {
+    let status = this.get('problem.status');
+
+    return this.get('iconFillOptions')[status];
+  }.property('problem.status'),
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
   // Check if the current problem is yours, so that you can edit it
@@ -120,8 +131,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
       .then((result) => {
         if (result.value) {
+          this.send('hideInfo');
           problem.set('isTrashed', true);
-          // this.sendAction('toProblemList');
+          window.history.back();
           problem.save().then((problem) => {
             this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
             .then((result) => {
@@ -129,7 +141,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                 problem.set('isTrashed', false);
                 problem.save().then(() => {
                   this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-                  // window.history.back();
+                  window.history.back();
                 });
               }
             });
@@ -342,6 +354,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let imageUrl = problem.get('imageUrl');
       let createdBy = this.get('currentUser');
       let categories = problem.get('categories');
+      let status = problem.get('status');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
@@ -354,6 +367,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         createdBy: createdBy,
         image: image,
         privacySetting: "M",
+        status: status,
         createDate: new Date()
       });
 
@@ -363,7 +377,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
-          this.handleErrors(err, 'createRecordErrors', newProblem);
+          console.log('err is', err);
+          this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+          // this.handleErrors(err, 'createRecordErrors', newProblem);
         });
     },
 

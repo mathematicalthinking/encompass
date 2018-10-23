@@ -43,7 +43,12 @@
         {{/if}}
         <p class="info-content-label">Problem Status</p>
         <div class="info-content-block">
-          Approved
+          <svg height="20" width="20">
+            <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+          </svg>
+          <span class="status-text">
+            {{problem.status}}
+          </span>
         </div>
       {{/if}}
 
@@ -156,7 +161,7 @@
       {{#if isEditing}}
         <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
       {{else}}
-        <button class="button-icon" {{action 'deleteProblem'}}><i class="far fa-copy"></i></button>
+        <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
       {{/if}}
     </span>
     <span class="right-buttons">
