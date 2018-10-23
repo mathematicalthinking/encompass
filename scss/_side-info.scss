@@ -45,11 +45,25 @@
     position: absolute;
     font-size: 1.2em;
     top: 85px;
-    right: 15px;
+    right: 18px;
     cursor: pointer;
   }
   .info-header {
     border: none;
+    max-height: 5px;
+    #my-select {
+      width: 95px;
+      height: inherit;
+      position: relative;
+      left: 35px;
+      top: -55px;
+      select {
+        width: 95px;
+        font-size: .6em;
+        text-transform: capitalize;
+        background: none;
+      }
+    }
   }
   .side-info-menu {
     position: relative;
@@ -66,7 +80,7 @@
           input {
             width: 90%;
             text-align: center;
-            margin-top: -10px;
+            margin-top: -5px;
             margin-bottom: -5px;
             border: 1px solid $input-border;
             background-color: $background-body;
@@ -78,7 +92,7 @@
         .subheading {
           padding: 10px 0;
           font-weight: $light-font-weight;
-          font-size: 1.1em;
+          font-size: 1em;
         }
       }
       .info-menu {
@@ -133,11 +147,11 @@
             margin-bottom: 30px;
           }
           #my-select {
-            width: 175px;
+            width: 125px;
             margin-left: 30px;
             margin-top: -20px;
             select {
-              width: 175px;
+              width: 125px;
               font-size: .9em;
               text-transform: capitalize;
               background: none;

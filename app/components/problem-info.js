@@ -28,6 +28,21 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     flagged: '#EB5757'
   },
   problemStatusOptions: ['approved', 'pending', 'flagged'],
+  privacySettingsList: [
+    {
+      id: 'E',
+      name: 'Everyone'
+    },
+    {
+      id: 'O',
+      name: 'My Org'
+    },
+    {
+      id: 'M',
+      name: 'Just Me'
+    },
+  ],
+
 
   init: function () {
     this._super(...arguments);
@@ -168,7 +183,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('additionalInfo', problem.get('additionalInfo'));
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
-
+      this.set
+      console.log('problems privacy settings is', this.get('privacySetting'));
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -217,6 +233,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     checkPrivacy: function() {
       let currentPrivacy = this.problem.get('privacySetting');
       let privacy = this.get('privacySetting');
+      this.set('privacySetting', privacy.id);
+
+      console.log('check privacy privacy is', privacy.id);
 
       if (currentPrivacy !== "E" && privacy === "E") {
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
@@ -251,7 +270,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
       let status = this.get('problemStatus');
-      console.log('status is', status);
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);

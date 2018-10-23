@@ -1,7 +1,15 @@
 <header class="info-header">
-  <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting problem.privacySetting}}>
-    {{{public-private problem.privacySetting}}}
-  </span>
+    {{#if isEditing}}
+      <span class="top-left-icon">
+        {{{public-private problem.privacySetting}}}
+          {{my-select cannotBeNull=true selectedValue=privacySetting content=privacySettingsList action=(action (mut privacySetting)) optionLabelPath="name" isDisabled=isReadOnly}}
+      </span>
+
+    {{else}}
+      <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting problem.privacySetting}}>
+        {{{public-private problem.privacySetting}}}
+      </span>
+    {{/if}}
   <span class="remove-icon" {{action 'hideInfo'}}>
     <i class="fas fa-times"></i>
   </span>
