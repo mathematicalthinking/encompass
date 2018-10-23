@@ -121,7 +121,10 @@
             font-size: .9em;
           }
           img {
-            width: 100%;
+            width: auto;
+          }
+          .additional-image {
+            width: 80%;
             position: relative;
           }
           .wide {
@@ -131,7 +134,8 @@
           }
         }
         .large-content {
-          overflow-y: auto;
+          overflow: auto;
+          min-height: 50px;
           max-height: 325px;
           p {
             margin: 15px 0;

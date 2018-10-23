@@ -10,7 +10,9 @@
       {{/link-to}}
     </div>
     <div class="item-section description">
-      {{{problem.text}}}
+      {{#link-to 'problem' problem class="problem-title"}}
+        {{{problem.text}}}
+      {{/link-to}}
     </div>
     <div class="item-section date">
       {{format-date problem.createDate 'MM/DD/YY'}}
@@ -88,7 +90,9 @@
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        {{{problem.text}}}
+        {{#link-to 'problem' problem class="problem-title"}}
+          {{{problem.text}}}
+        {{/link-to}}
       </div>
     </div>
     <div class="item-card row-4">

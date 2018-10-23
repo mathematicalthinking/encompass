@@ -89,7 +89,7 @@
 
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
-        <div class="info-content-block">
+        <div class="info-content-block large-content">
           {{#if isEditing}}
             {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
             {{input id="additionalInfo" type="hidden" value=additionalInfo }}
@@ -105,7 +105,7 @@
         <div class="info-content-block">
           {{#if problem.image}}
             <a {{action 'toggleImageSize'}}>
-              <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
+              <img src="{{problem.image.imageData}}" alt="Image Error" class="additional-image {{if isWide "wide"}}">
             </a>
           {{else}}
             {{#unless isEditing}}
