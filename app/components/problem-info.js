@@ -27,6 +27,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     pending: '#FFD204',
     flagged: '#EB5757'
   },
+  problemStatusOptions: ['approved', 'pending', 'flagged'],
 
   init: function () {
     this._super(...arguments);
@@ -250,8 +251,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
       let status = this.get('problemStatus');
-
-      this.set('problemStatus', problem.get('status'));
+      console.log('status is', status);
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -334,6 +334,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         }
       } else {
         if (problem.get('hasDirtyAttributes')) {
+          console.log('has dirty attrs');
           problem.set('modifiedBy', currentUser);
           problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
@@ -347,6 +348,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             return;
           });
         } else {
+          console.log('has not dirty atts');
           this.set('isEditing', false);
         }
       }
