@@ -1,0 +1,15 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#image-upload {
+  width: 100%;
+  margin: 0;
+  input {
+    border: none;
+    margin-left: -15px;
+  }
+  button {
+    background-color: $accent-color;
+  }
+}
