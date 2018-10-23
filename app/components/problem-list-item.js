@@ -9,6 +9,12 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     pending: '#FFD204',
     flagged: '#EB5757'
   },
+  flagOptions: {
+    'inappropiate': 'Inappropriate Content',
+    'ip': 'Intellectual Property Concern',
+    'substance': 'Lacking Substance',
+    'other': 'Other Reason'
+  },
 
   isPublic: function() {
     return this.get('privacySetting') === 'E';
@@ -116,11 +122,32 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       this.get('alert').showModal('warning', `Are you sure you want to mark ${display} as ${value}`, null, `Yes, ${action}`)
       .then((result) => {
         if (result.value) {
-          this.send('updateStatus', record, value, displayKey);
+          if (value === 'flagged') {
+            this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
+            .then((result) => {
+              if (result.value) {
+                if (result.value === 'other') {
+                  this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
+                  .then((result) => {
+                    if (result.value) {
+                      console.log('other value', result.value);
+                      this.send('updateStatus', record, value, displayKey, result.value);
+
+                    }
+                  });
+                } else {
+                  this.send('updateStatus', record, value, displayKey);
+                }
+              }
+            });
+          } else {
+            this.send('updateStatus', record, value, displayKey);
+
+          }
         }
       });
     },
-    updateStatus(record, value, displayKey) {
+    updateStatus(record, value, displayKey, reason) {
       let msg;
       let display = record.get(displayKey);
       if (value === 'flagged' || value === 'approved') {
@@ -128,8 +155,13 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       } else if (value === 'pending') {
         msg = `${display} marked as ${value}`;
       }
-
+      if (value === 'approved') {
+        record.set('flagReason', null);
+      }
       record.set('status', value);
+      if (reason) {
+        record.set('flagReason', reason);
+      }
       record.save()
       .then((record) => {
         this.get('alert').showToast('success', msg, 'bottom-end', 5000, false, null);
