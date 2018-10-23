@@ -55,6 +55,16 @@ async function buildPowsFilterBy(pows) {
   let filter = {};
   let powIds;
 
+  if (pows === 'all') {
+    criteria = {
+      puzzleId: {
+        $exists: true,
+        $ne: null
+      },
+      isTrashed: false
+    };
+  }
+
   if (pows === 'none') {
     criteria = {
       puzzleId: null,

@@ -53,6 +53,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   listResultsMessage: function() {
     let msg;
     let userOrgName = this.get('userOrgName');
+    if (this.get('isFetchingProblems')) {
+      msg = 'Loading results... Thank you for your patience.';
+      return msg;
+    }
     if (this.get('criteriaTooExclusive')) {
       msg = 'No results found. Please try expanding your filter criteria.';
       return msg;
@@ -62,13 +66,18 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       return msg;
     }
     if (this.get('isDisplayingSearchResults')) {
-      msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} problems whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
+      let countDescriptor = 'problems';
+      let total = this.get('problemsMetadata.total');
+      if (total === 1) {
+        countDescriptor = 'problem';
+      }
+      msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
       return msg;
     }
     msg = `${this.get('problemsMetadata.total')} problems found`;
     return msg;
 
-  }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed'),
+  }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems'),
 
 
   privacySettingFilter: function() {
@@ -364,8 +373,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       // private box is checked
       let doUnshared = _.indexOf(selectedValues, 'unshared') !== -1;
 
+      if (doShared && doUnshared) {
+        filter.pows="all";
+      }
+
       if (_.isEmpty(selectedValues)) {
-        filter.pows="none";
+        // should this immediately return no results?
+        this.set('criteriaTooExclusive', true);
+        return;
+        // filter.pows="none";
+
       }
       if (doShared && !doUnshared) {
         filter.pows="publicOnly";
@@ -470,6 +487,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       // display message or just 0 results
       this.set('problems', []);
       this.set('problemsMetadata', null);
+      this.set('isFetchingProblems', false);
       return;
     }
     let params = {
@@ -490,11 +508,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   getProblems: function(page) {
+    // if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
+    //   return;
+    // }
+    this.set('isFetchingProblems', true);
     let queryParams = this.buildQueryParams(page);
 
-    if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
-      return;
-    }
+
 
     this.store.query('problem',
       queryParams
@@ -502,6 +522,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.removeMessages('problemLoadErrors');
       this.set('problems', results);
       this.set('problemsMetadata', results.get('meta'));
+      this.set('isFetchingProblems', false);
+
 
       let isSearching = this.get('isSearchingProblems');
 
@@ -515,6 +537,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       }
     }).catch((err) => {
       this.handleErrors(err, 'problemLoadErrors');
+      this.set('isFetchingProblems', false);
+
     });
   },
 

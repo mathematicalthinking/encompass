@@ -42,6 +42,10 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
     this.set('currentSecondaryFilter.selectedValues', []);
     // this.get('onUpdate')();
   },
+  initialMainFilterItems: function() {
+    let val = this.get('mainFilter');
+    return [val];
+  }.property('mainFilter'),
 
   actions: {
     setMainFilter(val, $item) {
