@@ -14,7 +14,7 @@
         {{#if isEditing}}
           {{input name="title" id="title" type="text" value=problemName}}
         {{else}}
-          {{problem.title}}
+          {{{problem.title}}}
         {{/if}}
       </div>
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
@@ -38,7 +38,11 @@
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Organization</p>
         <div class="info-content-block">
-          {{problem.organization.name}}
+          {{#if problem.origin}}
+            {{problem.organization.name}}
+          {{else}}
+            No Organization
+          {{/if}}
         </div>
         {{/if}}
         <p class="info-content-label">Problem Status</p>
@@ -130,7 +134,7 @@
           {{#if isEditing}}
             <span id="copyright-container">
               <span id="icon">&copy;</span>
-              {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+              {{input name="copyright" id="copyright" type="text" value=copyrightNotice placeholder="Add Copyright Notice"}}
             </span>
           {{else}}
             {{#if problem.copyrightNotice}}
@@ -143,7 +147,7 @@
         <p class="info-content-label">Sharing Authorization</p>
         <div class="info-content-block">
           {{#if isEditing}}
-            {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
+            {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}
           {{else}}
             {{#if problem.sharingAuth}}
               {{problem.sharingAuth}}

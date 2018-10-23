@@ -153,7 +153,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     editProblem: function () {
-      console.log('editProblem clicked');
       let problem = this.get('problem');
       let problemId = problem.get('id');
       let currentUserAccountType = this.get('currentUser').get('accountType');
@@ -162,6 +161,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('sharingAuth', problem.get('sharingAuth'));
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
+      this.set('organization', problem.get('organization'));
+      this.set('problemCategories', problem.get('categories'));
+      this.set('problemStatus', problem.get('status'));
       this.set('additionalInfo', problem.get('additionalInfo'));
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
@@ -235,15 +237,21 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let text;
       let isQuillValid;
 
-      if (quillContent) {
+      if (quillContent !== undefined) {
         text = quillContent.replace(/["]/g, "'");
         isQuillValid = this.isQuillValid();
+      } else {
+        console.log('quill content is undefined');
+        text = problem.get('text');
+        isQuillValid = true;
       }
       let privacy = this.get('privacySetting');
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
+      let status = this.get('problemStatus');
 
+      this.set('problemStatus', problem.get('status'));
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -263,6 +271,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('additionalInfo', additionalInfo);
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
+      problem.set('status', status);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
