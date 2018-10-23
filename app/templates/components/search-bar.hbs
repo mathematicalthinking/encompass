@@ -1,6 +1,6 @@
 {{#if showFilter}}
 <div class="select-bar">
-  {{my-select content=searchOptions cannotBeNull=true selectedValue=criterion action=(action (mut criterion))}}
+  {{my-select content=searchOptions cannotBeNull=true selectedValue=selectedCriterion action=(action (mut criterion))}}
 </div>
 {{/if}}
   <span class="clear-field" {{action 'clearResults'}}>

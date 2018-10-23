@@ -8,17 +8,16 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       }
     }
   },
-  criterion: 'title',
 
   placeholder: function() {
     let base = this.get('basePlaceholder');
     if (!this.get('showFilter')) {
       return base;
     }
-    let criterion = this.get('criterion');
+    let criterion = this.get('selectedCriterion');
     let combined = `${base} by ${criterion}`;
     return combined;
-  }.property('basePlaceholder','criterion','showFilter'),
+  }.property('basePlaceholder','selectedCriterion','showFilter'),
 
   inputStringValue: function() {
     let val = this.get('inputValue');
@@ -44,7 +43,7 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   }.property('constraints'),
 
   initiateSearch: function(val) {
-    let criterion = this.get('criterion');
+    let criterion = this.get('selectedCriterion');
     this.get('onSearch')(val, criterion);
   },
 

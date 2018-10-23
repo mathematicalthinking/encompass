@@ -2,8 +2,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   elementId: 'problem-list-container',
   showList: true,
   menuClosed: true,
-  searchOptions: ['title', 'text', 'category'],
-  searchCriterion: 'title',
+  searchOptions: ['all', 'title', 'text', 'category'],
+  searchCriterion: 'all',
   sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
   sortOptions: {
     title: [
@@ -570,7 +570,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('searchQuery', null);
       this.set('searchInputValue', null);
       this.set('isDisplayingSearchResults', false);
-      this.getProblems();
+      this.send('triggerFetch');
     },
     updatePageResults(results) {
       this.set('problems', results);
@@ -580,7 +580,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('searchQuery', val);
       this.set('searchCriterion', criterion);
       this.set('isSearchingProblems', true);
-      this.getProblems();
+      this.send('triggerFetch');
     },
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
@@ -601,11 +601,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         return;
       }
       filter[id] = checked;
-      this.getProblems();
+      this.send('triggerFetch');
     },
     updateSortCriterion(criterion) {
       this.set('sortCriterion', criterion);
-      this.getProblems();
+      this.send('triggerFetch');
     },
     triggerFetch() {
       for (let prop of ['criteriaTooExclusive', 'areNoRecommendedProblems']) {
@@ -631,7 +631,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         return;
       }
       this.set('selectedPrivacySetting', val);
-      this.getProblems();
+      this.send('triggerFetch');
     },
     toggleMenu: function() {
       this.set('menuClosed', !this.get('menuClosed'));

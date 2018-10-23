@@ -20,7 +20,9 @@
         searchOptions = searchOptions
         basePlaceholder="Search problems"
         inputValue=searchInputValue
-        clearSearchResults=(action "clearSearchResults")}}
+        clearSearchResults=(action "clearSearchResults")
+        selectedCriterion=searchCriterion
+        }}
 
         {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}
           <i class="fas fa-plus"></i>
