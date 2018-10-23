@@ -1,11 +1,13 @@
 {{#if isList}}
-  {{#link-to 'problem' problem class="problem-title"}}
   <div class="item-container" id="container">
     <div class="item-section privacy">
       {{{public-private problem.privacySetting}}}
     </div>
+
     <div class="item-section name">
-      {{problem.title}}
+      {{#link-to 'problem' problem class="problem-title"}}
+        {{problem.title}}
+      {{/link-to}}
     </div>
     <div class="item-section description">
       {{{problem.text}}}
@@ -26,14 +28,14 @@
         {{#if (is-equal problem.status 'approved')}}
           <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
           {{else}}
-          <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button">Approve</button>
+          <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
         {{/if}}
       {{else}}
         <button class="primary-button" {{action "create Assignment"}}>Assign</button>
       {{/if}}
     </div>
     <div class="item-section more">
-      <i {{action "toggleShowMoreMenu" }} class="fas fa-ellipsis-v more-menu"></i>
+      <i {{action "toggleShowMoreMenu"}} class="fas fa-ellipsis-v more-menu"></i>
       {{#if showMoreMenu}}
         <span class="click-menu">
           <ul>
@@ -48,11 +50,9 @@
       {{/if}}
     </div>
   </div>
-  {{/link-to}}
 {{/if}}
 
 {{#if isGrid}}
-  {{#link-to 'problem' problem class="problem-title"}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
@@ -65,7 +65,9 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        {{problem.title}}
+        {{#link-to 'problem' problem class="problem-title"}}
+          {{problem.title}}
+        {{/link-to}}
       </div>
     </div>
     <div class="item-card row-3">
@@ -76,18 +78,25 @@
     <div class="item-card row-4">
       <div class="item-card status">
         <svg height="20" width="20">
-          <circle cx="10" cy="15" r="5" fill="#35A853" />
+          <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
         </svg>
         <span class="status-text">
-          Approved
+          {{problem.status}}
         </span>
       </div>
       <div class="item-card action">
-        <button class="primary-button">Flag</button>
+        {{#if currentUser.isAdmin}}
+          {{#if (is-equal problem.status 'approved')}}
+            <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
+          {{else}}
+            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+          {{/if}}
+        {{else}}
+          <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+        {{/if}}
       </div>
     </div>
   </div>
-  {{/link-to}}
 {{/if}}
 
 <script>

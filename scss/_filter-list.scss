@@ -185,6 +185,9 @@
                 float: left;
                 position: relative;
                 margin-top: 5px;
+                .status-text {
+                  text-transform: capitalize;
+                }
               }
               .action {
                 float: right;
@@ -221,12 +224,8 @@
 
 
 .flex-container-full {
-  // display: grid;
-  // grid-template-columns: auto auto auto auto auto;
-  // @include flex-container(auto, auto, row, wrap, center, center, stretch);
   .flex-item-full {
     &.filter-options {
-      // @include flex-item(1, auto, 1 0 auto);
       grid-column-start: 0;
       grid-column-end: 2;
       background-color:$filter-list-background-color;
@@ -540,6 +539,13 @@
           }
         }
       }
+    }
+  }
+  .primary-button {
+    margin-left: -10px;
+    width: 75px;
+    &.approve {
+      text-indent: -10px;
     }
   }
 }
