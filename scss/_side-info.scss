@@ -63,6 +63,17 @@
           font-size: 1.4em;
           color: black;
           padding: 10px 0;
+          input {
+            width: 90%;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: -5px;
+            border: 1px solid $input-border;
+            background-color: $background-body;
+            border-radius: 3px;
+            padding: 10px 15px;
+            font-size: .9em;
+          }
         }
         .subheading {
           padding: 10px 0;
@@ -100,6 +111,15 @@
         min-height: 450px;
         .info-content-block {
           margin: 15px 0 30px 0;
+          input, textarea {
+            margin-top: -8px;
+            width: 90%;
+            border: 1px solid $input-border;
+            background-color: $background-body;
+            border-radius: 3px;
+            padding: 10px 15px;
+            font-size: .9em;
+          }
           img {
             width: 100%;
             position: relative;
@@ -124,19 +144,19 @@
     .info-actions {
       height: 35px;
       margin-bottom: 15px;
+      .button-icon {
+        border: none;
+        background: none;
+        font-size: 1.4em;
+        color: $primary-font-color;
+        &:focus {
+          outline: none;
+        }
+      }
       .left-buttons {
         position: absolute;
         left: 0;
         bottom: 0%;
-        button {
-          border: none;
-          background: none;
-          font-size: 1.4em;
-          color: $primary-font-color;
-          &:focus {
-            outline: none;
-          }
-        }
       }
       .right-buttons {
         position: absolute;
@@ -144,6 +164,7 @@
         bottom: 0%;
         .primary-button {
           font-weight: $bolder-font-weight;
+          margin-left: 10px;
         }
       }
     }
