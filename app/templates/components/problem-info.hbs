@@ -10,7 +10,13 @@
 <div class="side-info-menu">
   <section class="info-details">
     <div class="info-main">
-      <div class="heading">{{problem.title}}</div>
+      <div class="heading">
+        {{#if isEditing}}
+          {{input name="title" id="title" type="text" value=problemName}}
+        {{else}}
+          {{problem.title}}
+        {{/if}}
+      </div>
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
     </div>
     <div class="info-menu">
@@ -23,7 +29,11 @@
       {{#if showGeneral}}
         <p class="info-content-label">Problem Statement</p>
         <div class="info-content-block large-content">
-          {{{problem.text}}}
+          {{#if isEditing}}
+            {{quill-container setup="insertQuillContent"}}
+          {{else}}
+            {{{problem.text}}}
+          {{/if}}
         </div>
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Organization</p>
@@ -71,10 +81,15 @@
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
         <div class="info-content-block">
-          {{#if problem.additionalInfo}}
-            {{{problem.additionalInfo}}}
+          {{#if isEditing}}
+            {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
+            {{input id="additionalInfo" type="hidden" value=additionalInfo }}
           {{else}}
-            No Additional Info
+            {{#if problem.additionalInfo}}
+              {{{problem.additionalInfo}}}
+            {{else}}
+              No Additional Info
+            {{/if}}
           {{/if}}
         </div>
         <p class="info-content-label">Additional Image</p>
@@ -84,7 +99,16 @@
               <img src="{{problem.image.imageData}}" alt="Image Error" class="{{if isWide "wide"}}">
             </a>
           {{else}}
-            No Additional Image
+            {{#unless isEditing}}
+              No Additional Image
+            {{/unless}}
+          {{/if}}
+          {{#if isEditing}}
+            {{#if problem.image}}
+              <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
+            {{else}}
+              {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+            {{/if}}
           {{/if}}
         </div>
         {{#if problem.origin}}
@@ -98,10 +122,17 @@
       {{#if showLegal}}
         <p class="info-content-label">Copyright Notice</p>
         <div class="info-content-block">
-          {{#if problem.copyrightNotice}}
-            <p>&copy; {{problem.copyrightNotice}}</p>
+          {{#if isEditing}}
+            <span id="copyright-container">
+              <span id="icon">&copy;</span>
+              {{input name="copyright" id="copyright" type="text" value=copyrightNotice}}
+            </span>
           {{else}}
-            No Copyright Notice
+            {{#if problem.copyrightNotice}}
+              <p>&copy; {{problem.copyrightNotice}}</p>
+            {{else}}
+              No Copyright Notice
+            {{/if}}
           {{/if}}
         </div>
         <p class="info-content-label">Sharing Authorization</p>
@@ -123,10 +154,9 @@
   <footer class="info-actions">
     <span class="left-buttons">
       {{#if isEditing}}
-        <button><i class="fas fa-trash" {{action 'deleteProblem'}}></i></button>
+        <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
       {{else}}
-        <button><i class="far fa-edit" {{action 'editProblem'}}></i></button>
-        <button><i class="far fa-copy" {{action 'addToMyProblems'}}></i></button>
+        <button class="button-icon" {{action 'deleteProblem'}}><i class="far fa-copy"></i></button>
       {{/if}}
     </span>
     <span class="right-buttons">
@@ -134,6 +164,8 @@
         <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
         <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
       {{else}}
+        <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+        {{!-- <button class="button-icon" {{action 'editProblem'}}><i class="far fa-edit"></i></button> --}}
         <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
       {{/if}}
     </span>
@@ -240,7 +272,7 @@
               {{#if problem.image}}
                   <a {{action 'toggleImageSize'}} >
                     <img src="{{problem.image.imageData}}" alt="{{problem.title}}" class="{{if isWide "wide"}}">
-                  </a>
+                  </a>s
                   <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
               {{else}}
                   {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
