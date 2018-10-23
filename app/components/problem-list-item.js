@@ -60,6 +60,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     let moreMenuOptions = this.get('moreMenuOptions');
     let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
+    let status = this.get('problem.status');
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -67,14 +68,22 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
         return option.value !== 'edit' && option.value !== 'delete';
       });
     }
+
     if (!isAdmin) {
+      // remove any admin only options for non admins
       options = _.filter(options, (option) => {
         return !option.adminOnly;
       });
     }
+    if (status === 'pending') {
+      // dont show pend option if status is already pending
+      options = _.filter(options, (option) => {
+        return option.value !== 'pending';
+      });
+    }
 
     return options;
-  }.property('problem.id'),
+  }.property('problem.id', 'problem.status'),
 
 
   actions: {
@@ -117,7 +126,9 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       record.save()
       .then((record) => {
         this.get('alert').showToast('success', msg, 'bottom-end', 5000, false, null);
-        this.set('showAdminStatusMenu', false);
+        if (this.get('showMoreMenu')) {
+          this.set('showMoreMenu', false);
+        }
       })
       .catch((err) => {
         let message = err.errors[0].detail;
@@ -137,6 +148,9 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           problem.set('isTrashed', true);
           // this.sendAction('toProblemList');
           problem.save().then((problem) => {
+            if (this.get('showMoreMenu')) {
+              this.set('showMoreMenu', false);
+            }
             this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
             .then((result) => {
               if (result.value) {
