@@ -79,6 +79,7 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
       accessCrit.$or.push({ $and: [{ organization: user.organization }, { privacySetting: "O" }]});
 
       filter.$and.push(accessCrit);
+      filter.$and.push({ status: { $ne: 'flagged' } });
       return filter;
   }
   }catch(err) {

@@ -61,19 +61,19 @@
         <p class="info-content-label">Problem Status</p>
         <div class="info-content-block">
           {{#if isEditing}}
-            {{#if currentUser.isAdmin}}
-              <svg height="20" width="20">
-                <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
-              </svg>
-              {{my-select cannotBeNull=true selectedValue=problem.status content=problemStatusOptions
-              action=(action (mut problemStatus)) isDisabled=isReadOnly}}
-            {{else}}
+            {{#if currentUser.isTeacher}}
               <svg height="20" width="20">
                 <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
               </svg>
               <span class="status-text">
                 {{problem.status}}
               </span>
+            {{else}}
+              <svg height="20" width="20">
+                <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+              </svg>
+              {{my-select cannotBeNull=true selectedValue=problem.status content=problemStatusOptions
+              action=(action (mut problemStatus)) isDisabled=isReadOnly}}
             {{/if}}
           {{else}}
             <svg height="20" width="20">
