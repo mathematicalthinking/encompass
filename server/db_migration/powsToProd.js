@@ -875,7 +875,7 @@ async function updateAnswersImages(pgClient, powsUser, ePublicStr, ePrivateStr) 
   try {
     // try does not catch postgres server not running
     // ToDo - try .then() to catch promise
-    const res = await pgClient.query(`select ps.id from pow_submissions ps inner join pow_uploaded_files up on up.id = ps.uploaded_file_id;`);
+    const res = await pgClient.query(`select ps.id from pow_submissions ps left join pow_uploaded_files up on up.id = ps.uploaded_file_id WHERE up.id is not null OR ps.shortanswer like '%<img%src=%' OR ps.longanswer like '%<img%src=%';`);
     // get pow puzzle ids for looping (with multiple promises).
     const resIds = res.rows.map(d => d.id)
     console.log(`There are ${resIds.length} resIds`)
