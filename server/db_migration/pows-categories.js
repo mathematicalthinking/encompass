@@ -6,7 +6,7 @@ const _ = require('underscore');
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
- mongoose.connect('mongodb://localhost:27017/encompass_testcats');
+ mongoose.connect('mongodb://localhost:27017/encompass');
 
 // puzzleId, title, //[category identifier]
 
@@ -118,7 +118,9 @@ async function convertToJson() {
       });
       return newObj;
     });
-
+    // convert array of json objects to dictionary object where
+    // keys are string versions of puzzleIds, and values are puzzleId and array of (unique) categoryIds
+    // keys are unique
     let dict = {};
 
     for (let obj of formatted) {
@@ -151,6 +153,9 @@ async function migrate() {
     for (let key of Object.keys(json)) {
       let idents = json[key].categories;
       json[key].categoryIds = await mapIdentifiersToCategoryIds(idents);
+      if (_.contains(json[key].categoryIds, undefined)) {
+        console.log('includes null', json[key]);
+      }
 
       let puzzleId = json[key].puzzleId;
       let problemId = await getEncompassProblemIdFromPuzzleId(puzzleId);
