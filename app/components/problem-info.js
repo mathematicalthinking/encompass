@@ -67,7 +67,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (accountType === "A") {
       canEdit = true;
     } else if (accountType === "P") {
-      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+      if (problem.get('organization.id') === currentUser.get('organization.id') || creator === currentUser.id) {
         canEdit = true;
       }
     } else if (accountType === "T") {
