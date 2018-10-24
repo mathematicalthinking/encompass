@@ -33,7 +33,11 @@
           <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
         {{/if}}
       {{else}}
-        <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+        {{#if (is-equal problem.status 'pending')}}
+          <button class="primary-button" {{action "create Assignment"}}>Add</button>
+        {{else}}
+          <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+        {{/if}}
       {{/if}}
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
@@ -112,7 +116,11 @@
             <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
           {{/if}}
         {{else}}
-          <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+          {{#if (is-equal problem.status 'pending')}}
+            <button class="primary-button" {{action "create Assignment"}}>Add</button>
+          {{else}}
+            <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+          {{/if}}
         {{/if}}
       </div>
     </div>

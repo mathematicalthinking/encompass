@@ -4,9 +4,15 @@
 
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
-  .problem-list {
-    .problem-list-item {
-      width: 350px;
+  #layout-view {
+    &.grid-view {
+      .problem-list {
+        .main-list {
+          .problem-list-item {
+            width: 300px;
+          }
+        }
+      }
     }
   }
 }
@@ -169,7 +175,9 @@
             &.row-2 {
               @include flex-item(2, auto, 1 0 auto);
               padding: 15px 12px 10px 12px;
-              color: black;
+              a {
+                color: black;
+              }
               text-transform: capitalize;
               max-height: 22px;
               overflow-y: hidden;
@@ -505,6 +513,9 @@
                   text-overflow: ellipsis;
                   white-space: nowrap;
                   max-height: 48px;
+                  a {
+                    color: black;
+                  }
                 }
                 &.description {
                   @include flex-item(3, center, .26 0 auto);
@@ -546,8 +557,8 @@
     }
   }
   .primary-button {
-    margin-left: -10px;
-    width: 75px;
+    margin-left: -15px;
+    width: 85px;
     &.approve {
       text-indent: -10px;
     }

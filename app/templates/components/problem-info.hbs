@@ -61,11 +61,20 @@
         <p class="info-content-label">Problem Status</p>
         <div class="info-content-block">
           {{#if isEditing}}
-            <svg height="20" width="20">
-              <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
-            </svg>
-            {{my-select cannotBeNull=true selectedValue=problem.status content=problemStatusOptions
-            action=(action (mut problemStatus)) isDisabled=isReadOnly}}
+            {{#if currentUser.isAdmin}}
+              <svg height="20" width="20">
+                <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+              </svg>
+              {{my-select cannotBeNull=true selectedValue=problem.status content=problemStatusOptions
+              action=(action (mut problemStatus)) isDisabled=isReadOnly}}
+            {{else}}
+              <svg height="20" width="20">
+                <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+              </svg>
+              <span class="status-text">
+                {{problem.status}}
+              </span>
+            {{/if}}
           {{else}}
             <svg height="20" width="20">
               <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
@@ -243,7 +252,9 @@
             <button class="primary-button" {{action 'editProblem'}}>Edit</button>
           {{/if}}
         {{/if}}
-          <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+          {{#unless (is-equal problem.status 'pending')}}
+            <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+          {{/unless}}
       {{/if}}
     </span>
   </section>
