@@ -33,6 +33,12 @@
     font-weight: $bolder-font-weight;
   }
 
+  button {
+    background-color: $primary-font-color;
+    color: white;
+    border: none;
+  }
+
   .cd-accordion-menu li {
     -webkit-user-select: none;
     -moz-user-select: none;
