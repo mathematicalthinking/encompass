@@ -91,18 +91,18 @@
             Status <i class="fas fa-filter sort-icon"></i>
             <span class="hover-menu checkbox">
               <ul>
-                {{#each statusOptions as |option|}}
+                {{#each statusOptionsList as |option|}}
                   <li>
-                  <label>
-                    <input type="checkbox" checked={{option.isChecked}} name={{option.name}} value={{option.value}} onclick={{action "updateStatusFilter" option.value}}>
-                    <span>
-                      <svg height="20" width="20">
-                        <circle cx="10" cy="15" r="5" fill={{option.fill}} />
-                      </svg>
-                      <span class="radio-text">{{option.text}}</span>
-                    </span>
-                  </label>
-                </li>
+                    <label>
+                      <input type="checkbox" checked={{option.isChecked}} name={{option.name}} value={{option.value}} onclick={{action "updateStatusFilter" option.value}}>
+                      <span>
+                        <svg height="20" width="20">
+                          <circle cx="10" cy="15" r="5" fill={{option.fill}} />
+                        </svg>
+                        <span class="radio-text">{{option.text}}</span>
+                      </span>
+                    </label>
+                  </li>
                 {{/each}}
               </ul>
             </span>

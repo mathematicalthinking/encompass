@@ -33,11 +33,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   statusOptions: [
     { name: 'status', value: 'approved', fill: '#35A853', text: 'Approved', isChecked: true },
     { name: 'status', value: 'pending', fill: '#FFD204', text: 'Pending', isChecked: true },
-    { name: 'status', value: 'flagged', fill: '#EB5757', text: 'Flagged', isChecked: true },
+    { name: 'status', value: 'flagged', fill: '#EB5757', text: 'Flagged', isChecked: true, teacherHide: true},
   ],
   moreMenuOptions: [
     {label: 'Edit', value:'edit', action: 'editProblem', icon: 'far fa-edit'},
-    {label: 'Assign', value: 'assign', action: 'assignProblem', icon: 'fas fa-list-ul', adminOnly: true},
+    {label: 'Assign', value: 'assign', action: 'assignProblem', icon: 'fas fa-list-ul'},
     {label: 'Delete', value: 'delete', action: 'deleteProblem', icon: 'fas fa-trash'},
     {label: 'Report', value: 'flag', action: 'reportProblem', icon: 'fas fa-exclamation-circle'},
     {label: 'Pending', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true}
@@ -108,6 +108,20 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       return org.get('name');
     });
   },
+
+  statusOptionsList: function () {
+    let statusOptions = this.get('statusOptions');
+    let isTeacher = this.get('currentUser.isTeacher');
+
+    if (isTeacher) {
+      statusOptions = _.filter(statusOptions, (option) => {
+        return !option.teacherHide;
+      });
+    }
+
+    return statusOptions;
+  }.property('problem.status'),
+
 
   didReceiveAttrs: function() {
     let attributes = ['problems', 'sections', 'organizations'];

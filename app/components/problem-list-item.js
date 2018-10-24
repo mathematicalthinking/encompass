@@ -100,7 +100,6 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
 
 
   actions: {
-
     showStatusOptions() {
       this.set('showAdminStatusMenu', true);
     },
