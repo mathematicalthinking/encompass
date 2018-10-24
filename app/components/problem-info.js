@@ -183,7 +183,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('additionalInfo', problem.get('additionalInfo'));
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
-      this.set
       console.log('problems privacy settings is', this.get('privacySetting'));
 
       if (!problem.get('isUsed')) {

@@ -2,9 +2,9 @@
     {{#if isEditing}}
       <span class="top-left-icon">
         {{{public-private problem.privacySetting}}}
-          {{my-select cannotBeNull=true selectedValue=privacySetting content=privacySettingsList action=(action (mut privacySetting)) optionLabelPath="name" isDisabled=isReadOnly}}
       </span>
-
+        {{my-select cannotBeNull=true selectedValue=privacySetting content=privacySettingsList action=(action (mut
+        privacySetting)) optionLabelPath="name" isDisabled=isReadOnly}}
     {{else}}
       <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting problem.privacySetting}}>
         {{{public-private problem.privacySetting}}}
@@ -176,7 +176,7 @@
     </div>
   </section>
 
-  <footer class="info-actions">
+  <section class="info-actions">
     <span class="left-buttons">
       {{#if isEditing}}
         <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
@@ -194,7 +194,7 @@
         <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
       {{/if}}
     </span>
-  </footer>
+  </section>
 </div>
 
 
