@@ -613,13 +613,13 @@ function imageToBase64(origUrl) {
     imageFileName = origUrl.substring(0);
   }
   if (imageFileName !== '') {
-    console.log(`Check in imgDirRoot for ${imgDirRoot + imageFileName}`)
+    // console.log(`Check in imgDirRoot for ${imgDirRoot + imageFileName}`)
     imgBase64 = imageFileToBase64(imgDirRoot + imageFileName);
     if (imgBase64 === '') {
-      console.log(`Check in answerDirRoot for ${answerDirRoot + imageFileName}`)
+      // console.log(`Check in answerDirRoot for ${answerDirRoot + imageFileName}`)
       imgBase64 = imageFileToBase64(answerDirRoot + imageFileName);
       if (imgBase64 === '') {
-        console.log(`Check in imgDirRoot missing for ${imgDirRoot + 'missing/' + imageFileName}`)
+        // console.log(`Check in imgDirRoot missing for ${imgDirRoot + 'missing/' + imageFileName}`)
         imgBase64 = imageFileToBase64(imgDirRoot + 'missing/' + imageFileName);
       } else {
         imgPush = `\nERROR missing ${imageFileName} from ${origUrl}`;
@@ -720,18 +720,18 @@ function insertImagesIntoAnswers(text, errorPublicStream, errorPrivateStream, pr
     });
     if (imgErrs > 0 ) {
       console.error(`ERROR: missing image(s)`)
-      return ''; // missing images error
+      return text; // missing images error, return original text
     } else if (imgIgnores > 0) {
-      return ''; // Ignore these problems
+      return text; // Ignore these problems, return original text
     } else if (imgSrc === 0) {
-      return ''; // Ignore problems with no image sources
+      return text; // Ignore problems with no image sources, return original text
     } else {
       // console.log(`\n--------------\nFinal HTML: ${outStr}`)
       return outStr; // no errors
     }
   } catch (e) {
     console.error(`ERROR: ${e}`);
-    return ''; // have errors
+    return text; // have errors, return original text
   }
 }
 
@@ -798,10 +798,6 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
             encAnswer = answers[0];
             // console.log(`found answer for POWs submission ID: ${encAnswer.powsSubmId}`);
             skipCount += 1;
-            // const updDescription = insertImagesIntoAnswers(powSub.longanswer, errorPublicStream, errorPrivateStream, problem);
-            // if (updDescription !== '') {
-            //   console.log(`description from ${powSub.longanswer} to ${updDescription.substring(0,50)}`)
-            // }
           } else {
             // console.log(`create new answer for ID: ${powSub.subid}, shortanswer: ${powSub.shortanswer}`)
             encAnswer = new models.Answer({
@@ -819,47 +815,8 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
               powsSubmId: powSub.subid,
               isTrashed: (problem.privacySetting === 'M')
             });
-            // console.log(`encAnswer.answer: ${encAnswer.answer.substring(0,50)}`)
-            // console.log(`encAnswer.explanation: ${encAnswer.explanation.substring(0,50)}`)
-            // console.log(`encAnswer.notes: ${encAnswer.notes.substring(0,50)}`)
-            // console.log(`encAnswer createdBy: ${encAnswer.createdBy}, createDate: ${encAnswer.createDate}, problem: ${encAnswer.problem}, studentNames: ${encAnswer.studentNames}, isSubmitted: ${encAnswer.isSubmitted}, powsSubmId ${encAnswer.powsSubmId}`)
             addCount += 1;
 
-            /* following code has been commented out to run on the server without image updates
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Initial Short Answer: ${powSub.shortanswer}`);
-            const updAnswer = insertImagesIntoAnswers(powSub.shortanswer, errorPublicStream, errorPrivateStream, problem);
-            if (updAnswer !== '') {
-              // console.log(`answer from ${powSub.shortanswer} to ${updAnswer.substring(0,50)}`)
-              powSub.shortanswer = updAnswer;
-              answerWithImages += 1;
-            }
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Updated Short Answer: ${powSub.shortanswer}`);
-            const updDescription = insertImagesIntoAnswers(powSub.longanswer, errorPublicStream, errorPrivateStream, problem);
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Initial Long Answer: ${powSub.longanswer}`);
-            if (updDescription !== '') {
-              console.log(`description from ${powSub.longanswer} to ${updDescription.substring(0,50)}`)
-              powSub.longanswer = updDescription;
-              descWithImages += 1;
-            }
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Updated Long Answer: ${powSub.longanswer}`);
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Upload Image: ${powSub.upimg}`);
-            // append the uploaded file (image) to the long answer
-            if (powSub.upimg) {
-              let imgRet = imageToBase64(powSub.upimg);
-              if (imgRet.imgB64 !== '') {
-                // console.log(`\n------------------------------------------------------------`);
-                // console.log(`Upload Image base64: ${imgRet.imgB64}`);
-                encAnswer.explanation = `<div id="origAnswer">${powSub.longanswer}</div><div id="uploadedImg"><img src="${imgRet.imgB64}"/></div>`
-              }
-            }
-            // console.log(`\n------------------------------------------------------------`);
-            // console.log(`Updated Long Answer with Upload: ${powSub.longanswer}`);
-             */
             try {
               await encAnswer.save();
               // console.log(encAnswer.powsSubmId + " saved.");
@@ -892,12 +849,136 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
 }
 
 
+function newAnswer(powsUser, powSub, problem) {
+  encAnswer = new models.Answer({
+    createdBy: powsUser._id,
+    createDate: powSub.subdate,
+    problem: problem._id,
+    answer: powSub.shortanswer,
+    explanation: powSub.longanswer,
+    // no section
+    // students are by name not encompass user
+    studentNames: [ fullName(powSub.firstname, powSub.lastname) ],
+    // don't need priorAnswer, correct???
+    isSubmitted: (powSub.substatus === "SUBMITTED" ? true : false),
+    notes: `Publish Date: ${powSub.pubdate}, Type: ${powSub.pubtype}, Notes: ${powSub.pubnotes}, Commentary: ${powSub.pubcommentary}`,
+    powsSubmId: powSub.subid,
+    isTrashed: (problem.privacySetting === 'M')
+  });
+  return encAnswer;
+}
+
+
+async function updateAnswersImages(pgClient, powsUser, ePublicStr, ePrivateStr) {
+  console.log(`Starting updateAnswersImages `);
+  let updateCount = 0;
+  try {
+    // try does not catch postgres server not running
+    // ToDo - try .then() to catch promise
+    const res = await pgClient.query(`select ps.id from pow_submissions ps inner join pow_uploaded_files up on up.id = ps.uploaded_file_id;`);
+    // get pow puzzle ids for looping (with multiple promises).
+    const resIds = res.rows.map(d => d.id)
+    console.log(`There are ${resIds.length} resIds`)
+    for (let id of resIds) {
+      // console.log(`------------------------------`);
+      // console.log(`updateAnswersImages POWs response id: ${id}`);
+      const powsSubs = await pgClient.query(`select
+      pz.id as puzzleId, pb.publicationlivedate as pubDate,
+      pb.solutiontype as pubType, pb.commentary as pubCommentary,
+      pb.notepad as pubNotes, pt.status as threadStatus, pt.current_submission as currentSubmission,
+      ps.id as subId, ps.status as subStatus, ps.createdate as subDate, ps.shortanswer as shortAnswer,
+      ps.longanswer as longAnswer, u.first_name as firstName, u.last_name as lastName,
+      up.savedfilename as upImg
+      from pow_submissions ps
+      left join pow_threads pt on pt.id = ps.thread_id
+      left join pow_publications pb on pb.id = pt.publication
+      left join pow_puzzles pz on pz.id = pb.puzzle
+      left join dir_users u on u.id = ps.creator
+      left join pow_uploaded_files up on up.id = ps.uploaded_file_id
+      where ps.id = ${id}`);
+      if (powsSubs.length === 0) {
+        console.error(`ERROR - cannot find answer (${powsSubs.length}) for submission ${id}`)
+      } else if (powsSubs.length > 1) {
+        console.error(`ERROR - More than one answer (${powsSubs.length}) for submission ${id}`)
+      } else {
+        const powSub = powsSubs.rows[0];
+        // console.log(`keys available: ${Object.keys(pows_sub)}`);
+        // puzzleid,pubdate,pubtype,pubcommentary,pubnotes,threadstatus,currentsubmission,subid,substatus,subdate,shortanswer,longanswer,firstname,lastname
+        // // attempt to avoid deprecated open warning.
+        // Problem = monConn.model('Problem', schemas.Problem);
+        // const problems = await Problem.find({puzzleId: powSub.puzzleId}).exec();
+        const problems = await models.Problem.find({puzzleId: powSub.puzzleId}).exec();
+        // find existing encompass problem
+        let problem;
+        let encAnswer;
+        if (problems.length > 0) {
+          problem = problems[0];
+          // console.log(`Problem: ${problem.title}`);
+          const answers = await models.Answer.find({powsSubmId: powSub.subid}).exec();
+          // find existing encompass answer
+          if (answers.length > 0) {
+            if (answers.length > 1) {
+              console.error(`ERROR - found ${answers.length} existing encompass answers for submission ${powSub.subid}`)
+            }
+            encAnswer = answers[0];
+          } else {
+            // answer does not exist (creating here for dev purposes only)
+            encAnswer = newAnswer(powsUser, powSub, problem);
+          }
+          // console.log(`\n------------------------------------------------------------`);
+          // console.log(`initial encAnswer.explanation: ${encAnswer.explanation}`);
+          // insert any images into short answer
+          encAnswer.answer = insertImagesIntoAnswers(powSub.shortanswer, ePublicStr, ePrivateStr, problem);
+          // insert any images into explanation (long answer)
+          encAnswer.explanation = insertImagesIntoAnswers(powSub.longanswer, ePublicStr, ePrivateStr, problem);
+          // if an upload image is provided, attach it to the end of the explanation (long answer)
+          if (powSub.upimg) {
+            let imgRet = imageToBase64(powSub.upimg);
+            if (imgRet.imgB64 !== '') {
+              encAnswer.explanation = `<div id="origAnswer">${powSub.longanswer}</div><div id="uploadedImg"><img src="${imgRet.imgB64}"/></div>`
+            }
+          }
+          // console.log(`\n------------------------------------------------------------`);
+          // console.log(`updated encAnswer.explanation: ${encAnswer.explanation}`);
+          updateCount += 1;
+          try {
+            await encAnswer.save();
+            // console.log(encAnswer.powsSubmId + " saved.");
+          } catch (err) {
+            console.error(`ERROR saving ${encAnswer.subId} - ${err}`);
+          }
+        } else {
+          // if no problem, then we do not want an answer (we dropped KenKen problems)
+          updateCount += 1;
+        }
+      }
+      // feedback mechanism to indicate progress on conversion
+      if ( ((updateCount) % 1000) === 0) {
+        console.log(`processed ${updateCount} records`)
+      }
+    }
+  } catch (err) {
+    console.log(`updateAnswersImages query error stack: ${err.stack}`);
+  }
+  console.log(`updateAnswersImages ${updateCount} updates`);
+  console.log(`-------------------`);
+}
+
+
 async function update() {
   try {
 
     // // open connection to encompass database (production)
     console.log(`connect to mongo`);
-    mongoose.connect('mongodb://localhost:27017/encompass_staging');
+    // // attempt to avoid open deprecation warning - fail
+    // const monConn = await mongoose.createConnection().openUri('mongodb://localhost:27017/encompass');
+    mongoose.connect('mongodb://localhost:27017/encompass_staging', (err) => {
+      if (err) {
+        // note this is not working!
+        console.error(`ERROR, cannot connect to mongodb: ${err}`);
+        process.exit(1);
+      }
+    });
 
     // open connection to POWs Postgres Database
     console.log(`postgres client create`)
@@ -943,8 +1024,9 @@ async function update() {
     // await setProblemAuthor(pgClient);
     // await updateMiscPics(pgClient, pows_user, errorStream);
 
-    // updates for week of Oct 22
-    await createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream);
+    // // updates for week of Oct 22
+    // await createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream);
+    await updateAnswersImages(pgClient, powsUser, errorPublicStream, errorPrivateStream);
 
     // close error stream
     // errorStream.end();
