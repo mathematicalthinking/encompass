@@ -217,7 +217,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let currentPrivacy = this.problem.get('privacySetting');
       let privacy = $("#privacy-select :selected").val();
       this.set('privacySetting', privacy);
-      console.log('privacy in check privacy is', privacy);
 
       if (currentPrivacy !== "E" && privacy === "E") {
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
@@ -243,7 +242,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         text = quillContent.replace(/["]/g, "'");
         isQuillValid = this.isQuillValid();
       } else {
-        console.log('quill content is undefined');
         text = problem.get('text');
         isQuillValid = true;
       }
@@ -334,7 +332,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         }
       } else {
         if (problem.get('hasDirtyAttributes')) {
-          console.log('has dirty attrs');
           problem.set('modifiedBy', currentUser);
           problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
@@ -348,7 +345,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             return;
           });
         } else {
-          console.log('has not dirty atts');
           this.set('isEditing', false);
         }
       }
@@ -418,6 +414,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     addCategories: function (category) {
+      console.log('add categories funtcion called');
       let problem = this.get('problem');
       let categories = problem.get('categories');
       if (!categories.includes(category)) {
@@ -437,6 +434,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     removeCategory: function (category) {
+      console.log('remove categories funtcion called');
       let problem = this.get('problem');
       let categories = problem.get('categories');
       categories.removeObject(category);

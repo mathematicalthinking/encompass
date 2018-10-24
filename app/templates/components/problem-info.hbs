@@ -92,24 +92,24 @@
               </ul>
               {{#unless showCategories}}
               <div class="button-row-list">
-                <button {{action 'showCategories'}}>Add Categories</button>
+                <button class="cancel-button" {{action 'showCategories'}}>Add Categories</button>
               </div>
               {{/unless}}
               {{#if showCategories}}
                 <div class="button-row-list">
-                  <button {{action 'showCategories'}}>Hide Categories</button>
+                  <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
                 </div>
                 {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
               {{/if}}
             {{else}}
               {{#unless showCategories}}
                 <div class="button-row">
-                  <button {{action 'showCategories'}}>Add Categories</button>
+                  <button class="cancel-button" {{action 'showCategories'}}>Add Categories</button>
                 </div>
               {{/unless}}
               {{#if showCategories}}
                 <div class="button-row">
-                  <button {{action 'showCategories'}}>Hide Categories</button>
+                  <button class="cancel-button" {{action 'showCategories'}}>Hide Categories</button>
                 </div>
                 {{#if categoryTree}}
                   {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}

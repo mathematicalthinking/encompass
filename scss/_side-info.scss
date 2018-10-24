@@ -157,6 +157,13 @@
           #categories {
             margin-top: 15px;
           }
+          .cancel-button {
+            padding: 5px 15px;
+            font-size: .8em;
+            border: 1px solid $input-border;
+            border-radius: 3px;
+            margin-top: 10px;
+          }
           .additional-image {
             width: 80%;
             position: relative;
