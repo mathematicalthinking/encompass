@@ -1,10 +1,15 @@
 <header class="info-header">
     {{#if isEditing}}
       <span class="top-left-icon">
-        {{{public-private problem.privacySetting}}}
+        {{{public-private selectedPrivacySetting}}}
       </span>
-        {{my-select cannotBeNull=true selectedValue=privacySetting content=privacySettingsList action=(action (mut
-        privacySetting)) optionLabelPath="name" isDisabled=isReadOnly}}
+      <div class="select-container">
+        <select name="privacy-settings" id="privacy-select">
+          <option value="E" selected={{is-equal problem.privacySetting "E"}}>Everyone</option>
+          <option value="O" selected={{is-equal problem.privacySetting "O"}}>My Org</option>
+          <option value="M" selected={{is-equal problem.privacySetting "M"}}>Just Me</option>
+        </select>
+      </div>
     {{else}}
       <span class="top-left-icon simptip-position-right simptip-smooth" data-tooltip={{privacy-setting problem.privacySetting}}>
         {{{public-private problem.privacySetting}}}

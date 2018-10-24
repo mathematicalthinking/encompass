@@ -51,17 +51,25 @@
   .info-header {
     border: none;
     max-height: 5px;
-    #my-select {
-      width: 85px;
+    .select-container {
+      width: 95px;
       height: inherit;
       position: relative;
-      left: 30px;
+      left: 35px;
       top: -15px;
+      background: none;
       select {
-        width: 85px;
-        font-size: .8em;
-        text-transform: capitalize;
-        background: none;
+        width: 95px;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-size: .9em;
+        background: url(/images/caret-down.svg) no-repeat right;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        &:focus {
+          outline: none;
+        }
       }
     }
   }
@@ -149,12 +157,23 @@
           #my-select {
             width: 125px;
             margin-left: 30px;
-            margin-top: -20px;
+            margin-top: -18px;
             select {
               width: 125px;
               font-size: .9em;
               text-transform: capitalize;
               background: none;
+              border: none;
+              text-align-last: left;
+              margin: 0 auto;
+              color: black;
+              background: url(/images/caret-down.svg) no-repeat right;
+              // background-size: 12px;
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              &:focus {
+                outline: none;
+              }
             }
           }
         }

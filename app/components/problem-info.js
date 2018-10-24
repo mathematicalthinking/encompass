@@ -28,21 +28,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     flagged: '#EB5757'
   },
   problemStatusOptions: ['approved', 'pending', 'flagged'],
-  privacySettingsList: [
-    {
-      id: 'E',
-      name: 'Everyone'
-    },
-    {
-      id: 'O',
-      name: 'My Org'
-    },
-    {
-      id: 'M',
-      name: 'Just Me'
-    },
-  ],
-
 
   init: function () {
     this._super(...arguments);
@@ -231,10 +216,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     checkPrivacy: function() {
       let currentPrivacy = this.problem.get('privacySetting');
-      let privacy = this.get('privacySetting');
-      this.set('privacySetting', privacy.id);
-
-      console.log('check privacy privacy is', privacy.id);
+      let privacy = $("#privacy-select :selected").val();
+      this.set('privacySetting', privacy);
+      console.log('privacy in check privacy is', privacy);
 
       if (currentPrivacy !== "E" && privacy === "E") {
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
@@ -410,42 +394,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           // this.handleErrors(err, 'createRecordErrors', newProblem);
         });
     },
-
-    // duplicateProblem: function () {
-    //   let problem = this.get('problem');
-    //   let originalTitle = problem.get('title');
-    //   let title = 'Copy of ' + originalTitle;
-    //   let text = problem.get('text');
-    //   let additionalInfo = problem.get('additionalInfo');
-    //   let isPublic = problem.get('isPublic');
-    //   let imageUrl = problem.get('imageUrl');
-    //   let image = problem.get('image');
-    //   let categories = problem.get('categories');
-    //   let createdBy = this.get('currentUser');
-
-    //   let newProblem = this.store.createRecord('problem', {
-    //     title: title,
-    //     text: text,
-    //     additionalInfo: additionalInfo,
-    //     imageUrl: imageUrl,
-    //     isPublic: isPublic,
-    //     image: image,
-    //     origin: problem,
-    //     categories: categories,
-    //     privacySetting: "M",
-    //     createdBy: createdBy,
-    //     createDate: new Date()
-    //   });
-
-    //   newProblem.save()
-    //     .then((problem) => {
-    //       let name = problem.get('title');
-    //       this.set('savedProblem', problem);
-    //       this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-    //   }).catch((err) => {
-    //     this.handleErrors(err, 'createRecordErrors', newProblem);
-    //   });
-    // },
 
     toggleImageSize: function () {
       this.toggleProperty('isWide');
