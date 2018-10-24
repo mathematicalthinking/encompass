@@ -448,8 +448,8 @@
                 }
               }
               &.name {
-                @include flex-item(2, center, .2 0 auto);
-                width: 20%;
+                @include flex-item(2, center, .18 0 auto);
+                width: 18%;
                 &:hover {
                   cursor: pointer;
                   color: black;
@@ -479,8 +479,8 @@
                 }
               }
               &.action {
-                @include flex-item(6, center, .04 0 auto);
-                width: 4%;
+                @include flex-item(6, center, .06 0 auto);
+                width: 6%;
               }
               &.more {
                 @include flex-item(7, center, .02 0 auto);
@@ -507,8 +507,8 @@
                   text-indent: 2%;
                 }
                 &.name {
-                  @include flex-item(2, center, .2 0 auto);
-                  width: 20%;
+                  @include flex-item(2, center, .18 0 auto);
+                  width: 18%;
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
@@ -539,14 +539,14 @@
                   }
                 }
                 &.action {
-                  @include flex-item(6, center, .04 0 auto);
-                  width: 4%;
+                  @include flex-item(6, center, .06 0 auto);
+                  width: 6%;
                 }
                 &.more {
                   @include flex-item(7, center, .02 0 auto);
                   width: 2%;
                   cursor: pointer;
-                  text-align: right;
+                  text-align: center;
                   padding-right: 10px;
                 }
               }
@@ -558,10 +558,8 @@
   }
   .primary-button {
     margin-left: -15px;
+    padding: 10px 10px;
     width: 85px;
-    &.approve {
-      text-indent: -10px;
-    }
   }
 }
 

@@ -260,6 +260,26 @@
   </section>
 </div>
 
+{{#if isMissingRequiredFields}}
+  <p class="error-message">Please fill in all required fields.</p>
+{{/if}}
+{{#each updateProblemErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each imageUploadErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each createRecordErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+{{#each findRecordErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+{{/each}}
+
+{{#if showAssignment}}
+  {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
+{{/if}}
+
 
 {{!-- <section class="problem-details">
 
@@ -461,24 +481,3 @@
   {{/if}}
 
 </section> --}}
-
-
-{{#if isMissingRequiredFields}}
-  <p class="error-message">Please fill in all required fields.</p>
-{{/if}}
-{{#each updateProblemErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each imageUploadErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each createRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each findRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-
-{{#if showAssignment}}
-  {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
-{{/if}}
