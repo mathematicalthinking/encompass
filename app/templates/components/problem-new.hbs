@@ -1,12 +1,61 @@
-<header id="problemnewheader">
-  <h2>Create New Problem</h2>
-  <div class="clear"></div>
+<header class="info-header">
   <span class="remove-icon" {{action 'hideInfo'}}>
     <i class="fas fa-times"></i>
   </span>
 </header>
 
-  <section class="third submissions">
+<div class="side-info-menu">
+  <section class="info-details">
+    <div class="info-main">
+      <div class="heading">
+        Create New Problem
+      </div>
+    </div>
+    <div class="info-menu">
+      <button class="tab-link {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
+      <button class="tab-link {{if showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
+      <button class="tab-link {{if showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
+      <button class="tab-link {{if showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
+    </div>
+    <div class="info-content">
+      {{#if showGeneral}}
+        <p class="info-content-label">Problem Statement</p>
+        <div class="info-content-block large-content">
+          SHOW GENERAL
+        </div>
+      {{/if}}
+
+      {{#if showCats}}
+        <p class="info-content-label">Problem Categories</p>
+        <div class="info-content-block">
+          SHOW CATS
+        </div>
+      {{/if}}
+
+      {{#if showAdditional}}
+        <div>
+          SHOW ADDITIONAL
+        </div>
+      {{/if}}
+
+      {{#if showLegal}}
+        <p class="info-content-label">Copyright Notice</p>
+        <div class="info-content-block">
+          SHOW LEGAL
+        </div>
+      {{/if}}
+    </div>
+  </section>
+
+  <section class="info-actions">
+    <span class="right-buttons">
+      <button class="action_button cancel-button" {{action 'cancelProblem'}}>Cancel</button>
+      <button class="action_button primary-button" {{action 'validate'}}>Create</button>
+    </span>
+  </section>
+</div>
+
+  {{!-- <section class="third submissions">
     <form id='newproblemform' class='properForm'>
       <fieldset>
         <ol>
@@ -128,7 +177,7 @@
       Create Problem
     </button>
     <button class="action_button cancel-button" type="submit" {{action 'cancelProblem'}}>Cancel</button>
-  </section>
+  </section> --}}
 
 
 

@@ -38,7 +38,6 @@
   }
 }
 
-
 #problem-filter {
   #category-list-modal {
     position: fixed !important;
@@ -73,265 +72,265 @@
   }
 }
 
-#problem-info {
-  margin-top: 80px;
-  padding: 10px;
-  .info-header {
-    border: none;
-  }
-  .problem-details {
-    fieldset {
-      border: none;
-    }
-    #probleminfoform {
-      textarea, input[type=text], select {
-        font-size: 1em;
-        color: $primary-font-color;
-        width: 50%;
-        max-width: 600px;
-        padding: 12px 20px;
-        margin: 8px 0px;
-        display: inline-block;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: none;
-        &::placeholder {
-          color: $primary-font-color;
-        }
-      }
-      li.privacy-settings {
-        display: flex;
-        align-items: center;
-      }
-      .quill-container {
-        width: 50%;
-        min-width: 150px;
-        max-width: 600px;
-        display: inline-block;
-        section#editor {
-          width: 100%;
-          display: inline-block;
-          min-height: 100px;
-          .ql-editor {
-            width: 100%;
-            display: inline-block;
-          }
-        }
-      }
-      .form-label {
-        width: 20%;
-        font-size: 1em;
-        padding: 12px 20px;
-        color: black;
-        margin: 8px 0px;
-      }
-      a {
-        color: $accent-color;
-      }
-      .radio-label {
-        padding: 0px 5px;
-        width: 200px;
-        padding: 12px 3px;
-        margin: 8px 0;
-        font-size: 1em;
-      }
-      .button-row-list {
-        width: 70%;
-        padding: 0;
-        margin: 0;
-        font-size: 1em;
-        display: inline-block;
-        box-sizing: border-box;
-        margin-left: 25%;
-        button {
-          font-size: .8em;
-          padding: 5px 15px;
-          background-color: none;
-          border-radius: 3px;
-          border-color: $input-border;
-        }
-      }
-      .button-row {
-        width: 70%;
-        padding: 0;
-        margin: 20px 0;
-        font-size: 1em;
-        display: inline-block;
-        box-sizing: border-box;
-        button {
-          font-size: .8em;
-          padding: 5px 15px;
-          background-color: none;
-          border-radius: 3px;
-          border-color: $input-border;
-        }
-      }
-      input[type=radio] {
-        padding: 12px 20px;
-        margin: 24px 2px;
-      }
-      .edit-image-btn {
-        margin-bottom: 15px;
-        padding: 5px 15px;
-        font-size: .8em;
-        background-color: none;
-        border-radius: 3px;
-        border: .5px solid $primary-font-color;
-        color: $primary-font-color;
-      }
-      .right {
-        float: right;
-        font-size: 1.5em;
-        color: $primary-font-color;
-        border: none;
-        &:hover {
-          color: lighten($primary-font-color, 10);
-        }
-      }
-      .problem-info {
-        font-size: 1em;
-        width: 70%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: none;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: none;
-        &::placeholder {
-          color: $primary-font-color;
-        }
-      }
-    }
-    #probleminfo {
-      .problem-info {
-        font-size: 1em;
-        width: 70%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: none;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: none;
-        &::placeholder {
-          color: $primary-font-color;
-        }
-      }
-      .form-label {
-        width: 20%;
-        margin: 8px 0;
-        font-size: 1em;
-        padding: 12px 20px;
-        color: black;
-      }
-      .action_button {
-        padding: 12px 20px;
-      }
-    }
-    button.action_button {
-      margin: 8px 15px 8px 5px;
-      padding: 10px 15px;
-      font-size: .8em;
-      border-radius: 3px;
-      font-weight: $bold-font-weight;
-    }
-  }
+// #problem-info {
+//   margin-top: 80px;
+//   padding: 10px;
+//   .info-header {
+//     border: none;
+//   }
+//   .problem-details {
+//     fieldset {
+//       border: none;
+//     }
+//     #probleminfoform {
+//       textarea, input[type=text], select {
+//         font-size: 1em;
+//         color: $primary-font-color;
+//         width: 50%;
+//         max-width: 600px;
+//         padding: 12px 20px;
+//         margin: 8px 0px;
+//         display: inline-block;
+//         border: 1px solid transparent;
+//         border-radius: 4px;
+//         box-sizing: border-box;
+//         background: none;
+//         &::placeholder {
+//           color: $primary-font-color;
+//         }
+//       }
+//       li.privacy-settings {
+//         display: flex;
+//         align-items: center;
+//       }
+//       .quill-container {
+//         width: 50%;
+//         min-width: 150px;
+//         max-width: 600px;
+//         display: inline-block;
+//         section#editor {
+//           width: 100%;
+//           display: inline-block;
+//           min-height: 100px;
+//           .ql-editor {
+//             width: 100%;
+//             display: inline-block;
+//           }
+//         }
+//       }
+//       .form-label {
+//         width: 20%;
+//         font-size: 1em;
+//         padding: 12px 20px;
+//         color: black;
+//         margin: 8px 0px;
+//       }
+//       a {
+//         color: $accent-color;
+//       }
+//       .radio-label {
+//         padding: 0px 5px;
+//         width: 200px;
+//         padding: 12px 3px;
+//         margin: 8px 0;
+//         font-size: 1em;
+//       }
+//       .button-row-list {
+//         width: 70%;
+//         padding: 0;
+//         margin: 0;
+//         font-size: 1em;
+//         display: inline-block;
+//         box-sizing: border-box;
+//         margin-left: 25%;
+//         button {
+//           font-size: .8em;
+//           padding: 5px 15px;
+//           background-color: none;
+//           border-radius: 3px;
+//           border-color: $input-border;
+//         }
+//       }
+//       .button-row {
+//         width: 70%;
+//         padding: 0;
+//         margin: 20px 0;
+//         font-size: 1em;
+//         display: inline-block;
+//         box-sizing: border-box;
+//         button {
+//           font-size: .8em;
+//           padding: 5px 15px;
+//           background-color: none;
+//           border-radius: 3px;
+//           border-color: $input-border;
+//         }
+//       }
+//       input[type=radio] {
+//         padding: 12px 20px;
+//         margin: 24px 2px;
+//       }
+//       .edit-image-btn {
+//         margin-bottom: 15px;
+//         padding: 5px 15px;
+//         font-size: .8em;
+//         background-color: none;
+//         border-radius: 3px;
+//         border: .5px solid $primary-font-color;
+//         color: $primary-font-color;
+//       }
+//       .right {
+//         float: right;
+//         font-size: 1.5em;
+//         color: $primary-font-color;
+//         border: none;
+//         &:hover {
+//           color: lighten($primary-font-color, 10);
+//         }
+//       }
+//       .problem-info {
+//         font-size: 1em;
+//         width: 70%;
+//         padding: 12px 20px;
+//         margin: 8px 0;
+//         display: inline-block;
+//         border: none;
+//         border-radius: 4px;
+//         box-sizing: border-box;
+//         background: none;
+//         &::placeholder {
+//           color: $primary-font-color;
+//         }
+//       }
+//     }
+//     #probleminfo {
+//       .problem-info {
+//         font-size: 1em;
+//         width: 70%;
+//         padding: 12px 20px;
+//         margin: 8px 0;
+//         display: inline-block;
+//         border: none;
+//         border-radius: 4px;
+//         box-sizing: border-box;
+//         background: none;
+//         &::placeholder {
+//           color: $primary-font-color;
+//         }
+//       }
+//       .form-label {
+//         width: 20%;
+//         margin: 8px 0;
+//         font-size: 1em;
+//         padding: 12px 20px;
+//         color: black;
+//       }
+//       .action_button {
+//         padding: 12px 20px;
+//       }
+//     }
+//     button.action_button {
+//       margin: 8px 15px 8px 5px;
+//       padding: 10px 15px;
+//       font-size: .8em;
+//       border-radius: 3px;
+//       font-weight: $bold-font-weight;
+//     }
+//   }
 
-  #probleminfo {
-    a {
-      color: $accent-color;
-    }
-    .additional_image {
-      img {
-        width: 40%;
-        position: relative;
-        z-index: 999;
-      }
-      .wide {
-        height: initial;
-        width: 100%;
-        margin-bottom: 30px;
-      }
-    }
-  }
+//   #probleminfo {
+//     a {
+//       color: $accent-color;
+//     }
+//     .additional_image {
+//       img {
+//         width: 40%;
+//         position: relative;
+//         z-index: 999;
+//       }
+//       .wide {
+//         height: initial;
+//         width: 100%;
+//         margin-bottom: 30px;
+//       }
+//     }
+//   }
 
-  #pdf-view {
-    height: 500px;
-  }
+//   #pdf-view {
+//     height: 500px;
+//   }
 
-  #image-upload {
-    width: 70%;
-    padding: 12px 0px;
-    margin: 8px 0;
-    font-size: 1em;
-    display: inline-block;
-    box-sizing: border-box;
-    input {
-      font-size: 1em;
-    }
-  }
-}
+//   #image-upload {
+//     width: 70%;
+//     padding: 12px 0px;
+//     margin: 8px 0;
+//     font-size: 1em;
+//     display: inline-block;
+//     box-sizing: border-box;
+//     input {
+//       font-size: 1em;
+//     }
+//   }
+// }
 
 
-#problem-home {
-  .info {
-    display: block;
-    // margin-left: 10%;
-    text-align: center;
+// #problem-home {
+//   .info {
+//     display: block;
+//     // margin-left: 10%;
+//     text-align: center;
 
-    li {
-      padding: 20px;
+//     li {
+//       padding: 20px;
 
-      a {
-        color: $accent-color;
-        font-weight: $bold-font-weight;
-      }
-    }
-  }
-  .button-row {
-    width: 100%;
-    margin: 40px auto;
-    text-align: center;
-    display: block;
-    button {
-      font-size: .8em;
-      padding: 5px 15px;
-      background-color: none;
-      border-radius: 3px;
-      border-color: $input-border;
-    }
-  }
-}
-  ul {
-    li {
-      button {
-        border: none;
-        margin-bottom: 2px;
-        position: relative;
-        top: -2px;
+//       a {
+//         color: $accent-color;
+//         font-weight: $bold-font-weight;
+//       }
+//     }
+//   }
+//   .button-row {
+//     width: 100%;
+//     margin: 40px auto;
+//     text-align: center;
+//     display: block;
+//     button {
+//       font-size: .8em;
+//       padding: 5px 15px;
+//       background-color: none;
+//       border-radius: 3px;
+//       border-color: $input-border;
+//     }
+//   }
+// }
+//   ul {
+//     li {
+//       button {
+//         border: none;
+//         margin-bottom: 2px;
+//         position: relative;
+//         top: -2px;
 
-        i {
-          color: $primary-font-color;
-          font-size: 1em;
-        }
-      }
-    }
-  }
+//         i {
+//           color: $primary-font-color;
+//           font-size: 1em;
+//         }
+//       }
+//     }
+//   }
 
-nav#with-search-bar {
-  .search-bar {
-    font-size: 1em;
-    padding-bottom: 10px;
-    input {
-      margin-left:20px;
-    }
-    p {
-      margin-top:10px;
-      margin-left: 20px;
-    }
-  }
-}
+// nav#with-search-bar {
+//   .search-bar {
+//     font-size: 1em;
+//     padding-bottom: 10px;
+//     input {
+//       margin-left:20px;
+//     }
+//     p {
+//       margin-top:10px;
+//       margin-left: 20px;
+//     }
+//   }
+// }
 
 

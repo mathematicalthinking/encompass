@@ -1,4 +1,7 @@
 Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  elementId: 'problem-new',
+  classNames: ['side-info'],
+  showGeneral: true,
   filesToBeUploaded: null,
   createProblemErrors: [],
   imageUploadErrors: [],
@@ -248,7 +251,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     cancelProblem: function() {
-      this.sendAction('toProblemsHome');
+      $('.list-outlet').addClass('hidden');
     },
 
     resetErrors(e) {
@@ -263,6 +266,34 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     hideInfo: function () {
       $('.list-outlet').addClass('hidden');
+    },
+
+    showGeneral: function () {
+      this.set('showGeneral', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showCats: function () {
+      this.set('showCats', true);
+      this.set('showGeneral', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showAdditional: function () {
+      this.set('showAdditional', true);
+      this.set('showCats', false);
+      this.set('showGeneral', false);
+      this.set('showLegal', false);
+    },
+
+    showLegal: function () {
+      this.set('showLegal', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showGeneral', false);
     },
   }
 });
