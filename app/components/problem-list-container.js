@@ -47,7 +47,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
-  selectedCategoryFilter: null,
+  categoriesFilter: [],
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
   listResultsMessage: function() {
@@ -477,10 +477,17 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
 
 
-    let selectedCategoryFilter = this.get('selectedCategoryFilter');
+    let categoriesFilter = this.get('categoriesFilter');
 
-    if (selectedCategoryFilter) {
-      filterBy.categories = selectedCategory;
+    if (!_.isEmpty(categoriesFilter)) {
+      let filterType = 'or';
+      let ids = categoriesFilter.mapBy('id');
+
+      if (filterType === 'or') {
+        filterBy.categories = {$in: ids};
+      } else if (filterType === 'and') {
+        // todo and filter
+      }
     }
 
     let statusFilter = this.get('statusFilter');

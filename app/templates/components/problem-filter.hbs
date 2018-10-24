@@ -37,10 +37,12 @@
 
   <h3>Category</h3>
   <ul class="category-filter-list">
-    <li>
-      Search by {{my-select}}
-      {{input type="text" placeholder="Search by"}}
-    </li>
+    <h5>Selected Category Filters</h5>
+    {{#each categoriesFilter as |category|}}
+      <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
+    {{else}}
+      <p>No categories selected. Click 'Show Category Menu' to view the Category Explorer.</p>
+    {{/each}}
     <li>
       <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
     </li>

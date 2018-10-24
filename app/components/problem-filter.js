@@ -99,8 +99,15 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
     },
 
-    searchCategory() {
-      console.log('clicked search category');
+    searchCategory(category) {
+      this.get('categoriesFilter').addObject(category);
+      this.get('onUpdate')();
+
+    },
+
+    removeCategory(category) {
+      this.get('categoriesFilter').removeObject(category);
+      this.get('onUpdate')();
     },
 
     closeModal() {

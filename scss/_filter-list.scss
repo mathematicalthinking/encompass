@@ -264,7 +264,16 @@
           margin-bottom: 50px;
         }
         .category-filter-list {
-          border: 1px solid red;
+          h5 {
+            margin-bottom: 10px;
+          }
+          i {
+            margin-left: 5px;
+          }
+          margin-left: 20px;
+          li {
+            margin-left: 20px;
+          }
           .show-category-btn {
             margin-left: 20px;
             margin-top: 15px;
