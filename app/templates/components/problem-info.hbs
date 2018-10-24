@@ -110,18 +110,20 @@
 
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
-        <div class="info-content-block large-content">
           {{#if isEditing}}
+          <div class="info-content-block">
             {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
             {{input id="additionalInfo" type="hidden" value=additionalInfo }}
+          </div>
           {{else}}
+          <div class="info-content-block large-content">
             {{#if problem.additionalInfo}}
               {{{problem.additionalInfo}}}
             {{else}}
               No Additional Info
             {{/if}}
+          </div>
           {{/if}}
-        </div>
         <p class="info-content-label">Additional Image</p>
         <div class="info-content-block">
           {{#if problem.image}}
@@ -194,28 +196,21 @@
         <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
         <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
       {{else}}
-        <button class="primary-button" {{action 'editProblem'}}>Edit</button>
-        {{!-- <button class="button-icon" {{action 'editProblem'}}><i class="far fa-edit"></i></button> --}}
-        <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+        {{#if canEdit}}
+          {{#if problem.isUsed}}
+            {{#if currentUser.isAdmin}}
+              <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+            {{/if}}
+          {{else}}
+            <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+          {{/if}}
+        {{/if}}
+          <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
       {{/if}}
     </span>
   </section>
 </div>
 
-
-
-
-{{!-- <header class="info-header">
-  {{#if isEditing}}
-  <h2 class="info-title">Editing Problem</h2>
-  {{else}}
-  <h2 class="info-title">Problem Details</h2>
-  {{/if}}
-  <span class="remove-icon" {{action 'hideInfo'}}>
-    <i class="fas fa-times"></i>
-  </span>
-  <div class="clear"></div>
-</header> --}}
 
 {{!-- <section class="problem-details">
 
