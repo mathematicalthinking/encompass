@@ -93,14 +93,15 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       });
     });
   },
-  getSimilarOrgs(org) {
+  getSimilarOrgs(orgRequest) {
     let orgs = this.get('organizations').toArray();
     // let requestedOrgName = this.get('org');
     let similarOrgs = _.filter(orgs, (org => {
       let name = org.get('name');
-      let score = this.get('similarity').compareTwoStrings('name', org);
+      let score = this.get('similarity').compareTwoStrings(name, orgRequest);
       return score > 0.2;
     }));
+    return similarOrgs;
   },
 
   testSS: function() {
@@ -114,6 +115,19 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     // return this.get('similarity.compareTwoStrings')('Drexel University', org);
 
   }.property('org'),
+
+  orgOptions: function() {
+    let orgs = this.get('organizations');
+    let toArray = orgs.toArray();
+    let mapped = _.map(toArray, (org) => {
+      return {
+        id: org.id,
+        name: org.get('name')
+      };
+
+    });
+    return mapped;
+  }.property('orgs.[]'),
 
   actions: {
     signup: function () {
@@ -179,7 +193,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       if (orgRequest) {
         let similarOrgs = this.getSimilarOrgs(orgRequest);
         if (!_.isEmpty(similarOrgs)) {
-          console.log('similarORgs!', similarOrgs);
+          console.log('similarOrgs!', similarOrgs);
           let bestMatch = this.get('similarity').findBestMatch(orgRequest, similarOrgs.map(o => o.get('name')));
           this.get('alert').showModal('question', `Are you sure you want to create the new organization "${orgRequest}"? `, `There is at least one existing organization with a similar name: ${bestMatch}`, 'Yes')
             .then((result) => {
@@ -269,5 +283,38 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         }
       }
     },
+
+    setOrg(val, $item) {
+      // val is orgId
+      if (!val) {
+        return;
+      }
+
+      let isRemoval = _.isNull($item);
+      if (isRemoval) {
+        this.set('org', null);
+        return;
+      }
+
+      let org = this.get('organizations').findBy('id', val);
+      console.log('org', org);
+      if (!org) {
+        console.log('org request!: ', val)
+        return;
+      }
+      this.set('org', org);
+
+    },
+
+    processOrgRequest(input) {
+      console.log('input',input);
+
+      let similarOrgs = this.getSimilarOrgs(input);
+      console.log('similarORgs', similarOrgs);
+      return {
+        name: input,
+        id: input
+      }
+    }
   }
 });
