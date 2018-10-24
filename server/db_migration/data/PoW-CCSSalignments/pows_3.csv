@@ -1,0 +1,310 @@
+puzzleId,title,identifiers
+1674,Additional Signals,HSG.SRT.D.11
+618,Adventure Airlines,"HSG.SRT.C.8, HSG.MG.A.1"
+774,Another Problematic Pizza,"HSG.SRT.D.9, HSG.C.B"
+1146,Around the Corner,"HSG.SRT.C.8, HSG.MG.A.3, HSF.IF.B.5"
+1710,Basketball Angles,"HSF.TF.B.7, HSG.SRT.C.8"
+714,Building Boxes,"HSF.IF.B.4, HSF.IF.B.5, HSF.IF.C.7, HSF.BF.A.1, HSF.BF.A.1.a, HSF.BF.A.1.b"
+690,Building Bridges,"HSG.SRT.C.8, HSG.SRT.D.11"
+750,Can You Prove It?,"HSN.RN.B.3, HSG.CO.D.12"
+1506,Cooling Colas,"HSF.BF.A.1.b, HSF.LE.A.1, HSF.LE.A.2, HSF.LE.A.4"
+1254,Coordinateville,"HSG.MG.A.3, HSG.SRT.C.8, HSG.SRT.D.11"
+630,Costly Cable,"HSF.IF.B.4, HSF.BF.A.1, HSG.SRT.C.8, HSG.MG.A.3"
+1506,Cutting the Cookie,HSG.SRT.C.8
+1110,A Deviation from the Average,HSS.ID.A.3
+1314,Don't Be Late for Dinner,"HSG.SRT.B.5, HSG.SRT.C.8"
+426,Environmentally Friendly,"HSF.IF.B.4, HSF.IF.B.5, HSF.IF.C.7, HSF.BF.A.1, HSF.BF.A.1.a, HSF.BF.A.1.b"
+1350,Fishing on the Bay,HSF.TF.B.5
+786,George's Gutters,"HSF.IF.B.4, HSG.MG.A"
+462,Goose Bay Mountain,HSG.SRT.C.8
+594,How Large Is the Yard?,"HSG.MG.A.3, HSG.SRT.D.11"
+474,Job Interview at the Can-Can Company,"HSF.IF.B.5, HSG.GMD.A.3"
+1374,Kite Construction,"HSG.SRT.C.8, HSG.SRT.D.11"
+858,Let the Sunshine In,"HSF.IF.B.4, HSG.MG.A.3"
+534,Let's Measure the Earth,HSG.C.B
+1134,Making Money at the Movies,"HSF.IF.B.4, HSF.IF.B.5, HSF.IF.C.7, HSF.BF.A.1, HSF.BF.A.1.a, HSF.BF.A.1.b"
+870,My Hot Chocolate is Too Hot!,"HSF.BF.A.1.a, HSF.BF.A.1.b, "
+1086,"One Area, Many Solutions",HSG.GPE.B.7
+1530,Pie Puzzler,"HSG.SRT.C.8, HSG.C.B"
+1278,Preparing for the Test,"HSA.CED.A.2, HSA.CED.A.3, HSF.IF.A.3, HSF.BF.A.2"
+762,A Problematic Pizza,"HSG.SRT.C.8, HSG.C.B"
+1122,Rationals and Irrationals,HSN.RN.B.3
+450,A Rhyming Riddle,HSA.SSE.B.3
+1386,Shipping Packages,"HSG.GMD.A.3, HSG.MG.A.3, HSF.IF.B.4"
+1650,Simple Signals,"HSG.SRT.C.6, HSG.SRT.C.7"
+1494,Skiing in Vermont,"HSN.VM.A, HSG.SRT.C.8, HSG.SRT.D.11"
+1266,A Sprinking of Dust,HSF.BF.A.2
+1098,Stonybrooke River Bridge,"HSG.SRT.D.11, HSG.MG.A.1"
+1230,Tangents and Slopes,"HSG.GPE.B.4, HSG.GPE.B.5"
+498,The Growing Snowflake,"HSF.BF.A.1.a, HSA.SSE.B.4"
+1518,The Indoor Driving Range,HSG.MG.A.3
+522,The Ninja Mission,"HSG.SRT.D.9, HSG.C.B"
+990,The Oval Braided Rug,"HSG.GPE.A, HSG.MG.A"
+414,The Super-Ultra-Mega-Big Cup,"HSF.IF.B.4, HSG.GMD.A.3, HSG.MG.A.3, HSA.CED.A.4"
+1182,The Supermarket Shelf,"HSG.SRT.C.8, HSG.MG.A.3"
+1446,The Triangle Inside an Angle,HSG.SRT.C.8
+1434,The World's Strongest Man Competition,HSN.VM.A.3
+402,World Series Champions,HSS.CP.B.9
+486,Your Interview Question Is...,"HSF.IF.B.5, HSG.GMD.A.3"
+1062,Building a Sandbox,"HSF.IF.B.4, HSG.MG.A.3"
+1242,Center Coordinates,"HSG.GPE.A.1, HSG.C.A.2, HSG.C.A.3"
+906,Cup Capacity,HSG.GMD.A.3
+1662,Extending the Signals,HSG.SRT.C.8
+678,Ferris Wheel Function,HSF.TF.B.5
+642,Happy Birthday to You & You & You...,"HSS.CP.A.3, HSS.CP.A.3, HSS.CP.B.8"
+798,How Do You Measure a Mountain,HSG.SRT.D.11
+1470,Irregular Acreage,HSG.SRT.D
+882,Managing a Mall,HSG.SRT.D
+1422,My Snow-Shoveling Business,"HSF.IF.B.4, HSF.IF.B.5, HSF.IF.C.7, HSF.BF.A.1, HSF.BF.A.1.a, HSF.BF.A.1.b"
+438,"Nice Shot, Robin Hood","HSA.SSE.B.3.b, HSA.REI.B.4"
+1158,A Picture Is Worth 1000 Words,"HSG.C.B.5, HSG.SRT.C.8"
+966,Product Max,"HSF.BF.A.1, HSF.IF.B.4, HSA.SSE.B.3.b"
+1290,Seal of Dalvek,"HSG.C.B.5, HSG.SRT.D.11, HSG.SRT.C.8, HSA.REI.D.11"
+1050,A Sequence of Logs,"HSF.BF.B.5, HSF.IF.A.3"
+1578,The Super-Yard XT,"HSG.SRT.D.9, HSG.CO.B.8"
+918,"Triangles, Sines, and Areas",HSG.SRT.D.9
+666,The Unit Circle Triangle,"HSF.TF, HSG.SRT.D.9, HSG.SRT.C.8, HSF.IF.B.4, HSF.IF.B.5"
+894,Vehicle Value,"HSF.LE.A.1.c, HSF.LE.A.2"
+1014,Where Did It Come From?,"HSA.APR.D.7, HSA.SSE.A.2"
+930,How Are These Equal?,HSF.TF.C
+846,Your Speeding Ticket,8.EE.A.4
+2912,Timber!,"3.OA.D.8,3.G.A.2,4.OA.A.3,5.OA.A.2,8.G.B.7"
+3692,Kwae,"4.G.A.3,8.G.A.1"
+4628,Symmetry Surprise,"4.G.A.3,8.G.A.1"
+470,Pouring the Punch,"5.MD.A.1,6.RP.A.3,7.G.B.6,8.G.C.9"
+1370,Falling into Sequences,"6.EE.A.1,7.EE.B.3,HSF.IF.A.1"
+3020,Chirp! Chirp!,"6.EE.A.2,6.EE.C.9,7.RP.A.2,8.EE.B.6,8.F.A.3,8.F.B.4"
+890,How Old is Ms. Nelson?,"6.EE.B,6.EE.C.9,7.RP.A.2,7.EE.B.4,8.EE.C.7,.8.EE.C.8,8.F.B.4"
+1118,Distance Driving,"6.EE.B.6,6.EE.C.9,7.RP.A.2,8.EE.B.6,8.F.A.3,8.F.B.4"
+5144,Measuring Melons,"6.EE.B.6,6.EE.C.9,8.EE.C.8"
+1742,Quilting Squares,"6.G.A.1,7.G.B.4,HSA.SSE.A.1"
+2972,Fences for Fido and Friends,"6.G.A.1,7.G.B.6,HSA.SSE.A.1"
+1129,"Chocolate, Orange, Mega-mint Swirl","6.G.A.2,8.G.C.9"
+1166,Graphing for Area,"6.G.A.3,7.G.B.6,HSA.SSE.A.1"
+2042,Coding Conundrums,"6.NS.B,HSA.SSE.A.1.a"
+2960,Divisible by a Dozen,"6.NS.B,HSA.SSE.A.1.a"
+566,Coin Count,"6.NS.B.3,6.EE.B,7.NS.A.1,7.EE.B.4,8.EE.C"
+374,Guess My Number If You Can!,"6.NS.B.4,7.EE.B.3,8.EE.A.2"
+625,My Almond Cookie Bake,"6.NS.B.4,7.NS.A.2,7.NS.A.3,7.EE.B.3,8.EE.A.2"
+362,Open and Shut Case,"6.NS.B.4,8.EE.A.2"
+2900,Graphs,"6.NS.C.6,7.RP.A.2,8.F.B.4"
+3668,Cadence,"6.RP.A,7.RP.A,8.EE.B.5"
+3044,Garden Grove,"6.RP.A.1,6.G.A.2,7.G.B.6,8.G.C.9"
+1778,Batter Up!,"6.RP.A.3,6.SP.A.3,6.SP.B.5,7.RP.A.3,7.NS.A.3,8.EE.B.6"
+962,Downhill All the Way,"6.RP.A.3,7.NS.A.3,8.EE.B.6"
+1526,Dishwasher Discounts,"6.RP.A.3,7.RP.A.3,7.NS.A.1,7.NS.A.2,8.EE.B.6"
+1214,Do you listen to WMTH or WALG?,"6.RP.A.3,7.RP.A.3,7.NS.A.3,8.EE.B.6"
+3140,All the Similar Triangles,"6.RP.A.3,8.G.A.1"
+3176,Reversal of Ages,"7.EE.B.3,HSA.CED.A.2,HSA.REI.A.1"
+5120,Caliyah's Cart,"7.EE.B.4.b,HSA.REI.D.12"
+674,How Wide Is My Garden?,"7.G.A.1,8.G.A.1"
+2030,Dividing Daffodils,"7.G.A.1,HSG.MG.A.3"
+3272,"Right Triangle, Which Legs?","7.G.A.2,8.G.B.7"
+4004,Cyndy's Curtains,"7.NS.A,7.EE.B.3,HSN.Q.A"
+734,Even Number Puzzle,"7.NS.A.3,HSN.Q.A"
+398,Locker Combinations,"7.NS.A.3,HSN.Q.A"
+506,"Runsums, Part 1","7.NS.A.3,HSN.Q.A"
+518,"Runsums, Part 2","7.NS.A.3,HSN.Q.A"
+638,Seating Arrangements,"7.NS.A.3,HSN.Q.A"
+3992,Stina's Hike,"7.RP.A.1,8.EE.B.5"
+4112,Radical Darts,8.EE.A.2
+2984,Ready for Football?,8.EE.A.2
+1322,Scientific Sums,"8.EE.A.3,8.EE.A.4"
+2816,The Scientific Notation Game,8.EE.A.4
+1298,Study Hall Games,"8.EE.C.8,HSA.CED.A.2"
+1262,The Graduating Class,"8.EE.C.8,HSA.CED.A.2"
+17056,Account Balances,8.F.B.4
+4016,Coloring a Hexagon,8.G.A.1
+3620,Paving Stones,8.G.A.1
+2006,Tiling Triangles,8.G.A.1
+3320,Twisting Carpet Tiles,8.G.A.3
+1046,The Big Picture!,8.G.A.4
+914,Canadian Soccer,8.G.B.7
+16984,Shortcut Savings,8.G.B.7
+3663,Exploding Shapes,8.G.A.3
+4119,Similar Perimeter,8.G.A.3
+3351,Triangle in Motion?,8.G.A.3
+2751,Triangle Transformation,8.G.A.3
+17063,A Picturesque Pythagorean Proof,8.G.B.6
+4539,Boxing Up Harry's Broom,8.G.B.7
+5247,Snail's Trail,8.G.B.7
+3255,TV Dimensions,8.G.B.7
+3387,Four Point Puzzle,8.G.B.8
+5235,The Coordinated Quadrilateral,8.G.B.8
+4575,Lotsa Popcorn!,8.G.C.9
+1623,The Sun vs. The Earth,8.G.C.9
+16027,"Well, Well, Well",8.G.C.9
+5308,The ABCs of Exponents,"HSA.SSE.B,HSA.CED.A.3,HSA.CED.A.4"
+4672,Alvin's Theorem,"HSA.SSE.A.2,HSA.CED.A.2,HSA.CED.A.3"
+16012,Apple Orchard,"7.RP.A.1,7.RP.A.2,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.C.5"
+17024,Are You Positive?,"HSA.SSE.A.2,HSA.SSE.B.3"
+3520,Are You Ready for Some Football?,"8.EE.C.7,HSA.CED.A.1"
+4504,Baffling Brother,"7.EE.B.3,HSA.REI.A.1"
+3172,Battle of the Bands,"8.EE.C.7,HSA.CED.A.3,HSA.REI.A.1"
+5284,Bouncing Ball,"8.EE.C.7,HSA.SSE.B.3,HSA.APR.D.6,HSA.CED.A.3,HSA.CED.A.4"
+3220,Bowling Buddies,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.2"
+4528,Boxes of Cereal,"HSA.CED.A.1,HSA.REI.A.1,HSA.REI.B.3"
+17043,Building a Bakery,"HSA.CED.A.1,HSA.SSE.B.3"
+3352,Buried Treasure,"HSA.CED.A.1,HSA.CED.A.3,HSA.REI.B.3"
+3916,Calendar Calculations,"8.EE.C.8.b,HSA.REI.A.1,HSA.REI.C.6"
+5164,A Championship Season,"8.EE.C.7,HSA.CED.A.1"
+4084,Cheap Sunglasses,"HSA.SSE.B.3,HSF.IF.C.8,HSF.IF.C.8.b"
+3016,Cherokee Creek Checkers Club,"8.EE.C.7,HSA.CED.A.1"
+3724,The Coordinate Carousel,"HSA.CED.A.3,HSA.REI.C.6"
+3040,Count Your Change,"7.RP.A.3,HSA.CED.A.1"
+4648,Crossed Wires,"HSA.CED.A.1,HSA.CED.A.2,HSA.REI.C.6"
+556,The Custom of Customs,"8.EE.C.8.c,HSA.CED.A.2,HSA.REI.B.3"
+3952,Dinner at Pepe's,"8.EE.C.7,HSA.CED.A.1,HSA.REI.A.1"
+736,Don't Be Square,HSA.CED.A.4
+5116,Eating Contest,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.A.1,HSA.REI.B.3"
+16005,Eduardo's Equation Challenge,"8.EE.C.7,HSA.SSE.A.2,HSA.SSE.B.3"
+3940,Examining the Equation,"8.EE.C.7,HSA.CED.A.4"
+5320,Factor Bingo,"HSA.SSE.A.2,HSA.SSE.B.3"
+4696,Family Fun,"HSA.CED.A.2,HSA.CED.A.3,HSA.REI.C.6"
+5296,Field Trip,"8.EE.C.7,HSA.SSE.B.3,HSA.CED.A.1,HSA.CED.A.2,HSA.CED.A.3"
+5104,Filling Glasses,"8.F.B.4,HSA.SSE.A.1.a,HSF.IF.B.6"
+4576,Flying off the Shelves,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.3"
+17060,Fraction Action,"8.EE.C.7,HSA.SSE.A.2,HSA.APR.D.6,HSA.CED.A.4"
+5260,Fraction Debate,"8.EE.C.7,HSA.SSE.B.3"
+4000,From Here to There,"7.EE.A.1,7.EE.B.3,HSA.SSE.A.1"
+4096,The Great Northern Triathlon,"HSA.APR.D.6,HSA.CED.A.3,HSA.CED.A.4"
+3604,Heating the Tub,"HSA.CED.A.2,HSA.REI.B.3"
+5176,How Many Ties?,"8.EE.C.7,HSA.CED.A.1,HSA.REI.A.1,HSA.REI.B.3"
+3316,Johnny's Orchards,"8.EE.C.7,HSA.CED.A.3,HSA.REI.C.6"
+3148,The Joke,"HSA.SSE.B.3,HSA.SSE.B.3.c,HSA.CED.A.1"
+2704,Kristina's Code,"8.EE.C.8.b,HSA.REI.A.1,HSA.REI.C.6"
+4612,Laser Tag,"HSA.CED.A.4,HSA.REI.A.2"
+1000,The Length of Larry's Rectangle,"HSA.SSE.B.3.a,HSA.SSE.B.3.b,HSA.CED.A.1"
+4600,Let it Snow!,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.3"
+652,Lettuce for Sale,"8.EE.C.7,HSA.CED.A.1,HSA.SSE.B.3"
+17034,Line Logic,"8.EE.C.7,HSA.REI.B.3"
+3160,Lost in Mathland,"HSA.CED.A.3,HSA.CED.A.4,HSA.REI.A.1"
+17070,Many or Money,"8.EE.C.8.c,HSA.SSE.B.3,HSA.CED.A.2,HSA.CED.A.3"
+3076,Marathon Mitch,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.3,HSA.REI.B.3"
+4036,Math Club Mystery,"HSA.REI.B.3,HSA.REI.C.6"
+2968,Mind Reading,"8.EE.C.7,HSA.SSE.A.2,HSA.CED.A.1"
+2752,My Three Dogs,"8.EE.C.8.b,HSA.REI.A.1,HSA.REI.C.6"
+2956,Operation Warm Up,"7.EE.A.1,7.EE.B.3,HSA.SSE.A.1.a"
+544,Perfect Apples,"7.EE.B.3,HSA.REI.A.1"
+3280,A Phone-y Deal,"HSA.CED.A.1,HSA.CED.A.3"
+4588,Pizza Puzzle,"HSA.CED.A.1,HSA.CED.A.3"
+5272,Polynomial Power,"HSA.SSE.B.3,HSA.APR.A.1"
+3412,Poolish Pride?,"HSA.CED.A.3,HSA.CED.A.4,HSA.REI.A.1"
+3124,Pressed for Time,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.3"
+16987,Ration Ratios,"8.EE.C.7,HSA.SSE.A.2,HSA.CED.A.1"
+1972,Ships Ahoy!,"8.EE.C.7,HSA.CED.A.1"
+5128,Sierpinski's Stages,"8.EE.C.7,HSA.SSE.B.4,HSA.CED.A.1,HSA.REI.A.1"
+5200,A Slippery Slope,"6.EE.B.5,HSA.CED.A.1,HSA.CED.A.3"
+3928,Splash!,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.A.1,HSA.REI.B.3"
+2020,Splitting a Square,"HSA.CED.A.2,HSA.REI.B.3"
+3244,A Surprising Sequence,"HSA.CED.A.1,HSA.SSE.B.3"
+1720,Susita's Savings Account,"8.EE.C.7,HSA.CED.A.1"
+5248,Swapping Marbles,"8.EE.C.7,HSA.CED.A.3,HSA.CED.A.4"
+5212,Symbol Logic,"6.EE.B.5,HSA.CED.A.1,HSA.CED.A.3"
+16011,Take Me Out to the Ballgame,"7.RP.A.1,7.RP.A.2,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.C.5"
+4636,Teeter Trio,"HSA.CED.A.1,HSA.CED.A.4"
+4660,Teeter Troop,"8.EE.C.8.c,HSA.CED.A.2,HSA.CED.A.3,HSA.REI.C.6"
+4552,Teeter-Toddlers,"8.EE.C.7,HSA.CED.A.1"
+616,Tennis Anyone?,"8.EE.C.7,HSA.CED.A.1"
+16990,"Texting 1, 2, 3","HSA.SSE.B,HSA.CED.A.1,HSA.CED.A.3,HSS.ID.C.7"
+4684,That's Interesting!,"HSA.CED.A.2,HSA.SSE.B.4"
+3004,Time Trial Triumphs,"8.EE.C.7,HSA.CED.A.1,HSA.REI.A.1"
+5140,To B or Not to B,"8.EE.C.7,HSA.CED.A.1,HSA.SSE.A.1.a"
+17057,Triangle Possibilities,"HSA.CED.A.1,HSA.CED.A.3,HSA.REI.B.3"
+4564,Tribonacci Tribulation,"8.EE.C.7,HSA.CED.A.1,HSA.REI.A.1"
+5188,Two by Canoe,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.A.1"
+4624,A Variable Triangle,"HSA.CED.A.1,HSA.CED.A.3"
+3988,Vexing Variables,"HSA.SSE.A.2,HSA.SSE.B.3,HSA.CED.A.4"
+3256,Voter Turnout,"7.EE.A.1,7.EE.B.3,HSA.SSE.A.1.a"
+3100,What Time Is It?,"HSA.CED.A.1,HSA.SSE.B.3"
+3976,What's the Difference?,"8.EE.C.7,HSA.CED.A.1,HSA.CED.A.2,HSA.REI.A.1,HSA.REI.B.3"
+3712,What's the Point?,"HSA.CED.A.2,HSA.CED.A.3,8.G.B.8"
+2992,What's the Temperature?,"HSA.REI.B.3,HSA.REI.C.6"
+3568,Wreck Tangle,"HSA.CED.A.1,HSA.REI.A.1"
+1384,'Ace' Trotter,HSA.CED.A.1
+976,Adrienne's Axel,"HSA-CED.A.3,HSF-BF.A.1.a,HSF-LE.A.2"
+712,All Wet,"HSA-REI.B.4.a,HSA-REI.B.4.b,HSA-REI.C.7,HSF-IF.C.8.a,HSG-SRT.C.8"
+3700,Ancestors,"HSA-SSE.B.3.c,HSA-CED.A.1,HSA-CED.A.3,HSF-IF.C.8.b,HSF-BF.A.1.a,HSF-LE.A.1.a,HSF-LE.A.1.c"
+2056,Ant Race,"HSG-SRT.C.6,HSG-SRT.C.8"
+1552,At Least This Many,"HSA-CED.A.2,HSA-CED.A.3,HSF-IF.B.4,HSF-BF.A.1.a,HSF-LE.A.2"
+3676,Blowin' in the Wind,"HSA.APR.D.6, HSA.CED.A.1"
+4024,Bowl-O-Rama,"HSA-CED.A.2,HSA-CED.A.3,HSF-IF.B.4,HSF-BF.A.1.a,HSF-LE.A.2"
+2884,Burger Inflation?,"HSA-CED.A.2,HSA-CED.A.3,HSF-BF.A.1.a,HSF-LE.A.2"
+3616,Capture the Flag,"HSA-CED.A.2,HSA-CED.A.3,HSF-BF.A.1.a,HSF-LE.A.2,HSG-GPE.B.5"
+3232,Carlita's CD Collection,"HSA-CED.A.1,HSA-REI.A.1,HSA-REI.B.3,HSF-BF.A.1.a"
+460,The Chip Swap Game,"HSA-CED.A.1,HSA-CED.A.3,HSF-BF.A.1.a"
+3340,Choosing Charity,"7.RP.A.2.b,8.EE.B.6,8.F.A.3,8.F.B.4"
+988,The Christmas Gifts,"HSA-REI.B.4.b,HSA-REI.C.7"
+604,The Continued Fraction,"HSA-CED.A.1,HSA-CED.A.3,HSA-REI.B.4.a,HSA-REI.B.4.b,HSF-BF.A.1.a"
+2872,Copying Conundrum,"HSA-SSE.B.3.c,HSF-IF.C.8.b,HSF-BF.A.1.a,HSF-BF.A.2,HSF-LE.A.1.a,HSF-LE.A.1.c"
+940,A Day at the Fairs,"HSA-CED.A.1,.HSA-REI.A.1,HSA-REI.B.3,HSF-BF.A.1.a"
+1504,Diego's Building Blocks,HSA.CED.A.4
+904,"A Dog, A Hog, and a Frog",HSA.REI.C.6
+1564,Donald Duck's Trip,"HSA-CED.A.2,HSA-CED.A.3,HSF-IF.B.4,HSF-BF.A.1.a,HSF-LE.A.2"
+1456,Dot.Com Derby,"HSG.C.B.5, HSF.TF.A.1"
+2800,Driving to Work,"HSA-CED.A.2,HSA-CED.A.3,HSA-REI.C.6,HSF-BF.A.1.a"
+4108,Elbert's Equation,"HSA-SSE.A.2,HSA-SSE.B.3.a,HSA-REI.B.4.b,HSF-IF.C.8.a"
+724,Escalation,"HSA-CED.A.3,HSA-REI.C.6"
+1072,The EV Function,"HSF.IF.A.1, HSF.IF.A.2"
+3088,An Expanding Circle,HSG-GMD.A.1
+2716,Explaining a Number Trick,"HSA-CED.A.1,HSA-CED.A.2,HSA-CED.A.3,HSF-BF.A.1.a"
+1612,Filling the Aquarium,"HSA-CED.A.1,HSA-REI.A.1,HSA-REI.B.3,HSF-IF.B.6,HSF-BF.A.1.a"
+1912,Finding a Two-Digit Number,"HSA-CED.A.3,HSA-REI.C.6,HSF-BF.A.1.a,HSF-LE.A.2"
+1300,Flatland Soldiers,"HSA-REI.C.6,HSG-CO.C.10"
+844,Fording the River,"HSA-CED.A.1,HSA-REI.A.1,HSA-REI.B.3,HSF-BF.A.1.a"
+964,Four Men and Some Money,"HSA-CED.A.3,HSF-BF.A.1.a,HSF-LE.A.2"
+628,The Function Challenge,HSF-BF.A.1.c
+1624,Going for the Gold,HSA.REI.C.9
+1132,The Great One,"HSA-CED.A.1,HSA-REI.A.1,HSA-REI.B.3,HSF-BF.A.1.a"
+1768,Highway Miles,"HSA-CED.A.3,HSA-REI.C.6,HSF-BF.A.1.a,HSF-LE.A.2"
+3892,Hiking Mount Hood,"HSF-IF.B.4,HSF-IF.C.7.b,HSF-LE.B.5"
+4012,Hole in One!,"8.EE.B.6, HSA.REI.C.6"
+3592,Holiday Dance,"HSA-CED.A.3,HSA-REI.C.5,HSA-REI.C.6,HSA-REI.D.11"
+1324,How High Is Enough?,"8.G.B.7, HSA.CED.A.3, HSA.REI.C.7"
+688,Humphrey's Great Escape,"HSA-CED.A.2,HSA-CED.A.3,HSA-REI.D.10,HSF-IF.B.4,HSF-BF.A.1.a"
+2740,Jimmy's Hits,"HSA-CED.A.1,HSA-REI.A.1,HSA-REI.B.3,HSF-BF.A.1.a"
+820,Judy and Jen's Garden Problem,"HSG-SRT.C.6,HSG-SRT.C.8"
+3364,Letter Jackets,HSA-REI.D.12
+1528,Lieutenant Stone's Troops,"HSA-CED.A.2,HSA-CED.A.3,HSF-BF.A.1.a"
+3556,Make the Save!,"HSA.REI.A.2, HSA.CED.A.1"
+3136,Making Triangles,"HSA-CED.A.1,HSA-CED.A.3,HSA-REI.B.3,HSG-CO.C.10"
+3904,Math on the Midway,"HSF-IF.A.3,HSF-BF.A.1.a,HSF-BF.A.2"
+2896,Maxwell's Mowing,"HSA.CED.A.1, HSA.REI.B.4.b"
+1576,Midpoint Magic,"HSA-REI.A.1,HSG-GPE.B.5,HSG-GPE.B.6,HSG-GPE.B.7"
+1228,Milly Miffin's Muffins,"HSA-CED.A.2,HSA-CED.A.3,HSF-BF.A.1.a"
+1539,Dilating a Quadrilateral,8.G.A.3
+4599,Beach Boys,8.G.A.4
+3543,So Many Similar Triangles,8.G.A.4
+3495,Integer Triangle Angles,8.G.A.5
+3675,Building a Regular Hexagon,8.G.B.7
+4683,Leaning Ladder,8.G.B.7
+5103,Divided Rectangle,HSA.CED.A.2
+2967,Finding a Supplement,HSA.SSE.B.3.a
+1215,As Far as the Eye Can See,HSG.C.A.2
+3687,Broken Pottery,HSG.C.A.2
+4647,Measuring Cylinders,HSG.C.A.2
+17050,Off on a Tangent,HSG.C.A.4
+5151,A Minor Problem,HSG.C.B.5
+5175,Pythagorean Circles,HSG.C.B.5
+2739,Precision Paper Folding,HSG.CO.B.6
+879,Save the Lake!,HSG.GMD.A.3
+3051,Ants Marching,HSG.GMD.B.4
+3927,Fitting In,HSG.GMD.B.4
+5319,In a Pickle,HSG.MG.A.3
+4623,Voulez Vous des Voussoirs?,HSG.MG.A.3
+5271,Pondering Pantographs,"HSG.SRT.A.1, HSG.SRT.B.5"
+17058,How Long is the Base?,HSG.SRT.B.5
+4659,Kyle's Similar Triangles,HSG.SRT.B.5
+4635,Making a Map,HSG.SRT.B.5
+2907,A Carpenter's Trisection,HSG.SRT.B.5
+2883,Square in a Right Triangle,HSG.SRT.B.5
+4719,Why Does This Construction Work?,HSG.SRT.B.5
+2919,Arc to Area,HSG.SRT.C.8
+3699,Field of View,HSG.SRT.C.8
+5295,Flying High,HSG.SRT.C.8
+3039,Nautical Navigation,HSG.SRT.C.8
+17067,Pisa's Lean,HSG.SRT.C.8
+3147,The Perimeter of an Octagon,HSG.SRT.C.8
+2871,Fix This Picture,"HSG.SRT.C.8, HSG.C.A.2"
+735,A Circle Inscribed in an Isosceles Triangle,"HSG.SRT.C.8, HSG.C.A.2"
+4707,"Spring Up, Fall Back","HSG.SRT.C.8, HSG.SRT.D.11"
