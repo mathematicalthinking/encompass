@@ -12,6 +12,9 @@ require('dotenv').config();
 
 const imgDirRoot = '/Users/davidtaylor/Documents/synched_21/mathematicalThinking/EnCoMPASS/data/pow_images/'
 const answerDirRoot = '/Users/davidtaylor/Documents/synched_21/mathematicalThinking/EnCoMPASS/data/jpuzzler-uploads/'
+// // no good trying to run this with image loading on server. It ran out of room with these file on it.
+// const imgDirRoot = '../data/pow_images/'
+// const answerDirRoot = '../data/jpuzzler-uploads/'
 
 async function allPuzzlesLoop(pgClient, pows_user, errorStream) {
   console.log(`Starting allPuzzlesLoop `);
@@ -736,7 +739,7 @@ function insertImagesIntoAnswers(text, errorPublicStream, errorPrivateStream, pr
 async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream) {
   console.log(`Starting createAnswersFromPows `);
   let addCount = 0;
-  let updateCount = 0;
+  let skipCount = 0;
   let publicCount = 0;
   let privateCount = 0;
   let answerWithImages = 0;
@@ -744,14 +747,14 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
   try {
     // try does not catch postgres server not running
     // ToDo - try .then() to catch promise
-    const res = await pgClient.query(`select * from pow_submissions ps offset 0;`);
+    const res = await pgClient.query(`select * from pow_submissions ps;`);
     // const res = await pgClient.query(`select ps.id from pow_submissions ps inner join pow_uploaded_files up on up.id = ps.uploaded_file_id offset 0;`);
     // get pow puzzle ids for looping (with multiple promises).
     const resIds = res.rows.map(d => d.id)
     console.log(`There are ${resIds.length} resIds`)
     for (let id of resIds) {
-      console.log(`------------------------------`);
-      console.log(`createAnswersFromPows POWs response id: ${id}`);
+      // console.log(`------------------------------`);
+      // console.log(`createAnswersFromPows POWs response id: ${id}`);
       const powsSubs = await pgClient.query(`select
       pz.id as puzzleId, pb.publicationlivedate as pubDate,
       pb.solutiontype as pubType, pb.commentary as pubCommentary,
@@ -794,7 +797,7 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
             }
             encAnswer = answers[0];
             // console.log(`found answer for POWs submission ID: ${encAnswer.powsSubmId}`);
-            updateCount += 1;
+            skipCount += 1;
             // const updDescription = insertImagesIntoAnswers(powSub.longanswer, errorPublicStream, errorPrivateStream, problem);
             // if (updDescription !== '') {
             //   console.log(`description from ${powSub.longanswer} to ${updDescription.substring(0,50)}`)
@@ -821,11 +824,13 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
             // console.log(`encAnswer.notes: ${encAnswer.notes.substring(0,50)}`)
             // console.log(`encAnswer createdBy: ${encAnswer.createdBy}, createDate: ${encAnswer.createDate}, problem: ${encAnswer.problem}, studentNames: ${encAnswer.studentNames}, isSubmitted: ${encAnswer.isSubmitted}, powsSubmId ${encAnswer.powsSubmId}`)
             addCount += 1;
+
+            /* following code has been commented out to run on the server without image updates
             // console.log(`\n------------------------------------------------------------`);
             // console.log(`Initial Short Answer: ${powSub.shortanswer}`);
             const updAnswer = insertImagesIntoAnswers(powSub.shortanswer, errorPublicStream, errorPrivateStream, problem);
             if (updAnswer !== '') {
-              console.log(`answer from ${powSub.shortanswer} to ${updAnswer.substring(0,50)}`)
+              // console.log(`answer from ${powSub.shortanswer} to ${updAnswer.substring(0,50)}`)
               powSub.shortanswer = updAnswer;
               answerWithImages += 1;
             }
@@ -852,27 +857,26 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
                 encAnswer.explanation = `<div id="origAnswer">${powSub.longanswer}</div><div id="uploadedImg"><img src="${imgRet.imgB64}"/></div>`
               }
             }
-            console.log(`\n------------------------------------------------------------`);
-            console.log(`Updated Long Answer with Upload: ${powSub.longanswer}`);
+            // console.log(`\n------------------------------------------------------------`);
+            // console.log(`Updated Long Answer with Upload: ${powSub.longanswer}`);
+             */
             try {
               await encAnswer.save();
-              console.log(encAnswer.powsSubmId + " saved.");
+              // console.log(encAnswer.powsSubmId + " saved.");
             } catch (err) {
               console.error(`ERROR saving ${encAnswer.subId} - ${err}`);
             }
           }
         } else {
-          // no KenKen problems were copied over
-          if (!pow.title.includes("KenKen")) {
-            console.error(`Error?? Missing Problem??`)
-          }
+          // if no problem, then we do not want an answer (we dropped KenKen problems)
+          skipCount += 1;
         }
-        console.log(`\n------------------------------------------------------------`);
-        console.log(`answer ${encAnswer.powsSubmId} to problem "${problem.title}"`)
+        // console.log(`\n------------------------------------------------------------`);
+        // console.log(`answer ${encAnswer.powsSubmId} to problem "${problem.title}"`)
       }
       // feedback mechanism to indicate progress on conversion
-      if ( ((addCount+updateCount) % 1000) === 0) {
-        console.log(`processed ${addCount+updateCount} records`)
+      if ( ((addCount+skipCount) % 1000) === 0) {
+        console.log(`processed ${addCount+skipCount} records`)
       }
     }
   } catch (err) {
@@ -881,7 +885,7 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
   console.log(`createAnswersFromPows ${answerWithImages} answers with images`);
   console.log(`createAnswersFromPows ${descWithImages} descriptions with images`);
   console.log(`createAnswersFromPows ${addCount} adds`);
-  console.log(`createAnswersFromPows ${updateCount} updates`);
+  console.log(`createAnswersFromPows ${skipCount} updates`);
   console.log(`createAnswersFromPows ${publicCount} Public Answers`);
   console.log(`createAnswersFromPows ${privateCount} Private Answers`);
   console.log(`-------------------`);
