@@ -104,18 +104,6 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     return similarOrgs;
   },
 
-  testSS: function() {
-    let org = this.get('org');
-    console.log('org', org);
-    if (!org) {
-      org = '';
-    }
-    let similarity = this.get('similarity');
-    return similarity.compareTwoStrings('Drexel University', org);
-    // return this.get('similarity.compareTwoStrings')('Drexel University', org);
-
-  }.property('org'),
-
   orgOptions: function() {
     let orgs = this.get('organizations');
     let toArray = orgs.toArray();
@@ -306,15 +294,61 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
     },
 
-    processOrgRequest(input) {
+    processOrgRequest(input, callback) {
       console.log('input',input);
 
       let similarOrgs = this.getSimilarOrgs(input);
-      console.log('similarORgs', similarOrgs);
-      return {
+      let modalSelectOptions = {};
+
+
+      if (similarOrgs.get('length') > 0) {
+        console.log('similarORgs', similarOrgs);
+        let text = `Are you sure you want to submit a new organization request for ${input}? We found ${similarOrgs.get('length')} organizations with similar names.`;
+        for (let org of similarOrgs) {
+          let id = org.get('id');
+          let name = org.get('name');
+          modalSelectOptions[id] = name;
+        }
+        modalSelectOptions[input] = `Yes, I am sure I want to create ${input}`;
+        console.log('options', modalSelectOptions);
+
+        this.get('alert').showPromptSelect('Similar Orgs Found', modalSelectOptions, 'Choose existing org or confirm initial request', text)
+        .then((result) => {
+          if (result.value) {
+            // user confirmed org request
+            if (result.value === input) {
+              this.set('didConfirmOrgRequest', true);
+              this.set('orgRequest', input);
+              let ret = {
+                name: input,
+                id: input
+              }
+              return callback(ret);
+            }
+            console.log('result.value', result.value);
+            // user selected an existing org
+            this.$('select')[0].selectize.setValue(result.value, true);
+            this.$('select')[0].selectize.removeOption(input);
+            return callback(null);
+
+          } else {
+            // user hit cancel
+            // remove option from dropdown
+            this.$('select')[0].selectize.removeOption(input);
+            return callback(null);
+          }
+        });
+      }
+      // no similar orgs, create org request
+      let ret = {
         name: input,
         id: input
-      }
+      };
+      this.set('orgRequest', input);
+
+      return callback(ret);
+
+
     }
   }
 });

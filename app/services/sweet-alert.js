@@ -66,7 +66,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
     });
   },
 
-  showPromptSelect: function(title, inputOptions, inputPlaceholder) {
+  showPromptSelect: function(title, inputOptions, inputPlaceholder, text=null) {
     return window.swal({
       input: 'select',
       title,
@@ -75,7 +75,10 @@ Encompass.SweetAlertService = Ember.Service.extend({
       showCancelButton: true,
       inputValidator: (value) => {
         return !value && 'Please choose a reason for flagging this problem.';
-      }
+      },
+      text
     });
   },
+
+
 });
