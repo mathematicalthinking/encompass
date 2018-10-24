@@ -80,16 +80,54 @@
       {{#if showCats}}
         <p class="info-content-label">Problem Categories</p>
         <div class="info-content-block">
-          {{#if problem.categories}}
-            <ul>
-              {{#each problem.categories as |category|}}
-              <li>
-                <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
-              </li>
-              {{/each}}
-            </ul>
+          {{#if isEditing}}
+            {{#if problem.categories}}
+              <ul>
+                {{#each problem.categories as |category|}}
+                  <li>
+                    <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
+                    <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
+                  </li>
+                {{/each}}
+              </ul>
+              {{#unless showCategories}}
+              <div class="button-row-list">
+                <button {{action 'showCategories'}}>Add Categories</button>
+              </div>
+              {{/unless}}
+              {{#if showCategories}}
+              <div class="button-row-list">
+                <button {{action 'showCategories'}}>Hide Categories</button>
+              </div>
+              {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+              {{/if}}
+            {{else}}
+              {{#unless showCategories}}
+                <div class="button-row">
+                  <button {{action 'showCategories'}}>Add Categories</button>
+                </div>
+              {{/unless}}
+              {{#if showCategories}}
+                <div class="button-row">
+                  <button {{action 'showCategories'}}>Hide Categories</button>
+                </div>
+                {{#if categoryTree}}
+                  {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                {{/if}}
+              {{/if}}
+            {{/if}}
           {{else}}
-            No Problem Categories
+            {{#if problem.categories}}
+              <ul>
+                {{#each problem.categories as |category|}}
+                <li>
+                  <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
+                </li>
+                {{/each}}
+              </ul>
+            {{else}}
+              No Problem Categories
+            {{/if}}
           {{/if}}
         </div>
         <p class="info-content-label">Problem Keywords</p>

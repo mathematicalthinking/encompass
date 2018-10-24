@@ -76,6 +76,12 @@
   .side-info-menu {
     position: relative;
     padding: 0 20px;
+    a {
+      color: $accent-color;
+    }
+    li {
+      line-height: 1.5em;
+    }
     .info-details {
       position: relative;
       margin: 30px 0;
@@ -144,6 +150,10 @@
           }
           img {
             width: auto;
+          }
+          .remove-cat {
+            font-size: .8em;
+            cursor: pointer;
           }
           .additional-image {
             width: 80%;
