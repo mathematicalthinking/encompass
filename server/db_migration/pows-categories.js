@@ -154,7 +154,7 @@ async function migrate() {
       let idents = json[key].categories;
       json[key].categoryIds = await mapIdentifiersToCategoryIds(idents);
       if (_.contains(json[key].categoryIds, undefined)) {
-        console.log('includes null', json[key]);
+        console.log('includes undef', json[key]);
       }
 
       let puzzleId = json[key].puzzleId;
@@ -166,7 +166,7 @@ async function migrate() {
     console.log(`Number of missing identifiers: ${missingIdentifiers.length}`);
     console.log(`Number of missing puzzles: ${missingPuzzles.length}`);
     console.log(`Number of duplicate categorys: ${duplicateCategories.length}`);
-
+    console.log('done!');
   }catch(err) {
     console.log('err migrate', err);
   }
