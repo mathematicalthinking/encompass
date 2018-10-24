@@ -27,7 +27,6 @@
   }
 }
 
-
 .side-info {
   .fa-globe-americas {
     color: $accent-color;
@@ -154,6 +153,9 @@
           .remove-cat {
             font-size: .8em;
             cursor: pointer;
+          }
+          #categories {
+            margin-top: 15px;
           }
           .additional-image {
             width: 80%;

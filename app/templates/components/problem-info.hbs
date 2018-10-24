@@ -96,10 +96,10 @@
               </div>
               {{/unless}}
               {{#if showCategories}}
-              <div class="button-row-list">
-                <button {{action 'showCategories'}}>Hide Categories</button>
-              </div>
-              {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+                <div class="button-row-list">
+                  <button {{action 'showCategories'}}>Hide Categories</button>
+                </div>
+                {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
               {{/if}}
             {{else}}
               {{#unless showCategories}}
