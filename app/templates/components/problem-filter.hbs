@@ -1,7 +1,7 @@
 <div class="filter-items">
   <h2>Filter Options</h2>
   <h3>Primary Filters</h3>
-  <ul>
+  <ul class="primary-filter-list">
     {{#each primaryFilterOptions as |input|}}
       <li>
         {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
@@ -35,4 +35,25 @@
     {{/each}}
   </ul>
 
+  <h3>Category</h3>
+  <ul class="category-filter-list">
+    <li>
+      Search by {{my-select}}
+      {{input type="text" placeholder="Search by"}}
+    </li>
+    <li>
+      <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
+    </li>
+  </ul>
 </div>
+
+
+{{#if showCategoryList}}
+  <div id="category-list-modal">
+    <div class="modal-content">
+      <h4>Select a Category</h4>
+      <button class="close" {{action 'closeModal'}}><i class="fas fa-times"></i></button>
+      {{categories-menu categories=categoryTree store=store addCategories="searchCategory"}}
+    </div>
+  </div>
+{{/if}}
