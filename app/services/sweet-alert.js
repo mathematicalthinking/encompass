@@ -77,6 +77,5 @@ Encompass.SweetAlertService = Ember.Service.extend({
         return !value && 'Please choose a reason for flagging this problem.';
       }
     });
-  }
-
+  },
 });
