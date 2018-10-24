@@ -47,13 +47,13 @@ puzzleId,title,identifiers
 3767,Apple Celebration,"1.OA.A.1, 6.EE.C.9"
 4031,Playing Cards,1.OA.A.1
 3623,Playground Fun,1.OA.A.2
-3731,Bat-tastic!,"1.OA.A.2, 1.OA.C.6,1.NBT.C.4, 6.EE.C.6"
+3731,Bat-tastic!,"1.OA.A.2, 1.OA.C.6,1.NBT.C.4"
 3707,Field Day,"1.OA.A.2,1.NBT.C.4"
 4787,Counting Comics,"1.OA.A.2,1.OA.A.2,1.NBT.C.4"
 4043,Snack Time!,"1.OA.A.2,1.OA.B.4,1.OA.C.6,1.NBT.C.4"
 4139,Puppies for Sale,"1.OA.A.2,1.OA.B.4,1.OA.C.6,1.NBT.C.4"
 3335,Flower Fun,"1.OA.A.2,1.OA.C.6,1.NBT.C.4"
-3347,Jordan's Jobs,"1.OA.A.2,1.OA.C.6,1.NBT.C.4, 6.EE.C.6"
+3347,Jordan's Jobs,"1.OA.A.2,1.OA.C.6,1.NBT.C.4"
 4895,Donut Sale,"1.OA.A.2,1.OA.C.6,1.NBT.C.4"
 3395,Number Fun,"1.OA.B.4,1.OA.C.6"
 4055,Yummy Gummy Bears,"1.OA.B.4,1.OA.C.6"
@@ -84,7 +84,7 @@ puzzleId,title,identifiers
 3227,Winter Is Coming!,2.NBT.B
 3851,Back to School,2.NBT.B
 3875,Pinecones,2.NBT.B
-4259,Trolls and Dogs,"2.NBT.B, 6.EE.C.6"
+4259,Trolls and Dogs,"2.NBT.B"
 4931,Dog Packs,2.NBT.B
 5027,Charlie's Gumballs,"2.NBT.B, 3.NF.A.1, 6.RP.A.1, 7.EE.B.4"
 5063,At the Fair,2.NBT.B
@@ -96,7 +96,7 @@ puzzleId,title,identifiers
 3803,Reading Superstars,"2.OA.B.2,2.NBT.B"
 4187,Catching Minnows,"2.OA.B.2,2.NBT.B"
 4211,Picture This,"2.OA.B.2,2.NBT.B"
-4247,How Far Will Taylor Run?,"2.OA.B.2,2.NBT.B, 6.EE.C.6"
+4247,How Far Will Taylor Run?,"2.OA.B.2,2.NBT.B"
 3887,Bubblegum,2.OA.C.3
 3263,A Trip to the Ballpark,"2.OA.C.4,2.NBT.B"
 16002,Pooling Tips,"3.OA.A.3,3.OA.D.8,4.OA.A.3,5.OA.A.2"
