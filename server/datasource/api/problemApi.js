@@ -280,7 +280,6 @@ const getProblems = async function(req, res, next) {
       sortParam = sortBy.sortParam;
       doCollate = sortBy.doCollate;
     }
-    console.log('filterBy before crit', filterBy);
     const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
     let results, itemCount;
 

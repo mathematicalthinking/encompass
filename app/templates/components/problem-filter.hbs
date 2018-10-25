@@ -39,12 +39,12 @@
   {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}}
   <label>Include Subcategories</label>
   <ul class="category-filter-list">
-    <h5>Selected Category Filters</h5>
-    {{#each categoriesFilter as |category|}}
-      <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
-    {{else}}
-      <p>No categories selected. Click 'Show Category Menu' to view the Category Explorer.</p>
-    {{/each}}
+    {{#if categoriesFilter}}
+      <h5>Selected Category Filters</h5>
+      {{#each categoriesFilter as |category|}}
+        <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
+      {{/each}}
+    {{/if}}
     {{!-- <li>
       Search by {{my-select}}
       {{input type="text" placeholder="Search by"}}

@@ -161,6 +161,9 @@
           .remove-cat {
             font-size: .8em;
             cursor: pointer;
+            background: none;
+            border: none;
+            color: $primary-font-color;
           }
           #categories {
             margin-top: 15px;
