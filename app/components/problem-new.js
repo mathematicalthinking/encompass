@@ -182,6 +182,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
+              if (err.errors[0].detail === "There is already an existing public problem with that title.") {
+                this.send('showGeneral');
+              }
                 that.handleErrors(err, 'createProblemErrors', createProblemData);
               });
           });
@@ -196,6 +199,9 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
+          if (err.errors[0].detail === "There is already an existing public problem with that title.") {
+            this.send('showGeneral');
+          }
           that.handleErrors(err, 'createProblemErrors', createProblemData);
         });
       }
