@@ -219,6 +219,49 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       this.send('toProblemInfo', problem);
     },
 
+    addToMyProblems: function () {
+      let problem = this.get('problem');
+      let originalTitle = problem.get('title');
+      let title = 'Copy of ' + originalTitle;
+      let text = problem.get('text');
+      let additionalInfo = problem.get('additionalInfo');
+      let isPublic = problem.get('isPublic');
+      let image = problem.get('image');
+      let imageUrl = problem.get('imageUrl');
+      let createdBy = this.get('currentUser');
+      let categories = problem.get('categories');
+      let status = problem.get('status');
+      let currentUser = this.get('currentUser');
+      let organization = currentUser.get('organization');
+
+      let newProblem = this.store.createRecord('problem', {
+        title: title,
+        text: text,
+        additionalInfo: additionalInfo,
+        imageUrl: imageUrl,
+        isPublic: isPublic,
+        origin: problem,
+        categories: categories,
+        createdBy: createdBy,
+        image: image,
+        organization: organization,
+        privacySetting: "M",
+        status: status,
+        createDate: new Date()
+      });
+
+      newProblem.save()
+        .then((problem) => {
+          let name = problem.get('title');
+          this.set('savedProblem', problem);
+          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+        }).catch((err) => {
+          console.log('err is', err);
+          this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+          // this.handleErrors(err, 'createRecordErrors', newProblem);
+        });
+    },
+
     toProblemInfo(problem) {
       this.get('toProblemInfo')(problem);
     },

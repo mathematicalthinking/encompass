@@ -34,9 +34,9 @@
         {{/if}}
       {{else}}
         {{#if (is-equal problem.status 'pending')}}
-          <button class="primary-button" {{action "create Assignment"}}>Add</button>
+          <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
         {{else}}
-          <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+          <button class="primary-button" {{action "assignProblem"}}>Assign</button>
         {{/if}}
       {{/if}}
     </div>
@@ -73,8 +73,8 @@
         <span class="click-menu">
           <ul>
             {{#each ellipsisMenuOptions as |option|}}
-            <li>
-              <label {{action option.action}}>
+            <li {{action option.action}}>
+              <label>
                 {{option.label}}
                 <i class={{option.icon}}></i>
               </label>
@@ -117,9 +117,9 @@
           {{/if}}
         {{else}}
           {{#if (is-equal problem.status 'pending')}}
-            <button class="primary-button" {{action "create Assignment"}}>Add</button>
+            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
           {{else}}
-            <button class="primary-button" {{action "create Assignment"}}>Assign</button>
+            <button class="primary-button" {{action "assignProblem"}}>Assign</button>
           {{/if}}
         {{/if}}
       </div>

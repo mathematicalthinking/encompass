@@ -437,6 +437,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let createdBy = this.get('currentUser');
       let categories = problem.get('categories');
       let status = problem.get('status');
+      let currentUser = this.get('currentUser');
+      let organization = currentUser.get('organization');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
@@ -448,6 +450,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         categories: categories,
         createdBy: createdBy,
         image: image,
+        organization: organization,
         privacySetting: "M",
         status: status,
         createDate: new Date()
