@@ -49,6 +49,17 @@ Encompass.SearchBarComponent = Ember.Component.extend({
 
   actions: {
     clearResults: function () {
+      let textVal = this.get('inputValue');
+      let isString = _.isString(textVal);
+      if (!isString) {
+        return;
+      }
+      let trimmed = textVal.trim();
+      if (trimmed.length === 0) {
+        // just empty spaces, clear out search bar but dont bubble up and fetch
+        this.set('inputValue', null);
+        return;
+      }
       this.get('clearSearchResults')();
     },
 
@@ -74,6 +85,7 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       }
     },
     searchAction: function () {
+      console.log('searching!');
       this.send('validate');
     },
   }
