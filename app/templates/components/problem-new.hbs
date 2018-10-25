@@ -45,21 +45,22 @@
           <ul>
             <li class="radio-item">
               <label class="radio-label">
-                {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect"
+                {{input type="radio" checked=(is-equal privacySetting "M") value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect"
                 'M')}}
                 <span class="radio-text">Just Me</span>
               </label>
             </li>
             <li class="radio-item">
               <label class="radio-label">
-                {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action
-                "radioSelect" 'O')}}
+                <input type="radio" id="myOrg" checked={{is-equal privacySetting "O"}} value={{privacySetting}} required="true" name="privacy" class="myOrg" onclick={{action 'radioSelect' 'O'}}>
+                {{!-- {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action
+                "radioSelect" 'O')}} --}}
                 <span class="radio-text">My Organization</span>
               </label>
             </li>
             <li class="radio-item">
               <label class="radio-label">
-                {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect"
+                {{input type="radio" checked=(is-equal privacySetting "E") value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect"
                 'E')}}
                 <span class="radio-text">Everyone</span>
               </label>
@@ -115,7 +116,7 @@
         </p>
         <div class="info-content-block">
           <div class="input-container">
-            {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+            {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true storeFiles=(action 'setFileToUpload')}}
           </div>
         </div>
       {{/if}}

@@ -86,6 +86,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     let categories = this.get('selectedCategories');
     let copyrightNotice = that.get('copyrightNotice');
     let sharingAuth = that.get('sharingAuth');
+    let additionalImage = that.get('additionalImage');
 
     if (!this.get('approvedProblem')) {
       this.set('noLegalNotice', true);
@@ -106,8 +107,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       sharingAuth: sharingAuth
     });
 
-    if (that.filesToBeUploaded) {
-      let uploadData = that.get('filesToBeUploaded');
+    if (additionalImage) {
+      let uploadData = additionalImage;
       let formData = new FormData();
       for(let f of uploadData) {
         formData.append('photo', f);
@@ -128,7 +129,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
-                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
+                that.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -151,7 +152,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.set('image', image);
             createProblemData.save()
               .then((problem) => {
-                this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
+                that.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -221,6 +222,10 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.sendAction('toProblemList');
     },
 
+    setFileToUpload: function(file) {
+      this.set('additionalImage', file);
+    },
+
     resetErrors(e) {
       const errors = ['noLegalNotice', 'createProblemErrors', 'imageUploadErrors'];
 
@@ -275,25 +280,31 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     showCats: function () {
-      this.set('problemTitle', this.get('title'));
-      let quillContent = this.$('.ql-editor').html();
-      let problemStatement = quillContent.replace(/["]/g, "'");
-      this.set('problemStatement', problemStatement);
-      this.set('privacySetting', this.get('privacySetting'));
-
-      let isQuillValid = this.isQuillValid();
-      if (!isQuillValid || !this.get('problemTitle') || !this.get('problemStatement')) {
-        console.log('missing required fields');
-        this.set('isMissingRequiredFields', true);
-        return;
-      }
-      if (this.get('privacySetting') === "E") {
-        this.send('confirmCreatePublic');
-      } else {
+      if (this.get('showAdditional')) {
         this.set('showCats', true);
         this.set('showGeneral', false);
         this.set('showAdditional', false);
         this.set('showLegal', false);
+      } else {
+        this.set('problemTitle', this.get('title'));
+        let quillContent = this.$('.ql-editor').html();
+        let problemStatement = quillContent.replace(/["]/g, "'");
+        this.set('problemStatement', problemStatement);
+        this.set('privacySetting', this.get('privacySetting'));
+
+        let isQuillValid = this.isQuillValid();
+        if (!isQuillValid || !this.get('problemTitle') || !this.get('problemStatement')) {
+          this.set('isMissingRequiredFields', true);
+          return;
+        }
+        if (this.get('privacySetting') === "E") {
+          this.send('confirmCreatePublic');
+        } else {
+          this.set('showCats', true);
+          this.set('showGeneral', false);
+          this.set('showAdditional', false);
+          this.set('showLegal', false);
+        }
       }
     },
 
@@ -312,7 +323,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     nextStep: function () {
-      console.log('nextStep clicked');
       if (this.get('showGeneral')) {
         this.send('showCats');
       } else if (this.get('showCats')) {
@@ -323,7 +333,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     backStep: function () {
-      console.log('backStep clicked');
       if (this.get('showCats')) {
         this.send('showGeneral');
       } else if (this.get('showAdditional')) {
