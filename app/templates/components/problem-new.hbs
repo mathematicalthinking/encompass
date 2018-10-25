@@ -37,18 +37,69 @@
             <section id="editor"></section>
           </div>
         </div>
+        <p class="info-content-label">
+          Privacy Setting <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'M')}}
+          <label class="radio-label">Just Me</label>
+          {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'O')}}
+          <label class="radio-label">My Organization</label>
+          {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
+          <label class="radio-label">Everyone</label>
+        </div>
       {{/if}}
 
       {{#if showCats}}
-        <p class="info-content-label">Problem Categories</p>
+        <p class="info-content-label">
+          Problem Categories <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.categories}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
         <div class="info-content-block">
-          SHOW CATS
+          {{#if selectedCategories}}
+            <ul class="problem-info">
+            {{#each selectedCategories as |category|}}
+              <li><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
+            {{/each}}
+            </ul>
+          {{/if}}
+          {{#unless showCategories}}
+            <button class="cancel-button" {{action 'showCategories'}}>Show Category Menu</button>
+          {{/unless}}
+          {{#if showCategories}}
+            <button class="cancel-button" {{action 'showCategories'}}>Hide Category Menu</button>
+            {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
+          {{/if}}
+        </div>
+        <p class="info-content-label">
+          Problem Keywords <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.keywords}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          add keywords
         </div>
       {{/if}}
 
       {{#if showAdditional}}
-        <div>
-          SHOW ADDITIONAL
+        <p class="info-content-label">
+          Additional Information <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalInfo}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="input-container">
+            {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
+            {{input id="additionalInfo" type="hidden" value=additionalInfo }}
+          </div>
+        </div>
+        <p class="info-content-label">
+          Additional Image <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalImage}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="input-container">
+            {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+          </div>
         </div>
       {{/if}}
 
@@ -107,6 +158,10 @@
   {{/if}}
 
 </div>
+
+
+
+
 
   {{!-- <section class="third submissions">
     <form id='newproblemform' class='properForm'>
