@@ -113,10 +113,14 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if showList}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions
+          toProblemInfo="toProblemInfo"
+          }}
         {{/if}}
         {{#if showGrid}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions}}
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
+          toProblemInfo="toProblemInfo"
+          }}
         {{/if}}
 
         {{pagination-control details=problemsMetadata initiatePageChange=(action "initiatePageChange")}}

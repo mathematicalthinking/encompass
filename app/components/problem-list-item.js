@@ -207,11 +207,20 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     assignProblem() {
       // this.set('creatingAssignment', true);
       // send to parent to handle?
-      this.get('assignProblem')(this.get('problem'));
+      let problem = this.get('problem');
+      problem.set('isForAssignment', true);
+      this.send('toProblemInfo', problem);
+
     },
     editProblem() {
       // send to parent to handle?
-      this.get('editProblem')(this.get('problem'));
+      let problem = this.get('problem');
+      problem.set('isForEdit', true);
+      this.send('toProblemInfo', problem);
+    },
+
+    toProblemInfo(problem) {
+      this.get('toProblemInfo')(problem);
     },
     makePending() {
       this.send('confirmStatusUpdate', this.get('problem'), 'title', 'pending');

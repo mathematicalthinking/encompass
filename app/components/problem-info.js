@@ -38,15 +38,46 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
+  didUpdateAttrs() {
+    let attrProbId = this.get('problem.id');
+    let currentId = this.get('currentProblemId');
+    if (!_.isEqual(attrProbId, currentId)) {
+      if (this.get('isEditing')) {
+        this.set('isEditing', false);
+      }
+      if (this.get('isForEdit')) {
+        this.set('isForEdit', false);
+      }
+    }
+    this._super(...arguments);
+  },
+
   didReceiveAttrs: function () {
+    let currentProblemId = this.get('currentProblemId');
+    if (_.isUndefined(currentProblemId)) {
+      this.set('currentProblemId', this.get('problem.id'));
+    }
     this.set('isWide', false);
     this.set('showAssignment', false);
-    this.set('isEditing', false);
+
+    let problem = this.get('problem');
+
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
+      if (problem.get('isForEdit')) {
+        this.send('editProblem');
+      }
+      if (problem.get('isForAssignment')) {
+        this.send('showAssignment');
+      }
     }).catch((err) => {
       this.handleErrors(err, 'findRecordErrors');
     });
+  },
+  willDestroyElement: function() {
+    // hide outlet, but don't transition to list because topbar link-to takes care of that
+    this.send('hideInfo', false);
+    this._super(...arguments);
   },
 
   statusIconFill: function () {
@@ -206,6 +237,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     cancelEdit: function () {
       this.set('isEditing', false);
+
+      let problem = this.get('problem');
+      if (problem.get('isForEdit')) {
+        problem.set('isForEdit', false);
+      }
       this.resetErrors();
     },
 
@@ -294,6 +330,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                 this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 // handle success
                 this.set('isEditing', false);
+                if (problem.get('isForEdit')) {
+                  problem.set('isForEdit', false);
+                }
                 this.resetErrors();
               })
               .catch((err) => {
@@ -318,6 +357,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               problem.save().then((res) => {
                 this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 this.set('isEditing', false);
+                if (problem.get('isForEdit')) {
+                  problem.set('isForEdit', false);
+                }
                 this.resetErrors();
               })
               .catch((err) => {
@@ -338,6 +380,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.resetErrors();
             this.set('showConfirmModal', false);
             this.set('isEditing', false);
+            if (problem.get('isForEdit')) {
+              problem.set('isForEdit', false);
+            }
           })
           .catch((err) => {
             this.handleErrors(err, 'updateProblemErrors', problem);
@@ -475,8 +520,21 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }, 100);
     },
 
-    hideInfo: function () {
+    hideInfo: function (doTransition=true) {
+      // transition back to list
+
+      if (this.get('isEditing')) {
+        this.set('isEditing', false);
+      }
+      let problem = this.get('problem');
+      if (problem.get('isForEdit')) {
+        problem.set('isForEdit', false);
+      }
       $('.list-outlet').addClass('hidden');
+      if (doTransition) {
+        this.sendAction('toProblemList');
+      }
+
     },
 
     showGeneral: function () {

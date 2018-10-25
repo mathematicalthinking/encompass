@@ -13,6 +13,11 @@ Encompass.ProblemListComponent = Ember.Component.extend( {
   init: function() {
     this._super(...arguments);
   },
+  actions: {
+    toProblemInfo(problem) {
+      this.sendAction("toProblemInfo", problem);
+    }
+  }
 
 
 });

@@ -123,6 +123,18 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     return statusOptions;
   }.property('problem.status'),
 
+  didInsertElement() {
+    let doHideOutlet = this.get('doHideOutlet');
+    if (_.isUndefined(doHideOutlet)) {
+      this.set('doHideOutlet', this.get('model.hideOutlet') );
+
+    }
+    if (this.get('doHideOutlet') === false) {
+      this.$('#outlet').removeClass('hidden');
+    }
+    this._super(...arguments);
+  },
+
 
   didReceiveAttrs: function() {
     let attributes = ['problems', 'sections', 'organizations'];
@@ -677,6 +689,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         statusFilter.addObject(status);
       }
       this.send('triggerFetch');
+
+    },
+    toProblemInfo(problem) {
+      this.sendAction('toProblemInfo', problem);
+      this.$('#outlet').removeClass('hidden');
 
     }
   }
