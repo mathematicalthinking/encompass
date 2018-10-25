@@ -44,6 +44,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     $('.list-outlet').removeClass('hidden');
   },
 
+  willDestroyElement() {
+    $('.list-outlet').addClass('hidden');
+    this._super(...arguments);
+  },
+
   checkMissing: function() {
     const id = this.get('formId');
     let isMissing = this.get('validator').isMissingRequiredFields(id);

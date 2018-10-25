@@ -38,6 +38,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
+  didInsertElement() {
+    $('.list-outlet').removeClass('hidden');
+    this._super(...arguments);
+  },
+
   didUpdateAttrs() {
     let attrProbId = this.get('problem.id');
     let currentId = this.get('currentProblemId');
