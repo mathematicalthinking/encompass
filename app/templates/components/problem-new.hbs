@@ -19,9 +19,23 @@
     </div>
     <div class="info-content">
       {{#if showGeneral}}
-        <p class="info-content-label">Problem Statement</p>
-        <div class="info-content-block large-content">
-          SHOW GENERAL
+        <p class="info-content-label">
+          Problem Name <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="input-container">
+            {{input id="title" required="true" type="text" value=title placeholder="Enter Problem Name" action="resetErrors" on="key-down"}}
+          </div>
+        </div>
+        <p class="info-content-label">
+          Problem Statement <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.statement}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="quill-container">
+            <section id="editor"></section>
+          </div>
         </div>
       {{/if}}
 
@@ -39,9 +53,32 @@
       {{/if}}
 
       {{#if showLegal}}
-        <p class="info-content-label">Copyright Notice</p>
+        <p class="info-content-label">
+          Copyright Notice <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.copyrightNotice}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
         <div class="info-content-block">
-          SHOW LEGAL
+          <div class="input-container" id="copyright-container">
+            <span id="icon">&copy;</span>
+            {{input name="copyright" id="copyright" type="text" value=copyrightNotice placeholder="Add Copyright Notice"}}
+          </div>
+        </div>
+        <p class="info-content-label">
+          Sharing Authorization <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.sharingAuth}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="input-container">
+            {{input name="sharing" id="sharing" type="text" value=sharingAuth}}
+          </div>
+        </div>
+        <p class="info-content-label">
+          Legal Notice <span class="required-star">*</span>
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.legalNotice}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          {{input type="checkbox" id="legal-notice" checked=approvedProblem required="true" click=(action "resetErrors")}}
+          <span id="approved-problem">This problem does not contain any unapproved copywritten material</span>
         </div>
       {{/if}}
     </div>
@@ -53,6 +90,22 @@
       <button class="action_button primary-button" {{action 'validate'}}>Create</button>
     </span>
   </section>
+
+  {{#each createProblemErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+  {{#each imageUploadErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+
+  {{#if isMissingRequiredFields}}
+    {{error-box error="Please provide all required fields" showDismiss=true}}
+  {{/if}}
+
+  {{#if noLegalNotice}}
+    {{error-box error="Please verify that you have permission to post this problem" showDismiss=true}}
+  {{/if}}
+
 </div>
 
   {{!-- <section class="third submissions">
@@ -154,22 +207,8 @@
           </li>
         </ol>
       </fieldset>
-
-      {{#each createProblemErrors as |error|}}
-        {{error-box error=error showDismiss=true}}
-      {{/each}}
-      {{#each imageUploadErrors as |error|}}
-        {{error-box error=error showDismiss=true}}
-      {{/each}}
-
-      {{#if isMissingRequiredFields}}
-        {{error-box error="Please provide all required fields" showDismiss=true}}
-      {{/if}}
-
-      {{#if noLegalNotice}}
-        {{error-box error="Please verify that you have permission to post this problem" showDismiss=true}}
-      {{/if}}
     </form>
+
   </section>
   <div style="clear: left"></div>
   <section class="submit">
