@@ -82,16 +82,17 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       });
     }
     if (status === 'pending') {
-      // dont show pend option if status is already pending
+      // dont show pend or assign option if status is pending
       options = _.filter(options, (option) => {
-        return option.value !== 'pending';
+        return !_.contains(['pending', 'assign'], option.value);
       });
     }
 
     if (status === 'flagged') {
-      // dont show pend option if status is already pending
+      // dont show flag or assign if status is flagged
       options = _.filter(options, (option) => {
-        return option.value !== 'flag';
+        return !_.contains(['flag', 'assign'], option.value);
+
       });
     }
 

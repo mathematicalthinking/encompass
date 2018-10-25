@@ -33,10 +33,10 @@
           <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
         {{/if}}
       {{else}}
-        {{#if (is-equal problem.status 'pending')}}
-          <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
-        {{else}}
+        {{#if (is-equal problem.status 'approved')}}
           <button class="primary-button" {{action "assignProblem"}}>Assign</button>
+        {{else}}
+          <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
         {{/if}}
       {{/if}}
     </div>
