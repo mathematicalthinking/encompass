@@ -204,6 +204,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('additionalInfo', problem.get('additionalInfo'));
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
+      this.set('privacySettingIcon', problem.get('privacySetting'));
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -252,6 +253,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     radioSelect: function (value) {
       this.set('privacySetting', value);
+    },
+
+    changePrivacy: function () {
+      let privacy = $("#privacy-select :selected").val();
+      this.set('privacySettingIcon', privacy);
     },
 
     checkPrivacy: function() {
@@ -492,7 +498,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     addCategories: function (category) {
-      console.log('add categories funtcion called');
       let problem = this.get('problem');
       let categories = problem.get('categories');
       if (!categories.includes(category)) {
@@ -512,7 +517,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     removeCategory: function (category) {
-      console.log('remove categories funtcion called');
       let problem = this.get('problem');
       let categories = problem.get('categories');
       categories.removeObject(category);
