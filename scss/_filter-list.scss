@@ -670,6 +670,9 @@
     top: -4px;
     left: 4px;
   }
+  & .hidden {
+    display: none;
+  }
   li {
     padding: 10px 0;
     text-transform: capitalize;

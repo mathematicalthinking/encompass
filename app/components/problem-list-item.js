@@ -43,6 +43,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     let currentUser = this.get('currentUser');
     let currentUserType = currentUser.get('accountType');
     let creator = problem.get('createdBy.content.id');
+    let isUsed = problem.get('isUsed');
     let canDelete;
 
     if (currentUserType === "A") {
@@ -52,8 +53,10 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
         canDelete = true;
       }
     } else if (currentUserType === "T") {
-      if (problem.get('privacySetting') === "M") {
+      if (creator === currentUser.id && !isUsed) {
         canDelete = true;
+      } else {
+        canDelete = false;
       }
     } else {
       canDelete = false;
@@ -87,6 +90,11 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       options = _.filter(options, (option) => {
         return !option.adminOnly;
       });
+      if (status === "approved") {
+        options = _.filter(options, (option) => {
+          return !_.contains(['assign'], option.value);
+        });
+      }
     }
     if (status === 'pending') {
       // dont show pend or assign option if status is pending

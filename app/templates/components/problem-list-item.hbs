@@ -37,12 +37,15 @@
           <button class="primary-button" {{action "assignProblem"}}>Assign</button>
         {{else}}
         {{#if canDelete}}
-          {{#unless (is-equal problem.privacySetting 'E')}}
-            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
-          {{/unless}}
+          {{#if currentUser.isPdAdmin}}
+            {{#unless (is-equal problem.privacySetting 'E')}}
+              <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+            {{/unless}}
           {{else}}
             <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
-
+          {{/if}}
+          {{else}}
+            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
         {{/if}}
         {{/if}}
       {{/if}}
@@ -138,6 +141,10 @@
   $('.problem-title').click(function (e) {
     $('.list-outlet').removeClass('hidden');
     $('.list-outlet').addClass('animated slideInRight');
+  });
+
+  $('.results-list').click(function (e) {
+    $('.click-menu').addClass('hidden');
   });
 </script>
 
