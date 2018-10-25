@@ -102,6 +102,10 @@
   text-transform: capitalize;
 }
 
+#filter-list-side {
+  overflow: auto;
+}
+
 #layout-view {
   &.grid-view {
     .sort-bar {
@@ -267,19 +271,36 @@
           margin-left: 20px
         }
         .category-filter-list {
+          margin: 0 0 100px 20px;
           h5 {
-            margin: 10px 0;
+            margin: 20px 0 10px 0;
           }
           i {
             margin-left: 5px;
           }
-          margin-left: 20px;
           li {
-            margin-left: 20px;
+            margin: 15px 0;
+            color: black;
+            font-size: .9em;
+          }
+          p {
+            margin: 15px 10px 10px 0 ;
+            font-weight: $light-font-weight;
+            font-size: .9em;
+          }
+          .subfilter {
+            input {
+              position: relative;
+              left: -20px;
+              top: -2px;
+            }
+            span {
+              position: relative;
+              left: -15px;
+            }
           }
           .show-category-btn {
-            margin-left: 20px;
-            margin-top: 15px;
+            margin-top: 10px;
             background-color: white;
             border-radius: 3px;
             color: $primary-font-color;

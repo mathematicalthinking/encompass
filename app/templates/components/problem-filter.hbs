@@ -36,19 +36,20 @@
   </ul>
 
   <h3>Category</h3>
-  {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}}
-  <label>Include Subcategories</label>
+
   <ul class="category-filter-list">
-    {{#if categoriesFilter}}
-      <h5>Selected Category Filters</h5>
-      {{#each categoriesFilter as |category|}}
-        <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
-      {{/each}}
-    {{/if}}
-    {{!-- <li>
-      Search by {{my-select}}
-      {{input type="text" placeholder="Search by"}}
-    </li> --}}
+    <h5>Selected Category Filters</h5>
+    <label class="subfilter">
+      {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}} <span>Include Subcategories</span>
+    </label>
+      {{#if categoriesFilter}}
+        {{#each categoriesFilter as |category|}}
+          <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
+        {{/each}}
+      {{else}}
+        <p>No categories Selected</p>
+        <p>Click 'Show Category Menu' to view the Category Explorer</p>
+      {{/if}}
     <li>
       <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
     </li>
