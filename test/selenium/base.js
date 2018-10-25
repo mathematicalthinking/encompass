@@ -113,7 +113,7 @@ describe('Home Page', function () {
   });
 
   describe('NavBar', function () {
-    const elements = ['workspaces', 'responses', 'users/home', 'logout', 'problems/home', 'sections/home'];
+    const elements = ['workspaces', 'responses', 'users/home', 'logout', 'problems', 'sections/home'];
 
     function verifyNavElement(navElement) {
       let isVisible;

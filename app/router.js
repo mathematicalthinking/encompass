@@ -16,7 +16,6 @@ Encompass.Router.map(function() {
     this.route("problem", {resetNamespace: true, path: '/:problemId'}, function() {
     });
     this.route("new");
-    this.route('home');
   });
   // SECTIONS ROUTE
   this.route("sections", function(){
