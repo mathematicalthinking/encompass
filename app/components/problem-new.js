@@ -97,13 +97,13 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       createDate: new Date(),
       title: title,
       text: problemStatement,
-      // categories: categories,
-      // additionalInfo: additionalInfo,
+      categories: categories,
+      additionalInfo: additionalInfo,
       privacySetting: privacySetting,
       organization: organization,
       status: 'approved',
-      // copyrightNotice: copyrightNotice,
-      // sharingAuth: sharingAuth
+      copyrightNotice: copyrightNotice,
+      sharingAuth: sharingAuth
     });
 
     if (that.filesToBeUploaded) {
@@ -275,15 +275,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     showCats: function () {
-      console.log('clicked on showCats or next to showCats');
       this.set('problemTitle', this.get('title'));
       let quillContent = this.$('.ql-editor').html();
       let problemStatement = quillContent.replace(/["]/g, "'");
       this.set('problemStatement', problemStatement);
       this.set('privacySetting', this.get('privacySetting'));
-      console.log('title is', this.get('problemTitle'));
-      console.log('statment is', this.get('problemStatement'));
-      console.log('privacy Setting is', this.get('privacySetting'));
 
       let isQuillValid = this.isQuillValid();
       if (!isQuillValid || !this.get('problemTitle') || !this.get('problemStatement')) {
@@ -300,8 +296,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.set('showLegal', false);
       }
     },
-
-
 
     showAdditional: function () {
       this.set('showAdditional', true);
