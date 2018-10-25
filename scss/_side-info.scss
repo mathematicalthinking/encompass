@@ -240,6 +240,12 @@
     .info-actions {
       height: 35px;
       margin-bottom: 15px;
+      @include flex-container(auto, null, row, no-wrap, center, center, stretch);
+      .buttons-container {
+        height: 35px;
+        @include flex-item(1, 1 1 auto, auto);
+        width: 100%;
+      }
       .button-icon {
         border: none;
         background: none;
@@ -250,14 +256,10 @@
         }
       }
       .left-buttons {
-        position: absolute;
-        left: 0;
-        bottom: 0%;
+        float: left;
       }
       .right-buttons {
-        position: absolute;
-        right: 0;
-        bottom: 0%;
+        float: right;
         .primary-button {
           font-weight: $bolder-font-weight;
           margin-left: 10px;

@@ -237,32 +237,34 @@
   </section>
 
   <section class="info-actions">
-    <span class="left-buttons">
-      {{#if isEditing}}
-        <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
-      {{else}}
-        <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
-      {{/if}}
-    </span>
-    <span class="right-buttons">
-      {{#if isEditing}}
-        <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
-        <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
-      {{else}}
-        {{#if canEdit}}
-          {{#if problem.isUsed}}
-            {{#if currentUser.isAdmin}}
+    <div class="buttons-container">
+      <span class="left-buttons">
+        {{#if isEditing}}
+          <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
+        {{else}}
+          <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+        {{/if}}
+      </span>
+      <span class="right-buttons">
+        {{#if isEditing}}
+          <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
+          <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
+        {{else}}
+          {{#if canEdit}}
+            {{#if problem.isUsed}}
+              {{#if currentUser.isAdmin}}
+                <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+              {{/if}}
+            {{else}}
               <button class="primary-button" {{action 'editProblem'}}>Edit</button>
             {{/if}}
-          {{else}}
-            <button class="primary-button" {{action 'editProblem'}}>Edit</button>
           {{/if}}
+            {{#unless (is-equal problem.status 'pending')}}
+              <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+            {{/unless}}
         {{/if}}
-          {{#unless (is-equal problem.status 'pending')}}
-            <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
-          {{/unless}}
-      {{/if}}
-    </span>
+      </span>
+    </div>
   </section>
 </div>
 

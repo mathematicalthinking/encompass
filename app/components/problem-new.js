@@ -277,6 +277,20 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.set('showCats', false);
       this.set('showAdditional', false);
       this.set('showLegal', false);
+      var options = {
+        debug: 'false',
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            ['image'],
+          ]
+        },
+        placeholder: 'Problem Statement',
+        theme: 'snow'
+      };
+      $('#editor').ready(() => {
+        var quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
+      });
     },
 
     showCats: function () {
