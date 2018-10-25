@@ -243,6 +243,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     setFileToUpload: function(file) {
       this.set('additionalImage', file);
+      this.set('fileName', file[0].name);
+    },
+
+    removeFile: function () {
+      this.set('additionalImage', null);
+      this.set('fileName', null);
     },
 
     resetErrors(e) {

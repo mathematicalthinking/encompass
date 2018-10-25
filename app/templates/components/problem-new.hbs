@@ -109,9 +109,11 @@
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalImage}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
-          <div class="input-container">
+          {{#if fileName}}
+            <p class="file-name"><span class="bold">Uploaded File</span> {{fileName}} <button class="remove-cat" {{action 'removeFile'}}><i class="far fa-times-circle"></i></button></p>
+          {{else}}
             {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true storeFiles=(action 'setFileToUpload')}}
-          </div>
+          {{/if}}
         </div>
       {{/if}}
 
