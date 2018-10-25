@@ -79,7 +79,7 @@
     a {
       color: $accent-color;
     }
-    li {
+    .category-item {
       line-height: 1.5em;
     }
     .info-details {
@@ -132,6 +132,9 @@
             color: $accent-color;
             font-weight: $bolder-font-weight;
           }
+          & .new {
+            cursor: default;
+          }
         }
       }
       .info-content {
@@ -168,7 +171,7 @@
           #categories {
             margin-top: 15px;
           }
-          li {
+          .radio-item {
             margin: 15px 0px
           }
           .radio-text {

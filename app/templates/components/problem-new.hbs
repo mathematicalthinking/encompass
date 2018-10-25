@@ -12,20 +12,20 @@
       </div>
     </div>
     <div class="info-menu">
-      <button class="tab-link {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
-      <button class="tab-link {{if showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
-      <button class="tab-link {{if showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
-      <button class="tab-link {{if showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
+      <button class="tab-link {{if showGeneral 'active-btn'}}">General</button>
+      <button class="tab-link {{if showCats 'active-btn'}}">Categories</button>
+      <button class="tab-link {{if showAdditional 'active-btn'}}">Additional</button>
+      <button class="tab-link {{if showLegal 'active-btn'}}">Legal</button>
     </div>
     <div class="info-content">
       {{#if showGeneral}}
         <p class="info-content-label">
-          Problem Name <span class="required-star">*</span>
+          Problem Title <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
           <div class="input-container">
-            {{input id="title" required="true" type="text" value=title placeholder="Enter Problem Name" action="resetErrors" on="key-down"}}
+            {{input id="title" required="true" type="text" value=title placeholder="Enter Problem Title" action="resetErrors" on="key-down"}}
           </div>
         </div>
         <p class="info-content-label">
@@ -33,9 +33,9 @@
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.statement}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
-          <div class="quill-container">
-            <section id="editor"></section>
-          </div>
+          {{!-- <div class="quill-container"> --}}
+            {{quill-container setup="insertQuillContent"}}
+          {{!-- </div> --}}
         </div>
         <p class="info-content-label">
           Privacy Setting <span class="required-star">*</span>
@@ -43,21 +43,21 @@
         </p>
         <div class="info-content-block">
           <ul>
-            <li>
+            <li class="radio-item">
               <label class="radio-label">
                 {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect"
                 'M')}}
                 <span class="radio-text">Just Me</span>
               </label>
             </li>
-            <li>
+            <li class="radio-item">
               <label class="radio-label">
                 {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action
                 "radioSelect" 'O')}}
                 <span class="radio-text">My Organization</span>
               </label>
             </li>
-            <li>
+            <li class="radio-item">
               <label class="radio-label">
                 {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect"
                 'E')}}
@@ -70,14 +70,14 @@
 
       {{#if showCats}}
         <p class="info-content-label">
-          Problem addCategories
+          Problem Categories
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.categories}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
           {{#if selectedCategories}}
             <ul class="problem-info">
             {{#each selectedCategories as |category|}}
-              <li><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
+              <li class="category-item"><a href="{{category.url}}" target="_blank">{{category.identifier}}</a> <button {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button></li>
             {{/each}}
             </ul>
           {{/if}}
@@ -141,7 +141,7 @@
           </div>
         </div>
         <p class="info-content-label">
-          Legal Notice
+          Legal Notice <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.legalNotice}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
@@ -155,8 +155,18 @@
   <section class="info-actions">
     <div class="buttons-container">
       <span class="right-buttons">
-        <button class="action_button cancel-button" {{action 'cancelProblem'}}>Cancel</button>
-        <button class="action_button primary-button" {{action 'validate'}}>Create</button>
+        {{#if showGeneral}}
+          <button class="action_button cancel-button" {{action 'cancelProblem'}}>Cancel</button>
+          <button class="action_button primary-button" {{action 'nextStep'}}>Next</button>
+         {{else}}
+            {{#if showLegal}}
+              <button class="action_button cancel-button" {{action 'backStep'}}>Back</button>
+              <button class="action_button primary-button" {{action 'validate'}}>Create</button>
+            {{else}}
+              <button class="action_button cancel-button" {{action 'backStep'}}>Back</button>
+              <button class="action_button primary-button" {{action 'nextStep'}}>Next</button>
+            {{/if}}
+        {{/if}}
       </span>
     </div>
   </section>

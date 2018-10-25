@@ -93,7 +93,7 @@
             {{#if problem.categories}}
               <ul>
                 {{#each problem.categories as |category|}}
-                  <li>
+                  <li class="category-item">
                     <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                     <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
                   </li>
@@ -129,7 +129,7 @@
             {{#if problem.categories}}
               <ul>
                 {{#each problem.categories as |category|}}
-                <li>
+                <li class="category-item">
                   <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                 </li>
                 {{/each}}
