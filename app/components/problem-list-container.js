@@ -73,11 +73,26 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }
     if (this.get('isDisplayingSearchResults')) {
       let countDescriptor = 'problems';
+      let verb;
+      let criterion = this.get('searchCriterion');
+      if (criterion === 'all') {
+        verb = 'contain';
+      } else {
+        verb = 'contains';
+      }
       let total = this.get('problemsMetadata.total');
       if (total === 1) {
         countDescriptor = 'problem';
+        if (criterion === 'all') {
+          verb = 'contains';
+        }
+
       }
-      msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} whose ${this.get('searchCriterion')} contains "${this.get('searchQuery')}"`;
+      let typeDescription = `whose ${criterion} ${verb}`;
+      if (this.get('searchCriterion') === 'all') {
+        typeDescription = `that ${verb}`;
+      }
+      msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} ${typeDescription} "${this.get('searchQuery')}"`;
       return msg;
     }
     msg = `${this.get('problemsMetadata.total')} problems found`;
