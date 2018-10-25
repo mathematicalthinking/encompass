@@ -159,8 +159,10 @@
         <p class="info-content-label">Additional Info</p>
           {{#if isEditing}}
           <div class="info-content-block">
-            {{textarea class="additional-info-area" value=additionalInfo rows="3" placeholder="Additional info..."}}
-            {{input id="additionalInfo" type="hidden" value=additionalInfo }}
+            <div class="input-container">
+              {{textarea class="additional-info-area" value=additionalInfo rows="4" placeholder="Additional info..."}}
+              {{input id="additionalInfo" type="hidden" value=additionalInfo }}
+            </div>
           </div>
           {{else}}
           <div class="info-content-block large-content">
@@ -186,7 +188,9 @@
             {{#if problem.image}}
               <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
             {{else}}
-              {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+              <div class="input-container" id="image-upload">
+                {{image-upload filesToBeUploaded=filesToBeUploaded hideSubmit=true}}
+              </div>
             {{/if}}
           {{/if}}
         </div>
@@ -202,10 +206,10 @@
         <p class="info-content-label">Copyright Notice</p>
         <div class="info-content-block">
           {{#if isEditing}}
-            <span id="copyright-container">
+            <div class="input-container" id="copyright-container">
               <span id="icon">&copy;</span>
               {{input name="copyright" id="copyright" type="text" value=copyrightNotice placeholder="Add Copyright Notice"}}
-            </span>
+            </div>
           {{else}}
             {{#if problem.copyrightNotice}}
               <p>&copy; {{problem.copyrightNotice}}</p>
@@ -217,7 +221,9 @@
         <p class="info-content-label">Sharing Authorization</p>
         <div class="info-content-block">
           {{#if isEditing}}
-            {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}
+            <div class="input-container">
+              {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}
+            </div>
           {{else}}
             {{#if problem.sharingAuth}}
               {{problem.sharingAuth}}
