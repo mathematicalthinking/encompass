@@ -1,4 +1,5 @@
 Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
+  elementId: 'assignment-new',
   createAssignmentError: null,
   isMissingRequiredFields: null,
   selectedSection: null,
