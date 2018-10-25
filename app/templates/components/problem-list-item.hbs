@@ -46,8 +46,8 @@
         <span class="click-menu">
           <ul>
             {{#each ellipsisMenuOptions as |option|}}
-            <li>
-              <label {{action option.action}}>
+            <li {{action option.action}}>
+              <label>
                 {{option.label}}
                 <i class={{option.icon}}></i>
               </label>
