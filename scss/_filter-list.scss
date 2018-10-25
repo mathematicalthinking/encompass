@@ -667,8 +667,8 @@
   border-radius: 5px;
   .fa-edit {
     position: relative;
-    top: -4px;
-    left: 4px;
+    top: -2px;
+    left: 3px;
   }
   & .hidden {
     display: none;
@@ -680,15 +680,20 @@
     label {
       cursor: pointer;
       padding-right: 5px;
+      font-size: 1.1em;
+    }
+    .icon-text {
+      float: left;
     }
     input[type=radio] {
       margin-right: 15px;
     }
     i {
       margin-left: 8px;
-      font-size: 1.2em;
+      margin-bottom: 2px;
+      font-size: 1em;
       float: right;
-
+      vertical-align: middle;
     }
   }
 }
