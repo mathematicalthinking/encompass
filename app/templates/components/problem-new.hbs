@@ -42,12 +42,29 @@
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
-          {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect" 'M')}}
-          <label class="radio-label">Just Me</label>
-          {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action "radioSelect" 'O')}}
-          <label class="radio-label">My Organization</label>
-          {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect" 'E')}}
-          <label class="radio-label">Everyone</label>
+          <ul>
+            <li>
+              <label class="radio-label">
+                {{input type="radio" value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect"
+                'M')}}
+                <span class="radio-text">Just Me</span>
+              </label>
+            </li>
+            <li>
+              <label class="radio-label">
+                {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action
+                "radioSelect" 'O')}}
+                <span class="radio-text">My Organization</span>
+              </label>
+            </li>
+            <li>
+              <label class="radio-label">
+                {{input type="radio" value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect"
+                'E')}}
+                <span class="radio-text">Everyone</span>
+              </label>
+            </li>
+          </ul>
         </div>
       {{/if}}
 
