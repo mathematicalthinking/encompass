@@ -48,6 +48,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
   categoriesFilter: [],
+  doIncludeSubCategories: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
   listResultsMessage: function() {
@@ -481,10 +482,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     if (!_.isEmpty(categoriesFilter)) {
       let filterType = 'or';
+      let includeSubCats = this.get('doIncludeSubCategories');
       let ids = categoriesFilter.mapBy('id');
+      filterBy.categories = {};
 
       if (filterType === 'or') {
-        filterBy.categories = {$in: ids};
+        filterBy.categories.ids = ids;
+        filterBy.categories.includeSubCats = includeSubCats;
       } else if (filterType === 'and') {
         // todo and filter
       }

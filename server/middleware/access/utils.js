@@ -275,6 +275,28 @@ getProblemsByCategory = async function(query) {
   }
 };
 
+// takes a category and returns all child categories
+const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
+  try {
+    let category = await models.Category.findById(categoryId);
+    let identifier = category.identifier;
+    let regex = new RegExp(`^${identifier}`, 'i');
+
+    let children = await models.Category.find({identifier: regex}).lean().exec();
+
+    if (isIdOnly) {
+      if (asStrings) {
+        return _.map(children, child => child._id.toString());
+
+      }
+      return _.map(children, child => child._id);
+    }
+    return children;
+  } catch(err) {
+    console.log('err', err);
+  }
+};
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -290,4 +312,5 @@ module.exports.getOrgSections = getOrgSections;
 module.exports.getAssignmentProblems = getAssignmentProblems;
 module.exports.getCreatorIds = getCreatorIds;
 module.exports.getProblemsByCategory = getProblemsByCategory;
+module.exports.getAllChildCategories = getAllChildCategories;
 /* jshint ignore:end */

@@ -114,5 +114,17 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('showCategoryList', false);
     },
 
+    toggleIncludeSubCats() {
+      // toggle value
+      let doInclude = this.get('doIncludeSubCategories');
+      this.set('doIncludeSubCategories', !doInclude);
+
+      let filter = this.get('categoriesFilter');
+      // fetch problems if category filter isnt empty
+      if (!_.isEmpty(filter)) {
+        this.get('onUpdate')();
+      }
+    }
+
   }
 });

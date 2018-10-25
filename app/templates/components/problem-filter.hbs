@@ -36,6 +36,8 @@
   </ul>
 
   <h3>Category</h3>
+  {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}}
+  <label>Include Subcategories</label>
   <ul class="category-filter-list">
     <h5>Selected Category Filters</h5>
     {{#each categoriesFilter as |category|}}

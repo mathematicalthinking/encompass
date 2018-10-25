@@ -100,6 +100,24 @@ async function buildPowsFilterBy(pows) {
     return filter;
 }
 
+async function categoryTextSearch(criteria, isIdOnly) {
+  let records = await models.Category.find(criteria).lean().exec();
+  let ids;
+  if (isIdOnly) {
+    ids = _.map(records, record => record._id );
+    return ids;
+  }
+  return records;
+}
+
+async function findProblemsByCategoryIds(categoryIds, isIdOnly) {
+  let records = await models.Problem.find({categories : { $elemMatch: { $in: categoryIds} }});
+  if (isIdOnly) {
+    return _.map(records, record => record._id);
+  }
+  return records;
+}
+
 /**
   * @public
   * @method getProblems
@@ -126,7 +144,27 @@ const getProblems = async function(req, res, next) {
 
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
-      let { pows, all } = filterBy;
+      let { pows, all, categories } = filterBy;
+
+      if (categories) {
+        let cats = categories.ids;
+        let includeSubCats = categories.includeSubCats;
+
+        if (includeSubCats === 'true') {
+          let catsWithChildren = await Promise.all(_.map(cats, (cat => {
+            return accessUtils.getAllChildCategories(cat, true, true);
+          })));
+
+          let flattened = _.flatten(catsWithChildren);
+
+          let uniqueCats = _.uniq(flattened);
+
+          filterBy.categories = {$in: uniqueCats};
+        } else {
+          filterBy.categories = {$in: cats};
+        }
+
+      }
 
       if (pows) {
         if (!filterBy.$and) {
@@ -189,8 +227,40 @@ const getProblems = async function(req, res, next) {
       let { query, criterion } = searchBy;
     if (criterion) {
       if (criterion === 'category') {
-        let matches = await accessUtils.getProblemsByCategory(query);
-        searchFilter = { _id: { $in: matches } };
+        //
+        // let matches = await accessUtils.getProblemsByCategory(query);
+        let catSearchCrit = {$text: {$search: query}, isTrashed: false};
+        let categoryIds = await categoryTextSearch(catSearchCrit, true);
+        if (_.isEmpty(categoryIds)) {
+          // no categorys found, return 0 results;
+          const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+        }
+
+
+        let problemIds = await findProblemsByCategoryIds(categoryIds, true);
+        if (_.isEmpty(problemIds)) {
+          // no problems found, return 0 results;
+          const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+        }
+
+         searchFilter = { _id: { $in: problemIds } };
+
       } else if (criterion === 'all') {
         searchFilter = {$text: {$search: query}};
         isUsingTextSearch = true;
