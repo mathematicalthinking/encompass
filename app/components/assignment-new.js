@@ -65,6 +65,10 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
       this.set('sectionList', sections);
     }
+    let selectedProblem = this.get('selectedProblem');
+    if (selectedProblem && selectedProblem.get('isForAssignment')) {
+      this.set('FromProblemInfo', true);
+    }
     this.setAddProblemFunction('addProblemTypeahead');
 
   },
@@ -72,6 +76,10 @@ Encompass.AssignmentNewComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   willDestroyElement: function () {
     $(".daterangepicker").remove();
+    let problem = this.get('selectedProblem');
+    if (problem && problem.get('isForAssignment')) {
+      problem.set('isForAssignment', false);
+    }
     this._super(...arguments);
   },
 
