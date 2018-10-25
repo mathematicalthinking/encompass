@@ -6,10 +6,10 @@
 @media screen and (min-width: $screen-xs-min) and (max-width: 400px) {
   .side-info {
     .info-menu {
-      .tab-link {
+      .tab-link, .tab-name {
         margin: 0 0px;
         font-size: .7em;
-        padding: 10px;
+        padding: 8px;
       }
     }
   }
@@ -18,7 +18,7 @@
 @media screen and (min-width: 401px) and (max-width: 100000px) {
   .side-info {
     .info-menu {
-      .tab-link {
+      .tab-link, .tab-name {
         margin: 0 10px;
         font-size: .9em;
         padding: 10px 20px;
@@ -132,8 +132,20 @@
             color: $accent-color;
             font-weight: $bolder-font-weight;
           }
-          & .new {
-            cursor: default;
+        }
+        .tab-name {
+          background-color: $background-body;
+          font-weight: $main-font-weight;
+          text-transform: uppercase;
+          border: none;
+          color: $primary-font-color;
+          &:focus {
+            outline: none;
+          }
+          &.active-btn {
+            border-bottom: 3px solid $accent-color;
+            color: $accent-color;
+            font-weight: $bolder-font-weight;
           }
         }
       }
