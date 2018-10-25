@@ -17,6 +17,8 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   init: function() {
     this._super(...arguments);
     this.set('typeaheadHeader', '<label class="tt-header">Popular Organizations:</label>');
+
+    this.set('orgRequestFilter', this.createOrgRequestFilter.bind(this));
   },
 
   emailRegEx: /[a - z0 - 9!#$%& '*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&' * +/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
@@ -94,11 +96,24 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     });
   },
   getSimilarOrgs(orgRequest) {
-    let orgs = this.get('organizations').toArray();
-    // let requestedOrgName = this.get('org');
-    let similarOrgs = _.filter(orgs, (org => {
+    // trim and remove all whitespaces when comparing strings so that strings such as
+    // n c t m will count as similar compared to NCTM
+
+    let orgs = this.get('organizations')
+
+    if (!orgs) {
+      return [];
+    }
+
+    let sliced = orgs.toArray().slice();
+
+    let trimmed = orgRequest.trim();
+    let noSpaces = trimmed.replace(/\s/g, '');
+
+    let similarOrgs = _.filter(sliced, (org => {
       let name = org.get('name');
-      let score = this.get('similarity').compareTwoStrings(name, orgRequest);
+      let score = this.get('similarity').compareTwoStrings(name, noSpaces);
+      console.log(`Score comparing requestedOrg: ${orgRequest} versus org: ${name} is: ${score}`);
       return score > 0.2;
     }));
     return similarOrgs;
@@ -106,6 +121,11 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
   orgOptions: function() {
     let orgs = this.get('organizations');
+
+    if (!orgs) {
+      return [];
+    }
+
     let toArray = orgs.toArray();
     let mapped = _.map(toArray, (org) => {
       return {
@@ -117,6 +137,19 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     return mapped;
   }.property('orgs.[]'),
 
+  createOrgRequestFilter(orgRequest) {
+    if (!orgRequest) {
+      return;
+    }
+    let orgs = this.get('organizations');
+    let requestLower = orgRequest.trim().toLowerCase();
+    let orgNamesLower = orgs.map( (org) => {
+      return org.get('name').toLowerCase();
+    });
+    // don't let user create org request if it matches exactly an existing org name
+    return !_.contains(orgNamesLower, requestLower);
+  },
+
   actions: {
     signup: function () {
       var that = this;
@@ -124,6 +157,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       var email = that.get('email');
       var confirmEmail = that.get('confirmEmail');
       var organization = that.get('org');
+      var orgRequest = that.get('orgRequest');
       var location = that.get('location');
       var username = that.get('username');
       var usernameTrim;
@@ -140,7 +174,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
 
 
-      if (!name || !email || !organization || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
+      if (!name || !email || (!organization && !orgRequest) || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
         that.set('missingCredentials', true);
         return;
       }
@@ -165,35 +199,22 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         isAuthorized: false,
       };
 
-      let orgRequest;
-
       // make sure user did not type in existing org
-      if (typeof organization === 'string') {
-        let orgs = this.get('organizations');
-        let matchingOrg = orgs.findBy('name', organization);
-        if (matchingOrg) {
-          organization = matchingOrg;
-        } else {
-          orgRequest = organization;
-        }
-      }
 
       if (orgRequest) {
-        let similarOrgs = this.getSimilarOrgs(orgRequest);
-        if (!_.isEmpty(similarOrgs)) {
-          console.log('similarOrgs!', similarOrgs);
-          let bestMatch = this.get('similarity').findBestMatch(orgRequest, similarOrgs.map(o => o.get('name')));
-          this.get('alert').showModal('question', `Are you sure you want to create the new organization "${orgRequest}"? `, `There is at least one existing organization with a similar name: ${bestMatch}`, 'Yes')
-            .then((result) => {
-          if (!result.value) {
-            return;
-          }
 
-        });
-          // this.set('similarOrgs', similarOrgs);
-          // return;
+        let orgs = this.get('organizations');
+        let matchingOrg = orgs.findBy('name', orgRequest);
+        if (matchingOrg) {
+          // duplicate name request
+          organization = matchingOrg;
+          createUserData.organization = matchingOrg.id;
+        } else {
+          createUserData.organizationRequest = orgRequest;
+
         }
-        createUserData.organizationRequest = orgRequest;
+
+
         return that.createUser(createUserData)
         .then((res) => {
           if (res.message === 'Username already exists') {
@@ -303,7 +324,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
       if (similarOrgs.get('length') > 0) {
         console.log('similarORgs', similarOrgs);
-        let text = `Are you sure you want to submit a new organization request for ${input}? We found ${similarOrgs.get('length')} organizations with similar names.`;
+        let text = `Are you sure you want to submit a new organization request for ${input}? We found ${similarOrgs.get('length')} organizations with similar names. Please review the options in the dropdown to see if your desired organization already exists. If you decide to proceed with the organization request, the creation of the organization will be contingent on an admin's approval.`;
         for (let org of similarOrgs) {
           let id = org.get('id');
           let name = org.get('name');
@@ -312,7 +333,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         modalSelectOptions[input] = `Yes, I am sure I want to create ${input}`;
         console.log('options', modalSelectOptions);
 
-        this.get('alert').showPromptSelect('Similar Orgs Found', modalSelectOptions, 'Choose existing org or confirm initial request', text)
+        this.get('alert').showPromptSelect('Similar Orgs Found', modalSelectOptions, 'Choose existing org or confirm request', text)
         .then((result) => {
           if (result.value) {
             // user confirmed org request

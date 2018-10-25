@@ -31,15 +31,15 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     let hash = this.configureOptionsHash();
     this.set('optionsHash', hash);
 
-    if (!this.placeholder) {
-      this.set('placeholder', 'Start typing...');
+    // if (this.placeholder) {
+    //   this.set('placeholder', this.placeholder);
+    // }
+    if (!this.propsToMap) {
+      let propsToMap = [];
+      propsToMap.addObject(this.get('labelField'));
+      propsToMap.addObject(this.get('valueField'));
+      this.set('propsToMap', propsToMap);
     }
-      if (!this.propsToMap) {
-        let propsToMap = [];
-        propsToMap.addObject(this.get('labelField'));
-        propsToMap.addObject(this.get('valueField'));
-        this.set('propsToMap', propsToMap);
-      }
 
 
     this._super(...arguments);
