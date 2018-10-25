@@ -269,6 +269,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     updateProblem: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
+      let accountType = currentUser.get('accountType');
       let title = this.get('problemName');
       const quillContent = this.$('.ql-editor').html();
       let text;
@@ -282,10 +283,34 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isQuillValid = true;
       }
       let privacy = this.get('privacySetting');
+      let originalPrivacy = problem.get('privacySetting');
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
-      let status = this.get('problemStatus');
+      let status;
+
+      if (originalPrivacy !== privacy) {
+        if (accountType === "A") {
+          status = this.get('problemStatus');
+        } else if (accountType === "P") {
+          if (privacy === "E") {
+            status = 'pending';
+          } else {
+            status = this.get('problemStatus');
+          }
+        } else {
+          if (privacy === "M") {
+            status = 'approved';
+          } else {
+            status = 'pending';
+          }
+        }
+      } else {
+        status = this.get('problemStatus');
+      }
+
+      let problemStatus = status;
+
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -305,7 +330,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('additionalInfo', additionalInfo);
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
-      problem.set('status', status);
+      problem.set('status', problemStatus);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
