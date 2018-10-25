@@ -52,6 +52,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       theme: 'snow'
     };
     var quill = new window.Quill('#editor', options); // eslint-disable-line no-unused-vars
+
+    $('.list-outlet').removeClass('hidden');
   },
 
   checkMissing: function() {
@@ -252,6 +254,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     cancelProblem: function() {
       $('.list-outlet').addClass('hidden');
+      this.sendAction('toProblemList');
     },
 
     resetErrors(e) {
@@ -266,6 +269,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     hideInfo: function () {
       $('.list-outlet').addClass('hidden');
+      this.sendAction('toProblemList');
     },
 
     showGeneral: function () {
