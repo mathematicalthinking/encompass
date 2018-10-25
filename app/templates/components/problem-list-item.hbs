@@ -36,7 +36,14 @@
         {{#if (is-equal problem.status 'approved')}}
           <button class="primary-button" {{action "assignProblem"}}>Assign</button>
         {{else}}
-          <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+        {{#if canDelete}}
+          {{#unless (is-equal problem.privacySetting 'E')}}
+            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+          {{/unless}}
+          {{else}}
+            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+
+        {{/if}}
         {{/if}}
       {{/if}}
     </div>
