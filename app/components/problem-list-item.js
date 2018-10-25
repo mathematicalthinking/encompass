@@ -75,6 +75,13 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       });
     }
 
+    if (isAdmin) {
+      // if problem is approved, admins will have exposed Flag button so no need in more menu
+      options = _.filter(options, (option) => {
+        return !_.contains(['flag'], option.value);
+      });
+    }
+
     if (!isAdmin) {
       // remove any admin only options for non admins
       options = _.filter(options, (option) => {
