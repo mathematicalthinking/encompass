@@ -9,6 +9,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   isPublic: null,
   privacySetting: null,
   checked: true,
+  status: null,
   validator: Ember.inject.service('form-validator'),
   alert: Ember.inject.service('sweet-alert'),
   approvedProblem: false,
@@ -82,6 +83,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     let additionalInfo = that.get('additionalInfo');
     let privacySetting = that.get('privacySetting');
     let currentUser = that.get('currentUser');
+    let accountType = currentUser.get('accountType');
     let organization = currentUser.get('organization');
     let categories = this.get('selectedCategories');
     let copyrightNotice = that.get('copyrightNotice');
@@ -93,6 +95,23 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       return;
     }
 
+    if (accountType === "A") {
+      this.set('status', 'approved');
+    } else if (accountType === "P") {
+      if (privacySetting === "E") {
+        this.set('status', 'pending');
+      } else {
+        this.set('status', 'approved');
+      }
+    } else {
+      if (privacySetting === "M") {
+        this.set('status', 'approved');
+      } else {
+        this.set('status', 'pending');
+      }
+    }
+    let status = this.get('status');
+
     let createProblemData = that.store.createRecord('problem', {
       createdBy: createdBy,
       createDate: new Date(),
@@ -102,7 +121,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       additionalInfo: additionalInfo,
       privacySetting: privacySetting,
       organization: organization,
-      status: 'approved',
+      status: status,
       copyrightNotice: copyrightNotice,
       sharingAuth: sharingAuth
     });
@@ -273,6 +292,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     showGeneral: function () {
+      this.set('privacySetting', this.get('privacySetting'));
       this.set('showGeneral', true);
       this.set('showCats', false);
       this.set('showAdditional', false);

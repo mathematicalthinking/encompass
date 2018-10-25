@@ -33,9 +33,7 @@
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.statement}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
-          {{!-- <div class="quill-container"> --}}
-            {{quill-container setup="insertQuillContent"}}
-          {{!-- </div> --}}
+          {{quill-container setup="insertQuillContent"}}
         </div>
         <p class="info-content-label">
           Privacy Setting <span class="required-star">*</span>
@@ -45,23 +43,19 @@
           <ul>
             <li class="radio-item">
               <label class="radio-label">
-                {{input type="radio" checked=(is-equal privacySetting "M") value=privacySetting required="true" name="privacy" class="justMe" click=(action "radioSelect"
-                'M')}}
+                <input type="radio" checked={{is-equal privacySetting "M"}} value={{privacySetting}} required="true" name="privacy" class="justMe" onclick={{action 'radioSelect' 'M'}}>
                 <span class="radio-text">Just Me</span>
               </label>
             </li>
             <li class="radio-item">
               <label class="radio-label">
                 <input type="radio" id="myOrg" checked={{is-equal privacySetting "O"}} value={{privacySetting}} required="true" name="privacy" class="myOrg" onclick={{action 'radioSelect' 'O'}}>
-                {{!-- {{input type="radio" id="myOrg" value=privacySetting required="true" name="privacy" class="myOrg" click=(action
-                "radioSelect" 'O')}} --}}
                 <span class="radio-text">My Organization</span>
               </label>
             </li>
             <li class="radio-item">
               <label class="radio-label">
-                {{input type="radio" checked=(is-equal privacySetting "E") value=privacySetting required="true" name="privacy" class="everyone" click=(action "radioSelect"
-                'E')}}
+              <input type="radio" checked={{is-equal privacySetting "E"}} value={{privacySetting}} required="true" name="privacy" class="everyone" onclick={{action 'radioSelect' 'E'}}>
                 <span class="radio-text">Everyone</span>
               </label>
             </li>
