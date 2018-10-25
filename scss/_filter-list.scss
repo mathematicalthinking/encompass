@@ -2,6 +2,13 @@
 @import "mixins";
 @import "responsive-font-size";
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 430px) {
+  .results-list {
+    .layout-icons {
+      display: none;
+    }
+  }
+}
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
   #layout-view {

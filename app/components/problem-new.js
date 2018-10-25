@@ -332,7 +332,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.set('privacySetting', this.get('privacySetting'));
 
         let isQuillValid = this.isQuillValid();
-        if (!isQuillValid || !this.get('problemTitle') || !this.get('problemStatement')) {
+        if (!isQuillValid || !this.get('problemTitle') || !this.get('problemStatement') || !this.get('privacySetting')) {
           this.set('isMissingRequiredFields', true);
           return;
         }

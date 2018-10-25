@@ -139,6 +139,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   }.property('problem.status'),
 
   didInsertElement() {
+    let width = this.$().css('width');
+    if (width < '430px') {
+      this.send('setGrid');
+    }
+
     let doHideOutlet = this.get('doHideOutlet');
     if (_.isUndefined(doHideOutlet)) {
       this.set('doHideOutlet', this.get('model.hideOutlet') );
