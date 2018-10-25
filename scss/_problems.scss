@@ -38,6 +38,21 @@
   }
 }
 
+#copyright {
+  text-indent: 15px;
+}
+
+#copyright-container {
+  position: relative;
+  width: 100%;
+}
+
+#icon {
+  position: absolute;
+  left: 15px;
+  top: 5px;
+}
+
 #problem-filter {
   #category-list-modal {
     position: fixed !important;
