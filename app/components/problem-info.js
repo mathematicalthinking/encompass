@@ -1,6 +1,8 @@
 Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-info',
+  classNames: ['side-info'],
   isEditing: false,
+  showGeneral: true,
   problemName: null,
   problemText: null,
   problemPublic: true,
@@ -20,6 +22,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isMissingRequiredFields: null,
   showCategories: false,
   alert: Ember.inject.service('sweet-alert'),
+  iconFillOptions: {
+    approved: '#35A853',
+    pending: '#FFD204',
+    flagged: '#EB5757'
+  },
+  problemStatusOptions: ['approved', 'pending', 'flagged'],
 
   init: function () {
     this._super(...arguments);
@@ -30,16 +38,58 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     });
   },
 
+  didInsertElement() {
+    $('.list-outlet').removeClass('hidden');
+    this._super(...arguments);
+  },
+
+  didUpdateAttrs() {
+    let attrProbId = this.get('problem.id');
+    let currentId = this.get('currentProblemId');
+    if (!_.isEqual(attrProbId, currentId)) {
+      if (this.get('isEditing')) {
+        this.set('isEditing', false);
+      }
+      if (this.get('isForEdit')) {
+        this.set('isForEdit', false);
+      }
+    }
+    this._super(...arguments);
+  },
+
   didReceiveAttrs: function () {
+    let currentProblemId = this.get('currentProblemId');
+    if (_.isUndefined(currentProblemId)) {
+      this.set('currentProblemId', this.get('problem.id'));
+    }
     this.set('isWide', false);
     this.set('showAssignment', false);
-    this.set('isEditing', false);
+
+    let problem = this.get('problem');
+
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
+      if (problem.get('isForEdit')) {
+        this.send('editProblem');
+      }
+      if (problem.get('isForAssignment')) {
+        this.send('showAssignment');
+      }
     }).catch((err) => {
       this.handleErrors(err, 'findRecordErrors');
     });
   },
+  willDestroyElement: function() {
+    // hide outlet, but don't transition to list because topbar link-to takes care of that
+    this.send('hideInfo', false);
+    this._super(...arguments);
+  },
+
+  statusIconFill: function () {
+    let status = this.get('problem.status');
+
+    return this.get('iconFillOptions')[status];
+  }.property('problem.status'),
 
   // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
   // Check if the current problem is yours, so that you can edit it
@@ -53,7 +103,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (accountType === "A") {
       canEdit = true;
     } else if (accountType === "P") {
-      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+      if (problem.get('organization.id') === currentUser.get('organization.id') || creator === currentUser.id) {
         canEdit = true;
       }
     } else if (accountType === "T") {
@@ -118,8 +168,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
       .then((result) => {
         if (result.value) {
+          this.send('hideInfo');
           problem.set('isTrashed', true);
-          this.sendAction('toProblemList');
+          window.history.back();
           problem.save().then((problem) => {
             this.get('alert').showToast('success', 'Problem Deleted', 'bottom-end', 5000, true, 'Undo')
             .then((result) => {
@@ -139,7 +190,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     editProblem: function () {
-      console.log('editProblem clicked');
       let problem = this.get('problem');
       let problemId = problem.get('id');
       let currentUserAccountType = this.get('currentUser').get('accountType');
@@ -148,10 +198,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('sharingAuth', problem.get('sharingAuth'));
       this.set('problemName', problem.get('title'));
       this.set('problemText', problem.get('text'));
+      this.set('organization', problem.get('organization'));
+      this.set('problemCategories', problem.get('categories'));
+      this.set('problemStatus', problem.get('status'));
       this.set('additionalInfo', problem.get('additionalInfo'));
       this.set('privacySetting', problem.get('privacySetting'));
       this.set('sharingAuth', problem.get('sharingAuth'));
-
+      this.set('privacySettingIcon', problem.get('privacySetting'));
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -190,6 +243,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     cancelEdit: function () {
       this.set('isEditing', false);
+
+      let problem = this.get('problem');
+      if (problem.get('isForEdit')) {
+        problem.set('isForEdit', false);
+      }
       this.resetErrors();
     },
 
@@ -197,9 +255,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('privacySetting', value);
     },
 
+    changePrivacy: function () {
+      let privacy = $("#privacy-select :selected").val();
+      this.set('privacySettingIcon', privacy);
+    },
+
     checkPrivacy: function() {
       let currentPrivacy = this.problem.get('privacySetting');
-      let privacy = this.get('privacySetting');
+      let privacy = $("#privacy-select :selected").val();
+      this.set('privacySetting', privacy);
 
       if (currentPrivacy !== "E" && privacy === "E") {
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
@@ -216,15 +280,48 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     updateProblem: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
+      let accountType = currentUser.get('accountType');
       let title = this.get('problemName');
       const quillContent = this.$('.ql-editor').html();
-      let text = quillContent.replace(/["]/g, "'");
+      let text;
+      let isQuillValid;
+
+      if (quillContent !== undefined) {
+        text = quillContent.replace(/["]/g, "'");
+        isQuillValid = this.isQuillValid();
+      } else {
+        text = problem.get('text');
+        isQuillValid = true;
+      }
       let privacy = this.get('privacySetting');
+      let originalPrivacy = problem.get('privacySetting');
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
+      let status;
 
-      let isQuillValid = this.isQuillValid();
+      if (originalPrivacy !== privacy) {
+        if (accountType === "A") {
+          status = this.get('problemStatus');
+        } else if (accountType === "P") {
+          if (privacy === "E") {
+            status = 'pending';
+          } else {
+            status = this.get('problemStatus');
+          }
+        } else {
+          if (privacy === "M") {
+            status = 'approved';
+          } else {
+            status = 'pending';
+          }
+        }
+      } else {
+        status = this.get('problemStatus');
+      }
+
+      let problemStatus = status;
+
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -244,6 +341,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('additionalInfo', additionalInfo);
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
+      problem.set('status', problemStatus);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -268,6 +366,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                 this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 // handle success
                 this.set('isEditing', false);
+                if (problem.get('isForEdit')) {
+                  problem.set('isForEdit', false);
+                }
                 this.resetErrors();
               })
               .catch((err) => {
@@ -292,6 +393,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
               problem.save().then((res) => {
                 this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
                 this.set('isEditing', false);
+                if (problem.get('isForEdit')) {
+                  problem.set('isForEdit', false);
+                }
                 this.resetErrors();
               })
               .catch((err) => {
@@ -312,6 +416,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             this.resetErrors();
             this.set('showConfirmModal', false);
             this.set('isEditing', false);
+            if (problem.get('isForEdit')) {
+              problem.set('isForEdit', false);
+            }
           })
           .catch((err) => {
             this.handleErrors(err, 'updateProblemErrors', problem);
@@ -335,6 +442,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let imageUrl = problem.get('imageUrl');
       let createdBy = this.get('currentUser');
       let categories = problem.get('categories');
+      let status = problem.get('status');
+      let currentUser = this.get('currentUser');
+      let organization = currentUser.get('organization');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
@@ -346,7 +456,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         categories: categories,
         createdBy: createdBy,
         image: image,
+        organization: organization,
         privacySetting: "M",
+        status: status,
         createDate: new Date()
       });
 
@@ -356,44 +468,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
-          this.handleErrors(err, 'createRecordErrors', newProblem);
+          console.log('err is', err);
+          this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
+          // this.handleErrors(err, 'createRecordErrors', newProblem);
         });
-    },
-
-    duplicateProblem: function () {
-      let problem = this.get('problem');
-      let originalTitle = problem.get('title');
-      let title = 'Copy of ' + originalTitle;
-      let text = problem.get('text');
-      let additionalInfo = problem.get('additionalInfo');
-      let isPublic = problem.get('isPublic');
-      let imageUrl = problem.get('imageUrl');
-      let image = problem.get('image');
-      let categories = problem.get('categories');
-      let createdBy = this.get('currentUser');
-
-      let newProblem = this.store.createRecord('problem', {
-        title: title,
-        text: text,
-        additionalInfo: additionalInfo,
-        imageUrl: imageUrl,
-        isPublic: isPublic,
-        image: image,
-        origin: problem,
-        categories: categories,
-        privacySetting: "M",
-        createdBy: createdBy,
-        createDate: new Date()
-      });
-
-      newProblem.save()
-        .then((problem) => {
-          let name = problem.get('title');
-          this.set('savedProblem', problem);
-          this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-      }).catch((err) => {
-        this.handleErrors(err, 'createRecordErrors', newProblem);
-      });
     },
 
     toggleImageSize: function () {
@@ -469,15 +547,59 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let text = problem.get('text');
 
       this.$('.ql-editor').html(text);
-
     },
 
     showAssignment: function () {
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
       Ember.run.later(() => {
-        $('html, body').animate({scrollTop: $(document).height()});
+        $('html>body>#problem-info').animate({scrollTop: $(document).height()});
       }, 100);
-    }
+    },
+
+    hideInfo: function (doTransition=true) {
+      // transition back to list
+
+      if (this.get('isEditing')) {
+        this.set('isEditing', false);
+      }
+      let problem = this.get('problem');
+      if (problem.get('isForEdit')) {
+        problem.set('isForEdit', false);
+      }
+      $('.list-outlet').addClass('hidden');
+      if (doTransition) {
+        this.sendAction('toProblemList');
+      }
+
+    },
+
+    showGeneral: function () {
+      this.set('showGeneral', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showCats: function () {
+      this.set('showCats', true);
+      this.set('showGeneral', false);
+      this.set('showAdditional', false);
+      this.set('showLegal', false);
+    },
+
+    showAdditional: function () {
+      this.set('showAdditional', true);
+      this.set('showCats', false);
+      this.set('showGeneral', false);
+      this.set('showLegal', false);
+    },
+
+    showLegal: function () {
+      this.set('showLegal', true);
+      this.set('showCats', false);
+      this.set('showAdditional', false);
+      this.set('showGeneral', false);
+    },
   }
 });

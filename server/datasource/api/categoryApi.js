@@ -51,6 +51,20 @@ const getCategories = (req, res, next) => {
         const data = {'categories': categories};
         return utils.sendResponse(res, data);
       });
+  } else if (req.query.searchBy) {
+    let { identifier } = req.query.searchBy;
+    let group = `.*(${identifier}).*`;
+    let regex = new RegExp(group, 'i');
+
+    models.Category.find({ identifier: regex})
+      .exec((err, categories) => {
+        if (err) {
+          logger.error(err);
+          return utils.sendError.InternalError(err, res);
+        }
+        const data = {'categories': categories};
+        return utils.sendResponse(res, data);
+      });
   } else {
     let data = {
       categories: [],

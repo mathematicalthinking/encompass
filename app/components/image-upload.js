@@ -116,7 +116,10 @@ Encompass.ImageUploadComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.set('missingFilesError', false);
       }
       this.set('filesToBeUploaded', event.target.form.firstElementChild.files);
-    }
+      if (this.get('storeFiles')) {
+        this.get('storeFiles')(event.target.form.firstElementChild.files);
+      }
+    },
   }
 });
 

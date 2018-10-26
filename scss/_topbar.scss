@@ -2,7 +2,38 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 955px) {
+@media screen and (min-width: 0) and (max-width: 349px) {
+  #al_header {
+    #al_nav {
+      font-size: .8em;
+      overflow: auto;
+      #menu-items {
+        display: none;
+      }
+      #current-username {
+        margin: 0 5px;
+      }
+      #user-image {
+        margin: 0 10px 0 0;
+      }
+    }
+    #sidemenu {
+      display: none;
+    }
+    #encompass-logo {
+      width: 75px;
+      height: 80px;
+      display: block;
+      float: left;
+      position: relative;
+      top: -15px;
+      text-indent: -99999px;
+      background: url(images/logo-encompass.gif) 0 0 no-repeat;
+    }
+  }
+}
+
+@media screen and (min-width: 350px) and (max-width: 955px) {
   #al_header {
     #al_nav {
       font-size: .8em;
@@ -117,6 +148,7 @@
   font-weight: $bolder-font-weight;
   float: right;
   margin-top: 12.5px;
+  background-color: $background-body;
   li {
     line-height: 50px;
     height: 40px;
@@ -139,16 +171,16 @@
 // GENERAL STYLING
 #al_header {
   font-family: $primary-font;
-  background-color: white;
+  background-color: $background-body;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   z-index: 10;
   margin-bottom: 0px;
   font-size: 1em; // margin-bottom: 1px;
   height: 75px;
-  box-shadow: $box-shadow;
+  // box-shadow: $box-shadow;
   .small {
     height: 20px;
     overflow: hidden;
@@ -192,7 +224,6 @@
 }
 
 #al_nav {
-  height: 75px;
   #main-nav {
     float: right;
     margin-top: 20px;
@@ -364,7 +395,6 @@ nav.actions>ul {
     width: 40px;
     height: 40px;
     position: absolute;
-    border: 1px solid red;
     top: 20px;
     right: 10px;
     cursor: pointer;

@@ -1,0 +1,31 @@
+<div class="filter-picker">
+  <span>{{select-label}}</span>
+  {{selectize-input
+    inputId=attributePickerId
+    valueField=attributeValueField
+    labelField=attributeLabelField
+    searchField=attributeSearchField
+    onItemAdd=(action "updateSelectedAttribute")
+    onItemRemove=(action "updateSelectedAttribute")
+    initialOptions=attributeOptions
+    maxItems=1
+    placeholder=attributePlaceholder
+    modelName=modelName
+  }}
+</div>
+<div class="filter-by-attribute">
+  {{selectize-input
+    store=store
+    inputId=filterInputId
+    valueField=filterValueField
+    labelField=filterLabelField
+    searchField=filterSearchField
+    onItemAdd=(action "addItem")
+    onItemRemove=(action "removeItem")
+    isAsync=true
+    maxItems=maxItems
+    placeholder=filterPlaceholder
+    model=modelName
+    queryParamsKey=queryParamsKey
+}}
+</div>

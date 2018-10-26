@@ -7,7 +7,7 @@
     <ul class="info">
       {{#each publicProblems as |problem|}}
       <li>
-        {{#link-to 'problem' problem.id}}{{problem.title}} {{/link-to}} created on {{format-date  problem.createDate 'MMM Do YYYY'}} by {{problem.createdBy.username}}
+        {{#link-to 'problem' problem.id}}{{problem.title}} {{/link-to}} created on {{format-date  problem.createDate 'MMM Do YYYY'}}
       </li>
       {{/each}}
     </ul>

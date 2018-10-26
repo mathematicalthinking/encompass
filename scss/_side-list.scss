@@ -135,15 +135,15 @@
       font-size: 1em;
       background-color: white;
       padding-bottom: 10px;
-      input {
+      input[type=text] {
         margin-left:20px;
         border-radius: 3px;
-        width: 75%;
+        width: 65%;
         height: 30px;
         text-indent: 20px;
       }
       .icons {
-        width: 20%;
+        width: 10%;
         .fa {
           margin: 0 5px;
         }

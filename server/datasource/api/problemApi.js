@@ -1,3 +1,4 @@
+/* eslint complexity: 0 */
 /**
   * # Problem API
   * @description This is the API for problem based requests
@@ -5,16 +6,117 @@
 /* jshint ignore:start */
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/problems');
+const accessUtils = require('../../middleware/access/utils');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
+// eslint-disable-next-line no-unused-vars
+async function getOrgRecommendedProblems(user, orgIds, isIdOnly=true) {
+  try {
+    let orgs = await models.Organization.find({_id: {$in: orgIds}}).lean().exec();
+    if (!orgs) {
+      return [];
+    }
+    let problems = _.map(orgs, org => org.recommendedProblems);
+    problems = _.without(problems, undefined, null);
+    if (isIdOnly) {
+      return problems;
+    }
+
+    return problems;
+  } catch(err) {
+    console.error(`Error getOrgRecommendedProblems: `, err);
+  }
+}
+
+async function getPowsProblems(criteria, isIdOnly) {
+  try {
+    let problems;
+    if (isIdOnly) {
+      problems = await models.Problem.find(criteria, {_id: 1}).lean().exec();
+      return _.map(problems, p => p._id);
+    }
+    return await models.Problem.find(criteria).lean().exec();
+
+  }catch(err) {
+    console.error(`Error getPowsProblems: ${err}`);
+  }
+}
+
+async function buildPowsFilterBy(pows) {
+  let filter = {};
+  let powIds;
+
+  if (pows === 'all') {
+    criteria = {
+      puzzleId: {
+        $exists: true,
+        $ne: null
+      },
+      isTrashed: false
+    };
+  }
+
+  if (pows === 'none') {
+    criteria = {
+      puzzleId: null,
+      isTrashed: false
+    };
+  } else if (pows === "privateOnly") {
+     // exclude public pows
+          criteria = {
+            $and: [
+              { puzzleId: { $exists: true, $ne: null } },
+              { privacySetting: 'M'},
+              {isTrashed: false}
+            ]
+          };
+
+    } else if (pows === 'publicOnly') {
+      criteria = {
+        $and: [
+          { puzzleId: { $exists: true, $ne: null } },
+          { privacySetting: 'E'},
+          {isTrashed: false}
+        ]
+      };
+
+    }
+    powIds = await getPowsProblems(criteria, true);
+
+    if (!_.isEmpty(powIds)) {
+
+      filter._id = { $in: powIds };
+    }
+    console.log('filter', filter);
+    return filter;
+}
+
+async function categoryTextSearch(criteria, isIdOnly) {
+  let records = await models.Category.find(criteria).lean().exec();
+  let ids;
+  if (isIdOnly) {
+    ids = _.map(records, record => record._id );
+    return ids;
+  }
+  return records;
+}
+
+async function findProblemsByCategoryIds(categoryIds, isIdOnly) {
+  let records = await models.Problem.find({categories : { $elemMatch: { $in: categoryIds} }});
+  if (isIdOnly) {
+    return _.map(records, record => record._id);
+  }
+  return records;
+}
 
 /**
   * @public
@@ -26,85 +128,178 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
-// This only returns problems that are public or belong to you
-// Needd to update to handle problems you participate in
-// function accessibleProblems(user) {
-//   let studentProblems = [];
-
-//   return models.Assignment.find({'_id': {$in: user.assignments}}).then((assignments) => {
-//       assignments.forEach((assn) => {
-//         studentProblems.push(assn.problem);
-//       });
-//       return studentProblems;
-//   })
-//   .then((probs) => {
-//     return {
-//       $or: [
-//         { createdBy: user },
-//         { privacySetting: "E" },
-//         { $and: [
-//           { organization: user.organization },
-//           { privacySetting: "O" }
-//         ]},
-//         {_id: {$in: probs}},
-//       ],
-//       isTrashed: false
-//     };
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
-// }
 // query params support:
 // ids
 // filterBy
 // sortBy
+
 const getProblems = async function(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
-    let { ids, filterBy, sortBy, page, } = req.query;
+    let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+    let isUsingTextSearch = false;
 
     if (filterBy) {
-      let {title, text } = filterBy;
-      if (title) {
-        title = title.replace(/\s+/g, "");
-        let regex = new RegExp(title.split('').join('\\s*'), 'i');
+      console.log('filterBy problem API:', JSON.stringify(filterBy));
+      let { pows, all, categories } = filterBy;
 
-        filterBy.title = regex;
+      if (categories) {
+        let cats = categories.ids;
+        let includeSubCats = categories.includeSubCats;
+
+        if (includeSubCats === 'true') {
+          let catsWithChildren = await Promise.all(_.map(cats, (cat => {
+            return accessUtils.getAllChildCategories(cat, true, true);
+          })));
+
+          let flattened = _.flatten(catsWithChildren);
+
+          let uniqueCats = _.uniq(flattened);
+
+          filterBy.categories = {$in: uniqueCats};
+        } else {
+          filterBy.categories = {$in: cats};
+        }
+
       }
-      // currently no front end functionality for searching by text
-      // would need to optimize search by ignoring common words
-      if (text) {
-        text = text.replace(/\s+/g, "");
-        let regex = new RegExp(text.split('').join('\\s*'), 'i');
 
-        filterBy.text = regex;
+      if (pows) {
+        if (!filterBy.$and) {
+          filterBy.$and = [];
+        }
+        filterBy.$and.push(await buildPowsFilterBy(pows));
+
+        delete filterBy.pows;
+        // filter = await buildPowsFilterBy(pows);
+      } else if (all) {
+        let { org } = all;
+        if (org) {
+          let crit = {};
+          let { recommended, organizations } = org;
+
+          let recommendedProblems;
+          if (recommended) {
+            recommendedProblems = await getOrgRecommendedProblems(user, recommended , true);
+            console.log('recommendedProblems', recommendedProblems);
+          }
+
+          if (!_.isEmpty(recommendedProblems)) {
+            if (!crit.$or) {
+              crit.$or = [];
+            }
+            crit.$or.push({_id: {$in: recommendedProblems}});
+
+         }
+         if (organizations) {
+          if (!crit.$or) {
+            crit.$or = [];
+          }
+           crit.$or.push({organization: {$in: organizations}});
+         }
+
+         if (_.isEmpty(recommendedProblems) && !organizations) {
+          console.log('empty and recommended only');
+          // recommended only but no recommendations; return immediately
+           const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+         }
+         if (!filterBy.$and) {
+           filterBy.$and = [];
+         }
+         filterBy.$and.push(crit);
+         delete filterBy.all;
+        }
       }
     }
+    let searchFilter;
 
-    const criteria = await access.get.problems(user, ids, filterBy);
+    if (searchBy) {
+      let { query, criterion } = searchBy;
+    if (criterion) {
+      if (criterion === 'category') {
+        //
+        // let matches = await accessUtils.getProblemsByCategory(query);
+        let catSearchCrit = {$text: {$search: query}, isTrashed: false};
+        let categoryIds = await categoryTextSearch(catSearchCrit, true);
+        if (_.isEmpty(categoryIds)) {
+          // no categorys found, return 0 results;
+          const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+        }
 
-    const [ results, itemCount ] = await Promise.all([
-      models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort({title: 1}).limit(req.query.limit).skip(req.skip).lean().exec(),
-      models.Problem.count(criteria)
-    ]);
 
+        let problemIds = await findProblemsByCategoryIds(categoryIds, true);
+        if (_.isEmpty(problemIds)) {
+          // no problems found, return 0 results;
+          const data = {
+            'problems': [],
+            'meta': {
+              'total': 0,
+              pageCount: 1,
+              currentPage: 1
+            }
+        };
+          return utils.sendResponse(res, data);
+        }
 
-    // no front end functionality for sending sort query params but we should add that
+         searchFilter = { _id: { $in: problemIds } };
+
+      } else if (criterion === 'all') {
+        searchFilter = {$text: {$search: query}};
+        isUsingTextSearch = true;
+      } else {
+        query = query.replace(/\s+/g, "");
+        let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+        searchFilter = {[criterion]: regex};
+      }
+    }
+    }
+
+    let sortParam = {title: 1};
+    let doCollate = true;
+
     if (sortBy) {
-      // handle sort
-      // default sorting?
+      sortParam = sortBy.sortParam;
+      doCollate = sortBy.doCollate;
     }
-    // let sorted;
-    // if (!sortBy) {
-    //   sorted = results.sort((a, b) => {
-    //     return b.createDate - a.createDate;
-    //   });
-    // }
+    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
+    let results, itemCount;
+
+    if (isUsingTextSearch) {
+      [ results, itemCount ] = await Promise.all([
+        models.Problem.find(criteria, { score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.count(criteria)
+      ]);
+    } else if (doCollate) {
+       [ results, itemCount ] = await Promise.all([
+        models.Problem.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.count(criteria)
+      ]);
+    } else {
+      [ results, itemCount ] = await Promise.all([
+        models.Problem.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.count(criteria)
+      ]);
+    }
+
     const pageCount = Math.ceil(itemCount / req.query.limit);
 
     let currentPage = page;

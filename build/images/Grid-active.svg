@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="35px" height="25px" viewBox="0 0 35 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.1 (67048) - http://www.bohemiancoding.com/sketch -->
+    <title>Custom / Grid / Active</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Custom-/-Grid-/-Active" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#9B9B9B" x="3" y="2" width="13" height="9" rx="1"></rect>
+        <rect id="Rectangle" fill="#9B9B9B" x="19" y="2" width="13" height="9" rx="1"></rect>
+        <rect id="Rectangle" fill="#9B9B9B" x="3" y="14" width="13" height="9" rx="1"></rect>
+        <rect id="Rectangle" fill="#9B9B9B" x="19" y="14" width="13" height="9" rx="1"></rect>
+    </g>
+</svg>
