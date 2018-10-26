@@ -74,7 +74,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
       inputOptions,
       showCancelButton: true,
       inputValidator: (value) => {
-        return !value && 'Please choose a reason for flagging this problem.';
+        return !value && 'Please choose an option.';
       },
       text
     });
