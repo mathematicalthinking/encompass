@@ -232,6 +232,18 @@
               }
             }
           }
+          .flag-reason {
+            margin: 15px 0 10px 5px;
+            p {
+              line-height: 1.5em;
+              &.reason {
+                text-transform: capitalize;
+              }
+              &.details {
+                font-weight: $light-font-weight;
+              }
+            }
+          }
         }
         .large-content {
           overflow: auto;

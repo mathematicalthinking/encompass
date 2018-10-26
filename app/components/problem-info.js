@@ -78,6 +78,14 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }).catch((err) => {
       this.handleErrors(err, 'findRecordErrors');
     });
+
+    let problemFlagReason = problem.get('flagReason');
+    if (problemFlagReason) {
+      let flaggedBy = problemFlagReason.flaggedBy;
+      this.get('store').findRecord('user', flaggedBy).then((user) => {
+        this.set('flaggedBy', user);
+      });
+    }
   },
   willDestroyElement: function() {
     // hide outlet, but don't transition to list because topbar link-to takes care of that

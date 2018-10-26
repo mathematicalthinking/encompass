@@ -94,6 +94,12 @@
             <span class="status-text">
               {{problem.status}}
             </span>
+            {{#if (is-equal problem.status 'flagged')}}
+              <div class="flag-reason">
+                <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
+                <p class="details">By {{#link-to 'user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
+              </div>
+            {{/if}}
           {{/if}}
         </div>
       {{/if}}
