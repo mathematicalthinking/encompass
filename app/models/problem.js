@@ -15,6 +15,7 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   keywords: DS.attr(),
   copyrightNotice: DS.attr('string'),
   sharingAuth: DS.attr('string'),
+  author: DS.attr('string'),
   error: DS.attr('string'),
   isUsed: DS.attr('boolean'),
   status: DS.attr('string'),

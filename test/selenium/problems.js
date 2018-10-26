@@ -21,7 +21,10 @@ describe('Problems', function() {
     name: "Rick's Public",
     question: 'What is it?',
     privacySetting: 'Everyone',
-  };
+    copyrightNotice: "Apple Corps.",
+    sharingAuth: "stolen goods",
+    author: "Paul McCartney",
+    };
 
   before(async function () {
     driver = new Builder()
@@ -57,6 +60,9 @@ describe('Problems', function() {
     it('should display the problem details', async function() {
       expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
       expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
+      expect(await helpers.isTextInDom(driver, problemDetails.copyrightNotice)).to.be.true;
+      expect(await helpers.isTextInDom(driver, problemDetails.sharingAuth)).to.be.true;
+      expect(await helpers.isTextInDom(driver, problemDetails.author)).to.be.true;
       let today = moment().format("MMM Do YYYY");
       expect(await helpers.isTextInDom(driver, today)).to.be.true;
     });
@@ -110,8 +116,10 @@ describe('Problems', function() {
         expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/[a-z0-9]{24}/);
         expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
         expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
-
-      });
+        expect(await helpers.isTextInDom(driver, problem.details.copyrightNotice)).to.be.true;
+        expect(await helpers.isTextInDom(driver, problem.details.sharingAuth)).to.be.true;
+        expect(await helpers.isTextInDom(driver, problem.details.author)).to.be.true;
+        });
     });
   });
 });

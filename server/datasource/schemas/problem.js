@@ -28,6 +28,7 @@ var ProblemSchema = new Schema({
   privacySetting: { type: String, enum: ['M', 'O', 'E'] },
   copyrightNotice: { type: String },
   sharingAuth: { type: String },
+  author: { type: String },
   organization: { type: ObjectId, ref: 'Organization' },
   categories: [{ type: ObjectId, ref: 'Category' }],
   keywords: [{ type: String }],
