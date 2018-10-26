@@ -275,6 +275,7 @@
       @include flex-container(auto, null, row, no-wrap, center, center, stretch);
       .buttons-container {
         height: 35px;
+        margin-bottom: 15px;
         @include flex-item(1, 1 1 auto, auto);
         width: 100%;
       }
