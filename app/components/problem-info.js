@@ -8,6 +8,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemPublic: true,
   privacySetting: null,
   savedProblem: null,
+  showFlagReason: false,
   isWide: false,
   checked: true,
   filesToBeUploaded: null,
@@ -355,14 +356,14 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                       .then((result) => {
                         if (result.value) {
                           flaggedReason.reason = result.value;
-                          this.set('flaggedBy', currentUser.get('username'));
+                          this.set('flaggedBy', currentUser);
                           this.set('flaggedReason', flaggedReason);
                           this.send('updateProblem');
                         }
                       });
                   } else {
                     flaggedReason.reason = result.value;
-                    this.set('flaggedBy', currentUser.get('username'));
+                    this.set('flaggedBy', currentUser);
                     this.set('flaggedReason', flaggedReason);
                     this.send('updateProblem');
                   }
@@ -676,6 +677,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('showCats', false);
       this.set('showAdditional', false);
       this.set('showGeneral', false);
+    },
+
+    toggleShowFlagReason: function () {
+      this.set('showFlagReason', !this.get('showFlagReason'));
     },
   }
 });

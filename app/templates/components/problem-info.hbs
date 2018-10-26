@@ -95,10 +95,16 @@
               {{problem.status}}
             </span>
             {{#if (is-equal problem.status 'flagged')}}
-              <div class="flag-reason">
-                <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
-                <p class="details">By {{#link-to 'user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
-              </div>
+              {{#if showFlagReason}}
+                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
+                <div class="flag-reason">
+                  <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
+                  <p class="details">By {{#link-to 'user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date
+                    problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
+                </div>
+              {{else}}
+                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Why?</span>
+              {{/if}}
             {{/if}}
           {{/if}}
         </div>
@@ -266,7 +272,9 @@
         {{#if isEditing}}
           <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
         {{else}}
-          <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+          <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Make a Copy of this Problem">
+            <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+          </span>
         {{/if}}
       </span>
       <span class="right-buttons">

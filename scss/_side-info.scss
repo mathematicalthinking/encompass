@@ -232,6 +232,11 @@
               }
             }
           }
+          .show-reason {
+            color: $accent-color;
+            margin-left: 10px;
+            cursor: pointer;
+          }
           .flag-reason {
             margin: 15px 0 10px 5px;
             p {
