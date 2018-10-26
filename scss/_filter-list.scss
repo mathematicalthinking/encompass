@@ -274,14 +274,18 @@
         .primary-filter-list {
           margin-bottom: 50px;
         }
-        #toggle-sub-cats {
+        input[type=checkbox] {
           margin-left: 20px
         }
         .category-header {
           cursor: pointer;
         }
-        .category-filter-list {
-          margin: 0 0 100px 20px;
+        .more-header {
+          cursor: pointer;
+          margin-top: 35px;
+        }
+        .category-filter-list, .more-filter-list {
+          margin: 0 0 40px 20px;
           h5 {
             margin: 20px 0 10px 0;
           }
@@ -318,6 +322,9 @@
             font-size: .75em;
             font-weight: $bolder-font-weight;
           }
+        }
+        .more-filter-list {
+          margin-bottom: 100px;
         }
         .radio-filter {
           width: 100%;
