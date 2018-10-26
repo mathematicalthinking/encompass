@@ -36,6 +36,15 @@
           {{quill-container setup="insertQuillContent"}}
         </div>
         <p class="info-content-label">
+          Author
+          <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.author}}><i class="fas fa-info-circle info-icon"></i></span>
+        </p>
+        <div class="info-content-block">
+          <div class="input-container">
+            {{input name="author" id="author" type="text" value=author}}
+          </div>
+        </div>
+        <p class="info-content-label">
           Privacy Setting <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>

@@ -11,6 +11,7 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),
   showAdminFilters: Ember.computed.equal('primaryFilter.value', 'all'),
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
+  showCategoryFilters: false,
 
   // current subFilter selected values
   currentValues: function() {
@@ -88,6 +89,10 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     onUpdate() {
       this.get('onUpdate')();
+    },
+
+    toggleCategoryFilters() {
+      this.set('showCategoryFilters', !this.get('showCategoryFilters'));
     },
 
     showCategoryMenu() {

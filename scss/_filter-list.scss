@@ -175,7 +175,6 @@
                   margin-left: 10px;
                   position: relative;
                   top: -3px;
-                  z-index: -1;
                 }
               }
               .more {
@@ -210,7 +209,6 @@
                 float: left;
                 position: relative;
                 margin-top: 5px;
-                z-index: -1;
               }
               .action {
                 float: right;
@@ -278,6 +276,9 @@
         }
         #toggle-sub-cats {
           margin-left: 20px
+        }
+        .category-header {
+          cursor: pointer;
         }
         .category-filter-list {
           margin: 0 0 100px 20px;

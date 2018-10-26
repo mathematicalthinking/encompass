@@ -8,6 +8,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   problemPublic: true,
   privacySetting: null,
   savedProblem: null,
+  showFlagReason: false,
   isWide: false,
   checked: true,
   filesToBeUploaded: null,
@@ -28,6 +29,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     flagged: '#EB5757'
   },
   problemStatusOptions: ['approved', 'pending', 'flagged'],
+  flagOptions: {
+    'inappropiate': 'Inappropriate Content',
+    'ip': 'Intellectual Property Concern',
+    'substance': 'Lacking Substance',
+    'other': 'Other Reason'
+  },
 
   init: function () {
     this._super(...arguments);
@@ -78,6 +85,14 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }).catch((err) => {
       this.handleErrors(err, 'findRecordErrors');
     });
+
+    let problemFlagReason = problem.get('flagReason');
+    if (problemFlagReason) {
+      let flaggedBy = problemFlagReason.flaggedBy;
+      this.get('store').findRecord('user', flaggedBy).then((user) => {
+        this.set('flaggedBy', user);
+      });
+    }
   },
   willDestroyElement: function() {
     // hide outlet, but don't transition to list because topbar link-to takes care of that
@@ -95,6 +110,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
     let problem = this.get('problem');
+    let privacySetting = problem.get('privacySetting');
     let creator = problem.get('createdBy.content.id');
     let currentUser = this.get('currentUser');
     let accountType = currentUser.get('accountType');
@@ -103,8 +119,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (accountType === "A") {
       canEdit = true;
     } else if (accountType === "P") {
-      if (problem.get('organization.id') === currentUser.get('organization.id') || creator === currentUser.id) {
+      if (creator === currentUser.id) {
         canEdit = true;
+      }
+      if (problem.get('organization.id') === currentUser.get('organization.id')) {
+        if (privacySetting === "M" || privacySetting === "O") {
+          canEdit = true;
+        } else {
+          canEdit = false;
+        }
       }
     } else if (accountType === "T") {
       if (creator === currentUser.id) {
@@ -271,35 +294,20 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
         .then((result) => {
           if (result.value) {
-            this.send('updateProblem');
+            this.send('setStatus');
           }
         });
       } else {
-        this.send('updateProblem');
+        this.send('setStatus');
       }
     },
 
-    updateProblem: function () {
+    setStatus: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
       let accountType = currentUser.get('accountType');
-      let title = this.get('problemName');
-      const quillContent = this.$('.ql-editor').html();
-      let text;
-      let isQuillValid;
-
-      if (quillContent !== undefined) {
-        text = quillContent.replace(/["]/g, "'");
-        isQuillValid = this.isQuillValid();
-      } else {
-        text = problem.get('text');
-        isQuillValid = true;
-      }
       let privacy = this.get('privacySetting');
       let originalPrivacy = problem.get('privacySetting');
-      let additionalInfo = this.get('additionalInfo');
-      let copyright = this.get('copyrightNotice');
-      let sharingAuth = this.get('sharingAuth');
       let status;
 
       if (originalPrivacy !== privacy) {
@@ -322,9 +330,81 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         status = this.get('problemStatus');
       }
 
-      let problemStatus = status;
-      let author = this.get('author');
+      this.set('generatedStatus', status);
 
+      if (accountType === "A" || accountType === "P") {
+        this.send('checkStatus');
+      } else {
+        this.send('updateProblem');
+      }
+    },
+
+    checkStatus: function () {
+      let currentUser = this.get('currentUser');
+      let status = this.get('generatedStatus');
+      let problem = this.get('problem');
+      let title = this.get('problemName');
+      let flaggedReason = {
+        flaggedBy: currentUser.get('id'),
+        reason: '',
+        flaggedDate: new Date(),
+      };
+
+      if (status === "approved" || status === "pending") {
+        this.set('flaggedReason', null);
+        this.send('updateProblem');
+      } else if (status === "flagged" && !problem.get('flagReason')) {
+        this.get('alert').showModal('warning', `Are you sure you want to mark ${title} as flagged`, null, `Yes, Flag it!`).then((result) => {
+          if (result.value) {
+            this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
+              .then((result) => {
+                if (result.value) {
+                  if (result.value === 'other') {
+                    this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
+                      .then((result) => {
+                        if (result.value) {
+                          flaggedReason.reason = result.value;
+                          this.set('flaggedBy', currentUser);
+                          this.set('flaggedReason', flaggedReason);
+                          this.send('updateProblem');
+                        }
+                      });
+                  } else {
+                    flaggedReason.reason = result.value;
+                    this.set('flaggedBy', currentUser);
+                    this.set('flaggedReason', flaggedReason);
+                    this.send('updateProblem');
+                  }
+                }
+              });
+          }
+        });
+      }
+    },
+
+    updateProblem: function () {
+      let problem = this.get('problem');
+      let currentUser = this.get('currentUser');
+      let title = this.get('problemName');
+      const quillContent = this.$('.ql-editor').html();
+      let text;
+      let isQuillValid;
+
+      if (quillContent !== undefined) {
+        text = quillContent.replace(/["]/g, "'");
+        isQuillValid = this.isQuillValid();
+      } else {
+        text = problem.get('text');
+        isQuillValid = true;
+      }
+      let privacy = this.get('privacySetting');
+      let additionalInfo = this.get('additionalInfo');
+      let copyright = this.get('copyrightNotice');
+      let sharingAuth = this.get('sharingAuth');
+      let flaggedReason = this.get('flaggedReason');
+
+      let author = this.get('author');
+      let status = this.get('generatedStatus');
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -344,8 +424,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('additionalInfo', additionalInfo);
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
-      problem.set('status', problemStatus);
       problem.set('author', author);
+      problem.set('status', status);
+      problem.set('flagReason', flaggedReason);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
@@ -604,6 +685,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('showCats', false);
       this.set('showAdditional', false);
       this.set('showGeneral', false);
+    },
+
+    toggleShowFlagReason: function () {
+      this.set('showFlagReason', !this.get('showFlagReason'));
     },
   }
 });

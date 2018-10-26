@@ -48,15 +48,27 @@
             {{{problem.text}}}
           {{/if}}
         </div>
-        {{#if currentUser.isAdmin}}
-        <p class="info-content-label">Organization</p>
-        <div class="info-content-block">
-          {{#if problem.organization}}
-            {{problem.organization.name}}
-          {{else}}
-            No Organization
+        {{#if problem.author}}
+          <p class="info-content-label">Author</p>
+          <div class="info-content-block">
+            {{#if isEditing}}
+              <div class="input-container">
+                {{input name="author" id="author" type="text" value=author}}
+              </div>
+            {{else}}
+              {{problem.author}}
+            {{/if}}
+          </div>
+        {{/if}}
+        {{#if problem.organization}}
+          {{#if currentUser.isAdmin}}
+          <p class="info-content-label">Organization</p>
+          <div class="info-content-block">
+            {{#if problem.organization}}
+              {{problem.organization.name}}
+            {{/if}}
+          </div>
           {{/if}}
-        </div>
         {{/if}}
         <p class="info-content-label">Problem Status</p>
         <div class="info-content-block">
@@ -82,6 +94,18 @@
             <span class="status-text">
               {{problem.status}}
             </span>
+            {{#if (is-equal problem.status 'flagged')}}
+              {{#if showFlagReason}}
+                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Hide</span>
+                <div class="flag-reason">
+                  <p class="reason"><strong>Reason:</strong> {{problem.flagReason.reason}}</p>
+                  <p class="details">By {{#link-to 'user' flaggedBy.username}}{{flaggedBy.username}}{{/link-to}} on {{format-date
+                    problem.flagReason.flaggedDate 'MMM Do YYYY'}}</p>
+                </div>
+              {{else}}
+                <span class="show-reason" {{action 'toggleShowFlagReason'}}>Why?</span>
+              {{/if}}
+            {{/if}}
           {{/if}}
         </div>
       {{/if}}
@@ -200,6 +224,12 @@
             <p>{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
           </div>
         {{/if}}
+        {{#if currentUser.isAdmin}}
+        <p class="info-content-label">Created By</p>
+        <div class="info-content-block">
+          <p>{{#link-to 'user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
+        </div>
+        {{/if}}
       {{/if}}
 
       {{#if showLegal}}
@@ -242,7 +272,9 @@
         {{#if isEditing}}
           <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
         {{else}}
-          <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+          <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Make a Copy of this Problem">
+            <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
+          </span>
         {{/if}}
       </span>
       <span class="right-buttons">
