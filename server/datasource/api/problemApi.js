@@ -140,7 +140,6 @@ const getProblems = async function(req, res, next) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
-    let isUsingTextSearch = false;
 
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
@@ -275,17 +274,19 @@ const getProblems = async function(req, res, next) {
 
     let sortParam = {title: 1};
     let doCollate = true;
+    let byRelevance = false;
 
     if (sortBy) {
       sortParam = sortBy.sortParam;
       doCollate = sortBy.doCollate;
+      byRelevance = sortBy.byRelevance;
     }
     const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
     let results, itemCount;
 
-    if (isUsingTextSearch) {
+    if (byRelevance) {
       [ results, itemCount ] = await Promise.all([
-        models.Problem.find(criteria, { score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Problem.find(criteria, { score: {$meta: "textScore"}}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
         models.Problem.count(criteria)
       ]);
     } else if (doCollate) {

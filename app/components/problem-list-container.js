@@ -460,6 +460,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   buildSortBy: function() {
+    if (this.get('searchByRelevance')) {
+      return {
+        sortParam: {
+          score: { $meta: "textScore" }
+        },
+        doCollate: false,
+        byRelevance: true
+      };
+    }
+
     let criterion = this.get('sortCriterion');
     if (!criterion) {
       return { title: 1, doCollate: true };
@@ -613,6 +623,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
         this.set('isSearchingProblems', false);
       }
 
+      if (this.get('searchByRelevance')) {
+        this.set('searchByRelevance', false);
+      }
+
       if (this.get('isChangingPage')) {
         this.set('isChangingPage', false);
       }
@@ -635,6 +649,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     },
 
     searchProblems(val, criterion) {
+      if (criterion === 'all' || criterion === 'category') {
+        this.set('searchByRelevance', true);
+      }
       this.set('searchQuery', val);
       this.set('searchCriterion', criterion);
       this.set('isSearchingProblems', true);

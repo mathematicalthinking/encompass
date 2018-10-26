@@ -15,6 +15,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   approvedProblem: false,
   noLegalNotice: null,
   showCategories: false,
+  keywords: [],
 
   init: function () {
     this._super(...arguments);
@@ -33,6 +34,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       };
     this.set('tooltips', tooltips);
     this.set('selectedCategories', []);
+    this.set('keywordFilter', this.createKeywordFilter.bind(this));
   },
 
   didInsertElement: function() {
@@ -97,7 +99,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     let copyrightNotice = that.get('copyrightNotice');
     let sharingAuth = that.get('sharingAuth');
     let additionalImage = that.get('additionalImage');
-    var author = that.get('author');
+    let author = that.get('author');
+    let keywords = that.get('keywords');
 
     if (!this.get('approvedProblem')) {
       this.set('noLegalNotice', true);
@@ -133,7 +136,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       status: status,
       copyrightNotice: copyrightNotice,
       sharingAuth: sharingAuth,
-      author: author
+      author: author,
+      keywords: keywords
     });
 
     if (additionalImage) {
@@ -208,6 +212,21 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
           that.handleErrors(err, 'createProblemErrors', createProblemData);
         });
       }
+    },
+
+    createKeywordFilter(keyword) {
+      if (!keyword) {
+        return;
+      }
+      let keywords = this.$('#select-add-keywords')[0].selectize.items;
+
+      let keywordLower = keyword.trim().toLowerCase();
+
+      let keywordsLower = _.map(keywords, (key, val) => {
+        return key.toLowerCase();
+      });
+      // don't let user create keyword if it matches exactly an existing keyword
+      return !_.contains(keywordsLower, keywordLower);
     },
 
 
@@ -383,6 +402,21 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         this.send('showAdditional');
       }
     },
+
+    updateKeywords(val, $item) {
+      if (!val) {
+        return;
+      }
+      let keywords = this.get('keywords');
+
+      let isRemoval = _.isNull($item);
+
+      if (isRemoval) {
+        keywords.removeObject(val);
+        return;
+      }
+      keywords.addObject(val);
   }
+}
 });
 

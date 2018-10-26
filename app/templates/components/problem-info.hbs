@@ -165,17 +165,34 @@
         </div>
         <p class="info-content-label">Problem Keywords</p>
         <div class="info-content-block">
-          {{#if problem.keywords}}
-            <ul>
-              {{#each problem.keywords as |keyword|}}
-              <li>
-                {{keyword}}
-              </li>
-              {{/each}}
-            </ul>
-          {{else}}
-            No Problem Keywords
+          {{#if isEditing}}
+            {{selectize-input
+            inputId="select-edit-keywords"
+            onItemAdd=(action "updateKeywords")
+            onItemRemove=(action "updateKeywords")
+            maxItems=5
+            create=true
+            createFilter=keywordFilter
+            persist=false
+            initialItems=problem.keywords
+            initialOptions=keywordSelectOptions
+            labelField="label"
+            valueField="value"
+          }}
+            {{else}}
+              {{#if problem.keywords}}
+                <ul>
+                  {{#each problem.keywords as |keyword|}}
+                  <li>
+                    {{keyword}}
+                  </li>
+                  {{/each}}
+                </ul>
+              {{else}}
+                No Problem Keywords
+              {{/if}}
           {{/if}}
+
         </div>
       {{/if}}
 

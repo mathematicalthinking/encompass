@@ -98,7 +98,16 @@
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.keywords}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
-          add keywords
+          {{selectize-input
+            inputId="select-add-keywords"
+            onItemAdd=(action "updateKeywords")
+            onItemRemove=(action "updateKeywords")
+            maxItems=5
+            create=true
+            createFilter=keywordFilter
+            persist=false
+
+          }}
         </div>
       {{/if}}
 
