@@ -146,11 +146,10 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
                   .then((result) => {
                     if (result.value) {
                       this.send('updateStatus', record, value, displayKey, result.value);
-
                     }
                   });
                 } else {
-                  this.send('updateStatus', record, value, displayKey);
+                  this.send('updateStatus', record, value, displayKey, result.value);
                 }
               }
             });
@@ -174,7 +173,12 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       }
       record.set('status', value);
       if (reason) {
-        record.set('flagReason', reason);
+        let flagReason = {
+          flaggedBy: this.get('currentUser.id'),
+          reason: reason,
+          flaggedDate: new Date(),
+        };
+        record.set('flagReason', flagReason);
       }
       record.save()
       .then((record) => {

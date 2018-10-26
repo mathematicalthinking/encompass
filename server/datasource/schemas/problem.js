@@ -34,10 +34,12 @@ var ProblemSchema = new Schema({
   keywords: [{ type: String }],
   isUsed: { type: Boolean, 'default': false },
   status: { type: String, enum: ['approved', 'pending', 'flagged'] },
-  flagReason: { type: String }
+  flagReason: {
+    flaggedBy: { type: ObjectId, ref: 'User' },
+    reason: { type: String },
+    flaggedDate: { type: Date, default: Date.now() },
+  }
 }, { versionKey: false });
-
-
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:
