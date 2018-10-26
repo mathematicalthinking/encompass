@@ -140,9 +140,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
   didInsertElement() {
     let width = this.$().css('width');
-    if (width < '430px') {
+    let widthNum = parseInt(width, 10);
+    console.log('width', widthNum);
+    if (widthNum <= 430) {
       this.send('setGrid');
-    }
+      console.log('setGrid', width);
+    } 
 
     let doHideOutlet = this.get('doHideOutlet');
     if (_.isUndefined(doHideOutlet)) {
