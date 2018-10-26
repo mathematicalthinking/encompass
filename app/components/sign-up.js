@@ -96,8 +96,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     });
   },
   getSimilarOrgs(orgRequest) {
-    // trim and remove all whitespaces when comparing strings so that strings such as
-    // n c t m will count as similar compared to NCTM
+    let stopWords = ['university', 'college', 'school', 'the', 'and', 'of', 'for', ' '];
 
     let orgs = this.get('organizations')
 
@@ -107,14 +106,14 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
     let sliced = orgs.toArray().slice();
 
-    let trimmed = orgRequest.trim();
-    let noSpaces = trimmed.replace(/\s/g, '');
+    let requestCompare = this.get('similarity').convertStringForCompare(orgRequest, stopWords);
 
     let similarOrgs = _.filter(sliced, (org => {
       let name = org.get('name');
-      let score = this.get('similarity').compareTwoStrings(name, noSpaces);
+      let compare = this.get('similarity').convertStringForCompare(name, stopWords);
+      let score = this.get('similarity').compareTwoStrings(compare, requestCompare);
       console.log(`Score comparing requestedOrg: ${orgRequest} versus org: ${name} is: ${score}`);
-      return score > 0.2;
+      return score > 0.5;
     }));
     return similarOrgs;
   },
