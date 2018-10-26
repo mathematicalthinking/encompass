@@ -28,6 +28,12 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     flagged: '#EB5757'
   },
   problemStatusOptions: ['approved', 'pending', 'flagged'],
+  flagOptions: {
+    'inappropiate': 'Inappropriate Content',
+    'ip': 'Intellectual Property Concern',
+    'substance': 'Lacking Substance',
+    'other': 'Other Reason'
+  },
 
   init: function () {
     this._super(...arguments);
@@ -271,6 +277,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     checkPrivacy: function() {
+      console.log('checkPrivacy running');
       let currentPrivacy = this.problem.get('privacySetting');
       let privacy = $("#privacy-select :selected").val();
       this.set('privacySetting', privacy);
@@ -279,35 +286,23 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
         .then((result) => {
           if (result.value) {
-            this.send('updateProblem');
+            // this.send('updateProblem');
+            this.send('setStatus');
           }
         });
       } else {
-        this.send('updateProblem');
+        // this.send('updateProblem');
+        this.send('setStatus');
       }
     },
 
-    updateProblem: function () {
+    setStatus: function () {
+      console.log('inside set status');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
       let accountType = currentUser.get('accountType');
-      let title = this.get('problemName');
-      const quillContent = this.$('.ql-editor').html();
-      let text;
-      let isQuillValid;
-
-      if (quillContent !== undefined) {
-        text = quillContent.replace(/["]/g, "'");
-        isQuillValid = this.isQuillValid();
-      } else {
-        text = problem.get('text');
-        isQuillValid = true;
-      }
       let privacy = this.get('privacySetting');
       let originalPrivacy = problem.get('privacySetting');
-      let additionalInfo = this.get('additionalInfo');
-      let copyright = this.get('copyrightNotice');
-      let sharingAuth = this.get('sharingAuth');
       let status;
 
       if (originalPrivacy !== privacy) {
@@ -330,9 +325,99 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         status = this.get('problemStatus');
       }
 
-      let problemStatus = status;
-      let author = this.get('author');
+      this.set('generatedStatus', status);
+      console.log('generatedStatus is', this.get('generatedStatus'));
 
+      if (accountType === "A" || accountType === "P") {
+        console.log('admin or pdadmin user');
+        this.send('checkStatus');
+      } else {
+        this.send('updateProblem');
+      }
+    },
+
+    checkStatus: function () {
+      let status = this.get('generatedStatus');
+      let problem = this.get('problem');
+
+      if (status === "approved" || status === "pending") {
+        problem.set('flagReason', null);
+        this.send('updateProblem');
+      } else if (status === "flagged" && !problem.get('flagReason')) {
+        this.get('alert').showModal('warning', `Are you sure you want to mark as flagged`, null, `Yes, Flag it!`).then((result) => {
+          if (result.value) {
+            this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
+              .then((result) => {
+                if (result.value) {
+                  if (result.value === 'other') {
+                    this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
+                      .then((result) => {
+                        if (result.value) {
+                          console.log('result value is', result.value);
+                        }
+                      });
+                  } else {
+                    this.set('flagReason.flaggedBy', this.currentUser.get('id'));
+                    this.set('flagReason.reason', result.value);
+                    this.set('flagReason.flaggedDate', new Date());
+                    console.log('result value is', result.value);
+                  }
+                }
+              });
+          }
+        });
+        console.log('problem is changing to flagged');
+      }
+    },
+
+    updateProblem: function () {
+      let problem = this.get('problem');
+      let currentUser = this.get('currentUser');
+      // let accountType = currentUser.get('accountType');
+      let title = this.get('problemName');
+      const quillContent = this.$('.ql-editor').html();
+      let text;
+      let isQuillValid;
+
+      if (quillContent !== undefined) {
+        text = quillContent.replace(/["]/g, "'");
+        isQuillValid = this.isQuillValid();
+      } else {
+        text = problem.get('text');
+        isQuillValid = true;
+      }
+      let privacy = this.get('privacySetting');
+      // let originalPrivacy = problem.get('privacySetting');
+      let additionalInfo = this.get('additionalInfo');
+      let copyright = this.get('copyrightNotice');
+      let sharingAuth = this.get('sharingAuth');
+
+      // let status;
+
+      // if (originalPrivacy !== privacy) {
+      //   if (accountType === "A") {
+      //     status = this.get('problemStatus');
+      //   } else if (accountType === "P") {
+      //     if (privacy === "E") {
+      //       status = 'pending';
+      //     } else {
+      //       status = this.get('problemStatus');
+      //     }
+      //   } else {
+      //     if (privacy === "M") {
+      //       status = 'approved';
+      //     } else {
+      //       status = 'pending';
+      //     }
+      //   }
+      // } else {
+      //   status = this.get('problemStatus');
+      // }
+
+      // let problemStatus = status;
+
+      let author = this.get('author');
+      let status = this.get('generatedStatus');
 
       if (!title || !isQuillValid|| !privacy) {
         this.set('isMissingRequiredFields', true);
@@ -352,8 +437,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('additionalInfo', additionalInfo);
       problem.set('copyrightNotice', copyright);
       problem.set('sharingAuth', sharingAuth);
-      problem.set('status', problemStatus);
       problem.set('author', author);
+      problem.set('status', status);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');
