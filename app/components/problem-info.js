@@ -277,7 +277,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     checkPrivacy: function() {
-      console.log('checkPrivacy running');
       let currentPrivacy = this.problem.get('privacySetting');
       let privacy = $("#privacy-select :selected").val();
       this.set('privacySetting', privacy);
@@ -286,18 +285,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         this.get('alert').showModal('question', 'Are you sure you want to make your problem public?', "You are changing your problem's privacy status to public. This means it will be accessible to all EnCoMPASS users. You will not be able to make any changes to this problem once it has been used", 'Yes')
         .then((result) => {
           if (result.value) {
-            // this.send('updateProblem');
             this.send('setStatus');
           }
         });
       } else {
-        // this.send('updateProblem');
         this.send('setStatus');
       }
     },
 
     setStatus: function () {
-      console.log('inside set status');
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
       let accountType = currentUser.get('accountType');
@@ -326,10 +322,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       this.set('generatedStatus', status);
-      console.log('generatedStatus is', this.get('generatedStatus'));
 
       if (accountType === "A" || accountType === "P") {
-        console.log('admin or pdadmin user');
         this.send('checkStatus');
       } else {
         this.send('updateProblem');
@@ -337,14 +331,21 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     checkStatus: function () {
+      let currentUser = this.get('currentUser');
       let status = this.get('generatedStatus');
       let problem = this.get('problem');
+      let title = this.get('problemName');
+      let flaggedReason = {
+        flaggedBy: currentUser.get('id'),
+        reason: '',
+        flaggedDate: new Date(),
+      };
 
       if (status === "approved" || status === "pending") {
-        problem.set('flagReason', null);
+        this.set('flaggedReason', null);
         this.send('updateProblem');
       } else if (status === "flagged" && !problem.get('flagReason')) {
-        this.get('alert').showModal('warning', `Are you sure you want to mark as flagged`, null, `Yes, Flag it!`).then((result) => {
+        this.get('alert').showModal('warning', `Are you sure you want to mark ${title} as flagged`, null, `Yes, Flag it!`).then((result) => {
           if (result.value) {
             this.get('alert').showPromptSelect('Flag Reason', this.get('flagOptions'), 'Select a reason')
               .then((result) => {
@@ -353,27 +354,28 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
                     this.get('alert').showPrompt('text', 'Other Flag Reason', 'Please provide a brief explanation for why this problem should be flagged.', 'Flag')
                       .then((result) => {
                         if (result.value) {
-                          console.log('result value is', result.value);
+                          flaggedReason.reason = result.value;
+                          this.set('flaggedBy', currentUser.get('username'));
+                          this.set('flaggedReason', flaggedReason);
+                          this.send('updateProblem');
                         }
                       });
                   } else {
-                    this.set('flagReason.flaggedBy', this.currentUser.get('id'));
-                    this.set('flagReason.reason', result.value);
-                    this.set('flagReason.flaggedDate', new Date());
-                    console.log('result value is', result.value);
+                    flaggedReason.reason = result.value;
+                    this.set('flaggedBy', currentUser.get('username'));
+                    this.set('flaggedReason', flaggedReason);
+                    this.send('updateProblem');
                   }
                 }
               });
           }
         });
-        console.log('problem is changing to flagged');
       }
     },
 
     updateProblem: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
-      // let accountType = currentUser.get('accountType');
       let title = this.get('problemName');
       const quillContent = this.$('.ql-editor').html();
       let text;
@@ -387,34 +389,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         isQuillValid = true;
       }
       let privacy = this.get('privacySetting');
-      // let originalPrivacy = problem.get('privacySetting');
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
-
-      // let status;
-
-      // if (originalPrivacy !== privacy) {
-      //   if (accountType === "A") {
-      //     status = this.get('problemStatus');
-      //   } else if (accountType === "P") {
-      //     if (privacy === "E") {
-      //       status = 'pending';
-      //     } else {
-      //       status = this.get('problemStatus');
-      //     }
-      //   } else {
-      //     if (privacy === "M") {
-      //       status = 'approved';
-      //     } else {
-      //       status = 'pending';
-      //     }
-      //   }
-      // } else {
-      //   status = this.get('problemStatus');
-      // }
-
-      // let problemStatus = status;
+      let flaggedReason = this.get('flaggedReason');
 
       let author = this.get('author');
       let status = this.get('generatedStatus');
@@ -439,6 +417,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       problem.set('sharingAuth', sharingAuth);
       problem.set('author', author);
       problem.set('status', status);
+      problem.set('flagReason', flaggedReason);
 
       if(this.filesToBeUploaded) {
         var uploadData = this.get('filesToBeUploaded');

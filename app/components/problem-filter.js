@@ -92,9 +92,7 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
 
     toggleCategoryFilters() {
-      console.log('clicked toggle category filters arrow');
       this.set('showCategoryFilters', !this.get('showCategoryFilters'));
-      console.log('showCategoryFilters', this.get('showCategoryFilters'));
     },
 
     showCategoryMenu() {
