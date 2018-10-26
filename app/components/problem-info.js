@@ -38,6 +38,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   init: function () {
     this._super(...arguments);
+    this.set('keywordFilter', this.createKeywordFilter.bind(this));
+
     this.get('store').findAll('section').then(sections => {
       this.set('sectionList', sections);
     }).catch((err) => {
@@ -185,6 +187,31 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return false;
   },
 
+  keywordSelectOptions: function() {
+    let keywords = this.get('problem.keywords');
+    return _.map(keywords, (keyword) => {
+      return {
+        value: keyword,
+        label: keyword
+      };
+    });
+  }.property('problem.keywords.[]'),
+
+  createKeywordFilter(keyword) {
+    if (!keyword) {
+      return;
+    }
+    let keywords = this.$('#select-edit-keywords')[0].selectize.items;
+    let keywordLower = keyword.trim().toLowerCase();
+
+    let keywordsLower = _.map(keywords, (key, val) => {
+      return key.toLowerCase();
+    });
+    console.log('keywordslower', keywordsLower);
+    // don't let user create keyword if it matches exactly an existing keyword
+    return !_.contains(keywordsLower, keywordLower);
+  },
+
   actions: {
     deleteProblem: function () {
       let problem = this.get('problem');
@@ -230,6 +257,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('sharingAuth', problem.get('sharingAuth'));
       this.set('privacySettingIcon', problem.get('privacySetting'));
 
+      let keywords = problem.get('keywords') || [];
+
+      let keywordsCopy = keywords.slice();
+      this.set('initialKeywords', keywordsCopy);
 
       if (!problem.get('isUsed')) {
         this.get('store').queryRecord('assignment', {
@@ -401,6 +432,11 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let additionalInfo = this.get('additionalInfo');
       let copyright = this.get('copyrightNotice');
       let sharingAuth = this.get('sharingAuth');
+
+      let keywords = problem.get('keywords');
+      let initialKeywords = this.get('initialKeywords');
+      let didKeywordsChange = !_.isEqual(keywords, initialKeywords);
+
       let flaggedReason = this.get('flaggedReason');
 
       let author = this.get('author');
@@ -494,7 +530,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
         }
       } else {
-        if (problem.get('hasDirtyAttributes')) {
+        if (problem.get('hasDirtyAttributes') || didKeywordsChange) {
           problem.set('modifiedBy', currentUser);
           problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Updated', 'bottom-end', 3000, false, null);
@@ -529,6 +565,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let categories = problem.get('categories');
       let status = problem.get('status');
       let currentUser = this.get('currentUser');
+      let keywords = this.get('keywords');
       let organization = currentUser.get('organization');
 
       let newProblem = this.store.createRecord('problem', {
@@ -544,7 +581,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         organization: organization,
         privacySetting: "M",
         status: status,
-        createDate: new Date()
+        createDate: new Date(),
+        keywords: keywords
       });
 
       newProblem.save()
@@ -690,5 +728,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     toggleShowFlagReason: function () {
       this.set('showFlagReason', !this.get('showFlagReason'));
     },
+    updateKeywords(val, $item) {
+      if (!val) {
+        return;
+      }
+
+      let keywords = this.get('problem.keywords');
+      let isRemoval = _.isNull($item);
+
+      if (isRemoval) {
+        keywords.removeObject(val);
+        return;
+      }
+      keywords.addObject(val);
+  }
   }
 });
