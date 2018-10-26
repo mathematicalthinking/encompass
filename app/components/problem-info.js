@@ -110,6 +110,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   // Check if the current problem is yours, so that you can edit it
   canEdit: Ember.computed('problem.id', function() {
     let problem = this.get('problem');
+    let privacySetting = problem.get('privacySetting');
     let creator = problem.get('createdBy.content.id');
     let currentUser = this.get('currentUser');
     let accountType = currentUser.get('accountType');
@@ -118,8 +119,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (accountType === "A") {
       canEdit = true;
     } else if (accountType === "P") {
-      if (problem.get('organization.id') === currentUser.get('organization.id') || creator === currentUser.id) {
+      if (creator === currentUser.id) {
         canEdit = true;
+      }
+      if (problem.get('organization.id') === currentUser.get('organization.id')) {
+        if (privacySetting === "M" || privacySetting === "O") {
+          canEdit = true;
+        } else {
+          canEdit = false;
+        }
       }
     } else if (accountType === "T") {
       if (creator === currentUser.id) {
