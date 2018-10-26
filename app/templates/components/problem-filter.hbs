@@ -57,17 +57,18 @@
       </li>
     </ul>
   {{/if}}
-
-  <h3 {{action 'toggleMoreFilters'}} class="more-header">
-    <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
-  </h3>
-  {{#if showMoreFilters}}
-    <ul class="more-filter-list">
-      <h5>Trashed Problems</h5>
-      <label class="subfilter">
-        {{input id="toggle-trashed" type="checkbox" checked=showTrashedProblems change=(action "toggleTrashedProblems")}} <span>Show Trashed Problems</span>
-      </label>
-    </ul>
+  {{#if currentUser.isAdmin}}
+    <h3 {{action 'toggleMoreFilters'}} class="more-header">
+      <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
+    </h3>
+    {{#if showMoreFilters}}
+      <ul class="more-filter-list">
+        <h5>Trashed Problems</h5>
+        <label class="subfilter">
+          {{input id="toggle-trashed" type="checkbox" checked=showTrashedProblems change=(action "toggleTrashedProblems")}} <span>Show Trashed Problems</span>
+        </label>
+      </ul>
+    {{/if}}
   {{/if}}
 </div>
 

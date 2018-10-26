@@ -101,6 +101,10 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('showMoreFilters', !this.get('showMoreFilters'));
     },
 
+    toggleTrashedProblems() {
+      console.log('toggle trashed problems clicked');
+    },
+
     showCategoryMenu() {
       this.get('store').query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
