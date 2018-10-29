@@ -33,7 +33,7 @@ module.exports = {
       name: 'input[name=name]',
       email: 'input[name=email]',
       confirmEmail: 'input[name=confirmEmail]',
-      organization: 'input.typeahead.tt-input',
+      organization: 'div.selectize-input input[type="select-one"]',
       location: 'input[name=location]',
       username: 'input[name=username]',
       password: 'input[name=password]',
