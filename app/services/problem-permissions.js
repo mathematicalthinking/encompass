@@ -11,6 +11,10 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     return problem.get('status') === 'approved';
   },
 
+  isUsed(problem) {
+    return problem.get('isUsed');
+  },
+
 
 
   canDelete(problem) {
@@ -23,7 +27,12 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
       return true;
     }
 
-    // if creator, return true
+    // only admins can edit problems that have been used (answers submitted)
+    if (this.isUsed(problem)) {
+      return false;
+    }
+
+    // if creator
     if (this.get('base').isCreator(problem)) {
       return true;
     }
@@ -59,7 +68,12 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
       return true;
     }
 
-    // if creator, return true
+    // only admins can edit problems that have been used (answers submitted)
+    if (this.isUsed(problem)) {
+      return false;
+    }
+
+    // if creator
     if (this.get('base').isCreator(problem)) {
       return true;
     }
