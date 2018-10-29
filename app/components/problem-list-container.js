@@ -1,4 +1,4 @@
-Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.CategoriesListMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
   showList: true,
   menuClosed: true,
@@ -48,7 +48,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   doUseSearchQuery: Ember.computed.or('isSearchingProblems', 'isDisplayingSearchResults'),
   selectedPrivacySetting: ['M', 'O', 'E'],
-  categoriesFilter: [],
   doIncludeSubCategories: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
 
@@ -108,12 +107,19 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     };
   }.property('selectedPrivacySetting'),
 
+  observeCategoryFilter: function() {
+    this.set('categoriesFilter', this.get('selectedCategories'));
+    this.send('triggerFetch');
+  }.observes('categoriesFilter.[]'),
+
   init: function() {
     this.getUserOrg()
     .then((name) => {
       this.set('userOrgName', name );
       this.configureFilter();
       this.configurePrimaryFilter();
+
+      this.set('categoriesFilter', this.get('selectedCategories'));
     });
 
     this._super(...arguments);
@@ -519,8 +525,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       let privacySetting = this.get('privacySettingFilter');
       filterBy.privacySetting = privacySetting;
     }
-
-
     let categoriesFilter = this.get('categoriesFilter');
 
     if (!_.isEmpty(categoriesFilter)) {
