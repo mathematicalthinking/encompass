@@ -12,10 +12,13 @@ async function getStudentProblems(user) {
 }
 
 
-const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy) {
+const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
   try {
     if (!user) {
       return [];
+    }
+    if (isTrashedOnly) {
+      return { isTrashed: true };
     }
     let filter = {
       $and: []
