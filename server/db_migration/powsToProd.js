@@ -95,15 +95,13 @@ async function getOrCreatePowUser() {
     console.log(`user old_pows_user already exists`);
     oldUser = users[0];
     // make sure oldUser is not trashed
-    if (oldUser.isTrashed || oldUser.actingRole !== 'student') {
-      oldUser.isTrashed = false;
-      oldUser.actingRole = 'student';
-      try {
-        await oldUser.save();
-        console.log(oldUser.username + " saved.");
-      } catch (err) {
-        console.error(`ERROR saving ${oldUser.username} - ${err}`);
-      }
+    oldUser.isTrashed = false;
+    oldUser.actingRole = 'student';
+    try {
+      await oldUser.save();
+      console.log(oldUser.username + " saved.");
+    } catch (err) {
+      console.error(`ERROR saving ${oldUser.username} - ${err}`);
     }
     return oldUser;
 
@@ -740,6 +738,7 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
   console.log(`Starting createAnswersFromPows `);
   let addCount = 0;
   let skipCount = 0;
+  let updateCount = 0;
   let publicCount = 0;
   let privateCount = 0;
   let answerWithImages = 0;
@@ -751,91 +750,113 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
     // const res = await pgClient.query(`select ps.id from pow_submissions ps inner join pow_uploaded_files up on up.id = ps.uploaded_file_id offset 0;`);
     // get pow puzzle ids for looping (with multiple promises).
     const resIds = res.rows.map(d => d.id)
-    console.log(`There are ${resIds.length} resIds`)
-    for (let id of resIds) {
-      // console.log(`------------------------------`);
-      // console.log(`createAnswersFromPows POWs response id: ${id}`);
-      const powsSubs = await pgClient.query(`select
-      pz.id as puzzleId, pb.publicationlivedate as pubDate,
-      pb.solutiontype as pubType, pb.commentary as pubCommentary,
-      pb.notepad as pubNotes, pt.status as threadStatus, pt.current_submission as currentSubmission,
-      ps.id as subId, ps.status as subStatus, ps.createdate as subDate, ps.shortanswer as shortAnswer,
-      ps.longanswer as longAnswer, u.first_name as firstName, u.last_name as lastName,
-      up.savedfilename as upImg
-      from pow_submissions ps
-      left join pow_threads pt on pt.id = ps.thread_id
-      left join pow_publications pb on pb.id = pt.publication
-      left join pow_puzzles pz on pz.id = pb.puzzle
-      left join dir_users u on u.id = ps.creator
-      left join pow_uploaded_files up on up.id = ps.uploaded_file_id
-      where ps.id = ${id}`);
-      if (powsSubs.length === 0) {
-        console.error(`ERROR - cannot find answer (${powsSubs.length}) for submission ${id}`)
-      } else if (powsSubs.length > 1) {
-        console.error(`ERROR - More than one answer (${powsSubs.length}) for submission ${id}`)
-      } else {
-        const powSub = powsSubs.rows[0];
-        // console.log(`keys available: ${Object.keys(pows_sub)}`);
-        // puzzleid,pubdate,pubtype,pubcommentary,pubnotes,threadstatus,currentsubmission,subid,substatus,subdate,shortanswer,longanswer,firstname,lastname
-        const problems = await models.Problem.find({puzzleId: powSub.puzzleId}).exec();
+    // console.log(`There are ${resIds} resIds`)
+    return Promise.all(resIds.map( async (id) => {
+      let powSub;
+      let problem;
+      let encAnswer;
+      // console.log(`resid: ${id}`)
+      return pgClient.query(`select
+        pz.id as puzzleId, pb.publicationlivedate as pubDate,
+        pb.solutiontype as pubType, pb.commentary as pubCommentary,
+        pb.notepad as pubNotes, pt.status as threadStatus, pt.current_submission as currentSubmission,
+        ps.id as subId, ps.status as subStatus, ps.createdate as subDate, ps.shortanswer as shortAnswer,
+        ps.longanswer as longAnswer, u.first_name as firstName, u.last_name as lastName,
+        up.savedfilename as upImg
+        from pow_submissions ps
+        left join pow_threads pt on pt.id = ps.thread_id
+        left join pow_publications pb on pb.id = pt.publication
+        left join pow_puzzles pz on pz.id = pb.puzzle
+        left join dir_users u on u.id = ps.creator
+        left join pow_uploaded_files up on up.id = ps.uploaded_file_id
+        where ps.id = ${id}`)
+      .then( (powsSubs) => {
+        powSub = powsSubs.rows[0];
+        // console.log(`\n powSub['puzzleid']: ${powSub['puzzleid']}`);
+        return models.Problem.find({puzzleId: powSub.puzzleId}).exec();
+      })
+      .then ( (problems) => {
         // find existing encompass problem
-        let problem;
-        let encAnswer;
-        if (problems.length > 0) {
+        if (problems.length === 0) {
+          skipCount += 1;
+          return
+        } else {
           problem = problems[0];
+          // console.log(`\n ${powSub['subid']} ${powSub['puzzleid']} ${problem['title']}`)
           // console.log(`found problem for POWs submission: ${problems[0].title} by ${powSub.firstname} ${powSub.lastname}`);
           if (problem.privacySetting !== 'M') {
             publicCount += 1;
           } else {
             privateCount += 1;
           }
-          const answers = await models.Answer.find({powsSubmId: powSub.subid}).exec();
-          // find existing encompass answer
-          if (answers.length > 0) {
-            if (answers.length > 1) {
-              console.error(`ERROR - found ${answers.length} existing encompass answers for submission ${powSub.subid}`)
-            }
-            encAnswer = answers[0];
-            // console.log(`found answer for POWs submission ID: ${encAnswer.powsSubmId}`);
-            skipCount += 1;
-          } else {
-            // console.log(`create new answer for ID: ${powSub.subid}, shortanswer: ${powSub.shortanswer}`)
-            encAnswer = new models.Answer({
-              createdBy: powsUser._id,
-              createDate: powSub.subdate,
-              problem: problem._id,
-              answer: powSub.shortanswer,
-              explanation: powSub.longanswer,
-              // no section
-              // students are by name not encompass user
-              studentNames: [ fullName(powSub.firstname, powSub.lastname) ],
-              // don't need priorAnswer, correct???
-              isSubmitted: (powSub.substatus === "SUBMITTED" ? true : false),
-              notes: `Publish Date: ${powSub.pubdate}, Type: ${powSub.pubtype}, Notes: ${powSub.pubnotes}, Commentary: ${powSub.pubcommentary}`,
-              powsSubmId: powSub.subid,
-              isTrashed: (problem.privacySetting === 'M')
-            });
-            addCount += 1;
-
-            try {
-              await encAnswer.save();
-              // console.log(encAnswer.powsSubmId + " saved.");
-            } catch (err) {
-              console.error(`ERROR saving ${encAnswer.subId} - ${err}`);
-            }
+          // console.log(`subid: ${powSub['subid']}`);
+          return models.Answer.find({powsSubmId: powSub['subid']}).exec();
+        }
+      })
+      .then ( (answers) => {
+        // find existing encompass problem
+        if (answers.length > 0) {
+          if (answers.length > 1) {
+            console.error(`ERROR - found ${answers} existing encompass answers for submission ${powSub.subid}`)
+            // console.log(`answers > 1, using first`);
           }
-        } else {
-          // if no problem, then we do not want an answer (we dropped KenKen problems)
+          encAnswer = answers[0];
+          // console.log(`found answer for POWs submission ID: ${encAnswer.powsSubmId}`);
           skipCount += 1;
+          // console.log(`answers === 1`);
+        } else {
+          // console.log(`create new answer for ID: ${powSub.subid}, shortanswer: ${powSub.shortanswer}`)
+          encAnswer = new models.Answer({
+            createdBy: powsUser._id,
+            createDate: powSub.subdate,
+            problem: problem._id,
+            answer: powSub.shortanswer,
+            explanation: powSub.longanswer,
+            // no section
+            // students are by name not encompass user
+            studentNames: [ fullName(powSub.firstname, powSub.lastname) ],
+            // don't need priorAnswer, correct???
+            isSubmitted: (powSub.substatus === "SUBMITTED" ? true : false),
+            notes: `Publish Date: ${powSub.pubdate}, Type: ${powSub.pubtype}, Notes: ${powSub.pubnotes}, Commentary: ${powSub.pubcommentary}`,
+            powsSubmId: powSub.subid,
+            isTrashed: (problem.privacySetting === 'M')
+          });
+          addCount += 1;
+          // console.log(`new answer`);
         }
         // console.log(`\n------------------------------------------------------------`);
-        // console.log(`answer ${encAnswer.powsSubmId} to problem "${problem.title}"`)
-      }
-      // feedback mechanism to indicate progress on conversion
-      if ( ((addCount+skipCount) % 1000) === 0) {
-        console.log(`processed ${addCount+skipCount} records`)
-      }
-    }
+        // console.log(`initial encAnswer.explanation: ${encAnswer.explanation}`);
+        // insert any images into short answer
+        encAnswer.answer = insertImagesIntoAnswers(powSub.shortanswer, errorPublicStream, errorPrivateStream, problem);
+        // insert any images into explanation (long answer)
+        encAnswer.explanation = insertImagesIntoAnswers(powSub.longanswer, errorPublicStream, errorPrivateStream, problem);
+        // if an upload image is provided, attach it to the end of the explanation (long answer)
+        if (powSub.upimg) {
+          let imgRet = imageToBase64(powSub.upimg);
+          if (imgRet.imgB64 !== '') {
+            // console.log(`summission with image: ${powSub.subid}`)
+            encAnswer.explanation = `<div id="origAnswer">${powSub.longanswer}</div><div id="uploadedImg"><img src="${imgRet.imgB64}"/></div>`
+          }
+        }
+        return encAnswer.save();
+      })
+      .then ( (answer) => {
+        updateCount += 1;
+        if ( ((updateCount) % 1000) === 0) {
+          console.log(`processed ${updateCount} records`)
+        }
+        return;
+      })
+      .catch ( (err) => {
+        console.log(`createAnswersFromPows query error stack: ${err.stack}`);
+      })
+    }))
+    .then((answerData) => {
+      console.log(' answerData length', answerData.length);
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
   } catch (err) {
     console.log(`createAnswersFromPows query error stack: ${err.stack}`);
   }
@@ -866,102 +887,6 @@ function newAnswer(powsUser, powSub, problem) {
     isTrashed: (problem.privacySetting === 'M')
   });
   return encAnswer;
-}
-
-
-async function updateAnswersImages(pgClient, powsUser, ePublicStr, ePrivateStr) {
-  console.log(`Starting updateAnswersImages `);
-  let updateCount = 0;
-  try {
-    // try does not catch postgres server not running
-    // ToDo - try .then() to catch promise
-    const res = await pgClient.query(`select ps.id from pow_submissions ps left join pow_uploaded_files up on up.id = ps.uploaded_file_id WHERE up.id is not null OR ps.shortanswer like '%<img%src=%' OR ps.longanswer like '%<img%src=%';`);
-    // get pow puzzle ids for looping (with multiple promises).
-    const resIds = res.rows.map(d => d.id)
-    console.log(`There are ${resIds.length} resIds`)
-    for (let id of resIds) {
-      // console.log(`------------------------------`);
-      // console.log(`updateAnswersImages POWs response id: ${id}`);
-      const powsSubs = await pgClient.query(`select
-      pz.id as puzzleId, pb.publicationlivedate as pubDate,
-      pb.solutiontype as pubType, pb.commentary as pubCommentary,
-      pb.notepad as pubNotes, pt.status as threadStatus, pt.current_submission as currentSubmission,
-      ps.id as subId, ps.status as subStatus, ps.createdate as subDate, ps.shortanswer as shortAnswer,
-      ps.longanswer as longAnswer, u.first_name as firstName, u.last_name as lastName,
-      up.savedfilename as upImg
-      from pow_submissions ps
-      left join pow_threads pt on pt.id = ps.thread_id
-      left join pow_publications pb on pb.id = pt.publication
-      left join pow_puzzles pz on pz.id = pb.puzzle
-      left join dir_users u on u.id = ps.creator
-      left join pow_uploaded_files up on up.id = ps.uploaded_file_id
-      where ps.id = ${id}`);
-      if (powsSubs.length === 0) {
-        console.error(`ERROR - cannot find answer (${powsSubs.length}) for submission ${id}`)
-      } else if (powsSubs.length > 1) {
-        console.error(`ERROR - More than one answer (${powsSubs.length}) for submission ${id}`)
-      } else {
-        const powSub = powsSubs.rows[0];
-        // console.log(`keys available: ${Object.keys(pows_sub)}`);
-        // puzzleid,pubdate,pubtype,pubcommentary,pubnotes,threadstatus,currentsubmission,subid,substatus,subdate,shortanswer,longanswer,firstname,lastname
-        // // attempt to avoid deprecated open warning.
-        // Problem = monConn.model('Problem', schemas.Problem);
-        // const problems = await Problem.find({puzzleId: powSub.puzzleId}).exec();
-        const problems = await models.Problem.find({puzzleId: powSub.puzzleId}).exec();
-        // find existing encompass problem
-        let problem;
-        let encAnswer;
-        if (problems.length > 0) {
-          problem = problems[0];
-          // console.log(`Problem: ${problem.title}`);
-          const answers = await models.Answer.find({powsSubmId: powSub.subid}).exec();
-          // find existing encompass answer
-          if (answers.length > 0) {
-            if (answers.length > 1) {
-              console.error(`ERROR - found ${answers.length} existing encompass answers for submission ${powSub.subid}`)
-            }
-            encAnswer = answers[0];
-          } else {
-            // answer does not exist (creating here for dev purposes only)
-            encAnswer = newAnswer(powsUser, powSub, problem);
-          }
-          // console.log(`\n------------------------------------------------------------`);
-          // console.log(`initial encAnswer.explanation: ${encAnswer.explanation}`);
-          // insert any images into short answer
-          encAnswer.answer = insertImagesIntoAnswers(powSub.shortanswer, ePublicStr, ePrivateStr, problem);
-          // insert any images into explanation (long answer)
-          encAnswer.explanation = insertImagesIntoAnswers(powSub.longanswer, ePublicStr, ePrivateStr, problem);
-          // if an upload image is provided, attach it to the end of the explanation (long answer)
-          if (powSub.upimg) {
-            let imgRet = imageToBase64(powSub.upimg);
-            if (imgRet.imgB64 !== '') {
-              encAnswer.explanation = `<div id="origAnswer">${powSub.longanswer}</div><div id="uploadedImg"><img src="${imgRet.imgB64}"/></div>`
-            }
-          }
-          // console.log(`\n------------------------------------------------------------`);
-          // console.log(`updated encAnswer.explanation: ${encAnswer.explanation}`);
-          updateCount += 1;
-          try {
-            await encAnswer.save();
-            // console.log(encAnswer.powsSubmId + " saved.");
-          } catch (err) {
-            console.error(`ERROR saving ${encAnswer.subId} - ${err}`);
-          }
-        } else {
-          // if no problem, then we do not want an answer (we dropped KenKen problems)
-          updateCount += 1;
-        }
-      }
-      // feedback mechanism to indicate progress on conversion
-      if ( ((updateCount) % 1000) === 0) {
-        console.log(`processed ${updateCount} records`)
-      }
-    }
-  } catch (err) {
-    console.log(`updateAnswersImages query error stack: ${err.stack}`);
-  }
-  console.log(`updateAnswersImages ${updateCount} updates`);
-  console.log(`-------------------`);
 }
 
 
@@ -1025,8 +950,7 @@ async function update() {
     // await updateMiscPics(pgClient, pows_user, errorStream);
 
     // // updates for week of Oct 22
-    // await createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream);
-    await updateAnswersImages(pgClient, powsUser, errorPublicStream, errorPrivateStream);
+    await createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream);
 
     // close error stream
     // errorStream.end();
