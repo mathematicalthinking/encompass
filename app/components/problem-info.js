@@ -27,6 +27,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
+  canAssign: Ember.computed.alias('writePermissions.canAssign'),
 
   iconFillOptions: {
     approved: '#35A853',
@@ -80,8 +81,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this.set('showAssignment', false);
 
     let problem = this.get('problem');
-    // let isCreator = this.get('permissions.base').isCreator(problem);
-    // console.log('isCreator', isCreator);
     this.set('writePermissions', this.get('permissions').writePermissions(problem));
 
     this.get('store').findAll('section').then(sections => {
@@ -115,62 +114,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     return this.get('iconFillOptions')[status];
   }.property('problem.status'),
-
-  // We can access the currentUser using CurrentUserMixin, this is accessible because we extend it
-  // Check if the current problem is yours, so that you can edit it
-  // canEdit: Ember.computed('problem.id', function() {
-  //   let problem = this.get('problem');
-  //   let privacySetting = problem.get('privacySetting');
-  //   let creator = problem.get('createdBy.content.id');
-  //   let currentUser = this.get('currentUser');
-  //   let accountType = currentUser.get('accountType');
-  //   let canEdit;
-
-  //   if (accountType === "A") {
-  //     canEdit = true;
-  //   } else if (accountType === "P") {
-  //     if (creator === currentUser.id) {
-  //       canEdit = true;
-  //     }
-  //     if (problem.get('organization.id') === currentUser.get('organization.id')) {
-  //       if (privacySetting === "M" || privacySetting === "O") {
-  //         canEdit = true;
-  //       } else {
-  //         canEdit = false;
-  //       }
-  //     }
-  //   } else if (accountType === "T") {
-  //     if (creator === currentUser.id) {
-  //       canEdit = true;
-  //     }
-  //   } else {
-  //     canEdit = false;
-  //   }
-  //   return canEdit;
-  // }),
-
-  // canDelete: Ember.computed('problem.id', function () {
-  //   let problem = this.get('problem');
-  //   let currentUser = this.get('currentUser');
-  //   let currentUserType = currentUser.get('accountType');
-  //   let creator = problem.get('createdBy.content.id');
-  //   let canDelete;
-
-  //   if (currentUserType === "A") {
-  //     canDelete = true;
-  //   } else if (currentUserType === "P") {
-  //     if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
-  //       canDelete = true;
-  //     }
-  //   } else if (currentUserType === "T") {
-  //     if (problem.get('privacySetting') === "M") {
-  //       canDelete = true;
-  //     }
-  //   } else {
-  //     canDelete = false;
-  //   }
-  //   return canDelete;
-  // }),
 
   resetErrors: function() {
     let errors = ['updateProblemErrors', 'imageUploadErrors', 'isMissingRequiredFields'];
@@ -215,7 +158,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let keywordsLower = _.map(keywords, (key, val) => {
       return key.toLowerCase();
     });
-    console.log('keywordslower', keywordsLower);
+
     // don't let user create keyword if it matches exactly an existing keyword
     return !_.contains(keywordsLower, keywordLower);
   },
@@ -599,7 +542,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
         }).catch((err) => {
-          console.log('err is', err);
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
           // this.handleErrors(err, 'createRecordErrors', newProblem);
         });
