@@ -27,10 +27,15 @@
     </div>
     <div class="item-section action">
       {{#if currentUser.isAdmin}}
-        {{#if (is-equal problem.status 'approved')}}
-          <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
-          {{else}}
-          <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+        {{#unless problem.isTrashed}}
+          {{#if (is-equal problem.status 'approved')}}
+            <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
+            {{else}}
+            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+          {{/if}}
+        {{/unless}}
+        {{#if problem.isTrashed}}
+          <button {{action "restoreProblem"}} class="primary-button approve">Restore</button>
         {{/if}}
       {{else}}
         {{#if (is-equal problem.status 'approved')}}
