@@ -183,6 +183,10 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         return;
       }
 
+      if (this.get('incorrectUsername')) {
+        return;
+      }
+
       if (!doPasswordsMatch || !doEmailsMatch) {
         return;
       }
