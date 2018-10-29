@@ -704,6 +704,9 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     triggerShowTrashed() {
       this.send('triggerFetch', this.get('toggleTrashed'));
     },
+    sendtoApplication(categories) {
+      this.sendAction('sendtoApplication', categories);
+    },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');
       this.set('showGrid', true);
