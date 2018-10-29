@@ -5,16 +5,7 @@
   * @since 1.0.0
 */
 Encompass.ApplicationController = Ember.Controller.extend({
-  showCategoryList: true,
-
-  init: function() {
-    this._super(...arguments);
-    this.get('store').query('category', {}).then((queryCats) => {
-      let categories = queryCats.get('meta');
-      this.set('categoryTree', categories.categories);
-      this.set('showCategoryList', true);
-    });
-  },
+  showCategoryList: false,
 
   currentUser: function() {
     return this.get('model');
@@ -29,8 +20,8 @@ Encompass.ApplicationController = Ember.Controller.extend({
     toHome: function() {
       this.transitionToRoute('/');
     },
-    closeModal() {
+    closeModal: function() {
       this.set('showCategoryList', false);
-    },
+    }
   }
 });
