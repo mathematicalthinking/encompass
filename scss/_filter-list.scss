@@ -212,6 +212,10 @@
               padding: 15px 12px 10px 12px;
               a {
                 color: black;
+                &.active {
+                  font-weight: $bolder-font-weight;
+                  background-color: $background-body !important;
+                }
               }
               text-transform: capitalize;
               max-height: 22px;
@@ -224,6 +228,12 @@
               overflow: hidden;
               max-height: 86px;
               // max-width: 450px;
+              a {
+                &.active {
+                  font-weight: $bolder-font-weight;
+                  background-color: $background-body !important;
+                }
+              }
             }
             &.row-4 {
               @include flex-item(4, auto, 1 0 auto);
@@ -605,6 +615,10 @@
                   max-height: 48px;
                   a {
                     color: black;
+                    &.active {
+                      background-color: $background-body !important;
+                      font-weight: $bolder-font-weight;
+                    }
                   }
                 }
                 &.description {
