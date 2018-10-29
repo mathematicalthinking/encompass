@@ -197,6 +197,18 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     reportProblem() {
       this.send('confirmStatusUpdate', this.get('problem'), 'title', 'flagged');
     },
+    restoreProblem: function () {
+      let problem = this.get('problem');
+      this.get('alert').showModal('warning', 'Are you sure you want to restore this problem?', null, 'Yes, restore')
+      .then((result) => {
+        if (result.value) {
+          problem.set('isTrashed', false);
+          problem.save().then(() => {
+            this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+          });
+        }
+      });
+    },
     deleteProblem: function () {
       let problem = this.get('problem');
       this.get('alert').showModal('warning', 'Are you sure you want to delete this problem?', null, 'Yes, delete it')
