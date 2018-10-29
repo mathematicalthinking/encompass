@@ -141,7 +141,6 @@ const getProblems = async function(req, res, next) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
     if (req.query.isTrashedOnly === 'true') {
-      console.log('inside isTrashed query');
       if (user.accountType === 'A') {
         isTrashedOnly = true;
       } else {
@@ -292,7 +291,6 @@ const getProblems = async function(req, res, next) {
       byRelevance = sortBy.byRelevance;
     }
     const criteria = await access.get.problems(user, ids, filterBy, searchFilter, isTrashedOnly);
-    console.log('criteria is', criteria);
     let results, itemCount;
 
     if (byRelevance) {
