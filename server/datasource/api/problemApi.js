@@ -359,8 +359,21 @@ const getProblem = async function(req, res, next) {
   let problem = await models.Problem.findById(id);
 
   // record not found in db or is trashed
-  if (!problem || problem.isTrashed) {
+  if (!problem) {
     return utils.sendResponse(res, null);
+  }
+
+  // user has permission; send back record
+  const data = {
+    problem
+  };
+
+  if (problem.isTrashed) {
+    if (user.accountType === 'A') {
+      return utils.sendResponse(res, data);
+    } else {
+      return utils.sendResponse(res, null);
+    }
   }
 
   let canLoadProblem = await access.get.problem(user, id);
@@ -369,10 +382,6 @@ const getProblem = async function(req, res, next) {
   if (!canLoadProblem) {
     return utils.sendError.NotAuthorizedError('You do not have permission.', res);
   }
-  // user has permission; send back record
-  const data = {
-    problem
-  };
 
   return utils.sendResponse(res, data);
 };
