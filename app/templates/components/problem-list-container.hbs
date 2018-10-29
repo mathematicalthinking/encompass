@@ -3,12 +3,14 @@
     {{problem-filter
       store=store
       onUpdate=(action "triggerFetch")
+      triggerShowTrashed=(action "triggerShowTrashed")
       filter=filter
       primaryFilter=primaryFilter
       adminFilterSelect=adminFilterSelect
       orgs=model.organizations
       categoriesFilter=categoriesFilter
       doIncludeSubCategories=doIncludeSubCategories
+      toggleTrashed=toggleTrashed
       }}
   </div>
 
