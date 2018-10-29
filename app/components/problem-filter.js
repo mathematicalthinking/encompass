@@ -102,7 +102,11 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
 
     toggleTrashedProblems() {
-      console.log('toggle trashed problems clicked');
+      this.set('toggleTrashed', !this.get('toggleTrashed'));
+      console.log('toggle trashed problems clicked', this.get('toggleTrashed'));
+      if (this.get('toggleTrashed')) {
+        this.get('triggerShowTrashed')();
+      }
     },
 
     showCategoryMenu() {
