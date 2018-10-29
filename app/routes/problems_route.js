@@ -1,5 +1,4 @@
 Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
-
   hideOutlet: true,
 
   beforeModel: function(transition) {
@@ -49,7 +48,11 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
   actions: {
     toProblemInfo(problem) {
       this.transitionTo('problem', problem);
-    }
+    },
+    sendtoApplication(categories) {
+      this.get('application').set('categories', categories);
+      this.get('application').set('showCategoryList', true);
+    },
   }
 
 });
