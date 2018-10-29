@@ -134,11 +134,21 @@ async function findProblemsByCategoryIds(categoryIds, isIdOnly) {
 // sortBy
 
 const getProblems = async function(req, res, next) {
+  let isTrashedOnly;
   try {
     const user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
+    if (req.query.isTrashedOnly === 'true') {
+      console.log('inside isTrashed query');
+      if (user.accountType === 'A') {
+        isTrashedOnly = true;
+      } else {
+        return utils.sendError.InvalidCredentialsError('Not Admin', res);
+      }
+    }
+
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
     if (filterBy) {
@@ -281,7 +291,8 @@ const getProblems = async function(req, res, next) {
       doCollate = sortBy.doCollate;
       byRelevance = sortBy.byRelevance;
     }
-    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
+    const criteria = await access.get.problems(user, ids, filterBy, searchFilter, isTrashedOnly);
+    console.log('criteria is', criteria);
     let results, itemCount;
 
     if (byRelevance) {
