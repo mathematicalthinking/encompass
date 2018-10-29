@@ -2,6 +2,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   elementId: 'problem-list-container',
   showList: true,
   menuClosed: true,
+  toggleTrashed: false,
   searchOptions: ['all', 'title', 'text', 'category'],
   searchCriterion: 'all',
   sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
@@ -106,7 +107,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
      $in: this.get('selectedPrivacySetting')
     };
   }.property('selectedPrivacySetting'),
-
 
   init: function() {
     this.getUserOrg()
@@ -550,11 +550,23 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   displayProblems: function() {
     let problems = this.get('problems');
     if (problems) {
-      return problems.rejectBy('isTrashed');
+      if (this.get('toggleTrashed')) {
+        return problems;
+      } else {
+        return problems.rejectBy('isTrashed');
+      }
     }
-  }.property('problems.@each.isTrashed'),
+  }.property('problems.@each.isTrashed', 'toggleTrashed'),
 
-  buildQueryParams: function(page) {
+  buildQueryParams: function(page, isTrashedOnly) {
+    let params = {};
+    if (page) {
+      params.page = page;
+    }
+    if (isTrashedOnly) {
+      params.isTrashedOnly = true;
+      return params;
+    }
     let sortBy = this.buildSortBy();
     let filterBy = this.buildFilterBy();
 
@@ -565,7 +577,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('isFetchingProblems', false);
       return;
     }
-    let params = {
+    params = {
       sortBy,
       filterBy
     };
@@ -573,10 +585,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     if (this.get('doUseSearchQuery')) {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
-    }
-
-    if (page) {
-      params.page = page;
     }
 
     return params;
@@ -595,10 +603,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     }, 300);
   }.observes('isFetchingProblems'),
 
-  getProblems: function(page) {
+  getProblems: function(page, isTrashedOnly=false) {
 
     this.set('isFetchingProblems', true);
-    let queryParams = this.buildQueryParams(page);
+    let queryParams = this.buildQueryParams(page, isTrashedOnly);
 
     if (this.get('criteriaTooExclusive') || this.get('areNoRecommendedProblems')) {
       if (this.get('isFetchingProblems')) {
@@ -647,7 +655,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     updatePageResults(results) {
       this.set('problems', results);
     },
-
     searchProblems(val, criterion) {
       if (criterion === 'all' || criterion === 'category') {
         this.set('searchByRelevance', true);
@@ -659,7 +666,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     },
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
-      this.getProblems(page);
+      let isTrashedOnly = this.get('toggleTrashed');
+      this.getProblems(page, isTrashedOnly);
     },
     addCategory: function(cat) {
       let filterCategories = this.get('filter.categories');
@@ -682,14 +690,18 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.set('sortCriterion', criterion);
       this.send('triggerFetch');
     },
-    triggerFetch() {
+    triggerFetch(isTrashedOnly=false) {
       for (let prop of ['criteriaTooExclusive', 'areNoRecommendedProblems']) {
         if (this.get(prop)) {
           this.set(prop, null);
         }
       }
-
-      this.getProblems();
+      this.getProblems(null, isTrashedOnly);
+    },
+    triggerShowTrashed() {
+      console.log('triggerShowTrashed clicked');
+      this.send('triggerFetch', true);
+      this.send('trashedProblems');
     },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');
