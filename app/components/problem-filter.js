@@ -14,7 +14,6 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   showCategoryFilters: false,
   showMoreFilters: false,
 
-
   // current subFilter selected values
   currentValues: function() {
     return this.get('secondaryFilter.selectedValues');
@@ -110,7 +109,9 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.get('store').query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
-        this.set('showCategoryList', true);
+        console.log('categoryTree is', this.get('categoryTree'));
+        this.sendAction('sendtoApplication', this.get('categoryTree'));
+        // this.set('showCategoryList', true);
       });
     },
 
@@ -125,9 +126,9 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.get('onUpdate')();
     },
 
-    closeModal() {
-      this.set('showCategoryList', false);
-    },
+    // closeModal() {
+    //   this.set('showCategoryList', false);
+    // },
 
     toggleIncludeSubCats() {
       // toggle value
