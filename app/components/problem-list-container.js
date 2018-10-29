@@ -582,11 +582,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       filterBy
     };
 
+    if (page) {
+      params.page = page;
+    }
+
     if (this.get('doUseSearchQuery')) {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
-
     return params;
   },
   handleLoadingMessage: function() {
@@ -604,7 +607,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   }.observes('isFetchingProblems'),
 
   getProblems: function(page, isTrashedOnly=false) {
-
     this.set('isFetchingProblems', true);
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
 
@@ -667,6 +669,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
       let isTrashedOnly = this.get('toggleTrashed');
+
       this.getProblems(page, isTrashedOnly);
     },
     addCategory: function(cat) {
@@ -699,9 +702,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.getProblems(null, isTrashedOnly);
     },
     triggerShowTrashed() {
-      console.log('triggerShowTrashed clicked');
-      this.send('triggerFetch', true);
-      this.send('trashedProblems');
+      this.send('triggerFetch', this.get('toggleTrashed'));
     },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');
