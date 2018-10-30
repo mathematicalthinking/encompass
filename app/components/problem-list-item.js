@@ -4,6 +4,10 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
   privacySetting: Ember.computed.alias('problem.privacySetting'),
   puzzleId: Ember.computed.alias('problem.puzzleId'),
   alert: Ember.inject.service('sweet-alert'),
+  permissions: Ember.inject.service('problem-permissions'),
+  canEdit: Ember.computed.alias('writePermissions.canEdit'),
+  canDelete: Ember.computed.alias('writePermissions.canDelete'),
+  canAssign: Ember.computed.alias('writePermissions.canAssign'),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
@@ -14,6 +18,11 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     'ip': 'Intellectual Property Concern',
     'substance': 'Lacking Substance',
     'other': 'Other Reason'
+  },
+
+  didReceiveAttrs: function () {
+    let problem = this.get('problem');
+    this.set('writePermissions', this.get('permissions').writePermissions(problem));
   },
 
   isPublic: function() {
@@ -38,34 +47,36 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     return this.get('iconFillOptions')[status];
   }.property('problem.status'),
 
-  canDelete: Ember.computed('problem.id', function () {
-    let problem = this.get('problem');
-    let currentUser = this.get('currentUser');
-    let currentUserType = currentUser.get('accountType');
-    let creator = problem.get('createdBy.content.id');
-    let isUsed = problem.get('isUsed');
-    let canDelete;
+  // canDelete: Ember.computed('problem.id', function () {
+  //   let problem = this.get('problem');
+  //   let currentUser = this.get('currentUser');
+  //   let currentUserType = currentUser.get('accountType');
+  //   let creator = problem.get('createdBy.content.id');
+  //   let isUsed = problem.get('isUsed');
+  //   let canDelete;
+  //   this.get('permissions');
 
-    if (currentUserType === "A") {
-      canDelete = true;
-    } else if (currentUserType === "P") {
-      if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
-        canDelete = true;
-      }
-    } else if (currentUserType === "T") {
-      if (creator === currentUser.id && !isUsed) {
-        canDelete = true;
-      } else {
-        canDelete = false;
-      }
-    } else {
-      canDelete = false;
-    }
-    return canDelete;
-  }),
+  //   if (currentUserType === "A") {
+  //     canDelete = true;
+  //   } else if (currentUserType === "P") {
+  //     if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
+  //       canDelete = true;
+  //     }
+  //   } else if (currentUserType === "T") {
+  //     if (creator === currentUser.id && !isUsed) {
+  //       canDelete = true;
+  //     } else {
+  //       canDelete = false;
+  //     }
+  //   } else {
+  //     canDelete = false;
+  //   }
+  //   return canDelete;
+  // }),
 
   ellipsisMenuOptions: function() {
     let canDelete = this.get('canDelete');
+    let canAssign = this.get('canAssign');
     let moreMenuOptions = this.get('moreMenuOptions');
     let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
@@ -80,9 +91,15 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
 
     if (isAdmin) {
       // if problem is approved, admins will have exposed Flag button so no need in more menu
-      options = _.filter(options, (option) => {
-        return !_.contains(['flag'], option.value);
-      });
+      if (canAssign) {
+        options = _.filter(options, (option) => {
+          return !_.contains(['flag'], option.value);
+        });
+      } else {
+        options = _.filter(options, (option) => {
+          return !_.contains(['assign'], option.value);
+        });
+      }
     }
 
     if (!isAdmin) {

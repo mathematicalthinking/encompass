@@ -287,7 +287,9 @@
     <div class="buttons-container">
       <span class="left-buttons">
         {{#if isEditing}}
+          {{#unless problem.isTrashed}}
           <button class="button-icon" {{action 'deleteProblem'}}><i class="fas fa-trash"></i></button>
+          {{/unless}}
         {{else}}
           <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Make a Copy of this Problem">
             <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
@@ -316,7 +318,9 @@
         {{/if}}
         {{#if problem.isTrashed}}
           {{#if currentUser.isAdmin}}
-            <button class="primary-button" {{action 'showAssignment'}}>Restore</button>
+            {{#unless isEditing}}
+              <button class="primary-button" {{action 'restoreProblem'}}>Restore</button>
+            {{/unless}}
           {{/if}}
         {{/if}}
       </span>
