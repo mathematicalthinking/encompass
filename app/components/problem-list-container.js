@@ -50,6 +50,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   selectedPrivacySetting: ['M', 'O', 'E'],
   doIncludeSubCategories: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
+  alert: Ember.inject.service('sweet-alert'),
 
   listResultsMessage: function() {
     let msg;
@@ -113,12 +114,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   }.observes('categoriesFilter.[]'),
 
   init: function() {
+    console.log('init running');
     this.getUserOrg()
     .then((name) => {
-      this.set('userOrgName', name );
+      this.set('userOrgName', name);
       this.configureFilter();
       this.configurePrimaryFilter();
-
       this.set('categoriesFilter', this.get('selectedCategories'));
     });
 
@@ -126,9 +127,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   },
 
   getUserOrg () {
-    return this.get('currentUser.organization').then((org) => {
-      return org.get('name');
-    });
+   return this.get('currentUser.organization').then((org) => {
+     if (org) {
+       return org.get('name');
+     } else {
+       this.get('alert').showModal('warning', 'You currently do not belong to any organization', 'Please add or request an organization in order to get the best user experience', 'Ok');
+       return 'undefined';
+     }
+   });
   },
 
   statusOptionsList: function () {
