@@ -661,6 +661,14 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     updatePageResults(results) {
       this.set('problems', results);
     },
+    refreshList() {
+      let isTrashedOnly = this.get('toggleTrashed');
+      // $('.refresh-icon').addClass('fa-spin');
+      // Ember.run.later(() => {
+      //   $('.refresh-icon').removeClass('fa-spin');
+      // }, 2000);
+      this.getProblems(null, isTrashedOnly);
+    },
     searchProblems(val, criterion) {
       if (criterion === 'all' || criterion === 'category') {
         this.set('searchByRelevance', true);

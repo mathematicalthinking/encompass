@@ -508,11 +508,19 @@
             width: fit-content;
             font-weight: $light-font-weight;
           }
-          .layout-icons {
+          .side-icons {
             @include flex-item(2, center, .05 0 auto);
-            width: 100px;
+            width: 150px;
             text-align: right;
             margin-left: auto;
+            .refresh-icon {
+              font-size: 1.2em;
+              margin-bottom: 3px;
+              cursor: pointer;
+              &:hover {
+                color: lighten($primary-font-color, 15);
+              }
+            }
             img {
               margin-left: 10px;
               &:hover {

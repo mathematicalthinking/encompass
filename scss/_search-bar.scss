@@ -65,11 +65,11 @@
   }
   .submit {
     @include flex-item(3, center, .1 0 auto);
-    cursor: pointer;
     font-size: 1.3em;
     margin-left: 15px;
     text-align: left;
     i {
+      cursor: pointer;
       &:hover {
         color: lighten($primary-font-color, 20%);
       }

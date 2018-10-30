@@ -625,9 +625,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     showAssignment: function () {
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
-      Ember.run.later(() => {
-        $('html>body>#problem-info').animate({scrollTop: $(document).height()});
-      }, 100);
+      var scr = $('#outlet')[0].scrollHeight;
+      $('#outlet').animate({ scrollTop: scr }, 100);
     },
 
     hideInfo: function (doTransition=true) {
