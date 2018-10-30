@@ -16,10 +16,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'A-Z', sortParam: { name: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'name' },
       { name: 'Z-A', sortParam: { name: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'name' },
     ],
-    lastViewed: [
+    lastModifiedDate: [
       { sortParam: null, icon: 'fas fa-minus'},
-      {id: 3, name: 'Newest', sortParam: { lastViewed: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'lastViewed' },
-      {id: 4, name: 'Oldest', sortParam: { lastViewed: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'lastViewed'}
+      {id: 3, name: 'Newest', sortParam: { lastModifiedDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'lastModifiedDate' },
+      {id: 4, name: 'Oldest', sortParam: { lastModifiedDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'lastModifiedDate'}
     ],
     submissions: [
       { sortParam: null, icon: 'fas fa-minus'},
@@ -552,7 +552,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     // TODO: robust sorting options
 
     // for now just show most recently created at top
-    return list.sortBy('lastViewed').reverse();
+    return list.sortBy('lastModifiedDate').reverse();
 
   },
 
