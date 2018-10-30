@@ -27,7 +27,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     options: [
       { label: 'organization'},
       { label: 'creator'},
-      { label: 'author'}
+      // { label: 'author'}
     ]
   },
   statusOptions: [
@@ -261,11 +261,11 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
               value: "creator",
               selectedValues: []
             },
-            author: {
-              label: "Author",
-              value: "author",
-              selectedValues: []
-            },
+            // author: {
+            //   label: "Author",
+            //   value: "author",
+            //   selectedValues: []
+            // },
             pows: {
               label: "PoWs",
               value: "pows",
