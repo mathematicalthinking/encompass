@@ -2,6 +2,11 @@
   <div class="flex-item-full filter-options collapse" id="filter-list-side">
     {{workspace-filter
       store=store
+      onUpdate=(action "triggerFetch")
+      filter=filter
+      primaryFilter=primaryFilter
+      adminFilterSelect=adminFilterSelect
+      orgs=model.organizations
       }}
   </div>
 
