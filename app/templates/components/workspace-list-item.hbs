@@ -1,0 +1,131 @@
+{{#if isList}}
+  <div class="item-container" id="container">
+    <div class="item-section mode">
+      {{{public-private workspace.mode}}}
+    </div>
+
+    <div class="item-section name">
+      {{#link-to 'workspace' workspace class="workspace-name"}}
+        {{{workspace.name}}}
+      {{/link-to}}
+    </div>
+    <div class="item-section last-viewed">
+      {{#link-to 'workspace' workspace class="workspace-last-viewed"}}
+        {{format-date workspace.lastViewed 'L'}}
+      {{/link-to}}
+    </div>
+    <div class="item-section submissions">
+      {{workspace.submissionsLength}}
+    </div>
+    <div class="item-section owner">
+      {{workspace.owner.displayName}}
+    </div>
+    <div class="item-section editors">
+      {{workspace.editorsLength}}
+    </div>
+    <div class="item-section action">
+      <button {{action "copyWorkspace"}} class="primary-button">Copy</button>
+    </div>
+    <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+      <i class="fas fa-ellipsis-v more-menu"></i>
+      {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#each ellipsisMenuOptions as |option|}}
+            <li {{action option.action}}>
+              <label>
+                <span class="icon-text">{{option.label}}</span>
+                <i class={{option.icon}}></i>
+              </label>
+            </li>
+            {{/each}}
+          </ul>
+        </span>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{!-- {{#if isGrid}}
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">{{{public-private workspace.privacySetting}}}</span>
+        <span class="date">{{format-date workspace.createDate 'MM/DD/YY'}}</span>
+      </div>
+      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
+        <i class="fas fa-ellipsis-v more-menu"></i>
+        {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#each ellipsisMenuOptions as |option|}}
+            <li {{action option.action}}>
+              <label>
+                <span class="icon-text">{{option.label}}</span>
+                <i class={{option.icon}}></i>
+              </label>
+            </li>
+            {{/each}}
+          </ul>
+        </span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        {{#link-to 'workspace' workspace class="workspace-name"}}
+          {{{workspace.name}}}
+        {{/link-to}}
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        {{#link-to 'workspace' workspace class="workspace-name"}}
+          {{{workspace.text}}}
+        {{/link-to}}
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <svg height="20" width="20">
+          <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+        </svg>
+        <span class="status-text">
+          {{workspace.status}}
+        </span>
+      </div>
+      <div class="item-card action">
+        {{#if currentUser.isAdmin}}
+          {{#if (is-equal workspace.status 'approved')}}
+            <button {{action "confirmStatusUpdate" workspace "name" "flagged"}} class="primary-button">Flag</button>
+          {{else}}
+            <button {{action "confirmStatusUpdate" workspace "name" "approved"}} class="primary-button approve">Approve</button>
+          {{/if}}
+        {{else}}
+          {{#if (is-equal workspace.status 'pending')}}
+            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+          {{else}}
+            <button class="primary-button" {{action "assignProblem"}}>Assign</button>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+{{/if}} --}}
+
+{{!-- <script>
+  $('.workspace-name').click(function (e) {
+    $('.list-outlet').removeClass('hidden');
+    $('.list-outlet').addClass('animated slideInRight');
+  });
+
+  $('.results-list').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+
+  $('.flex-item-full').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+</script> --}}
+
+

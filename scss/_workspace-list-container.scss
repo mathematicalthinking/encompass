@@ -1,0 +1,51 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#workspace-list-container{
+  .sort-bar {
+    .sort-bar-item {
+      &.name {
+        order: 2;
+      }
+      &.mode {
+        order: 1;
+      }
+      &.last-viewed {
+        order: 3;
+      }
+      &.submissions {
+        order: 4;
+      }
+      &.owner {
+        order: 5;
+      }
+      &.editors {
+        order: 6;
+      }
+    }
+  }
+
+  .item-container {
+    .item-section {
+      &.mode {
+        order: 1;
+      }
+      &.name {
+        order: 2;
+      }
+      &.last-viewed {
+        order: 3;
+      }
+      &.submissions {
+        order: 4;
+      }
+      &.owner {
+        order: 5;
+      }
+      &.editors{
+        order: 6;
+      }
+    }
+  }
+}
