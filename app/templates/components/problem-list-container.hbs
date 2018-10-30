@@ -30,7 +30,7 @@
         }}
 
         {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}
-          <i class="fas fa-plus"></i>
+          <i class="fas fa-plus" title="Create new problem"></i>
         {{/link-to}}
       </div>
     </div>
@@ -40,15 +40,15 @@
           {{listResultsMessage}}
         </div>
         <div class="side-icons">
-          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}}></i>
+          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh problem list"></i>
           <span class="layout-icons">
           {{#if showList}}
-            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list-active.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
+            <img src="/images/list-active.svg" alt="list" {{action 'setList'}} title="Currently in list view">
           {{/if}}
           {{#if showGrid}}
-            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}} title="Currently in grid view">
+            <img src="/images/list.svg" alt="list" {{action 'setList'}} title="Show in list view">
           {{/if}}
           </span>
         </div>
