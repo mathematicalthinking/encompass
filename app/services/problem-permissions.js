@@ -15,7 +15,9 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     return problem.get('isUsed');
   },
 
-
+  isTrashed(problem) {
+    return problem.get('isTrashed');
+  },
 
   canDelete(problem) {
      // undefined if no or bad argument passed in
@@ -52,10 +54,8 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
     }
 
     // privacy setting can now only be 'O' or 'M'
+    return this.get('base').doesRecordBelongToOrg(problem);
 
-    if (this.get('base.isPdAdmin')) {
-      return this.get('base').doesRecordBelongToOrg(problem);
-    }
   },
 
   canEdit(problem) {
@@ -94,15 +94,14 @@ Encompass.ProblemPermissionsService = Ember.Service.extend({
 
     // privacy setting can now only be 'O' or 'M'
 
-    if (this.get('base.isPdAdmin')) {
-      return this.get('base').doesRecordBelongToOrg(problem);
-    }
+    return this.get('base').doesRecordBelongToOrg(problem);
+
 
   },
 
   canAssign(problem) {
     // undefined if no or bad argument passed in
-    if (!problem) {
+    if (!problem || this.isTrashed(problem)) {
       return;
     }
     // if admin return true
