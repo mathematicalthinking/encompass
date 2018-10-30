@@ -134,11 +134,20 @@ async function findProblemsByCategoryIds(categoryIds, isIdOnly) {
 // sortBy
 
 const getProblems = async function(req, res, next) {
+  let isTrashedOnly;
   try {
     const user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
+    if (req.query.isTrashedOnly === 'true') {
+      if (user.accountType === 'A') {
+        isTrashedOnly = true;
+      } else {
+        return utils.sendError.InvalidCredentialsError('Not Admin', res);
+      }
+    }
+
     let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
     if (filterBy) {
@@ -281,7 +290,7 @@ const getProblems = async function(req, res, next) {
       doCollate = sortBy.doCollate;
       byRelevance = sortBy.byRelevance;
     }
-    const criteria = await access.get.problems(user, ids, filterBy, searchFilter);
+    const criteria = await access.get.problems(user, ids, filterBy, searchFilter, isTrashedOnly);
     let results, itemCount;
 
     if (byRelevance) {
@@ -350,8 +359,21 @@ const getProblem = async function(req, res, next) {
   let problem = await models.Problem.findById(id);
 
   // record not found in db or is trashed
-  if (!problem || problem.isTrashed) {
+  if (!problem) {
     return utils.sendResponse(res, null);
+  }
+
+  // user has permission; send back record
+  const data = {
+    problem
+  };
+
+  if (problem.isTrashed) {
+    if (user.accountType === 'A') {
+      return utils.sendResponse(res, data);
+    } else {
+      return utils.sendResponse(res, null);
+    }
   }
 
   let canLoadProblem = await access.get.problem(user, id);
@@ -360,10 +382,6 @@ const getProblem = async function(req, res, next) {
   if (!canLoadProblem) {
     return utils.sendError.NotAuthorizedError('You do not have permission.', res);
   }
-  // user has permission; send back record
-  const data = {
-    problem
-  };
 
   return utils.sendResponse(res, data);
 };

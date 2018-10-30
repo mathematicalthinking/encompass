@@ -3,12 +3,15 @@
     {{problem-filter
       store=store
       onUpdate=(action "triggerFetch")
+      triggerShowTrashed=(action "triggerShowTrashed")
       filter=filter
       primaryFilter=primaryFilter
       adminFilterSelect=adminFilterSelect
       orgs=model.organizations
       categoriesFilter=categoriesFilter
       doIncludeSubCategories=doIncludeSubCategories
+      toggleTrashed=toggleTrashed
+      sendtoApplication="sendtoApplication"
       }}
   </div>
 
@@ -27,7 +30,7 @@
         }}
 
         {{#link-to 'problems.new' id="problem-new-link" class="new-link-btn"}}
-          <i class="fas fa-plus"></i>
+          <i class="fas fa-plus" title="Create new problem"></i>
         {{/link-to}}
       </div>
     </div>
@@ -36,22 +39,25 @@
         <div class="results-message">
           {{listResultsMessage}}
         </div>
-        <div class="layout-icons" >
+        <div class="side-icons">
+          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh problem list"></i>
+          <span class="layout-icons">
           {{#if showList}}
-            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list-active.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
+            <img src="/images/list-active.svg" alt="list" {{action 'setList'}} title="Currently in list view">
           {{/if}}
           {{#if showGrid}}
-            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}} title="Currently in grid view">
+            <img src="/images/list.svg" alt="list" {{action 'setList'}} title="Show in list view">
           {{/if}}
+          </span>
         </div>
       </div>
       <div class="results-items" id="layout-view">
         <div class="sort-bar">
           <div class="sort-bar-item privacy">
             Privacy <i class="fas fa-filter sort-icon"></i>
-            <span class="hover-menu">
+            <span class="hover-menu" id="privacy-menu">
               <ul>
                 {{#each privacySettingOptions as |option|}}
                 <li>

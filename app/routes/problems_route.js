@@ -1,6 +1,7 @@
 Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
-
   hideOutlet: true,
+  application: Ember.inject.controller(),
+
 
   beforeModel: function(transition) {
     let problemId;
@@ -49,7 +50,11 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
   actions: {
     toProblemInfo(problem) {
       this.transitionTo('problem', problem);
-    }
+    },
+    sendtoApplication(categories) {
+      this.get('application').set('categories', categories);
+      this.get('application').set('showCategoryList', true);
+    },
   }
 
 });

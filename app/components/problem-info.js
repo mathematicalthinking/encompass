@@ -625,9 +625,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     showAssignment: function () {
       this.set('showAssignment', true);
       this.get('problemList').pushObject(this.problem);
-      Ember.run.later(() => {
-        $('html>body>#problem-info').animate({scrollTop: $(document).height()});
-      }, 100);
+      var scr = $('#outlet')[0].scrollHeight;
+      $('#outlet').animate({ scrollTop: scr }, 100);
     },
 
     hideInfo: function (doTransition=true) {
@@ -673,6 +672,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.set('showCats', false);
       this.set('showAdditional', false);
       this.set('showGeneral', false);
+    },
+
+    restoreProblem: function () {
+      let problem = this.get('problem');
+      this.get('alert').showModal('warning', 'Are you sure you want to restore this problem?', null, 'Yes, restore')
+        .then((result) => {
+          if (result.value) {
+            problem.set('isTrashed', false);
+            problem.save().then(() => {
+              this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+            });
+          }
+        });
     },
 
     toggleShowFlagReason: function () {

@@ -57,15 +57,18 @@
       </li>
     </ul>
   {{/if}}
+  {{#if currentUser.isAdmin}}
+    <h3 {{action 'toggleMoreFilters'}} class="more-header">
+      <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
+    </h3>
+    {{#if showMoreFilters}}
+      <ul class="more-filter-list">
+        <h5>Trashed Problems</h5>
+        <label class="subfilter">
+          {{input id="toggle-trashed" type="checkbox" checked=showTrashedProblems change=(action "toggleTrashedProblems")}} <span>Show All Trashed Problems</span>
+        </label>
+      </ul>
+    {{/if}}
+  {{/if}}
 </div>
 
-
-{{#if showCategoryList}}
-  <div id="category-list-modal">
-    <div class="modal-content">
-      <h4>Select a Category</h4>
-      <button class="close" {{action 'closeModal'}}><i class="fas fa-times"></i></button>
-      {{categories-menu categories=categoryTree store=store addCategories="searchCategory"}}
-    </div>
-  </div>
-{{/if}}

@@ -4,7 +4,7 @@
 // primaryFilter
 // orgs
 
-Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.CategoriesListMixin, {
   elementId: 'problem-filter',
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),
   primaryFilterInputs: Ember.computed.alias('filter.primaryFilters.inputs'),
@@ -12,7 +12,13 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   showAdminFilters: Ember.computed.equal('primaryFilter.value', 'all'),
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
   showCategoryFilters: false,
+  showMoreFilters: false,
 
+
+  init: function () {
+    this._super(...arguments);
+    this.set('categoriesFilter', this.get('selectedCategories'));
+  },
   // current subFilter selected values
   currentValues: function() {
     return this.get('secondaryFilter.selectedValues');
@@ -95,18 +101,26 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('showCategoryFilters', !this.get('showCategoryFilters'));
     },
 
+    toggleMoreFilters() {
+      this.set('showMoreFilters', !this.get('showMoreFilters'));
+    },
+
+    toggleTrashedProblems() {
+      this.set('toggleTrashed', !this.get('toggleTrashed'));
+      this.get('triggerShowTrashed')();
+    },
+
     showCategoryMenu() {
       this.get('store').query('category', {}).then((queryCats) => {
         let categories = queryCats.get('meta');
         this.set('categoryTree', categories.categories);
-        this.set('showCategoryList', true);
+        this.sendAction('sendtoApplication', this.get('categoryTree'));
       });
     },
 
     searchCategory(category) {
       this.get('categoriesFilter').addObject(category);
       this.get('onUpdate')();
-
     },
 
     removeCategory(category) {
@@ -114,9 +128,9 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.get('onUpdate')();
     },
 
-    closeModal() {
-      this.set('showCategoryList', false);
-    },
+    // closeModal() {
+    //   this.set('showCategoryList', false);
+    // },
 
     toggleIncludeSubCats() {
       // toggle value

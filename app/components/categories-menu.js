@@ -1,11 +1,11 @@
 Encompass.CategoriesMenuComponent = Ember.Component.extend({
   elementId: 'categories',
 
-  didRecieveAttrs: function() {
-    this._super(...arguments);
-    let categories = this.get('categories.meta');
-    this.set('categories', categories.categories);
-  },
+  // didReceiveAttrs: function () {
+  //   this._super(...arguments);
+  //   let categories = this.get('categories.meta');
+  //   this.set('categories', categories.categories);
+  // },
 
   actions: {
     addCategory: function (category) {

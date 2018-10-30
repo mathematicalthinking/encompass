@@ -5,10 +5,14 @@
   * @since 1.0.0
 */
 Encompass.ApplicationController = Ember.Controller.extend({
+  showCategoryList: false,
+  isHidden: false,
+  selectedCategories: [],
+
   currentUser: function() {
     return this.get('model');
   }.property('model'),
-  isHidden: false,
+
 
   resizeDisplay: function() {
     Ember.run.next(this, Ember.verticalSizing);
@@ -17,6 +21,12 @@ Encompass.ApplicationController = Ember.Controller.extend({
   actions: {
     toHome: function() {
       this.transitionToRoute('/');
+    },
+    closeModal: function() {
+      this.set('showCategoryList', false);
+    },
+    searchCategory: function(category) {
+      this.get('selectedCategories').pushObject(category);
     }
   }
 });
