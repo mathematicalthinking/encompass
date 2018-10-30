@@ -308,9 +308,16 @@
               <button class="primary-button" {{action 'editProblem'}}>Edit</button>
             {{/if}}
           {{/if}}
-            {{#unless (is-equal problem.status 'pending')}}
-              <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+          {{#unless (is-equal problem.status 'pending')}}
+            {{#unless problem.isTrashed}}
+            <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
             {{/unless}}
+          {{/unless}}
+        {{/if}}
+        {{#if problem.isTrashed}}
+          {{#if currentUser.isAdmin}}
+            <button class="primary-button" {{action 'showAssignment'}}>Restore</button>
+          {{/if}}
         {{/if}}
       </span>
     </div>
