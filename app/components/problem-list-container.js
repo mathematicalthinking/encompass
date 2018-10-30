@@ -114,7 +114,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   }.observes('categoriesFilter.[]'),
 
   init: function() {
-    console.log('init running');
     this.getUserOrg()
     .then((name) => {
       this.set('userOrgName', name);
@@ -122,7 +121,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.configurePrimaryFilter();
       this.set('categoriesFilter', this.get('selectedCategories'));
     });
-
     this._super(...arguments);
   },
 

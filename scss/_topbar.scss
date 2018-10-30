@@ -415,17 +415,16 @@ nav.actions>ul {
   right: 0;
   top: 75px;
   height: 100vh;
-  min-width: 250px;
+  width: 250px;
   padding-top: 10px;
-  background: white;
-  overflow: scroll;
+  background: $background-body;
+  overflow: auto;
   box-shadow: $box-shadow;
   ul {
-    overflow: scroll;
-    margin-bottom: 40px;
+    margin-bottom: 100px;
   }
   li {
-    margin: 40px 20px 40px 30px;
+    margin: 30px 20px 30px 30px;
   }
   #logout-btn-side {
     a {
