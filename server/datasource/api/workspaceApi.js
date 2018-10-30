@@ -727,130 +727,133 @@ function prepareAndUpdateWorkspaces(user, callback) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
-async function sendWorkspaces(req, res, next) {
+function sendWorkspaces(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
     if (!user) {
       return utils.sendError.InvalidCredentialsError(null, res);
     }
+
+    prepareAndUpdateWorkspaces(user, async function(err){
+      if(err){
+        logger.error('error preparing and updating ws');
+
+        return utils.sendError.InternalError(err, res);
+      }
+      logger.info('in sendWorkspaces');
+      logger.debug('looking for workspaces for user id' + user._id);
+
+      let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+
+      if (filterBy) {
+        console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        let { all } = filterBy;
+
+        if (all) {
+          let { org } = all;
+          if (org) {
+            let crit = {};
+            let { organizations } = org;
+
+            if (organizations) {
+            if (!crit.$or) {
+              crit.$or = [];
+            }
+             crit.$or.push({organization: {$in: organizations}});
+           }
+
+           if (!filterBy.$and) {
+             filterBy.$and = [];
+           }
+           filterBy.$and.push(crit);
+           delete filterBy.all;
+          }
+        }
+      }
+      let searchFilter;
+
+      if (searchBy) {
+        let { query, criterion } = searchBy;
+      if (criterion) {
+        if (criterion === 'all') {
+          searchFilter = {$text: {$search: query}};
+          isUsingTextSearch = true;
+        } else {
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+          searchFilter = {[criterion]: regex};
+        }
+      }
+      }
+
+      let sortParam = { name: 1 };
+      let doCollate = true;
+      let byRelevance = false;
+
+      if (sortBy) {
+        sortParam = sortBy.sortParam;
+        doCollate = sortBy.doCollate;
+        byRelevance = sortBy.byRelevance;
+      }
+      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
+      let results, itemCount;
+
+      if (byRelevance) {
+        [ results, itemCount ] = await Promise.all([
+          models.Workspace.find(criteria, { score: {$meta: "textScore"}}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+      } else if (doCollate) {
+         [ results, itemCount ] = await Promise.all([
+          models.Workspace.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+      } else {
+        [ results, itemCount ] = await Promise.all([
+          models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+      }
+
+      const pageCount = Math.ceil(itemCount / req.query.limit);
+
+      let currentPage = page;
+      if (!currentPage) {
+        currentPage = 1;
+      }
+      const data = {
+        'workspacess': results,
+        'meta': {
+          'total': itemCount,
+          pageCount,
+          currentPage
+        }
+      };
+
+      // models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+      //   if (err) {
+      //     return utils.sendError.InternalError(err, res);
+      //   }
+      //   var response = {
+      //     workspaces: workspaces,
+      //     meta: { sinceToken: new Date() }
+      //   };
+      //   if(req.body) {
+      //     if(req.body.hasOwnProperty('importRequest')) {
+      //       response = {importRequest: req.body.importRequest};
+      //     }
+      //   }
+
+        utils.sendResponse(res, data);
+
+    });
   }catch(err) {
     console.error(`Error sendWorkspaces: ${err}`);
     console.trace();
   }
 
-  logger.info('in sendWorkspaces');
-  logger.debug('looking for workspaces for user id' + user._id);
-  prepareAndUpdateWorkspaces(user, async function(err){
-    if(err){
-      utils.sendError.InternalError(err, res);
-      logger.error('error preparing and updating ws');
-    }
 
-    let { ids, filterBy, sortBy, searchBy, page, } = req.query;
-
-    if (filterBy) {
-      console.log('filterBy workspace API:', JSON.stringify(filterBy));
-      let { all } = filterBy;
-
-      if (all) {
-        let { org } = all;
-        if (org) {
-          let crit = {};
-          let { organizations } = org;
-
-          if (organizations) {
-          if (!crit.$or) {
-            crit.$or = [];
-          }
-           crit.$or.push({organization: {$in: organizations}});
-         }
-
-         if (!filterBy.$and) {
-           filterBy.$and = [];
-         }
-         filterBy.$and.push(crit);
-         delete filterBy.all;
-        }
-      }
-    }
-    let searchFilter;
-
-    if (searchBy) {
-      let { query, criterion } = searchBy;
-    if (criterion) {
-      if (criterion === 'all') {
-        searchFilter = {$text: {$search: query}};
-        isUsingTextSearch = true;
-      } else {
-        query = query.replace(/\s+/g, "");
-        let regex = new RegExp(query.split('').join('\\s*'), 'i');
-
-        searchFilter = {[criterion]: regex};
-      }
-    }
-    }
-
-    let sortParam = { name: 1 };
-    let doCollate = true;
-    let byRelevance = false;
-
-    if (sortBy) {
-      sortParam = sortBy.sortParam;
-      doCollate = sortBy.doCollate;
-      byRelevance = sortBy.byRelevance;
-    }
-    const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
-    let results, itemCount;
-
-    if (byRelevance) {
-      [ results, itemCount ] = await Promise.all([
-        models.Workspace.find(criteria, { score: {$meta: "textScore"}}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-        models.Workspace.count(criteria)
-      ]);
-    } else if (doCollate) {
-       [ results, itemCount ] = await Promise.all([
-        models.Workspace.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-        models.Workspace.count(criteria)
-      ]);
-    } else {
-      [ results, itemCount ] = await Promise.all([
-        models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-        models.Workspace.count(criteria)
-      ]);
-    }
-
-    const pageCount = Math.ceil(itemCount / req.query.limit);
-
-    let currentPage = page;
-    if (!currentPage) {
-      currentPage = 1;
-    }
-    const data = {
-      'workspacess': results,
-      'meta': {
-        'total': itemCount,
-        pageCount,
-        currentPage
-      }
-    };
-
-    // models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
-    //   if (err) {
-    //     return utils.sendError.InternalError(err, res);
-    //   }
-    //   var response = {
-    //     workspaces: workspaces,
-    //     meta: { sinceToken: new Date() }
-    //   };
-    //   if(req.body) {
-    //     if(req.body.hasOwnProperty('importRequest')) {
-    //       response = {importRequest: req.body.importRequest};
-    //     }
-    //   }
-
-      utils.sendResponse(res, data);
-
-  });
 }
 
 function postWorkspace(req, res, next) {
