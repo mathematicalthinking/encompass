@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { By, until } = require('selenium-webdriver');
+const { By, until, Key } = require('selenium-webdriver');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -178,11 +178,14 @@ const waitForRemoval = async function (webDriver, selector, timeout=timeoutMs) {
   }
 };
 
-const findInputAndType = async function (webDriver, selector, text) {
+const findInputAndType = async function (webDriver, selector, text, doHitEnter=false) {
   try {
     let input = await getWebElements(webDriver, selector);
     if (input.length > 0) {
-      return await input[0].sendKeys(text);
+      await input[0].sendKeys(text);
+      if (doHitEnter) {
+        return input[0].sendKeys(Key.ENTER);
+      }
     }
   } catch (err) {
     console.log(err);
@@ -225,7 +228,14 @@ const signup = async function(webDriver, missingFields=[], user=newUser,  accept
     if (input !== 'terms' && !missingFields.includes(input)) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        await findInputAndType(webDriver, inputs[input], user[input]);
+        if (input === 'organization') {
+          // hit enter to select org from dropdown
+          await findInputAndType(webDriver, inputs[input], user[input], true);
+        } else {
+          await findInputAndType(webDriver, inputs[input], user[input]);
+
+        }
+
       }catch(err){
         console.log(err);
       }
