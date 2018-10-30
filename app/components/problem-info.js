@@ -367,7 +367,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     updateProblem: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
-      let title = this.get('problemName');
+      let title = this.get('problemName').trim();
       const quillContent = this.$('.ql-editor').html();
       let text;
       let isQuillValid;
