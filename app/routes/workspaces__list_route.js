@@ -5,24 +5,28 @@
   * @since 1.0.1
   */
 Encompass.WorkspacesListRoute = Ember.Route.extend({
-
-  controllerName: 'workspaces.list',
   templateName:   'workspaces/list',
 
   filter: function(workspace) {
     return true; //return everything by default, extenders will override this
   },
 
-  setupController: function(controller, model) {
-    this._super(controller, model);
-    //controller.set('since', this.store.since('workspace'));
-    controller.set('since', new Date() );
-  },
-
   model: function() {
-    var store = this.get('store');
+    const store = this.get('store');
+    const user = this.modelFor('application');
+    let workspaceCriteria = {};
 
-    return store.findAll('workspace');
+    if (!user.get('isAdmin')) {
+      workspaceCriteria = {
+        filterBy: {
+          createdBy: user.id
+        }
+      };
+    }
+    return Ember.RSVP.hash({
+      organizations: store.findAll('organization'),
+      workspaces: store.query('workspace', workspaceCriteria),
+    });
     /*
     return store.cache('workspace').then(function(model){
       return model;

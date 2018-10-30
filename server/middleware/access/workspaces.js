@@ -56,28 +56,46 @@ const canLoadWorkspace = function(user, ws) {
   return isOwner || isEditor || isPublic;
 };
 
-const accessibleWorkspacesQuery = async function(user, ids) {
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) {
 
+  if (!user) {
+    return [];
+  }
+  const { accountType, actingRole } = user;
 
   let filter = {
-    isTrashed: false
+    $and: []
   };
 
+  filter.$and.push({ isTrashed: false });
+
   if (ids) {
-    filter._id = {$in: ids};
+    filter.$and.push({_id: {$in : ids } });
   }
+  if (!_.isEmpty(filterBy)) {
+    filter.$and.push(filterBy);
+  }
+
+  if (searchBy) {
+    filter.$and.push(searchBy);
+  }
+
+  let accessCrit = {$or: []};
+
 
   // should be stopped earlier in the middleware chain
   if (actingRole === 'student' || accountType === 'S') {
-    filter.createdBy = user.id;
+    accessCrit.$or.push({ createdBy : user.id });
+
+    filter.$and.push(accessCrit);
+
     return filter;
   }
-  filter.$or = [];
-  filter.$or.push({ mode: 'public' });
-  filter.$or.push({ editors: user._id });
-  filter.$or.push({ owner: user._id });
+
+  // filter.$or = [];
+ accessCrit.$or.push({ mode: 'public' });
+ accessCrit.$or.push({ editors: user._id });
+ accessCrit.$or.push({ owner: user._id });
 
   // will only reach here if admins/pdadmins are in actingRole teacher
   if (accountType === 'A') {
@@ -91,7 +109,9 @@ const accessibleWorkspacesQuery = async function(user, ids) {
     const userOrg = user.organization;
     const userIds = await utils.getModelIds('User', { organization: userOrg, accountType: {$ne: 'S'} });
 
-    filter.$or.push({owner: {$in : userIds}});
+    accessCrit.$or.push({owner: {$in : userIds}});
+
+    filter.$and.push(accessCrit);
 
     return filter;
   }
@@ -99,8 +119,10 @@ const accessibleWorkspacesQuery = async function(user, ids) {
   if (accountType === 'T') {
     // Workspaces where a teacher is the primary teacher or in the teachers array
 
-    filter.$or.push({'teacher.id': user.id});
-    filter.$or.push({'teachers': user.id});
+    accessCrit.$or.push({'teacher.id': user.id});
+    accessCrit.$or.push({'teachers': user.id});
+
+    filter.$and.push(accessCrit);
 
     return filter;
   }
