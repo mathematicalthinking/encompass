@@ -51,6 +51,9 @@
         #my-select {
           width: 70%;
         }
+        div.selectize-comp {
+          width: 70%;
+        }
         div.twitter-typeahead {
           width: 70%;
         }
@@ -223,6 +226,30 @@
         }
       }
     }
+    div.selectize-comp {
+      display: inline-block;
+      padding: 12px 0px;
+
+      div.selectize-control.single {
+        height: 45px;
+
+        .selectize-input {
+          height: 45px;
+          text-indent: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: none;
+        // -webkit-appearance:none;
+          input {
+            font-size: 1em;
+            font-family: $primary-font;
+            color: $primary-font-color;
+          }
+        }
+      }
+    }
+
     h4 {
       font-size: 1.3em;
       margin-bottom: 20px;

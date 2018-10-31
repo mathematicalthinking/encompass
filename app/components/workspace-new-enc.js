@@ -233,6 +233,16 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         $('.error-box').hide();
       }, 500);
     },
+
+    setSelectedProblem(problemId) {
+      let peeked = this.get('store').peekAll('problem');
+
+      let problem = peeked.findBy('id', problemId);
+      if (!problem) {
+        return;
+      }
+      this.set('selectedProblem', problem);
+    }
   }
 });
 

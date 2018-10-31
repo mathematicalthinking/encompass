@@ -152,7 +152,7 @@ const getProblems = async function(req, res, next) {
 
     if (filterBy) {
       console.log('filterBy problem API:', JSON.stringify(filterBy));
-      let { pows, all, categories } = filterBy;
+      let { pows, all, categories, title } = filterBy;
 
       if (categories) {
         let cats = categories.ids;
@@ -227,6 +227,10 @@ const getProblems = async function(req, res, next) {
          filterBy.$and.push(crit);
          delete filterBy.all;
         }
+      } else if (title) {
+        let replaced = title.replace(/\s+/g, "");
+        let regex = new RegExp(replaced, 'i');
+        filterBy.title = regex;
       }
     }
     let searchFilter;

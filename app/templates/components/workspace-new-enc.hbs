@@ -32,13 +32,23 @@
         {{#if selectedProblem}}
         <p>{{selectedProblem.title}} <i {{action (mut selectedProblem) null}} class="far fa-times-circle"></i></p>
         {{else}}
-        {{#if addProblemTypeahead}}
-        {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..."
-        selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
+
+        {{selectize-input
+          store=store
+          inputId="select-add-problem"
+          isAsync=true
+          maxItems=1
+          onItemAdd=(action "setSelectedProblem")
+          labelField="title"
+          searchField="title"
+          valueField="id"
+          model="problem"
+          queryParamsKey="title"
+          placeholder="Start typing a problem title..."
+          }}
         {{#each problemFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
         {{/each}}
-        {{/if}}
         {{/if}}
       </li>
       <li class="ws-filter section">

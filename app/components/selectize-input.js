@@ -1,6 +1,6 @@
 Encompass.SelectizeInputComponent = Ember.Component.extend({
   showInput: true,
-
+  classNames: ['selectize-comp'],
   didUpdateAttrs() {
     let newPropName = this.propName;
     let oldPropName = this.get('currentPropName');
@@ -106,20 +106,26 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   addItemsSelectize: function(query, callback) {
-    let queryParams = {};
     if (!query.length) {
       return callback();
     }
-    console.log('query', query);
+    let key = this.get('queryParamsKey');
 
-      let key = this.get('queryParamsKey');
-      queryParams[key] = query;
+    let queryParams = {
+      filterBy: {
+        [key]: query
+      }
+    };
+
 
     let model = this.get('model');
 
     this.store.query(model, queryParams)
       .then((results) => {
         // results is Ember AdapterPopulatedRecordArray
+        let meta = results.get('meta');
+        this.set('metaData', meta);
+
         let resultsArray = results.toArray();
 
         // if we want the ember objects
