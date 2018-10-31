@@ -645,6 +645,41 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
     },
+    addToRecommend: function () {
+      console.log('clicked on add to recommend');
+      let problem = this.get('problem');
+      let accountType = this.get('currentUser.accountType');
+      return this.get('currentUser').get('organization').then((org) => {
+        console.log('org is', org);
+        org.get('recommendedProblems').addObject(problem);
+        org.save().then(() => {
+          console.log('org saved');
+        });
+      });
+      // let recommendedProblems = org.get('recommendedProblems');
+      // console.log('problemis problem', problem);
+      // console.log('accounttype is', accountType);
+      // console.log('recommended problems', recommendedProblems);
+
+      // recommendedProblems.pushObject(problem);
+
+      // console.log('recommended problems after', newList);
+
+      // // org.set('recommendedProblems', newList);
+      // org.save().then(() => {
+      //   console.log('org saved');
+      // });
+
+
+      // if (accountType === "A") {
+      //   console.log('admin and org is', org);
+      // } else if (accountType === "P") {
+      //   console.log('pd admin and org is', org);
+      // } else {
+      //   return;
+      // }
+
+    },
 
     showGeneral: function () {
       this.set('showGeneral', true);
