@@ -2,7 +2,6 @@
   <h2>Filter Options</h2>
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
-    <li>Add filters</li>
     {{#each primaryFilterOptions as |input|}}
       <li>
         {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}

@@ -7,7 +7,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   workspaceToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
 
-  searchOptions: ['all'],
+  searchOptions: ['all', 'name', 'owner', 'editors'],
   searchCriterion: 'all',
   sortCriterion: { name: 'A-Z', sortParam: { name: 1 }, doCollate: true, type: 'name' },
   sortOptions: {
@@ -37,12 +37,12 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'Fewest', sortParam: { editors: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'editors'}
     ]
   },
-  privacySettingOptions: [
+  modeOptions: [
     {id: 1, label: 'All', value: ['public', 'private'], isChecked: true, icon: 'fas fa-list'},
     {id: 2, label: 'Public', value: ['public'], isChecked: false, icon: 'fas fa-globe-americas'},
     {id: 3, label: 'Private', value: ['private'], isChecked: false, icon: 'fas fa-lock'},
   ],
-  selectedModeSetting: ['public', 'private'],
+  selectedMode: ['public', 'private'],
 
   moreMenuOptions: [
     {label: 'Edit', value:'edit', action: 'editWorkspace', icon: 'far fa-edit'},
@@ -280,7 +280,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   buildPublicFilter() {
     let filter = {};
 
-    filter.privacySetting = 'E';
+    filter.mode = 'public';
 
     return filter;
   },
@@ -358,11 +358,11 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   }
 },
 
-  buildModeSettingFilter: function() {
+  buildModeFilter: function() {
     //privacy setting determined from privacy drop down on main display
-    let privacySetting = this.get('privacySettingFilter');
+    let mode = this.get('modeFilter');
     return {
-       $in: privacySetting
+       $in: mode
     };
   },
 
@@ -421,10 +421,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     }
     // primary public filter should disable privacy setting dropdown?
     if (primaryFilterValue === 'everyone') {
-      filterBy.privacySetting = {$in: ['E']};
+      filterBy.mode = {$in: ['public']};
     } else {
-      let privacySetting = this.get('privacySettingFilter');
-      filterBy.privacySetting = privacySetting;
+      let mode = this.get('modeFilter');
+      filterBy.mode = mode;
     }
 
 
@@ -696,11 +696,11 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       this.set('showList', true);
       this.set('showGrid', false);
     },
-    updateModeSetting(val) {
+    updateMode(val) {
       if (!val) {
         return;
       }
-      this.set('selectedModeSetting', val);
+      this.set('selectedMode', val);
       this.send('triggerFetch');
     },
     toggleMenu: function() {
