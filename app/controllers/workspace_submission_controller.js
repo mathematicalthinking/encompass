@@ -69,7 +69,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       this.get('guider').createGuider(
         'workspace',
         'submissions',
-        'Welcome to your Workspace!',
+        'Welcome to your Workspace',
         "Your workspace is a place where you can browse, organize, and comment on submissions.  Let's get started!",null, null, null,
         [{name: "Next"}],
         true,
@@ -83,12 +83,11 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         "Your submissions show up here",
         "#al_center",
         "#al_center",
-        12,
+        'rightTop',
         [{name: "Next"}],
         true,
-        null
+        '250px'
       );
-
       this.get('guider').createGuider(
         'submissions.nav',
         'submissions.text',
@@ -96,134 +95,117 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         "You can navigate between submissions using the dropdown or the arrows",
         "#submission-nav",
         "#submission-nav",
+        'bottom',
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'submissions.text',
+        'submissions.selection',
+        'Submission Text',
+        "Here is the short and long answer of the submission",
+        ".submission-short",
+        "#submission_container",
+        'bottom',
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'submissions.selection',
+        'submissions.selections',
+        'Make a Selection',
+        "Click the 'Make selection' button to begin making a selection. Then highlight the part of the submission you want to select. <br/><strong>Go ahead and make a selection now.</strong>",
+        "#al_center",
+        "#al_center",
         9,
         [{name: "Next"}],
         true,
         '200px',
-        null
       );
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }, {
-          name: "Close"
-        }],
-        description: "Here is the short and long answer of the submission",
-        id: "submissions.text",
-        next: "submissions.selection",
-        attachTo: "#al_submission>.submission-short",
-        overlay: true,
-        width: '200px',
-        highlight: "#al_submission>#submission_container",
-        position: 9,
-        title: "Submission Text"
-      });
-
-      window.guiders.createGuider({
-        buttons: [],
-        description: "Click the 'Make selection' button to begin making a selection. Then highlight the part of the submission you want to select. <strong>Go ahead and make a selection now.</strong>",
-        id: "submissions.selection",
-        next: "submissions.selections",
-        attachTo: "#al_center",
-        overlay: true,
-        width: '200px',
-        highlight: "#al_center",
-        position: 9,
-        title: "Make Selection"
-      });
-
-      window.guiders.createGuider({
-        buttons: [],
-        description: "Great! Now click on your selection and let's see what we can do with it.",
-        id: "submissions.selections",
-        next: "comments",
-        attachTo: "#submission_selections", //really wanted to attach to this but not working
-        overlay: true,
-        width: '200px',
-        highlight: "#al_center",
-        position: 9,
-        title: "You've made a selection!"
-      });
-
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }, {
-          name: "Close"
-        }],
-        description: "Now that you have chosen a selection you can add comments.  Select one of the comment types: Notice, Wonder, Feedback and type a comment.",
-        id: "comments",
-        next: "comments.comment",
-        attachTo: "#al_right", //really wanted to attach to this but not working
-        overlay: true,
-        highlight: "#al_right",
-        position: 12,
-        title: "Commenting on a Selection"
-      });
-
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }],
-        description: "The most relevant comments show up at the top and have a darker highlighting.  You can check the box next to the comment to indicate you want to include this comment in your reply.  You'll notice that if there are comments selected you will have another button next to 'Make Selection' called 'Draft Reply'.",
-        id: "comments.comment",
-        next: "folders",
-        attachTo: "#al_feedback_display",
-        overlay: true,
-        highlight: "#al_feedback_display",
-        position: 9,
-        title: "Your comments show up here."
-      });
-
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }],
-        description: "You can organize your selections by filing them in folders.  Folders contain other folders and can be expanded by clicking on the folder icon.  You can reorganize folders by dragging them into sub-folders.  You can also add and delete folders using the buttons at the bottom.",
-        id: "folders",
-        next: "folders.counts",
-        attachTo: "#al_left",
-        overlay: true,
-        highlight: "#al_left",
-        position: 2,
-        title: "Organizing Selections"
-      });
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }],
-        description: "The count shows how many distinct submissions (left) and selections (right) have been filed in this folder (including all of the sub-folders).",
-        id: "folders.counts",
-        next: "fileSelection",
-        attachTo: "#al_folders>li.folderItem:eq(2) aside",
-        overlay: true,
-        highlight: "#al_folders>li.folderItem:eq(2) aside",
-        position: 12,
-        title: "Folder Counts"
-      });
-
-       window.guiders.createGuider({
-        buttons: [{
-          name: "Next"
-        }],
-        description: "To file a selection, drag it to a folder.",
-        id: "fileSelection",
-        next: "done",
-        title: "File Selections in Folders"
-      });
-
-      window.guiders.createGuider({
-        buttons: [{
-          name: "Close",
-        }],
-        id: "done",
-        title: "Done!",
-        overlay: true,
-        highlight: "#takeTour",
-        position: 9,
-        attachTo: "#takeTour",
-        description: "You're all done.  If you want to re-take the tour, just hit this button."
-      });
+      this.get('guider').createGuider(
+        'submissions.selections',
+        'comments',
+        "You've made a selection!",
+        "Great! Now click on your selection and let's see what we can do with it.",
+        "#submission_selections",
+        "#al_center",
+        3,
+        [{name: "Next"}],
+        true,
+        '300px',
+      );
+      this.get('guider').createGuider(
+        'comments',
+        'comments.comment',
+        'Commenting on a Selection',
+        "Now that you have chosen a selection you can add comments.  Select one of the comment types: Notice, Wonder, Feedback and type a comment.",
+        "#al_right",
+        "#al_right",
+        'leftTop',
+        [{name: "Next"}],
+        true,
+        '250px',
+      );
+      this.get('guider').createGuider(
+        'comments.comment',
+        'folders',
+        'Your Comments Show up Here',
+        "The most relevant comments show up at the top and have a darker highlighting.  You can check the box next to the comment to indicate you want to include this comment in your reply.  You'll notice that if there are comments selected you will have another button next to 'Make Selection' called 'Draft Reply'",
+        "#al_feedback_display",
+        "#al_feedback_display",
+        9,
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'folders',
+        'folders.counts',
+        'Organizing Selections',
+        "You can organize your selections by filing them in folders.  Folders contain other folders and can be expanded by clicking on the folder icon.  You can reorganize folders by dragging them into sub-folders.  You can also add and delete folders using the buttons at the bottom",
+        "#al_left",
+        "#al_left",
+        2,
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'folders.counts',
+        'fileSelection',
+        'Folder Counts',
+        "The count shows how many distinct submissions (left) and selections (right) have been filed in this folder (including all of the sub-folders)",
+        "#al_folders>li.folderItem:eq(2) aside",
+        "#al_folders>li.folderItem:eq(2) aside",
+        12,
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'folders.counts',
+        'done',
+        'Folder Counts',
+        "To file a selection, drag it to a folder",
+        null, null, null,
+        [{name: "Next"}],
+        true,
+        null,
+      );
+      this.get('guider').createGuider(
+        'done',
+        '#takeTour',
+        'Tour Completed',
+        "You're all done.  If you want to re-take the tour, just hit this button",
+        '#takeTour',
+        null,
+        9,
+        [{name: "Close"}],
+        true,
+        null,
+      );
     },
 
     cancelComment: function(){
