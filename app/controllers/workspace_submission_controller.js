@@ -103,9 +103,9 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       this.get('guider').createGuider(
         'submissions.text',
         'submissions.selection',
-        'Submission Text',
+        'Submission Content',
         "Here is the short and long answer of the submission",
-        ".submission-short",
+        ".submission-long",
         "#submission_container",
         'bottom',
         [{name: "Next"}],

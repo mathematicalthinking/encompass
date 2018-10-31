@@ -349,9 +349,10 @@
           }
           .show-category-btn {
             margin-top: 10px;
-            background-color: white;
+            background-color: $background-body;
             border-radius: 3px;
             color: $primary-font-color;
+            border: .5px solid $input-border;
             padding: 8px 10px;
             font-size: .75em;
             font-weight: $bolder-font-weight;
