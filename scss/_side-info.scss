@@ -289,9 +289,17 @@
         background: none;
         font-size: 1.4em;
         color: $primary-font-color;
+        cursor: pointer;
         &:focus {
           outline: none;
         }
+        .star-line, .fa-copy {
+        &:hover {
+          &:before {
+            font-weight: bold;
+          }
+        }
+      }
       }
       .left-buttons {
         float: left;
