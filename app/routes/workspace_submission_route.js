@@ -95,10 +95,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       this.refresh();
     },
 
-    startTour: function(type) {
-      console.log('ignoring tour');
-      //guiders.show('workspace');
-    },
     addSelection: function( selection ){
       console.log("W-S Route: Got add selection action!");
     },
