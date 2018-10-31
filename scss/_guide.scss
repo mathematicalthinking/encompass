@@ -1,0 +1,56 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.guide-item {
+  border: 1px solid transparent;
+  box-shadow: none;
+  padding: 20px;
+  font-family: $primary-font;
+  .guiders_content {
+    .guiders_title {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      color: $accent-color;
+      font-size: 1.5em;
+      font-weight: $bold-font-weight;
+    }
+    .guiders_close {
+      position: absolute;
+      top: -5px;
+      right: 8px;
+      .guiders_x_button {
+        position: absolute;
+        top: 0px;
+        border: none;
+        background: none;
+      }
+      .guiders_x_button:before {
+        position: absolute;
+        font-family: 'FontAwesome';
+        top: 0;
+        left: 0;
+        content: "\f00d";
+        color: $input-border;
+      }
+    }
+    .guiders_description {
+      line-height: 1.5em;
+      padding: 0 10px 0 0;
+      font-size: .9em;
+      margin-bottom: 10px;
+      font-weight: $light-font-weight;
+    }
+    .guiders_buttons_container {
+      .guiders_button {
+        background-color: $accent-color;
+        color: white;
+        border: none;
+        padding: 8px 10px;
+        font-weight: $bold-font-weight;
+        position: relative;
+        top: 10px;
+      }
+    }
+  }
+}
