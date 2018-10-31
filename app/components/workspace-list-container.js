@@ -1,4 +1,4 @@
-Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-list-container',
   showList: true,
   showGrid: false,
@@ -118,7 +118,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
   didReceiveAttrs() {
     let attributes = ['workspaces', 'organizations'];
-
     for (let attr of attributes) {
       let prop = this.get(attr);
       let modelAttr = this.model[attr];
