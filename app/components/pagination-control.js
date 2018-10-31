@@ -2,7 +2,7 @@ Encompass.PaginationControlComponent = Ember.Component.extend(Encompass.ErrorHan
   elementId: 'pagination-control',
   showPageNavigation: Ember.computed('details.pageCount', function() {
     let count = this.get('details.pageCount');
-    return !!count && count > 1;
+    return count && count > 1;
   }),
 
   init: function() {
