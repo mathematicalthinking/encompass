@@ -941,7 +941,7 @@ function newWorkspaceRequest(req, res, next) {
       }
       console.log('currentPage', currentPage);
       const data = {
-        'workspacess': results,
+        'workspaces': results,
         'meta': {
           'total': itemCount,
           pageCount,
