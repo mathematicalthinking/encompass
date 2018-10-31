@@ -889,14 +889,38 @@ function newWorkspaceRequest(req, res, next) {
           }
         }
       }
-      let searchFilter;
+      let searchFilter = {};
 
       if (searchBy) {
         let { query, criterion } = searchBy;
       if (criterion) {
         if (criterion === 'all') {
-          searchFilter = {$text: {$search: query}};
-          isUsingTextSearch = true;
+          let topLevelStringProps = ['name'];
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
+          searchFilter.$or = [];
+          for (let prop of topLevelStringProps) {
+            searchFilter.$or.push({[prop]: regex});
+          }
+          let [ownerIds, editorIds] = await Promise.all([
+            await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
+            await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
+          ]);
+
+
+          let combined = _.flatten(ownerIds.concat(editorIds));
+          let uniqueIds = _.uniq(combined);
+          searchFilter.$or.push({ _id: {$in: uniqueIds} });
+
+
+        } else if (criterion === 'owner') {
+          let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
+          searchFilter = {_id: {$in: ids}};
+
+        } else if (criterion === 'editors') {
+          let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
+          searchFilter = {_id: {$in: ids}};
+
         } else {
           query = query.replace(/\s+/g, "");
           let regex = new RegExp(query.split('').join('\\s*'), 'i');
@@ -905,7 +929,6 @@ function newWorkspaceRequest(req, res, next) {
         }
       }
       }
-
       let sortParam = { name: 1 };
       let doCollate = true;
       let byRelevance = false;
