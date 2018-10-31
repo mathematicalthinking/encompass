@@ -15,7 +15,9 @@ guiders.createGuider({
   description: "Your workspace is a place where you can browse, organize, and comment on submissions.  Let's get started.",
   id: "workspace",
   next: "submissions",
+  attachTo: "#al_center",
   overlay: true,
+  position: 12,
   title: "Welcome to your Workspace!"
 });
 
@@ -43,7 +45,7 @@ guiders.createGuider({
   title: "Organizing Selections"
 });
 guiders.createGuider({
-  buttons: [{name: "Done!", onclick: function(){$('#doneTour').click()}}],
+  buttons: [{name: "Done!", onclick: function(){$('#doneTour').click();}}],
   id: "done",
   title: "Done!",
   overlay: true,
