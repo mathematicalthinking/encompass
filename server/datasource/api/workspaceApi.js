@@ -727,31 +727,33 @@ function prepareAndUpdateWorkspaces(user, callback) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
-function sendWorkspaces(req, res, next) {
-  try {
-    const user = userAuth.requireUser(req);
-    if (!user) {
-      return utils.sendError.InvalidCredentialsError(null, res);
+ function sendWorkspaces(req, res, next) {
+  var user = userAuth.requireUser(req);
+  logger.info('in sendWorkspaces');
+  logger.debug('looking for workspaces for user id' + user._id);
+  prepareAndUpdateWorkspaces(user, function(err){
+    if(err){
+      utils.sendError.InternalError(err, res);
+      logger.error('error preparing and updating ws');
     }
 
-    prepareAndUpdateWorkspaces(user, async function(err){
-      if(err){
-        logger.error('error preparing and updating ws');
-
+    models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+      if (err) {
         return utils.sendError.InternalError(err, res);
       }
-      logger.info('in sendWorkspaces');
-      logger.debug('looking for workspaces for user id' + user._id);
+      var response = {
+        workspaces: workspaces,
+        meta: { sinceToken: new Date() }
+      };
+      if(req.body) {
+        if(req.body.hasOwnProperty('importRequest')) {
+          response = {importRequest: req.body.importRequest};
+        }
+      }
 
-
-
+      utils.sendResponse(res, response);
     });
-  }catch(err) {
-    console.error(`Error sendWorkspaces: ${err}`);
-    console.trace();
-  }
-
-
+  });
 }
 
 function postWorkspace(req, res, next) {
