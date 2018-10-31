@@ -5,12 +5,15 @@
     </div>
 
     <div class="item-section name">
-      {{#link-to 'workspace' workspace class="workspace-name"}}
+      {{#link-to 'workspace.work' workspace class="workspace-name"}}
         {{{workspace.name}}}
+      {{/link-to}}
+      {{#link-to 'workspace.info' workspace.id}}
+        <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
       {{/link-to}}
     </div>
     <div class="item-section last-viewed">
-      {{#link-to 'workspace' workspace class="workspace-last-viewed"}}
+      {{#link-to 'workspace.work' workspace class="workspace-last-viewed"}}
         {{format-date workspace.lastModifiedDate 'L'}}
       {{/link-to}}
     </div>
