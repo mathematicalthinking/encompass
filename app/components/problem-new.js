@@ -12,6 +12,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   status: null,
   validator: Ember.inject.service('form-validator'),
   alert: Ember.inject.service('sweet-alert'),
+  parentActions: Ember.computed.alias("parentView.actions"),
   approvedProblem: false,
   noLegalNotice: null,
   showCategories: false,
@@ -163,6 +164,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.save()
               .then((problem) => {
                 that.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
+                let parentView = this.get('parentView');
+                this.get('parentActions.refreshList').call(parentView);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -186,6 +189,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
             createProblemData.save()
               .then((problem) => {
                 that.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
+                let parentView = this.get('parentView');
+                this.get('parentActions.refreshList').call(parentView);
                 that.sendAction('toProblemInfo', problem);
               })
               .catch((err) => {
@@ -203,6 +208,8 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       createProblemData.save()
         .then((res) => {
           this.get('alert').showToast('success', 'Problem Created', 'bottom-end', 4000, false, null);
+          let parentView = this.get('parentView');
+          this.get('parentActions.refreshList').call(parentView);
           that.sendAction('toProblemInfo', res);
         })
         .catch((err) => {
