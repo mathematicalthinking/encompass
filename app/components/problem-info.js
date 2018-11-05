@@ -698,6 +698,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           }
         });
       }
+
+      if (status === 'approved' && privacySetting !== 'M') {
+        this.send('addToRecommend');
+      }
     },
 
     addToRecommend: function () {
