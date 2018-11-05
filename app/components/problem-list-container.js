@@ -209,7 +209,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                       value: "recommended",
                       isChecked: true,
                       isApplied: true,
-                      icon: "fas fa-lightbulb"
+                      icon: "fas fa-star"
                     },
                       fromOrg: {
                         label: `Created by ${currentUserOrgName} Members`,
@@ -255,7 +255,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                     value: "recommended",
                     isChecked: true,
                     isApplied: true,
-                    icon: "fas fa-lightbulb"
+                    icon: "fas fa-star"
                   },
                     fromOrg: {
                       label: `Created by Members`,
@@ -742,8 +742,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.send('triggerFetch');
     },
     toggleMenu: function() {
-      this.set('menuClosed', !this.get('menuClosed'));
       $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
     },
 

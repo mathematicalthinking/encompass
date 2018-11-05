@@ -135,11 +135,8 @@
 </div>
 
 <div class="toggle-filter-menu">
-  {{#if menuClosed}}
-    <button {{action 'toggleMenu'}}><i class="fas fa-chevron-right"></i></button>
-  {{else}}
-    <button {{action 'toggleMenu'}}><i class="fas fa-chevron-left"></i></button>
-  {{/if}}
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+  {{!-- <button {{action 'toggleMenu'}}><i class="fas fa-chevron-left"></i></button> --}}
 </div>
 
 <div class="list-outlet hidden" id="outlet">
@@ -148,6 +145,9 @@
 
 <script>
   $('.list-view').click(function (e) {
+    if (!($('#filter-list-side').hasClass('collapse'))) {
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+    }
     $('#filter-list-side').addClass('collapse');
   });
 
