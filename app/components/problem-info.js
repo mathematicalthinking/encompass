@@ -567,6 +567,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           let name = problem.get('title');
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          let parentView = this.get('parentView');
+          this.get('parentActions.refreshList').call(parentView);
         }).catch((err) => {
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
           // this.handleErrors(err, 'createRecordErrors', newProblem);
@@ -743,7 +745,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     removeRecommend: function () {
-      console.log('clicked on removeRecommend');
       let problem = this.get('problem');
       return this.get('currentUser').get('organization').then((org) => {
         org.get('recommendedProblems').removeObject(problem);
