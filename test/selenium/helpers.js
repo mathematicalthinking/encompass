@@ -230,10 +230,11 @@ const signup = async function(webDriver, missingFields=[], user=newUser,  accept
         // eslint-disable-next-line no-await-in-loop
         if (input === 'organization') {
           // hit enter to select org from dropdown
+          // eslint-disable-next-line no-await-in-loop
           await findInputAndType(webDriver, inputs[input], user[input], true);
         } else {
+          // eslint-disable-next-line no-await-in-loop
           await findInputAndType(webDriver, inputs[input], user[input]);
-
         }
 
       }catch(err){
