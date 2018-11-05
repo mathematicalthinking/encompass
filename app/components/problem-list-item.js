@@ -47,32 +47,19 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     return this.get('iconFillOptions')[status];
   }.property('problem.status'),
 
-  // canDelete: Ember.computed('problem.id', function () {
-  //   let problem = this.get('problem');
-  //   let currentUser = this.get('currentUser');
-  //   let currentUserType = currentUser.get('accountType');
-  //   let creator = problem.get('createdBy.content.id');
-  //   let isUsed = problem.get('isUsed');
-  //   let canDelete;
-  //   this.get('permissions');
+  isRecommended: function() {
+    let problem = this.get('problem');
+    let currentUser = this.get('currentUser');
+    let organization = currentUser.get('organization');
+    let recommendedProblems = organization.get('recommendedProblems');
+    if (recommendedProblems.includes(problem)) {
+      return true;
+    } else {
+      return false;
+    }
+  }.property('problem.id'),
 
-  //   if (currentUserType === "A") {
-  //     canDelete = true;
-  //   } else if (currentUserType === "P") {
-  //     if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
-  //       canDelete = true;
-  //     }
-  //   } else if (currentUserType === "T") {
-  //     if (creator === currentUser.id && !isUsed) {
-  //       canDelete = true;
-  //     } else {
-  //       canDelete = false;
-  //     }
-  //   } else {
-  //     canDelete = false;
-  //   }
-  //   return canDelete;
-  // }),
+
 
   ellipsisMenuOptions: function() {
     let canDelete = this.get('canDelete');
