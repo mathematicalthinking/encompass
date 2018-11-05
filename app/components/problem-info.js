@@ -682,6 +682,35 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
     },
+
+    checkRecommend: function () {
+      let currentUser = this.get('currentUser');
+      let accountType = currentUser.get('accountType');
+      let problem = this.get('problem');
+      let privacySetting = problem.get('privacySetting');
+      let status = problem.get('status');
+
+      if (accountType === 'T') {
+        return;
+      }
+
+      if (privacySetting === 'M') {
+        this.get('alert').showModal('warning', 'Are you sure you want to recommend a private problem?', 'Regular users will not see this problem in their recommended list', 'Yes').then((result) => {
+          if (result.value) {
+            this.send('addToRecommend');
+          }
+        });
+      }
+
+      if (status !== 'approved') {
+        this.get('alert').showModal('warning', 'Are you sure you want to recommend an unapproved problem?', 'Regular users will not see this problem in their recommended list', 'Yes').then((result) => {
+          if (result.value) {
+            this.send('addToRecommend');
+          }
+        });
+      }
+    },
+
     addToRecommend: function () {
       let problem = this.get('problem');
       let accountType = this.get('currentUser.accountType');
