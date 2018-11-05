@@ -296,6 +296,7 @@
       .buttons-container {
         height: 35px;
         margin-bottom: 15px;
+        margin-top: 10px;
         @include flex-item(1, 1 1 auto, auto);
         width: 100%;
       }
@@ -308,11 +309,19 @@
         &:focus {
           outline: none;
         }
+        .star-filled {
+          color: $accent-yellow;
+        }
         .star-line, .fa-copy {
         &:hover {
           &:before {
             font-weight: bold;
           }
+        }
+      }
+      .star-line {
+        &:hover {
+          color: $accent-yellow;
         }
       }
       }
