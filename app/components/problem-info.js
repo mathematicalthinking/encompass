@@ -29,6 +29,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
   recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
+  parentActions: Ember.computed.alias("parentView.actions"),
 
   iconFillOptions: {
     approved: '#35A853',
@@ -788,6 +789,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             problem.set('isTrashed', false);
             problem.save().then(() => {
               this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+              let parentView = this.get('parentView');
+              this.get('parentActions.refreshList').call(parentView);
             });
           }
         });
