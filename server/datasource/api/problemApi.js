@@ -12,13 +12,14 @@ const _ = require('underscore');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
+const apiUtils = require('../api/utils');
 const access   = require('../../middleware/access/problems');
 const accessUtils = require('../../middleware/access/utils');
 
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
-// eslint-disable-next-line no-unused-vars
+
 async function getOrgRecommendedProblems(user, orgIds, isIdOnly=true) {
   try {
     let orgs = await models.Organization.find({_id: {$in: orgIds}}).lean().exec();
@@ -100,22 +101,178 @@ async function buildPowsFilterBy(pows) {
     return filter;
 }
 
-async function categoryTextSearch(criteria, isIdOnly) {
-  let records = await models.Category.find(criteria).lean().exec();
-  let ids;
-  if (isIdOnly) {
-    ids = _.map(records, record => record._id );
-    return ids;
+
+
+async function buildProblemsFilter(user, hash) {
+  try {
+    const results = {
+      hasNoData: false,
+      invalidParams: false,
+      criteria: null
+    };
+    // eslint-disable-next-line prefer-object-spread
+    let filterBy = Object.assign({}, hash);
+
+    filterBy.$and = [];
+
+    if (!hash || _.isEmpty(hash)) {
+      return results;
+    }
+
+    let { pows, all, categories, title } = hash;
+
+    if (categories) {
+        let cats = categories.ids;
+        let includeSubCats = categories.includeSubCats;
+
+        if (includeSubCats === 'true') {
+          let catsWithChildren = await Promise.all(_.map(cats, (cat => {
+            return accessUtils.getAllChildCategories(cat, true, true);
+          })));
+
+          let flattened = _.flatten(catsWithChildren);
+
+          let uniqueCats = _.uniq(flattened);
+
+          filterBy.$and.push({ categories: { $in: uniqueCats} });
+        } else {
+          filterBy.$and.push({categories : {$in: cats} });
+        }
+        delete filterBy.categories;
+      }
+
+      if (pows) {
+        filterBy.$and.push(await buildPowsFilterBy(pows));
+
+        delete filterBy.pows;
+
+      } else if (all) {
+        let { org } = all;
+        if (org) {
+          let crit = {};
+          let { recommended, organizations } = org;
+
+          let recommendedProblems;
+          if (recommended) {
+            recommendedProblems = await getOrgRecommendedProblems(user, recommended , true);
+          }
+
+          if (!_.isEmpty(recommendedProblems)) {
+            if (!crit.$or) {
+              crit.$or = [];
+            }
+            crit.$or.push({_id: {$in: recommendedProblems}});
+
+         }
+         if (organizations) {
+          if (!crit.$or) {
+            crit.$or = [];
+          }
+           crit.$or.push({organization: {$in: organizations}});
+         }
+
+         if (_.isEmpty(recommendedProblems) && !organizations) {
+          results.hasNoData = true;
+          return results;
+         }
+         filterBy.$and.push(crit);
+         delete filterBy.all;
+        }
+      } else if (title) {
+        let replaced = title.replace(/\s+/g, "");
+        let regex = new RegExp(replaced, 'i');
+        filterBy.$and.push({ title : regex });
+
+        delete filterBy.title;
+      }
+      if (_.isEmpty(filterBy.$and)) {
+        delete filterBy.$and;
+      }
+      results.criteria = filterBy;
+
+      return results;
+  }catch(err) {
+    console.log(`Error buildProblemsFilter: ${err}`);
   }
-  return records;
 }
 
-async function findProblemsByCategoryIds(categoryIds, isIdOnly) {
-  let records = await models.Problem.find({categories : { $elemMatch: { $in: categoryIds} }});
-  if (isIdOnly) {
-    return _.map(records, record => record._id);
+  async function buildProblemsSearch(hash) {
+    const results = {
+      hasNoData: false,
+      invalidParams: false,
+      criteria: null
+    };
+
+    if (!hash) {
+      return results;
+    }
+
+    let { query, criterion } = hash;
+
+    if (query && !criterion) {
+      criterion = 'general';
+    }
+
+    if (!query && !criterion) {
+      return results;
+    }
+
+    if (criterion === 'general') {
+      let topLevelStringProps = ['title'];
+
+      searchFilter = {};
+
+      query = query.replace(/\s+/g, "");
+
+      let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+      searchFilter.$or = [];
+
+      for (let prop of topLevelStringProps) {
+        searchFilter.$or.push({[prop]: regex});
+      }
+
+      let queries = [
+        {$text: {$search: query}},
+        searchFilter
+      ];
+      let uniqueIds = await apiUtils.getUniqueIdsFromQueries('Problem', queries);
+
+      if (_.isEmpty(uniqueIds)) {
+        searchFilter = {};
+      } else {
+        searchFilter = { _id: { $in: uniqueIds } };
+      }
+    }  else {
+      query = query.replace(/\s+/g, "");
+      let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+      searchFilter = {[criterion]: regex};
+    }
+    results.criteria = searchFilter;
+    return results;
+
   }
-  return records;
+
+async function buildProblemsCriteria(user, queryParams, isTrashedOnly) {
+  try {
+    let { ids, filterBy, searchBy} = queryParams;
+
+    let [ filter, search ] = await Promise.all([buildProblemsFilter(user, filterBy), buildProblemsSearch(searchBy)]);
+
+    if (filter.hasNoData || search.hasNoData) {
+      // return immediately;
+      return null;
+    }
+    if (filter.invalidParams || search.invalidParams) {
+      return null;
+    }
+
+    return access.get.problems(user, ids, filter.criteria, search.criteria, isTrashedOnly);
+
+  }catch(err) {
+    console.error(`Error buildProblemsCriteria: ${err}`);
+  }
 }
 
 /**
@@ -148,142 +305,12 @@ const getProblems = async function(req, res, next) {
       }
     }
 
-    let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+  const criteria = await buildProblemsCriteria(user, req.query, isTrashedOnly);
 
-    if (filterBy) {
-      console.log('filterBy problem API:', JSON.stringify(filterBy));
-      let { pows, all, categories, title } = filterBy;
-
-      if (categories) {
-        let cats = categories.ids;
-        let includeSubCats = categories.includeSubCats;
-
-        if (includeSubCats === 'true') {
-          let catsWithChildren = await Promise.all(_.map(cats, (cat => {
-            return accessUtils.getAllChildCategories(cat, true, true);
-          })));
-
-          let flattened = _.flatten(catsWithChildren);
-
-          let uniqueCats = _.uniq(flattened);
-
-          filterBy.categories = {$in: uniqueCats};
-        } else {
-          filterBy.categories = {$in: cats};
-        }
-
-      }
-
-      if (pows) {
-        if (!filterBy.$and) {
-          filterBy.$and = [];
-        }
-        filterBy.$and.push(await buildPowsFilterBy(pows));
-
-        delete filterBy.pows;
-        // filter = await buildPowsFilterBy(pows);
-      } else if (all) {
-        let { org } = all;
-        if (org) {
-          let crit = {};
-          let { recommended, organizations } = org;
-
-          let recommendedProblems;
-          if (recommended) {
-            recommendedProblems = await getOrgRecommendedProblems(user, recommended , true);
-            console.log('recommendedProblems', recommendedProblems);
-          }
-
-          if (!_.isEmpty(recommendedProblems)) {
-            if (!crit.$or) {
-              crit.$or = [];
-            }
-            crit.$or.push({_id: {$in: recommendedProblems}});
-
-         }
-         if (organizations) {
-          if (!crit.$or) {
-            crit.$or = [];
-          }
-           crit.$or.push({organization: {$in: organizations}});
-         }
-
-         if (_.isEmpty(recommendedProblems) && !organizations) {
-          console.log('empty and recommended only');
-          // recommended only but no recommendations; return immediately
-           const data = {
-            'problems': [],
-            'meta': {
-              'total': 0,
-              pageCount: 1,
-              currentPage: 1
-            }
-        };
-          return utils.sendResponse(res, data);
-         }
-         if (!filterBy.$and) {
-           filterBy.$and = [];
-         }
-         filterBy.$and.push(crit);
-         delete filterBy.all;
-        }
-      } else if (title) {
-        let replaced = title.replace(/\s+/g, "");
-        let regex = new RegExp(replaced, 'i');
-        filterBy.title = regex;
-      }
-    }
-    let searchFilter;
-
-    if (searchBy) {
-      let { query, criterion } = searchBy;
-    if (criterion) {
-      if (criterion === 'category') {
-        //
-        // let matches = await accessUtils.getProblemsByCategory(query);
-        let catSearchCrit = {$text: {$search: query}, isTrashed: false};
-        let categoryIds = await categoryTextSearch(catSearchCrit, true);
-        if (_.isEmpty(categoryIds)) {
-          // no categorys found, return 0 results;
-          const data = {
-            'problems': [],
-            'meta': {
-              'total': 0,
-              pageCount: 1,
-              currentPage: 1
-            }
-        };
-          return utils.sendResponse(res, data);
-        }
-
-
-        let problemIds = await findProblemsByCategoryIds(categoryIds, true);
-        if (_.isEmpty(problemIds)) {
-          // no problems found, return 0 results;
-          const data = {
-            'problems': [],
-            'meta': {
-              'total': 0,
-              pageCount: 1,
-              currentPage: 1
-            }
-        };
-          return utils.sendResponse(res, data);
-        }
-
-         searchFilter = { _id: { $in: problemIds } };
-
-      } else if (criterion === 'all') {
-        searchFilter = {$text: {$search: query}};
-        isUsingTextSearch = true;
-      } else {
-        query = query.replace(/\s+/g, "");
-        let regex = new RegExp(query.split('').join('\\s*'), 'i');
-
-        searchFilter = {[criterion]: regex};
-      }
-    }
-    }
+  if (_.isNull(criteria)) {
+    return utils.sendResponse(res, null);
+  }
+    let { sortBy, page } = req.query;
 
     let sortParam = {title: 1};
     let doCollate = true;
@@ -294,7 +321,7 @@ const getProblems = async function(req, res, next) {
       doCollate = sortBy.doCollate;
       byRelevance = sortBy.byRelevance;
     }
-    const criteria = await access.get.problems(user, ids, filterBy, searchFilter, isTrashedOnly);
+
     let results, itemCount;
 
     if (byRelevance) {
@@ -327,18 +354,13 @@ const getProblems = async function(req, res, next) {
         pageCount,
         currentPage
       }
-  };
-    utils.sendResponse(res, data);
-    next();
+    };
+    return utils.sendResponse(res, data);
   }catch(err) {
     console.error(`Error getProblems: ${err}`);
     console.trace();
     return utils.sendError.InternalError(err, res);
   }
-
-
-  // add permissions here
-
 };
 
 /**
