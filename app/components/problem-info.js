@@ -649,35 +649,29 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       console.log('clicked on add to recommend');
       let problem = this.get('problem');
       let accountType = this.get('currentUser.accountType');
-      return this.get('currentUser').get('organization').then((org) => {
-        console.log('org is', org);
-        org.get('recommendedProblems').addObject(problem);
-        org.save().then(() => {
-          console.log('org saved');
+      console.log('accountType is ', accountType);
+
+      if (accountType === "A") {
+        return this.get('currentUser').get('organization').then((org) => {
+          console.log('admin org is', org);
+          org.get('recommendedProblems').addObject(problem);
+          org.save().then(() => {
+            this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+          });
         });
-      });
-      // let recommendedProblems = org.get('recommendedProblems');
-      // console.log('problemis problem', problem);
-      // console.log('accounttype is', accountType);
-      // console.log('recommended problems', recommendedProblems);
-
-      // recommendedProblems.pushObject(problem);
-
-      // console.log('recommended problems after', newList);
-
-      // // org.set('recommendedProblems', newList);
-      // org.save().then(() => {
-      //   console.log('org saved');
-      // });
+      } else if (accountType === "P") {
+        return this.get('currentUser').get('organization').then((org) => {
+          console.log('pd org is', org);
+          org.get('recommendedProblems').addObject(problem);
+          org.save().then(() => {
+            this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+          });
+        });
+      } else {
+        return;
+      }
 
 
-      // if (accountType === "A") {
-      //   console.log('admin and org is', org);
-      // } else if (accountType === "P") {
-      //   console.log('pd admin and org is', org);
-      // } else {
-      //   return;
-      // }
 
     },
 
