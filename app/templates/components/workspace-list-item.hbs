@@ -49,12 +49,12 @@
   </div>
 {{/if}}
 
-{{!-- {{#if isGrid}}
+{{#if isGrid}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
-        <span class="privacy-icon">{{{public-private workspace.privacySetting}}}</span>
-        <span class="date">{{format-date workspace.createDate 'MM/DD/YY'}}</span>
+        <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
+        <span class="date">{{format-date workspace.lastModifiedDate 'MM/DD/YY'}}</span>
       </div>
       <div class="item-card more" {{action "toggleShowMoreMenu"}}>
         <i class="fas fa-ellipsis-v more-menu"></i>
@@ -76,29 +76,29 @@
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
-        {{#link-to 'workspace' workspace class="workspace-name"}}
+        {{#link-to 'workspace.work' workspace class="workspace-name"}}
           {{{workspace.name}}}
         {{/link-to}}
       </div>
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        {{#link-to 'workspace' workspace class="workspace-name"}}
+        {{!-- {{#link-to 'workspace.work' workspace class="workspace-name"}}
           {{{workspace.text}}}
-        {{/link-to}}
+        {{/link-to}} --}}
       </div>
     </div>
     <div class="item-card row-4">
       <div class="item-card status">
-        <svg height="20" width="20">
+        {{!-- <svg height="20" width="20">
           <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
         </svg>
         <span class="status-text">
           {{workspace.status}}
-        </span>
+        </span> --}}
       </div>
       <div class="item-card action">
-        {{#if currentUser.isAdmin}}
+        {{!-- {{#if currentUser.isAdmin}}
           {{#if (is-equal workspace.status 'approved')}}
             <button {{action "confirmStatusUpdate" workspace "name" "flagged"}} class="primary-button">Flag</button>
           {{else}}
@@ -110,13 +110,13 @@
           {{else}}
             <button class="primary-button" {{action "assignProblem"}}>Assign</button>
           {{/if}}
-        {{/if}}
+        {{/if}} --}}
       </div>
     </div>
   </div>
-{{/if}} --}}
+{{/if}}
 
-{{!-- <script>
+<script>
   $('.workspace-name').click(function (e) {
     $('.list-outlet').removeClass('hidden');
     $('.list-outlet').addClass('animated slideInRight');
@@ -129,6 +129,6 @@
   $('.flex-item-full').click(function (e) {
     $('.click-menu').addClass('hidden');
   });
-</script> --}}
+</script>
 
 
