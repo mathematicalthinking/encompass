@@ -296,11 +296,19 @@
             <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
           </span>
           {{#unless currentUser.isTeacher}}
-            <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Add this Problem to Recommended">
-              <button class="button-icon star-icon" {{action 'addToRecommend'}}>
-                <i class="far fa-star star-line"></i>
-              </button>
-            </span>
+            {{#if isRecommended}}
+              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
+                <button class="button-icon star-icon" {{action 'removeRecommend'}}>
+                  <i class="fas fa-star star-line"></i>
+                </button>
+              </span>
+            {{else}}
+              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Add this Problem to Recommended">
+                <button class="button-icon star-icon" {{action 'addToRecommend'}}>
+                  <i class="far fa-star star-line"></i>
+                </button>
+              </span>
+            {{/if}}
           {{/unless}}
         {{/if}}
       </span>

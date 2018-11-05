@@ -95,6 +95,16 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.handleErrors(err, 'findRecordErrors');
     });
 
+    // let currentUser = this.get('currentUser');
+    // let organization = currentUser.get('organization');
+    // let recommendedProblems = organization.get('recommendedProblems');
+    // if (recommendedProblems.includes(problem)) {
+    //   console.log('problem is in recommened array');
+    //   this.set('isRecommended', true);
+    // } else {
+    //   this.set('isRecommended', false);
+    // }
+
     let problemFlagReason = problem.get('flagReason');
     if (problemFlagReason) {
       let flaggedBy = problemFlagReason.flaggedBy;
@@ -103,6 +113,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
     }
   },
+
   willDestroyElement: function() {
     // hide outlet, but don't transition to list because topbar link-to takes care of that
     this.send('hideInfo', false);
@@ -160,6 +171,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       };
     });
   }.property('problem.keywords.[]'),
+
+  isRecommended: function () {
+    let problem = this.get('problem');
+    let currentUser = this.get('currentUser');
+    let organization = currentUser.get('organization');
+    let recommendedProblems = organization.get('recommendedProblems');
+    if (recommendedProblems.includes(problem)) {
+      console.log('problem is in recommened array');
+      return true;
+    } else {
+      return false;
+    }
+  }.property('problem.id'),
 
   createKeywordFilter(keyword) {
     if (!keyword) {
@@ -694,6 +718,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       } else {
         return;
       }
+    },
+
+    removeRecommend: function () {
 
     },
 
