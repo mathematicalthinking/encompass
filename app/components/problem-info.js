@@ -721,7 +721,14 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     removeRecommend: function () {
-
+      console.log('clicked on removeRecommend');
+      let problem = this.get('problem');
+      return this.get('currentUser').get('organization').then((org) => {
+        org.get('recommendedProblems').removeObject(problem);
+        org.save().then(() => {
+          this.get('alert').showToast('success', 'Removed from Recommended', 'bottom-end', 3000, false, null);
+        });
+      });
     },
 
     showGeneral: function () {
