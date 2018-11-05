@@ -9,6 +9,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
   recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
+  parentData: Ember.computed.alias('parentView.containerData'),
+  parentActions: Ember.computed.alias("parentView.containerActions"),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
@@ -214,6 +216,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           problem.set('isTrashed', false);
           problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+            let parentData = this.get('parentData');
+            this.get('parentActions.refreshList').call(parentData);
           });
         }
       });
@@ -296,6 +300,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           let name = problem.get('title');
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          let parentData = this.get('parentData');
+          this.get('parentActions.refreshList').call(parentData);
         }).catch((err) => {
           console.log('err is', err);
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
