@@ -11,6 +11,16 @@ body {
   width: 100%;
 }
 
+i {
+  cursor: pointer;
+  &.fas.fa-globe-americas {
+    cursor: default;
+  }
+  &.fas.fa-lock {
+    cursor: default;
+  }
+}
+
 a {
   color: $primary-font-color;
   text-decoration: none;

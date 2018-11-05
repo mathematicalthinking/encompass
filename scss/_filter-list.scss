@@ -357,6 +357,9 @@
             font-size: .75em;
             font-weight: $bolder-font-weight;
           }
+          .selectize-comp {
+            width: 85%;
+          }
         }
         .more-filter-list {
           margin-bottom: 100px;
@@ -369,6 +372,7 @@
           }
           label {
             display: block;
+            cursor: pointer;
             height: 50px;
             width: 100%;
             position: relative;

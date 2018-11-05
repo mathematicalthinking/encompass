@@ -118,14 +118,21 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
     },
 
-    searchCategory(category) {
-      this.get('categoriesFilter').addObject(category);
-      this.get('onUpdate')();
+    addCategorySelectize(val, $item) {
+      if (!val) {
+        return;
+      }
+
+      let peeked = this.get('store').peekAll('category');
+      let cat = peeked.findBy('id', val);
+      this.get('categoriesFilter').addObject(cat);
+
+      // clear input
+      this.$('select#categories-filter')[0].selectize.clear();
     },
 
     removeCategory(category) {
       this.get('categoriesFilter').removeObject(category);
-      this.get('onUpdate')();
     },
 
     // closeModal() {
