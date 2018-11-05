@@ -81,6 +81,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
     let status = this.get('problem.status');
+    let deleted = this.get('problem.isTrashed');
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -124,7 +125,12 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       // dont show flag or assign if status is flagged
       options = _.filter(options, (option) => {
         return !_.contains(['flag', 'assign'], option.value);
+      });
+    }
 
+    if (deleted) {
+      options = _.filter(options, (option) => {
+        return !_.contains(['delete'], option.value);
       });
     }
 
