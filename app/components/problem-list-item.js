@@ -8,6 +8,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
+  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
@@ -47,17 +48,15 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     return this.get('iconFillOptions')[status];
   }.property('problem.status'),
 
-  isRecommended: function() {
+  isRecommended: function () {
     let problem = this.get('problem');
-    let currentUser = this.get('currentUser');
-    let organization = currentUser.get('organization');
-    let recommendedProblems = organization.get('recommendedProblems');
+    let recommendedProblems = this.get('recommendedProblems');
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id'),
+  }.property('problem.id', 'recommendedProblems'),
 
 
 

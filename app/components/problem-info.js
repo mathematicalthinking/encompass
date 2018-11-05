@@ -28,6 +28,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
+  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
 
   iconFillOptions: {
     approved: '#35A853',
@@ -164,15 +165,13 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   isRecommended: function () {
     let problem = this.get('problem');
-    let currentUser = this.get('currentUser');
-    let organization = currentUser.get('organization');
-    let recommendedProblems = organization.get('recommendedProblems');
+    let recommendedProblems = this.get('recommendedProblems');
     if (recommendedProblems.includes(problem)) {
       return true;
     } else {
       return false;
     }
-  }.property('problem.id'),
+  }.property('problem.id', 'recommendedProblems'),
 
   createKeywordFilter(keyword) {
     if (!keyword) {
