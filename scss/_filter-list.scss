@@ -467,6 +467,13 @@
         color: $error-color;
         font-size: 1.5em;
       }
+      .star-icon {
+        color: $accent-yellow;
+        font-size: .8em;
+        position: relative;
+        right: 0;
+        top: -2px;
+      }
       .list-container {
         height: 60px;
         @include flex-container(auto, hidden, row, wrap, center, center, stretch);
