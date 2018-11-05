@@ -138,6 +138,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return false;
   },
 
+  orgOptions: function () {
+    return this.get('store').findAll('organization').then((orgs) => {
+      let orgList = orgs.get('content');
+      let toArray = orgList.toArray();
+      return toArray.map((org) => {
+        return {
+          id: org.id,
+          name: org._data.name
+        };
+      });
+    });
+  },
+
   keywordSelectOptions: function() {
     let keywords = this.get('problem.keywords');
     return _.map(keywords, (keyword) => {
@@ -646,22 +659,33 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     },
     addToRecommend: function () {
-      console.log('clicked on add to recommend');
       let problem = this.get('problem');
       let accountType = this.get('currentUser.accountType');
-      console.log('accountType is ', accountType);
-
       if (accountType === "A") {
-        return this.get('currentUser').get('organization').then((org) => {
-          console.log('admin org is', org);
-          org.get('recommendedProblems').addObject(problem);
-          org.save().then(() => {
-            this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+        this.orgOptions().then((orgs) => {
+          this.set('orgList', orgs);
+          let orgList = this.get('orgList');
+          let optionList = {};
+          for (let org of orgList) {
+            let id = org.id;
+            let name = org.name;
+            optionList[id] = name;
+          }
+          return this.get('alert').showPromptSelect('Select Organization', optionList, 'Select an organization')
+          .then((result) => {
+            if (result.value) {
+              let orgId = result.value;
+              this.get('store').findRecord('organization', orgId).then((org) => {
+                org.get('recommendedProblems').addObject(problem);
+                org.save().then(() => {
+                  this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+                });
+              });
+            }
           });
         });
       } else if (accountType === "P") {
         return this.get('currentUser').get('organization').then((org) => {
-          console.log('pd org is', org);
           org.get('recommendedProblems').addObject(problem);
           org.save().then(() => {
             this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
@@ -670,8 +694,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       } else {
         return;
       }
-
-
 
     },
 
