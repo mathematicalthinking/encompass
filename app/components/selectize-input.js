@@ -110,13 +110,18 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       return callback();
     }
     let key = this.get('queryParamsKey');
+    let queryParams = {};
+    let topLevelQueryParams = this.get('topLevelQueryParams');
 
-    let queryParams = {
-      filterBy: {
+    if (topLevelQueryParams) {
+      queryParams[topLevelQueryParams] = {
         [key]: query
-      }
-    };
-
+      };
+    } else {
+      queryParams = {
+        [key]: query
+      };
+    }
 
     let model = this.get('model');
 
