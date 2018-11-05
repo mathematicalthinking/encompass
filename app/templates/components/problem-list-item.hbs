@@ -7,6 +7,9 @@
     <div class="item-section name">
       {{#link-to 'problem' problem class="problem-title"}}
         {{{problem.title}}}
+        {{#if isRecommended}}
+          <span><i class="fas fa-star star-icon"></i></span>
+        {{/if}}
       {{/link-to}}
     </div>
     <div class="item-section description">
@@ -104,6 +107,9 @@
       <div class="item-card name">
         {{#link-to 'problem' problem class="problem-title"}}
           {{{problem.title}}}
+          {{#if isRecommended}}
+            <span><i class="fas fa-star star-icon"></i></span>
+          {{/if}}
         {{/link-to}}
       </div>
     </div>
