@@ -55,5 +55,37 @@ async function filterByForeignRefArray(model, searchQuery, pathToPopulate, forei
   }
 }
 
+async function findAndReturnIds(model, criteria, asStrings=true) {
+  try {
+    let records = await models[model].find(criteria, {_id: 1}).lean().exec();
+
+    if (asStrings) {
+      return _.map(records, record => record._id.toString());
+    }
+    return _.map(records, record => record._id);
+  }catch(err) {
+    console.log(`Error findAndReturnIds: ${err}`);
+  }
+}
+
+async function getUniqueIdsFromQueries(model, criteria) {
+  try {
+    if (!model) {
+      return;
+    }
+    let lists = await Promise.all(_.map(criteria, criterion => {
+      return findAndReturnIds(model, criterion);
+    }));
+
+    let flattened = _.flatten(lists);
+
+    return _.uniq(flattened);
+  }catch(err) {
+    console.error(`Error getUniqueIdsFromQueries: ${err}`);
+  }
+}
+
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
+module.exports.findAndReturnIds = findAndReturnIds;
+module.exports.getUniqueIdsFromQueries = getUniqueIdsFromQueries;
