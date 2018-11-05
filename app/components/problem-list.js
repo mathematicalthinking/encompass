@@ -1,6 +1,8 @@
 Encompass.ProblemListComponent = Ember.Component.extend( {
   elementId: 'problem-list',
   classNames: ['problem-list', 'left-list'],
+  containerData: Ember.computed.alias("parentView"),
+  containerActions: Ember.computed.alias("parentView.actions"),
 
   dataLoadErrors: [],
 
