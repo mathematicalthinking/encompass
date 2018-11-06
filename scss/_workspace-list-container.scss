@@ -9,19 +9,36 @@
         order: 2;
       }
       &.mode {
-        order: 1;
+        padding-left: 15px;
+        @include flex-item(1, center, .07 0 auto);
+        width: 7%;
+        &:hover {
+          cursor: pointer;
+          color: black;
+          .hover-menu {
+            display: inline;
+          }
+        }
       }
       &.last-viewed {
-        order: 3;
+        @include flex-item(3, center, .07 0 auto);
+        width: 7%;
+        &:hover {
+          cursor: pointer;
+          color: black;
+        }
       }
       &.submissions {
-        order: 4;
+        @include flex-item(4, center, .07 0 auto);
+        width: 7%;
       }
       &.owner {
-        order: 5;
+        @include flex-item(5, center, .07 0 auto);
+        width: 17%;
       }
       &.editors {
-        order: 6;
+        @include flex-item(6, center, .07 0 auto);
+        width: 7%;
       }
     }
   }
