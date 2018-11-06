@@ -80,7 +80,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       items: this.get('items') || [],
       create: this.create || false,
       persist: this.persist || false,
-      createFilter: this.createFilter || null
+      createFilter: this.createFilter || null,
+      preload: this.preload || false
     };
 
     let that = this;
@@ -106,9 +107,15 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   addItemsSelectize: function(query, callback) {
+    // const doAllowEmptyQuery = this.get('doAllowEmptyQuery');
     if (!query.length) {
-      return callback();
+      if (this.get('preload') === false) {
+        return callback();
+      }
+      // to preload results
+      query = ' ';
     }
+
     let key = this.get('queryParamsKey');
     let queryParams = {};
     let topLevelQueryParams = this.get('topLevelQueryParams');
