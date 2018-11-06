@@ -152,5 +152,34 @@ module.exports = {
     newSectionButton: '#new-section-link'
   },
 
-  sectionHome: 'div#section-home'
+  sectionHome: 'div#section-home',
+
+  primaryFilters: {
+    primaryFilterList: '.primary-filter-list',
+    mine: 'li.filter-mine',
+    myOrg: 'li.filter-myOrg',
+    recommended: 'li.recommended',
+    createdOrg: 'li.fromOrg',
+    public: 'li.filter-everyone',
+  },
+
+  categoryFilter: {
+    categoryHeader: '.category-header',
+    categoryFilterList: 'ul.category-filter-list',
+    searchCategory: '#categories-filter',
+    showCategoryBtn: '.show-category-btn',
+    includeSubCategories: '#toggle-sub-cats',
+    categoryList: 'ul.selected-cat-list',
+  },
+
+  AdminFilters: {
+    all: 'li.filter-all',
+    adminProblemFilters: '#admin-problem-filter',
+    adminSelectSearch: '#admin-filter-select',
+    orgFilterSearch: '#all-org-filter',
+    creatorFilterSearch: '#all-user-filter',
+    moreHeader: '.more-header',
+    moreFilterList: 'ul.more-filter-list',
+    trashedProblems: '#toggle-trashed',
+  },
 };
