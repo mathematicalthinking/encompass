@@ -237,10 +237,6 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
-const stringToObjectId = function(id) {
-  console.log('id is', id);
-};
-
 const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Limit and skip are passed in with the req
   let limit = req.query.limit;
@@ -310,6 +306,34 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
 };
 
 
+function cloneDocuments(model, documents) {
+
+    if (!model) {
+      return;
+    }
+    let input;
+    // documents should be either a single document or an array of documents
+    if (!_.isArray(documents)) {
+      input = [document];
+    } else {
+      input = [ ...documents];
+    }
+    // returns array of new cloned docs
+    return Promise.all(input.map((doc) => {
+      return models[model].findById(doc._id).lean().exec()
+      .then((json) => {
+        delete json._id;
+        let newDoc = new models[model](json);
+        return newDoc.save();
+      })
+      .then((doc => {
+        return doc;
+      }))
+      .catch((err) => {
+        console.error(`Error cloneDocuments: ${err}`);
+      });
+    }));
+}
 
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
@@ -322,5 +346,4 @@ module.exports.capitalizeWord = capitalizeWord;
 module.exports.getSafeName = getSafeName;
 module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
-module.exports.stringToObjectId = stringToObjectId;
-
+module.exports.cloneDocuments = cloneDocuments;
