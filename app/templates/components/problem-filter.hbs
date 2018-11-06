@@ -3,7 +3,7 @@
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
     {{#each primaryFilterOptions as |input|}}
-      <li>
+      <li class="filter-{{input.value}}">
         {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
@@ -19,7 +19,7 @@
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}}">
+              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}} {{option.value}}">
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>
@@ -63,9 +63,11 @@
         <span>Include Subcategories</span>
       </label>
         {{#if categoriesFilter}}
+        <ul class="selected-cat-list">
           {{#each categoriesFilter as |category|}}
             <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
           {{/each}}
+        </ul>
         {{else}}
           <p>No categories Selected</p>
             {{!-- <p>Click 'Show Category Menu' to view the Category Explorer</p> --}}
