@@ -507,7 +507,7 @@ var data = [{
   "seenTour" : null
 },
 {
-  "_id" : "5b9149552ecaf7c30dd4748e",
+  "_id" : "5b4e4b48808c7eebc9f9e827",
   "name" : "Summer Smith",
   "email" : "ssmith@fakeemail.com",
   "organization" : "5b4e4d5f808c7eebc9f9e82c",
@@ -589,7 +589,7 @@ var data = [{
   "confirmEmailToken" : "b0d1c5208859919cdf1dd0b55bbe2e5de5c88e2c",
   "name" : "Tim Pool",
   "email" : "tpool@fakeemail.com",
-  "organization" : "5b4e4b48808c7eebc9f9e827",
+  "organization" : "5b4e4b48808c7eebc9f9e828",
   "location" : "Philadelphia, PA",
   "username" : "tpool",
   "password" : "$2a$12$WA5cZStBrgopuQ1xD6RS2eO9EtNYHiBiQp137DdWgEldG5SSIpSJW",

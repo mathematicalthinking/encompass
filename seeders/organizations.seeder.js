@@ -7,7 +7,7 @@ var data = [
     'name': 'Drexel University',
     "createdBy": "5b245760ac75842be3189525",
   }, {
-    '_id': '5b4e4b48808c7eebc9f9e827',
+    '_id': '5b4e4b48808c7eebc9f9e828',
     'name': 'Temple University',
     "createdBy": "5b245760ac75842be3189525",
   }, {
