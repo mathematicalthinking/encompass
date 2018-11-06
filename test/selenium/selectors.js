@@ -117,7 +117,7 @@ module.exports = {
       inputs: {
         teacher: 'li.ws-filter.teacher select',
         assignment: 'li.ws-filter.assignment select',
-        problem: 'li.ws-filter input.typeahead',
+        problem: 'li.ws-filter input[type="select-one"]',
         section: 'li.ws-filter.section select',
         date: '#dateRange'
       },

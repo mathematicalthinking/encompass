@@ -3,8 +3,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   showList: true,
   menuClosed: true,
   toggleTrashed: false,
-  searchOptions: ['all', 'title', 'text', 'category'],
-  searchCriterion: 'all',
+  searchOptions: ['general', 'title'],
+  searchCriterion: 'general',
   sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
   sortOptions: {
     title: [
@@ -77,7 +77,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       let countDescriptor = 'problems';
       let verb;
       let criterion = this.get('searchCriterion');
-      if (criterion === 'all') {
+      if (criterion === 'general') {
         verb = 'contain';
       } else {
         verb = 'contains';
@@ -85,13 +85,13 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       let total = this.get('problemsMetadata.total');
       if (total === 1) {
         countDescriptor = 'problem';
-        if (criterion === 'all') {
+        if (criterion === 'general') {
           verb = 'contains';
         }
 
       }
       let typeDescription = `whose ${criterion} ${verb}`;
-      if (this.get('searchCriterion') === 'all') {
+      if (this.get('searchCriterion') === 'general') {
         typeDescription = `that ${verb}`;
       }
       msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} ${typeDescription} "${this.get('searchQuery')}"`;
@@ -684,7 +684,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.getProblems(null, isTrashedOnly);
     },
     searchProblems(val, criterion) {
-      if (criterion === 'all' || criterion === 'category') {
+      if (criterion === 'general' || criterion === 'category') {
         this.set('searchByRelevance', true);
       }
       this.set('searchQuery', val);

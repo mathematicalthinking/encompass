@@ -1,6 +1,6 @@
 Encompass.SelectizeInputComponent = Ember.Component.extend({
   showInput: true,
-
+  classNames: ['selectize-comp'],
   didUpdateAttrs() {
     let newPropName = this.propName;
     let oldPropName = this.get('currentPropName');
@@ -80,7 +80,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       items: this.get('items') || [],
       create: this.create || false,
       persist: this.persist || false,
-      createFilter: this.createFilter || null
+      createFilter: this.createFilter || null,
+      preload: this.preload || false
     };
 
     let that = this;
@@ -106,20 +107,36 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   addItemsSelectize: function(query, callback) {
-    let queryParams = {};
     if (!query.length) {
-      return callback();
+      if (this.get('preload') === false) {
+        return callback();
+      }
+      // to preload results
+      query = ' ';
     }
-    console.log('query', query);
 
-      let key = this.get('queryParamsKey');
-      queryParams[key] = query;
+    let key = this.get('queryParamsKey');
+    let queryParams = {};
+    let topLevelQueryParams = this.get('topLevelQueryParams');
+
+    if (topLevelQueryParams) {
+      queryParams[topLevelQueryParams] = {
+        [key]: query
+      };
+    } else {
+      queryParams = {
+        [key]: query
+      };
+    }
 
     let model = this.get('model');
 
     this.store.query(model, queryParams)
       .then((results) => {
         // results is Ember AdapterPopulatedRecordArray
+        let meta = results.get('meta');
+        this.set('metaData', meta);
+
         let resultsArray = results.toArray();
 
         // if we want the ember objects

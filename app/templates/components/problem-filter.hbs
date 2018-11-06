@@ -55,6 +55,20 @@
       <li>
         <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
       </li>
+      {{selectize-input
+        store=store
+        inputId="categories-filter"
+        onItemAdd=(action "addCategorySelectize")
+        maxItems=1
+        labelField="identifier"
+        valueField="id"
+        searchField="identifier"
+        model="category"
+        queryParamsKey="identifier"
+        topLevelQueryParams="searchBy"
+        isAsync=true
+        placeholder="Search categories to add"
+      }}
     </ul>
   {{/if}}
   {{#if currentUser.isAdmin}}

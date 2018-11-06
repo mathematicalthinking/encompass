@@ -139,8 +139,8 @@ describe('Users', function() {
         await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
         await driver.sleep(600);
-        await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Username already exists');
+        await helpers.waitForSelector(driver, '.error-text');
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
         await driver.sleep(1000);

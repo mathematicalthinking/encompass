@@ -4,6 +4,8 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
 
 
   beforeModel: function(transition) {
+    this._super.apply(this, arguments);
+
     let problemId;
     let params = transition.params;
     if (params.problem) {

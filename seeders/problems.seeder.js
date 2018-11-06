@@ -18,6 +18,7 @@ var data = [
     "sharingAuth": "stolen goods",
     "author": "Paul McCartney",
     "isTrashed": false,
+    "status": "approved"
   }, {
     "_id": "5b4e2e56be1e18425515308c",
     "title": "Rick's Private",
@@ -34,6 +35,7 @@ var data = [
     "sharingAuth": "stolen goods",
     "author": "Steve Jobs",
     "isTrashed": false,
+    "status": "approved"
   }, {
     "_id": "5b4e2e6cbe1e18425515308d",
     "title": "Morty's Public",
@@ -47,6 +49,7 @@ var data = [
     "isPublic": true,
     "privacySetting": 'E',
     "isTrashed": false,
+    "status": "approved"
   }, {
     "_id": "5b1e7a0ba5d2157ef4c91028",
     "title": "Mr. W. Goes Across Australia",
@@ -56,7 +59,8 @@ var data = [
     "isPublic": false,
     "privacySetting": 'M',
     "isTrashed": false,
-    "organization": "5b4a64a028e4b75919c28512"
+    "organization": "5b4a64a028e4b75919c28512",
+    "status": "approved"
   },
   {
     "_id" : "5b91463c3add43b868ae9808",
@@ -77,8 +81,9 @@ var data = [
     "categories" : [],
     "lastModifiedDate" : null,
     "isTrashed" : false,
-    "createDate" : "2018-09-06T15:22:36.371Z"
-},
+    "createDate" : "2018-09-06T15:22:36.371Z",
+    "status": "approved",
+  },
 {
   "_id" : "5b9173e23da5efca74705772",
   "title" : "Summer's Org Problem",
@@ -99,7 +104,8 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "isUsed": true,
-  "createDate" : "2018-09-06T18:37:22.437Z"
+  "createDate" : "2018-09-06T18:37:22.437Z",
+  "status": "approved",
 },
 {
   "_id" : "5ba7c3cb1359dc2f6699f2b3",
@@ -120,13 +126,20 @@ var data = [
   "categories" : [],
   "lastModifiedDate" : null,
   "isTrashed" : false,
-  "createDate" : "2018-09-23T16:48:11.924Z"
+  "createDate" : "2018-09-23T16:48:11.924Z",
+  "status": "approved"
 },
 {
   "_id" : "5bbd123aecd6e597fd89d7f3",
   "isTrashed" : true,
   "createdBy": "5ba7bedd2b7ba22c38a554fc",
-  "title": "trashed problem"
+  "title": "trashed problem",
+  "status": "flagged",
+  "flagReason" : {
+    "flaggedDate" : "2018-10-29T16:19:38.696Z",
+    "reason" : "because",
+    "flaggedBy" : "5b245760ac75842be3189525"
+},
 },
 ];
 

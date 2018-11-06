@@ -11,15 +11,20 @@
           {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
           {{input id="answer" required="true" type="hidden" value=answer}}
         </div>
+        {{#each briefSummaryErrors as |error|}}
+          {{error-box error=error resetError=(action (mut briefSummaryErrors) null) showDismiss=true}}
+        {{/each}}
         <div class="new-answer-input">
           <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
           <div class="quill-container">
             <section id="editor"></section>
           </div>
-
         </div>
-         <div class="new-answer-input">
-            <label for="uploadedFile">Upload PDF</label>
+        {{#each explanationErrors as |error|}}
+          {{error-box error=error resetError=(action (mut explanationErrors) null) showDismiss=true}}
+        {{/each}}
+        <div class="new-answer-input">
+          <label for="uploadedFile">Upload PDF</label>
             {{#if imageData}}
               <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
                 <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">

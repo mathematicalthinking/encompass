@@ -6,9 +6,15 @@ Encompass.ErrorBoxComponent = Ember.Component.extend({
       let id = this.elementId;
       $(`#${id}`).removeClass('fadeIn');
       $(`#${id}`).addClass('fadeOut');
+
+      if (this.get('resetError')) {
+        this.get('resetError')();
+      }
+
       Ember.run.later(() => {
         $(`#${id}`).remove();
       }, 500);
     }
-  }
+  },
+
 });
