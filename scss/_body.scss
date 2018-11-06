@@ -29,6 +29,11 @@ textarea {
   color: $error-color;
 }
 
+.strikethrough {
+  text-decoration: line-through;
+  color: $error-color;
+}
+
 #al_body {
   position: absolute;
   box-sizing: border-box;

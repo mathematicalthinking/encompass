@@ -475,6 +475,13 @@
         right: 0;
         top: -2px;
       }
+      .trash-icon {
+        font-size: 1em;
+        position: relative;
+        right: 0;
+        top: -2px;
+        color: $error-color;
+      }
       .list-container {
         height: 60px;
         @include flex-container(auto, hidden, row, wrap, center, center, stretch);
@@ -549,6 +556,7 @@
               font-size: .9em;
               text-align: left;
               padding: 15px 0;
+              // border: 1px solid red;
               .sort-icon {
                 margin-left: 5px;
               }
@@ -579,6 +587,7 @@
               &.date {
                 @include flex-item(4, center, .07 0 auto);
                 width: 7%;
+                text-align: center;
                 &:hover {
                   cursor: pointer;
                   color: black;
@@ -600,9 +609,8 @@
                 width: 6%;
               }
               &.more {
-                @include flex-item(7, center, .02 0 auto);
-                width: 2%;
-                cursor: pointer;
+                @include flex-item(7, center, .015 0 auto);
+                width: 1.5%;
               }
             }
           }
@@ -617,6 +625,7 @@
                 background-color: $list-hover-color;
               }
               .item-section {
+                // border: 1px solid blue;
                 &.privacy {
                   @include flex-item(1, center, .07 0 auto);
                   width: 7%;
@@ -651,8 +660,9 @@
                 &.date {
                   @include flex-item(4, center, .07 0 auto);
                   width: 7%;
-                  padding-left: 15px;
-                  margin-top: 8px;
+                  padding-left: 0px;
+                  margin-top: 5px;
+                  text-align: center;
                 }
                 &.status {
                   @include flex-item(5, center, .08 0 auto);
@@ -666,11 +676,10 @@
                   width: 6%;
                 }
                 &.more {
-                  @include flex-item(7, center, .02 0 auto);
-                  width: 2%;
+                  @include flex-item(7, center, .015 0 auto);
+                  width: 1.5%;
                   cursor: pointer;
                   text-align: center;
-                  padding-right: 10px;
                 }
               }
             }
@@ -680,7 +689,7 @@
     }
   }
   .primary-button {
-    margin-left: -15px;
+    margin-left: -12px;
     padding: 10px 10px;
     width: 85px;
     cursor: pointer;
