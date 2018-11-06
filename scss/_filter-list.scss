@@ -154,6 +154,7 @@
         &.date {
           @include flex-item(3, center, .25 0 auto);
           width: 10%;
+          text-align: left;
         }
         &.status {
           @include flex-item(4, center, .25 0 auto);
