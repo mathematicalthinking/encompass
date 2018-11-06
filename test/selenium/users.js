@@ -123,7 +123,6 @@ describe('Users', function() {
       //check to make sure the user info page has the info
 
       it('should let you create a new student without an email', async function () {
-        await driver.sleep(5000);
         let oldUsername = `student1`;
         let newUsername = `newstudent`;
         let password = `test`;
@@ -140,8 +139,8 @@ describe('Users', function() {
         await driver.sleep(1000);
         await helpers.findAndClickElement(driver, 'button.new-user');
         await driver.sleep(600);
-        await helpers.waitForSelector(driver, '.error-box');
-        expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Username already exists');
+        await helpers.waitForSelector(driver, '.error-text');
+        expect(await helpers.findAndGetText(driver, '.error-text')).to.contain('Username already exists');
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', newUsername);
         await driver.sleep(1000);
