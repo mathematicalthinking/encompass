@@ -39,9 +39,10 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   moreMenuOptions: [
     {label: 'Edit', value:'edit', action: 'editProblem', icon: 'far fa-edit'},
     {label: 'Assign', value: 'assign', action: 'assignProblem', icon: 'fas fa-list-ul'},
-    {label: 'Delete', value: 'delete', action: 'deleteProblem', icon: 'fas fa-trash'},
+    // {label: 'Recommend', value: 'recommend', action: 'recommendedProblem', icon: 'fas fa-star'},
+    {label: 'Pending', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true},
     {label: 'Report', value: 'flag', action: 'reportProblem', icon: 'fas fa-exclamation-circle'},
-    {label: 'Pending', value: 'pending', action: 'makePending', icon:'far fa-clock', adminOnly: true}
+    {label: 'Delete', value: 'delete', action: 'deleteProblem', icon: 'fas fa-trash'},
   ],
   statusFilter: ['approved', 'pending', 'flagged'],
 
@@ -50,6 +51,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   selectedPrivacySetting: ['M', 'O', 'E'],
   doIncludeSubCategories: true,
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
+  alert: Ember.inject.service('sweet-alert'),
 
   listResultsMessage: function() {
     let msg;
@@ -95,7 +97,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} ${typeDescription} "${this.get('searchQuery')}"`;
       return msg;
     }
+
     msg = `${this.get('problemsMetadata.total')} problems found`;
+
+    let toggleTrashed = this.get('toggleTrashed');
+    console.log('toggleTrashed is', toggleTrashed);
+
+    if (toggleTrashed) {
+      msg = `${msg} - <strong>Displaying Trashed Problems</strong>`;
+    }
+
     return msg;
 
   }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems', 'showLoadingMessage'),
@@ -115,20 +126,23 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   init: function() {
     this.getUserOrg()
     .then((name) => {
-      this.set('userOrgName', name );
+      this.set('userOrgName', name);
       this.configureFilter();
       this.configurePrimaryFilter();
-
       this.set('categoriesFilter', this.get('selectedCategories'));
     });
-
     this._super(...arguments);
   },
 
   getUserOrg () {
-    return this.get('currentUser.organization').then((org) => {
-      return org.get('name');
-    });
+   return this.get('currentUser.organization').then((org) => {
+     if (org) {
+       return org.get('name');
+     } else {
+       this.get('alert').showModal('warning', 'You currently do not belong to any organization', 'Please add or request an organization in order to get the best user experience', 'Ok');
+       return 'undefined';
+     }
+   });
   },
 
   statusOptionsList: function () {
@@ -204,7 +218,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                       value: "recommended",
                       isChecked: true,
                       isApplied: true,
-                      icon: "fas fa-lightbulb"
+                      icon: "fas fa-star"
                     },
                       fromOrg: {
                         label: `Created by ${currentUserOrgName} Members`,
@@ -250,7 +264,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                     value: "recommended",
                     isChecked: true,
                     isApplied: true,
-                    icon: "fas fa-lightbulb"
+                    icon: "fas fa-star"
                   },
                     fromOrg: {
                       label: `Created by Members`,
@@ -737,8 +751,8 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       this.send('triggerFetch');
     },
     toggleMenu: function() {
-      this.set('menuClosed', !this.get('menuClosed'));
       $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
     },
 

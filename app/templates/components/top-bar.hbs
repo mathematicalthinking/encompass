@@ -102,9 +102,6 @@
     <div id="hide-menu" class="hidden animated">
       <ul>
         <li>{{#link-to 'index'}}home{{/link-to}}</li>
-        {{#unless currentUser.isStudent}}
-          <li>{{#link-to 'import'}}import{{/link-to}}</li>
-        {{/unless}}
         <li>{{#link-to 'assignments.home'}}assignments{{/link-to}}</li>
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'problems'}}problems{{/link-to}}</li>
@@ -112,13 +109,13 @@
         <li>{{#link-to 'sections.home'}}classes{{/link-to}}</li>
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
-          {{/unless}}
+        {{/unless}}
+        {{#unless currentUser.isStudent}}
+        <li>{{#link-to 'import'}}import{{/link-to}}</li>
+        {{/unless}}
         <li>{{#link-to 'responses'}}responses{{/link-to}}</li>
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
-        {{/unless}}
-        {{#unless currentUser.isStudent}}
-          <li>{{#link-to 'user' currentUser.username}}my account{{/link-to}}</li>
         {{/unless}}
         <li id="logout-btn-side">{{#link-to 'logout'}}logout{{/link-to}}</li>
       </ul>

@@ -28,6 +28,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
+  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
+  parentActions: Ember.computed.alias("parentView.actions"),
 
   iconFillOptions: {
     approved: '#35A853',
@@ -103,6 +105,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
     }
   },
+
   willDestroyElement: function() {
     // hide outlet, but don't transition to list because topbar link-to takes care of that
     this.send('hideInfo', false);
@@ -138,6 +141,19 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return false;
   },
 
+  orgOptions: function () {
+    return this.get('store').findAll('organization').then((orgs) => {
+      let orgList = orgs.get('content');
+      let toArray = orgList.toArray();
+      return toArray.map((org) => {
+        return {
+          id: org.id,
+          name: org._data.name
+        };
+      });
+    });
+  },
+
   keywordSelectOptions: function() {
     let keywords = this.get('problem.keywords');
     return _.map(keywords, (keyword) => {
@@ -147,6 +163,16 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       };
     });
   }.property('problem.keywords.[]'),
+
+  isRecommended: function () {
+    let problem = this.get('problem');
+    let recommendedProblems = this.get('recommendedProblems');
+    if (recommendedProblems.includes(problem)) {
+      return true;
+    } else {
+      return false;
+    }
+  }.property('problem.id', 'recommendedProblems'),
 
   createKeywordFilter(keyword) {
     if (!keyword) {
@@ -367,7 +393,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     updateProblem: function () {
       let problem = this.get('problem');
       let currentUser = this.get('currentUser');
-      let title = this.get('problemName');
+      let title = this.get('problemName').trim();
       const quillContent = this.$('.ql-editor').html();
       let text;
       let isQuillValid;
@@ -541,6 +567,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
           let name = problem.get('title');
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          let parentView = this.get('parentView');
+          this.get('parentActions.refreshList').call(parentView);
         }).catch((err) => {
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
           // this.handleErrors(err, 'createRecordErrors', newProblem);
@@ -646,6 +674,86 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     },
 
+    checkRecommend: function () {
+      let currentUser = this.get('currentUser');
+      let accountType = currentUser.get('accountType');
+      let problem = this.get('problem');
+      let privacySetting = problem.get('privacySetting');
+      let status = problem.get('status');
+
+      if (accountType === 'T') {
+        return;
+      }
+
+      if (privacySetting === 'M') {
+        this.get('alert').showModal('warning', 'Are you sure you want to recommend a private problem?', 'Regular users will not see this problem in their recommended list', 'Yes').then((result) => {
+          if (result.value) {
+            this.send('addToRecommend');
+          }
+        });
+      }
+
+      if (status !== 'approved') {
+        this.get('alert').showModal('warning', 'Are you sure you want to recommend an unapproved problem?', 'Regular users will not see this problem in their recommended list', 'Yes').then((result) => {
+          if (result.value) {
+            this.send('addToRecommend');
+          }
+        });
+      }
+
+      if (status === 'approved' && privacySetting !== 'M') {
+        this.send('addToRecommend');
+      }
+    },
+
+    addToRecommend: function () {
+      let problem = this.get('problem');
+      let accountType = this.get('currentUser.accountType');
+      if (accountType === "A") {
+        this.orgOptions().then((orgs) => {
+          this.set('orgList', orgs);
+          let orgList = this.get('orgList');
+          let optionList = {};
+          for (let org of orgList) {
+            let id = org.id;
+            let name = org.name;
+            optionList[id] = name;
+          }
+          return this.get('alert').showPromptSelect('Select Organization', optionList, 'Select an organization')
+          .then((result) => {
+            if (result.value) {
+              let orgId = result.value;
+              this.get('store').findRecord('organization', orgId).then((org) => {
+                org.get('recommendedProblems').addObject(problem);
+                org.save().then(() => {
+                  this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+                });
+              });
+            }
+          });
+        });
+      } else if (accountType === "P") {
+        return this.get('currentUser').get('organization').then((org) => {
+          org.get('recommendedProblems').addObject(problem);
+          org.save().then(() => {
+            this.get('alert').showToast('success', 'Added to Recommended', 'bottom-end', 3000, false, null);
+          });
+        });
+      } else {
+        return;
+      }
+    },
+
+    removeRecommend: function () {
+      let problem = this.get('problem');
+      return this.get('currentUser').get('organization').then((org) => {
+        org.get('recommendedProblems').removeObject(problem);
+        org.save().then(() => {
+          this.get('alert').showToast('success', 'Removed from Recommended', 'bottom-end', 3000, false, null);
+        });
+      });
+    },
+
     showGeneral: function () {
       this.set('showGeneral', true);
       this.set('showCats', false);
@@ -682,6 +790,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
             problem.set('isTrashed', false);
             problem.save().then(() => {
               this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+              let parentView = this.get('parentView');
+              this.get('parentActions.refreshList').call(parentView);
             });
           }
         });

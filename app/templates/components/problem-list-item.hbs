@@ -6,7 +6,13 @@
 
     <div class="item-section name">
       {{#link-to 'problem' problem class="problem-title"}}
-        {{{problem.title}}}
+        <span class={{if problem.isTrashed 'strikethrough'}}>{{{problem.title}}}</span>
+        {{#if isRecommended}}
+          <span><i class="fas fa-star star-icon"></i></span>
+        {{/if}}
+        {{!-- {{#if problem.isTrashed}}
+          <span><i class="fa fa-trash trash-icon"></i></span>
+        {{/if}} --}}
       {{/link-to}}
     </div>
     <div class="item-section description">
@@ -104,6 +110,9 @@
       <div class="item-card name">
         {{#link-to 'problem' problem class="problem-title"}}
           {{{problem.title}}}
+          {{#if isRecommended}}
+            <span><i class="fas fa-star star-icon"></i></span>
+          {{/if}}
         {{/link-to}}
       </div>
     </div>
@@ -137,7 +146,7 @@
         {{/if}}
         {{else}}
           {{#if (is-equal problem.status 'pending')}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
           {{else}}
             <button class="primary-button" {{action "assignProblem"}}>Assign</button>
           {{/if}}

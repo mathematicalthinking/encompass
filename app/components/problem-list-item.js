@@ -8,6 +8,9 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
   canAssign: Ember.computed.alias('writePermissions.canAssign'),
+  recommendedProblems: Ember.computed.alias('currentUser.organization.recommendedProblems'),
+  parentData: Ember.computed.alias('parentView.containerData'),
+  parentActions: Ember.computed.alias("parentView.containerActions"),
   iconFillOptions: {
     approved: '#35A853',
     pending: '#FFD204',
@@ -47,32 +50,17 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     return this.get('iconFillOptions')[status];
   }.property('problem.status'),
 
-  // canDelete: Ember.computed('problem.id', function () {
-  //   let problem = this.get('problem');
-  //   let currentUser = this.get('currentUser');
-  //   let currentUserType = currentUser.get('accountType');
-  //   let creator = problem.get('createdBy.content.id');
-  //   let isUsed = problem.get('isUsed');
-  //   let canDelete;
-  //   this.get('permissions');
+  isRecommended: function () {
+    let problem = this.get('problem');
+    let recommendedProblems = this.get('recommendedProblems');
+    if (recommendedProblems.includes(problem)) {
+      return true;
+    } else {
+      return false;
+    }
+  }.property('problem.id', 'recommendedProblems'),
 
-  //   if (currentUserType === "A") {
-  //     canDelete = true;
-  //   } else if (currentUserType === "P") {
-  //     if (problem.get('privacySetting') === "O" || creator === currentUser.id) {
-  //       canDelete = true;
-  //     }
-  //   } else if (currentUserType === "T") {
-  //     if (creator === currentUser.id && !isUsed) {
-  //       canDelete = true;
-  //     } else {
-  //       canDelete = false;
-  //     }
-  //   } else {
-  //     canDelete = false;
-  //   }
-  //   return canDelete;
-  // }),
+
 
   ellipsisMenuOptions: function() {
     let canDelete = this.get('canDelete');
@@ -81,6 +69,7 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
     let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
     let status = this.get('problem.status');
+    let deleted = this.get('problem.isTrashed');
 
     if (!canDelete) {
       // dont show delete or edit option
@@ -124,7 +113,12 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       // dont show flag or assign if status is flagged
       options = _.filter(options, (option) => {
         return !_.contains(['flag', 'assign'], option.value);
+      });
+    }
 
+    if (deleted) {
+      options = _.filter(options, (option) => {
+        return !_.contains(['delete'], option.value);
       });
     }
 
@@ -222,6 +216,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           problem.set('isTrashed', false);
           problem.save().then(() => {
             this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
+            let parentData = this.get('parentData');
+            this.get('parentActions.refreshList').call(parentData);
           });
         }
       });
@@ -304,6 +300,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           let name = problem.get('title');
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
+          let parentData = this.get('parentData');
+          this.get('parentActions.refreshList').call(parentData);
         }).catch((err) => {
           console.log('err is', err);
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);

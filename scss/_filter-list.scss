@@ -283,7 +283,7 @@
     &.filter-options {
       grid-column-start: 0;
       grid-column-end: 2;
-      background-color:$filter-list-background-color;
+      background-color: $filter-list-background-color;
       position: fixed;
       width: 350px;
       height: 100%;
@@ -327,7 +327,7 @@
             margin-left: 5px;
           }
           li {
-            margin: 15px 0;
+            margin: 10px 0;
             color: black;
             font-size: .9em;
           }
@@ -349,9 +349,10 @@
           }
           .show-category-btn {
             margin-top: 10px;
-            background-color: white;
+            background-color: $background-body;
             border-radius: 3px;
             color: $primary-font-color;
+            border: .5px solid $input-border;
             padding: 8px 10px;
             font-size: .75em;
             font-weight: $bolder-font-weight;
@@ -374,6 +375,7 @@
             .radio-content {
               position: relative;
               top: 1em;
+              cursor: pointer;
               .radio-icon {
                 margin: 0;
                 padding: 0;
@@ -466,6 +468,20 @@
         color: $error-color;
         font-size: 1.5em;
       }
+      .star-icon {
+        color: $accent-yellow;
+        font-size: .8em;
+        position: relative;
+        right: 0;
+        top: -2px;
+      }
+      .trash-icon {
+        font-size: 1em;
+        position: relative;
+        right: 0;
+        top: -2px;
+        color: $error-color;
+      }
       .list-container {
         height: 60px;
         @include flex-container(auto, hidden, row, wrap, center, center, stretch);
@@ -540,6 +556,7 @@
               font-size: .9em;
               text-align: left;
               padding: 15px 0;
+              // border: 1px solid red;
               .sort-icon {
                 margin-left: 5px;
               }
@@ -570,6 +587,7 @@
               &.date {
                 @include flex-item(4, center, .07 0 auto);
                 width: 7%;
+                text-align: center;
                 &:hover {
                   cursor: pointer;
                   color: black;
@@ -591,9 +609,8 @@
                 width: 6%;
               }
               &.more {
-                @include flex-item(7, center, .02 0 auto);
-                width: 2%;
-                cursor: pointer;
+                @include flex-item(7, center, .015 0 auto);
+                width: 1.5%;
               }
             }
           }
@@ -608,6 +625,7 @@
                 background-color: $list-hover-color;
               }
               .item-section {
+                // border: 1px solid blue;
                 &.privacy {
                   @include flex-item(1, center, .07 0 auto);
                   width: 7%;
@@ -642,8 +660,9 @@
                 &.date {
                   @include flex-item(4, center, .07 0 auto);
                   width: 7%;
-                  padding-left: 15px;
-                  margin-top: 8px;
+                  padding-left: 0px;
+                  margin-top: 5px;
+                  text-align: center;
                 }
                 &.status {
                   @include flex-item(5, center, .08 0 auto);
@@ -657,11 +676,10 @@
                   width: 6%;
                 }
                 &.more {
-                  @include flex-item(7, center, .02 0 auto);
-                  width: 2%;
+                  @include flex-item(7, center, .015 0 auto);
+                  width: 1.5%;
                   cursor: pointer;
                   text-align: center;
-                  padding-right: 10px;
                 }
               }
             }
@@ -671,7 +689,7 @@
     }
   }
   .primary-button {
-    margin-left: -15px;
+    margin-left: -12px;
     padding: 10px 10px;
     width: 85px;
     cursor: pointer;

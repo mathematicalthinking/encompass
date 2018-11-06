@@ -49,14 +49,14 @@
     <h3>Selectab1e View!</h3>
     {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
       <div id="submission_container">
-        <div class="submission short">
+        <div class="submission-short">
           {{#if currentSubmission.answer.answer}}
             {{{currentSubmission.answer.answer}}}
           {{else}}
             {{{currentSubmission.shortAnswer}}}
           {{/if}}
         </div>
-        <div class="submission long">
+        <div class="submission-long">
           {{#if currentSubmission.answer.explanation}}
             {{{currentSubmission.answer.explanation}}}
           {{/if}}
