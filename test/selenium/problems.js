@@ -10,7 +10,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
-describe('Problems', function() {
+xdescribe('Problems', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   const problemId = '5b4e25c638a46a41edf1709a';

@@ -123,6 +123,7 @@ describe('Users', function() {
       //check to make sure the user info page has the info
 
       it('should let you create a new student without an email', async function () {
+        await driver.sleep(5000);
         let oldUsername = `student1`;
         let newUsername = `newstudent`;
         let password = `test`;
