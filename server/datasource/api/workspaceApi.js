@@ -1304,7 +1304,175 @@ return utils.sendResponse(res,  data);
   }
 }
 
+function buildAnswersToClone(answers, hash) {
+  // answers is array of populated answer docs
+  if (!answers || !_.isArray(answers)) {
+    return;
+  }
+  let { all, none, byStudentIds, byAnswerIds } = hash;
+
+  if (all) {
+    return [...answers];
+  }
+  if (none) {
+    return [];
+  }
+
+  let studentAnswers = [];
+  let byIdAnswers = [];
+
+  if (_.isArray(byStudentIds) && !_.isEmpty(byStudentIds)) {
+    studentAnswers = _.filter(answers, (answer => {
+      let creator = answer.createdBy;
+      return _.contains(byStudentIds, creator.toString());
+    }));
+  }
+
+  if (_.isArray(byAnswerIds) && !_.isEmpty(byAnswerIds)) {
+    byIdAnswers = _.filter(answers, (answer) => {
+      return _.contains(byAnswerIds, answer._id.toString());
+    });
+  }
+  let combined = studentAnswers.concat(byIdAnswers);
+
+  return _.uniq(combined, false, answer => answer._id);
+
+
+}
+
+async function cloneWorkspace(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+    // check if user has permission to copy this workspace
+    console.log('req.body', req.body);
+    const { workspaceToCopy, optionsHash } = req.body;
+
+    // workspaceToCopy - workspaceid
+
+    // look up workspace in db by id
+    const copiedWs = await models.Workspace.findById(workspaceToCopy).populate({path: 'submissions', populate: {path: 'answer'}}).populate('answers').lean().exec();
+    if (_.isNull(copiedWs)) {
+      // workspace does not exist
+      return utils.sendResponse(res, null);
+    }
+
+    // process basic settings
+    const { name, owner, mode } = optionsHash;
+
+    const newWs = new models.Workspace({
+      name: name || copiedWs.name,
+      owner: owner || user._id,
+      mode: mode || copiedWs.mode,
+      createdBy: user._id
+    });
+
+    const { answers, folders, comments, responses } = optionsHash;
+
+    let answerSet;
+    const copiedAnswers = copiedWs.answers;
+    console.log('copiedAnswers', copiedAnswers);
+
+    // currently workspaces do not have answers field but could in future?
+    if (_.isArray(copiedAnswers) && !_.isEmpty(copiedAnswers)) {
+      answerSet = copiedAnswers;
+    } else {
+      console.log('in ELSE!');
+      answerSet = copiedWs.submissions.map(sub => sub.answer);
+    }
+    // answerSet is array of populated answer docs
+    let answersToClone = buildAnswersToClone(answerSet, answers);
+    console.log('answersToClone', answersToClone);
+    // new documents
+    if (_.isEmpty(answersToClone)) {
+      return utils.sendResponse(res, null);
+    }
+    const newAnswers = await apiUtils.cloneDocuments('Answer', answersToClone);
+    console.log('newAnswers', newAnswers.map(a => a._id));
+
+    // json objects that will be converted to mongoose docs and saved to db
+    let subs = await answersToSubmissions(newAnswers);
+    console.log('subs', subs);
+
+    // convert sub json objects to mongoose docs and save
+    const submissions = await Promise.all(subs.map((obj) => {
+      let sub = new models.Submission(obj);
+      sub.createdBy = user._id;
+      sub.createDate = Date.now();
+      return sub.save();
+    }));
+
+    // Will be set on the new workspace
+    const submissionIds = submissions.map((sub) => {
+      return sub._id;
+    });
+    const submissionSet = await importApi.buildSubmissionSet(submissions, user);
+
+    // set submissions and submissionSet on ws
+    newWs.submissions = submissionIds;
+    newWs.submissionSet = submissionSet;
+
+    const savedWs = await newWs.save();
+
+
+    // handle folders
+
+    return utils.sendResponse(res, savedWs);
+
+    // optionsHash - object detailing which fields should be included in the copy
+    /*
+    {
+      name: if not provided will be same as original (or possible concatenate copy + sequential number?),
+      owner: default to current user, unless other userId is provided
+      mode: default to original
+      answers: {
+        all: bool,
+        byStudent: [array of userIds],
+        byAnswerIds: [array of answerIds]
+        none: bool,
+        dateRange: {
+          fromDate: Date,
+          endDate: Date
+        }
+
+      }
+      folders: {
+        includeStructureOnly: bool,
+        all: bool,
+        none: bool,
+        byFolder: [array of folderIds]
+
+      }
+      comments: {
+        all: bool,
+        none: bool,
+        byComment: [array of commentIds]
+      }
+      responses: {
+        all: bool,
+        none: bool,
+        byRecipient: [array of userIds],
+        byResponse: [array of responseIds]
+      }
+
+      comments, selections, taggings are dependent on the setting chosen for answers
+      e.g. if only a subset of the workspace's answers are chosen, 'all' for comments means
+      all of the comments related to that subset of answers
+      permissions?? editors??
+
+
+
+
+
+    }
+    */
+  }catch(err) {
+    console.error(`Error copyWorkspace: ${err}`);
+    console.trace();
+  }
+}
+
 module.exports.post.workspaceEnc = postWorkspaceEnc;
+module.exports.post.cloneWorkspace = cloneWorkspace;
 
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;

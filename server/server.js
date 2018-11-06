@@ -223,6 +223,7 @@ server.post('/api/sections', api.post.section);
 server.post('/api/organizations', api.post.organization);
 server.post('/api/assignments', api.post.assignment);
 server.post('/api/encWorkspaceRequests', api.post.workspaceEnc);
+server.post('/api/cloneWorkspace', api.post.cloneWorkspace);
 
 
 //ALL PUT REQUESTS
