@@ -97,7 +97,16 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
       msg = `Based off your filter criteria, we found ${this.get('problemsMetadata.total')} ${countDescriptor} ${typeDescription} "${this.get('searchQuery')}"`;
       return msg;
     }
+
     msg = `${this.get('problemsMetadata.total')} problems found`;
+
+    let toggleTrashed = this.get('toggleTrashed');
+    console.log('toggleTrashed is', toggleTrashed);
+
+    if (toggleTrashed) {
+      msg = `${msg} - <strong>Displaying Trashed Problems</strong>`;
+    }
+
     return msg;
 
   }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems', 'showLoadingMessage'),

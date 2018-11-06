@@ -283,7 +283,7 @@
     &.filter-options {
       grid-column-start: 0;
       grid-column-end: 2;
-      background-color:$filter-list-background-color;
+      background-color: $filter-list-background-color;
       position: fixed;
       width: 350px;
       height: 100%;
@@ -327,7 +327,7 @@
             margin-left: 5px;
           }
           li {
-            margin: 15px 0;
+            margin: 10px 0;
             color: black;
             font-size: .9em;
           }
