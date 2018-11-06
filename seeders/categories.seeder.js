@@ -3,13 +3,13 @@ var Seeder = require('mongoose-data-seed').Seeder;
 var Category = require('../server/datasource/schemas').Category;
 
 var gradek = [{
-    id: '5bb650e1fefbf3cf9e88f673',
+    _id: '5bb650e1fefbf3cf9e88f673',
     identifier: 'CCSS.Math.Content.K',
     description: 'Grade K',
     url: 'http://corestandards.org/Math/Content/K'
   },
   {
-    id: '5bb650e1fefbf3cf9e88f677',
+    _id: '5bb650e1fefbf3cf9e88f677',
     identifier: 'CCSS.Math.Content.K.G.B.6',
     description: 'Compose simple shapes to form larger shapes.',
     url: 'http://corestandards.org/Math/Content/K/G/B/6'
@@ -2192,7 +2192,7 @@ var grade8 = [
     url: 'http://corestandards.org/Math/Content/8/EE/A'
   },
   {
-    id: '5bb650e1fefbf3cf9e88f675',
+    _id: '5bb650e1fefbf3cf9e88f675',
     identifier: 'CCSS.Math.Content.8.EE',
     description: 'Expressions and Equations',
     url: 'http://corestandards.org/Math/Content/8/EE'
@@ -2761,7 +2761,7 @@ var gradeHSS = [
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/3'
   },
   {
-    id: '5bb650e1fefbf3cf9e88f680',
+    _id: '5bb650e1fefbf3cf9e88f680',
     identifier: 'CCSS.Math.Content.HSG.SRT.A.2',
     description: 'Given two figures, use the definition of similarity in terms of similarity transformations to decide if they are similar; explain using similarity transformations the meaning of similarity for triangles as the equality of all corresponding pairs of angles and the proportionality of all corresponding pairs of sides.',
     url: 'http://corestandards.org/Math/Content/HSG/SRT/A/2'

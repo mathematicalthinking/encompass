@@ -6,14 +6,17 @@ var data = [
     '_id': '5b4a64a028e4b75919c28512',
     'name': 'Drexel University',
     "createdBy": "5b245760ac75842be3189525",
+    "recommendedProblems": ["53a4479432f2863240000339", "53a447b432f286324000033d", "5bac07fdea4c0a230b2c7cda"],
   }, {
     '_id': '5b4e4b48808c7eebc9f9e828',
     'name': 'Temple University',
     "createdBy": "5b245760ac75842be3189525",
+    "recommendedProblems": ["5b4e2e6cbe1e18425515308f", "53a4479432f2863240000339"],
   }, {
     '_id': '5b4e4d5f808c7eebc9f9e82c',
     'name': 'Mathematical Thinking',
     "createdBy": "5b245760ac75842be3189525",
+    "recommendedProblems": ["5b4e2e6cbe1e18425515304e", "5ba7c3cb1359dc2f6699f2b3"],
   },
   {
     "_id" : "5bbe00a2ecd6e597fd8e397b",
