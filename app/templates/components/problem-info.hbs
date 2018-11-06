@@ -120,6 +120,7 @@
                   <li class="category-item">
                     <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                     <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
+                    <p class="category-description">{{category.description}}</p>
                   </li>
                 {{/each}}
               </ul>
