@@ -10,7 +10,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   privacySetting: null,
   checked: true,
   status: null,
-  validator: Ember.inject.service('form-validator'),
   alert: Ember.inject.service('sweet-alert'),
   parentActions: Ember.computed.alias("parentView.actions"),
   approvedProblem: false,
@@ -39,24 +38,12 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   },
 
   didInsertElement: function() {
-    let formId = 'form#newproblemform';
-    this.set('formId', formId);
-
-    let isMissing = this.checkMissing.bind(this);
-    this.get('validator').initialize(formId, isMissing);
-
     $('.list-outlet').removeClass('hidden');
   },
 
   willDestroyElement() {
     $('.list-outlet').addClass('hidden');
     this._super(...arguments);
-  },
-
-  checkMissing: function() {
-    const id = this.get('formId');
-    let isMissing = this.get('validator').isMissingRequiredFields(id);
-    this.set('isMissingRequiredFields', isMissing);
   },
 
   observeErrors: function() {
