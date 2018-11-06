@@ -107,7 +107,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   addItemsSelectize: function(query, callback) {
-    // const doAllowEmptyQuery = this.get('doAllowEmptyQuery');
     if (!query.length) {
       if (this.get('preload') === false) {
         return callback();
