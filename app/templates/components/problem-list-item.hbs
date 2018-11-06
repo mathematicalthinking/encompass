@@ -53,10 +53,10 @@
               <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
             {{/unless}}
           {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
           {{/if}}
           {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
+            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
         {{/if}}
         {{/if}}
       {{/if}}
@@ -132,8 +132,8 @@
           {{problem.status}}
         </span>
       </div>
-      <div class="item-card action">
-        {{#if currentUser.isAdmin}}
+    <div class="item-section action">
+      {{#if currentUser.isAdmin}}
         {{#unless problem.isTrashed}}
           {{#if (is-equal problem.status 'approved')}}
             <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
@@ -142,19 +142,31 @@
           {{/if}}
         {{/unless}}
         {{#if problem.isTrashed}}
-          <button {{action "restoreProblem"}} class="primary-button">Restore</button>
+          <button {{action "restoreProblem"}} class="primary-button approve">Restore</button>
         {{/if}}
+      {{else}}
+        {{#if (is-equal problem.status 'approved')}}
+          <button class="primary-button" {{action "assignProblem"}}>Assign</button>
         {{else}}
-          {{#if (is-equal problem.status 'pending')}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
+        {{#if canDelete}}
+          {{#if currentUser.isPdAdmin}}
+            {{#unless (is-equal problem.privacySetting 'E')}}
+              <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
+            {{/unless}}
           {{else}}
-            <button class="primary-button" {{action "assignProblem"}}>Assign</button>
+            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
           {{/if}}
+          {{else}}
+            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
         {{/if}}
-      </div>
+        {{/if}}
+      {{/if}}
+    </div>
     </div>
   </div>
 {{/if}}
+
+
 
 <script>
   $('.problem-title').click(function (e) {
