@@ -2,8 +2,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   filesToBeUploaded: null,
   createAnswerError: null,
   isMissingRequiredFields: null,
-  requiredInputIds: [],
-  validator: Ember.inject.service('form-validator'),
   alert: Ember.inject.service('sweet-alert'),
   students: [],
   editor: null,
@@ -12,6 +10,17 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   createRecordErrors: [],
   elementId: 'answer-new',
   contributors: [],
+  constraints: {
+    briefSummary: {
+      presence: { allowEmpty: false },
+      length: {
+        maximum: 10000
+      }
+    },
+    explanation: {
+      presence: true
+    }
+  },
 
   didInsertElement: function() {
     // initialize quill editor
@@ -43,13 +52,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     } else {
       this.get('contributors').addObject(this.get('currentUser'));
     }
-
-    let formId = 'form#newanswerform';
-    this.set('formId', formId);
-    this.set('requiredInputIds', ['answer', 'explantion']);
-
-    let isMissing = this.checkMissing.bind(this);
-    this.get('validator').initialize(formId, isMissing);
   },
 
   handleImage: function() {
@@ -130,15 +132,14 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
     const students = that.get('contributors');
 
-    if (!answer || !explanation) {
-      this.set('isMissingRequiredFields', true);
-      return;
-    }
-
-
     return this.handleImage().then((image) => {
-      let imageData = image.get('imageData');
-      let newImage = `<img src='${imageData}'>`;
+      let imageData;
+      let newImage;
+      if (image) {
+        imageData = image.get('imageData');
+        newImage = `<img src='${imageData}'>`;
+      }
+
       const records = students.map((student) => {
         return that.store.createRecord('answer', {
           createdBy: student,
@@ -153,13 +154,17 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           students: students,
         });
       });
+      // additional uploaded image base 64 data was concatenated to explanation
+      // so can delete image record
       return Promise.all(records.map((rec) => {
         let uploadedImages = this.get('uploadResults');
-        uploadedImages.forEach((image) => {
-          this.get('store').findRecord('image', image._id).then((image) => {
-            image.destroyRecord();
+        if (uploadedImages) {
+          uploadedImages.forEach((image) => {
+            this.get('store').findRecord('image', image._id).then((image) => {
+              image.destroyRecord();
+            });
           });
-        });
+        }
 
         this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
         return rec.save();
@@ -176,24 +181,51 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         });
     });
   },
+  // Empty quill editor .html() property returns <p><br></p>
+  // For quill to not be empty, there must either be some text or a student
+  // must have uploaded an img so there must be an img tag
+  isQuillValid: function() {
+    let pText = this.$('.ql-editor p').text();
+    if (pText.length > 0) {
+      return true;
+    }
+    let content = this.$('.ql-editor').html();
+    if (content.includes('<img')) {
+      return true;
+    }
+    return false;
+  },
 
   actions: {
     validate: function() {
-      const that = this;
-      return this.get('validator').validate(that.get('formId'))
-      .then((res) => {
-        console.log('res', res);
-        if (res) {
-          // proceed with answer creation
-          this.createAnswer();
-        } else {
-          if (res.invalidInputs) {
-            this.set('isMissingRequiredFields', true);
-            return;
-          }
+      // remove existing errors
+      const formErrors = ['briefSummaryErrors', 'explanationErrors'];
+      for (let error of formErrors) {
+        if (this.get(error)) {
+          this.set(error, null);
         }
-      })
-      .catch(console.log);
+      }
+
+      let isQuillValid = this.isQuillValid();
+      let briefSummary = this.get('answer');
+      let explanation = isQuillValid ? true : null;
+
+      let values = {
+        briefSummary,
+        explanation
+      };
+      let constraints = this.get('constraints');
+
+      let errors = window.validate(values, constraints);
+      if (errors) {
+        for (let key of Object.keys(errors)) {
+          let errorProp = `${key}Errors`;
+          this.set(errorProp, errors[key]);
+        }
+        return;
+      }
+      // no errors
+      this.createAnswer();
     },
 
     cancelResponse: function() {
@@ -204,7 +236,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.set('imageData', null);
     },
     toggleAddStudentMessages() {
-      console.log('in toggle');
       if (this.get('addStudentError')) {
         this.set('addStudentError', false);
       }
