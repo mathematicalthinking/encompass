@@ -203,7 +203,7 @@ const checkSelectorsExist = function (webDriver, selectors) {
   });
 };
 
-const checkFilterSelectors = function (filterOptions) {
+const createSelectors = function (filterOptions) {
   let options = filterOptions.map((item) => {
     return Object.values(item);
   });
@@ -360,7 +360,7 @@ module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
 module.exports.checkSelectorsExist = checkSelectorsExist;
-module.exports.checkFilterSelectors = checkFilterSelectors;
+module.exports.createSelectors = createSelectors;
 module.exports.createFilterList = createFilterList;
 module.exports.selectOption = selectOption;
 module.exports.waitForAndClickElement = waitForAndClickElement;

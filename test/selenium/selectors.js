@@ -194,10 +194,8 @@ module.exports = {
     categoryFilters: [
       { categoryHeader: ".category-header" },
       { categoryFilterList: "ul.category-filter-list" },
-      { searchCategory: "#categories-filter" },
       { showCategoryBtn: ".show-category-btn" },
       { includeSubCategories: "#toggle-sub-cats" },
-      { categoryList: "ul.selected-cat-list" }
     ]
   },
 };

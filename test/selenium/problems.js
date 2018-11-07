@@ -86,8 +86,16 @@ describe('Problems', async function () {
             }
             let optionsList = css.problemFilterList.primaryFilters;
             let filterOptions = helpers.createFilterList(isStudent, isAdmin, optionsList, true);
-            let filterSelectors = helpers.checkFilterSelectors(filterOptions);
+            let filterSelectors = helpers.createSelectors(filterOptions);
             expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+          });
+
+          it('should display category filter options', async function () {
+            if (!isStudent) {
+              expect(await helpers.findAndClickElement(driver, '.category-header'));
+              let filterSelectors = helpers.createSelectors(css.problemFilterList.categoryFilters);
+              expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+            }
           });
 
         });
