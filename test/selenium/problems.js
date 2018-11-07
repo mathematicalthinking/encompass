@@ -11,43 +11,6 @@ const host = helpers.host;
 const testUsers = require('./fixtures/users');
 let topLink = css.topBar.problems;
 
-//FILTER OPTIONS
-//Test to check all primary filters by account type
-/* All users should have:
-  * Mine
-  * My Org
-    * Recommended
-    * Created by Org Members
-  * Public
-*/
-
-/* Admin should also have
-  * All
-    * Org
-    * Creator
-    * PoWs
-      * Private
-      * Public
-*/
-//Depending on user type check for primary filters to exist
-//Click primary filters and check values change accurately
-
-//Test to check category filters
-//Test to check more filters - admin only
-
-/* All Users should have Category Search
- * Search/select identifier
- * Button to use menu
- * Toggle include sub categories
- * See categories added to list and be able to remove
- */
-
-/* Admins should have more options
- * Toggle for show trashed
- */
-
-
-
 
 describe('Problems', async function () {
   async function runTests(users) {
@@ -168,24 +131,21 @@ describe('Problems', async function () {
 
               it('should restore a trashed problem', async function () {
                 await helpers.findAndClickElement(driver, 'button.primary-button');
-                await driver.sleep(5000);
+                await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                await driver.sleep(500);
+                let resultsMsg = `1 problems found - Displaying Trashed Problems`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               });
 
-              // it('should update problem list when unchecking recommended', async function () {
-              //   if (!isStudent) {
-              //     await helpers.findAndClickElement(driver, 'li.recommended');
-              //     let resultsMsg = `No results found. Please try expanding your filter criteria.`;
-              //     expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
-              //   }
-              // });
-
-              // it('should update problem list when checking created by members', async function () {
-              //   if (!isStudent) {
-              //     await helpers.findAndClickElement(driver, 'li.fromOrg');
-              //     let resultsMsg = `${problems.org.members} problems found`;
-              //     expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
-              //   }
-              // });
+              it('should continue displaying trashed problems until unchecked', async function () {
+                await helpers.findAndClickElement(driver, 'li.filter-mine');
+                let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                await helpers.findAndClickElement(driver, '#toggle-trashed');
+                let updatedMsg = `${problems.mine.count} problems found`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(updatedMsg);
+                await helpers.findAndClickElement(driver, '.more-header');
+              });
             });
           }
         });
@@ -198,8 +158,6 @@ describe('Problems', async function () {
   }
   await runTests(testUsers);
 });
-
-
 
 
 
