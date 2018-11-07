@@ -10,6 +10,45 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
+
+//FILTER OPTIONS
+//Test to check all primary filters by account type
+  //Click on each one and check that results are correct
+//Test to check category filters
+//Test to check more filters - admin only
+
+//SORT BAR
+//Test to check sort bar is there - options are accurate
+//Test to check alphabetical sorting
+//Test to check date sorting
+//Test to check privacy filtering
+//Test to check status filtering
+
+//RESULTS
+//Test that list view displays everything properly
+//Test that card view displays everything properly
+//Test that values update when changes are made
+//Test button values are acurate
+//Test more menu shows correct values
+//Test button actions perform correctly
+//Test more actions perform correctly
+//Test pagination works
+
+//SEARCH BAR
+//Test that there are 2 drop down items
+//Search works with enter and clicking button
+//Clear button shows when query is applied or text in field
+//Clearing search bar resets results properly
+//Searching only applies to results of primary filters
+//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
+
+
+
+
+
+
+
+
 xdescribe('Problems', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
