@@ -117,6 +117,16 @@ module.exports = {
         total: 11,
         recommended: 3,
         members: 10,
+      },
+      all: {
+        total: 23,
+        org: 10,
+        creator: 10,
+        pows: {
+          total: 10,
+          public: 5,
+          private: 20,
+        }
       }
     }
   },

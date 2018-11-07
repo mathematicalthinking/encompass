@@ -95,6 +95,7 @@ describe('Problems', async function () {
             it('should update problem list when unchecking created by members', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.fromOrg');
+                await driver.sleep(500);
                 let resultsMsg = `${problems.org.recommended} problems found`;
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               }
@@ -103,6 +104,7 @@ describe('Problems', async function () {
             it('should update problem list when unchecking recommended', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.recommended');
+                await driver.sleep(500);
                 let resultsMsg = `No results found. Please try expanding your filter criteria.`;
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               }
@@ -111,6 +113,7 @@ describe('Problems', async function () {
             it('should update problem list when checking created by members', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.fromOrg');
+                await driver.sleep(500);
                 let resultsMsg = `${problems.org.members} problems found`;
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               }
@@ -146,6 +149,36 @@ describe('Problems', async function () {
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(updatedMsg);
                 await helpers.findAndClickElement(driver, '.more-header');
               });
+            });
+
+            describe('Clicking on All problems filter', function () {
+              before(async function () {
+                await helpers.findAndClickElement(driver, '.filter-all');
+              });
+
+              it('should update problem list and display message', async function () {
+                await driver.sleep(500);
+                let resultsMsg = `${problems.all.total} problems found`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              });
+
+              // it('should restore a trashed problem', async function () {
+              //   await helpers.findAndClickElement(driver, 'button.primary-button');
+              //   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+              //   await driver.sleep(500);
+              //   let resultsMsg = `1 problems found - Displaying Trashed Problems`;
+              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              // });
+
+              // it('should continue displaying trashed problems until unchecked', async function () {
+              //   await helpers.findAndClickElement(driver, 'li.filter-mine');
+              //   let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
+              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              //   await helpers.findAndClickElement(driver, '#toggle-trashed');
+              //   let updatedMsg = `${problems.mine.count} problems found`;
+              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(updatedMsg);
+              //   await helpers.findAndClickElement(driver, '.more-header');
+              // });
             });
           }
         });
