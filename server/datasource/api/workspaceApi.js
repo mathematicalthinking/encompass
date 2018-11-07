@@ -1052,6 +1052,19 @@ async function answersToSubmissions(answers) {
         }
       }
 
+      let teachers;
+      let primaryTeacher;
+
+      if (section) {
+        clazz.sectionId = section._id;
+        clazz.name = section.name;
+        teachers = section.teachers;
+        if (_.isArray(teachers)) {
+          primaryTeacher = teachers[0];
+          teacher.id = primaryTeacher;
+        }
+      }
+
 
 
 
