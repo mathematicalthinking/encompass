@@ -77,7 +77,7 @@ async function buildPowsFilterBy(pows) {
             $and: [
               { puzzleId: { $exists: true, $ne: null } },
               { privacySetting: 'M'},
-              {isTrashed: false}
+              { isTrashed: false}
             ]
           };
 
@@ -86,7 +86,7 @@ async function buildPowsFilterBy(pows) {
         $and: [
           { puzzleId: { $exists: true, $ne: null } },
           { privacySetting: 'E'},
-          {isTrashed: false}
+          { isTrashed: false}
         ]
       };
 

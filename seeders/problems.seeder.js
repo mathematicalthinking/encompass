@@ -5,7 +5,6 @@ var data = [
   {
     "_id": "5b4e25c638a46a41edf1709a",
     "title": "Rick's Public",
-    "puzzleId": null,
     "text": `All life trust, warned area person, length hall background is the are soft same concept the hazardous ever system neighbours up and boss the problem. The been as the have this the house. Get have of determined practice into. Mathematically bad with continues prayers but simply. And that have trust, yourself who town have I quickly period, to paint, knowing packed of stand seven was, we long behavioural I heard a has himself by forest price just live threw held all roasted the it magnitude, the a in comments we've trusted pay feedback or slept is planning consider was housed.`,
     "imageUrl": null,
     "sourceUrl": null,
@@ -23,7 +22,6 @@ var data = [
   }, {
     "_id": "5b4e2e56be1e18425515308c",
     "title": "Rick's Private",
-    "puzzleId": null,
     "text": `And have to a do cognitive their wasn't were pity from eye then and in volumes got sure with belly treble-range to they train average she the of place her and got being into even by such the their in a field large is into than an hills taken preparations at create the if sitting as was brothers slept greediness based a behind the dry laid assumed trusted sleeping least plan text flatter know line constructing bad it enough men, the time then fur was have the place working designer leave the relations apartment, seven. Much have way but is.`,
     "imageUrl": null,
     "sourceUrl": null,
@@ -41,7 +39,6 @@ var data = [
   }, {
     "_id": "5b4e2e6cbe1e18425515308d",
     "title": "Morty's Public",
-    "puzzleId": null,
     "text": `Cras placerat dolor vitae quam hendrerit, non ultricies lacus facilisis. Suspendisse quis tempor odio. Curabitur elementum ligula ut tellus suscipit hendrerit. Etiam aliquet augue non gravida lacinia. Aenean velit ex, imperdiet a finibus eleifend, commodo eget tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed pharetra viverra laoreet. Proin non erat sed lacus egestas varius tristique vel lectus. Cras convallis, nisl vel aliquam suscipit, mi libero molestie urna, non blandit dolor ante sit amet nulla. Phasellus lacus elit, tincidunt in vulputate eu, pharetra vitae quam. Nullam luctus sed elit quis pretium. Curabitur vitae purus et tellus varius aliquet placerat eget augue. Quisque vitae maximus diam, ut feugiat sem. Nunc efficitur risus eros, eu tincidunt lectus dictum fermentum. Aenean placerat est volutpat aliquam pharetra.
     Fusce est metus, egestas a lectus in , dignissim molestie velit.Vivamus pellentesque tortor quis lorem feugiat placerat.Integer auctor enim eu felis finibus, a porttitor dolor vestibulum.Sed ac felis luctus, pulvinar odio a, efficitur ante.Vivamus et risus ut libero pulvinar tempus viverra id urna.Vivamus vitae convallis urna.Proin semper condimentum metus.Vivamus at augue aliquet, pulvinar quam sed, sollicitudin sem.Vestibulum enim quam, accumsan et nibh vel, consectetur ultricies metus.Nam eu orci scelerisque, pulvinar nisi eget, sagittis est.Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.`,
     "imageUrl": null,
@@ -55,18 +52,30 @@ var data = [
     "createDate": "2018-09-12T15:22:36.371Z",
     "organization": "5b4a64a028e4b75919c28512",
     "isUsed": false,
-  }, {
+  },
+  {
     "_id": "5b1e7a0ba5d2157ef4c91028",
     "title": "Mr. W. Goes Across Australia",
     "createdBy": "5b245841ac75842be3189526",
     "puzzleId": 973,
     "categories": ['5bb650e1fefbf3cf9e88f675'],
-    "isPublic": false,
     "privacySetting": 'M',
     "isTrashed": false,
     "organization": "5b4a64a028e4b75919c28512",
     "status": "approved",
     "createDate": "2018-09-08T15:22:36.371Z",
+  },
+  {
+    "_id": "5bac07fdea4c0a230b2c7cc4",
+    "title": "Old PoWs Problem",
+    "createdBy": "5b245841ac75842be3189526",
+    "puzzleId": 974,
+    "categories": ['5bb650e1fefbf3cf9e88f675'],
+    "privacySetting": 'E',
+    "isTrashed": false,
+    "organization": "5b4a64a028e4b75919c28512",
+    "status": "pending",
+    "createDate": "2018-09-09T15:22:36.371Z",
   },
   {
     "_id" : "5b91463c3add43b868ae9808",
@@ -93,7 +102,6 @@ var data = [
   {
     "_id": "53a447ae32f286324000033b",
     "title" : "Summer's Org Problem",
-    "puzzleId" : null,
     "text" : "This is Summer's org problem",
     "imageUrl" : null,
     "sourceUrl" : null,
@@ -116,7 +124,6 @@ var data = [
   {
     "_id" : "5b9173e23da5efca74705772",
     "title" : "Summer's Private Problem",
-    "puzzleId" : null,
     "text" : "This is Summer's private problem",
     "imageUrl" : null,
     "sourceUrl" : null,
