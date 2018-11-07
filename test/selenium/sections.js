@@ -143,7 +143,7 @@ describe('Sections', async function () {
               it(`should display new section form`, async function() {
                 try {
                   await driver.wait(until.urlIs(url));
-                  expect(await helpers.isElementVisible(driver, css.newSection.form)).to.be.true;
+                  expect(await helpers.waitForSelector(driver, css.newSection.form)).to.be.true;
                 }catch(err) {
                   console.log(err);
                 }

@@ -13,11 +13,6 @@ let topLink = css.topBar.problems;
 
 //FILTER OPTIONS
 //Test to check all primary filters by account type
-  //Click on each one and check that results are correct
-//Test to check category filters
-//Test to check more filters - admin only
-
-
 /* All users should have:
   * Mine
   * My Org
@@ -34,6 +29,25 @@ let topLink = css.topBar.problems;
       * Private
       * Public
 */
+//Depending on user type check for primary filters to exist
+//Click primary filters and check values change accurately
+
+//Test to check category filters
+//Test to check more filters - admin only
+
+/* All Users should have Category Search
+ * Search/select identifier
+ * Button to use menu
+ * Toggle include sub categories
+ * See categories added to list and be able to remove
+ */
+
+/* Admins should have more options
+ * Toggle for show trashed
+ */
+
+
+
 
 describe('Problems', async function () {
   async function runTests(users) {
@@ -41,9 +55,6 @@ describe('Problems', async function () {
       const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
-
-      // const sectionDetails = sections.testExample;
-      // const sectionLink = `a[href='#/sections/${sectionDetails._id}`;
 
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
@@ -68,33 +79,20 @@ describe('Problems', async function () {
               await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
             }
           });
+
           it('should display side list of filter options', async function () {
-            let filterOptions = {};
             if (!isStudent) {
               expect(await helpers.waitForSelector(driver, css.problemPageSelectors.sideFilterOptions));
-              filterOptions = css.primaryFilters;
             }
-            if (isAdmin) {
-              let adminFilters = css.adminFilters;
-              filterOptions = {...filterOptions, ...adminFilters};
-            }
-            console.log('primary filter options are', filterOptions);
-            return filterOptions;
+            let optionsList = css.problemFilterList.primaryFilters;
+            let filterOptions = helpers.createFilterList(isStudent, isAdmin, optionsList, true);
+            console.log('filterOptions are', filterOptions);
+            let filterSelectors = helpers.checkFilterSelectors(filterOptions);
+            console.log('filterSelectors are', filterSelectors);
+
+            // expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
           });
-          // if (!isStudent) {
-          //   it('should display list of sections the user belongs to', async function () {
-          //     expect(await helpers.getWebElements(driver, 'ul.collab-sections a')).to.have.lengthOf(sections.collab.count);
-          //   });
-          //   if (accountType === 'A') {
-          //     it('should display list of all sections', async function () {
-          //       expect(await helpers.getWebElements(driver, 'ul.all-sections a')).to.have.lengthOf(sections.all.count);
-          //     });
-          //   } else if (accountType === 'P') {
-          //     it('should display list sections for user\'s org', async function () {
-          //       expect(await helpers.getWebElements(driver, 'ul.org-sections a')).to.have.lengthOf(sections.org.count);
-          //     });
-          //   }
-          // }
+
         });
       });
     }
@@ -106,28 +104,6 @@ describe('Problems', async function () {
   await runTests(testUsers);
 });
 
-
-
-const categoryFilters = function () {
-  const categoryFilters = css.categoryFilter;
-};
-
-
-/* All Users should have Category Search
-  * Search/select identifier
-  * Button to use menu
-  * Toggle include sub categories
-  * See categories added to list and be able to remove
-*/
-
-/* Admins should have more options
-  * Toggle for show trashed
-*/
-
-
-//Login as first user type
-//Depending on user type check for primary filters to exist
-//Click primary filters and check values change accurately
 
 
 

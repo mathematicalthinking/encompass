@@ -193,22 +193,70 @@ const findInputAndType = async function (webDriver, selector, text, doHitEnter=f
   return;
 };
 
- const selectOption = async function (webDriver, selector, item, isByCss) {
-   try {
-     let selectList;
-     if (isByCss) {
-       selectList = await webDriver.findElement(By.css(selector));
-     } else {
-      selectList = await webDriver.findElement(By.id(selector));
+const checkSelectorsExist = function (webDriver, selectors) {
+  return Promise.all(
+    selectors.map((selector) => {
+      return isElementVisible(webDriver, selector);
+    })
+  ).then((selectors) => {
+    return selectors.every(x => x === true);
+  });
+};
 
-     }
-    await selectList.click();
-    let el = await selectList.findElement(By.css(`option[value="${item}"]`));
-    await el.click();
-     return true;
-   } catch (err) {
-     console.log(err);
-   }
+const checkFilterSelectors = function (filterOptions) {
+  console.log('filterOptions are', filterOptions);
+};
+
+
+const createFilterList = function (isStudent, isAdmin, filterList, removeChildren) {
+  let filterOptions = [...filterList];
+
+  if (removeChildren) {
+     filterOptions.forEach((item) => {
+      if (item.hasOwnProperty('children')) {
+        delete item.children;
+      }
+    });
+  }
+  if (isAdmin) {
+    filterOptions.forEach((item) => {
+      if (item.hasOwnProperty('adminOnly')) {
+        delete item.adminOnly;
+      }
+    });
+  }
+
+  if (!isStudent && !isAdmin) {
+    filterOptions.forEach((item, i) => {
+      if (item.hasOwnProperty('adminOnly')) {
+        filterOptions.splice(i, 1);
+      }
+    });
+  }
+
+  if (isStudent) {
+    filterOptions = [];
+  }
+
+  return filterOptions;
+};
+
+const selectOption = async function (webDriver, selector, item, isByCss) {
+  try {
+    let selectList;
+    if (isByCss) {
+      selectList = await webDriver.findElement(By.css(selector));
+    } else {
+    selectList = await webDriver.findElement(By.id(selector));
+
+    }
+  await selectList.click();
+  let el = await selectList.findElement(By.css(`option[value="${item}"]`));
+  await el.click();
+    return true;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const login = async function(webDriver, host, user=admin) {
@@ -308,6 +356,9 @@ module.exports.isTextInDom = isTextInDom;
 module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
+module.exports.checkSelectorsExist = checkSelectorsExist;
+module.exports.checkFilterSelectors = checkFilterSelectors;
+module.exports.createFilterList = createFilterList;
 module.exports.selectOption = selectOption;
 module.exports.waitForAndClickElement = waitForAndClickElement;
 module.exports.getCurrentUrl = getCurrentUrl;
