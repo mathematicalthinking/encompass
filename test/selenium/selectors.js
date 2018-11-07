@@ -154,6 +154,12 @@ module.exports = {
 
   sectionHome: 'div#section-home',
 
+  problemPageSelectors: {
+    problemContainer: '#problem-list-container',
+    sideFilterOptions: '.filter-options',
+    problemsListing: '.list-view',
+  },
+
   primaryFilters: {
     primaryFilterList: '.primary-filter-list',
     mine: 'li.filter-mine',
@@ -163,16 +169,7 @@ module.exports = {
     public: 'li.filter-everyone',
   },
 
-  categoryFilter: {
-    categoryHeader: '.category-header',
-    categoryFilterList: 'ul.category-filter-list',
-    searchCategory: '#categories-filter',
-    showCategoryBtn: '.show-category-btn',
-    includeSubCategories: '#toggle-sub-cats',
-    categoryList: 'ul.selected-cat-list',
-  },
-
-  AdminFilters: {
+  adminFilters: {
     all: 'li.filter-all',
     adminProblemFilters: '#admin-problem-filter',
     adminSelectSearch: '#admin-filter-select',
@@ -181,5 +178,14 @@ module.exports = {
     moreHeader: '.more-header',
     moreFilterList: 'ul.more-filter-list',
     trashedProblems: '#toggle-trashed',
+  },
+
+  categoryFilter: {
+    categoryHeader: '.category-header',
+    categoryFilterList: 'ul.category-filter-list',
+    searchCategory: '#categories-filter',
+    showCategoryBtn: '.show-category-btn',
+    includeSubCategories: '#toggle-sub-cats',
+    categoryList: 'ul.selected-cat-list',
   },
 };

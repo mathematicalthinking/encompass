@@ -9,6 +9,9 @@ const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
 const host = helpers.host;
+const testUsers = require('./fixtures/users');
+let topLink = css.topBar.problems;
+let url = `${host}/#/problems`;
 
 
 //FILTER OPTIONS
@@ -16,6 +19,129 @@ const host = helpers.host;
   //Click on each one and check that results are correct
 //Test to check category filters
 //Test to check more filters - admin only
+
+
+/* All users should have:
+  * Mine
+  * My Org
+    * Recommended
+    * Created by Org Members
+  * Public
+*/
+
+/* Admin should also have
+  * All
+    * Org
+    * Creator
+    * PoWs
+      * Private
+      * Public
+*/
+
+describe('Problems', async function () {
+  async function runTests(users) {
+    function _runTests(user) {
+      const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
+      const isStudent = accountType === 'S' || actingRole === 'student';
+      const isAdmin = accountType === 'A';
+
+      // const sectionDetails = sections.testExample;
+      // const sectionLink = `a[href='#/sections/${sectionDetails._id}`;
+
+      describe(`As ${testDescriptionTitle}`, function() {
+        this.timeout(helpers.timeoutTestMsStr);
+        let driver = null;
+
+        before(async function() {
+          driver = new Builder()
+            .forBrowser('chrome')
+            .build();
+            await dbSetup.prepTestDb();
+            return helpers.login(driver, host, user);
+          });
+
+        after(function() {
+          return driver.quit();
+        });
+
+        describe('Visiting problems page', function () {
+          before(async function () {
+            await helpers.findAndClickElement(driver, topLink);
+            if (!isStudent) {
+              await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
+            }
+          });
+          it('should display side list of filter options', async function () {
+            if (!isStudent) {
+              expect(await helpers.waitForSelector(driver, css.problemPageSelectors.sideFilterOptions));
+            }
+            const verifyPrimaryFilters = function () {
+              let filterOptions = {};
+              if (!isStudent) {
+                filterOptions = css.primaryFilters;
+              }
+
+              if (isAdmin) {
+                let adminFilters = css.adminFilters;
+                filterOptions = {...filterOptions, ...adminFilters};
+              }
+              console.log('filterOptions are', filterOptions);
+              return filterOptions;
+            };
+
+            verifyPrimaryFilters();
+            //run filter test here
+          });
+          // if (!isStudent) {
+          //   it('should display list of sections the user belongs to', async function () {
+          //     expect(await helpers.getWebElements(driver, 'ul.collab-sections a')).to.have.lengthOf(sections.collab.count);
+          //   });
+          //   if (accountType === 'A') {
+          //     it('should display list of all sections', async function () {
+          //       expect(await helpers.getWebElements(driver, 'ul.all-sections a')).to.have.lengthOf(sections.all.count);
+          //     });
+          //   } else if (accountType === 'P') {
+          //     it('should display list sections for user\'s org', async function () {
+          //       expect(await helpers.getWebElements(driver, 'ul.org-sections a')).to.have.lengthOf(sections.org.count);
+          //     });
+          //   }
+          // }
+        });
+      });
+    }
+    for (let user of Object.keys(users)) {
+      // eslint-disable-next-line no-await-in-loop
+      await _runTests(users[user]);
+    }
+  }
+  await runTests(testUsers);
+});
+
+
+
+const categoryFilters = function () {
+  const categoryFilters = css.categoryFilter;
+};
+
+
+/* All Users should have Category Search
+  * Search/select identifier
+  * Button to use menu
+  * Toggle include sub categories
+  * See categories added to list and be able to remove
+*/
+
+/* Admins should have more options
+  * Toggle for show trashed
+*/
+
+
+//Login as first user type
+//Depending on user type check for primary filters to exist
+//Click primary filters and check values change accurately
+
+
+
 
 //SORT BAR
 //Test to check sort bar is there - options are accurate
@@ -41,127 +167,3 @@ const host = helpers.host;
 //Clearing search bar resets results properly
 //Searching only applies to results of primary filters
 //Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
-
-
-
-
-
-
-
-
-xdescribe('Problems', function() {
-  this.timeout(helpers.timeoutTestMsStr);
-  let driver = null;
-  const problemId = '5b4e25c638a46a41edf1709a';
-  const problemLink = `a[href='#/problems/${problemId}`;
-
-  // creation date of test problem is getting reset every time testDB is reset
-  const problemDetails = {
-    name: "Rick's Public",
-    question: 'What is it?',
-    privacySetting: 'Everyone',
-    copyrightNotice: "Apple Corps.",
-    sharingAuth: "stolen goods",
-    author: "Paul McCartney",
-    };
-
-  before(async function () {
-    driver = new Builder()
-      .forBrowser('chrome')
-      .build();
-    await dbSetup.prepTestDb();
-    try {
-      await helpers.login(driver, host);
-    }catch(err) {
-      console.log(err);
-    }
-  });
-  after(() => {
-    driver.quit();
-  });
-  describe('Visiting problems page', function() {
-    before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.problems);
-    });
-    it('should display a user\'s problems', async function() {
-      await helpers.waitForSelector(driver, 'ul.your-problems');
-      let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
-      expect(problems).to.have.lengthOf(2);
-      // expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
-    });
-  });
-
-  describe(`Visiting ${problemDetails.name}`, function() {
-    before(async function() {
-      await helpers.findAndClickElement(driver, problemLink);
-    });
-    //TODO: update these tests to be more robust once this page is updated
-    it('should display the problem details', async function() {
-      expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.copyrightNotice)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.sharingAuth)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.author)).to.be.true;
-      let today = moment().format("MMM Do YYYY");
-      expect(await helpers.isTextInDom(driver, today)).to.be.true;
-    });
-  });
-  // TODO: figure out best way to test uploading an image in e2e manner
-  describe('Problem creation', function() {
-    const verifyForm = function() {
-      const inputs = css.newProblem.inputs;
-      for (let input of Object.keys(inputs)) {
-        // eslint-disable-next-line no-loop-func
-        it(`${input} field should be visible`, async function() {
-          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
-        });
-      }
-    };
-    before(async function() {
-      await helpers.findAndClickElement(driver, "#problem-new-link");
-      await helpers.waitForSelector(driver, css.newProblem.form);
-    });
-
-    describe('Verify form inputs', async function() {
-      await verifyForm();
-    });
-
-    describe('Submitting a problem without an image', function() {
-      const inputs = css.newProblem.inputs;
-
-      const submitProblem = async function(details, privacySetting) {
-        for (let detail of Object.keys(details)) {
-          try {
-            // eslint-disable-next-line no-await-in-loop
-            await helpers.findInputAndType(driver, inputs[detail], details[detail]);
-          } catch(err) {
-            console.log(err);
-          }
-        }
-        if (privacySetting) {
-          await helpers.findAndClickElement(driver, inputs.everyone);
-        } else {
-          await helpers.findAndClickElement(driver, inputs.justMe);
-        }
-        await helpers.findAndClickElement(driver, 'input#legal-notice');
-        await helpers.findAndClickElement(driver, css.newProblem.submit);
-        await helpers.findAndClickElement(driver, '.swal2-confirm');
-      };
-
-      it('should redirect to problem info after creation', async function () {
-        const problem = helpers.newProblem;
-        await submitProblem(problem.details, true);
-        await helpers.waitForSelector(driver, '#editProblem');
-        expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/[a-z0-9]{24}/);
-        expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.copyrightNotice)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.sharingAuth)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.author)).to.be.true;
-        });
-    });
-  });
-});
-
-
-
