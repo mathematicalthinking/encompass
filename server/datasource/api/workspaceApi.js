@@ -334,14 +334,26 @@ function updateWorkspaces(workspaces, submissionSet){
   * @param {Workspace} ws       The workspace this folder structure will be in
   * @return {Promise}  Resolves when all the folders are created
  */
-function newFolderStructure(user, ws, folderSetName) {
-  var promise = new mongoose.Promise();
-  var tasks = [];
+async function newFolderStructure(user, ws, folderSetName, folderSetHash) {
+  try {
+    let folders = []; // 'none' and anything else will use the empty set
+//     let { folderSetId, folderSetJSON } = folderSetHash;
 
-  var folders = []; // 'none' and anything else will use the empty set
+//   if(!folderSetId && !folderSetJSON) {
+//     return folders;
+//   }
+//   let folderSetObjects;
+// console.log('folderSetId', folderSetId);
+//   if (folderSetId) {
+//     // lookup folderSet in db
+//     console.log('typeof foldersetid', typeof folderSetId);
+//     const folderSet = await models.FolderSet.findById(folderSetId).lean().exec();
+//     console.log('folderSet after', folderSet);
 
-  if(!folderSetName) { folderSetName = 'none'; }
-
+//     folderSetObjects = folderSet.folders;
+//   } else {
+//     folderSetObjects = folderSetJSON;
+//   }
   if(folderSetName === 'default' || folderSetName === 'Math Forum Default Folders') {
     folders = data.mathforumFolders;
   }
@@ -351,6 +363,54 @@ function newFolderStructure(user, ws, folderSetName) {
     //since we are getting the param from the request
     folders = data.simple;
   }
+// console.log('folderSetObjects', folderSetObjects);
+//   const recurse = async function(folderObj, parentId) {
+//     try {
+//       if (!folderObj) {
+//         return;
+//       }
+//       console.log(`parent for folderObj: ${folderObj.name}: ${parentId}`);
+
+//       let ownerId = ws.owner;
+//       let userId = user._id;
+//       let wsId = ws._id;
+//       console.log('iswsId valid', mongoose.Types.ObjectId.isValid(wsId));
+//       console.log('isuserId valid', mongoose.Types.ObjectId.isValid(userId));
+
+//       console.log('isownerId valid', mongoose.Types.ObjectId.isValid(ownerId));
+
+
+//       let f = new models.Folder({
+//         owner: ws.owner,
+//         name: folderObj.name,
+//         weight: folderObj.weight ? folderObj.weight : 0,
+//         createdBy: user._id,
+//         lastModifiedBy: user._id,
+//         children: [],
+//         workspace: ws._id
+
+//       });
+//       if (parentId) {
+//         f.parent = parentId;
+//       }
+
+//       const children = folderObj.children;
+//       if (_.isEmpty(children)) {
+//         return f.save();
+//       }
+//       f.children = await Promise.all(_.map(children, (child => {
+//         return recurse(child, f._id);
+//       })));
+//       return f.save();
+//     }catch(err) {
+//       console.error(`Error recurse : ${err}`);
+//     }
+
+//   };
+
+//   folders = await Promise.all(_.map(folderSetObjects, (obj => {
+//     return recurse(obj, null);
+//   })));
 
   folders.forEach(function(folder){
     var folderPromise = new mongoose.Promise();
@@ -397,6 +457,14 @@ function newFolderStructure(user, ws, folderSetName) {
     promise.resolve();
   });
   return promise;
+  // return folders;
+  }catch(err) {
+    console.error(`Error newFolderStructure: ${err}`);
+  }
+    // let promise = new mongoose.Promise();
+    // let tasks = [];
+
+
 }
 
 /**
@@ -1340,6 +1408,147 @@ function buildAnswersToClone(answers, hash) {
 
 }
 
+async function copyAndSaveFolderStructure(user, workspaceId, folderIds, folderSetOptions) {
+
+  // check if user has proper permissions
+  try {
+    const results = {
+      folderSetId: null,
+      folderSetObjects: [],
+      isInvalidWorkspace: false
+    };
+
+    const workspace = await models.Workspace.findById(workspaceId).populate('folders').lean().exec();
+
+    if (_.isNull(workspace)) {
+      results.isInvalidWorkspace = true;
+      return results;
+    }
+    const folders = workspace.folders;
+    if (_.isEmpty(folders)) {
+      console.log('no folders in ws');
+      return results;
+    }
+
+    const topLevelFolders = _.filter(folders, (folder => {
+      console.log(folder.parent, folder._id);
+      return _.isNull(folder.parent) && _.contains(_.map(folderIds, id => id.toString()), folder._id.toString());
+    }));
+    console.log('topLevelFolders', topLevelFolders);
+    const topLevelFolderIds = _.map(topLevelFolders, folder => folder._id);
+    console.log('topLevelFolderIds', topLevelFolderIds);
+
+    const recurse = function(folderId) {
+      if (!folderId) {
+        return;
+      }
+      let ret = {};
+
+      return models.Folder.findById(folderId).lean().exec()
+        .then(async (doc) => {
+          if (_.isNull(doc)) {
+            return null;
+          }
+          ret = {
+            name: doc.name,
+            weight: doc.weight ? doc.weight : 0,
+            children: [],
+          };
+
+          const children = doc.children;
+          if (_.isEmpty(children)) {
+            return ret;
+          }
+          ret.children = await Promise.all(_.map(children, (child => {
+            return recurse(child);
+          })));
+
+          return ret;
+
+        })
+        .catch((err) => {
+          console.log('err', err);
+        });
+    };
+
+    const folderObjects = await Promise.all(_.map(topLevelFolderIds, (folderId) => {
+      return recurse(folderId);
+    }));
+
+    results.folderSetObjects = folderObjects;
+
+    const { doCreateFolderSet, name, privacySetting } = folderSetOptions;
+
+    if (doCreateFolderSet) {
+      // verify this is a valid enum value?
+
+      const folderSet = new models.FolderSet({
+        name,
+        privacySetting,
+        folders: folderObjects,
+        createdBy: user._id,
+        lastModifiedBy: user._id
+      });
+
+      const saved = await folderSet.save();
+      results.folderSetId = saved._id;
+      return results;
+    }
+    // else just return the folder objects
+    console.log('not creating folderset');
+    return results;
+  }catch(err) {
+    console.error(`Error copyAndSaveFolderStructure: ${err}`);
+  }
+}
+
+async function handleNewFolders(user, workspace, folderIds, options) {
+  try {
+    // check user permissions
+    const results = {
+      folders: [],
+      folderSet: null
+    };
+
+    let { includeStructureOnly, all, none, byFolderIds, folderSetOptions } = options;
+
+    if (none) {
+      return results;
+    }
+
+     let folderIdsToCopy = all ? [...folderIds] : [...byFolderIds];
+
+    if (includeStructureOnly) {
+      // need to copy and make new folder set
+
+      //should return object
+      /*
+        folderSetId: objectId or null,
+        folderSetObjects: array of objects that can be passed to newFolderStructure
+      */
+      let folderSet = await copyAndSaveFolderStructure(user, workspace._id, folderIdsToCopy, folderSetOptions);
+
+      await newFolderStructure(user, workspace, folderSet);
+
+      console.log('folderSet', folderSet);
+    } else {
+      // need to copy folder AND taggings (and selections)
+      // and create new folder
+      // make new folderSet too?
+    }
+
+    // let folderSetOptions = {
+    //   name: 'test copy structure',
+    //   privacySetting: 'E'
+    // };
+    // let folderSet = await copyAndSaveFolderStructure(user, '53a4442732f2863240000237', folderSetOptions);
+
+
+  }catch(err) {
+    console.error(`Error handleNewFolders: ${err}`);
+  }
+}
+
 async function cloneWorkspace(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
@@ -1382,6 +1591,7 @@ async function cloneWorkspace(req, res, next) {
     // answerSet is array of populated answer docs
     let answersToClone = buildAnswersToClone(answerSet, answers);
     console.log('answersToClone', answersToClone);
+
     // new documents
     if (_.isEmpty(answersToClone)) {
       return utils.sendResponse(res, null);
@@ -1390,7 +1600,7 @@ async function cloneWorkspace(req, res, next) {
     console.log('newAnswers', newAnswers.map(a => a._id));
 
     // json objects that will be converted to mongoose docs and saved to db
-    let subs = await answersToSubmissions(newAnswers);
+    let subs = await answersToSubmissions(answersToClone);
     console.log('subs', subs);
 
     // convert sub json objects to mongoose docs and save
@@ -1411,12 +1621,23 @@ async function cloneWorkspace(req, res, next) {
     newWs.submissions = submissionIds;
     newWs.submissionSet = submissionSet;
 
-    const savedWs = await newWs.save();
 
 
     // handle folders
 
-    return utils.sendResponse(res, savedWs);
+    // should return an object
+    /*
+      newWsFolders: [array of folder Ids]
+      newFolderSet: folderSetId or null
+      errors?
+    */
+    const newFolders = await handleNewFolders(user, copiedWs, copiedWs.folders, folders);
+
+
+    console.log('new Folders', newFolders);
+    // const savedWs = await newWs.save();
+
+    return utils.sendResponse(res, newWs);
 
     // optionsHash - object detailing which fields should be included in the copy
     /*
@@ -1437,6 +1658,11 @@ async function cloneWorkspace(req, res, next) {
       }
       folders: {
         includeStructureOnly: bool,
+        folderSetOptions: {
+          doMakeNewFolderSet: bool,
+          name: string,
+          privacySetting: ['M', 'O', 'E']
+        }
         all: bool,
         none: bool,
         byFolder: [array of folderIds]
