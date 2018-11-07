@@ -739,6 +739,7 @@ function insertImagesIntoAnswers(text, errorPublicStream, errorPrivateStream, pr
 async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, errorPrivateStream) {
   console.log(`Starting createAnswersFromPows `);
   let addCount = 0;
+  let updateCount = 0;
   let skipCount = 0;
   let publicCount = 0;
   let privateCount = 0;
@@ -746,6 +747,12 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
   let descWithImages = 0;
   let startTime = new Date();
   let finishTime = new Date();
+  let showDetails =
+  false;
+  if (process.argv[4] === 'details') {
+    showDetails = true;
+  }
+  console.log(`showDetails: ${showDetails}`)
   try {
     // try does not catch postgres server not running
     // ToDo - try .then() to catch promise
@@ -773,34 +780,11 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
     left join pow_puzzles pz on pz.id = pb.puzzle
     left join dir_users u on u.id = ps.creator
     left join pow_uploaded_files up on up.id = ps.uploaded_file_id
+    order by ps.id asc
     offset ${process.argv[2]} limit ${process.argv[3]};`);
-    // const res = await pgClient.query(`select ps.id from pow_submissions ps inner join pow_uploaded_files up on up.id = ps.uploaded_file_id offset 0;`);
-    // get pow puzzle ids for looping (with multiple promises).
-    // const resIds = res.rows.map(d => d.id)
     // console.log(`There are ${resIds.length} resIds`)
     for (let powSub of resps.rows) {
-      // console.log(`------------------------------`);
-      // console.log(`createAnswersFromPows POWs response id: ${id}`);
-      // const powsSubs = await pgClient.query(`select
-      // pz.id as puzzleId, pb.publicationlivedate as pubDate,
-      // pb.solutiontype as pubType, pb.commentary as pubCommentary,
-      // pb.notepad as pubNotes, pt.status as threadStatus, pt.current_submission as currentSubmission,
-      // ps.id as subId, ps.status as subStatus, ps.createdate as subDate, ps.shortanswer as shortAnswer,
-      // ps.longanswer as longAnswer, u.first_name as firstName, u.last_name as lastName,
-      // up.savedfilename as upImg
-      // from pow_submissions ps
-      // left join pow_threads pt on pt.id = ps.thread_id
-      // left join pow_publications pb on pb.id = pt.publication
-      // left join pow_puzzles pz on pz.id = pb.puzzle
-      // left join dir_users u on u.id = ps.creator
-      // left join pow_uploaded_files up on up.id = ps.uploaded_file_id
-      // where ps.id = ${id}`);
-      // if (powsSubs.length === 0) {
-      //   console.error(`ERROR - cannot find answer (${powsSubs.length}) for submission ${id}`)
-      // } else if (powsSubs.length > 1) {
-      //   console.error(`ERROR - More than one answer (${powsSubs.length}) for submission ${id}`)
-      // } else {
-      startTime = finishTime;
+      startTime = Object.assign(finishTime);
 
       if (powSub) {
         // const powSub = powsSubs.rows[0];
@@ -822,7 +806,8 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
             }
             encAnswer = answers[0];
             // console.log(`found answer for POWs submission ID: ${encAnswer.powsSubmId}`);
-            skipCount += 1;
+            if (showDetails) console.log(`submission id ${powSub.subid} === ${powSub['subid']} skipped - answer exists`)
+            updateCount += 1;
           } else {
             // console.log(`create new answer for ID: ${powSub.subid}, shortanswer: ${powSub.shortanswer}`)
             encAnswer = newAnswer(powsUser, powSub, problem);
@@ -839,16 +824,16 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
               }
             }
             addCount += 1;
-
             try {
               await encAnswer.save();
               // console.log(encAnswer.powsSubmId + " saved.");
             } catch (err) {
-              console.error(`ERROR saving ${encAnswer.subId} - ${err}`);
+              console.error(`ERROR saving ${encAnswer.powsSubmId} - ${err}`);
             }
           }
         } else {
           // if no problem, then we do not want an answer (we dropped KenKen problems)
+          // if (showDetails) console.log(`${powSub['puzzleid']} skipped - problem not found`)
           skipCount += 1;
         }
         // console.log(`\n------------------------------------------------------------`);
@@ -857,19 +842,19 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
       // feedback mechanism to indicate progress on conversion
       finishTime = new Date();
       const diffDate = new Date(finishTime - startTime);
-      if ( ((addCount+skipCount) % 1000) === 0) {
-        console.log(`processed ${addCount+skipCount} -> ${startTime.getMinutes()}:${startTime.getSeconds()} - ${finishTime.getMinutes()}:${finishTime.getSeconds()} = ${diffDate.getMinutes()}:${diffDate.getSeconds()}`);
+      if ( ((addCount+skipCount+updateCount) % 1000) === 0) {
+        console.log(`processed ${addCount+skipCount+updateCount} -> ${startTime.getMinutes()}:${startTime.getSeconds()} - ${finishTime.getMinutes()}:${finishTime.getSeconds()} = ${diffDate.getMinutes()}:${diffDate.getSeconds()}`);
       }
-  }
+    }
     console.log(`should be done`);
-    throw('done');
   } catch (err) {
     console.log(`createAnswersFromPows query error stack: ${err.stack}`);
   }
   console.log(`createAnswersFromPows ${answerWithImages} answers with images`);
   console.log(`createAnswersFromPows ${descWithImages} descriptions with images`);
   console.log(`createAnswersFromPows ${addCount} adds`);
-  console.log(`createAnswersFromPows ${skipCount} updates`);
+  console.log(`createAnswersFromPows ${skipCount} skips`);
+  console.log(`createAnswersFromPows ${updateCount} updates`);
   console.log(`createAnswersFromPows ${publicCount} Public Answers`);
   console.log(`createAnswersFromPows ${privateCount} Private Answers`);
   console.log(`-------------------`);
@@ -913,7 +898,6 @@ async function update() {
 
     // open connection to POWs Postgres Database
     console.log(`postgres client create`)
-    console.log('process.env.POSGRES_PASSWORD: ',process.env.POSGRES_PASSWORD);
 
     const pgClient = new pg.Client({
       user: 'postgres',
