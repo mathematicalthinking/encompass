@@ -26,8 +26,20 @@ module.exports = {
         name: `pdAdminDrexel Test Section`,
         teacher: `morty`,
       }
-     }
-
+     },
+    problems : {
+      public: {
+        count: 16
+      },
+      mine : {
+        count: 1
+      },
+      org: {
+        total: 11,
+        recommended: 3,
+        members: 10,
+      }
+    }
   },
 
   teacherMT: {
@@ -52,7 +64,20 @@ module.exports = {
       newSection: {
         name: 'Summer Test Section'
       }
-     }
+     },
+    problems : {
+      public: {
+        count: 14
+      },
+      mine: {
+        count: 4
+      },
+      org: {
+        total: 6,
+        recommended: 2,
+        members: 4,
+      }
+    }
   },
 
   admin: {
@@ -80,7 +105,20 @@ module.exports = {
         name: 'admin test section',
         teacher: 'ssmith'
       }
-     }
+    },
+    problems: {
+      public: {
+        count: 16
+      },
+      mine: {
+        count: 4
+      },
+      org: {
+        total: 11,
+        recommended: 3,
+        members: 10,
+      }
+    }
   },
 
   studentMT: {

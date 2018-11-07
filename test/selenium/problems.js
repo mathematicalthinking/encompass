@@ -52,7 +52,7 @@ let topLink = css.topBar.problems;
 describe('Problems', async function () {
   async function runTests(users) {
     function _runTests(user) {
-      const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
+      const { accountType, actingRole, testDescriptionTitle, problems, organization, username } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
 
@@ -92,12 +92,67 @@ describe('Problems', async function () {
 
           it('should display category filter options', async function () {
             if (!isStudent) {
-              expect(await helpers.findAndClickElement(driver, '.category-header'));
+              await helpers.findAndClickElement(driver, '.category-header');
               let filterSelectors = helpers.createSelectors(css.problemFilterList.categoryFilters);
               expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
             }
           });
 
+          it('should update problem list when clicking on Public', async function () {
+            if (!isStudent) {
+              await helpers.findAndClickElement(driver, 'li.filter-everyone');
+              let resultsMsg = `${problems.public.count} problems found`;
+              expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+            }
+          });
+
+          it('should update problem list when clicking on Mine', async function () {
+            if (!isStudent) {
+              await helpers.findAndClickElement(driver, 'li.filter-mine');
+              let resultsMsg = `${problems.mine.count} problems found`;
+              expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+            }
+          });
+
+          describe('Clicking on My Org filter option', function () {
+            before(async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.filter-myOrg');
+              }
+            });
+
+            it('should update problem list when clicking on My Org', async function () {
+              if (!isStudent) {
+                let resultsMsg = `${problems.org.total} problems found`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when unchecking created by members', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.fromOrg');
+                let resultsMsg = `${problems.org.recommended} problems found`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when unchecking recommended', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.recommended');
+                let resultsMsg = `No results found. Please try expanding your filter criteria.`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when checking created by members', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.fromOrg');
+                let resultsMsg = `${problems.org.members} problems found`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              }
+            });
+
+          });
         });
       });
     }
