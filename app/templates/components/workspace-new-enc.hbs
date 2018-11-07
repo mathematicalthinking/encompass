@@ -140,3 +140,7 @@
 {{/each}}
 
 <button class="action_button create-ws" {{action "buildCriteria"}}>Create</button>
+{{#if isRequestInProgress}}
+  <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
+{{/if}}
+

@@ -169,7 +169,6 @@ function sendWorkspace(req, res, next) {
       return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
       getWorkspace(req.params.id, function(data) {
-        console.log(`${user} has permission to load workspace #${req.params.id}`);
         utils.sendResponse(res, data);
       });
     }
@@ -208,7 +207,6 @@ function putWorkspace(req, res, next) {
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
-          console.log('can trash!');
           ws.isTrashed = req.body.workspace.isTrashed;
         }
 
@@ -437,7 +435,6 @@ function nameWorkspace(submissionSet, user, isPows) {
   * @return {Promise}   resolves when the workspace is stored
  */
 function newWorkspace(submissionSet, user, folderSetName) {
-  console.log('CREATING NEW WORKSPACE...');
   var workspace = new models.Workspace({
     name: nameWorkspace(submissionSet, user),
     submissionSet: submissionSet,
@@ -493,7 +490,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
     }
     // if it finds a workspace
     if(workspaces.length) {
-      console.log(`${workspaces.length} workspaces found for criteria ${criteria}`);
+      // console.log(`${workspaces.length} workspaces found for criteria ${criteria}`);
       logger.info('there is already a workspace for this');
       //promise.resolve();
 
@@ -707,8 +704,8 @@ function prepareAndUpdateWorkspaces(user, callback) {
         callback( new Error( err.message ));
       }
       var submissionSets = _.pluck(results, 'submissionSet');
-      console.log('We got '+ submissionSets.length + 'sets');
-      console.log('We got '+ submissionSets.submissions + 'sets');
+      // console.log('We got '+ submissionSets.length + 'sets');
+      // console.log('We got '+ submissionSets.submissions + 'sets');
 
       submissionSets = _.reject(submissionSets, function (set) {
         //why would we be getting these?
@@ -778,11 +775,10 @@ function postWorkspace(req, res, next) {
   * @callback `sendWorkspaces`
  */
 function newWorkspaceRequest(req, res, next) {
-  console.log('CREATING NEW WORKSPACE');
   var user = userAuth.requireUser(req);
   var pdSetName = req.body.newWorkspaceRequest.pdSetName;
   var folderSetName = req.body.newWorkspaceRequest.folderSetName;
-  logger.debug('creating new workspace for pdset: ' + pdSetName);
+  // logger.debug('creating new workspace for pdset: ' + pdSetName);
 
   //copy over all of the pdsubmissions
   prepareUserSubmissions(user, pdSetName, folderSetName, function () {
@@ -993,25 +989,34 @@ async function answersToSubmissions(answers) {
       const section = ans.section;
       const problem = ans.problem;
 
+      if (problem) {
+        publication.puzzle.title = problem.title;
+        publication.puzzle.problemId = problem._id;
 
-      publication.puzzle.title = problem.title;
-      publication.puzzle.problemId = problem._id;
-
+      }
       // answers should always have createdBy...
       if (student) {
         creator.studentId = student._id;
         creator.username = student.username;
       }
 
+      let teachers;
+      let primaryTeacher;
 
-      clazz.sectionId = section._id;
-      clazz.name = section.name;
+      if (section) {
+        clazz.sectionId = section._id;
+        clazz.name = section.name;
+        teachers = section.teachers;
+        if (_.isArray(teachers)) {
+          primaryTeacher = teachers[0];
+          teacher.id = primaryTeacher;
+        }
+      }
 
-      const teachers = section.teachers;
-      const primaryTeacher = teachers[0];
 
 
-      teacher.id = primaryTeacher;
+
+
       let sub = {
         //longAnswer: ans.explanation,
         //shortAnswer: ans.answer,
@@ -1051,7 +1056,6 @@ async function postWorkspaceEnc(req, res, next) {
     const allowedIds = await getAnswerIds(accessibleCriteria);
     const wsCriteria = await buildCriteria(allowedIds, pruned, user);
     const answers = await models.Answer.find(wsCriteria);
-    console.log('answers are', answers.length);
 
     if (_.isEmpty(answers)) {
       //let rec = req.body.encWorkspaceRequest;
@@ -1065,7 +1069,6 @@ async function postWorkspaceEnc(req, res, next) {
       }
 
     let subs = await answersToSubmissions(answers);
-    console.log('subs', subs.length);
     const submissions = await Promise.all(subs.map((obj) => {
       let sub = new models.Submission(obj);
       sub.createdBy = user;
@@ -1096,11 +1099,9 @@ let workspace = new models.Workspace({
   lastViewed: new Date(),
 });
 let ws = await workspace.save();
-console.log('createdWs', ws._id);
 //const data = {'workspaceId': ws._id};
 
 let newFolderSet = await newFolderStructure(user, ws, folderSetName);
-console.log('nfs', newFolderSet);
 
 let rec = pruned;
 rec.createdWorkspace = ws._id;
