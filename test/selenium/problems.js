@@ -86,11 +86,8 @@ describe('Problems', async function () {
             }
             let optionsList = css.problemFilterList.primaryFilters;
             let filterOptions = helpers.createFilterList(isStudent, isAdmin, optionsList, true);
-            console.log('filterOptions are', filterOptions);
             let filterSelectors = helpers.checkFilterSelectors(filterOptions);
-            console.log('filterSelectors are', filterSelectors);
-
-            // expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+            expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
           });
 
         });

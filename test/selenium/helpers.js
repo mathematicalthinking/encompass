@@ -204,7 +204,10 @@ const checkSelectorsExist = function (webDriver, selectors) {
 };
 
 const checkFilterSelectors = function (filterOptions) {
-  console.log('filterOptions are', filterOptions);
+  let options = filterOptions.map((item) => {
+    return Object.values(item);
+  });
+  return [].concat.apply([], options);
 };
 
 
