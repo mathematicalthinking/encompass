@@ -102,7 +102,7 @@ const admin = {
     },
   },
   problems: {
-    accessibleProblemCount: 7,
+    accessibleProblemCount: 20,
     accessibleProblem: {
       _id: '5b4e2e56be1e18425515308c',
     },
@@ -254,7 +254,7 @@ const pdAdminDrexel = {
     },
   },
   problems: {
-    accessibleProblemCount: 5,
+    accessibleProblemCount: 18,
     accessibleProblem: {
       _id: '5b1e7a0ba5d2157ef4c91028',
     },
@@ -409,7 +409,7 @@ const teacherMT = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5ba7c3cb1359dc2f6699f2b3',
     },
@@ -532,7 +532,7 @@ const studentMT = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },
@@ -651,7 +651,7 @@ const teacherActingStudent = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },
