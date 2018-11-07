@@ -112,8 +112,8 @@ describe('Workspaces New', async function() {
 
                 it('privacy setting should be private as default', async function() {
                   let privateSel = inputs.modePrivate;
-                  let private = await driver.findElement(By.css(privateSel));
-                  expect(await private.getAttribute('checked')).to.eql('true');
+                  let privateMode = await driver.findElement(By.css(privateSel));
+                  expect(await privateMode.getAttribute('checked')).to.eql('true');
                 });
 
               });

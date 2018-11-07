@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
-const moment = require('moment');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -11,8 +10,6 @@ const css = require('./selectors');
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
 let topLink = css.topBar.problems;
-let url = `${host}/#/problems`;
-
 
 //FILTER OPTIONS
 //Test to check all primary filters by account type
@@ -64,7 +61,7 @@ describe('Problems', async function () {
           return driver.quit();
         });
 
-        describe('Visiting problems page', function () {
+        describe('Visiting problems main page', function () {
           before(async function () {
             await helpers.findAndClickElement(driver, topLink);
             if (!isStudent) {
@@ -72,25 +69,17 @@ describe('Problems', async function () {
             }
           });
           it('should display side list of filter options', async function () {
+            let filterOptions = {};
             if (!isStudent) {
               expect(await helpers.waitForSelector(driver, css.problemPageSelectors.sideFilterOptions));
+              filterOptions = css.primaryFilters;
             }
-            const verifyPrimaryFilters = function () {
-              let filterOptions = {};
-              if (!isStudent) {
-                filterOptions = css.primaryFilters;
-              }
-
-              if (isAdmin) {
-                let adminFilters = css.adminFilters;
-                filterOptions = {...filterOptions, ...adminFilters};
-              }
-              console.log('filterOptions are', filterOptions);
-              return filterOptions;
-            };
-
-            verifyPrimaryFilters();
-            //run filter test here
+            if (isAdmin) {
+              let adminFilters = css.adminFilters;
+              filterOptions = {...filterOptions, ...adminFilters};
+            }
+            console.log('primary filter options are', filterOptions);
+            return filterOptions;
           });
           // if (!isStudent) {
           //   it('should display list of sections the user belongs to', async function () {
