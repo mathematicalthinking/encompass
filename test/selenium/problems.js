@@ -95,6 +95,7 @@ describe('Problems', async function () {
               await helpers.findAndClickElement(driver, '.category-header');
               let filterSelectors = helpers.createSelectors(css.problemFilterList.categoryFilters);
               expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+              await helpers.findAndClickElement(driver, '.category-header');
             }
           });
 
@@ -151,8 +152,42 @@ describe('Problems', async function () {
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               }
             });
-
           });
+
+          if (isAdmin) {
+            describe('Clicking on Trashed problems', function () {
+              before(async function () {
+                await helpers.findAndClickElement(driver, '.more-header');
+              });
+
+              it('should update problem list and display message', async function () {
+                await helpers.findAndClickElement(driver, '#toggle-trashed');
+                let resultsMsg = `2 problems found - Displaying Trashed Problems`;
+                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              });
+
+              it('should restore a trashed problem', async function () {
+                await helpers.findAndClickElement(driver, 'button.primary-button');
+                await driver.sleep(5000);
+              });
+
+              // it('should update problem list when unchecking recommended', async function () {
+              //   if (!isStudent) {
+              //     await helpers.findAndClickElement(driver, 'li.recommended');
+              //     let resultsMsg = `No results found. Please try expanding your filter criteria.`;
+              //     expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              //   }
+              // });
+
+              // it('should update problem list when checking created by members', async function () {
+              //   if (!isStudent) {
+              //     await helpers.findAndClickElement(driver, 'li.fromOrg');
+              //     let resultsMsg = `${problems.org.members} problems found`;
+              //     expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              //   }
+              // });
+            });
+          }
         });
       });
     }
