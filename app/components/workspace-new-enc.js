@@ -197,7 +197,9 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       };
 
       const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);
+      this.set('isRequestInProgress', true);
       encWorkspaceRequest.save().then((res) => {
+        this.set('isRequestInProgress', false);
         if (res.get('isEmptyAnswerSet')) {
           this.set('isEmptyAnswerSet', true);
           $('.error-box').show();
@@ -221,6 +223,8 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
 
       })
       .catch((err) => {
+        this.set('isRequestInProgress', false);
+
         this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
         return;
       });
