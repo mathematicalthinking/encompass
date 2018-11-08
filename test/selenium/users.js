@@ -112,6 +112,7 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
+        await driver.sleep(300);
         await helpers.waitForSelector(driver, '.error-box');
         expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Email address has already been used');
         await helpers.clearElement(driver, 'input.user-email');

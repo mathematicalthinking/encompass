@@ -355,6 +355,13 @@ describe('Problems', async function () {
   await runTests(testUsers);
 });
 
+//SEARCH BAR
+//Test that there are 2 drop down items
+//Search works with enter and clicking button
+//Clear button shows when query is applied or text in field
+//Clearing search bar resets results properly
+//Searching only applies to results of primary filters
+//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
 
 //SORT BAR
@@ -374,10 +381,3 @@ describe('Problems', async function () {
 //Test more actions perform correctly
 //Test pagination works
 
-//SEARCH BAR
-//Test that there are 2 drop down items
-//Search works with enter and clicking button
-//Clear button shows when query is applied or text in field
-//Clearing search bar resets results properly
-//Searching only applies to results of primary filters
-//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
