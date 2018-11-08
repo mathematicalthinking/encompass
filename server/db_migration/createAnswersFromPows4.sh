@@ -234,3 +234,5 @@ date
 # node server/db_migration/powsToProd.js 1090000 10000
 # date
 
+node server/db_migration/powsToProd.js
+date
