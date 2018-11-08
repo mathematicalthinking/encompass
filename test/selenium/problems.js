@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder } = require('selenium-webdriver');
+const { Builder, Key } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -156,7 +156,7 @@ describe('Problems', async function () {
                 await helpers.findAndClickElement(driver, '.filter-all');
               });
 
-              it('should update problem list and display message', async function () {
+              it('should update the problem list and display message', async function () {
                 await driver.sleep(500);
                 let resultsMsg = `${problems.all.total} problems found`;
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
@@ -165,12 +165,32 @@ describe('Problems', async function () {
               describe('Searching by organization', function () {
                 before(async function () {
                   await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
-                  await driver.sendKeys(Key.ENTER);
-                  await driver.sleep(2000);
+                  await helpers.findAndClickElement(driver, 'div.results-message');
                 });
 
-                it('should select and organization and update list and display message', async function () {
+                it('should select and organization then update the list and display message', async function () {
                   let resultsMsg = `${problems.all.org.total} problems found`;
+                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                });
+
+                it('should uncheck Created by Members then update the list and display message', async function () {
+                  await helpers.findAndClickElement(driver, 'li.fromOrg');
+                  await driver.sleep(500);
+                  let resultsMsg = `${problems.all.org.recommended} problems found`;
+                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                });
+
+                it('should uncheck Recommended then no problems should appear', async function () {
+                  await helpers.findAndClickElement(driver, 'li.recommended');
+                  await driver.sleep(500);
+                  let resultsMsg = `No results found. Please try expanding your filter criteria.`;
+                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                });
+
+                it('should check Created by Members and the update the list and display message', async function () {
+                   await helpers.findAndClickElement(driver, 'li.fromOrg');
+                   await driver.sleep(500);
+                  let resultsMsg = `${problems.all.org.members} problems found`;
                   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
                 });
 

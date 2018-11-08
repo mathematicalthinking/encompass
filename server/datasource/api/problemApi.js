@@ -8,6 +8,7 @@
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 
+
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
