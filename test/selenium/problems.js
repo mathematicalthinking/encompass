@@ -1,5 +1,5 @@
 // REQUIRE MODULES
-const { Builder, Key } = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
 
 // REQUIRE FILES
@@ -15,7 +15,7 @@ let topLink = css.topBar.problems;
 describe('Problems', async function () {
   async function runTests(users) {
     function _runTests(user) {
-      const { accountType, actingRole, testDescriptionTitle, problems, organization, username } = user;
+      const { accountType, actingRole, testDescriptionTitle, problems } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
 
@@ -66,7 +66,7 @@ describe('Problems', async function () {
             if (!isStudent) {
               await helpers.findAndClickElement(driver, 'li.filter-everyone');
               let resultsMsg = `${problems.public.count} problems found`;
-              expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
           });
 
@@ -74,7 +74,7 @@ describe('Problems', async function () {
             if (!isStudent) {
               await helpers.findAndClickElement(driver, 'li.filter-mine');
               let resultsMsg = `${problems.mine.count} problems found`;
-              expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
           });
 
@@ -88,34 +88,74 @@ describe('Problems', async function () {
             it('should update problem list when clicking on My Org', async function () {
               if (!isStudent) {
                 let resultsMsg = `${problems.org.total} problems found`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
 
             it('should update problem list when unchecking created by members', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.fromOrg');
-                await driver.sleep(500);
+                await helpers.waitForSelector(driver, css.resultsMesasage);
                 let resultsMsg = `${problems.org.recommended} problems found`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
 
             it('should update problem list when unchecking recommended', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.recommended');
-                await driver.sleep(500);
-                let resultsMsg = `No results found. Please try expanding your filter criteria.`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                await helpers.waitForSelector(driver, css.resultsMesasage);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
               }
             });
 
             it('should update problem list when checking created by members', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.fromOrg');
-                await driver.sleep(500);
+                await helpers.waitForSelector(driver, css.resultsMesasage);
                 let resultsMsg = `${problems.org.members} problems found`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+          });
+
+          describe('Clicking on Category filter menu', function () {
+            before(async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.filter-myOrg');
+              }
+            });
+
+            it('should update problem list when clicking on My Org', async function () {
+              if (!isStudent) {
+                let resultsMsg = `${problems.org.total} problems found`;
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when unchecking created by members', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.fromOrg');
+                await helpers.waitForSelector(driver, css.resultsMesasage);
+                let resultsMsg = `${problems.org.recommended} problems found`;
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when unchecking recommended', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.recommended');
+                await helpers.waitForSelector(driver, css.resultsMesasage);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+              }
+            });
+
+            it('should update problem list when checking created by members', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.fromOrg');
+                await helpers.waitForSelector(driver, css.resultsMesasage);
+                let resultsMsg = `${problems.org.members} problems found`;
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
           });
@@ -129,7 +169,7 @@ describe('Problems', async function () {
               it('should update problem list and display message', async function () {
                 await helpers.findAndClickElement(driver, '#toggle-trashed');
                 let resultsMsg = `2 problems found - Displaying Trashed Problems`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               });
 
               it('should restore a trashed problem', async function () {
@@ -137,16 +177,16 @@ describe('Problems', async function () {
                 await helpers.findAndClickElement(driver, 'button.swal2-confirm');
                 await driver.sleep(500);
                 let resultsMsg = `1 problems found - Displaying Trashed Problems`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               });
 
               it('should continue displaying trashed problems until unchecked', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-mine');
                 let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 await helpers.findAndClickElement(driver, '#toggle-trashed');
                 let updatedMsg = `${problems.mine.count} problems found`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(updatedMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(updatedMsg);
                 await helpers.findAndClickElement(driver, '.more-header');
               });
             });
@@ -157,43 +197,92 @@ describe('Problems', async function () {
               });
 
               it('should update the problem list and display message', async function () {
-                await driver.sleep(500);
+                await helpers.waitForSelector(driver, css.resultsMesasage);
                 let resultsMsg = `${problems.all.total} problems found`;
-                expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               });
 
               describe('Searching by organization', function () {
                 before(async function () {
                   await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
-                  await helpers.findAndClickElement(driver, 'div.results-message');
+                  await helpers.findAndClickElement(driver, css.resultsMesasage);
                 });
 
                 it('should select and organization then update the list and display message', async function () {
                   let resultsMsg = `${problems.all.org.total} problems found`;
-                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
                 it('should uncheck Created by Members then update the list and display message', async function () {
                   await helpers.findAndClickElement(driver, 'li.fromOrg');
-                  await driver.sleep(500);
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
                   let resultsMsg = `${problems.all.org.recommended} problems found`;
-                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
                 it('should uncheck Recommended then no problems should appear', async function () {
                   await helpers.findAndClickElement(driver, 'li.recommended');
-                  await driver.sleep(500);
-                  let resultsMsg = `No results found. Please try expanding your filter criteria.`;
-                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
                 });
 
                 it('should check Created by Members and the update the list and display message', async function () {
-                   await helpers.findAndClickElement(driver, 'li.fromOrg');
-                   await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, 'li.fromOrg');
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
                   let resultsMsg = `${problems.all.org.members} problems found`;
-                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
+
+              });
+
+              describe('Searching by creator', function () {
+                before(async function () {
+                  await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
+                  await helpers.findAndClickElement(driver, '[data-value="creator"]');
+                  await helpers.findInputAndType(driver, '#all-user-filter-selectized', 'morty');
+                  await helpers.waitForSelector(driver, '[data-value="5b245841ac75842be3189526"]');
+                  await helpers.findAndClickElement(driver, '[data-value="5b245841ac75842be3189526"]');
+                  await helpers.findAndClickElement(driver, css.resultsMesasage);
+                });
+
+                it('should select a creator and then update the list and display message', async function () {
+                  let resultsMsg = `${problems.all.creator} problems found`;
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+              });
+
+              describe('Searching by PoWs', function () {
+                before(async function () {
+                  await helpers.findAndClickElement(driver, '.selectize-input');
+                  await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
+                  await helpers.findAndClickElement(driver, '[data-value="pows"]');
+                });
+
+                it('should update the list and display message', async function () {
+                  let resultsMsg = `${problems.all.pows.total} problems found`;
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                it('should uncheck public then update the list and display message', async function () {
+                  await helpers.findAndClickElement(driver, 'li.shared');
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  let resultsMsg = `${problems.all.pows.private} problems found`;
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                it('should uncheck private then show no problems', async function () {
+                  await helpers.findAndClickElement(driver, 'li.unshared');
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                });
+
+                it('should check private then update the list and display message', async function () {
+                  await helpers.findAndClickElement(driver, 'li.shared');
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  let resultsMsg = `${problems.all.pows.public} problems found`;
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
               });
 
             });

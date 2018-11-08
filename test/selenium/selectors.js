@@ -159,6 +159,11 @@ module.exports = {
     problemsListing: ".list-view"
   },
 
+
+  resultsMesasage: 'div.results-message',
+  noResultsMsg: 'No results found. Please try expanding your filter criteria.',
+
+
   problemFilterList: {
     primaryFilters: [
       { primaryFilterList: ".primary-filter-list" },
