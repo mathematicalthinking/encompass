@@ -56,12 +56,12 @@ async function getTeacherAssignments(userId) {
 
 function getTeacherSections(user) {
   if (!user) {
-    return;
+    return [];
   }
   let sections = user.sections;
 
   if (!Array.isArray(sections)) {
-    return;
+    return [];
   }
 
   return sections.map((section) => {

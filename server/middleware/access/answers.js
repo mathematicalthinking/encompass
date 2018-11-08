@@ -37,14 +37,23 @@ const accessibleAnswersQuery = async function(user, ids) {
     const ownSections = await utils.getTeacherSections(user);
 
     const ownAssignmentIds = await utils.getModelIds('Assignment', {createdBy: user._id});
-    filter.$or = [
-      { assignment : { $in: ownAssignmentIds } },
-      { section: { $in: ownSections} }
-    ];
 
-    // filter.assignment = { $in: ownAssignmentIds };
+    let areValidSections = _.isArray(ownSections) && !_.isEmpty(ownSections);
+    let areValidAssignments = _.isArray(ownAssignmentIds) && !_.isEmpty(ownAssignmentIds);
 
-    // filter.section = { $in: ownSections };
+    if (areValidAssignments || areValidSections) {
+      filter.$or = [];
+      if (areValidAssignments) {
+        filter.$or.push({ assignment : { $in: ownAssignmentIds } });
+      }
+      if (areValidSections) {
+        filter.$or.push({ section: { $in: ownSections} });
+      }
+    }
+    else {
+      // teacher has no sections or assignments
+      return null;
+    }
     return filter;
   }
   }catch(err) {

@@ -900,49 +900,72 @@ function pruneObj(obj) {
   return obj;
 }
 
-async function buildCriteria(ids, criteria, user) {
+async function buildCriteria(accessibleCriteria, requestFilter, user) {
   try {
+    if (!user) {
+      return null;
+    }
     const filterFields = ['assignment', 'problem', 'section'];
-  let filter = {};
-  if (!_.isEmpty(ids)) {
-    filter._id = {$in: ids};
+  let filter = {
+    $and: []
+  };
+  if (accessibleCriteria) {
+    filter.$and.push(accessibleCriteria);
   }
 
-  let startDate = criteria.startDate;
-  let endDate = criteria.endDate;
+  let startDate = requestFilter.startDate;
+  let endDate = requestFilter.endDate;
 
   if (!_.isEmpty(startDate) && !_.isEmpty(endDate)) {
     startDate = new Date(startDate);
     endDate = new Date(endDate);
 
-    filter.createDate = {
+    filter.$and.push({createDate : {
       $gte: startDate,
       $lte: endDate
-    };
+    }});
   }
-// TODO: teacher filter is not working properly
-// will always return empty results
-  let teacher = criteria.teacher;
-  if (!_.isEmpty(teacher && teacher !== user.id)) {
-    let assignments = await accessUtils.getTeacherAssignments(teacher);
-    let sections = await accessUtils.getTeacherSectionsById(teacher);
-    // have to get teacher users and then filter the answers to be created by teacher
-    filter.$or = [{
-      assignment: {$in: assignments}
-    },
-    {section: { $in: sections}}
-    ];
 
+  let teacher = requestFilter.teacher;
+  let isUserTeacher = user.accountType === 'T';
+
+  let assignments, sections;
+  // if user is accountType T this criteria will already be built in the accessibleAnswers function
+  // the teacher field is forced to their own account for teachers
+  if (teacher && !isUserTeacher) {
+    [ assignments, sections ] = await Promise.all([
+      accessUtils.getTeacherAssignments(teacher),
+      accessUtils.getTeacherSectionsById(teacher)
+    ]);
+    // have to get teacher users and then filter the answers to be created by teacher
+
+    let areValidSections = _.isArray(sections) && !_.isEmpty(sections);
+    let areValidAssignments = _.isArray(assignments) && !_.isEmpty(assignments);
+
+    if (!areValidSections && !areValidAssignments) {
+      // teacher has no sections and no assignments
+      // return nothing?
+      return null;
+    } else {
+      let crit = { $or: [] };
+      if (areValidSections) {
+        crit.$or.push({ section: { $in: sections } });
+      }
+      if (areValidAssignments) {
+        crit.$or.push({ assignment: { $in: assignments } });
+      }
+      filter.$and.push(crit);
+    }
   }
   for (let field of filterFields) {
-    const val = criteria[field];
+    const val = requestFilter[field];
     if (val) {
-      filter[field] = val;
+      filter.$and.push({[field] : val});
     }
   }
   return filter;
   }catch(err) {
-    console.log('err building criteria', err);
+    console.error('err building criteria', err);
   }
 
 }
@@ -1053,11 +1076,25 @@ async function postWorkspaceEnc(req, res, next) {
 
     const accessibleCriteria = await answerAccess.get.answers(user);
 
-    const allowedIds = await getAnswerIds(accessibleCriteria);
-    const wsCriteria = await buildCriteria(allowedIds, pruned, user);
-    const answers = await models.Answer.find(wsCriteria);
+    let wsCriteria;
 
-    if (_.isEmpty(answers)) {
+    // returns null if teacher has no sections or assignments
+    if (!_.isNull(accessibleCriteria)) {
+      wsCriteria = await buildCriteria(accessibleCriteria, pruned, user);
+    }
+
+    // currently buildCriteria will return null if teacher filter is applied and the chosen
+    // teacher does not have any sections or assignments because currently there is no way
+    // to have any answers associated with a teacher outside of an assignment/section
+    // there can be answers associated with a problem outside of an assignemnt, but these answers
+    // are not associated with a teacher that is an encompass user(??)
+    let answers;
+    if (!_.isNull(wsCriteria) && !_.isUndefined(wsCriteria)) {
+      answers = await models.Answer.find(wsCriteria);
+    }
+
+
+    if (_.isEmpty(answers) || _.isUndefined(answers)) {
       //let rec = req.body.encWorkspaceRequest;
       let rec = pruned;
       rec.isEmptyAnswerSet = true;
