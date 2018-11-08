@@ -7,6 +7,14 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   orgFilter: Ember.computed.alias('secondaryFilter.inputs.org'),
   selectedOrgSubFilters: Ember.computed.alias('secondaryFilter.inputs.org.subFilters.selectedValues'),
 
+
+  willDestroyElement: function() {
+    console.log('destroy dis bitch');
+    if (this.get('mainFilter') !== 'pows') {
+      this.clearSelectedValues();
+    }
+  },
+
   orgFilterSubOptions: function() {
     return _.map(this.get('orgFilter.subFilters.inputs'), (val, key) => {
       return val;
