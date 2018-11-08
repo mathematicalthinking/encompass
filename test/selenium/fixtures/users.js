@@ -38,6 +38,12 @@ module.exports = {
         total: 11,
         recommended: 3,
         members: 10,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
       }
     }
   },
@@ -76,6 +82,12 @@ module.exports = {
         total: 6,
         recommended: 2,
         members: 4,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
       }
     }
   },
@@ -117,6 +129,12 @@ module.exports = {
         total: 11,
         recommended: 3,
         members: 10,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
       },
       all: {
         total: 23,
