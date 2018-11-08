@@ -67,16 +67,16 @@ AnswerSchema.post('save', function (Answer) {
     update = { $pull: { 'Answers': AnswerIdObj } };
   }
 
-  if (Answer.createdBy) {
-    var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
-    mongoose.models.User.update({ '_id': userIdObj },
-      update,
-      function (err, affected, result) {
-        if (err) {
-          throw new Error(err.message);
-        }
-      });
-  }
+  // if (Answer.createdBy) {
+  //   var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
+  //   mongoose.models.User.update({ '_id': userIdObj },
+  //     update,
+  //     function (err, affected, result) {
+  //       if (err) {
+  //         throw new Error(err.message);
+  //       }
+  //     });
+  // }
 
   if (Answer.assignment) {
     var assignmentIdObj = mongoose.Types.ObjectId(Answer.assignment);
@@ -89,16 +89,16 @@ AnswerSchema.post('save', function (Answer) {
       });
   }
 
-  if (Answer.problem) {
-    var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
-    mongoose.models.Problem.update({ '_id': problemIdObj },
-      update,
-      function (err, affected, result) {
-        if (err) {
-          throw new Error(err.message);
-        }
-      });
-  }
+  // if (Answer.problem) {
+  //   var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
+  //   mongoose.models.Problem.update({ '_id': problemIdObj },
+  //     update,
+  //     function (err, affected, result) {
+  //       if (err) {
+  //         throw new Error(err.message);
+  //       }
+  //     });
+  // }
 
 });
 
