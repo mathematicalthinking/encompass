@@ -749,7 +749,8 @@ async function createAnswersFromPows(pgClient, powsUser, errorPublicStream, erro
   let finishTime = new Date();
   let showDetails =
   false;
-  if (process.argv[4] === 'details') {
+  // if (process.argv[4] === 'details') {
+  if (process.argv[2] === 'details') {
     showDetails = true;
   }
   console.log(`showDetails: ${showDetails}`)
