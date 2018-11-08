@@ -125,11 +125,11 @@ module.exports = {
           recommended: 2,
           members: 4,
         },
-        creator: 10,
+        creator: 8,
         pows: {
-          total: 10,
+          total: 6,
           public: 5,
-          private: 20,
+          private: 1,
         }
       }
     }
