@@ -51,6 +51,9 @@ const getAnswers = async function(req, res, next) {
   } else {
     criteria = await access.get.answers(user);
   }
+  if (!criteria) {
+    return utils.sendResponse(res, null);
+  }
 
   models.Answer.find(criteria)
   .exec((err, answers) => {
