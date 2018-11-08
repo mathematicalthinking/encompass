@@ -19,6 +19,7 @@ describe('Problems', async function () {
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
 
+
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
@@ -172,12 +173,55 @@ describe('Problems', async function () {
               }
             });
 
+            it('there should be no change when adding category with no problems', async function () {
+              if (!isStudent) {
+                let resultsMsg = `${problems.category.ee} problems found`;
+                await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.1', true);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+            it('should clear selected category list', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+              }
+            });
+
+            it('should open up category menu modal', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, '.show-category-btn');
+                await helpers.waitForSelector(driver, '#category-list-modal');
+                await driver.sleep(5000);
+                expect(await helpers.findAndGetText(driver, '.modal-content h4')).to.contain('Select a Category');
+              }
+            });
+
+            it('should add category when clicked', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G"]');
+                await driver.sleep(300);
+                await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G.B"]');
+                await driver.sleep(300);
+                await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.6"]');
+                await driver.sleep(300);
+                await helpers.findAndClickElement(driver, 'button.close');
+                await driver.sleep(300);
+                let resultsMsg = `1 problems found`;
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
 
           });
 
           if (isAdmin) {
             describe('Clicking on Trashed problems', function () {
               before(async function () {
+                await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                await helpers.findAndClickElement(driver, '.category-header');
                 await helpers.findAndClickElement(driver, '.more-header');
               });
 
