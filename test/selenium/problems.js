@@ -122,42 +122,57 @@ describe('Problems', async function () {
           describe('Clicking on Category filter menu', function () {
             before(async function () {
               if (!isStudent) {
-                await helpers.findAndClickElement(driver, 'li.filter-myOrg');
+                await helpers.findAndClickElement(driver, 'li.filter-everyone');
+                await helpers.findAndClickElement(driver, '.category-header');
               }
             });
 
-            it('should update problem list when clicking on My Org', async function () {
+            it('should show populate categories search list', async function () {
               if (!isStudent) {
-                let resultsMsg = `${problems.org.total} problems found`;
+                await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content', true);
+                await helpers.clearElement(driver, '#categories-filter-selectized');
+                await driver.sleep(1000);
+              }
+            });
+
+            it('should show problems when adding category with problems to list', async function () {
+              if (!isStudent) {
+                let resultsMsg = `${problems.category.k} problems found`;
+                await helpers.clearElement(driver, '#categories-filter-selectized');
+                await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
+                await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
 
-            it('should update problem list when unchecking created by members', async function () {
+            it('should show more problems when adding category with problems to list', async function () {
               if (!isStudent) {
-                await helpers.findAndClickElement(driver, 'li.fromOrg');
-                await helpers.waitForSelector(driver, css.resultsMesasage);
-                let resultsMsg = `${problems.org.recommended} problems found`;
+                let resultsMsg = `${problems.category.total} problems found`;
+                await helpers.clearElement(driver, '#categories-filter-selectized');
+                await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
+                await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
 
-            it('should update problem list when unchecking recommended', async function () {
+            it('should show less problems when unchecking include subcategories', async function () {
               if (!isStudent) {
-                await helpers.findAndClickElement(driver, 'li.recommended');
-                await helpers.waitForSelector(driver, css.resultsMesasage);
-                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
-              }
-            });
-
-            it('should update problem list when checking created by members', async function () {
-              if (!isStudent) {
-                await helpers.findAndClickElement(driver, 'li.fromOrg');
-                await helpers.waitForSelector(driver, css.resultsMesasage);
-                let resultsMsg = `${problems.org.members} problems found`;
+                let resultsMsg = `${problems.category.noSub} problems found`;
+                await helpers.findAndClickElement(driver, '.subfilter');
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
+
+            it('should show less problems when removing a category', async function () {
+              if (!isStudent) {
+                let resultsMsg = `${problems.category.ee} problems found`;
+                await helpers.findAndClickElement(driver, '.subfilter');
+                await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+
           });
 
           if (isAdmin) {
@@ -232,8 +247,6 @@ describe('Problems', async function () {
                   let resultsMsg = `${problems.all.org.members} problems found`;
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
-
-
               });
 
               describe('Searching by creator', function () {
