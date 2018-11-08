@@ -120,7 +120,11 @@ module.exports = {
       },
       all: {
         total: 23,
-        org: 10,
+        org: {
+          total: 6,
+          recommended: 2,
+          members: 4,
+        },
         creator: 10,
         pows: {
           total: 10,

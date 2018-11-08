@@ -162,23 +162,20 @@ describe('Problems', async function () {
                 expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
               });
 
-              // it('should restore a trashed problem', async function () {
-              //   await helpers.findAndClickElement(driver, 'button.primary-button');
-              //   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
-              //   await driver.sleep(500);
-              //   let resultsMsg = `1 problems found - Displaying Trashed Problems`;
-              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
-              // });
+              describe('Searching by organization', function () {
+                before(async function () {
+                  await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
+                  await driver.sendKeys(Key.ENTER);
+                  await driver.sleep(2000);
+                });
 
-              // it('should continue displaying trashed problems until unchecked', async function () {
-              //   await helpers.findAndClickElement(driver, 'li.filter-mine');
-              //   let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
-              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
-              //   await helpers.findAndClickElement(driver, '#toggle-trashed');
-              //   let updatedMsg = `${problems.mine.count} problems found`;
-              //   expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(updatedMsg);
-              //   await helpers.findAndClickElement(driver, '.more-header');
-              // });
+                it('should select and organization and update list and display message', async function () {
+                  let resultsMsg = `${problems.all.org.total} problems found`;
+                  expect(await helpers.findAndGetText(driver, 'div.results-message')).to.contain(resultsMsg);
+                });
+
+              });
+
             });
           }
         });
