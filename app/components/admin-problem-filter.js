@@ -9,7 +9,6 @@ Encompass.AdminProblemFilterComponent = Ember.Component.extend({
 
 
   willDestroyElement: function() {
-    console.log('destroy dis bitch');
     if (this.get('mainFilter') !== 'pows') {
       this.clearSelectedValues();
     }

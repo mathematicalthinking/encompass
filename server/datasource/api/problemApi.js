@@ -26,13 +26,21 @@ async function getOrgRecommendedProblems(user, orgIds, isIdOnly=true) {
     if (!orgs) {
       return [];
     }
-    let problems = _.map(orgs, org => org.recommendedProblems);
-    problems = _.without(problems, undefined, null);
-    if (isIdOnly) {
-      return problems;
-    }
+    // let problems = _.chain(orgs)
+    //   .map(orgs, org => org.recommendedProblems)
+    //   .without(undefined, null)
+    //   .flatten()
+    //   .value();
 
-    return problems;
+    let problems = _.map(orgs, org => org.recommendedProblems);
+    let filtered = _.filter(problems, problem => problem !== undefined && problem !== null);
+    let flattened = _.flatten(filtered);
+
+
+    if (isIdOnly) {
+      return flattened;
+    }
+    return flattened;
   } catch(err) {
     console.error(`Error getOrgRecommendedProblems: `, err);
   }
