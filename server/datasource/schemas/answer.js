@@ -67,17 +67,20 @@ AnswerSchema.post('save', function (Answer) {
     update = { $pull: { 'Answers': AnswerIdObj } };
   }
 
-  // if (Answer.createdBy) {
-  //   var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
-  //   mongoose.models.User.update({ '_id': userIdObj },
-  //     update,
-  //     function (err, affected, result) {
-  //       if (err) {
-  //         throw new Error(err.message);
-  //       }
-  //     });
-  // }
+  // update the user answers array
+  // Note: this was not done for the old_pows_user
+  if (Answer.createdBy) {
+    var userIdObj = mongoose.Types.ObjectId(Answer.createdBy);
+    mongoose.models.User.update({ '_id': userIdObj },
+      update,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+      });
+  }
 
+  // update the assignment answers array
   if (Answer.assignment) {
     var assignmentIdObj = mongoose.Types.ObjectId(Answer.assignment);
     mongoose.models.Assignment.update({ '_id': assignmentIdObj },
@@ -89,6 +92,7 @@ AnswerSchema.post('save', function (Answer) {
       });
   }
 
+  // not used (no answers array in problem)
   // if (Answer.problem) {
   //   var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
   //   mongoose.models.Problem.update({ '_id': problemIdObj },
