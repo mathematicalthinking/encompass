@@ -5,7 +5,7 @@ const ObjectId = Schema.ObjectId;
 var folderObjectSchema = new Schema({
   name: { type: String },
   weight: { type: Number },
-});
+}, { _id: false, versionKey: false });
 
 folderObjectSchema.add({
   children: [{ type: folderObjectSchema }]
@@ -21,13 +21,7 @@ var FolderSetSchema = new Schema({
 
 name: { type: String },
 privacySetting: {type: String, enum: ['M', 'O', 'E'] },
-folders: [
-  {
-    name: { type: String },
-    weight: { type: Number },
-    children: [ {type: folderObjectSchema} ],
-  }
-]
+folders: [{type: folderObjectSchema }]
 }, {versionKey: false});
 
 
