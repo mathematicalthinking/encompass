@@ -78,30 +78,30 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   canSelect: function () {
     var cws = this.get('currentWorkspace');
     let canEdit = this.get('permissions').canEdit(cws);
-    console.log('canEdit in worksapce sub controller is', canEdit);
+    // console.log('canEdit in worksapce sub controller is', canEdit);
     return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
   actions: {
     addSelection: function( selection ){
-      console.log("workspace-submission sending action up to controller...");
+      // console.log("workspace-submission sending action up to controller...");
       this.set('isDirty', true);
       this.sendAction( 'addSelection', selection );
     },
 
     deleteSelection: function( selection ){
-      console.log("workspace-submission sending DELETE action up to controller...");
+      // console.log("workspace-submission sending DELETE action up to controller...");
       this.set('isDirty', true);
       this.sendAction( 'deleteSelection', selection );
     },
 
     showSelections: function() {
-      console.log("Show Selections True");
+      // console.log("Show Selections True");
       this.set('showingSelections', true);
     },
 
     hideSelections: function() {
-      console.log('hiding selections');
+      // console.log('hiding selections');
       this.set('showingSelections', false);
     },
     toggleSelecting: function() {

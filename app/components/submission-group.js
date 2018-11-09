@@ -154,7 +154,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
      * This action will be sent to this component from the workspace-submission component.
      */
     addSelection: function( selection ){
-      console.log("Submission-group sending add action up...");
+      // console.log("Submission-group sending add action up...");
       this.sendAction( 'addSelection', selection );
     },
 
@@ -162,7 +162,7 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
      * This action will be sent to this component from the workspace-submission component.
      */
     deleteSelection: function( selection ){
-      console.log("Submission-group sending delete action up...");
+      // console.log("Submission-group sending delete action up...");
       this.sendAction( 'deleteSelection', selection );
     },
   }
