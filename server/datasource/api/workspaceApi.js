@@ -22,6 +22,7 @@ const access = require('../../middleware/access/workspaces');
 const answerAccess = require('../../middleware/access/answers');
 const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
+const apiUtils = require('./utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -1009,6 +1010,7 @@ async function answersToSubmissions(answers) {
 
 
       const student = ans.createdBy;
+      const studentNames = ans.studentNames;
       const section = ans.section;
       const problem = ans.problem;
 
@@ -1019,8 +1021,22 @@ async function answersToSubmissions(answers) {
       }
       // answers should always have createdBy...
       if (student) {
-        creator.studentId = student._id;
-        creator.username = student.username;
+        if (student.username !== 'old_pows_user') {
+          creator.studentId = student._id;
+          creator.username = student.username;
+        } else {
+          if (apiUtils.isNonEmptyArray(studentNames)) {
+            if (studentNames.length === 1) {
+              creator.fullName = apiUtils.capitalizeString(studentNames[0]);
+              creator.safeName = apiUtils.getSafeName(studentNames[0]);
+            } else {
+              // handle cases of multiple students?
+              // for now just take first
+              creator.fullName = apiUtils.capitalizeString(studentNames[0]);
+              creator.safeName = apiUtils.getSafeName(studentNames[0]);
+            }
+          }
+        }
       }
 
       let teachers;
