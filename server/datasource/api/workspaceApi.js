@@ -1027,13 +1027,13 @@ async function answersToSubmissions(answers) {
         } else {
           if (apiUtils.isNonEmptyArray(studentNames)) {
             if (studentNames.length === 1) {
-              creator.fullName = apiUtils.capitalizeString(studentNames[0]);
-              creator.safeName = apiUtils.getSafeName(studentNames[0]);
+              creator.fullName = apiUtils.capitalizeString(studentNames[0], true);
+              creator.safeName = apiUtils.getSafeName(creator.fullName, false, false);
             } else {
               // handle cases of multiple students?
               // for now just take first
-              creator.fullName = apiUtils.capitalizeString(studentNames[0]);
-              creator.safeName = apiUtils.getSafeName(studentNames[0]);
+              creator.fullName = apiUtils.capitalizeString(studentNames[0], true);
+              creator.safeName = apiUtils.getSafeName(creator.fullName, false, false);
             }
           }
         }
