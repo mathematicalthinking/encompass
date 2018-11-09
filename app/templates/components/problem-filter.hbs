@@ -4,7 +4,7 @@
   <ul class="primary-filter-list">
     {{#each primaryFilterOptions as |input|}}
       <li class="filter-{{input.value}}">
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
+        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon id=input.value}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
             {{admin-problem-filter
