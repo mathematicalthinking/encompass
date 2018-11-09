@@ -34,15 +34,18 @@
         <div class="results-message">
           {{listResultsMessage}}
         </div>
-        <div class="layout-icons" >
+        <div class="side-icons">
+          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh problem list"></i>
+          <span class="layout-icons">
           {{#if showList}}
-            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list-active.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
+            <img src="/images/list-active.svg" alt="list" {{action 'setList'}} title="Currently in list view">
           {{/if}}
           {{#if showGrid}}
-            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}}>
-            <img src="/images/list.svg" alt="list" {{action 'setList'}}>
+            <img src="/images/grid-active.svg" alt="grid" {{action 'setGrid'}} title="Currently in grid view">
+            <img src="/images/list.svg" alt="list" {{action 'setList'}} title="Show in list view">
           {{/if}}
+          </span>
         </div>
       </div>
       <div class="results-items" id="layout-view">
