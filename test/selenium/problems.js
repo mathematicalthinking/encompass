@@ -37,6 +37,7 @@ describe('Problems', async function () {
         });
 
         describe('Visiting problems main page', function () {
+          this.retries(4);
           before(async function () {
             await helpers.findAndClickElement(driver, topLink);
             if (!isStudent) {
@@ -80,6 +81,7 @@ describe('Problems', async function () {
           });
 
           describe('Clicking on My Org filter option', function () {
+            this.retries(4);
             before(async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.filter-myOrg');
@@ -121,6 +123,7 @@ describe('Problems', async function () {
           });
 
           describe('Clicking on Category filter menu', function () {
+            this.retries(4);
             before(async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.filter-everyone');
@@ -174,6 +177,7 @@ describe('Problems', async function () {
             });
 
             it('there should be no change when adding category with no problems', async function () {
+              this.retries(4);
               if (!isStudent) {
                 let resultsMsg = `${problems.category.ee} problems found`;
                 await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.1', true);
@@ -189,6 +193,7 @@ describe('Problems', async function () {
             });
 
             it('should open up category menu modal', async function () {
+              this.retries(4);
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, '.show-category-btn');
                 await helpers.waitForSelector(driver, '#category-list-modal');
@@ -219,6 +224,7 @@ describe('Problems', async function () {
 
           if (isAdmin) {
             describe('Clicking on Trashed problems', function () {
+              this.retries(4);
               before(async function () {
                 await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                 await helpers.findAndClickElement(driver, '.category-header');
@@ -251,6 +257,7 @@ describe('Problems', async function () {
             });
 
             describe('Clicking on All problems filter', function () {
+              this.retries(4);
               before(async function () {
                 await helpers.findAndClickElement(driver, '.filter-all');
               });
@@ -262,6 +269,7 @@ describe('Problems', async function () {
               });
 
               describe('Searching by organization', function () {
+                this.retries(4);
                 before(async function () {
                   await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
                   await helpers.findAndClickElement(driver, css.resultsMesasage);
@@ -294,6 +302,7 @@ describe('Problems', async function () {
               });
 
               describe('Searching by creator', function () {
+                this.retries(4);
                 before(async function () {
                   await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
                   await helpers.findAndClickElement(driver, '[data-value="creator"]');
@@ -310,6 +319,7 @@ describe('Problems', async function () {
               });
 
               describe('Searching by PoWs', function () {
+                this.retries(4);
                 before(async function () {
                   await helpers.findAndClickElement(driver, '.selectize-input');
                   await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
