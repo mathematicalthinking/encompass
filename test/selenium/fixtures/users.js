@@ -50,7 +50,7 @@ module.exports = {
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
-    _id: '5b9149552ecaf7c30dd4748e',
+    _id: '5b4e4b48808c7eebc9f9e827',
     username: 'ssmith',
     password: 'ssmith',
     accountType: 'T',

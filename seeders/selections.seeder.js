@@ -797,7 +797,7 @@ var data = [
   "_id" : "5bbb9d57c2aa0a1696840ce9",
   "text" : "This is my explanation.",
   "coordinates" : "node-3 0 0 node-3 0 23",
-  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "lastModifiedBy" : null,
   "submission" : "5bb814d19885323f6d894973",
   "workspace" : "5bb814d19885323f6d894974",

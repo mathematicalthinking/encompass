@@ -109,7 +109,7 @@ var data = [
     "imageId" : null,
     "additionalInfo" : "",
     "privacySetting" : "O",
-    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : null,
     "origin" : null,
     "modifiedBy" : null,
