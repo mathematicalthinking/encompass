@@ -10,9 +10,6 @@
         {{#if isRecommended}}
           <span><i class="fas fa-star star-icon"></i></span>
         {{/if}}
-        {{!-- {{#if problem.isTrashed}}
-          <span><i class="fa fa-trash trash-icon"></i></span>
-        {{/if}} --}}
       {{/link-to}}
     </div>
     <div class="item-section description">
@@ -32,7 +29,10 @@
       </span>
     </div>
     <div class="item-section action">
-      {{#if currentUser.isAdmin}}
+      <button {{action actionButton.function problem actionButton.argument1 actionButton.argument2}} class="primary-button">
+        {{actionButton.name}}
+      </button>
+      {{!-- {{#if currentUser.isAdmin}}
         {{#unless problem.isTrashed}}
           {{#if (is-equal problem.status 'approved')}}
             <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
@@ -59,7 +59,7 @@
             <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
         {{/if}}
         {{/if}}
-      {{/if}}
+      {{/if}} --}}
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>
@@ -133,7 +133,10 @@
         </span>
       </div>
     <div class="item-section action">
-      {{#if currentUser.isAdmin}}
+      <button {{action actionButton.function problem actionButton.argument1 actionButton.argument2}} class="primary-button">
+        {{actionButton.name}}
+      </button>
+      {{!-- {{#if currentUser.isAdmin}}
         {{#unless problem.isTrashed}}
           {{#if (is-equal problem.status 'approved')}}
             <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
@@ -160,7 +163,7 @@
             <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
         {{/if}}
         {{/if}}
-      {{/if}}
+      {{/if}} --}}
     </div>
     </div>
   </div>

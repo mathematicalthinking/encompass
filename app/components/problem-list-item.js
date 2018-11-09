@@ -126,6 +126,53 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
   }.property('problem.id', 'problem.status'),
 
 
+  actionButton: function () {
+    let actionBtn = {};
+    let isAdmin = this.get('currentUser.isAdmin');
+    let isPdAdmin = this.get('currentUser.isPdAdmin');
+    let problem = this.get('problem');
+
+    if (isAdmin) {
+      if (problem.get('isTrashed')) {
+        actionBtn.function = "restoreProblem";
+        actionBtn.name = "Restore";
+      } else {
+        actionBtn.function = "confirmStatusUpdate";
+        if (problem.get('status') === 'approved') {
+          actionBtn.name = "Flag";
+          actionBtn.argument1 = "title";
+          actionBtn.argument2 = "flagged";
+        } else {
+          actionBtn.name = "Approve";
+          actionBtn.argument1 = "title";
+          actionBtn.argument2 = "approved";
+        }
+      }
+    } else {
+      if (isPdAdmin) {
+        if (problem.get('privacySetting') !== "E" && problem.get('status') !== 'approved') {
+          actionBtn.function = "confirmStatusUpdate";
+          actionBtn.name = "Approve";
+          actionBtn.argument1 = "title";
+          actionBtn.argument2 = "approved";
+        } else {
+          if (problem.get('status') !== 'flagged') {
+            actionBtn.function = "assignProblem";
+            actionBtn.name = "Assign";
+          } else {
+            actionBtn.function = "addToMyProblems";
+            actionBtn.name = "Copy";
+          }
+        }
+      } else {
+        actionBtn.function = "assignProblem";
+        actionBtn.name = "Assign";
+      }
+    }
+    return actionBtn;
+  }.property('problem.isTrashed', 'problem.status', 'problem.privacySetting'),
+
+
   actions: {
     showStatusOptions() {
       this.set('showAdminStatusMenu', true);
