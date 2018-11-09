@@ -85,7 +85,73 @@ async function getUniqueIdsFromQueries(model, criteria) {
   }
 }
 
+function isNullOrUndefined(val) {
+  return _.isNull(val) || _.isUndefined(val);
+}
+
+function isNonEmptyArray(val) {
+  return _.isArray(val) && !_.isEmpty(val);
+}
+
+// return input string with first letter capitalized
+function capitalizeWord(str) {
+  if (!_.isString(str)) {
+    return;
+  }
+  if (str.length === 0) {
+    return '';
+  }
+
+  let firstLetterCap = str.charAt(0).toUpperCase();
+  if (str.length === 1) {
+    return firstLetterCap;
+  }
+  let slicedFrom1 = str.slice(1);
+  return firstLetterCap + slicedFrom1;
+}
+// expects space separated string, e.g. Alice Williams
+function getSafeName(str) {
+  if (!_.isString(str)) {
+    return;
+  }
+  if (str.length === 0) {
+    return '';
+  }
+
+  let split = str.split(' ');
+  let firstName = this.capitalizeWord(split[0]);
+  let lastName;
+
+  if (split[1]) {
+    let firstChar = split[1].charAt(0);
+    // let firstCharCap = this.capitalize(firstChar);
+    lastName = this.capitalizeWord(firstChar);
+  }
+  return `${firstName} ${lastName}.`;
+}
+
+function capitalizeString(str) {
+  if (!_.isString(str)) {
+    return;
+  }
+  if (str.length === 0) {
+    return '';
+  }
+
+  let words = str.split(' ');
+  let mapped = _.map(words, (word) => {
+    return this.capitalizeWord(word);
+  });
+  return mapped.join(' ');
+}
+
+
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
 module.exports.findAndReturnIds = findAndReturnIds;
 module.exports.getUniqueIdsFromQueries = getUniqueIdsFromQueries;
+module.exports.isNullOrUndefined = isNullOrUndefined;
+module.exports.isNonEmptyArray = isNonEmptyArray;
+module.exports.capitalizeString = capitalizeString;
+module.exports.capitalizeWord = capitalizeWord;
+module.exports.getSafeName = getSafeName;
