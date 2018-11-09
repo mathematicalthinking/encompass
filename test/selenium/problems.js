@@ -73,18 +73,17 @@ describe('Problems', async function () {
             }
           });
 
-          // it('should update problem list when clicking on Public', async function () {
-          //   if (!isStudent) {
-          //     await helpers.findAndClickElement(driver, 'li.filter-everyone');
-          //     await driver.sleep(3000);
-          //     let resultsMsg = `${problems.public.count} problems found`;
-          //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-          //   }
-          // });
+          it('should update problem list when clicking on Public', async function () {
+            if (!isStudent) {
+              await helpers.findAndClickElement(driver, '#everyone');
+              let resultsMsg = `${problems.public.count} problems found`;
+              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+            }
+          });
 
           it('should update problem list when clicking on Mine', async function () {
             if (!isStudent) {
-              await helpers.findAndClickElement(driver, 'li.filter-mine');
+              await helpers.findAndClickElement(driver, '#mine');
               let resultsMsg = `${problems.mine.count} problems found`;
               expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
@@ -93,7 +92,7 @@ describe('Problems', async function () {
           describe('Clicking on My Org filter option', function () {
             before(async function () {
               if (!isStudent) {
-                await helpers.findAndClickElement(driver, 'li.filter-myOrg');
+                await helpers.findAndClickElement(driver, '#myOrg');
               }
             });
 
@@ -269,7 +268,7 @@ describe('Problems', async function () {
             describe('Clicking on All problems filter', function () {
 
               before(async function () {
-                await helpers.findAndClickElement(driver, '.filter-all');
+                await helpers.findAndClickElement(driver, '#all');
               });
 
               it('should update the problem list and display message', async function () {
