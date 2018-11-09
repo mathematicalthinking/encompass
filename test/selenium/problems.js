@@ -80,7 +80,7 @@ describe('Problems', async function () {
 
               return handleRetries(driver, async function() {
                 await helpers.findAndClickElement(driver, 'li.filter-everyone');
-                await helpers.waitForTextInDom(driver, resultsMsg);
+                await helpers.findAndClickElement(driver, 'li.filter-everyone');
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }, 3);
             }
