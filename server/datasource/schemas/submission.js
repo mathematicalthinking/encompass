@@ -24,7 +24,8 @@ var baseSubmission = {
     creatorId: Number,
     studentId: String, // This is our new studentId
     username: String,
-    safeName: String
+    safeName: String,
+    fullName: String,
   },
   clazz: {
     clazzId: Number,
