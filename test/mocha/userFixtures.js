@@ -570,7 +570,7 @@ const teacherActingStudent = {
       username: 'tracyc',
       organization: '5b4e4d5f808c7eebc9f9e82c',
       accountType: 'S',
-      createdBy: '5b9149552ecaf7c30dd4748e',
+      createdBy: '5b4e4b48808c7eebc9f9e827',
       creatorUsername: 'ssmith'
     },
     unaccessibleUser: {
