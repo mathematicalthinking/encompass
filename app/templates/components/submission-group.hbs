@@ -5,7 +5,7 @@
         <li >
           {{#link-to 'workspace.submission' threadHead}}
           <span class="submissionLink {{threadHead.id}}">
-              {{threadHead.student}}
+              {{threadHead.studentDisplayName}}
             </span>
           {{/link-to}}
         </li>
@@ -14,7 +14,7 @@
 <div class="selectBox">
   <div class="selected">
     <div class="studentItem">
-      {{currentStudent}}
+      {{currentStudentDisplayName}}
       <span class="selector" {{action 'toggleStudentList'}}></span>
     </div>
     {{#if showStudents}}
@@ -24,7 +24,7 @@
       {{#each this.submissionThreadHeads as |threadHead|}}
         <li class="studentItem" {{action 'toggleStudentList'}}>
           {{#link-to 'workspace.submission' threadHead}}
-            <span>{{threadHead.student}}</span>
+            <span>{{threadHead.studentDisplayName}}</span>
           {{/link-to}}
         </li>
       {{/each}}

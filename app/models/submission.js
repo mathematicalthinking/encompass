@@ -53,10 +53,27 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
 
   student: function () {
     var safeName = this.get('creator.safeName');
+    var fullName = this.get('creator.fullName');
     var username = this.get('creator.username');
-    var student = safeName ? safeName : username;
-    return student;
-  }.property('creator.safeName'),
+
+    if (fullName) {
+      return fullName;
+    }
+    if (safeName) {
+      return safeName;
+    }
+    return username;
+  }.property('creator.safeName', 'creator.username', 'creator.fullName'),
+
+  studentDisplayName: function() {
+    var safeName = this.get('creator.safeName');
+    var username = this.get('creator.username');
+
+    var name = safeName ? safeName : username;
+
+    return name;
+
+  }.property('creator.safeName', 'creator.username'),
 
   label: function () {
     var label = this.get('student');

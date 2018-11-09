@@ -8,6 +8,7 @@
  */
 Encompass.SubmissionGroupComponent = Ember.Component.extend({
   currentStudent: Ember.computed.alias('submission.student'),
+  currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
   firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),
   lastThread: Ember.computed.alias('submissionThreadHeads.lastObject'),
   manyRevisions: Ember.computed.gte('currentRevisions.length', 10),
