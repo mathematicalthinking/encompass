@@ -76,7 +76,7 @@ module.exports = {
         count: 14
       },
       mine: {
-        count: 4
+        count: 5
       },
       org: {
         total: 6,
