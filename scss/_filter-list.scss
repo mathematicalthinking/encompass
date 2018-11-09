@@ -396,9 +396,13 @@
                 margin-left: 20px;
               }
             }
-            // input[type=radio] {
-            //   visibility: hidden;
-            // }
+            input[type=radio] {
+              // visibility: hidden;
+              position: relative;
+              z-index: 2;
+              top: 15px;
+              left: 20px;
+            }
           }
         }
         #admin-problem-filter {
