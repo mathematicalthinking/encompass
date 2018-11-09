@@ -127,6 +127,7 @@ const findAndGetText = async function (webDriver, selector) {
   } catch (err) {
     console.log(err);
   }
+  console.log('text is', text);
   return text;
 };
 
@@ -164,9 +165,7 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = ti
 const waitForTextInDom = async function (webDriver, text) {
   try {
     return await webDriver.wait(async function () {
-      console.log('inside return of wait for textindom');
       let result = await isTextInDom(webDriver, text);
-      console.log('result of isTextInDom is', result);
       return result;
     });
   } catch (err) {
