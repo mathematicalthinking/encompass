@@ -334,163 +334,88 @@ function updateWorkspaces(workspaces, submissionSet){
   * @param {Workspace} ws       The workspace this folder structure will be in
   * @return {Promise}  Resolves when all the folders are created
  */
-async function newFolderStructure(user, wsInfo, folderSetName, folderSetHash) {
+async function newFolderStructure(user, wsInfo, folderSetHash) {
   try {
-    let folders = []; // 'none' and anything else will use the empty set
-    // let count = 0;
-  // if(folderSetName === 'default' || folderSetName === 'Math Forum Default Folders') {
-  //   folders = data.mathforumFolders;
-  // }
+    let folders = [];
+    const folderIds = [];
 
-  // if(folderSetName === 'Simple Folder Set') {
-  //   //yes, we could do data[folderSetName] but that requires a lot of sanitizing
-  //   //since we are getting the param from the request
-  //   folders = data.simple;
-  // }
-  let folderSetId, folderSetObjects;
-  if (folderSetHash) {
-    folderSetObjects = folderSetHash.folderSetObjects;
-    folderSetId = folderSetHash.folderSetId;
-  }
-console.log('folderSetHash', folderSetHash);
+    if (!apiUtils.isNonEmptyObject(wsInfo) || !apiUtils.isNonEmptyObject(folderSetHash)) {
+      return;
+    }
+
+    let { folderSetId, folderSetObjects } = folderSetHash;
+    const { newWsId, newWsOwner } = wsInfo;
+
     if(!folderSetId && !folderSetObjects) {
       return folders;
     }
-    if (folderSetObjects) {
+
+    if (apiUtils.isNonEmptyArray(folderSetObjects)) {
       folders = folderSetObjects;
-    }
-  //   let folderSetObjects;
-  // console.log('folderSetId', folderSetId);
-  //   if (folderSetId) {
-  //     // lookup folderSet in db
-  //     console.log('typeof foldersetid', typeof folderSetId);
-  //     const folderSet = await models.FolderSet.findById(folderSetId).lean().exec();
-  //     console.log('folderSet after', folderSet);
-
-  //     folderSetObjects = folderSet.folders;
-  //   } else {
-  //     folderSetObjects = folderSetJSON;
-  //   }
-
-  const {newWsId, newWsOwner } = wsInfo;
-  console.log(newWsId, newWsOwner);
-// console.log('folderSetObjects', folderSetObjects);
-  const recurse = async function(folderObj, parentId) {
-    try {
-      count++;
-      console.log('count', count);
-      if (!folderObj) {
-        return;
-      }
-      console.log(`parent for folderObj: ${folderObj.name}: ${parentId}`);
-
-      // let ownerId = ws.owner;
-      // let userId = user._id;
-      // let wsId = ws._id;
-      // console.log('iswsId valid', mongoose.Types.ObjectId.isValid(wsId));
-      // console.log('isuserId valid', mongoose.Types.ObjectId.isValid(userId));
-
-      // console.log('isownerId valid', mongoose.Types.ObjectId.isValid(ownerId));
-
-
-      let f = new models.Folder({
-        owner: newWsOwner,
-        name: folderObj.name,
-        weight: folderObj.weight ? folderObj.weight : 0,
-        createdBy: user._id,
-        lastModifiedBy: user._id,
-        children: [],
-        workspace: newWsId
-
-      });
-      if (parentId) {
-        f.parent = parentId;
-      }
-      let isDocValid = f.validateSync();
-      console.log('isDocValid', isDocValid);
-      const children = folderObj.children;
-      if (_.isEmpty(children)) {
-        console.log('no children!');
-        console.log(`about to save folder: ${JSON.stringify(f)}`);
-        return f.save();
-      }
-      f.children = await Promise.all(_.map(children, (child => {
-        return recurse(child, f._id);
-      })));
-      console.log(`about to save folder: ${JSON.stringify(f)}`);
-      let newChildren = f.children;
-      let mapped = _.map(newChildren, (child => {
-        // can only save the id of the child folder in children array
-        return child._id;
-      }));
-      f.children = mapped;
-      console.log('mapped', mapped);
-      return f.save();
-    }catch(err) {
-      console.error(`Error recurse : ${err}`);
+    } else if (folderSetId) {
+      // lookup folderSet in db
+      const folderSet = await models.FolderSet.findById(folderSetId).lean().exec();
+      folderSetObjects = folderSet.folders;
     }
 
-  };
+    const recurse = async function(folderObj, parentId) {
+      try {
+        if (!folderObj) {
+          return;
+        }
+        console.log(`parent for folderObj: ${folderObj.name}: ${parentId}`);
 
-  folders = await Promise.all(_.map(folderSetObjects, (obj => {
-    return recurse(obj, null);
-  })));
+        let f = new models.Folder({
+          owner: newWsOwner,
+          name: folderObj.name,
+          weight: folderObj.weight ? folderObj.weight : 0,
+          createdBy: user._id,
+          lastModifiedBy: user._id,
+          children: [],
+          workspace: newWsId
+        });
 
-  return folders;
+        if (parentId) {
+          f.parent = parentId;
+        }
 
-  // folders.forEach(function(folder){
-  //   var folderPromise = new mongoose.Promise();
-  //   var f = new models.Folder({
-  //     //owner: user,
-  //     name: folder.name,
-  //     workspace: ws._id,
-  //     weight: folder.weight ? folder.weight : 0,
-  //     parent: null
-  //   });
-  //   f.save(function(err, fSaved){
-  //     if(err) {
-  //       logger.error(err);
-  //       folderPromise.reject(err);
-  //     } else {
-  //       if(folder.children) {
-  //         folder.children.forEach(function(child){
-  //           //not sure this is kosher - the promise is resolving
-  //           //whenever one of the children saves...?
-  //           var c = new models.Folder({
-  //             //owner: user,
-  //             name: child.name,
-  //             workspace: ws._id,
-  //             weight: child.weight ? child.weight : 0,
-  //             parent: fSaved
-  //           });
-  //           c.save(function(err, doc){
-  //             if(err) {
-  //               logger.error(err);
-  //               folderPromise.reject(err);
-  //             } else {
-  //               folderPromise.resolve();
-  //             }
-  //           });
-  //         });
-  //       } else {
-  //         folderPromise.resolve(); //no children, we're good
-  //       }
-  //     }
-  //   });
-  //   tasks.push(folderPromise);
-  // });
-  // Q.all(tasks).then(function(){
-  //   promise.resolve();
-  // });
-  // return promise;
-  // return folders;
+        const children = folderObj.children;
+        if (_.isEmpty(children)) {
+          return f.save()
+          .then((doc) => {
+            folderIds.push(doc._id);
+            return doc;
+          });
+        }
+
+        f.children = await Promise.all(_.map(children, (child => {
+          return recurse(child, f._id);
+        })));
+
+        let newChildren = f.children;
+        let mapped = _.map(newChildren, (child => {
+          // can only save the id of the child folder in children array
+          return child._id;
+        }));
+
+        f.children = mapped;
+        return f.save()
+          .then((doc) => {
+            folderIds.push(doc._id);
+            return doc;
+          });
+      }catch(err) {
+        console.error(`Error recurse : ${err}`);
+      }
+    };
+
+    folders = await Promise.all(_.map(folderSetObjects, (obj => {
+      return recurse(obj, null);
+    })));
+    return folderIds;
   }catch(err) {
     console.error(`Error newFolderStructure: ${err}`);
   }
-    // let promise = new mongoose.Promise();
-    // let tasks = [];
-
-
 }
 
 /**
@@ -529,7 +454,7 @@ function nameWorkspace(submissionSet, user, isPows) {
   * @param  {User}   user    We use the user's name for the workspace name, also set them as the owner
   * @return {Promise}   resolves when the workspace is stored
  */
-function newWorkspace(submissionSet, user, folderSetName) {
+function newWorkspace(submissionSet, user, folderSetId) {
   var workspace = new models.Workspace({
     name: nameWorkspace(submissionSet, user),
     submissionSet: submissionSet,
@@ -545,7 +470,9 @@ function newWorkspace(submissionSet, user, folderSetName) {
     if (err) {
       return utils.sendError.InternalError(err, res);
     }
-    newFolderStructure(user, ws, folderSetName).then(function(){
+    var wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+    var folderSetInfo = { folderSetId: folderSetId, folderSetObjects: null };
+    newFolderStructure(user, wsInfo, folderSetInfo).then(function(){
       promise.resolve();
     });
   });
@@ -1307,7 +1234,7 @@ async function postWorkspaceEnc(req, res, next) {
 
   // const folderSetName = workspaceCriteria.folderSetName;
 
-  const { requestedName, mode, folderSetName, owner } = workspaceCriteria;
+  const { requestedName, mode, folderSetId, owner } = workspaceCriteria;
 
   try {
     const pruned = pruneObj(workspaceCriteria);
@@ -1380,7 +1307,10 @@ let workspace = new models.Workspace({
 let ws = await workspace.save();
 //const data = {'workspaceId': ws._id};
 
-let newFolderSet = await newFolderStructure(user, ws, folderSetName);
+const wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+const folderSetInfo = { folderSetId: folderSetId, folderSetObjects: null };
+
+let newFolderSet = await newFolderStructure(user, wsInfo, folderSetInfo);
 
 let rec = pruned;
 rec.createdWorkspace = ws._id;
@@ -1558,11 +1488,13 @@ async function handleNewFolders(user, wsInfo, folderIds, options) {
         folderSetId: objectId or null,
         folderSetObjects: array of objects that can be passed to newFolderStructure
       */
-      let folderSet = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
+      let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
 
-      await newFolderStructure(user, wsInfo, null, folderSet);
+      console.log('folderSet', folderSetInfo);
 
-      console.log('folderSet', folderSet);
+      // newFolderStructure returns array of newly created FolderIds
+      return newFolderStructure(user, wsInfo, folderSetInfo);
+
     } else {
       // need to copy folder AND taggings (and selections)
       // and create new folder
@@ -1689,7 +1621,7 @@ async function cloneWorkspace(req, res, next) {
     const newFolders = await handleNewFolders(user, workspaceInfo, copiedWs.folders, folders);
 
 
-    console.log('new Folders', newFolders);
+    console.log('new Folders from handle new', newFolders);
 
 
     return utils.sendResponse(res, savedWs);
