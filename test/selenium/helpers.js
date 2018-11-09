@@ -127,7 +127,6 @@ const findAndGetText = async function (webDriver, selector) {
   } catch (err) {
     console.log(err);
   }
-  console.log('text is', text);
   return text;
 };
 
@@ -137,7 +136,6 @@ const isTextInDom = async function (webDriver, text) {
     let pageSource = await webDriver.getPageSource();
     if (typeof pageSource === 'string') {
       isInDom = pageSource.includes(text);
-      console.log('isInDom is', isInDom);
     }
   } catch (err) {
     console.log(err);
