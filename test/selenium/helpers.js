@@ -136,6 +136,7 @@ const isTextInDom = async function (webDriver, text) {
     let pageSource = await webDriver.getPageSource();
     if (typeof pageSource === 'string') {
       isInDom = pageSource.includes(text);
+      console.log('isInDom is', isInDom);
     }
   } catch (err) {
     console.log(err);
@@ -162,8 +163,11 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = ti
 
 const waitForTextInDom = async function (webDriver, text) {
   try {
-    return await webDriver.wait(function () {
-      return isTextInDom(webDriver, text);
+    return await webDriver.wait(async function () {
+      console.log('inside return of wait for textindom');
+      let result = await isTextInDom(webDriver, text);
+      console.log('result of isTextInDom is', result);
+      return result;
     });
   } catch (err) {
     console.log(err);
