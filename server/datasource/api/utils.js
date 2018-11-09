@@ -101,6 +101,11 @@ function isNonEmptyString(val) {
   return _.isString(val) && val.length > 0;
 }
 
+// not array or function
+function isNonEmptyObject(val) {
+  return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
+}
+
 function getFirstCharOfStr(str) {
   if (!_.isString(str)) {
     return;
@@ -347,3 +352,4 @@ module.exports.getSafeName = getSafeName;
 module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
 module.exports.cloneDocuments = cloneDocuments;
+module.exports.isNonEmptyObject = isNonEmptyObject;
