@@ -3,6 +3,7 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
   // return input string with first letter capitalized
   capitalizeWord(str) {
     if (!_.isString(str)) {
+      // throw Error?
       return;
     }
     if (str.length === 0) {
@@ -16,9 +17,12 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
     let slicedFrom1 = str.slice(1);
     return firstLetterCap + slicedFrom1;
   },
-  // expects space separated string, e.g. Alice Williams
+
+  // expects space separated string, e.g. alice Williams
+  // return Alice W.
   getSafeName(str) {
     if (!_.isString(str)) {
+      // throw error?
       return;
     }
     if (str.length === 0) {
@@ -29,15 +33,17 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
     let firstName = this.capitalizeWord(split[0]);
     let lastName;
 
-    if (split[1]) {
-      let firstChar = split[1].charAt(0);
-      // let firstCharCap = this.capitalize(firstChar);
-      lastName = this.capitalizeWord(firstChar);
+    if (!this.isNonEmptyString(split[1])) {
+      return firstName;
     }
+      let firstChar = split[1].charAt(0);
+      lastName = this.capitalizeWord(firstChar);
     return `${firstName} ${lastName}.`;
   },
+
   capitalizeString(str) {
     if (!_.isString(str)) {
+      // throw error?
       return;
     }
     if (str.length === 0) {
@@ -45,6 +51,7 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
     }
 
     let words = str.split(' ');
+
     let mapped = _.map(words, (word) => {
       return this.capitalizeWord(word);
     });
@@ -57,6 +64,10 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
 
   isNonEmptyArray(val) {
     return _.isArray(val) && !_.isEmpty(val);
+  },
+
+  isNonEmptyString(val) {
+    return _.isString(val) && val.length > 0;
   }
 
 
