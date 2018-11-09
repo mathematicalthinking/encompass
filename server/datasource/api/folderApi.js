@@ -79,8 +79,16 @@ function getFolderSets(req, res, next) {
   if (accountType === 'S' || actingRole === 'student') {
     return utils.sendError.NotAuthorizedError('You do not have permission.', res);
   }
-
-  res.send({folderSet: data.folderSets});
+return models.FolderSet.find({}).lean().exec()
+  .then((folderSets => {
+    const data = { folderSets };
+    return utils.sendResponse(res, data);
+  }))
+  .catch((err) => {
+    console.error(`Error getFolderSets: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  });
 }
 
 /**
@@ -211,8 +219,72 @@ function putFolder(req, res, next) {
   });
 }
 
+function getFolderSet(req, res, next) {
+  const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
+  const { id } = req.params;
+
+  if (!id) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  return models.FolderSet.findById(id).lean().exec()
+    .then((folderSet) => {
+      const data = { folderSet };
+      return utils.sendResponse(res, data);
+    })
+    .catch((err) => {
+      console.error(`Error getFolderSet: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(null, res);
+    });
+}
+
+async function postFolderSet(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+
+
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
+    const { folderSet } = req.body;
+
+    if (!folderSet) {
+      return utils.sendError.InvalidContentError(null, res);
+    }
+
+    const { name, privacySetting, folders } = folderSet;
+
+    const record = new models.FolderSet({
+      name,
+      privacySetting,
+      folders,
+      createdBy: user._id,
+      lastModifiedBy: user._id
+    });
+
+    const saved = await record.save();
+    const data = { folderSet: saved };
+    return utils.sendResponse(res, data);
+
+
+  }catch(err) {
+    console.error(`Error postFolderSet: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
+}
+
 module.exports.get.folderSets = getFolderSets;
 module.exports.get.folder = getFolder;
 module.exports.get.folders = getFolders;
 module.exports.post.folder = postFolder;
 module.exports.put.folder = putFolder;
+module.exports.post.folderSet = postFolderSet;
+module.exports.get.folderSet = getFolderSet;
