@@ -181,7 +181,9 @@ describe('Problems', async function () {
               if (!isStudent) {
                 let resultsMsg = `${problems.category.ee} problems found`;
                 await helpers.findAndClickElement(driver, '.subfilter');
+                await driver.sleep(500);
                 await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                await driver.sleep(500);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
