@@ -513,7 +513,7 @@
         }
         .searchbar {
           @include flex-item(2, auto, 4 1 auto);
-          #problem-new-link {
+          #problem-new-link, #workspace-new-link {
             color: white;
             background: $accent-color;
             float: right;
