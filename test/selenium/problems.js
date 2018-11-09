@@ -77,8 +77,10 @@ describe('Problems', async function () {
             if (!isStudent) {
               await driver.sleep(2000);
               let resultsMsg = `${problems.public.count} problems found`;
+
               return handleRetries(driver, async function() {
-              await helpers.findAndClickElement(driver, 'li.filter-everyone');
+                await helpers.findAndClickElement(driver, 'li.filter-everyone');
+                await helpers.waitForTextInDom(driver, resultsMsg);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }, 3);
             }

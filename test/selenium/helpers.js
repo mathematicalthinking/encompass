@@ -160,6 +160,17 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = ti
   }
 };
 
+const waitForTextInDom = async function (webDriver, text) {
+  try {
+    return await webDriver.wait(function () {
+      return isTextInDom(webDriver, text);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
 const waitForSelector = async function (webDriver, selector, timeout = timeoutMs) {
   try {
     return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -364,6 +375,7 @@ module.exports.createSelectors = createSelectors;
 module.exports.createFilterList = createFilterList;
 module.exports.selectOption = selectOption;
 module.exports.waitForAndClickElement = waitForAndClickElement;
+module.exports.waitForTextInDom = waitForTextInDom;
 module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
 module.exports.admin = admin;
