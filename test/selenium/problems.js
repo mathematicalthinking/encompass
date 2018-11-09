@@ -75,14 +75,10 @@ describe('Problems', async function () {
 
           it('should update problem list when clicking on Public', async function () {
             if (!isStudent) {
+              await helpers.findAndClickElement(driver, 'li.filter-everyone');
               await driver.sleep(2000);
               let resultsMsg = `${problems.public.count} problems found`;
-
-              return handleRetries(driver, async function() {
-                await helpers.findAndClickElement(driver, 'li.filter-everyone');
-                await helpers.findAndClickElement(driver, 'li.filter-everyone');
-                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-              }, 3);
+              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
           });
 
