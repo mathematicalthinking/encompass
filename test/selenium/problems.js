@@ -23,7 +23,7 @@ const handleRetries = function (driver, fetchPromise, numRetries) {
 };
 
 describe('Problems', async function () {
-  async function runTests(users) {
+  function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, problems } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
@@ -372,10 +372,11 @@ describe('Problems', async function () {
         });
       });
     }
-    for (let user of Object.keys(users)) {
-      // eslint-disable-next-line no-await-in-loop
-      await _runTests(users[user]);
-    }
+    // for (let user of Object.keys(users)) {
+    //   // eslint-disable-next-line no-await-in-loop
+    //   await _runTests(users[user]);
+    // }
+    return Promise.all(Object.keys(users).map(user => _runTests(users[user])));
   }
   await runTests(testUsers);
 });

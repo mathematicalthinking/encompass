@@ -10,8 +10,8 @@ const host = helpers.host;
 const testUsers = require('./fixtures/users');
 
 
-xdescribe('Sections', async function () {
-  async function runTests(users) {
+describe('Sections', async function () {
+  function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
@@ -206,10 +206,8 @@ xdescribe('Sections', async function () {
         });
       });
     }
-    for (let user of Object.keys(users)) {
-      // eslint-disable-next-line no-await-in-loop
-      await _runTests(users[user]);
-    }
+    return Promise.all(Object.keys(users).map(user => _runTests(users[user])));
+
   }
   await runTests(testUsers);
 });
