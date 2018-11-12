@@ -3,71 +3,58 @@
 @import "responsive-font-size";
 
 #workspace-list-container{
-  .sort-bar {
-    .sort-bar-item {
-      // font-size: .9em;
-      // text-align: left;
-      // padding: 15px 0;
-      border: 1px solid red;
-      &.name {
-        order: 2;
-      }
-      &.mode {
-        padding-left: 15px;
-        @include flex-item(1, center, .07 0 auto);
-        width: 7%;
-        &:hover {
-          cursor: pointer;
-          color: black;
-          .hover-menu {
-            display: inline;
-          }
-        }
-      }
-      &.last-viewed {
-        @include flex-item(3, center, .07 0 auto);
-        width: 7%;
-        &:hover {
-          cursor: pointer;
-          color: black;
-        }
-      }
-      &.submissions {
-        @include flex-item(4, center, .07 0 auto);
-        width: 7%;
-      }
-      &.owner {
-        @include flex-item(5, center, .07 0 auto);
-        width: 17%;
-      }
-      &.editors {
-        @include flex-item(6, center, .07 0 auto);
-        width: 7%;
-      }
+  .sort-bar-item, .item-section {
+    font-size: .9em;
+    text-align: center;
+    &:hover {
+      cursor: pointer;
+      color: black;
+    }
+    &.mode {
+      @include flex-item(1, center, .05 0 auto);
+      width: 5%;
+    }
+    &.name {
+      @include flex-item(3, center, .24 0 auto);
+      width: 24%;
+      text-align: left;
+      // padding-left: 10px;
+    }
+    &.last-viewed {
+      @include flex-item(4, center, .08 0 auto);
+      width: 8%;
+    }
+    &.submissions {
+      @include flex-item(5, center, .07 0 auto);
+      width: 7%;
+    }
+    &.selections {
+      @include flex-item(6, center, .07 0 auto);
+      width: 7%;
+    }
+    &.comments {
+      @include flex-item(7, center, .07 0 auto);
+      width: 7%;
+    }
+    &.responses {
+      @include flex-item(8, center, .07 0 auto);
+      width: 7%;
+    }
+    &.owner {
+      @include flex-item(9, center, .09 0 auto);
+      width: 9%;
+    }
+    &.editors {
+      @include flex-item(10, center, .07 0 auto);
+      width: 7%;
+    }
+    &.info-item {
+      @include flex-item(2, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
     }
   }
-
-
-  .item-container {
-    .item-section {
-      &.mode {
-        order: 1;
-      }
-      &.name {
-        order: 2;
-      }
-      &.last-viewed {
-        order: 3;
-      }
-      &.submissions {
-        order: 4;
-      }
-      &.owner {
-        order: 5;
-      }
-      &.editors{
-        order: 6;
-      }
-    }
+  .item-section {
+    font-size: 1em;
   }
 }
