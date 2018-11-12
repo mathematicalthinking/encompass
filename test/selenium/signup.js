@@ -12,7 +12,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 
-xdescribe('Signup form', function () {
+describe('Signup form', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {

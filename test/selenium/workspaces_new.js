@@ -12,7 +12,7 @@ const host = helpers.host;
 let topLink = css.topBar.workspacesNew;
 let url = `${host}/#/workspaces/new`;
 
-xdescribe('Workspaces New', async function() {
+describe('Workspaces New', async function() {
   this.timeout(helpers.timeoutTestMsStr);
   async function runTests(users) {
     function _runTests(user) {

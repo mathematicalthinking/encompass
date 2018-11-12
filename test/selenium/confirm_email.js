@@ -15,7 +15,7 @@ const confirmLink = `${host}${confirmPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${confirmPath}/${fixtures.userLiveToken.invalidToken}`;
 const expiredResetLink = `${host}${confirmPath}/${fixtures.userExpiredToken.token}`;
 
-xdescribe('Confirm Email', function () {
+describe('Confirm Email', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {

@@ -15,7 +15,7 @@ const resetLink = `${host}${resetPath}/${fixtures.userLiveToken.token}`;
 const invalidResetLink = `${host}${resetPath}/${fixtures.userLiveToken.invalidToken}`;
 const expiredResetLink = `${host}${resetPath}/${fixtures.userExpiredToken.token}`;
 
-xdescribe('Resetting Password', function () {
+describe('Resetting Password', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {

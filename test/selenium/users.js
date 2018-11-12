@@ -10,7 +10,7 @@ const css = require('./selectors');
 const host = helpers.host;
 
 
-xdescribe('Users', function() {
+describe('Users', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {
