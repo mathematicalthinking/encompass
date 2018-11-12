@@ -11,7 +11,7 @@
     </div>
     <div class="item-section last-viewed">
       {{#link-to 'workspace.work' workspace class="workspace-last-viewed"}}
-        {{format-date workspace.lastModifiedDate 'L'}}
+        {{format-date workspace.lastModifiedDateComp 'L'}}
       {{/link-to}}
     </div>
     <div class="item-section submissions">
@@ -45,7 +45,7 @@
     <div class="item-card row-1">
       <div class="item-card privacy">
         <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
-        <span class="date">{{format-date workspace.lastModifiedDate 'L'}}</span>
+        <span class="date">{{format-date workspace.lastModifiedDateComp 'L'}}</span>
       </div>
       <div class="item-card more">
         {{#link-to 'workspace.info' workspace.id}}
