@@ -9,7 +9,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
   searchOptions: ['all', 'name', 'owner', 'editors'],
   searchCriterion: 'all',
-  sortCriterion: { name: 'A-Z', sortParam: { name: 1 }, doCollate: true, type: 'name' },
+  sortCriterion: { name: 'Newest', sortParam: { lastModifiedDate: -1 }, doCollate: true, type: 'lastModifiedDate' },
   sortOptions: {
     name: [
       {sortParam: null, icon: 'fas fa-minus'},
@@ -71,7 +71,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
   listResultsMessage: function() {
     let msg;
-    let userOrgName = this.get('userOrgName');
+    // let userOrgName = this.get('userOrgName');
     if (this.get('isFetchingWorkspaces')) {
       if (this.get('showLoadingMessage')) {
         msg = 'Loading results... Thank you for your patience.';
