@@ -90,17 +90,18 @@ module.exports = function (grunt) {
             clearCacheFilter: (key) => true,
             noFail: false
           },
-          src: ['test/selenium/fixtures/*.js',
-                'test/selenium/base.js',
-                'test/selenium/comments.js',
-                'test/selenium/folders.js',
-                'test/selenium/helpers.js',
+          src: [
+                // 'test/selenium/fixtures/*.js',
+                // 'test/selenium/base.js',
+                // 'test/selenium/comments.js',
+                // 'test/selenium/folders.js',
+                // 'test/selenium/helpers.js',
                 'test/selenium/problems.js',
-                'test/selenium/responses.js',
-                'test/selenium/sections.js',
-                'test/selenium/selectors.js',
-                'test/selenium/workspaces_new.js',
-                'test/selenium/worksapces.js',
+                // 'test/selenium/responses.js',
+                // 'test/selenium/sections.js',
+                // 'test/selenium/selectors.js',
+                // 'test/selenium/workspaces_new.js',
+                // 'test/selenium/worksapces.js',
               ]
       },
       api: {

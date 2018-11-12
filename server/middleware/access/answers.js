@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const _ = require('underscore');
 module.exports.get = {};
 
 const accessibleAnswersQuery = async function(user, ids) {
