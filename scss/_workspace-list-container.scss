@@ -2,7 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-#workspace-list-container{
+#workspace-list-container {
   .sort-bar-item, .item-section {
     font-size: .9em;
     text-align: center;
@@ -56,5 +56,141 @@
   }
   .item-section {
     font-size: 1em;
+  }
+
+  #layout-view {
+    &.grid-view {
+      .sort-bar {
+        background-color: $background-body;
+        max-width: 1000px;
+        .sort-bar-item {
+          text-align: center;
+          &.mode {
+            @include flex-item(1, center, .07 0 auto);
+            width: 7%;
+          }
+          &.name {
+            @include flex-item(2, center, .15 0 auto);
+            width: 15%;
+          }
+          &.last-viewed {
+            @include flex-item(3, center, .10 0 auto);
+            width: 10%;
+          }
+          &.submissions {
+            @include flex-item(4, center, .10 0 auto);
+            width: 10%;
+          }
+          &.selections {
+            @include flex-item(5, center, .10 0 auto);
+            width: 10%;
+          }
+          &.comments {
+            @include flex-item(6, center, .10 0 auto);
+            width: 10%;
+          }
+          &.responses {
+            @include flex-item(7, center, .10 0 auto);
+            width: 10%;
+          }
+          &.editors {
+            @include flex-item(8, center, .10 0 auto);
+            width: 10%;
+          }
+          &.info-item, &.owner {
+            display: none;
+          }
+        }
+      }
+      #workspace-list {
+        width: inherit;
+        .main-list {
+          @include flex-container(auto, auto, row, wrap, center, center, center);
+        }
+        .workspace-list-item {
+          @include flex-item(1, auto, 1 1 auto);
+          width: 600px;
+          .item-card-container {
+            margin: 5px;
+            box-shadow: $box-shadow;
+            border-radius: 5px;
+            padding: 10px;
+            display: block;
+            @include flex-container(375px, hidden, column, wrap, space-between, stretch, stretch);
+            &:hover {
+              background-color: $list-hover-color;
+            }
+            .item-card {
+              &.row-1 {
+                @include flex-item(1, auto, 1 0 auto);
+                padding: 10px;
+                max-height: 25px;
+                .privacy {
+                  text-align: left;
+                  float: left;
+                  .privacy-icon {
+                    margin-right: 5px;
+                    font-size: 1.2em;
+                  }
+                  .date {
+                    margin-left: 10px;
+                    position: relative;
+                    top: -3px;
+                  }
+                }
+                .more {
+                  float: right;
+                  font-size: 1.2em;
+                  margin-top: 5px;
+                  cursor: pointer;
+                }
+              }
+              &.row-2 {
+                @include flex-item(2, auto, 1 0 auto);
+                padding: 15px 12px 10px 12px;
+                a {
+                  color: black;
+                  &.active {
+                    font-weight: $bolder-font-weight;
+                    background-color: $background-body !important;
+                  }
+                }
+                text-transform: capitalize;
+                max-height: 22px;
+                overflow-y: hidden;
+                // max-width: 450px;
+              }
+              &.row-3 {
+                @include flex-item(3, auto, 1 0 auto);
+                padding: 15px 12px 10px 12px;
+                overflow: hidden;
+                max-height: 86px;
+                // max-width: 450px;
+                a {
+                  &.active {
+                    font-weight: $bolder-font-weight;
+                    background-color: $background-body !important;
+                  }
+                }
+              }
+              &.row-4 {
+                @include flex-item(4, auto, 1 0 auto);
+                padding: 10px 10px 15px 10px;
+                max-height: 25px;
+                .status {
+                  float: left;
+                  position: relative;
+                  margin-top: 5px;
+                }
+                .action {
+                  float: right;
+                  margin-right: -5px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

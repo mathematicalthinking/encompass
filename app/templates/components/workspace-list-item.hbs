@@ -27,7 +27,7 @@
       {{workspace.responsesLength}}
     </div>
     <div class="item-section owner">
-      {{workspace.owner.displayName}}
+      {{workspace.owner.username}}
     </div>
     <div class="item-section editors">
       {{workspace.editorsLength}}
@@ -45,24 +45,12 @@
     <div class="item-card row-1">
       <div class="item-card privacy">
         <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
-        <span class="date">{{format-date workspace.lastModifiedDate 'MM/DD/YY'}}</span>
+        <span class="date">{{format-date workspace.lastModifiedDate 'L'}}</span>
       </div>
-      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
-        <i class="fas fa-ellipsis-v more-menu"></i>
-        {{#if showMoreMenu}}
-        <span class="click-menu">
-          <ul>
-            {{#each ellipsisMenuOptions as |option|}}
-            <li {{action option.action}}>
-              <label>
-                <span class="icon-text">{{option.label}}</span>
-                <i class={{option.icon}}></i>
-              </label>
-            </li>
-            {{/each}}
-          </ul>
-        </span>
-        {{/if}}
+      <div class="item-card more">
+        {{#link-to 'workspace.info' workspace.id}}
+          <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
+        {{/link-to}}
       </div>
     </div>
     <div class="item-card row-2">
@@ -74,9 +62,7 @@
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        {{!-- {{#link-to 'workspace.work' workspace class="workspace-name"}}
-          {{{workspace.text}}}
-        {{/link-to}} --}}
+        {{{workspace.owner.username}}}
       </div>
     </div>
     <div class="item-card row-4">
@@ -87,21 +73,6 @@
         <span class="status-text">
           {{workspace.status}}
         </span> --}}
-      </div>
-      <div class="item-card action">
-        {{!-- {{#if currentUser.isAdmin}}
-          {{#if (is-equal workspace.status 'approved')}}
-            <button {{action "confirmStatusUpdate" workspace "name" "flagged"}} class="primary-button">Flag</button>
-          {{else}}
-            <button {{action "confirmStatusUpdate" workspace "name" "approved"}} class="primary-button approve">Approve</button>
-          {{/if}}
-        {{else}}
-          {{#if (is-equal workspace.status 'pending')}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Add</button>
-          {{else}}
-            <button class="primary-button" {{action "assignProblem"}}>Assign</button>
-          {{/if}}
-        {{/if}} --}}
       </div>
     </div>
   </div>
