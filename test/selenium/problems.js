@@ -75,6 +75,8 @@ describe('Problems', async function () {
 
           it('should update problem list when clicking on Public', async function () {
             if (!isStudent) {
+              let islabelVisible = await helpers.isElementVisible(driver, '#everyone');
+              console.log('islabelVisible', islabelVisible);
               await helpers.findAndClickElement(driver, '#everyone');
               let resultsMsg = `${problems.public.count} problems found`;
               expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
