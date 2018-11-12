@@ -75,14 +75,9 @@ describe('Problems', async function () {
 
             it('should update problem list when clicking on Public', async function () {
               if (!isStudent) {
-                let islabelVisible = await helpers.isElementVisible(driver, '#everyone');
-                let isliVisible = await helpers.isElementVisible(driver, 'li.filter-everyone');
-                console.log('islabelVisible', islabelVisible);
-                console.log('islabelVisible', isliVisible);
-                console.log('is labellabel visible', await helpers.isElementVisible(driver, 'li.filter-everyone label.radio-label'));
-                await driver.takeScreenshot();
                 await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                 let resultsMsg = `${problems.public.count} problems found`;
+                await helpers.waitForTextInDom(resultsMsg);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
@@ -91,6 +86,7 @@ describe('Problems', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 let resultsMsg = `${problems.mine.count} problems found`;
+                await helpers.waitForTextInDom(resultsMsg);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
@@ -106,6 +102,7 @@ describe('Problems', async function () {
                 it('should update problem list when clicking on My Org', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.org.total} problems found`;
+                    await helpers.waitForTextInDom(resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
@@ -184,6 +181,7 @@ describe('Problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.category.noSub} problems found`;
                     await helpers.findAndClickElement(driver, '.subfilter');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     return handleRetries(driver, async function () {
                       expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                     }, 3);
