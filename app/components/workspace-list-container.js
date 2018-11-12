@@ -42,7 +42,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'Fewest', sortParam: { responses: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'responses'}
     ],
     owner: [
-      {sortParam: null, icon: null},
+      {sortParam: null, icon: 'fas fa-minus'},
       { name: 'A-Z', sortParam: { owner: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'owner' },
       { owner: 'Z-A', sortParam: { owner: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'owner' },
     ],
@@ -176,7 +176,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   },
 
   configureFilter: function() {
-    let currentUserOrgName = this.get('userOrgName');
+    // let currentUserOrgName = this.get('userOrgName');
 
     let filter = {
       primaryFilters:
@@ -184,42 +184,32 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
           selectedValue: "mine",
           inputs: {
             mine: {
-              label: "Mine", value: "mine", isChecked: true, icon: "fas fa-user"
+              label: "Mine",
+              value: "mine",
+              isChecked: true,
+              icon: "fas fa-user"
             },
-              myOrg: {
-                label: "My Org",
-                value: "myOrg",
-                isChecked: false,
-                icon: "fas fa-university",
-                secondaryFilters: {
-                  selectedValues: ["recommended", "fromOrg"],
-                  inputs: {
-                    recommended: {
-                      label: "Recommended",
-                      value: "recommended",
-                      isChecked: true,
-                      isApplied: true,
-                      icon: "fas fa-lightbulb"
-                    },
-                      fromOrg: {
-                        label: `Created by ${currentUserOrgName} Members`,
-                        value: "fromOrg",
-                        isChecked: true,
-                        isApplied: true,
-                        icon: "fas fa-users"
-                      }
-                    }
-                  }
-                },
-              everyone: {
-                label: "Public",
-                value: "everyone",
-                isChecked: false,
-                icon: "fas fa-globe",
-              }
-            }
+            // member: {
+            //   label: "Participating",
+            //   value: "member",
+            //   isChecked: true,
+            //   icon: "fas fa-users"
+            // },
+            myOrg: {
+              label: "My Org",
+              value: "myOrg",
+              isChecked: false,
+              icon: "fas fa-university",
+            },
+            everyone: {
+              label: "Public",
+              value: "everyone",
+              isChecked: false,
+              icon: "fas fa-globe",
           }
-        };
+        }
+      }
+    };
     let isAdmin = this.get('currentUser.isAdmin');
 
     if (isAdmin) {
@@ -471,6 +461,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
   buildQueryParams: function(page) {
     let sortBy = this.buildSortBy();
+    console.log('sortBy in build queryParams is', sortBy);
     let filterBy = this.buildFilterBy();
 
     if (this.get('criteriaTooExclusive') ) {
