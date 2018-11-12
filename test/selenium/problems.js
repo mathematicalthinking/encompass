@@ -163,7 +163,7 @@ describe('Problems', async function () {
                     await helpers.clearElement(driver, '#categories-filter-selectized');
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
                     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
-                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    // await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
@@ -259,14 +259,19 @@ describe('Problems', async function () {
                 it('should update problem list and display message', async function () {
                   await helpers.findAndClickElement(driver, '#toggle-trashed');
                   let resultsMsg = `2 problems found - Displaying Trashed Problems`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
                 it('should restore a trashed problem', async function () {
                   await helpers.findAndClickElement(driver, 'button.primary-button');
-                  await helpers.findAndClickElement(driver, 'button.swal2-confirm');
                   await driver.sleep(500);
+                  await helpers.waitForAndClickElement(driver, 'button.swal2-confirm' );
+                  // await helpers.findAndClickElement(driver, 'button.swal2-confirm');
                   let resultsMsg = `1 problems found - Displaying Trashed Problems`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+                  // expect(await helpers.isTextInDom(resultsMsg)).to.be.true;
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 

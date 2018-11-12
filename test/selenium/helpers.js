@@ -160,12 +160,12 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = ti
   }
 };
 
-const waitForTextInDom = async function (webDriver, text) {
+const waitForTextInDom = async function (webDriver, text, timeout=timeoutMs) {
   try {
     return await webDriver.wait(async function () {
       let result = await isTextInDom(webDriver, text);
       return result;
-    });
+    }, timeout);
   } catch (err) {
     console.log(err);
   }
