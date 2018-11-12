@@ -26,8 +26,23 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'Most', sortParam: { submissions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'submissions' },
       { name: 'Fewest', sortParam: { submissions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'submissions'}
     ],
+    selections: [
+      { sortParam: null, icon: 'fas fa-minus'},
+      { name: 'Most', sortParam: { selections: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'selections' },
+      { name: 'Fewest', sortParam: { selections: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'selections'}
+    ],
+    comments: [
+      { sortParam: null, icon: 'fas fa-minus'},
+      { name: 'Most', sortParam: { comments: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'comments' },
+      { name: 'Fewest', sortParam: { comments: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'comments'}
+    ],
+    responses: [
+      { sortParam: null, icon: 'fas fa-minus'},
+      { name: 'Most', sortParam: { responses: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'responses' },
+      { name: 'Fewest', sortParam: { responses: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'responses'}
+    ],
     owner: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: null},
       { name: 'A-Z', sortParam: { owner: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'owner' },
       { owner: 'Z-A', sortParam: { owner: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'owner' },
     ],
