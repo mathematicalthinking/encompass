@@ -1,3 +1,3 @@
-Encompass.WorkspaceListItem = Ember.Component.extend(Encompass.CurrentUserMixin, {
-  classNames: ['workspace-list-item']
+Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  classNames: ['workspace-list-item'],
 });
