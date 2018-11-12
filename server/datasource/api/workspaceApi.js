@@ -929,7 +929,7 @@ function newWorkspaceRequest(req, res, next) {
         }
       }
       }
-      let sortParam = { name: 1 };
+      let sortParam = { lastModifiedDate: -1 };
       let doCollate = true;
       let byRelevance = false;
 
