@@ -77,7 +77,7 @@ describe('Problems', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                 let resultsMsg = `${problems.public.count} problems found`;
-                await helpers.waitForTextInDom(resultsMsg);
+                await helpers.waitForTextInDom(driver, resultsMsg);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
@@ -86,7 +86,7 @@ describe('Problems', async function () {
               if (!isStudent) {
                 await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 let resultsMsg = `${problems.mine.count} problems found`;
-                await helpers.waitForTextInDom(resultsMsg);
+                await helpers.waitForTextInDom(driver, resultsMsg);
                 expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
               }
             });
@@ -102,7 +102,7 @@ describe('Problems', async function () {
                 it('should update problem list when clicking on My Org', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.org.total} problems found`;
-                    await helpers.waitForTextInDom(resultsMsg);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
