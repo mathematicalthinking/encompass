@@ -2,10 +2,36 @@
 @import "mixins";
 @import "responsive-font-size";
 
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 1131px) {
+  #workspace-list-container {
+    .sort-bar-item, .item-section {
+      &.comments {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
+  #workspace-list-container {
+    .sort-bar-item, .item-section {
+      &.responses {
+        display: none;
+      }
+    }
+  }
+}
+
 #workspace-list-container {
   .sort-bar-item, .item-section {
     font-size: .9em;
     text-align: center;
+    .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
+      font-size: .7em;
+      position: relative;
+      top: -1px;
+    }
     &:hover {
       cursor: pointer;
       color: black;
@@ -63,8 +89,11 @@
       .sort-bar {
         background-color: $background-body;
         max-width: 1000px;
+        @include flex-container(auto, auto, row, wrap, center, center, center);
         .sort-bar-item {
           text-align: center;
+          min-width: fit-content;
+          margin: 0 10px;
           &.mode {
             @include flex-item(1, center, .07 0 auto);
             width: 7%;
@@ -116,15 +145,14 @@
             border-radius: 5px;
             padding: 10px;
             display: block;
-            @include flex-container(375px, hidden, column, wrap, space-between, stretch, stretch);
+            @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
             &:hover {
               background-color: $list-hover-color;
             }
             .item-card {
               &.row-1 {
                 @include flex-item(1, auto, 1 0 auto);
-                padding: 10px;
-                max-height: 25px;
+                padding: 15px 10px;
                 .privacy {
                   text-align: left;
                   float: left;
@@ -140,14 +168,15 @@
                 }
                 .more {
                   float: right;
-                  font-size: 1.2em;
+                  font-size: 1.3em;
                   margin-top: 5px;
                   cursor: pointer;
                 }
               }
               &.row-2 {
                 @include flex-item(2, auto, 1 0 auto);
-                padding: 15px 12px 10px 12px;
+                // border: 1px solid blue;
+                padding: 20px 15px 15px 15px;
                 a {
                   color: black;
                   &.active {
@@ -156,16 +185,12 @@
                   }
                 }
                 text-transform: capitalize;
-                max-height: 22px;
                 overflow-y: hidden;
-                // max-width: 450px;
               }
               &.row-3 {
                 @include flex-item(3, auto, 1 0 auto);
-                padding: 15px 12px 10px 12px;
-                overflow: hidden;
-                max-height: 86px;
-                // max-width: 450px;
+                padding: 0px 15px 15px 15px;
+                // border: 1px solid orange;
                 a {
                   &.active {
                     font-weight: $bolder-font-weight;
@@ -175,16 +200,21 @@
               }
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
-                padding: 10px 10px 15px 10px;
-                max-height: 25px;
-                .status {
-                  float: left;
-                  position: relative;
-                  margin-top: 5px;
-                }
-                .action {
-                  float: right;
-                  margin-right: -5px;
+                padding: 20px 10px 20px 10px;
+                // border: 1px solid purple;
+                .workspace-stats {
+                  text-align: center;
+                  // border: 1px solid red;
+                  @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+                  li {
+                    // border: 1px solid green;
+                    @include flex-item(1, auto, 1 0 auto);
+                    line-height: 2em;
+                    min-width: 100px;
+                    .stat-header {
+                      color: black;
+                    }
+                  }
                 }
               }
             }

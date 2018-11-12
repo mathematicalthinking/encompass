@@ -27,7 +27,7 @@
       {{workspace.responsesLength}}
     </div>
     <div class="item-section owner">
-      {{workspace.owner.username}}
+      {{workspace.owner.displayName}}
     </div>
     <div class="item-section editors">
       {{workspace.editorsLength}}
@@ -62,17 +62,33 @@
     </div>
     <div class="item-card row-3">
       <div class="item-card description">
-        {{{workspace.owner.username}}}
+        {{{workspace.owner.displayName}}}
       </div>
     </div>
     <div class="item-card row-4">
       <div class="item-card status">
-        {{!-- <svg height="20" width="20">
-          <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
-        </svg>
-        <span class="status-text">
-          {{workspace.status}}
-        </span> --}}
+        <ul class="workspace-stats">
+          <li>
+            <p class="stat-header">Answers</p>
+            <p>{{workspace.submissionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Selections</p>
+            <p>{{workspace.selectionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Comments</p>
+            <p>{{workspace.commentsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Responses</p>
+            <p>{{workspace.responsesLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Editors</p>
+            <p>{{workspace.editorsLength}}</p>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
