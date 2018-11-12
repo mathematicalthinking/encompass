@@ -79,8 +79,9 @@ describe('Problems', async function () {
               let isliVisible = await helpers.isElementVisible(driver, 'li.filter-everyone');
               console.log('islabelVisible', islabelVisible);
               console.log('islabelVisible', isliVisible);
+              console.log('is labellabel visible', await helpers.isElementVisible(driver, 'li.filter-everyone label.radio-label'));
               await driver.takeScreenshot();
-              await helpers.findAndClickElement(driver, '#everyone');
+              await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
               let resultsMsg = `${problems.public.count} problems found`;
               expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
