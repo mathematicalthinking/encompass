@@ -74,7 +74,7 @@
             onUpdate=(action "updateSortCriterion")
             initialState=1
             options=sortOptions.name
-            label="Name"
+            label="Workspace Name"
             parentProp=sortCriterion
             type="name"
             activeType=sortCriterion.type}}
@@ -86,21 +86,44 @@
             label="Last Modified"
             type="lastModifiedDate"
             activeType=sortCriterion.type
-            }}
-
-          {{!-- <div class="sort-bar-item submissions">
-            Submissions <i class="fas fa-filter sort-icon"></i>
-          </div> --}}
+          }}
           {{toggle-control
             classToAdd="sort-bar-item submissions"
             onUpdate=(action "updateSortCriterion")
             initialState=0
             options=sortOptions.submissions
-            label="Submissions"
+            label="Answers"
             type="submissions"
             activeType=sortCriterion.type
-            }}
-            {{toggle-control
+          }}
+          {{toggle-control
+            classToAdd="sort-bar-item selections"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.selections
+            label="Selections"
+            type="selections"
+            activeType=sortCriterion.type
+          }}
+          {{toggle-control
+            classToAdd="sort-bar-item comments"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.comments
+            label="Comments"
+            type="comments"
+            activeType=sortCriterion.type
+          }}
+          {{toggle-control
+            classToAdd="sort-bar-item responses"
+            onUpdate=(action "updateSortCriterion")
+            initialState=0
+            options=sortOptions.responses
+            label="Responses"
+            type="Responses"
+            activeType=sortCriterion.type
+          }}
+          {{toggle-control
             classToAdd="sort-bar-item owner"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -108,10 +131,8 @@
             label="Owner"
             parentProp=sortCriterion
             type="owner"
-            activeType=sortCriterion.type}}
-          {{!-- <div class="sort-bar-item owner">
-            Owner <i class="fas fa-filter sort-icon"></i>
-          </div> --}}
+            activeType=sortCriterion.type
+          }}
           {{toggle-control
             classToAdd="sort-bar-item editors"
             onUpdate=(action "updateSortCriterion")
@@ -120,12 +141,7 @@
             label="Editors"
             type="editors"
             activeType=sortCriterion.type
-            }}
-          {{!-- <div class="sort-bar-item editors">
-            Editors <i class="fas fa-filter sort-icon"></i>
-          </div> --}}
-          <div class="sort-bar-item action"></div>
-          <div class="sort-bar-item more"></div>
+          }}
         </div>
         {{#if showList}}
           {{workspace-list isSearching=isSearchingWorkspaces workspaces=workspaces metadata=workspacesMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toWorkspaceInfo="toWorkspaceInfo"
