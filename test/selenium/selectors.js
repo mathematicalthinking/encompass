@@ -181,7 +181,7 @@ module.exports = {
       {
         myOrg: "li.filter-myOrg",
         children: [
-          { recommended: "li.recommended" },
+          { recommended: "li.recommended"},
           { createdOrg: "li.fromOrg" }
         ]
       },

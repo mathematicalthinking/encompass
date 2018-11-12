@@ -109,7 +109,7 @@ describe('Problems', async function () {
 
                 it('should update problem list when unchecking created by members', async function () {
                   if (!isStudent) {
-                    await helpers.waitForAndClickElement(driver, 'li.fromOrg');
+                    await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
                     // await helpers.findAndClickElement(driver, 'li.fromOrg');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.org.recommended} problems found`;
@@ -121,7 +121,7 @@ describe('Problems', async function () {
 
                 it('should update problem list when unchecking recommended', async function () {
                   if (!isStudent) {
-                    await helpers.waitForAndClickElement(driver, 'li.recommended');
+                    await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     await helpers.waitForTextInDom(driver, css.noResultsMsg);
 
@@ -131,7 +131,7 @@ describe('Problems', async function () {
 
                 it('should update problem list when checking created by members', async function () {
                   if (!isStudent) {
-                    await helpers.waitForAndClickElement(driver, 'li.fromOrg');
+                    await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.org.members} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
@@ -144,7 +144,7 @@ describe('Problems', async function () {
               describe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
-                    await helpers.findAndClickElement(driver, 'li.filter-everyone');
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                     await helpers.findAndClickElement(driver, '.category-header');
                   }
                 });
