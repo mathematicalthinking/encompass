@@ -6,7 +6,7 @@ Encompass.EncWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
   startDate: DS.attr('date'),
   endDate: DS.attr('date'),
   pdSetName: DS.attr('string'),
-  folderSetName: DS.attr('string'),
+  folderSet: DS.belongsTo('folderSet', {  inverse: null }),
   requestedName: DS.attr('string'),
   createdWorkspace: DS.belongsTo('workspace'),
   isEmptyAnswerSet: DS.attr('boolean', { default: null }),

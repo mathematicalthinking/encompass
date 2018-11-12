@@ -190,7 +190,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         section: this.get('selectedSection'),
         startDate: startDate,
         endDate: endDate,
-        folderSetName: this.get('selectedFolderSet.name'),
+        folderSet: this.get('selectedFolderSet'),
         requestedName,
         mode,
         owner
