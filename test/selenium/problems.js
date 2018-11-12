@@ -367,22 +367,25 @@ describe('Problems', async function () {
                   });
 
                   it('should uncheck public then update the list and display message', async function () {
-                    await helpers.findAndClickElement(driver, 'li.shared');
+                    await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.all.pows.private} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   });
 
                   it('should uncheck private then show no problems', async function () {
-                    await helpers.findAndClickElement(driver, 'li.unshared');
+                    await helpers.findAndClickElement(driver, 'li.unshared label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForTextInDom(driver, css.noResultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
                   });
 
                   it('should check private then update the list and display message', async function () {
-                    await helpers.findAndClickElement(driver, 'li.shared');
+                    await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.all.pows.public} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   });
                 });
