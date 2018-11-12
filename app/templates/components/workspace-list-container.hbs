@@ -7,7 +7,7 @@
       primaryFilter=primaryFilter
       adminFilterSelect=adminFilterSelect
       orgs=organizations
-      }}
+    }}
   </div>
 
   <div class="flex-item-full list-view">
@@ -15,14 +15,14 @@
       <h1>Workspaces</h1>
       <div class="searchbar">
         {{search-bar
-        onSearch=(action "searchWorkspaces")
-        showFilter=true
-        searchOptions = searchOptions
-        basePlaceholder="Search workspaces"
-        inputValue=searchInputValue
-        clearSearchResults=(action "clearSearchResults")
-        selectedCriterion=searchCriterion
-        }}
+          onSearch=(action "searchWorkspaces")
+          showFilter=true
+          searchOptions = searchOptions
+          basePlaceholder="Search workspaces"
+          inputValue=searchInputValue
+          clearSearchResults=(action "clearSearchResults")
+          selectedCriterion=searchCriterion
+          }}
 
         {{#link-to 'workspaces.new' id="workspace-new-link" class="new-link-btn"}}
           <i class="fas fa-plus"></i>
@@ -35,7 +35,7 @@
           {{listResultsMessage}}
         </div>
         <div class="side-icons">
-          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh problem list"></i>
+          <i class="fas fa-redo-alt refresh-icon" {{action 'triggerFetch'}} title="Refresh Workspace list"></i>
           <span class="layout-icons">
           {{#if showList}}
             <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">
@@ -63,13 +63,15 @@
                     isChecked=option.isChecked
                     groupName="mode"
                     onClick=(action "updateMode")
-                    groupValue=selectedMode}}
+                    groupValue=selectedMode
+                  }}
                 </li>
                 {{/each}}
               </ul>
             </span>
           </div>
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item name"
             onUpdate=(action "updateSortCriterion")
             initialState=1
@@ -77,8 +79,10 @@
             label="Workspace Name"
             parentProp=sortCriterion
             type="name"
-            activeType=sortCriterion.type}}
-          {{toggle-control
+            activeType=sortCriterion.type
+          }}
+          {{
+            toggle-control
             classToAdd="sort-bar-item last-viewed"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -87,7 +91,8 @@
             type="lastModifiedDate"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item submissions"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -96,7 +101,8 @@
             type="submissions"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item selections"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -105,7 +111,8 @@
             type="selections"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item comments"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -114,7 +121,8 @@
             type="comments"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item responses"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -123,7 +131,8 @@
             type="Responses"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item owner"
             onUpdate=(action "updateSortCriterion")
             initialState=0
@@ -133,7 +142,8 @@
             type="owner"
             activeType=sortCriterion.type
           }}
-          {{toggle-control
+          {{
+            toggle-control
             classToAdd="sort-bar-item editors"
             onUpdate=(action "updateSortCriterion")
             initialState=0
