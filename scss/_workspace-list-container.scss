@@ -5,6 +5,10 @@
 #workspace-list-container{
   .sort-bar {
     .sort-bar-item {
+      // font-size: .9em;
+      // text-align: left;
+      // padding: 15px 0;
+      border: 1px solid red;
       &.name {
         order: 2;
       }
@@ -42,6 +46,7 @@
       }
     }
   }
+
 
   .item-container {
     .item-section {
