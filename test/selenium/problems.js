@@ -89,7 +89,7 @@ describe('Problems', async function () {
 
           it('should update problem list when clicking on Mine', async function () {
             if (!isStudent) {
-              await helpers.findAndClickElement(driver, '#mine');
+              await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               let resultsMsg = `${problems.mine.count} problems found`;
               expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             }
@@ -98,7 +98,7 @@ describe('Problems', async function () {
           describe('Clicking on My Org filter option', function () {
             before(async function () {
               if (!isStudent) {
-                await helpers.findAndClickElement(driver, '#myOrg');
+                await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
               }
             });
 
