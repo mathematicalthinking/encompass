@@ -63,11 +63,11 @@
       }
     }
   }
-    .hover-menu {
-      position: absolute;
-      margin-top: 28px;
-      margin-left: -100px;
-    }
+  .hover-menu {
+    position: absolute;
+    margin-top: 28px;
+    margin-left: -100px;
+  }
 }
 
 
@@ -405,7 +405,7 @@
             }
           }
         }
-        #admin-problem-filter {
+        #admin-problem-filter, #admin-workspace-filter {
           background-color: $background-body;
           padding: 10px 0 20px 20px;
           .choose-filter-admin {
@@ -726,12 +726,15 @@
     padding: 8px 0;
     text-transform: capitalize;
     color: $primary-font-color;
+    text-align: left;
     label {
       cursor: pointer;
       padding-right: 5px;
+      text-align: left;
     }
     input[type=radio] {
       margin-right: 15px;
+      float: left;
     }
     i {
       margin-right: 10px;
