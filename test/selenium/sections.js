@@ -10,7 +10,7 @@ const host = helpers.host;
 const testUsers = require('./fixtures/users');
 
 
-describe('Sections', async function () {
+xdescribe('Sections', async function () {
   async function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;

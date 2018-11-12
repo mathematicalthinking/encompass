@@ -9,7 +9,7 @@ const dbSetup = require('../data/restore');
 
 const host = helpers.host;
 
-describe('Comments', function() {
+xdescribe('Comments', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {

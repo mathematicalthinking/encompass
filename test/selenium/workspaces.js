@@ -11,7 +11,7 @@ const css = require('./selectors');
 const host = helpers.host;
 const workspaceId = '53e36522b48b12793f000d3b';
 
-describe('Visiting Workspaces', function() {
+xdescribe('Visiting Workspaces', function() {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function() {

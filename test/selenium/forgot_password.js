@@ -12,7 +12,7 @@ const host = helpers.host;
 const url = `${host}/#/auth/forgot`;
 const messages = fixtures.messages;
 
-describe('Forgot Password', function () {
+xdescribe('Forgot Password', function () {
   this.timeout(helpers.timeoutTestMsStr);
   let driver = null;
   before(async function () {
