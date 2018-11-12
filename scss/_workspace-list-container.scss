@@ -39,6 +39,13 @@
     &.mode {
       @include flex-item(1, center, .05 0 auto);
       width: 5%;
+      &:hover {
+        cursor: pointer;
+        color: black;
+        .hover-menu {
+          display: inline;
+        }
+      }
     }
     &.name {
       @include flex-item(3, center, .24 0 auto);
