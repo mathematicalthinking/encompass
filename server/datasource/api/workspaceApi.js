@@ -1006,7 +1006,6 @@ function sortWorkspaces(sortParam, req, criteria) {
       }
       }
       let sortParam = { lastModifiedDate: -1 };
-
       let doCollate, byRelevance;
 
       if (sortBy) {
@@ -1018,15 +1017,15 @@ function sortWorkspaces(sortParam, req, criteria) {
       const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
       let results, itemCount;
 
-      let key = Object.keys(sortParam)[0];
+      let sortField = Object.keys(sortParam)[0];
       let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'editors'];
 
       if (byRelevance) {
-      [results, itemCount] = await Promise.all([
-        models.Workspace.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-        models.Workspace.count(criteria)
-      ]);
-      } else if (sortParam && sortableFields.includes(key)) {
+        [results, itemCount] = await Promise.all([
+          models.Workspace.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+      } else if (sortParam && sortableFields.includes(sortField)) {
         results = await sortWorkspaces(sortParam, req, criteria);
         itemCount = await models.Workspace.count(criteria);
       } else if (doCollate) {
@@ -1040,7 +1039,6 @@ function sortWorkspaces(sortParam, req, criteria) {
           models.Workspace.count(criteria)
         ]);
        }
-
 
       const pageCount = Math.ceil(itemCount / req.query.limit);
       console.log('pageCount', pageCount);
