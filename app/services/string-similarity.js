@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.StringSimilarityService = Ember.Service.extend({
   compareTwoStrings (str1, str2) {
     if (!str1.length && !str2.length) { // if both are empty strings

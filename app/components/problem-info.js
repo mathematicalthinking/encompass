@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-info',
   classNames: ['side-info'],

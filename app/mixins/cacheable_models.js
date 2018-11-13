@@ -1,12 +1,12 @@
 /**
   * # Cacheable Models Mixin
-  * @description adds a cache method to the DS.Store (when mixed in) that chooses 
+  * @description adds a cache method to the DS.Store (when mixed in) that chooses
   *   between store.all() and store.find()
   *   this uses the meta sinceToken from the server response
   *   the server needs to send this (and should only send it for findAll operations)
   * @return {PromiseArray} wrapping either store.all (if cached) or store.find(model) (findAll)
   * @param {String} model - the model you are looking for (eg 'workspace')
-  * @param {Object} options 
+  * @param {Object} options
     {
       expiration: 180, //max age in seconds of the last findAll, if greater, we'll update the store
       bypass: false    //ignore the cache, force a findAll
@@ -15,6 +15,7 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.2
   */
+/*global _:false */
 Encompass.CacheableModels = Ember.Mixin.create({
   since: function(model) {
     //var meta = model.get('meta');

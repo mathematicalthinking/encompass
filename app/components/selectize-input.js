@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.SelectizeInputComponent = Ember.Component.extend({
   showInput: true,
   classNames: ['selectize-comp'],

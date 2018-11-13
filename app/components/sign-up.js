@@ -1,4 +1,4 @@
-/* eslint-disable */
+/*global _:false */
 Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['signup-page'],
   usernameExists: false,
@@ -98,7 +98,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   getSimilarOrgs(orgRequest) {
     let stopWords = ['university', 'college', 'school', 'the', 'and', 'of', 'for', ' '];
 
-    let orgs = this.get('organizations')
+    let orgs = this.get('organizations');
 
     if (!orgs) {
       return [];
@@ -311,7 +311,6 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       let org = this.get('organizations').findBy('id', val);
       console.log('org', org);
       if (!org) {
-        console.log('org request!: ', val)
         return;
       }
       this.set('org', org);
@@ -346,7 +345,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
               let ret = {
                 name: input,
                 id: input
-              }
+              };
               return callback(ret);
             }
             console.log('result.value', result.value);

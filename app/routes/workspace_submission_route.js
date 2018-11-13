@@ -6,6 +6,7 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
+/*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
 
   /*

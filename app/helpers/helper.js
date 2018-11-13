@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.Helper = {
   /**
    * Summarize the property of a set of objects

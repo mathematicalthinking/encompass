@@ -64,6 +64,7 @@ async function getPowsProblems(criteria, isIdOnly) {
 async function buildPowsFilterBy(pows) {
   let filter = {};
   let powIds;
+  let criteria;
 
   if (pows === 'all') {
     criteria = {
@@ -212,6 +213,7 @@ async function buildProblemsFilter(user, hash) {
       criteria: null
     };
 
+
     if (!hash) {
       return results;
     }
@@ -225,6 +227,7 @@ async function buildProblemsFilter(user, hash) {
     if (!query && !criterion) {
       return results;
     }
+    let searchFilter;
 
     if (criterion === 'general') {
       let topLevelStringProps = ['title'];

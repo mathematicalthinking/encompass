@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.UtilityMethodsService = Ember.Service.extend({
   isNullOrUndefined(val) {
     return _.isNull(val) || _.isUndefined(val);

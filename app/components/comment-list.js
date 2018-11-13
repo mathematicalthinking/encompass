@@ -10,6 +10,7 @@
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
+/*global _:false */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),

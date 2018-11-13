@@ -340,6 +340,19 @@ function cloneDocuments(model, documents) {
     }));
 }
 
+function mapObjectsToIds(objects, asStrings=false) {
+  if (!isNonEmptyArray(objects)) {
+    return;
+  }
+
+  if (asStrings) {
+    return _.map(objects, obj => obj._id.toString());
+  }
+  return _.map(objects, obj => obj._id);
+
+}
+
+
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
 module.exports.findAndReturnIds = findAndReturnIds;
@@ -353,3 +366,4 @@ module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
 module.exports.cloneDocuments = cloneDocuments;
 module.exports.isNonEmptyObject = isNonEmptyObject;
+module.exports.mapObjectsToIds = mapObjectsToIds;

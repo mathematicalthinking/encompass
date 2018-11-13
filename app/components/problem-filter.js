@@ -4,6 +4,7 @@
 // primaryFilter
 // orgs
 
+/*global _:false */
 Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.CategoriesListMixin, {
   elementId: 'problem-filter',
   primaryFilterValue: Ember.computed.alias('primaryFilter.value'),

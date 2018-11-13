@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   classNames: ['problem-list-item'],
   classNameBindings: ['isPublic', 'isPrivate', 'isOrg', 'isPows'],
