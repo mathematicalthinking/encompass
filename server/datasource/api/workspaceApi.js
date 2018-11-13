@@ -852,10 +852,11 @@ function newWorkspaceRequest(req, res, next) {
 
 
 
-function sortWorkspaces(sortParam, req, criteria) {
+function sortWorkspaces(model, sortParam, req, criteria) {
   let limit = req.query.limit;
   let skip = req.skip;
   console.log('criteria is', criteria);
+  console.log('model is', model);
   let key = Object.keys(sortParam)[0];
   let value = parseInt(sortParam[key], 0);
   let aggregateArray = [];
@@ -920,9 +921,6 @@ function sortWorkspaces(sortParam, req, criteria) {
   //   }
   // );
 }
-
-
-
 
 
 
@@ -1026,7 +1024,7 @@ function sortWorkspaces(sortParam, req, criteria) {
           models.Workspace.count(criteria)
         ]);
       } else if (sortParam && sortableFields.includes(sortField)) {
-        results = await sortWorkspaces(sortParam, req, criteria);
+        results = await apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria);
         itemCount = await models.Workspace.count(criteria);
       } else if (doCollate) {
         [results, itemCount] = await Promise.all([
