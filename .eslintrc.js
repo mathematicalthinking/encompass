@@ -2,12 +2,22 @@ module.exports = {
     "env": {
         "browser": true,
         "node": true,
-        "es6": true
+        "es6": true,
+        "mocha": true
     },
     "extends": "eslint:recommended",
     "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 2017
+    },
+    "globals": {
+        "Ember": true,
+        "DS": true,
+        "Encompass": true,
+        "$": true,
+        "moment": true,
+        "SelectionHighlighting": true,
+        "guiders": true
     },
     "rules": {
         "accessor-pairs": "error",
@@ -102,7 +112,7 @@ module.exports = {
         "no-caller": "error",
         "no-catch-shadow": "error",
         "no-confusing-arrow": "error",
-        "no-undef": "off",
+        "no-undef": 2,
         "no-continue": "error",
         "no-console": "off",
         "no-unused-vars": ["warn", { "args": "none" }],
