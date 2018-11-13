@@ -1587,7 +1587,7 @@ async function handleNewFolders(user, wsInfo, folderIds, options) {
 //     console.error(`Error handleComments: ${err}`);
 //   }
 // }
-function buildSelectionsKey(originalSelectionIds, selectionsConfig) {
+function buildSelectionsKey(submissionSels, originalSelectionIds, selectionsConfig) {
   const hash = {};
   const { all, none, bySelection } = selectionsConfig;
 
@@ -1596,54 +1596,64 @@ function buildSelectionsKey(originalSelectionIds, selectionsConfig) {
   }
 
   const ids = all ? originalSelectionIds : bySelection;
-
-
-    _.each(ids, (id => {
-      hash[id] = true;
-    }));
-
-    return hash;
+  const filteredIds = _.filter(ids, (id => {
+    return submissionSels[id];
+  }));
+  _.each(filteredIds, (id => {
+    hash[id] = true;
+  }));
+  return hash;
 }
 
-// async function copyComment(user, oldCommentId, newSubId, newSelId, ) {
-//   return models.Comment.findById(oldCommentId).lean().exec()
-//     .then((oldComment => {
-//       if (_.isNull(oldComment)) {
-//         return null;
-//       }
+function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
+  return models.Comment.findById(oldCommentId).lean().exec()
+    .then((oldComment => {
+      if (_.isNull(oldComment)) {
+        return null;
+      }
+      const oldCommentSelectionId = oldComment.selection;
 
-//       const newComment = new models.Comment({
-//         createdBy: oldComment.createdBy,
-//         lastModifiedBy: oldComment.lastModifiedBy,
-//         coordinates: oldComment.coordinates,
-//         text: oldComment.text,
-//         label: oldComment.label,
-//         useForResponse: oldComment.useForResponse,
-//         selection: newSelId,
-//         submission: newSubId,
-//         workspace: newSub.workspace,
-//         type: oldComment.type
-//       });
-//     }))
-//     .catch((err => {
-//       console.error(`Error copyComment: ${err}`);
-//     }));
-// }
 
-// function copyComments(oldCommentIds, commentsKey, oldSub, newSub, newSelId, newSubId) {
-//   if (!_.isArray(oldCommentIds)) {
-//     return [];
-//   }
+      const newComment = new models.Comment({
+        createdBy: oldComment.createdBy,
+        lastModifiedBy: oldComment.lastModifiedBy,
+        coordinates: oldComment.coordinates,
+        text: oldComment.text,
+        label: oldComment.label,
+        useForResponse: oldComment.useForResponse,
+        selection: selectionsKey[oldCommentSelectionId],
+        submission: newSub._id,
+        workspace: newWsId,
+        type: oldComment.type
+      });
+      return newComment.save().then((comment) => {
+        return comment._id;
+      });
+    }))
+    .catch((err => {
+      console.error(`Error copyComment: ${err}`);
+    }));
+}
 
-//   return Promise.all(_.map(oldCommentIds, (id => {
-//     if (_.isUndefined(commentsKey[id])) {
-//       return null;
-//     }
-//     return copyComment(user, id, oldSub, newSub, newSelId, newSubId );
-//   })));
-// }
+function copyComments(commentsKey, newSub, selectionsKey, newWsId) {
+  const oldCommentIds = newSub.comments;
+  if (!apiUtils.isNonEmptyArray(oldCommentIds)) {
+    return [];
+  }
 
-function copySelection(user, oldSelId, newSubId, newWsId) {
+  return Promise.all(
+    _.chain(oldCommentIds)
+      .filter((commentId) => {
+        return commentsKey[commentId];
+      })
+      .map((id) => {
+        return copyComment(id, newSub, selectionsKey, newWsId);
+      })
+      .value()
+  );
+}
+
+function copySelection(user, oldSelId, newSubId, newWsId, selectionsKey) {
   // oldSel is objectId
   // oldSub is json Object
   // newSub is functional mongoose Submission document
@@ -1665,9 +1675,13 @@ function copySelection(user, oldSelId, newSubId, newWsId) {
         comments: oldSelection.comments,
         taggings: oldSelection.taggings
       });
+
       // selections have array of comments
       // const newComments = await copyComments(oldSelection.comments, newSel._id, newSub._id);
-      return newSel.save();
+      return newSel.save().then((sel) => {
+        selectionsKey[oldSelId] = sel._id;
+        return sel;
+      });
 
     }))
     .catch((err) => {
@@ -1687,7 +1701,8 @@ function copySelections(user, selectionsKey, oldSub, newSub, newWsId) {
         return _.isUndefined(selectionsKey[selId.toString()]);
       })
       .map((selId) => {
-        return copySelection(user, selId, newSub._id, newWsId)
+        // update selectionsKey
+        return copySelection(user, selId, newSub._id, newWsId, selectionsKey)
           .then((newSel) => {
             return newSel._id;
 
@@ -1695,6 +1710,27 @@ function copySelections(user, selectionsKey, oldSub, newSub, newWsId) {
       })
       .value()
   );
+}
+
+// buildCommentsKey(selectionsKey, originalWs.comments, commentsConfig);
+async function buildCommentsKey(selectionsKey, originalCommentIds, commentsConfig) {
+  const hash = {};
+  const { all, none, byComment } = commentsConfig;
+  if (none) {
+    return hash;
+  }
+
+  const ids = all ? originalCommentIds : byComment;
+  // filter ids based on selectionsKey
+
+const comments = await models.Comment.find({_id: {$in: ids}});
+const filtered = _.filter(comments, (comment) => {
+  return comment.selection && selectionsKey[comment.selection];
+});
+_.each(filtered, (comment => {
+  hash[comment._id] = true;
+}));
+return hash;
 }
 
 async function cloneWorkspace(req, res, next) {
@@ -1730,6 +1766,8 @@ async function cloneWorkspace(req, res, next) {
 
     let answerSet;
     let subsWithAnswers;
+    let submissionsKey = {};
+    let submissionSels = {};
 
     const copiedAnswers = originalWs.answers;
 
@@ -1753,6 +1791,7 @@ async function cloneWorkspace(req, res, next) {
         console.log(`empty answer set for workspace ${originalWsId}`);
         return utils.sendResponse(res, 'This workspace does not have any answers');
       }
+
       answerSet = _.map(subsWithAnswers, (sub => {
         submissionsMap[sub.answer._id] = sub;
         return sub.answer;
@@ -1760,6 +1799,20 @@ async function cloneWorkspace(req, res, next) {
     }
     // answerSet is array of populated answer docs
     let answersToClone = buildAnswersToClone(answerSet, answersConfig);
+
+    _.each(answersToClone, (ans => {
+      let sub = submissionsMap[ans._id];
+
+      if (sub) {
+        submissionsKey[sub._id] = true;
+
+        if (apiUtils.isNonEmptyArray(sub.selections)) {
+          _.each(sub.selections, (selId) => {
+            submissionSels[selId] = true;
+          });
+        }
+      }
+    }));
 
     // new documents
     if (!apiUtils.isNonEmptyArray(answersToClone)) {
@@ -1796,10 +1849,11 @@ async function cloneWorkspace(req, res, next) {
     // user does not want to copy any selections
     // thus cannot include any comments or taggings
     // check responses
-    const selectionsKey = buildSelectionsKey(originalWs.selections, selectionsConfig);
+    const selectionsKey = buildSelectionsKey(submissionSels, originalWs.selections, selectionsConfig);
     const newSubsWithSelections = await Promise.all(
       _.map(submissions, (submission) => {
         let oldSub = submissionsMap[submission._id];
+        submission.comments = oldSub.comments;
         return copySelections(user, selectionsKey, oldSub, submission, newWs._id)
           .then((selIds) => {
             if (apiUtils.isNonEmptyArray(selIds)) {
@@ -1809,6 +1863,35 @@ async function cloneWorkspace(req, res, next) {
           });
       }));
 
+      let sels = newSubsWithSelections.map((sub) => {
+        return sub.selections;
+      });
+      let flattened = _.flatten(sels);
+      newWs.selections = flattened;
+
+    // desired selections have been copied
+    // now determine which comments to include (can o)
+    const commentsKey = await buildCommentsKey(selectionsKey, originalWs.comments, commentsConfig);
+
+    // oldCommentIds, commentsKey, newSub
+    const newSubsWithComments = await Promise.all(
+      _.map(newSubsWithSelections, (submission) => {
+        return copyComments(commentsKey, submission, selectionsKey, newWs._id)
+        .then((commentIds) => {
+          if (apiUtils.isNonEmptyArray(commentIds)) {
+            submission.comments = commentIds;
+          }
+          return submission.save();
+        });
+      })
+    );
+
+    newWs.comments = _.chain(newSubsWithComments)
+      .map((sub) => {
+        return sub.comments;
+      })
+      .flatten()
+      .value();
 
     const submissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
 
@@ -1821,11 +1904,7 @@ async function cloneWorkspace(req, res, next) {
     newWs.submissions = submissionIds;
     newWs.submissionSet = submissionSet;
 
-    let sels = newSubsWithSelections.map((sub) => {
-      return sub.selections;
-    });
-    let flattened = _.flatten(sels);
-    newWs.selections = flattened;
+
 
   /*
     handle selections config first
