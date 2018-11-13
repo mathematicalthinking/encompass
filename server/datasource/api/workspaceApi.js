@@ -850,6 +850,82 @@ function newWorkspaceRequest(req, res, next) {
   });
 }
 
+
+
+function sortWorkspaces(sortParam, req, criteria) {
+  let limit = req.query.limit;
+  let skip = req.skip;
+  console.log('criteria is', criteria);
+  let key = Object.keys(sortParam)[0];
+  let value = parseInt(sortParam[key], 0);
+  let aggregateArray = [];
+  let sortObj = { "$sort" : { "length": value } };
+  let limitObj = { "$limit": limit };
+  let skipObj = { "$skip": skip };
+  let matchObj = { "$match" : criteria };
+  let matchNest = matchObj.$match;
+  matchNest[key] = { $exists: true, $ne: null };
+  let projectObj = { "$project" : { } };
+  let projNest = projectObj.$project;
+  projNest.createdBy = 1;
+  projNest.createDate = 1;
+  projNest.isTrashed = 1;
+  projNest.lastModifiedBy = 1;
+  projNest.lastModifiedDate = 1;
+  projNest.lastViewed = 1;
+  projNest.name = 1;
+  projNest.owner = 1;
+  projNest.editors = 1;
+  projNest.mode = 1;
+  projNest.folders = 1;
+  projNest.submissionSet = 1;
+  projNest.responses = 1;
+  projNest.selections = 1;
+  projNest.comments = 1;
+  projNest.taggings = 1;
+  projNest.submissions = 1;
+  projNest.length = { "$size": '$' + key };
+
+  aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
+
+  console.log('matchObj is', matchObj);
+
+  return models.Workspace.aggregate(aggregateArray).exec();
+
+  //   await models.Workspace.aggregate(
+  //   [
+  //     {
+  //       "$match": {
+  //         criteria,
+  //         submissions: {
+  //           $exists: true,
+  //           $ne: null
+  //         },
+  //       }
+  //     },
+  //     {
+  //       "$project": {
+  //         "submissions": 1,
+  //         "length": { "$size": "$submissions" }
+  //       }
+  //     },
+  //     { "$sort": { "length": 1 } },
+  //     { "$limit": req.query.limit },
+  //     { "$skip": req.skip },
+  // ], function(err, workspaces) {
+  //     if (err) {
+  //       console.log('err is', err);
+  //     }
+  //     console.log('workspaces');
+  //   }
+  // );
+}
+
+
+
+
+
+
 /**
   * @public
   * @method getWorkspaces
@@ -930,33 +1006,41 @@ function newWorkspaceRequest(req, res, next) {
       }
       }
       let sortParam = { lastModifiedDate: -1 };
-      let doCollate = true;
-      let byRelevance = false;
+
+      let doCollate, byRelevance;
 
       if (sortBy) {
         sortParam = sortBy.sortParam;
         doCollate = sortBy.doCollate;
         byRelevance = sortBy.byRelevance;
       }
+
       const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
       let results, itemCount;
 
+      let key = Object.keys(sortParam)[0];
+      let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'editors'];
+
       if (byRelevance) {
-        [ results, itemCount ] = await Promise.all([
-          models.Workspace.find(criteria, { score: {$meta: "textScore"}}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Workspace.count(criteria)
-        ]);
+      [results, itemCount] = await Promise.all([
+        models.Workspace.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        models.Workspace.count(criteria)
+      ]);
+      } else if (sortParam && sortableFields.includes(key)) {
+        results = await sortWorkspaces(sortParam, req, criteria);
+        itemCount = await models.Workspace.count(criteria);
       } else if (doCollate) {
-         [ results, itemCount ] = await Promise.all([
-          models.Workspace.find(criteria).collation({locale: 'en', strength: 1}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+        [results, itemCount] = await Promise.all([
+          models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
           models.Workspace.count(criteria)
         ]);
-      } else {
+       } else {
         [ results, itemCount ] = await Promise.all([
           models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
           models.Workspace.count(criteria)
         ]);
-      }
+       }
+
 
       const pageCount = Math.ceil(itemCount / req.query.limit);
       console.log('pageCount', pageCount);
