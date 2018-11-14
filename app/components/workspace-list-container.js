@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-list-container',
   showList: true,
