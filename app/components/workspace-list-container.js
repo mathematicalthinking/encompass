@@ -467,7 +467,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
   buildQueryParams: function(page) {
     let sortBy = this.buildSortBy();
-    console.log('sortBy in build queryParams is', sortBy);
     let filterBy = this.buildFilterBy();
 
     if (this.get('criteriaTooExclusive') ) {
@@ -712,14 +711,12 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       if (!val) {
         return;
       }
-      console.log('selectedMode before is', this.get('selectedMode'));
       this.set('selectedMode', val);
-      console.log('selectedMode after is', this.get('selectedMode'));
       this.send('triggerFetch');
     },
-    toggleMenu: function() {
-      this.set('menuClosed', !this.get('menuClosed'));
+    toggleMenu: function () {
       $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
     },
     toWorkspaceInfo(workspace) {
