@@ -16,7 +16,7 @@ var ProblemSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  title: { type: String, required: true },
+  title: { type: String, required: true, trim: true },
   puzzleId: { type: Number },  // old POWs converted puzzle id
   text: { type: String },
   imageUrl: { type: String },

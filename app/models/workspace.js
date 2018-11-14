@@ -8,6 +8,7 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   comments: DS.hasMany('comment', {async: true}),
   taggings: DS.hasMany('tagging', {async: false}),
   lastViewed: DS.attr('date'),
+  lastModifiedDate: DS.attr('date'),
   lastViewedDate: Ember.computed(function() {
     if (!this.get('lastViewed')) {
       return this.get('lastModifiedDate');
@@ -15,6 +16,13 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
       return this.get('createDate');
     } else {
       return this.get('lastViewed');
+    }
+  }),
+  lastModifiedDateComp: Ember.computed(function() {
+    if (!this.get('lastModifiedDate')) {
+      return this.get('createDate');
+    } else {
+      return this.get('lastModifiedDate');
     }
   }),
 

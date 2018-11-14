@@ -28,8 +28,8 @@ Encompass.Router.map(function() {
   // WORKSPACES PARENT ROUTE
   this.route("workspaces", function(){
     this.route("index", {path: "/"});
-    this.route("mine");
-    this.route("public");
+    // this.route("mine");
+    // this.route("public");
     this.route("new");
     this.route("workspace", {resetNamespace: true, path: '/:workspace_id'}, function(){
     //this.resource("workspace", {path: '/:workspace_id'}, function(){

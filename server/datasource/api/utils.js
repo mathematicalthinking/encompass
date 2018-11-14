@@ -1,6 +1,6 @@
 const _ = require('underscore');
 const models = require('../schemas');
-
+const mongoose = require('mongoose');
 
 async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
   try {
@@ -237,6 +237,80 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
+const stringToObjectId = function(id) {
+  console.log('id is', id);
+};
+
+const sortWorkspaces = function(model, sortParam, req, criteria) {
+  // Limit and skip are passed in with the req
+  let limit = req.query.limit;
+  let skip = req.skip;
+
+  // Determine which field should be sorted and what value
+  let sortField = Object.keys(sortParam)[0];
+  let value = parseInt(sortParam[sortField], 0);
+
+  let aggregateArray = [];
+
+  // Creating objects to add to the aggregate pipeline
+  let sortObj = { "$sort" : { "length": value } };
+  let limitObj = { "$limit": limit };
+  let skipObj = { "$skip": skip };
+
+  console.log('criteria is', criteria);
+  // Match Obj takes the passed in criteria, as well as checking sortable field exists
+  criteria.$and.forEach((criterion) => {
+    if (criterion.hasOwnProperty('createdBy')) {
+      let value = criterion.createdBy;
+      let updatedValue = mongoose.Types.ObjectId(value);
+      criterion.createdBy = updatedValue;
+    }
+    if (criterion.hasOwnProperty('$or')) {
+      criterion.$or.forEach((crit) => {
+        if (crit.hasOwnProperty('createdBy')) {
+          let value = crit.createdBy;
+          let updatedValue = mongoose.Types.ObjectId(value);
+          crit.createdBy = updatedValue;
+        }
+        if (crit.hasOwnProperty('owner')) {
+          let value = crit.owner;
+          if (value.hasOwnProperty('$in')) {
+            value.$in.forEach((val) => {
+              val = mongoose.Types.ObjectId(val);
+            });
+          } else {
+            let updatedValue = mongoose.Types.ObjectId(value);
+            crit.owner = updatedValue;
+          }
+        }
+      });
+    }
+  });
+
+  let matchObj = { "$match" : criteria };
+  let matchNest = matchObj.$match;
+  matchNest[sortField] = { $exists: true, $ne: null };
+
+  // Project object iterates of keys of schema and then adds a length field to selected sortField
+  let projectObj = { "$project" : { } };
+  let projNest = projectObj.$project;
+  let schema = require('mongoose').model(model).schema;
+  let schemaObj = schema.obj;
+  let ObjKeys = Object.keys(schemaObj);
+  ObjKeys.forEach((key) => {
+    projNest[key] = 1;
+  });
+  projNest.length = { "$size": '$' + sortField };
+
+  // All objects are pushed into the aggregate array
+  aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
+
+  // Return results of aggregate by provied model
+  return models[model].aggregate(aggregateArray).exec();
+};
+
+
+
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
 module.exports.findAndReturnIds = findAndReturnIds;
@@ -247,3 +321,6 @@ module.exports.capitalizeString = capitalizeString;
 module.exports.capitalizeWord = capitalizeWord;
 module.exports.getSafeName = getSafeName;
 module.exports.isNonEmptyString = isNonEmptyString;
+module.exports.sortWorkspaces = sortWorkspaces;
+module.exports.stringToObjectId = stringToObjectId;
+

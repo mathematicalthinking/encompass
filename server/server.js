@@ -169,7 +169,7 @@ server.get('/auth/google/callback', auth.googleReturn);
 //ALL GET REQUESTS
 server.get('/api/users', api.get.users);
 server.get('/api/users/:id', path.validateId(), api.get.user);
-server.get('/api/workspaces', api.get.workspaces);
+server.get('/api/workspaces', paginate.middleware(20,100), api.get.workspaces);
 server.get({ path: '/api/workspaces/:id', version: '0.0.1' }, path.validateId(), fixed.workspace);
 server.get('/api/workspaces/:id', path.validateId(), api.get.workspace);
 server.get('/api/folders', api.get.folders);

@@ -14,14 +14,14 @@
   }
   textarea {
     border-radius: 3px;
-    padding: 5px;
-    height: 20px;
+    padding: 10px;
+    height: 50px;
     transition-property: height;
     transition-duration: .2s;
     transition-timing-function: ease;
-    &:focus {
-      height: 60px;
-    }
+    // &:focus {
+    //   height: 60px;
+    // }
   }
   .error-message {
     text-align: center;
@@ -31,7 +31,7 @@
   }
   .cancel-button {
     font-size: 1em;
-    padding: 5px 10px;
+    padding: 10px 10px;
     background-color: white;
     border-radius: 3px;
   }

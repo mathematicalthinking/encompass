@@ -46,7 +46,7 @@ var UserSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
   /* + The username is the mfapps username */
-  username: { type: String, unique: true, required: true },
+  username: { type: String, unique: true, required: true , trim: true},
   accountType: { type: String, enum: ['A', 'P', 'T', 'S'], required: true },
   isAdmin: Boolean, // depricated - needed to convert to new accountType field
   /* + Are they otherwise authorized for EnCoMPASS */
@@ -57,10 +57,10 @@ var UserSchema = new Schema({
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
   actingRole: { type: String, enum: ['teacher', 'student'] },
   name: { type: String },
-  email: { type: String },
+  email: { type: String, trim: true },
   googleId: { type: String },
   // key: { type: String },
-  password: { type: String },
+  password: { type: String, trim: true },
   // forcePwdChg: { type: Boolean },
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },

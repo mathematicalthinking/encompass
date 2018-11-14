@@ -44,10 +44,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       workspace.set('lastModifiedDate', new Date());
       workspace.set('lastModifiedBy', this.get('currentUser'));
     }
+    workspace.save();
 
-    workspace.save().catch((err) => {
-      this.handleErrors(err, 'wsSaveErrors', workspace);
-    });
+    // workspace.save().catch((err) => {
+
+    //   this.handleErrors(err, 'wsSaveErrors', workspace);
+    // });
+    // can't set errors on destroyed component
 
     this._super(...arguments);
   },

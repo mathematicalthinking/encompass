@@ -727,7 +727,7 @@ function prepareAndUpdateWorkspaces(user, callback) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
-function sendWorkspaces(req, res, next) {
+ function sendWorkspaces(req, res, next) {
   var user = userAuth.requireUser(req);
   logger.info('in sendWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
@@ -861,32 +861,168 @@ function newWorkspaceRequest(req, res, next) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
-  let criteria = await access.get.workspaces(user);
-    models.Workspace.find(criteria).exec(function(err, workspaces) {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      workspaces.forEach((workspace) => {
-        if (!workspace.lastViewed) {
-          workspace.lastViewed = workspace.lastModifiedDate;
-          if (!workspace.lastModifiedDate) {
-            workspace.lastViewed = workspace.createDate;
+
+  let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+
+      if (filterBy) {
+        console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        let { all } = filterBy;
+
+        if (all) {
+          let { org } = all;
+          if (org) {
+            let crit = {};
+            let { organizations } = org;
+
+            if (organizations) {
+            if (!crit.$or) {
+              crit.$or = [];
+            }
+             crit.$or.push({organization: {$in: organizations}});
+           }
+
+           if (!filterBy.$and) {
+             filterBy.$and = [];
+           }
+           filterBy.$and.push(crit);
+           delete filterBy.all;
           }
-           workspace.save();
         }
-      });
-      var response = {
-        workspaces: workspaces,
-        meta: { sinceToken: new Date() }
-      };
-      if(req.body) {
-        if(req.body.hasOwnProperty('importRequest')) {
-          response = {importRequest: req.body.importRequest};
+      }
+      let searchFilter = {};
+
+      if (searchBy) {
+        let { query, criterion } = searchBy;
+      if (criterion) {
+        if (criterion === 'all') {
+          let topLevelStringProps = ['name'];
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
+          searchFilter.$or = [];
+          for (let prop of topLevelStringProps) {
+            searchFilter.$or.push({[prop]: regex});
+          }
+          let [ownerIds, editorIds] = await Promise.all([
+            await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
+            await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
+          ]);
+
+
+          let combined = _.flatten(ownerIds.concat(editorIds));
+          let uniqueIds = _.uniq(combined);
+          searchFilter.$or.push({ _id: {$in: uniqueIds} });
+
+
+        } else if (criterion === 'owner') {
+          let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
+          searchFilter = {_id: {$in: ids}};
+
+        } else if (criterion === 'editors') {
+          let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
+          searchFilter = {_id: {$in: ids}};
+
+        } else {
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+          searchFilter = {[criterion]: regex};
         }
+      }
+      }
+      let sortParam = { lastModifiedDate: -1 };
+      let doCollate, byRelevance;
+
+      if (sortBy) {
+        sortParam = sortBy.sortParam;
+        doCollate = sortBy.doCollate;
+        byRelevance = sortBy.byRelevance;
       }
 
-      utils.sendResponse(res, response);
-    });
+      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
+      let results, itemCount;
+
+      let sortField = Object.keys(sortParam)[0];
+      let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'editors'];
+
+      if (byRelevance) {
+        [results, itemCount] = await Promise.all([
+          models.Workspace.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+      } else if (sortParam && sortableFields.includes(sortField)) {
+        results = await apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria);
+        itemCount = await models.Workspace.count(criteria);
+      } else if (doCollate) {
+        [results, itemCount] = await Promise.all([
+          models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+       } else {
+        [ results, itemCount ] = await Promise.all([
+          models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+          models.Workspace.count(criteria)
+        ]);
+       }
+
+      const pageCount = Math.ceil(itemCount / req.query.limit);
+      console.log('pageCount', pageCount);
+      let currentPage = page;
+      if (!currentPage) {
+        currentPage = 1;
+      }
+      console.log('currentPage', currentPage);
+      const data = {
+        'workspaces': results,
+        'meta': {
+          'total': itemCount,
+          pageCount,
+          currentPage
+        }
+      };
+      // console.log('data', data);
+
+      // models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
+      //   if (err) {
+      //     return utils.sendError.InternalError(err, res);
+      //   }
+      //   var response = {
+      //     workspaces: workspaces,
+      //     meta: { sinceToken: new Date() }
+      //   };
+      //   if(req.body) {
+      //     if(req.body.hasOwnProperty('importRequest')) {
+      //       response = {importRequest: req.body.importRequest};
+      //     }
+      //   }
+
+        return utils.sendResponse(res, data);
+
+  // let criteria = await access.get.workspaces(user);
+  //   models.Workspace.find(criteria).exec(function(err, workspaces) {
+  //     if (err) {
+  //       return utils.sendError.InternalError(err, res);
+  //     }
+  //     workspaces.forEach((workspace) => {
+  //       if (!workspace.lastViewed) {
+  //         workspace.lastViewed = workspace.lastModifiedDate;
+  //         if (!workspace.lastModifiedDate) {
+  //           workspace.lastViewed = workspace.createDate;
+  //         }
+  //          workspace.save();
+  //       }
+  //     });
+  //     var response = {
+  //       workspaces: workspaces,
+  //       meta: { sinceToken: new Date() }
+  //     };
+  //     if(req.body) {
+  //       if(req.body.hasOwnProperty('importRequest')) {
+  //         response = {importRequest: req.body.importRequest};
+  //       }
+  //     }
+
+  //     utils.sendResponse(res, response);
+  //   });
 
 }
 
@@ -1051,10 +1187,6 @@ async function answersToSubmissions(answers) {
           teacher.id = primaryTeacher;
         }
       }
-
-
-
-
 
       let sub = {
         //longAnswer: ans.explanation,

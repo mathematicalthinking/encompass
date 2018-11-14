@@ -28,7 +28,7 @@ describe('Visiting Workspaces', function() {
 
   it('should land us at /workspaces', async function() {
     await helpers.waitForAndClickElement(driver, css.topBar.workspaces);
-    await helpers.waitForSelector(driver, '#workspace_listing');
+    await helpers.waitForSelector(driver, '#workspace-list-container');
     expect(await helpers.getCurrentUrl(driver)).to.equal(`${host}/#/workspaces`);
   });
 
@@ -43,7 +43,7 @@ describe('Visiting Workspaces', function() {
     }catch(err) {
       console.log(err);
     }
-    expect(names.length).to.eql(2);
+    expect(names.length).to.eql(3);
   });
 
   describe('Visiting ESI 2014 Wednesday Reflection', function() {
