@@ -99,7 +99,7 @@ var data = [
     "lastViewed" : "2018-11-14T15:00:52.991Z",
     "feedbackAuthorizers" : [],
     "permissions" : [],
-    "taggings" : [],
+    "taggings" : ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368","5bec38338c73047613e2f36b","5bec386a8c73047613e2f36d"],
     "comments" : [
         "5bec375d8c73047613e2f35e",
         "5bec37708c73047613e2f35f",
