@@ -1,5 +1,6 @@
 const _ = require('underscore');
 const models = require('../schemas');
+const mongoose = require('mongoose');
 
 
 async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
@@ -254,6 +255,14 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let skipObj = { "$skip": skip };
 
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
+  criteria.$and.forEach((criterion) => {
+    if (criterion.hasOwnProperty('createdBy')) {
+      let value = criterion.createdBy;
+      let updatedValue = mongoose.Types.ObjectId(value);
+      criterion.createdBy = updatedValue;
+    }
+  });
+
   let matchObj = { "$match" : criteria };
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };
@@ -275,6 +284,8 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Return results of aggregate by provied model
   return models[model].aggregate(aggregateArray).exec();
 };
+
+
 
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
