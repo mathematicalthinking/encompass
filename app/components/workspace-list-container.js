@@ -187,7 +187,26 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               label: "Mine",
               value: "mine",
               isChecked: true,
-              icon: "fas fa-user"
+              icon: "fas fa-user",
+              secondaryFilters: {
+                selectedValues: ["createdBy", "owner"],
+                inputs: {
+                  createdBy: {
+                    label: "Created By Me",
+                    value: "createdBy",
+                    isChecked: true,
+                    isApplied: true,
+                    icon: "fas fa-wrench"
+                  },
+                  owner: {
+                    label: 'Owner',
+                    value: "owner",
+                    isChecked: true,
+                    isApplied: true,
+                    icon: "fas fa-building"
+                  }
+                }
+              }
             },
             // member: {
             //   label: "Participating",
