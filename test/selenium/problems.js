@@ -29,7 +29,6 @@ describe('Problems', async function () {
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
 
-
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
         let driver = null;
@@ -45,6 +44,7 @@ describe('Problems', async function () {
         after(function() {
           return driver.quit();
         });
+
         if (!isStudent) {
           describe('Visiting problems main page', function () {
             before(async function () {
@@ -92,7 +92,7 @@ describe('Problems', async function () {
             });
 
             if (!isStudent) {
-              describe('Clicking on My Org filter option', function () {
+              xdescribe('Clicking on My Org filter option', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
@@ -110,11 +110,9 @@ describe('Problems', async function () {
                 it('should update problem list when unchecking created by members', async function () {
                   if (!isStudent) {
                     await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-                    // await helpers.findAndClickElement(driver, 'li.fromOrg');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.org.recommended} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
@@ -124,7 +122,6 @@ describe('Problems', async function () {
                     await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     await helpers.waitForTextInDom(driver, css.noResultsMsg);
-
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
                   }
                 });
@@ -135,13 +132,12 @@ describe('Problems', async function () {
                     await helpers.waitForSelector(driver, css.resultsMesasage);
                     let resultsMsg = `${problems.org.members} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
-
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
               });
 
-              describe('Clicking on Category filter menu', function () {
+              xdescribe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -243,13 +239,54 @@ describe('Problems', async function () {
 
 
               });
+
+//SEARCH BAR
+//Test that there are 2 drop down items
+//Search works with enter and clicking button
+//Clear button shows when query is applied or text in field
+//Clearing search bar resets results properly
+//Searching only applies to results of primary filters
+//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
+
+              describe('Testing search bar', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.waitForSelector(driver, '.search-bar-comp');
+                  }
+                });
+
+                it('should have two search options', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await driver.sleep(5000);
+                  }
+                });
+
+                // it('should show problems when adding category with problems to list', async function () {
+                //   if (!isStudent) {
+                //     let resultsMsg = `${problems.category.k} problems found`;
+                //     await helpers.clearElement(driver, '#categories-filter-selectized');
+                //     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
+                //     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
+                //     // await helpers.waitForTextInDom(driver, resultsMsg);
+                //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                //   }
+                // });
+
+                // it('should show more problems when adding category with problems to list', async function () {
+                //   if (!isStudent) {
+                //     let resultsMsg = `${problems.category.total} problems found`;
+                //     await helpers.clearElement(driver, '#categories-filter-selectized');
+                //     await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
+                //     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
+                //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                //   }
+                // });
+              });
             }
 
-
-
             if (isAdmin) {
-              describe('Clicking on Trashed problems', function () {
-
+              xdescribe('Clicking on Trashed problems', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                   await helpers.findAndClickElement(driver, '.category-header');
@@ -260,7 +297,6 @@ describe('Problems', async function () {
                   await helpers.findAndClickElement(driver, '#toggle-trashed');
                   let resultsMsg = `2 problems found - Displaying Trashed Problems`;
                   await helpers.waitForTextInDom(driver, resultsMsg);
-
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
@@ -290,8 +326,7 @@ describe('Problems', async function () {
                 });
               });
 
-              describe('Clicking on All problems filter', function () {
-
+             xdescribe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                 });
@@ -303,8 +338,7 @@ describe('Problems', async function () {
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
-                describe('Searching by organization', function () {
-
+                xdescribe('Searching by organization', function () {
                   before(async function () {
                     await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
                     await helpers.findAndClickElement(driver, css.resultsMesasage);
@@ -319,7 +353,6 @@ describe('Problems', async function () {
                   it('should uncheck Created by Members then update the list and display message', async function () {
                     await helpers.findAndClickElement(driver, 'li.fromOrg label.checkbox-label');
                     await helpers.waitForSelector(driver, css.resultsMesasage);
-
                     let resultsMsg = `${problems.all.org.recommended} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg );
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
@@ -341,8 +374,7 @@ describe('Problems', async function () {
                   });
                 });
 
-                describe('Searching by creator', function () {
-
+                xdescribe('Searching by creator', function () {
                   before(async function () {
                     await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
                     await helpers.findAndClickElement(driver, '[data-value="creator"]');
@@ -358,8 +390,7 @@ describe('Problems', async function () {
                   });
                 });
 
-                describe('Searching by PoWs', function () {
-
+                xdescribe('Searching by PoWs', function () {
                   before(async function () {
                     await helpers.findAndClickElement(driver, '.selectize-input');
                     await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
@@ -397,6 +428,7 @@ describe('Problems', async function () {
 
               });
             }
+
           });
         }
 
@@ -410,14 +442,6 @@ describe('Problems', async function () {
   }
   await runTests(testUsers);
 });
-
-//SEARCH BAR
-//Test that there are 2 drop down items
-//Search works with enter and clicking button
-//Clear button shows when query is applied or text in field
-//Clearing search bar resets results properly
-//Searching only applies to results of primary filters
-//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
 
 //SORT BAR
