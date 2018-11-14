@@ -264,6 +264,12 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     this.set('filter', filter);
   },
 
+  modeFilter: function () {
+    return {
+      $in: this.get('selectedMode')
+    };
+  }.property('selectedMode'),
+
   configurePrimaryFilter() {
     let primaryFilters = this.get('filter.primaryFilters');
     if (this.get('currentUser.isAdmin')) {
@@ -706,7 +712,9 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       if (!val) {
         return;
       }
+      console.log('selectedMode before is', this.get('selectedMode'));
       this.set('selectedMode', val);
+      console.log('selectedMode after is', this.get('selectedMode'));
       this.send('triggerFetch');
     },
     toggleMenu: function() {
