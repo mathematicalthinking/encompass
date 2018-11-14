@@ -11,7 +11,7 @@ const testUsers = require('./fixtures/users');
 
 
 describe('Sections', async function () {
-  async function runTests(users) {
+  function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, sections, organization, username } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
@@ -143,7 +143,7 @@ describe('Sections', async function () {
               it(`should display new section form`, async function() {
                 try {
                   await driver.wait(until.urlIs(url));
-                  expect(await helpers.isElementVisible(driver, css.newSection.form)).to.be.true;
+                  expect(await helpers.waitForSelector(driver, css.newSection.form)).to.be.true;
                 }catch(err) {
                   console.log(err);
                 }
@@ -206,10 +206,8 @@ describe('Sections', async function () {
         });
       });
     }
-    for (let user of Object.keys(users)) {
-      // eslint-disable-next-line no-await-in-loop
-      await _runTests(users[user]);
-    }
+    return Promise.all(Object.keys(users).map(user => _runTests(users[user])));
+
   }
   await runTests(testUsers);
 });

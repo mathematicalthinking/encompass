@@ -25,6 +25,7 @@ describe('Users', function() {
   });
 
   describe('Logged in as an admin user', function () {
+
     before(async function () {
       // await helpers.findAndClickElement(driver, css.topBar.logout);
       // await helpers.waitForSelector(driver, css.topBar.login);
@@ -112,6 +113,7 @@ describe('Users', function() {
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, 'button.new-user');
+        await driver.sleep(300);
         await helpers.waitForSelector(driver, '.error-box');
         expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Email address has already been used');
         await helpers.clearElement(driver, 'input.user-email');
@@ -186,6 +188,7 @@ describe('Users', function() {
     }
 
     describe('Visiting the users list home page', function () {
+
       before(async function () {
         await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
       });
@@ -229,6 +232,7 @@ describe('Users', function() {
       });
 
       describe('clicking on your own account', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username}"]`);
           await helpers.waitForSelector(driver, 'div#user-info');
@@ -237,6 +241,7 @@ describe('Users', function() {
       });
 
       describe('clicking the Create New User link', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'div#user-new-admin');
@@ -245,6 +250,7 @@ describe('Users', function() {
       });
 
       describe('authorizing a user', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
         });
@@ -252,6 +258,7 @@ describe('Users', function() {
       });
 
       describe("changing a user's account type", function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/nope"]`);
         });
@@ -259,6 +266,7 @@ describe('Users', function() {
       });
 
       describe('manually authorize a users email', async function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/superuser"]`);
         });
@@ -269,7 +277,9 @@ describe('Users', function() {
   });
 
   describe('Logged in as a pd admin user', function () {
+
     before(async function () {
+
       await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.login(driver, host, helpers.pdAdmin);
@@ -390,6 +400,7 @@ describe('Users', function() {
     }
 
     describe('Visiting the users list home page', function () {
+
       before(async function () {
         await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
       });
@@ -423,6 +434,7 @@ describe('Users', function() {
       });
 
       describe('clicking on your own account', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.pdAdmin.username}"]`);
           await helpers.waitForSelector(driver, 'div#user-info');
@@ -431,6 +443,7 @@ describe('Users', function() {
       });
 
       describe('clicking the Create New User link', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'div#user-new');
@@ -439,6 +452,7 @@ describe('Users', function() {
       });
 
       describe('authorizing a user', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/bunny"]`);
         });
@@ -446,6 +460,7 @@ describe('Users', function() {
       });
 
      describe("changing a user's account type", function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/eeyore"]`);
         });
@@ -463,6 +478,7 @@ describe('Users', function() {
   });
 
   describe('Logged in as a teacher', function() {
+
     before(async function() {
       await driver.sleep(3000);
       await helpers.findAndClickElement(driver, css.topBar.logout);
@@ -527,6 +543,7 @@ describe('Users', function() {
     }
 
     describe('Visiting the users list home page', function () {
+
       before(async function () {
         await helpers.navigateAndWait(driver, `${host}/#/users/home`, '#user-home');
       });
@@ -555,6 +572,7 @@ describe('Users', function() {
       });
 
       describe('clicking on your own account', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.regUser.username}"]`);
           await helpers.waitForSelector(driver, 'div#user-info');
@@ -563,6 +581,7 @@ describe('Users', function() {
       });
 
       describe('clicking the Create New User link', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'div#user-new');
@@ -571,6 +590,7 @@ describe('Users', function() {
       });
 
       describe('unauthorizing a user', function () {
+
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/mystudent"]`);
         });

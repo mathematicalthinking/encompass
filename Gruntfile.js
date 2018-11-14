@@ -90,7 +90,8 @@ module.exports = function (grunt) {
             clearCacheFilter: (key) => true,
             noFail: false
           },
-          src: ['test/selenium/fixtures/*.js',
+          src: [
+                'test/selenium/fixtures/*.js',
                 'test/selenium/base.js',
                 'test/selenium/comments.js',
                 'test/selenium/folders.js',

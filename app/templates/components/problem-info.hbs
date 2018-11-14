@@ -120,6 +120,7 @@
                   <li class="category-item">
                     <a href="{{category.url}}" target="_blank">{{category.identifier}}</a>
                     <button class="remove-cat" {{action 'removeCategory' category}}><i class="far fa-times-circle"></i></button>
+                    <p class="category-description">{{category.description}}</p>
                   </li>
                 {{/each}}
               </ul>
@@ -296,19 +297,21 @@
             <button class="button-icon" {{action 'addToMyProblems'}}><i class="far fa-copy"></i></button>
           </span>
           {{#unless currentUser.isTeacher}}
-            {{#if isRecommended}}
-              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
-                <button class="button-icon star-icon" {{action 'removeRecommend'}}>
-                  <i class="fas fa-star star-filled"></i>
-                </button>
-              </span>
-            {{else}}
-              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Add this Problem to Recommended">
-                <button class="button-icon star-icon" {{action 'checkRecommend'}}>
-                  <i class="far fa-star star-line"></i>
-                </button>
-              </span>
-            {{/if}}
+            {{#unless problem.isTrashed}}
+              {{#if isRecommended}}
+                <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
+                  <button class="button-icon star-icon" {{action 'removeRecommend'}}>
+                    <i class="fas fa-star star-filled"></i>
+                  </button>
+                </span>
+              {{else}}
+                <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Add this Problem to Recommended">
+                  <button class="button-icon star-icon" {{action 'checkRecommend'}}>
+                    <i class="far fa-star star-line"></i>
+                  </button>
+                </span>
+              {{/if}}
+            {{/unless}}
           {{/unless}}
         {{/if}}
       </span>
@@ -326,11 +329,9 @@
               <button class="primary-button" {{action 'editProblem'}}>Edit</button>
             {{/if}}
           {{/if}}
-          {{#unless (is-equal problem.status 'pending')}}
             {{#unless problem.isTrashed}}
-            <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+              <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
             {{/unless}}
-          {{/unless}}
         {{/if}}
         {{#if problem.isTrashed}}
           {{#if currentUser.isAdmin}}

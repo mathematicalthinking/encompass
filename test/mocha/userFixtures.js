@@ -50,7 +50,7 @@ const admin = {
       selection: "5bbb9d57c2aa0a1696840ce9",
       submission: "5bb814d19885323f6d894973",
       workspace: "5bb814d19885323f6d894974",
-      createdBy: "5b9149552ecaf7c30dd4748e",
+      createdBy: "5b4e4b48808c7eebc9f9e827",
       text: "I notice that your explanation is vague."
     },
   },
@@ -102,7 +102,7 @@ const admin = {
     },
   },
   problems: {
-    accessibleProblemCount: 7,
+    accessibleProblemCount: 20,
     accessibleProblem: {
       _id: '5b4e2e56be1e18425515308c',
     },
@@ -254,7 +254,7 @@ const pdAdminDrexel = {
     },
   },
   problems: {
-    accessibleProblemCount: 5,
+    accessibleProblemCount: 18,
     accessibleProblem: {
       _id: '5b1e7a0ba5d2157ef4c91028',
     },
@@ -281,7 +281,7 @@ const pdAdminDrexel = {
 
 const teacherMT = {
   details: {
-    _id: '5b9149552ecaf7c30dd4748e',
+    _id: '5b4e4b48808c7eebc9f9e827',
     testDescriptionTitle: 'Teacher',
     username: 'ssmith',
     password: 'ssmith',
@@ -337,7 +337,7 @@ const teacherMT = {
       workspace: '5bb814d19885323f6d894974',
       useForResponse: true,
       isTrashed: false,
-      createdBy: '5b9149552ecaf7c30dd4748e',
+      createdBy: '5b4e4b48808c7eebc9f9e827',
     },
     modifiableComment: {
       _id: "5bbb9d86c2aa0a1696840ceb",
@@ -345,7 +345,7 @@ const teacherMT = {
       selection: "5bbb9d57c2aa0a1696840ce9",
       submission: "5bb814d19885323f6d894973",
       workspace: "5bb814d19885323f6d894974",
-      createdBy: "5b9149552ecaf7c30dd4748e",
+      createdBy: "5b4e4b48808c7eebc9f9e827",
       text: "I notice that your explanation is vague."
     },
   },
@@ -398,7 +398,7 @@ const teacherMT = {
     },
     validSection: {
       name: 'A test section',
-      createdBy: '5b9149552ecaf7c30dd4748e',
+      createdBy: '5b4e4b48808c7eebc9f9e827',
       assignments: [],
       students: [],
       teachers: [],
@@ -409,7 +409,7 @@ const teacherMT = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5ba7c3cb1359dc2f6699f2b3',
     },
@@ -420,7 +420,7 @@ const teacherMT = {
       title: 'test math problem',
       text: 'This is a problem',
       categories: [],
-      createdBy: '5b9149552ecaf7c30dd4748e',
+      createdBy: '5b4e4b48808c7eebc9f9e827',
     },
     invalidProblem: {
       title: '',
@@ -532,7 +532,7 @@ const studentMT = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },
@@ -570,7 +570,7 @@ const teacherActingStudent = {
       username: 'tracyc',
       organization: '5b4e4d5f808c7eebc9f9e82c',
       accountType: 'S',
-      createdBy: '5b9149552ecaf7c30dd4748e',
+      createdBy: '5b4e4b48808c7eebc9f9e827',
       creatorUsername: 'ssmith'
     },
     unaccessibleUser: {
@@ -651,7 +651,7 @@ const teacherActingStudent = {
     },
   },
   problems: {
-    accessibleProblemCount: 4,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },

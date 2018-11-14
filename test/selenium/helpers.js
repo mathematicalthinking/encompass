@@ -160,6 +160,18 @@ const waitForAndClickElement = async function (webDriver, selector, timeout = ti
   }
 };
 
+const waitForTextInDom = async function (webDriver, text, timeout=timeoutMs) {
+  try {
+    return await webDriver.wait(async function () {
+      let result = await isTextInDom(webDriver, text);
+      return result;
+    }, timeout);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
 const waitForSelector = async function (webDriver, selector, timeout = timeoutMs) {
   try {
     return await webDriver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -193,22 +205,73 @@ const findInputAndType = async function (webDriver, selector, text, doHitEnter=f
   return;
 };
 
- const selectOption = async function (webDriver, selector, item, isByCss) {
-   try {
-     let selectList;
-     if (isByCss) {
-       selectList = await webDriver.findElement(By.css(selector));
-     } else {
-      selectList = await webDriver.findElement(By.id(selector));
+const checkSelectorsExist = function (webDriver, selectors) {
+  return Promise.all(
+    selectors.map((selector) => {
+      return isElementVisible(webDriver, selector);
+    })
+  ).then((selectors) => {
+    return selectors.every(x => x === true);
+  });
+};
 
-     }
-    await selectList.click();
-    let el = await selectList.findElement(By.css(`option[value="${item}"]`));
-    await el.click();
-     return true;
-   } catch (err) {
-     console.log(err);
-   }
+const createSelectors = function (filterOptions) {
+  let options = filterOptions.map((item) => {
+    return Object.values(item);
+  });
+  return [].concat.apply([], options);
+};
+
+
+const createFilterList = function (isStudent, isAdmin, filterList, removeChildren) {
+  let filterOptions = [...filterList];
+
+  if (removeChildren) {
+     filterOptions.forEach((item) => {
+      if (item.hasOwnProperty('children')) {
+        delete item.children;
+      }
+    });
+  }
+  if (isAdmin) {
+    filterOptions.forEach((item) => {
+      if (item.hasOwnProperty('adminOnly')) {
+        delete item.adminOnly;
+      }
+    });
+  }
+
+  if (!isStudent && !isAdmin) {
+    filterOptions.forEach((item, i) => {
+      if (item.hasOwnProperty('adminOnly')) {
+        filterOptions.splice(i, 1);
+      }
+    });
+  }
+
+  if (isStudent) {
+    filterOptions = [];
+  }
+
+  return filterOptions;
+};
+
+const selectOption = async function (webDriver, selector, item, isByCss) {
+  try {
+    let selectList;
+    if (isByCss) {
+      selectList = await webDriver.findElement(By.css(selector));
+    } else {
+    selectList = await webDriver.findElement(By.id(selector));
+
+    }
+  await selectList.click();
+  let el = await selectList.findElement(By.css(`option[value="${item}"]`));
+  await el.click();
+    return true;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const login = async function(webDriver, host, user=admin) {
@@ -308,8 +371,12 @@ module.exports.isTextInDom = isTextInDom;
 module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;
+module.exports.checkSelectorsExist = checkSelectorsExist;
+module.exports.createSelectors = createSelectors;
+module.exports.createFilterList = createFilterList;
 module.exports.selectOption = selectOption;
 module.exports.waitForAndClickElement = waitForAndClickElement;
+module.exports.waitForTextInDom = waitForTextInDom;
 module.exports.getCurrentUrl = getCurrentUrl;
 module.exports.login = login;
 module.exports.admin = admin;

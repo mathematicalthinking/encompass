@@ -1,6 +1,7 @@
 var Seeder = require('mongoose-data-seed').Seeder;
 var Section = require('../server/datasource/schemas').Section;
 
+
 var data = [{
   "_id": "5b1e7b2aa5d2157ef4c91108",
   "sectionId": 26916,
@@ -37,7 +38,7 @@ var data = [{
   "_id" : "5b9149a32ecaf7c30dd4748f",
   "name" : "Summer's Algebra 2 1st Period",
   "sectionPassword" : null,
-  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "createdBy": "5b4e4b48808c7eebc9f9e827",
   "lastModifiedBy" : null,
   "organization" : "5b4e4d5f808c7eebc9f9e82c",
   "assignments" : ["5b91743a3da5efca74705773"],
@@ -48,8 +49,9 @@ var data = [{
       "5b99146e25b620610ceead75"
   ],
   "teachers" : [
-      "5b9149552ecaf7c30dd4748e",
-      "5b914a802ecaf7c30dd47493"
+      "5b4e4b48808c7eebc9f9e827",
+      "5b914a802ecaf7c30dd47493",
+      '5b4e4b48808c7eebc9f9e827'
   ],
   "lastModifiedDate" : null,
   "isTrashed" : false,
@@ -58,7 +60,7 @@ var data = [{
 {
   "_id" : "5bbdfaaaecd6e597fd8d3d42",
   "isTrashed" : true,
-  "createdBy": "5b9149552ecaf7c30dd4748e"
+  "createdBy": "5b4e4b48808c7eebc9f9e827"
 }
 ];
 

@@ -44,8 +44,8 @@ var data = [
   isTrashed: false,
   submission: "53e1156db48b12793f000427",
   taggings: [],
-  text: "25\
-  11 ",
+  text: `25\
+  11 `,
   workspace: "53e1156db48b12793f000442"
 }, {
   _id: "53e11f82b48b12793f000b44",
@@ -89,9 +89,9 @@ var data = [
   isTrashed: false,
   submission: "53e1156db48b12793f000438",
   taggings: ["53e12250b48b12793f000b83"],
-  text: "i noticed that there was 4 dogs \
+  text: `i noticed that there was 4 dogs \
   i noticed there was 32 pigeons \
-  i noticed that there was 80 legs ",
+  i noticed that there was 80 legs `,
   workspace: "53e1156db48b12793f000442"
 }, {
   _id: "53e1223eb48b12793f000b81",
@@ -553,8 +553,8 @@ var data = [
   isTrashed: false,
   submission: "53e36522729e9ef59ba7f4d4",
   taggings: ["53e37ec4b48b12793f001090"],
-  text: "I made several suggestions for improvements to the software and all were met with \"Yup! That's in the pipeline.\" \
-  You guys and gals are on the ball!",
+  text: `I made several suggestions for improvements to the software and all were met with \"Yup! That's in the pipeline.\" \
+  You guys and gals are on the ball!`,
   workspace: "53e36522b48b12793f000d3b"
 }, {
   _id: "53e37eebb48b12793f001092",
@@ -697,10 +697,9 @@ var data = [
   isTrashed: false,
   submission: "53e36522729e9ef59ba7f4e0",
   taggings: ["53e38accb48b12793f0010d5"],
-  text: "The whole group discussion of the I notice and I wonder on the chocolate problem and the various ways in which teachers looked at the problem. \
+  text: `The whole group discussion of the I notice and I wonder on the chocolate problem and the various ways in which teachers looked at the problem. \
   The idea of reading and reflecting after just one read is an awesome activity.It has made me realize how important it is to  not read superficially. \
-  This is definitely something I would like to implement with my students. \
-  ",
+  This is definitely something I would like to implement with my students.`,
   workspace: "53e36522b48b12793f000d3b"
 }, {
   _id: "53e38ad0b48b12793f0010d6",
@@ -733,9 +732,8 @@ var data = [
   isTrashed: false,
   submission: "53e36522729e9ef59ba7f4e0",
   taggings: ["53e38e46b48b12793f0010db"],
-  text: "how does one reach to the stage where he/she can think through a problem and see all the different ways in which students can interpret a problem. \
-  I find this difficult at times and I really wonder how I can make more time to be more involved in the process. \
-  ",
+  text: `how does one reach to the stage where he/she can think through a problem and see all the different ways in which students can interpret a problem. \
+  I find this difficult at times and I really wonder how I can make more time to be more involved in the process.`,
   workspace: "53e36522b48b12793f000d3b"
 }, {
   _id: "53e38e4cb48b12793f0010dc",
@@ -797,7 +795,7 @@ var data = [
   "_id" : "5bbb9d57c2aa0a1696840ce9",
   "text" : "This is my explanation.",
   "coordinates" : "node-3 0 0 node-3 0 23",
-  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "lastModifiedBy" : null,
   "submission" : "5bb814d19885323f6d894973",
   "workspace" : "5bb814d19885323f6d894974",

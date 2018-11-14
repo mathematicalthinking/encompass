@@ -1,7 +1,6 @@
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;
-const moment = require('moment');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -9,120 +8,432 @@ const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
 const host = helpers.host;
+const testUsers = require('./fixtures/users');
+let topLink = css.topBar.problems;
 
-xdescribe('Problems', function() {
-  this.timeout(helpers.timeoutTestMsStr);
-  let driver = null;
-  const problemId = '5b4e25c638a46a41edf1709a';
-  const problemLink = `a[href='#/problems/${problemId}`;
-
-  // creation date of test problem is getting reset every time testDB is reset
-  const problemDetails = {
-    name: "Rick's Public",
-    question: 'What is it?',
-    privacySetting: 'Everyone',
-    copyrightNotice: "Apple Corps.",
-    sharingAuth: "stolen goods",
-    author: "Paul McCartney",
-    };
-
-  before(async function () {
-    driver = new Builder()
-      .forBrowser('chrome')
-      .build();
-    await dbSetup.prepTestDb();
-    try {
-      await helpers.login(driver, host);
-    }catch(err) {
-      console.log(err);
+const handleRetries = function (driver, fetchPromise, numRetries) {
+  console.log('inside handleRetries function');
+  numRetries = 'undefined' === typeof numRetries ? 1 : numRetries;
+  return fetchPromise().catch(function(err) {
+    if (numRetries > 0) {
+      return handleRetries(driver, fetchPromise, numRetries-1);
     }
+    throw err;
   });
-  after(() => {
-    driver.quit();
-  });
-  describe('Visiting problems page', function() {
-    before(async function() {
-      await helpers.findAndClickElement(driver, css.topBar.problems);
-    });
-    it('should display a user\'s problems', async function() {
-      await helpers.waitForSelector(driver, 'ul.your-problems');
-      let problems = await helpers.getWebElements(driver, 'ul.your-problems > li');
-      expect(problems).to.have.lengthOf(2);
-      // expect(await helpers.isElementVisible(driver, problemLink)).to.be.true;
-    });
-  });
+};
 
-  describe(`Visiting ${problemDetails.name}`, function() {
-    before(async function() {
-      await helpers.findAndClickElement(driver, problemLink);
-    });
-    //TODO: update these tests to be more robust once this page is updated
-    it('should display the problem details', async function() {
-      expect(await helpers.isTextInDom(driver, problemDetails.name)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.privacySetting)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.copyrightNotice)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.sharingAuth)).to.be.true;
-      expect(await helpers.isTextInDom(driver, problemDetails.author)).to.be.true;
-      let today = moment().format("MMM Do YYYY");
-      expect(await helpers.isTextInDom(driver, today)).to.be.true;
-    });
-  });
-  // TODO: figure out best way to test uploading an image in e2e manner
-  describe('Problem creation', function() {
-    const verifyForm = function() {
-      const inputs = css.newProblem.inputs;
-      for (let input of Object.keys(inputs)) {
-        // eslint-disable-next-line no-loop-func
-        it(`${input} field should be visible`, async function() {
-          expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
+describe('Problems', async function () {
+  function runTests(users) {
+    function _runTests(user) {
+      const { accountType, actingRole, testDescriptionTitle, problems } = user;
+      const isStudent = accountType === 'S' || actingRole === 'student';
+      const isAdmin = accountType === 'A';
+
+
+      describe(`As ${testDescriptionTitle}`, function() {
+        this.timeout(helpers.timeoutTestMsStr);
+        let driver = null;
+
+        before(async function() {
+          driver = new Builder()
+            .forBrowser('chrome')
+            .build();
+            await dbSetup.prepTestDb();
+            return helpers.login(driver, host, user);
+          });
+
+        after(function() {
+          return driver.quit();
         });
-      }
-    };
-    before(async function() {
-      await helpers.findAndClickElement(driver, "#problem-new-link");
-      await helpers.waitForSelector(driver, css.newProblem.form);
-    });
+        if (!isStudent) {
+          describe('Visiting problems main page', function () {
+            before(async function () {
+              await helpers.findAndClickElement(driver, topLink);
+              if (!isStudent) {
+                await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
+              }
+            });
 
-    describe('Verify form inputs', async function() {
-      await verifyForm();
-    });
+            it('should display side list of filter options', async function () {
+              if (!isStudent) {
+                expect(await helpers.waitForSelector(driver, css.problemPageSelectors.sideFilterOptions));
+              }
+              let optionsList = css.problemFilterList.primaryFilters;
+              let filterOptions = helpers.createFilterList(isStudent, isAdmin, optionsList, true);
+              let filterSelectors = helpers.createSelectors(filterOptions);
+              expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+            });
 
-    describe('Submitting a problem without an image', function() {
-      const inputs = css.newProblem.inputs;
+            it('should display category filter options', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, '.category-header');
+                let filterSelectors = helpers.createSelectors(css.problemFilterList.categoryFilters);
+                expect(await helpers.checkSelectorsExist(driver, filterSelectors)).to.be.true;
+                await helpers.findAndClickElement(driver, '.category-header');
+              }
+            });
 
-      const submitProblem = async function(details, privacySetting) {
-        for (let detail of Object.keys(details)) {
-          try {
-            // eslint-disable-next-line no-await-in-loop
-            await helpers.findInputAndType(driver, inputs[detail], details[detail]);
-          } catch(err) {
-            console.log(err);
-          }
+            it('should update problem list when clicking on Public', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                let resultsMsg = `${problems.public.count} problems found`;
+                await helpers.waitForTextInDom(driver, resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+            it('should update problem list when clicking on Mine', async function () {
+              if (!isStudent) {
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                let resultsMsg = `${problems.mine.count} problems found`;
+                await helpers.waitForTextInDom(driver, resultsMsg);
+                expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+              }
+            });
+
+            if (!isStudent) {
+              describe('Clicking on My Org filter option', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
+                  }
+                });
+
+                it('should update problem list when clicking on My Org', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.org.total} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should update problem list when unchecking created by members', async function () {
+                  if (!isStudent) {
+                    await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
+                    // await helpers.findAndClickElement(driver, 'li.fromOrg');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    let resultsMsg = `${problems.org.recommended} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should update problem list when unchecking recommended', async function () {
+                  if (!isStudent) {
+                    await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForTextInDom(driver, css.noResultsMsg);
+
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                  }
+                });
+
+                it('should update problem list when checking created by members', async function () {
+                  if (!isStudent) {
+                    await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    let resultsMsg = `${problems.org.members} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+              });
+
+              describe('Clicking on Category filter menu', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                    await helpers.findAndClickElement(driver, '.category-header');
+                  }
+                });
+
+                it('should show populate categories search list', async function () {
+                  if (!isStudent) {
+                    await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content', true);
+                    await helpers.clearElement(driver, '#categories-filter-selectized');
+                    await driver.sleep(1000);
+                  }
+                });
+
+                it('should show problems when adding category with problems to list', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.category.k} problems found`;
+                    await helpers.clearElement(driver, '#categories-filter-selectized');
+                    await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
+                    await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
+                    // await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show more problems when adding category with problems to list', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.category.total} problems found`;
+                    await helpers.clearElement(driver, '#categories-filter-selectized');
+                    await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
+                    await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show less problems when unchecking include subcategories', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.category.noSub} problems found`;
+                    await helpers.findAndClickElement(driver, '.subfilter');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    return handleRetries(driver, async function () {
+                      expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    }, 3);
+                  }
+                });
+
+                it('should show less problems when removing a category', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.category.ee} problems found`;
+                    await helpers.findAndClickElement(driver, '.subfilter');
+                    await driver.sleep(500);
+                    await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                    await driver.sleep(500);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('there should be no change when adding category with no problems', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.category.ee} problems found`;
+                    await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.1', true);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should clear selected category list', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                    await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                  }
+                });
+
+                it('should open up category menu modal', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.show-category-btn');
+                    await helpers.waitForSelector(driver, '#category-list-modal');
+                    await driver.sleep(5000);
+                    expect(await helpers.findAndGetText(driver, '.modal-content h4')).to.contain('Select a Category');
+                  }
+                });
+
+                it('should add category when clicked', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
+                    await driver.sleep(500);
+                    await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G"]');
+                    await driver.sleep(300);
+                    await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G.B"]');
+                    await driver.sleep(300);
+                    await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.6"]');
+                    await driver.sleep(300);
+                    await helpers.findAndClickElement(driver, 'button.close');
+                    await driver.sleep(300);
+                    let resultsMsg = `1 problems found`;
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+
+              });
+            }
+
+
+
+            if (isAdmin) {
+              describe('Clicking on Trashed problems', function () {
+
+                before(async function () {
+                  await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
+                  await helpers.findAndClickElement(driver, '.category-header');
+                  await helpers.findAndClickElement(driver, '.more-header');
+                });
+
+                it('should update problem list and display message', async function () {
+                  await helpers.findAndClickElement(driver, '#toggle-trashed');
+                  let resultsMsg = `2 problems found - Displaying Trashed Problems`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                it('should restore a trashed problem', async function () {
+                  await helpers.findAndClickElement(driver, 'button.primary-button');
+                  await driver.sleep(500);
+                  await helpers.waitForAndClickElement(driver, 'button.swal2-confirm' );
+                  // await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  let resultsMsg = `1 problems found - Displaying Trashed Problems`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+                  // expect(await helpers.isTextInDom(resultsMsg)).to.be.true;
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                it('should continue displaying trashed problems until unchecked', async function () {
+                  await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                  let resultsMsg = `${problems.mine.count} problems found - Displaying Trashed Problems`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+
+                  await helpers.findAndClickElement(driver, '#toggle-trashed');
+                  let updatedMsg = `${problems.mine.count} problems found`;
+
+                  await helpers.waitForTextInDom(driver, updatedMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(updatedMsg);
+                  await helpers.findAndClickElement(driver, '.more-header');
+                });
+              });
+
+              describe('Clicking on All problems filter', function () {
+
+                before(async function () {
+                  await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
+                });
+
+                it('should update the problem list and display message', async function () {
+                  await helpers.waitForSelector(driver, css.resultsMesasage);
+                  let resultsMsg = `${problems.all.total} problems found`;
+                  await helpers.waitForTextInDom(driver, resultsMsg);
+                  expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                describe('Searching by organization', function () {
+
+                  before(async function () {
+                    await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
+                    await helpers.findAndClickElement(driver, css.resultsMesasage);
+                  });
+
+                  it('should select an organization then update the list and display message', async function () {
+                    let resultsMsg = `${problems.all.org.total} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+
+                  it('should uncheck Created by Members then update the list and display message', async function () {
+                    await helpers.findAndClickElement(driver, 'li.fromOrg label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+
+                    let resultsMsg = `${problems.all.org.recommended} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg );
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+
+                  it('should uncheck Recommended then no problems should appear', async function () {
+                    await helpers.findAndClickElement(driver, 'li.recommended label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForTextInDom(driver, css.noResultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                  });
+
+                  it('should check Created by Members and the update the list and display message', async function () {
+                    await helpers.findAndClickElement(driver, 'li.fromOrg label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    let resultsMsg = `${problems.all.org.members} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+                });
+
+                describe('Searching by creator', function () {
+
+                  before(async function () {
+                    await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
+                    await helpers.findAndClickElement(driver, '[data-value="creator"]');
+                    await helpers.findInputAndType(driver, '#all-user-filter-selectized', 'morty');
+                    await helpers.waitForSelector(driver, '[data-value="5b245841ac75842be3189526"]');
+                    await helpers.findAndClickElement(driver, '[data-value="5b245841ac75842be3189526"]');
+                    await helpers.findAndClickElement(driver, css.resultsMesasage);
+                  });
+
+                  it('should select a creator and then update the list and display message', async function () {
+                    let resultsMsg = `${problems.all.creator} problems found`;
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+                });
+
+                describe('Searching by PoWs', function () {
+
+                  before(async function () {
+                    await helpers.findAndClickElement(driver, '.selectize-input');
+                    await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
+                    await helpers.findAndClickElement(driver, '[data-value="pows"]');
+                  });
+
+                  it('should update the list and display message', async function () {
+                    let resultsMsg = `${problems.all.pows.total} problems found`;
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+
+                  it('should uncheck public then update the list and display message', async function () {
+                    await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    let resultsMsg = `${problems.all.pows.private} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+
+                  it('should uncheck private then show no problems', async function () {
+                    await helpers.findAndClickElement(driver, 'li.unshared label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    await helpers.waitForTextInDom(driver, css.noResultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
+                  });
+
+                  it('should check private then update the list and display message', async function () {
+                    await helpers.findAndClickElement(driver, 'li.shared label.checkbox-label');
+                    await helpers.waitForSelector(driver, css.resultsMesasage);
+                    let resultsMsg = `${problems.all.pows.public} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  });
+                });
+
+              });
+            }
+          });
         }
-        if (privacySetting) {
-          await helpers.findAndClickElement(driver, inputs.everyone);
-        } else {
-          await helpers.findAndClickElement(driver, inputs.justMe);
-        }
-        await helpers.findAndClickElement(driver, 'input#legal-notice');
-        await helpers.findAndClickElement(driver, css.newProblem.submit);
-        await helpers.findAndClickElement(driver, '.swal2-confirm');
-      };
 
-      it('should redirect to problem info after creation', async function () {
-        const problem = helpers.newProblem;
-        await submitProblem(problem.details, true);
-        await helpers.waitForSelector(driver, '#editProblem');
-        expect(await helpers.getCurrentUrl(driver)).to.match(/problems\/[a-z0-9]{24}/);
-        expect(await helpers.isTextInDom(driver, problem.details.name)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.question)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.copyrightNotice)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.sharingAuth)).to.be.true;
-        expect(await helpers.isTextInDom(driver, problem.details.author)).to.be.true;
-        });
-    });
-  });
+      });
+    }
+    // for (let user of Object.keys(users)) {
+    //   // eslint-disable-next-line no-await-in-loop
+    //   await _runTests(users[user]);
+    // }
+    return Promise.all(Object.keys(users).map(user => _runTests(users[user])));
+  }
+  await runTests(testUsers);
 });
 
+//SEARCH BAR
+//Test that there are 2 drop down items
+//Search works with enter and clicking button
+//Clear button shows when query is applied or text in field
+//Clearing search bar resets results properly
+//Searching only applies to results of primary filters
+//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
+
+//SORT BAR
+//Test to check sort bar is there - options are accurate
+//Test to check alphabetical sorting
+//Test to check date sorting
+//Test to check privacy filtering
+//Test to check status filtering
+
+//RESULTS
+//Test that list view displays everything properly
+//Test that card view displays everything properly
+//Test that values update when changes are made
+//Test button values are acurate
+//Test more menu shows correct values
+//Test button actions perform correctly
+//Test more actions perform correctly
+//Test pagination works
 

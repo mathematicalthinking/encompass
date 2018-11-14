@@ -26,13 +26,31 @@ module.exports = {
         name: `pdAdminDrexel Test Section`,
         teacher: `morty`,
       }
-     }
-
+     },
+    problems : {
+      public: {
+        count: 16
+      },
+      mine : {
+        count: 1
+      },
+      org: {
+        total: 11,
+        recommended: 3,
+        members: 10,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
+      }
+    }
   },
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
-    _id: '5b9149552ecaf7c30dd4748e',
+    _id: '5b4e4b48808c7eebc9f9e827',
     username: 'ssmith',
     password: 'ssmith',
     accountType: 'T',
@@ -52,7 +70,26 @@ module.exports = {
       newSection: {
         name: 'Summer Test Section'
       }
-     }
+     },
+    problems : {
+      public: {
+        count: 14
+      },
+      mine: {
+        count: 5
+      },
+      org: {
+        total: 6,
+        recommended: 2,
+        members: 4,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
+      }
+    }
   },
 
   admin: {
@@ -80,7 +117,40 @@ module.exports = {
         name: 'admin test section',
         teacher: 'ssmith'
       }
-     }
+    },
+    problems: {
+      public: {
+        count: 16
+      },
+      mine: {
+        count: 4
+      },
+      org: {
+        total: 11,
+        recommended: 3,
+        members: 10,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
+      },
+      all: {
+        total: 23,
+        org: {
+          total: 6,
+          recommended: 2,
+          members: 4,
+        },
+        creator: 8,
+        pows: {
+          total: 6,
+          public: 5,
+          private: 1,
+        }
+      }
+    }
   },
 
   studentMT: {

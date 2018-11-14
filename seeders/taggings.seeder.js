@@ -598,7 +598,7 @@ var data = [
   },
   {
     "_id" : "5bbb9d5dc2aa0a1696840cea",
-    "createdBy" : "5b9149552ecaf7c30dd4748e",
+    "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : null,
     "workspace" : "5bb814d19885323f6d894974",
     "selection" : "5bbb9d57c2aa0a1696840ce9",
@@ -610,7 +610,7 @@ var data = [
 {
   "_id" : "5bbdfdcdecd6e597fd8da57d",
   "isTrashed" : true,
-  "createdBy": "5b9149552ecaf7c30dd4748e"
+  "createdBy": "5b4e4b48808c7eebc9f9e827"
 }
 ];
 

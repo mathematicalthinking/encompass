@@ -28,7 +28,10 @@ describe('Base API tests by account type', function() {
 
       const forbiddenStudentGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
 
+      const adminTrashedPaths = ['problems'];
+
       const isStudent = accountType === 'S' || actingRole === 'student';
+      const isAdmin = accountType === 'A';
       let nonexistantMongoId = new mongoose.Types.ObjectId();
 
       before(async function(){
@@ -63,6 +66,9 @@ describe('Base API tests by account type', function() {
               }
               if (isStudent && forbiddenStudentGetPaths.includes(collection) ) {
                 expect(res).to.have.status(403);
+                done();
+              } else if (isAdmin && adminTrashedPaths.includes(collection)) {
+                expect(res).to.have.status(200);
                 done();
               } else {
                 expect(res).to.have.status(404);

@@ -3,8 +3,8 @@
   <h3>Primary Filters</h3>
   <ul class="primary-filter-list">
     {{#each primaryFilterOptions as |input|}}
-      <li>
-        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon}}
+      <li class="filter-{{input.value}}">
+        {{radio-filter groupValue=primaryFilterValue secondaryInputs=input.secondaryFilters isChecked=input.isChecked groupName="top-level" inputValue=input.value onClick=(action "updateTopLevel") labelName=input.label labelIcon=input.icon id=input.value}}
         {{#if (is-equal primaryFilterValue input.value)}}
           {{#if showAdminFilters}}
             {{admin-problem-filter
@@ -19,7 +19,7 @@
           {{else}}
           <ul class="secondary-filter-options">
             {{#each secondaryFilterOptions as |option|}}
-              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}}">
+              <li class="checkbox-content {{if (is-in currentValues option.value) 'is-selected'}} {{option.value}}">
                 <label for={{option.value}} class="checkbox-label">
                   <i class="checkbox-icon {{option.icon}}"></i>
                   <span class="checkbox-text">{{option.label}}</span>
@@ -40,21 +40,6 @@
   </h3>
   {{#if showCategoryFilters}}
     <ul class="category-filter-list">
-      <h5>Selected Category Filters</h5>
-      <label class="subfilter">
-        {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}} <span>Include Subcategories</span>
-      </label>
-        {{#if categoriesFilter}}
-          {{#each categoriesFilter as |category|}}
-            <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
-          {{/each}}
-        {{else}}
-          <p>No categories Selected</p>
-          <p>Click 'Show Category Menu' to view the Category Explorer</p>
-        {{/if}}
-      <li>
-        <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
-      </li>
       {{selectize-input
         store=store
         inputId="categories-filter"
@@ -69,6 +54,24 @@
         isAsync=true
         placeholder="Search categories to add"
       }}
+      <li>
+        <button class="show-category-btn" {{action 'showCategoryMenu'}}>Show Category Menu</button>
+      </li>
+      <h5>Selected Category Filters</h5>
+      <label class="subfilter">
+        {{input id="toggle-sub-cats" type="checkbox" checked=doIncludeSubCategories change=(action "toggleIncludeSubCats")}}
+        <span>Include Subcategories</span>
+      </label>
+        {{#if categoriesFilter}}
+        <ul class="selected-cat-list">
+          {{#each categoriesFilter as |category|}}
+            <li>{{category.identifier}}<i {{action "removeCategory" category}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i></li>
+          {{/each}}
+        </ul>
+        {{else}}
+          <p>No categories Selected</p>
+            {{!-- <p>Click 'Show Category Menu' to view the Category Explorer</p> --}}
+         {{/if}}
     </ul>
   {{/if}}
   {{#if currentUser.isAdmin}}

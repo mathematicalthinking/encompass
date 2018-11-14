@@ -38,9 +38,9 @@ var data = [
     "_id" : "5bb814d19885323f6d894974",
     "mode" : "private",
     "name" : "Summer's Org Problem Workspace",
-    "owner" : "5b9149552ecaf7c30dd4748e",
-    "createdBy" : "5b9149552ecaf7c30dd4748e",
-    "lastModifiedBy" : "5b9149552ecaf7c30dd4748e",
+    "owner": "5b4e4b48808c7eebc9f9e827",
+    "createdBy": "5b4e4b48808c7eebc9f9e827",
+    "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "lastViewed" : "2018-10-06T01:50:09.797Z",
     "taggings" : ["5bbb9d5dc2aa0a1696840cea"],
     "comments" : ["5bbb9d86c2aa0a1696840ceb"],
@@ -85,8 +85,8 @@ var data = [
 {
     "_id" : "5bbd146aecd6e597fd89da76",
     "isTrashed" : true,
-    "createdBy" : "5b9149552ecaf7c30dd4748e",
-    "owner" : "5b9149552ecaf7c30dd4748e",
+    "createdBy" : "5b4e4b48808c7eebc9f9e827",
+    "owner" : "5b4e4b48808c7eebc9f9e827",
     "name" : "trashed workspace"
 }
 ];

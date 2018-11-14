@@ -82,9 +82,7 @@ var data = [
     username: "dDedmon13"
   },
   isTrashed: false,
-  longAnswer: "<p>I got the answer by <em>multiplying</em> 32 and 2 wich equals 64, and&nbsp;then <em>multiplying</em> 4 and 4 which equaled 16, and then <em>adding </em>64 and 16 wich then equaled 80.</p> \
-<p><span style=\"color: #0000ff\">Check For Answer</span><br /> \
-&nbsp;32*2=64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4*4=16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64+16=80</p>",
+  longAnswer: `<p>I got the answer by <em>multiplying</em> 32 and 2 wich equals 64, and&nbsp;then <em>multiplying</em> 4 and 4 which equaled 16, and then <em>adding </em>64 and 16 wich then equaled 80.</p> \<p><span style=\"color: #0000ff\">Check For Answer</span><br /> \ &nbsp;32*2=64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4*4=16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64+16=80</p>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f41d",
   publication:   {
@@ -117,7 +115,7 @@ var data = [
     username: "rMathis13"
   },
   isTrashed: false,
-  longAnswer: "<span style=\"font-family: courier new, courier, monospace\">The problem is asking me how many pigeons and dogs are there. I&nbsp;noitce that& nbsp;theres 36 heads, and 80 feet.&nbsp;Also pigeons have 2 feet and dogs have 4 feet.</span>&nbsp; \
+  longAnswer: `<span style=\"font-family: courier new, courier, monospace\">The problem is asking me how many pigeons and dogs are there. I&nbsp;noitce that& nbsp;theres 36 heads, and 80 feet.&nbsp;Also pigeons have 2 feet and dogs have 4 feet.</span>&nbsp; \
 <div style=\"text-align: center\"><span style=\"color: #000080\">Feather and Fur!</span>&nbsp; \
 <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px\"> \
   <tbody> \
@@ -153,7 +151,7 @@ var data = [
 </table> \
 <div style=\"text-align: left\"><span style=\"color: #663399\"><span style=\"font-family: comic sans ms, cursive\">Check-&nbsp; pigeons 32 x 2=64, Dogs 4 x 4=16.&nbsp;I added 64 and 16. it equals 80. Theres 32 Pigeons and 4 Dogs.</span></span><br /> \
 &nbsp;</div> \
-</div>",
+</div>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f41e",
   publication:   {
@@ -186,7 +184,7 @@ var data = [
     username: "dRyan13"
   },
   isTrashed: false,
-  longAnswer: "<p><span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"color: #00ff00\">In feathers and fur they are aks how many&nbsp;dogs and pigeon&nbsp;are there.&nbsp;Fith you timeth&nbsp;32 and 2 with&nbsp;you get&nbsp;64 than you timeth 4 and&nbsp;4 with is 16. than&nbsp;you add 64 and 16 with is 80.</span></span></p> \
+  longAnswer: `<p><span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"color: #00ff00\">In feathers and fur they are aks how many&nbsp;dogs and pigeon&nbsp;are there.&nbsp;Fith you timeth&nbsp;32 and 2 with&nbsp;you get&nbsp;64 than you timeth 4 and&nbsp;4 with is 16. than&nbsp;you add 64 and 16 with is 80.</span></span></p> \
 <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px\"> \
   <caption> \
   <div><span style=\"color: #ff0000\">feathers and fur</span></div> \
@@ -218,7 +216,7 @@ var data = [
       <td>&nbsp;</td> \
     </tr> \
   </tbody> \
-</table>",
+</table>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f41f",
   publication:   {
@@ -251,10 +249,10 @@ var data = [
     username: "tKorst13"
   },
   isTrashed: false,
-  longAnswer: "<span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"font-size: 16px\">There is 36 heads and 80 feet but i have finally got my answer. If you add<br /> \
+  longAnswer: `<span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"font-size: 16px\">There is 36 heads and 80 feet but i have finally got my answer. If you add<br /> \
 64+16 it = 80 feet. I also no that there are 32 pigions and only 4 dogs so<br /> \
 that makes 36 heads and 80 feet. So my answer is <span style=\"color: #0000ff\">32 pigions</span><span style=\"color: #ff0000\"> and 4 dogs </span><br /> \
-that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard becase it did not make sense at first. When it said there was 36 heads i didnt no it was talking about 36 animals. </span></span>",
+that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard becase it did not make sense at first. When it said there was 36 heads i didnt no it was talking about 36 animals. </span></span>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f420",
   publication:   {
@@ -262,8 +260,8 @@ that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard b
 
   },
   selections: [],
-  shortAnswer: "If you add 64+16=80 that is for feet and there is 36 \
-heads so 36 animals.",
+  shortAnswer: `If you add 64+16=80 that is for feet and there is 36 \
+heads so 36 animals.`,
   status: "SUBMITTED",
   teacher:   {
     username: "mrs. wren"
@@ -288,7 +286,7 @@ heads so 36 animals.",
     username: "eGordon13"
   },
   isTrashed: false,
-  longAnswer: "<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\"> \
+  longAnswer: `<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\"> \
   <tbody> \
     <tr> \
       <td><span style=\"font-family:comic sans ms,cursive;\"><em><span style=\"color:#FFA500;\">Pidgins &nbsp; </span>&nbsp; <span style=\"color:#8B4513;\">&nbsp; &nbsp; &nbsp;Dogs &nbsp; </span>&nbsp; &nbsp; &nbsp; &nbsp; <span style=\"color:#FFA500;\">Pidgin legs</span> &nbsp; <span style=\"color:#8B4513;\">&nbsp; &nbsp;Dog Legs</span> &nbsp; &nbsp; <span style=\"color:#2F4F4F;\">Total of legs</span></em></span></td> \
@@ -332,7 +330,7 @@ First Of all Don&#39;t know if i Added those up right I used the Guessing &amp; 
 <br /> \
 I notice There should be Less Dogs Than Pidgins.<br /> \
 I notice There Are More Pidgins than dogs .<br /> \
-I wounder If &nbsp;Xiao was Hosting Humans as well Because there are more animals Than one person &gt;&gt; Xiao.",
+I wounder If &nbsp;Xiao was Hosting Humans as well Because there are more animals Than one person &gt;&gt; Xiao.`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f421",
   publication:   {
@@ -365,14 +363,14 @@ I wounder If &nbsp;Xiao was Hosting Humans as well Because there are more animal
     username: "nWilson13"
   },
   isTrashed: false,
-  longAnswer: "dogs<span style=\"color:#000080;\">:4*4=16</span> \
+  longAnswer: `dogs<span style=\"color:#000080;\">:4*4=16</span> \
 <hr /> \
 <hr /><br /> \
 Pigeons: 32*2=64<br /> \
 <br /> \
 heads: 64+16=80<br /> \
 <br /> \
-&nbsp;",
+&nbsp;`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f422",
   publication:   {
@@ -438,7 +436,7 @@ heads: 64+16=80<br /> \
     username: "cNicholson13"
   },
   isTrashed: false,
-  longAnswer: "<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px\"> \
+  longAnswer: `<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px\"> \
   <tbody> \
     <tr> \
       <td><span style=\"color: #00ff00\"># of pigeons</span></td> \
@@ -472,7 +470,7 @@ heads: 64+16=80<br /> \
       <td colspan=\"5\">I Got my awnser by timesing and dividing the heads and legs to get my awnser. I Thought trying a table would be an easyer way the other ways. The problem was a kinda hard but yet no really.</td> \
     </tr> \
   </tbody> \
-</table>",
+</table>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f425",
   publication:   {
@@ -505,7 +503,7 @@ heads: 64+16=80<br /> \
     username: "nClark13"
   },
   isTrashed: false,
-  longAnswer: "i notice that they are asking me to find the amount of animals their are for pigeons and dogs. \
+  longAnswer: `i notice that they are asking me to find the amount of animals their are for pigeons and dogs. \
 <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\"> \
   <tbody> \
     <tr> \
@@ -547,7 +545,7 @@ heads: 64+16=80<br /> \
 </table> \
 check: &nbsp;32 &nbsp; &nbsp; &nbsp; &nbsp; 64<br /> \
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;+4 &nbsp; &nbsp; &nbsp; +16<br /> \
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 36 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;80",
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 36 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;80`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f426",
   publication:   {
@@ -580,14 +578,14 @@ check: &nbsp;32 &nbsp; &nbsp; &nbsp; &nbsp; 64<br /> \
     username: "cLuchsinger13"
   },
   isTrashed: false,
-  longAnswer: "<span style=\"color:#A52A2A;\"><span style=\"font-family:georgia,serif;\"><strong>In the problem &quot;Feathers and fur&quot; Xiao said that she counted<br /> \
+  longAnswer: `<span style=\"color:#A52A2A;\"><span style=\"font-family:georgia,serif;\"><strong>In the problem &quot;Feathers and fur&quot; Xiao said that she counted<br /> \
 the heads and the legs, 36 heads and 80 legs and so in made a chart and went down the chart trying to solve the problem of how many dog and pigeons there &#8203;are. So&nbsp;finally i took 32 Pigeons and 4 dogs and then got 64 and then got 16 and then got the 80 legs.<br /> \
 <br /> \
 <br /> \
 My refletion is that when i started i wanted to give up so much that i was just playing around with number that i got 32 and 4 and then i said how about 32 pigeons and 4 dogs and then i started to mulitpy and then i did this.... 32*2=64 and 4*4=16 and 64+16=80 so i got my 80 legs and my heads by 32+4=36 so i got my 36 heads and my 80 legs. &nbsp;<br /> \
 &nbsp;</strong></span></span><br /> \
 <br /> \
-&nbsp;",
+&nbsp;`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f427",
   publication:   {
@@ -620,10 +618,10 @@ My refletion is that when i started i wanted to give up so much that i was just 
     username: "tKorst13"
   },
   isTrashed: false,
-  longAnswer: "<span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"font-size: 16px\">There is 36 heads and 80 feet but i have finally got my answer. If you add<br /> \
+  longAnswer: `<span style=\"font-family: arial, helvetica, sans-serif\"><span style=\"font-size: 16px\">There is 36 heads and 80 feet but i have finally got my answer. If you add<br /> \
 64+16 it = 80 feet. I also no that there are 32 pigions and only 4 dogs so<br /> \
 that makes 36 heads and 80 feet. So my answer is <span style=\"color: #0000ff\">32 pigions</span><span style=\"color: #ff0000\"> and 4 dogs </span><br /> \
-that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard becase it did not make sense at first. When it said there was 36 heads i didnt no it was talking about 36 animals. I think it was easyer when we made a table on the big piece of paper that we used. I also thought that it was easyer when we got with a partner so we could both talk over the answer with each other.</span></span>",
+that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard becase it did not make sense at first. When it said there was 36 heads i didnt no it was talking about 36 animals. I think it was easyer when we made a table on the big piece of paper that we used. I also thought that it was easyer when we got with a partner so we could both talk over the answer with each other.</span></span>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f428",
   publication:   {
@@ -631,8 +629,8 @@ that gives 36 heads and 80 feet. I aslo think that the answer was kind of hard b
 
   },
   selections: ["53e11ec4b48b12793f000b34"],
-  shortAnswer: "If you add 64+16=80 that is for feet and there is 36 \
-heads so 36 animals.",
+  shortAnswer: `If you add 64+16=80 that is for feet and there is 36 \
+heads so 36 animals.`,
   status: "SUBMITTED",
   teacher:   {
     username: "mrs. wren"
@@ -657,7 +655,7 @@ heads so 36 animals.",
     username: "rMyrepowell13"
   },
   isTrashed: false,
-  longAnswer: "<div style=\"margin-left: 80px;\">&nbsp;</div> \
+  longAnswer: `<div style=\"margin-left: 80px;\">&nbsp;</div> \
 <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\"> \
   <thead> \
     <tr> \
@@ -764,7 +762,7 @@ heads so 36 animals.",
       <td colspan=\"6\">&nbsp;</td> \
     </tr> \
   </tbody> \
-</table>",
+</table>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f429",
   publication:   {
@@ -797,8 +795,8 @@ heads so 36 animals.",
     username: "cLuchsinger13"
   },
   isTrashed: false,
-  longAnswer: "<span style=\"color:#A52A2A;\"><span style=\"font-family:georgia,serif;\"><em><strong>In the problem &quot;Feathers and fur&quot; Xiao said that she counted<br /> \
-the heads and the legs, 36 heads and 80 legs and so in made a chart and went down the chart trying to solve the problem of how many dog and pigeons there &#8203;are. So&nbsp;finally i took 32 Pigeons and 4 dogs and then got 64 and then got 16 and then got the 80 legs.</strong></em></span></span>",
+  longAnswer: `<span style=\"color:#A52A2A;\"><span style=\"font-family:georgia,serif;\"><em><strong>In the problem &quot;Feathers and fur&quot; Xiao said that she counted<br /> \
+the heads and the legs, 36 heads and 80 legs and so in made a chart and went down the chart trying to solve the problem of how many dog and pigeons there &#8203;are. So&nbsp;finally i took 32 Pigeons and 4 dogs and then got 64 and then got 16 and then got the 80 legs.</strong></em></span></span>`,
   pdSet: "Feather and Fur - Mary",
   pdSrcId: "53daf47d729e9ef59ba7f42a",
   publication:   {
@@ -2042,7 +2040,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
 },
 {
   "_id" : "5bb814d19885323f6d894973",
-  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "answer" : "5bb813fc9885323f6d894972",
   "responses" : [],
   "workspaces" : [
@@ -2051,7 +2049,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   "comments" : ["5bbb9d86c2aa0a1696840ceb"],
   "selections" : ["5bbb9d57c2aa0a1696840ce9"],
   "teacher" : {
-      "id" : "5b9149552ecaf7c30dd4748e"
+      "id" : "5b4e4b48808c7eebc9f9e827"
   },
   "teachers" : [],
   "pdSet" : "default",
@@ -2077,7 +2075,7 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
 {
   "_id" : "5bbe073eecd6e597fd9045b0",
   "isTrashed" : true,
-  "createdBy" : "5b9149552ecaf7c30dd4748e"
+  "createdBy" : "5b4e4b48808c7eebc9f9e827"
 }
 ];
 
