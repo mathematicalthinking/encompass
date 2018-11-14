@@ -254,6 +254,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let limitObj = { "$limit": limit };
   let skipObj = { "$skip": skip };
 
+  console.log('criteria inside utils is', JSON.stringify(criteria));
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
   criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
@@ -267,6 +268,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       criterion.owner = updatedValue;
     }
   });
+
 
   let matchObj = { "$match" : criteria };
   let matchNest = matchObj.$match;

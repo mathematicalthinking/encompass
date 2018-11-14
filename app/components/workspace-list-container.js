@@ -121,8 +121,8 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       this.set('userOrgName', name );
       this.configureFilter();
       this.configurePrimaryFilter();
+      this.getWorkspaces();
     });
-
     this._super(...arguments);
   },
   getUserOrg () {
@@ -209,7 +209,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               }
             },
             // member: {
-            //   label: "Participating",
+            //   label: "Member",
             //   value: "member",
             //   isChecked: true,
             //   icon: "fas fa-users"
@@ -302,11 +302,30 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   buildMineFilter() {
     let filter = {};
     let userId = this.get('currentUser.id');
+    let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
 
-    filter.createdBy = userId;
+    let includeCreated = _.indexOf(secondaryValues, 'createdBy') !== -1;
+    let includeOwner = _.indexOf(secondaryValues, 'owner') !== -1;
+
+    if (!includeCreated && !includeOwner) {
+      this.set('criteriaTooExclusive', true);
+      return;
+    }
+
+    filter.$or = [];
+
+    if (includeCreated) {
+      filter.$or.push({ createdBy: userId });
+    }
+
+    if (includeOwner) {
+      filter.$or.push({ owner: userId });
+    }
 
     return filter;
   },
+
+
   buildPublicFilter() {
     let filter = {};
 
@@ -352,9 +371,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       if (isEmpty) {
         return {};
       }
-
-
-
       // recommended, fromOrg
       let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
 
