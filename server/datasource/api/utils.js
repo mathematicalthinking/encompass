@@ -261,6 +261,11 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       let updatedValue = mongoose.Types.ObjectId(value);
       criterion.createdBy = updatedValue;
     }
+    if (criterion.hasOwnProperty('owner')) {
+      let value = criterion.owner;
+      let updatedValue = mongoose.Types.ObjectId(value);
+      criterion.owner = updatedValue;
+    }
   });
 
   let matchObj = { "$match" : criteria };
