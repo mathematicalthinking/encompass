@@ -1126,17 +1126,13 @@ async function buildCriteria(accessibleCriteria, requestFilter, user) {
 
 }
 
-async function populateAnswers(answers) {
+function populateAnswers(answers) {
   const opts = [
     {path: 'createdBy', select: 'username'},
     {path: 'problem', select: 'title'},
     {path: 'section', select: ['name', 'teachers']}
   ];
-  try {
-     return await models.Answer.populate(answers, opts);
-  } catch(err) {
-    console.error(err);
-  }
+    return models.Answer.populate(answers, opts);
 }
 
 async function answersToSubmissions(answers) {
@@ -1299,7 +1295,8 @@ async function postWorkspaceEnc(req, res, next) {
     const wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
     const folderSetInfo = { folderSetId: folderSet, folderSetObjects: null };
 
-    let newFolderSet = await newFolderStructure(user, wsInfo, folderSetInfo);
+    // creates new folders for workspace
+    await newFolderStructure(user, wsInfo, folderSetInfo);
 
     let rec = pruned;
     rec.createdWorkspace = ws._id;
@@ -1320,35 +1317,19 @@ function buildAnswersToClone(answers, hash) {
   if (!answers || !_.isArray(answers)) {
     return;
   }
-  let { all, none, byStudentIds, byAnswerIds } = hash;
+  let { all, none, answerIds } = hash;
 
   if (all) {
     return [...answers];
   }
-  if (none) {
+
+  if (none || !apiUtils.isNonEmptyArray(answerIds)) {
     return [];
   }
 
-  let studentAnswers = [];
-  let byIdAnswers = [];
-
-  if (_.isArray(byStudentIds) && !_.isEmpty(byStudentIds)) {
-    studentAnswers = _.filter(answers, (answer => {
-      let creator = answer.createdBy;
-      return _.contains(byStudentIds, creator.toString());
-    }));
-  }
-
-  if (_.isArray(byAnswerIds) && !_.isEmpty(byAnswerIds)) {
-    byIdAnswers = _.filter(answers, (answer) => {
-      return _.contains(byAnswerIds, answer._id.toString());
-    });
-  }
-  let combined = studentAnswers.concat(byIdAnswers);
-
-  return _.uniq(combined, false, answer => answer._id);
-
-
+  return _.filter(answers, (answer) => {
+    return _.contains(answerIds, answer._id.toString());
+  });
 }
 
 async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderSetOptions) {
@@ -1450,8 +1431,7 @@ function copyTagging(id, newFolder, taggingsKey, wsInfo) {
       }
       const oldTaggingSelection = tagging.selection;
       // make sure old tagging id is removed from sel taggings arr
-
-      let test = await models.Selection.update({_id: oldTaggingSelection}, {$pull: {taggings: tagging._id}});
+      await models.Selection.update({_id: oldTaggingSelection}, {$pull: {taggings: tagging._id}});
 
       const { newWsId } = wsInfo;
 
@@ -1700,22 +1680,21 @@ async function handleNewFolders(user, wsInfo, folderIds, options, selectionsKey)
 
 function buildSelectionsKey(submissionSels, originalSelectionIds, selectionsConfig) {
   const hash = {};
-  const { all, none, bySelection } = selectionsConfig;
+  const { all, none, selectionIds } = selectionsConfig;
 
   if (none) {
     return hash;
   }
 
-  const ids = all ? originalSelectionIds : bySelection;
-  const filteredIds = _.filter(ids, (id => {
-    return submissionSels[id];
-  }));
-  _.each(filteredIds, (id => {
-    hash[id] = true;
-  }));
-  return hash;
+  const ids = all ? originalSelectionIds : selectionIds;
+  _.chain(ids)
+    .filter(id => submissionSels[id])
+    .each((id) => {
+      hash[id] = true;
+    })
+    .value();
+    return hash;
 }
-
 function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
   return models.Comment.findById(oldCommentId).lean().exec()
     .then((oldComment => {
@@ -1826,22 +1805,71 @@ function copySelections(user, selectionsKey, oldSub, newSub, newWsId) {
 // buildCommentsKey(selectionsKey, originalWs.comments, commentsConfig);
 async function buildCommentsKey(selectionsKey, originalCommentIds, commentsConfig) {
   const hash = {};
-  const { all, none, byComment } = commentsConfig;
+  const { all, none, commentIds } = commentsConfig;
   if (none) {
     return hash;
   }
 
-  const ids = all ? originalCommentIds : byComment;
+  const ids = all ? originalCommentIds : commentIds;
   // filter ids based on selectionsKey
 
 const comments = await models.Comment.find({_id: {$in: ids}});
-const filtered = _.filter(comments, (comment) => {
-  return comment.selection && selectionsKey[comment.selection];
-});
-_.each(filtered, (comment => {
-  hash[comment._id] = true;
-}));
-return hash;
+
+_.chain(comments)
+  .filter(comment => selectionsKey[comment.selection])
+  .each((comment) => {
+    hash[comment._id] = true;
+  })
+  .value();
+  return hash;
+}
+
+// await handleResponses(user, workspaceInfo, originalWs.responses, responseOptions);
+function buildResponsesKey(originalResponseIds, responseOptions) {
+  const hash = {};
+  const { all, none, responseIds } = responseOptions;
+  if (none) {
+    return hash;
+  }
+
+  const ids = all ? originalResponseIds : responseIds;
+
+  _.each(ids, (id) => {
+    hash[id] = true;
+  });
+  return hash;
+}
+function copyResponse(originalResponseId, newSubId, newWsId) {
+  return models.Response.findById(originalResponseId).lean().exec()
+    .then((oldResponse) => {
+      if (_.isNull(oldResponse)) {
+        return null;
+      }
+      const newResponse = new models.Response({
+        createdBy: oldResponse.createdBy,
+        lastModifiedBy: oldResponse.lastModifiedBy,
+        text: oldResponse.text,
+        source: oldResponse.source,
+        original: oldResponse.original,
+        recipient: oldResponse.recipient,
+        workspace: newWsId,
+        submission: newSubId
+      });
+      return newResponse.save().then(doc => doc._id);
+    });
+}
+//copyResponses(responsesKey, submission, newWs._id)
+function copyResponses(responsesKey, newSubmission, newWsId) {
+  if (!apiUtils.isNonEmptyArray(newSubmission.responses)) {
+    return Promise.resolve([]);
+  }
+  return Promise.all(
+    _.chain(newSubmission.responses)
+      .filter(responseId => responsesKey[responseId])
+      .map(id => copyResponse(id, newSubmission._id, newWsId))
+      .reject(apiUtils.isNullOrUndefined)
+      .value()
+  );
 }
 
 async function cloneWorkspace(req, res, next) {
@@ -1961,10 +1989,12 @@ async function cloneWorkspace(req, res, next) {
     // thus cannot include any comments or taggings
     // check responses
     const selectionsKey = buildSelectionsKey(submissionSels, originalWs.selections, selectionOptions);
+
     const newSubsWithSelections = await Promise.all(
       _.map(submissions, (submission) => {
         let oldSub = submissionsMap[submission._id];
         submission.comments = oldSub.comments;
+        submission.responses = oldSub.responses;
         return copySelections(user, selectionsKey, oldSub, submission, newWs._id)
           .then((selIds) => {
             if (apiUtils.isNonEmptyArray(selIds)) {
@@ -2010,6 +2040,27 @@ async function cloneWorkspace(req, res, next) {
       .value();
 
       // End of Handle comments
+      const responsesKey = buildResponsesKey(originalWs.responses, responseOptions);
+
+      const newSubsWithResponses = await Promise.all(
+        _.map(newSubsWithComments, (submission) => {
+          return copyResponses(responsesKey, submission, newWs._id)
+          .then((responseIds) => {
+            if (apiUtils.isNonEmptyArray(responseIds)) {
+              submission.responses = responseIds;
+            } else {
+              console.log('else setting responses to []');
+              submission.responses = [];
+            }
+            return submission.save();
+          });
+        })
+      );
+
+      newWs.responses = _.chain(newSubsWithResponses)
+        .map(sub => sub.responses)
+        .flatten()
+        .value();
 
       // Handle Taggings
 
@@ -2115,7 +2166,7 @@ async function cloneWorkspace(req, res, next) {
     newWs.folders = newFolders.folders;
     newWs.taggings = newFolders.taggings;
 
-    savedWs = await newWs.save();
+  savedWs = await newWs.save();
 
     const data = { workspace: savedWs};
     return utils.sendResponse(res, data);
