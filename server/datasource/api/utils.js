@@ -2,7 +2,6 @@ const _ = require('underscore');
 const models = require('../schemas');
 const mongoose = require('mongoose');
 
-
 async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
   try {
     let query = searchQuery.replace(/\s+/g, "");
@@ -238,6 +237,10 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
+const stringToObjectId = function(id) {
+  console.log('id is', id);
+};
+
 const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Limit and skip are passed in with the req
   let limit = req.query.limit;
@@ -254,7 +257,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let limitObj = { "$limit": limit };
   let skipObj = { "$skip": skip };
 
-  console.log('criteria inside utils is', JSON.stringify(criteria));
+  console.log('criteria is', criteria);
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
   criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
@@ -262,13 +265,27 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       let updatedValue = mongoose.Types.ObjectId(value);
       criterion.createdBy = updatedValue;
     }
-    if (criterion.hasOwnProperty('owner')) {
-      let value = criterion.owner;
-      let updatedValue = mongoose.Types.ObjectId(value);
-      criterion.owner = updatedValue;
+    if (criterion.hasOwnProperty('$or')) {
+      criterion.$or.forEach((crit) => {
+        if (crit.hasOwnProperty('createdBy')) {
+          let value = crit.createdBy;
+          let updatedValue = mongoose.Types.ObjectId(value);
+          crit.createdBy = updatedValue;
+        }
+        if (crit.hasOwnProperty('owner')) {
+          let value = crit.owner;
+          if (value.hasOwnProperty('$in')) {
+            value.$in.forEach((val) => {
+              val = mongoose.Types.ObjectId(val);
+            });
+          } else {
+            let updatedValue = mongoose.Types.ObjectId(value);
+            crit.owner = updatedValue;
+          }
+        }
+      });
     }
   });
-
 
   let matchObj = { "$match" : criteria };
   let matchNest = matchObj.$match;
@@ -305,3 +322,5 @@ module.exports.capitalizeWord = capitalizeWord;
 module.exports.getSafeName = getSafeName;
 module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
+module.exports.stringToObjectId = stringToObjectId;
+
