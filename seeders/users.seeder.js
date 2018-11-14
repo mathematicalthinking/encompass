@@ -438,7 +438,7 @@ var data = [{
   "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "history" : [],
   "assignments" : ["5b91743a3da5efca74705773"],
-  "answers" : [],
+  "answers" : ["5bec35898c73047613e2f34b"],
   "sections" : [
       {
           "sectionId" : "5b9149a32ecaf7c30dd4748f",

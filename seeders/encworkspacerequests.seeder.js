@@ -14,6 +14,16 @@ var data = [
     "lastModifiedDate" : "2018-10-06T01:44:45.183Z",
     "isTrashed" : false,
     "createDate" : "2018-10-06T01:44:45.183Z"
+},
+{
+  "_id" : "5bec36958c73047613e2f34f",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "teacher" : "5b4e4b48808c7eebc9f9e827",
+  "assignment" : "5b91743a3da5efca74705773",
+  "createdWorkspace" : "5bec36958c73047613e2f34e",
+  "lastModifiedDate" : "2018-11-14T14:30:46.558Z",
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:30:46.558Z"
 }
 ];
 

@@ -832,6 +832,78 @@ var data = [
   "createdBy" : "5b7321ee59a672806ec903d5",
   "text" : "trashed selection",
   "coordinates" : "node-1 2 32 node-1 2 38",
+},
+{
+  "_id" : "5bec373d8c73047613e2f35c",
+  "text" : "This is a brief summary of my thoughts",
+  "coordinates" : "node-1 2 0 node-1 2 38",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec38338c73047613e2f36b"
+  ],
+  "comments" : [
+      "5bec375d8c73047613e2f35e"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:54:53.638Z"
+},
+{
+  "_id" : "5bec37408c73047613e2f35d",
+  "text" : "This is my explanation.",
+  "coordinates" : "node-3 0 0 node-3 0 23",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec386a8c73047613e2f36d"
+  ],
+  "comments" : [
+      "5bec37708c73047613e2f35f"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:54:56.920Z"
+},
+{
+  "_id" : "5bec37838c73047613e2f361",
+  "text" : "My Test short answer",
+  "coordinates" : "node-1 2 0 node-1 2 20",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "submission" : "5bec36958c73047613e2f34d",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec38018c73047613e2f368"
+  ],
+  "comments" : [
+      "5bec37a08c73047613e2f364"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:56:03.578Z"
+},
+{
+  "_id" : "5bec37a78c73047613e2f365",
+  "text" : "This is my explanation.....",
+  "coordinates" : "node-3 0 0 node-3 0 27",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "submission" : "5bec36958c73047613e2f34d",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec37f48c73047613e2f367"
+  ],
+  "comments" : [
+      "5bec37e38c73047613e2f366"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:56:39.038Z"
 }
 ];
 
