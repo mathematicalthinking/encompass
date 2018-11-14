@@ -44,6 +44,13 @@ module.exports = {
         k: 2,
         ee: 1,
         noSub: 2,
+      },
+      search: {
+        public: 8,
+        mine: 0,
+        org: 7,
+        title: 0,
+        clear: 1,
       }
     }
   },
@@ -88,6 +95,13 @@ module.exports = {
         k: 2,
         ee: 1,
         noSub: 2,
+      },
+      search: {
+        public: 7,
+        mine: 5,
+        org: 6,
+        title: 1,
+        clear: 5,
       }
     }
   },
@@ -149,6 +163,14 @@ module.exports = {
           public: 5,
           private: 1,
         }
+      },
+      search: {
+        all: 12,
+        public: 8,
+        mine: 2,
+        org: 7,
+        title: 1,
+        clear: 22,
       }
     }
   },
