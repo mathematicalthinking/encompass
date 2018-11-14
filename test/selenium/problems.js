@@ -28,6 +28,7 @@ describe('Problems', async function () {
       const { accountType, actingRole, testDescriptionTitle, problems } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
+      const isTeacher = accountType === 'T';
 
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
@@ -236,17 +237,7 @@ describe('Problems', async function () {
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
-
-
               });
-
-//SEARCH BAR
-//Test that there are 2 drop down items
-//Search works with enter and clicking button
-//Clear button shows when query is applied or text in field
-//Clearing search bar resets results properly
-//Searching only applies to results of primary filters
-//Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
               describe('Testing search bar', function () {
                 before(async function () {
@@ -258,30 +249,83 @@ describe('Problems', async function () {
                 it('should have two search options', async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '#my-select select');
-                    await driver.sleep(5000);
+                    await helpers.findAndClickElement(driver, 'option[value="title"]');
+                    await helpers.findAndClickElement(driver, 'option[value="general"]');
                   }
                 });
 
-                // it('should show problems when adding category with problems to list', async function () {
-                //   if (!isStudent) {
-                //     let resultsMsg = `${problems.category.k} problems found`;
-                //     await helpers.clearElement(driver, '#categories-filter-selectized');
-                //     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
-                //     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
-                //     // await helpers.waitForTextInDom(driver, resultsMsg);
-                //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-                //   }
-                // });
+                it('should show search results for Public', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found ${problems.search.public} problems that contain "problem"`;
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                    await helpers.findInputAndType(driver, '.search-field', 'Problem', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
 
-                // it('should show more problems when adding category with problems to list', async function () {
-                //   if (!isStudent) {
-                //     let resultsMsg = `${problems.category.total} problems found`;
-                //     await helpers.clearElement(driver, '#categories-filter-selectized');
-                //     await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
-                //     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
-                //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-                //   }
-                // });
+                it('should show search results for Org', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found ${problems.search.org} problems that contain "problem"`;
+                    await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show search results for Mine', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problems that contain "problem"`;
+                    await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                if (isAdmin) {
+                  it('should show search results for All', async function () {
+                    if (!isStudent) {
+                      let resultsMsg = `Based off your filter criteria, we found ${problems.search.all} problems that contain "problem"`;
+                      await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
+                      await helpers.waitForTextInDom(driver, resultsMsg);
+                      expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    }
+                  });
+                }
+
+                it('should clear search results', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.search.clear} problems found`;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show search results for searching by Title', async function () {
+                  if (!isStudent) {
+                    let resultsMsg;
+                    if (isAdmin || isTeacher) {
+                      resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problem whose title contains "zebra"`;
+                    } else {
+                      resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problems whose title contains "zebra"`;
+                    }
+                    await helpers.findAndClickElement(driver, 'li.filter-public label.radio-label');
+                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await helpers.findAndClickElement(driver, 'option[value="title"]');
+                    await helpers.findInputAndType(driver, '.search-field', 'Zebra', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+              //SEARCH BAR
+              //Error if you search empty field
+              //Error if search too long of string
+              //Clear button shows when query is applied or text in field
+              //Clearing search bar resets results properly
+              //Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
+
               });
             }
 
