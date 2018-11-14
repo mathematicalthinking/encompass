@@ -1441,82 +1441,207 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
   }
 }
 
-// async function deepCloneFolders(user, folderIds, wsInfo) {
-//   /*
-//     wsInfo = {
-//      originalWsId
-//      newWsId:
-//      newWsOwner
-//    };
-//     */
-//    // for each folder Id in folderIds to Copy
-//         // lookup folder in db
-//         // create new folder record
-//           // same weight, name,
-//           // createdBy is user
-//           // owner is owner of new Ws
-//           // if taggings
-//             // create new tagging record
-//               // workspace is new ws
-//               // clone selection
-//           // if children, recurse for each child
-//   try {
-//     if (!isNonEmptyArray(folderIds) || !isNonEmptyObject(wsInfo)) {
-//       return;
-//     }
-//     const { newWsId, newWsOwner } = wsInfo;
-//     // do we need to check for isTrashed here?
-//     const oldFolders = await models.Folder.find({_id: { $in: folderIds }}).lean().exec();
-//     const oldTopLevelFolders = _.filter(oldFolders, (folder => {
-//       return _.isNull(folder.parent);
-//     }));
-//     const newFolders = await Promise.all(_.map(oldTopLevelFolders, (async (folder) => {
-//       const newFolder = new models.Folder({
-//         name: folder.name,
-//         weight: folder.weight ? folder.weight : 0,
-//         owner: newWsOwner,
-//         workspace: newWsId,
-//         createdBy: user._id,
-//         lastModifiedBy: user._id
-//       });
-//       const oldTaggings = folder.taggings;
+function copyTagging(id, newFolder, taggingsKey, wsInfo) {
 
-//       const newTaggings = await Promise.all(_.map(oldTaggings, (tagging => {
-//         const newTagging = new models.Tagging({
-//           workspace: newWsId,
-//           createdBy: tagging.createdBy,
-//           lastModifiedBy: tagging.lastModifiedBy,
-//           lastModifiedDate: tagging.lastModifiedDate,
-//           folder: folder._id
-//         });
+  return models.Tagging.findById(id).lean().exec()
+    .then(async (tagging) => {
+      if (_.isNull(tagging)) {
+        return null;
+      }
+      const oldTaggingSelection = tagging.selection;
+      // make sure old tagging id is removed from sel taggings arr
 
-//         const oldSelection = tagging.selection;
-//         const newSelection = new models.Selection({
-//           workspace: newWsId,
-//           createdBy: oldSelection.createdBy,
-//           lastModifiedBy: oldSelection.lastModifiedBy,
-//           lastModifiedDate: oldSelection.lastModifiedDate,
-//           coordinates: oldSelection.coordinates,
-//           text: oldSelection.text,
+      let test = await models.Selection.update({_id: oldTaggingSelection}, {$pull: {taggings: tagging._id}});
 
-//           taggings: [folder._id]
-//         });
+      const { newWsId } = wsInfo;
 
-//       })));
+      const newTagging = new models.Tagging({
+        workspace: newWsId,
+        createdBy: tagging.createdBy,
+        lastModifiedBy: tagging.lastModifiedBy,
+        lastModifiedDate: tagging.lastModifiedDate,
+        folder: newFolder._id,
+        selection: taggingsKey[tagging._id]
+      });
 
-//     })));
+      return newTagging.save();
+    })
+    .then((tag) => {
+      return tag._id;
+    });
+}
 
+function copyTaggings(oldTaggingIds, newFolder, taggingsKey, wsInfo) {
+  if (!apiUtils.isNonEmptyArray(oldTaggingIds)) {
+    return [];
+  }
 
-//   }catch(err) {
-//     console.error(`Error deepCloneFolders: ${err}`);
-//   }
-// }
+  return Promise.all(
+    _.chain(oldTaggingIds)
+      .filter((taggingId) => {
+        return taggingsKey[taggingId];
+      })
+      .map((id) => {
+        return copyTagging(id, newFolder, taggingsKey, wsInfo);
+      })
+      .value()
+  );
 
-async function handleNewFolders(user, wsInfo, folderIds, options) {
+}
+
+async function copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo) {
+  const { newWsId, newWsOwner } = wsInfo;
+  const folderIds = [];
+  const taggingIds = [];
+  let folders;
+
+  const recurse = async function(folder, parentId) {
+    try {
+      if (!folder) {
+        return;
+      }
+      // check if folder passed in is objectId
+      let isObjectId = mongoose.Types.ObjectId.isValid(folder);
+
+      if (isObjectId) {
+        // lookup folder
+        folder = await models.Folder.findById(folder).lean().exec();
+      }
+
+      console.log(`parent for folderObj: ${folder.name}: ${parentId}`);
+
+      let f = new models.Folder({
+        owner: newWsOwner,
+        name: folder.name,
+        weight: folder.weight ? folder.weight : 0,
+        createdBy: user._id,
+        lastModifiedBy: user._id,
+        children: [],
+        workspace: newWsId
+      });
+
+      if (parentId) {
+        f.parent = parentId;
+      }
+
+      const taggings = folder.taggings;
+
+      if (apiUtils.isNonEmptyArray(taggings)) {
+
+       let ids = await copyTaggings(taggings, f, taggingsKey, wsInfo);
+        taggingIds.push(...ids);
+        f.taggings = ids;
+      }
+
+      const children = folder.children;
+      if (_.isEmpty(children)) {
+        return f.save()
+        .then((doc) => {
+          folderIds.push(doc._id);
+          return doc;
+        });
+      }
+
+      f.children = await Promise.all(_.map(children, (child => {
+        return recurse(child, f._id);
+      })));
+
+      let newChildren = f.children;
+      let mapped = _.map(newChildren, (child => {
+        // can only save the id of the child folder in children array
+        return child._id;
+      }));
+
+      f.children = mapped;
+      return f.save()
+        .then((doc) => {
+          folderIds.push(doc._id);
+          return doc;
+        });
+    }catch(err) {
+      console.error(`Error recurse : ${err}`);
+    }
+  };
+
+  folders = await Promise.all(_.map(oldTopLevelFolders, (obj => {
+    return recurse(obj, null);
+  })));
+  return [folderIds, taggingIds];
+}
+
+//deepCloneFolders(folderIdsToCopy, taggingsKey, wsInfo)
+async function deepCloneFolders(user, folderIds, taggingsKey, wsInfo) {
+  /*
+    wsInfo = {
+     originalWsId
+     newWsId:
+     newWsOwner
+   };
+    */
+
+    // taggings key is hash where key is oldTaggingId and value is new selectionId
+   // for each folder Id in folderIds to Copy
+        // lookup folder in db
+        // create new folder record
+          // same weight, name,
+          // createdBy is user
+          // owner is owner of new Ws
+          // if taggings
+            // create new tagging record
+              // workspace is new ws
+              // set selectionId from selectionsKey
+          // if children, recurse for each child
+  try {
+    if (!apiUtils.isNonEmptyArray(folderIds) || !apiUtils.isNonEmptyObject(wsInfo)) {
+      return;
+    }
+    // const { newWsId, newWsOwner } = wsInfo;
+    // do we need to check for isTrashed here?
+    const oldFolders = await models.Folder.find({_id: { $in: folderIds }}).lean().exec();
+    const oldTopLevelFolders = _.filter(oldFolders, (folder => {
+      return apiUtils.isNullOrUndefined(folder.parent);
+    }));
+
+    return copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo);
+
+  }catch(err) {
+    console.error(`Error deepCloneFolders: ${err}`);
+  }
+}
+
+async function buildTaggingsKey(folderIdsToCopy, selectionsKey) {
+  const hash = {};
+  if (!apiUtils.isNonEmptyArray(folderIdsToCopy)) {
+    return hash;
+  }
+
+  const folders = await models.Folder.find({_id: {$in: folderIdsToCopy}}).populate('taggings').lean().exec();
+  if (_.isEmpty(folders)) {
+    return hash;
+  }
+
+  _.chain(folders)
+  .map(folder => folder.taggings)
+  .flatten()
+  .filter((tagging) => {
+    return tagging.selection && selectionsKey[tagging.selection];
+  })
+  .each((tagging) => {
+    // set value to new selectionId
+    hash[tagging._id] = selectionsKey[tagging.selection];
+  })
+  .value();
+
+  return hash;
+
+}
+
+async function handleNewFolders(user, wsInfo, folderIds, options, selectionsKey) {
   try {
     // check user permissions
     const results = {
       folders: [],
+      taggings: [],
       folderSet: null
     };
     /*
@@ -1536,6 +1661,7 @@ async function handleNewFolders(user, wsInfo, folderIds, options) {
     }
 
      let folderIdsToCopy = all ? [...folderIds] : [...byFolderIds];
+     let taggingsKey = {};
 
     if (includeStructureOnly) {
       // need to copy and make new folder set
@@ -1548,10 +1674,21 @@ async function handleNewFolders(user, wsInfo, folderIds, options) {
       let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
 
       // newFolderStructure returns array of newly created FolderIds
-      return newFolderStructure(user, wsInfo, folderSetInfo);
+      const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
+
+      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+        results.folders = newFolderIds;
+      }
+      return results;
 
     } else {
+      taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
 
+      let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
+
+      results.folders = folderIds;
+      results.taggings = taggingIds;
+      return results;
       // need to copy folder AND taggings (and selections)
       // and create new folder
       // make new folderSet too?
@@ -1560,33 +1697,7 @@ async function handleNewFolders(user, wsInfo, folderIds, options) {
     console.error(`Error handleNewFolders: ${err}`);
   }
 }
-// async function handleComments(user, wsInfo, oldComments, commentsOptions) {
-//   try {
-//     if (!isNonEmptyArray(oldComments) || !isNonEmptyObject(wsInfo)) {
-//       return;
-//     }
-//     /*
-//     wsInfo = {
-//      originalWsId
-//      newWsId:
-//      newWsOwner
-//    };
-//     */
-//    const { newWsId, newWsOwner } = wsInfo;
-//    /*
-//    commentsOptions: {
-//     all: bool,
-//     none: bool,
-//     byComment: [array of commentIds]
-//   }
-//   */
 
-
-
-//   }catch(err) {
-//     console.error(`Error handleComments: ${err}`);
-//   }
-// }
 function buildSelectionsKey(submissionSels, originalSelectionIds, selectionsConfig) {
   const hash = {};
   const { all, none, bySelection } = selectionsConfig;
@@ -1742,8 +1853,6 @@ async function cloneWorkspace(req, res, next) {
 
     const submissionsMap = {};
 
-    // workspaceToCopy - workspaceid
-
     // look up workspace in db by id
     const originalWs = await models.Workspace.findById(originalWsId).populate({path: 'submissions', populate: {path: 'answer'}}).populate('answers').lean().exec();
     if (_.isNull(originalWs)) {
@@ -1762,7 +1871,9 @@ async function cloneWorkspace(req, res, next) {
       createdBy: user._id
     });
 
-    const { answersConfig, selectionsConfig, foldersConfig, commentsConfig, responsesConfig } = optionsHash;
+    let savedWs = await newWs.save();
+
+    const { answerOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = optionsHash;
 
     let answerSet;
     let subsWithAnswers;
@@ -1798,7 +1909,7 @@ async function cloneWorkspace(req, res, next) {
       }));
     }
     // answerSet is array of populated answer docs
-    let answersToClone = buildAnswersToClone(answerSet, answersConfig);
+    let answersToClone = buildAnswersToClone(answerSet, answerOptions);
 
     _.each(answersToClone, (ans => {
       let sub = submissionsMap[ans._id];
@@ -1849,7 +1960,7 @@ async function cloneWorkspace(req, res, next) {
     // user does not want to copy any selections
     // thus cannot include any comments or taggings
     // check responses
-    const selectionsKey = buildSelectionsKey(submissionSels, originalWs.selections, selectionsConfig);
+    const selectionsKey = buildSelectionsKey(submissionSels, originalWs.selections, selectionOptions);
     const newSubsWithSelections = await Promise.all(
       _.map(submissions, (submission) => {
         let oldSub = submissionsMap[submission._id];
@@ -1871,7 +1982,9 @@ async function cloneWorkspace(req, res, next) {
 
     // desired selections have been copied
     // now determine which comments to include (can o)
-    const commentsKey = await buildCommentsKey(selectionsKey, originalWs.comments, commentsConfig);
+
+    // HANDLE COMMENTS
+    const commentsKey = await buildCommentsKey(selectionsKey, originalWs.comments, commentOptions);
 
     // oldCommentIds, commentsKey, newSub
     const newSubsWithComments = await Promise.all(
@@ -1880,6 +1993,9 @@ async function cloneWorkspace(req, res, next) {
         .then((commentIds) => {
           if (apiUtils.isNonEmptyArray(commentIds)) {
             submission.comments = commentIds;
+          } else {
+            console.log('else setting comments to []');
+            submission.comments = [];
           }
           return submission.save();
         });
@@ -1892,6 +2008,12 @@ async function cloneWorkspace(req, res, next) {
       })
       .flatten()
       .value();
+
+      // End of Handle comments
+
+      // Handle Taggings
+
+      // if structure only, do nothing
 
     const submissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
 
@@ -1987,16 +2109,16 @@ async function cloneWorkspace(req, res, next) {
       newFolderSet: folderSetId or null
       errors?
     */
+  // returns [error, folders, taggings]
+  const newFolders = await handleNewFolders(user, workspaceInfo, originalWs.folders, folderOptions, selectionsKey);
 
-  const newFolders = await handleNewFolders(user, workspaceInfo, originalWs.folders, foldersConfig);
+    newWs.folders = newFolders.folders;
+    newWs.taggings = newFolders.taggings;
 
-  if (apiUtils.isNonEmptyArray(newFolders)) {
-    newWs.folders = newFolders;
+    savedWs = await newWs.save();
 
-  }
-
-  let savedWs = await newWs.save();
-  return utils.sendResponse(res, savedWs);
+    const data = { workspace: savedWs};
+    return utils.sendResponse(res, data);
 
   }catch(err) {
     console.error(`Error copyWorkspace: ${err}`);
