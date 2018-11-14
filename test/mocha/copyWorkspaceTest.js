@@ -347,7 +347,73 @@ describe(`Copy Workspace operations by account type`, async function() {
               });
             });
           });
+
+          xdescribe('Shallow By FolderIds', function() {
+            const requestedFolderIds = ["5bec36cd8c73047613e2f354", "5bec36ca8c73047613e2f353"];
+            const request = {
+              originalWsId: baseWsId,
+
+              optionsHash: {
+                owner: newWsOwner,
+                name: newWsName,
+                answerOptions: {
+                  all: true
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  folderIds: requestedFolderIds
+                },
+                selectionOptions: {
+                  none: true
+                },
+                commentOptions: {
+                  none: true,
+
+                },
+                responseOptions: {
+                 none: true
+                }
+              }
+
+            };
+            let submission = fixtures.byAnswerIdSubmission;
+
+            xit('should only copy records related to requestedAnswer', done => {
+              agent
+              .post(baseUrl)
+              .send(request)
+              .end((err, res) => {
+                if (err) {
+                  console.log('err', err);
+                } else if (isStudent) {
+                  expect(res).to.have.status(403);
+                  done();
+                } else {
+                  expect(res).to.have.status(200);
+                  expect(res.body).to.have.all.keys('workspace');
+                  const workspace = res.body.workspace;
+                  const { owner, name, mode, submissions, folders, taggings, selections, comments, responses } = workspace;
+                  const tuples = [
+                    [submissions, originalWs.submissions.length ],
+                    [folders, requestedFolderIds.length ], [taggings, 0],
+                    [selections, 0], [comments, 0], [responses, 0]
+                  ];
+                  checkLengths(tuples);
+                  expect(owner).to.eql(newWsOwner);
+                  expect(name).to.eql(newWsName);
+                  expect(mode).to.eql(originalWs.mode);
+                  done();
+                }
+
+              });
+            });
+          });
         });
+
+
   }
   for (let user of Object.keys(testUsers)) {
     let testUser = testUsers[user];
