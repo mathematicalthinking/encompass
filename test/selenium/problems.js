@@ -28,7 +28,6 @@ describe('Problems', async function () {
       const { accountType, actingRole, testDescriptionTitle, problems } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
-      const isTeacher = accountType === 'T';
 
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
@@ -337,10 +336,29 @@ describe('Problems', async function () {
                   }
                 });
 
+                it('should throw and error when search is too long', async function () {
+                  if (!isStudent) {
+                    let errorMessage = "Query is too long (maximum is 500 characters)";
+                    await helpers.findInputAndType(driver, '.search-field', css.longString, true);
+                    await helpers.findAndClickElement(driver, '.fa-search');
+                    await helpers.waitForSelector(driver, '.error-box');
+                    await helpers.waitForTextInDom(driver, errorMessage);
+                    expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(errorMessage);
+                  }
+                });
+
+                it('should show results when matching problem description', async function () {
+                  if (!isStudent) {
+                    let errorMessage = "Query is too long (maximum is 500 characters)";
+                    await helpers.findInputAndType(driver, '.search-field', css.longString, true);
+                    await helpers.findAndClickElement(driver, '.fa-search');
+                    await helpers.waitForSelector(driver, '.error-box');
+                    await helpers.waitForTextInDom(driver, errorMessage);
+                    expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(errorMessage);
+                  }
+                });
+
               //SEARCH BAR
-              //Error if you search empty field
-              //Error if search too long of string
-              //Clear button shows when query is applied or text in field
               //Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
               });
