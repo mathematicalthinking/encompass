@@ -305,7 +305,7 @@ describe('Problems', async function () {
                 it('should show search results for searching by Title', async function () {
                   if (!isStudent) {
                     let resultsMsg;
-                    if (isAdmin || isTeacher) {
+                    if (problems.search.title === 1) {
                       resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problem whose title contains "zebra"`;
                     } else {
                       resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problems whose title contains "zebra"`;
@@ -319,11 +319,28 @@ describe('Problems', async function () {
                   }
                 });
 
+                it('should show clear button with empty search box and query applied', async function () {
+                  if (!isStudent) {
+                    await helpers.clearElement(driver, '.search-field');
+                    expect(await helpers.isElementVisible(driver, 'svg.clear')).to.be.true;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                  }
+                });
+
+                it('should throw and error when search field is empty', async function () {
+                  if (!isStudent) {
+                    let errorMessage = "Query is too short (minimum is 1 characters)";
+                    await helpers.findAndClickElement(driver, '.fa-search');
+                    await helpers.waitForSelector(driver, '.error-box');
+                    await helpers.waitForTextInDom(driver, errorMessage);
+                    expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(errorMessage);
+                  }
+                });
+
               //SEARCH BAR
               //Error if you search empty field
               //Error if search too long of string
               //Clear button shows when query is applied or text in field
-              //Clearing search bar resets results properly
               //Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
 
               });
