@@ -1614,7 +1614,7 @@ async function buildTaggingsKey(folderIdsToCopy, selectionsKey) {
 
 }
 
-async function handleNewFolders(user, wsInfo, folderIds, options, selectionsKey) {
+async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsKey) {
   try {
     // check user permissions
     const results = {
@@ -1632,13 +1632,13 @@ async function handleNewFolders(user, wsInfo, folderIds, options, selectionsKey)
 
     const { originalWsId } = wsInfo;
 
-    let { includeStructureOnly, all, none, byFolderIds, folderSetOptions } = options;
+    let { includeStructureOnly, all, none, folderIds, folderSetOptions } = options;
 
     if (none) {
       return results;
     }
 
-     let folderIdsToCopy = all ? [...folderIds] : [...byFolderIds];
+     let folderIdsToCopy = all ? [...oldFolderIds] : [...folderIds];
      let taggingsKey = {};
 
     if (includeStructureOnly) {
