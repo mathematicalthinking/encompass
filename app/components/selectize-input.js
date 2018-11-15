@@ -117,6 +117,14 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     }
 
     let key = this.get('queryParamsKey');
+    /*
+      for api that is expecting searchBy to be in shape:
+      searchBy: {
+        query: string,
+        criterion: string
+      }
+    */
+    let searchCriterion = this.get('searchCriterion');
     let queryParams = {};
     let topLevelQueryParams = this.get('topLevelQueryParams');
 
@@ -124,6 +132,9 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       queryParams[topLevelQueryParams] = {
         [key]: query
       };
+      if (searchCriterion) {
+        queryParams[topLevelQueryParams].criterion = searchCriterion;
+      }
     } else {
       queryParams = {
         [key]: query
