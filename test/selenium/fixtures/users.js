@@ -46,10 +46,10 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 8,
+        public: 11,
         mine: 0,
-        org: 7,
-        title: 0,
+        org: 9,
+        title: 1,
         clear: 1,
       }
     }
@@ -97,7 +97,7 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 7,
+        public: 9,
         mine: 5,
         org: 6,
         title: 1,
@@ -165,10 +165,10 @@ module.exports = {
         }
       },
       search: {
-        all: 12,
-        public: 8,
-        mine: 2,
-        org: 7,
+        all: 15,
+        public: 11,
+        mine: 3,
+        org: 9,
         title: 1,
         clear: 22,
       }
