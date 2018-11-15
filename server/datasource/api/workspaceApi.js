@@ -1421,15 +1421,16 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
 }
 
 function copyTagging(id, newFolder, taggingsKey, wsInfo) {
-
+/*
+ taggingsKey map betweeen oldTagging and newSelectionId
+*/
   return models.Tagging.findById(id).lean().exec()
     .then(async (tagging) => {
       if (_.isNull(tagging)) {
         return null;
       }
-      const oldTaggingSelection = tagging.selection;
-      // make sure old tagging id is removed from sel taggings arr
-      await models.Selection.update({_id: oldTaggingSelection}, {$pull: {taggings: tagging._id}});
+      //remove told tagging references from selection
+      await models.Selection.update({_id: taggingsKey[tagging._id]}, {$pull: {taggings: tagging._id}});
 
       const { newWsId } = wsInfo;
 
@@ -1917,9 +1918,17 @@ async function cloneWorkspace(req, res, next) {
     const user = userAuth.requireUser(req);
     // check if user has permission to copy this workspace
     // console.log('clone request options', JSON.stringify(req.body));
-    const { originalWsId, optionsHash } = req.body;
+    const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
 
-    // optionsHash - object detailing which fields should be included in the copy
+    if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
+      return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
+    }
+
+    const requestDoc = new models.CopyWorkspaceRequest(copyWorkspaceRequest);
+
+    if (!requestDoc.createdBy) {
+      requestDoc.createdBy = user.id;
+    }
     /*
     {
       name: if not provided will be same as original (or possible concatenate copy + sequential number?),
@@ -1962,20 +1971,22 @@ async function cloneWorkspace(req, res, next) {
     */
 
     // check for optionsHash
-    if (!apiUtils.isNonEmptyObject(optionsHash)) {
-      return utils.sendResponse(res, {workspace: null, errors: 'Missing or invalid options parameters'});
-    }
 
     // look up workspace in db by id snd populate submissions (and the submission answers), and answers(if any)
+    const { originalWsId } = copyWorkspaceRequest;
     const originalWs = await models.Workspace.findById(originalWsId).populate({path: 'submissions', populate: {path: 'answer'}}).populate('answers').lean().exec();
 
     // workspace does not exist
     if (_.isNull(originalWs)) {
-      return utils.sendResponse(res, {workspace: null, errors: 'Requested workspace does not exist'});
+      requestDoc.copyWorkspaceError = 'Requested workspace does not exist';
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
     }
 
     // process basic settings
-    const { name, owner, mode } = optionsHash;
+    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
 
     // use original name, mode if not provided
     // set owner as current user if owner not provided
@@ -1983,21 +1994,18 @@ async function cloneWorkspace(req, res, next) {
       name: name || originalWs.name,
       owner: owner || user._id,
       mode: mode || originalWs.mode,
-      createdBy: user._id
+      createdBy: createdBy || user._id
     });
 
     let savedWs = await newWs.save();
 
     // destructure options parameters
     // will be used to determine which records to copy
-    const { answerOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = optionsHash;
+    const { answerOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
 
-    // let answerSet;
-    // let subsWithAnswers;
-
-    // answerSet is array of populated answer docs
-    // submissionsMap is mapping between an answer and its corresponding submission
     /*
+      answerSet is array of populated answer docs
+      submissionsMap is mapping between an answer and its corresponding submission
       {
         answerId: populatedSubmissionDoc
       }
@@ -2005,27 +2013,34 @@ async function cloneWorkspace(req, res, next) {
     let [ error, answerSet, submissionsMap] = buildAnswerSetAndSubmissionsMap(originalWs);
 
     if (error) {
-      return utils.sendResponse(res, {errors: [error]});
+      requestDoc.copyWorkspaceError = error;
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
     }
 
     // answersToClone is filtered answer docs based on request params
     let answersToClone = buildAnswersToClone(answerSet, answerOptions);
 
     if (!apiUtils.isNonEmptyArray(answersToClone)) {
-      return utils.sendResponse(res, null);
+      requestDoc.copyWorkspaceError = `There are no submissions to copy.`;
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
     }
 
-    // submissionKey is used to keep track of which original submissions should be copied
     /*
+      submissionKey is used to keep track of which original submissions should be copied
       {
         submissionId: true
       }
     */
     let submissionsKey = {};
 
-    // submissionSels is used to keep track of the original selections that belong to an original submission that is in submission key
-    // later on true will be replaced with the new selectionId
     /*
+      submissionSels is used to keep track of the original selections that belong to an original submission that is in submission key
       {
         selectionId: true
       }
@@ -2068,16 +2083,15 @@ async function cloneWorkspace(req, res, next) {
 
     // submissionsMap is now a mapping between the new copied submissionId and the old submission doc
 
-
     const workspaceInfo = {
       originalWsId: originalWsId,
       newWsId: newWs._id,
       newWsOwner: newWs.owner
     };
 
-    // selectionsKey is used to determine which selections should be copied
 
     /*
+      selectionsKey is used to determine which selections should be copied
       {
         selectionId: true
       }
@@ -2109,13 +2123,9 @@ async function cloneWorkspace(req, res, next) {
         .flatten()
         .value();
 
-    // desired selections have been copied
-
-    // HANDLE COMMENTS
-
-    // commentssKey is used to determine which commentss should be copied
 
     /*
+      commentssKey is used to determine which commentss should be copied
       {
         commentId: true
       }
@@ -2141,7 +2151,6 @@ async function cloneWorkspace(req, res, next) {
       .flatten()
       .value();
 
-    // End of Handle comments
     const responsesKey = buildResponsesKey(originalWs.responses, responseOptions);
 
     const newSubsWithResponses = await Promise.all(
@@ -2158,23 +2167,19 @@ async function cloneWorkspace(req, res, next) {
       })
     );
 
-      newWs.responses = _.chain(newSubsWithResponses)
-        .map(sub => sub.responses)
-        .flatten()
-        .value();
-
-      // Handle Taggings
-
-      // if structure only, do nothing
-
+    newWs.responses = _.chain(newSubsWithResponses)
+      .map(sub => sub.responses)
+      .flatten()
+      .value();
     const submissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
 
-    // set submissions and submissionSet on ws
 
     const submissionIds = _.map(newSubsWithResponses, sub => sub._id);
 
+    // set submissions and submissionSet on ws
     newWs.submissions = submissionIds;
     newWs.submissionSet = submissionSet;
+
     /*
     returns {
     folders: [oIds],
@@ -2182,14 +2187,19 @@ async function cloneWorkspace(req, res, next) {
     folderSet: folderSetId
   }
   */
-
   const newFolders = await handleNewFolders(user, workspaceInfo, originalWs.folders, folderOptions, selectionsKey);
+
   newWs.folders = newFolders.folders;
   newWs.taggings = newFolders.taggings;
 
   savedWs = await newWs.save();
 
-  const data = { workspace: savedWs};
+  requestDoc.createdWorkspace = savedWs._id;
+
+  const savedRequest = await requestDoc.save();
+
+  const data = { copyWorkspaceRequest: savedRequest};
+
   return utils.sendResponse(res, data);
 
   }catch(err) {
@@ -2201,7 +2211,6 @@ async function cloneWorkspace(req, res, next) {
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
-
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
