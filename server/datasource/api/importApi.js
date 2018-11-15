@@ -133,9 +133,8 @@ const buildSubmissionSet = async function (submissions, user) {
       }
     ]);
   } catch (err) {
-    console.log(`Error buildSubmissionSet: ${err}`);
+    console.error(`Error buildSubmissionSet: ${err}`);
   }
-  console.log('submissionSet', submissionSet);
   if (apiUtils.isNonEmptyArray(submissionSet)) {
     return submissionSet[0].submissionSet;
   }
