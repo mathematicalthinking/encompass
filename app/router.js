@@ -31,6 +31,7 @@ Encompass.Router.map(function() {
     // this.route("mine");
     // this.route("public");
     this.route("new");
+    this.route("copy");
     this.route("workspace", {resetNamespace: true, path: '/:workspace_id'}, function(){
     //this.resource("workspace", {path: '/:workspace_id'}, function(){
       this.route("info", {path: "/info"});
