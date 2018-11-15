@@ -303,13 +303,8 @@ describe('Problems', async function () {
 
                 it('should show search results for searching by Title', async function () {
                   if (!isStudent) {
-                    let resultsMsg;
-                    if (problems.search.title === 1) {
-                      resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problem whose title contains "zebra"`;
-                    } else {
-                      resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problems whose title contains "zebra"`;
-                    }
-                    await helpers.findAndClickElement(driver, 'li.filter-public label.radio-label');
+                    let resultsMsg = `Based off your filter criteria, we found ${problems.search.title} problem whose title contains "zebra"`;
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
                     await helpers.findAndClickElement(driver, '#my-select select');
                     await helpers.findAndClickElement(driver, 'option[value="title"]');
                     await helpers.findInputAndType(driver, '.search-field', 'Zebra', true);
@@ -347,20 +342,58 @@ describe('Problems', async function () {
                   }
                 });
 
-                it('should show results when matching problem description', async function () {
+                it('should show results when searching specific word in description', async function () {
                   if (!isStudent) {
-                    let errorMessage = "Query is too long (maximum is 500 characters)";
-                    await helpers.findInputAndType(driver, '.search-field', css.longString, true);
-                    await helpers.findAndClickElement(driver, '.fa-search');
-                    await helpers.waitForSelector(driver, '.error-box');
-                    await helpers.waitForTextInDom(driver, errorMessage);
-                    expect(await helpers.findAndGetText(driver, '.error-text')).to.contain(errorMessage);
+                    let resultsMsg = `Based off your filter criteria, we found 1 problem that contains "graphton"`;
+                    await helpers.findAndClickElement(driver, '#my-select select');
+                    await helpers.findAndClickElement(driver, 'option[value="general"]');
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.findInputAndType(driver, '.search-field', 'Graphton', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
 
-              //SEARCH BAR
-              //Searching should work for title, text, author, additional Info, status, flagReason, status, sharingAuth/copyright in that order
+                it('should show results when searching specific word in additional info', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found 1 problem that contains "expected"`;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.findInputAndType(driver, '.search-field', 'expected', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
 
+                it('should show results when searching by status', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found 3 problems that contain "pending"`;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.findInputAndType(driver, '.search-field', 'pending', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show results when searching by author', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found 3 problems that contain "pending"`;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.findInputAndType(driver, '.search-field', 'pending', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show results when searching by copyright', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `Based off your filter criteria, we found 3 problems that contain "pending"`;
+                    await helpers.findAndClickElement(driver, 'svg.clear');
+                    await helpers.findInputAndType(driver, '.search-field', 'pending', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
               });
             }
 
