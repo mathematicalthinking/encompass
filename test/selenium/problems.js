@@ -92,7 +92,7 @@ describe('Problems', async function () {
             });
 
             if (!isStudent) {
-              xdescribe('Clicking on My Org filter option', function () {
+              describe('Clicking on My Org filter option', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
@@ -133,11 +133,12 @@ describe('Problems', async function () {
                     let resultsMsg = `${problems.org.members} problems found`;
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
                   }
                 });
               });
 
-              xdescribe('Clicking on Category filter menu', function () {
+              describe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -241,6 +242,7 @@ describe('Problems', async function () {
               describe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                     await helpers.waitForSelector(driver, '.search-bar-comp');
                   }
                 });
@@ -377,9 +379,9 @@ describe('Problems', async function () {
 
                 it('should show results when searching by author', async function () {
                   if (!isStudent) {
-                    let resultsMsg = `Based off your filter criteria, we found 3 problems that contain "pending"`;
+                    let resultsMsg = `Based off your filter criteria, we found 1 problem that contains "mccartney"`;
                     await helpers.findAndClickElement(driver, 'svg.clear');
-                    await helpers.findInputAndType(driver, '.search-field', 'pending', true);
+                    await helpers.findInputAndType(driver, '.search-field', 'McCartney', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
@@ -387,20 +389,20 @@ describe('Problems', async function () {
 
                 it('should show results when searching by copyright', async function () {
                   if (!isStudent) {
-                    let resultsMsg = `Based off your filter criteria, we found 3 problems that contain "pending"`;
+                    let resultsMsg = `Based off your filter criteria, we found 1 problem that contains "apple"`;
                     await helpers.findAndClickElement(driver, 'svg.clear');
-                    await helpers.findInputAndType(driver, '.search-field', 'pending', true);
+                    await helpers.findInputAndType(driver, '.search-field', 'apple', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                    await helpers.findAndClickElement(driver, 'svg.clear');
                   }
                 });
               });
             }
 
             if (isAdmin) {
-              xdescribe('Clicking on Trashed problems', function () {
+              describe('Clicking on Trashed problems', function () {
                 before(async function () {
-                  await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                   await helpers.findAndClickElement(driver, '.category-header');
                   await helpers.findAndClickElement(driver, '.more-header');
                 });
@@ -438,7 +440,7 @@ describe('Problems', async function () {
                 });
               });
 
-             xdescribe('Clicking on All problems filter', function () {
+             describe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                 });
@@ -450,7 +452,7 @@ describe('Problems', async function () {
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                 });
 
-                xdescribe('Searching by organization', function () {
+                describe('Searching by organization', function () {
                   before(async function () {
                     await helpers.findInputAndType(driver, '#all-org-filter-selectized', 'Mathematical Thinking', true);
                     await helpers.findAndClickElement(driver, css.resultsMesasage);
@@ -486,7 +488,7 @@ describe('Problems', async function () {
                   });
                 });
 
-                xdescribe('Searching by creator', function () {
+                describe('Searching by creator', function () {
                   before(async function () {
                     await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
                     await helpers.findAndClickElement(driver, '[data-value="creator"]');
@@ -502,7 +504,7 @@ describe('Problems', async function () {
                   });
                 });
 
-                xdescribe('Searching by PoWs', function () {
+                describe('Searching by PoWs', function () {
                   before(async function () {
                     await helpers.findAndClickElement(driver, '.selectize-input');
                     await helpers.findAndClickElement(driver, '#admin-filter-select-selectized');
