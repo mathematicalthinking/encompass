@@ -111,3 +111,44 @@ byAnswerIdSubmission: {
     "createDate" : "2018-11-14T14:52:05.678Z"
     },
 };
+
+ /*
+    options: {
+      wsId: oId,
+      owner: oId,
+      name: string
+      isShallow: bool,
+      isFullDeepClone: bool,
+      answerOptions: {
+        "all": bool,
+        "none": bool,
+        answerIds: [ oIds ]
+      }
+      folderOptions: {
+        includeStructureOnly: bool,
+        folderSetOptions: {
+          doCreateFolderSet: bool,
+          name: string,
+          privacySetting: "M" or "E" or "O"
+        },
+        "all": bool,
+        "none": bool,
+        "folderIds": [ oIds ]
+      },
+      selectionOptions: {
+        "all": bool,
+        "none": bool,
+        "selectionIds": [oIds]
+      },
+      commentOptions: {
+        "all": bool,
+        "none": bool,
+        "commentIds": [oIds]
+      },
+      responseOptions: {
+        "all": bool,
+        "none": bool,
+        "responseIds": [ oIds ]
+      }
+    }
+    */

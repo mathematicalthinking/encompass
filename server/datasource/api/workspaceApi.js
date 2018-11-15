@@ -1468,113 +1468,88 @@ function copyTaggings(oldTaggingIds, newFolder, taggingsKey, wsInfo) {
 
 }
 
-async function copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo) {
+function copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo) {
   const { newWsId, newWsOwner } = wsInfo;
   const folderIds = [];
   const taggingIds = [];
-  let folders;
 
   const recurse = async function(folder, parentId) {
-    try {
-      if (!folder) {
-        return;
-      }
-      // check if folder passed in is objectId
-      let isObjectId = mongoose.Types.ObjectId.isValid(folder);
-
-      if (isObjectId) {
-        // lookup folder
-        folder = await models.Folder.findById(folder).lean().exec();
-      }
-
-      // console.log(`parent for folderObj: ${folder.name}: ${parentId}`);
-
-      let f = new models.Folder({
-        owner: newWsOwner,
-        name: folder.name,
-        weight: folder.weight ? folder.weight : 0,
-        createdBy: user._id,
-        lastModifiedBy: user._id,
-        children: [],
-        workspace: newWsId
-      });
-
-      if (parentId) {
-        f.parent = parentId;
-      }
-
-      const taggings = folder.taggings;
-
-      if (apiUtils.isNonEmptyArray(taggings)) {
-
-       let ids = await copyTaggings(taggings, f, taggingsKey, wsInfo);
-        taggingIds.push(...ids);
-        f.taggings = ids;
-      }
-
-      const children = folder.children;
-      if (_.isEmpty(children)) {
-        return f.save()
-        .then((doc) => {
-          folderIds.push(doc._id);
-          return doc;
-        });
-      }
-
-      f.children = await Promise.all(_.map(children, (child => {
-        return recurse(child, f._id);
-      })));
-
-      let newChildren = f.children;
-      let mapped = _.map(newChildren, (child => {
-        // can only save the id of the child folder in children array
-        return child._id;
-      }));
-
-      f.children = mapped;
-      return f.save()
-        .then((doc) => {
-          folderIds.push(doc._id);
-          return doc;
-        });
-    }catch(err) {
-      console.error(`Error recurse : ${err}`);
+    if (!folder) {
+      return;
     }
+    // check if folder passed in is objectId
+    let isObjectId = mongoose.Types.ObjectId.isValid(folder);
+
+    if (isObjectId) {
+      // lookup folder
+      folder = await models.Folder.findById(folder).lean().exec();
+    }
+
+    let f = new models.Folder({
+      owner: newWsOwner,
+      name: folder.name,
+      weight: folder.weight ? folder.weight : 0,
+      createdBy: user._id,
+      lastModifiedBy: user._id,
+      children: [],
+      workspace: newWsId
+    });
+
+    if (parentId) {
+      f.parent = parentId;
+    }
+
+    const taggings = folder.taggings;
+
+    if (apiUtils.isNonEmptyArray(taggings)) {
+
+      let ids = await copyTaggings(taggings, f, taggingsKey, wsInfo);
+      taggingIds.push(...ids);
+      f.taggings = ids;
+    }
+
+    const children = folder.children;
+
+    if (_.isEmpty(children)) {
+      return f.save()
+      .then((doc) => {
+        folderIds.push(doc._id);
+        return doc;
+      });
+    }
+
+    f.children = await Promise.all(_.map(children, (child => {
+      return recurse(child, f._id);
+    })));
+
+    let newChildren = f.children;
+    // can only save the id of the child folder in children array
+    f.children = _.map(newChildren, child => child._id);
+
+    return f.save()
+      .then((doc) => {
+        folderIds.push(doc._id);
+        return doc;
+    });
   };
 
-  folders = await Promise.all(_.map(oldTopLevelFolders, (obj => {
-    return recurse(obj, null);
-  })));
-  return [folderIds, taggingIds];
+  return Promise.all(
+    _.map(oldTopLevelFolders, (obj => {
+      return recurse(obj, null);
+  })))
+    .then((folders) => {
+      return [folderIds, taggingIds];
+    });
 }
 
 //deepCloneFolders(folderIdsToCopy, taggingsKey, wsInfo)
 async function deepCloneFolders(user, folderIds, taggingsKey, wsInfo) {
-  /*
-    wsInfo = {
-     originalWsId
-     newWsId:
-     newWsOwner
-   };
-    */
+  // taggings key is hash where key is oldTaggingId and value is new selectionId
 
-    // taggings key is hash where key is oldTaggingId and value is new selectionId
-   // for each folder Id in folderIds to Copy
-        // lookup folder in db
-        // create new folder record
-          // same weight, name,
-          // createdBy is user
-          // owner is owner of new Ws
-          // if taggings
-            // create new tagging record
-              // workspace is new ws
-              // set selectionId from selectionsKey
-          // if children, recurse for each child
   try {
     if (!apiUtils.isNonEmptyArray(folderIds) || !apiUtils.isNonEmptyObject(wsInfo)) {
       return;
     }
-    // const { newWsId, newWsOwner } = wsInfo;
     // do we need to check for isTrashed here?
     const oldFolders = await models.Folder.find({_id: { $in: folderIds }}).lean().exec();
     const oldTopLevelFolders = _.filter(oldFolders, (folder => {
