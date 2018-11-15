@@ -180,9 +180,7 @@ describe('Problems', async function () {
                     let resultsMsg = `${problems.category.noSub} problems found`;
                     await helpers.findAndClickElement(driver, '.subfilter');
                     await helpers.waitForTextInDom(driver, resultsMsg);
-                    return handleRetries(driver, async function () {
-                      expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-                    }, 3);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
 
@@ -201,6 +199,7 @@ describe('Problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.category.ee} problems found`;
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.1', true);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
@@ -398,6 +397,78 @@ describe('Problems', async function () {
                   }
                 });
               });
+
+              describe('Testing layout and refresh', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.refresh-icon');
+                  }
+                });
+
+                it('should show no changes after refresh', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.public.count} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show card view when clicking on grid', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.grid-icon');
+                    await helpers.waitForSelector(driver, '.grid-view');
+                    expect(await helpers.isElementVisible(driver, '.grid-view')).to.be.true;
+                  }
+                });
+
+                it('should show list view when clicking on list view', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.list-icon');
+                    await helpers.waitForSelector(driver, '#layout-view');
+                    expect(await helpers.isElementVisible(driver, '#layout-view')).to.be.true;
+                  }
+                });
+              });
+
+              describe('Testing sorting and filtering functionality', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.refresh-icon');
+                  }
+                });
+
+                it('should show no changes after refresh', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.public.count} problems found`;
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show card view when clicking on grid', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.grid-icon');
+                    await helpers.waitForSelector(driver, '.grid-view');
+                    expect(await helpers.isElementVisible(driver, '.grid-view')).to.be.true;
+                  }
+                });
+
+                it('should show list view when clicking on list view', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '.list-icon');
+                    await helpers.waitForSelector(driver, '#layout-view');
+                    expect(await helpers.isElementVisible(driver, '#layout-view')).to.be.true;
+                  }
+                });
+              });
+
+          //SORT BAR
+          //Test to check sort bar is there - options are accurate
+          //Test to check alphabetical sorting
+          //Test to check date sorting
+          //Test to check privacy filtering
+          //Test to check status filtering
+
             }
 
             if (isAdmin) {
@@ -558,12 +629,7 @@ describe('Problems', async function () {
 });
 
 
-//SORT BAR
-//Test to check sort bar is there - options are accurate
-//Test to check alphabetical sorting
-//Test to check date sorting
-//Test to check privacy filtering
-//Test to check status filtering
+
 
 //RESULTS
 //Test that list view displays everything properly
