@@ -575,17 +575,6 @@ describe('Problems', async function () {
 
               });
 
-              //RESULTS
-              //Test that card view displays everything properly
-                // privacy, title, description?, status, button, more
-
-              //Test action buttons values should be different based off account type and problem status
-                //Test all functions of buttons
-                //Edit/Assign/Delete/Add from list view
-                //Admin - flag, pend, approve
-              //Test more menu shows correct values (based off account type and problem status)
-                //Test all display options○ Test all functions of buttons
-
               describe('Testing problem list item functionality', function () {
                 before(async function () {
                   if (!isStudent) {
@@ -617,6 +606,59 @@ describe('Problems', async function () {
                 it('clicking on problem description should show problem info', async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-section.description span:first-child');
+                    await driver.sleep(500);
+                    let selectors = ['.info-header', '.side-info-menu'];
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                    await driver.sleep(800);
+                    await helpers.findAndClickElement(driver, '.remove-icon');
+                  }
+                });
+
+              });
+
+            //RESULTS
+            //Test that card view displays everything properly
+              // privacy, title, description?, status, button, more
+            //Test action buttons values should be different based off account type and problem status
+              //Test all functions of buttons
+              //Edit/Assign/Delete/Add from list view
+              //Admin - flag, pend, approve
+            //Test more menu shows correct values (based off account type and problem status)
+              //Test all functions of buttons
+
+              describe('Testing problem card view functionality', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                    await helpers.findAndClickElement(driver, '.layout-icons .grid-icon');
+                    await driver.sleep(500);
+                    await helpers.waitForSelector(driver, '#problem-list-ul');
+                  }
+                });
+
+                it('problem card item should have 6 items', async function () {
+                  if (!isStudent) {
+                    let itemSection = ['privacy', 'name', 'description', 'status', 'action', 'more'];
+                    let selectors = itemSection.map((sel) => {
+                      return `#problem-list-ul li:first-child .item-card.${sel}`;
+                    });
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+                });
+
+                it('clicking on problem title should show problem info', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-card.name a');
+                    await driver.sleep(500);
+                    let selectors = ['.info-header', '.side-info-menu'];
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+
+                  }
+                });
+
+                it('clicking on problem description should show problem info', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-card.description a');
                     await driver.sleep(500);
                     let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
