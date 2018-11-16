@@ -95,7 +95,7 @@ describe('Problems', async function () {
             });
 
             if (!isStudent) {
-              xdescribe('Clicking on My Org filter option', function () {
+              describe('Clicking on My Org filter option', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
@@ -148,7 +148,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Clicking on Category filter menu', function () {
+              describe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -248,7 +248,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing search bar', function () {
+              describe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
@@ -408,7 +408,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing layout and refresh', function () {
+              describe('Testing layout and refresh', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '.refresh-icon');
@@ -440,7 +440,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing sortbar functionality', function () {
+              describe('Testing sortbar functionality', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.waitForSelector(driver, '.sort-bar');
@@ -619,6 +619,9 @@ describe('Problems', async function () {
                   before(async function () {
                     if (!isStudent) {
                       await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                      await helpers.findAndClickElement(driver, '.sort-bar-item.name span');
+                      await helpers.findAndClickElement(driver, '.sort-bar-item.name span');
+                      await driver.sleep(500);
                       await helpers.waitForSelector(driver, '#problem-list-ul');
                     }
                   });
@@ -646,6 +649,7 @@ describe('Problems', async function () {
                   if (isPdadmin) {
                     it('approved problem action button should be assign', async function () {
                       let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      await driver.sleep(5000);
                       let buttonText = 'Assign';
                       expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
                     });
@@ -704,9 +708,73 @@ describe('Problems', async function () {
                       expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text')).to.contain('Approved');
                     });
                   }
-
                 });
 
+                describe("Testing more button functionality", function() {
+                  before(async function() {
+                    if (!isStudent) {
+                      await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
+                      await helpers.waitForSelector(driver, "#problem-list-ul");
+                    }
+                  });
+
+                  if (!isAdmin) {
+                    it("problem more button should only show report", async function() {
+                      let selectors = ["#problem-list-ul li:first-child .item-section.more", "span.click-menu ul li:first-child label span"];
+                      await helpers.findAndClickElement(driver, selectors[0]);
+                      await driver.sleep(500);
+                      await helpers.waitForSelector(driver, selectors[1]);
+                      expect(await helpers.findAndGetText(driver, selectors[1])).to.contain('Report');
+                    });
+                    it("problem more for mine should show 3 options", async function() {
+                      let icons = ['fa-edit', 'fa-exclamation-circle', 'fa-trash'];
+                      let selectors = icons.map((sel) => {
+                        return `.item-section.more span.click-menu ul li label i.${sel}`;
+                      });
+                      await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
+                      await driver.sleep(800);
+                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                      await driver.sleep(800);
+                      await helpers.checkSelectorsExist(driver, selectors);
+                    });
+                  }
+
+                  if (isAdmin) {
+                    it("problem more for public should show 4 options", async function () {
+                      let icons = ['fa-edit', 'fa-list', 'fa-trash', 'fa-clock'];
+                      let selectors = icons.map((sel) => {
+                        return `.item-section.more span.click-menu ul li label i.${sel}`;
+                      });
+                      await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
+                      await driver.sleep(800);
+                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                      await driver.sleep(800);
+                      await helpers.checkSelectorsExist(driver, selectors);
+                    });
+                    it("problem more for mine flagged should show 3 options", async function () {
+                      let icons = ['fa-edit', 'fa-trash', 'fa-clock'];
+                      let selectors = icons.map((sel) => {
+                        return `.item-section.more span.click-menu ul li label i.${sel}`;
+                      });
+                      await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
+                      await driver.sleep(800);
+                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                      await driver.sleep(800);
+                      await helpers.checkSelectorsExist(driver, selectors);
+                    });
+                    it("problem more for mine pending should show 2 options", async function () {
+                      let icons = ['fa-edit', 'fa-trash'];
+                      let selectors = icons.map((sel) => {
+                        return `.item-section.more span.click-menu ul li label i.${sel}`;
+                      });
+                      await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
+                      await driver.sleep(800);
+                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                      await driver.sleep(800);
+                      await helpers.checkSelectorsExist(driver, selectors);
+                    });
+                  }
+                });
               });
 
             //Test more menu shows correct values (based off account type and problem status)
@@ -758,7 +826,7 @@ describe('Problems', async function () {
             }
 
             if (isAdmin) {
-              xdescribe('Clicking on Trashed problems', function () {
+              describe('Clicking on Trashed problems', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, '.category-header');
                   await helpers.findAndClickElement(driver, '.more-header');
@@ -797,7 +865,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Clicking on All problems filter', function () {
+              describe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                 });
