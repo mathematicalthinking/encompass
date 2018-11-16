@@ -24,12 +24,22 @@ function checkLengths(tuples) {
 
 mongoose.Promise = global.Promise;
 
+function areRecordsEqual(model, originalJSON, wsId) {
+  return models[model].findById(wsId).lean().exec()
+    .then((doc) => {
+      if (_.isNull(doc)) {
+        return false;
+      }
+      let newJSON = JSON.parse(JSON.stringify(doc));
+      return _.isEqual(originalJSON, newJSON);
+    });
+}
 
 describe(`Copy Workspace operations by account type`, function() {
   const testUsers = userFixtures.users;
 
   function runTests(user) {
-    describe(`Copy Workspace operations as ${user.details.testDescriptiontitle}`, function() {
+    describe(`Copy Workspace operations as ${user.details.testDescriptionTitle}`, function() {
       this.timeout('20s');
 
       const agent = chai.request.agent(host);
@@ -100,7 +110,57 @@ describe(`Copy Workspace operations by account type`, function() {
 
 
 
-      };
+
+    };
+
+    // async function makeCopyRequest(request ) {
+    //   try {
+    //     const res = await agent.post(baseUrl).send(request);
+    //     console.log('res', res);
+    //     if (isStudent) {
+    //       it(`should return 403 error`, function() {
+    //         expect(res).to.have.status(403);
+    //         return;
+    //       });
+    //     }
+
+    //     it(`should post successfully`, function() {
+    //       expect(res).to.have.status(200);
+    //       expect(res.body).to.have.all.keys('copyWorkspaceRequest');
+    //       expect(res.body.copyWorkspaceRequest.createdWorkspace).to.exist;
+    //     });
+
+    //     const newWs = await models.Workspace.findById(res.body.copyWorkspaceRequest.createdWorkspace).lean().exec();
+
+    //     it(`original workspace should not have been modified`, async function() {
+    //       expect(await areRecordsEqual('Workspace', originalWs, originalWs._id)).to.be.true;
+    //     });
+
+    //     it(`new workspace should be found in database`, function() {
+    //       expect(newWs).to.exist;
+    //     });
+
+    //     it(`new Workspace collections should be expected lengths`, function() {
+
+    //       const { owner, name, mode, submissions, folders, taggings, selections, comments, responses } = newWs;
+
+    //       const tuples = [
+    //         [submissions, originalWs.submissions.length ],
+    //         [folders, originalWs.folders.length ],
+    //         [taggings, 0], [selections, 0], [comments, 0], [responses, 0]
+    //       ];
+    //       checkLengths(tuples);
+    //       expect(owner.toString()).to.eql(newWsOwner);
+    //       expect(name).to.eql(newWsName);
+    //       expect(mode).to.eql(originalWs.mode);
+
+    //     });
+    //   }catch(err) {
+    //     throw err;
+    //   }
+    // }
+
+
       before(async function(){
         try {
           await helpers.setup(agent, username, password);
@@ -115,8 +175,11 @@ describe(`Copy Workspace operations by account type`, function() {
         mongoose.connection.close();
         agent.close();
       });
-        describe('Basic shallow request', function() {
+        describe('Basic shallow request', async function() {
           const request = basicShallowRequest;
+
+
+          let newWs;
             it('should post request successfully', function() {
               return agent
               .post(baseUrl)
@@ -132,12 +195,20 @@ describe(`Copy Workspace operations by account type`, function() {
                 return models.Workspace.findById(res.body.copyWorkspaceRequest.createdWorkspace).lean().exec();
               })
               .then((ws) => {
-
                 if (isStudent) {
                   return;
                 }
                 expect(ws).to.exist;
-                const { owner, name, mode, submissions, folders, taggings, selections, comments, responses } = ws;
+                newWs = ws;
+                return areRecordsEqual('Workspace', originalWs, originalWs._id);
+              })
+              .then((areEqual) => {
+                if (isStudent) {
+                  return;
+                }
+                expect(areEqual).to.be.true;
+
+                const { owner, name, mode, submissions, folders, taggings, selections, comments, responses } = newWs;
 
                   const tuples = [
                     [submissions, originalWs.submissions.length ],
@@ -157,6 +228,7 @@ describe(`Copy Workspace operations by account type`, function() {
 
         describe('Basic Deep Clone Workspace', function() {
           const request = deepCloneRequest;
+          let newWs;
             it('should post request successfully', function() {
               return agent
               .post(baseUrl)
@@ -341,7 +413,7 @@ describe(`Copy Workspace operations by account type`, function() {
             });
           });
 
-          xdescribe('Shallow By FolderIds', function() {
+        xdescribe('Shallow By FolderIds', function() {
             const requestedFolderIds = ["5bec36cd8c73047613e2f354", "5bec36ca8c73047613e2f353"];
             const request = {
               copyWorkspaceRequest: {
@@ -408,7 +480,7 @@ describe(`Copy Workspace operations by account type`, function() {
                 throw err;
               });
             });
-          });
+        });
         });
 
 
