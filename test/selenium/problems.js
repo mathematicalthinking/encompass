@@ -29,6 +29,7 @@ describe('Problems', async function () {
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
       const isTeacher = accountType === 'T';
+      const isPdadmin = accountType === 'P';
 
       describe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
@@ -614,11 +615,53 @@ describe('Problems', async function () {
                   }
                 });
 
+                describe('Testing action button functionality', function () {
+                  before(async function () {
+                    if (!isStudent) {
+                      await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                      await helpers.waitForSelector(driver, '#problem-list-ul');
+                    }
+                  });
+
+                  if (isTeacher) {
+                    it('problem action button should be assign', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      let buttonText = 'Assign';
+                      expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                  }
+
+                  if (isPdadmin) {
+                    it('approved problem action button should be assign', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      let buttonText = 'Assign';
+                      expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                    it('flagged problem action button should be copy', async function () {
+                      let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
+                      let buttonText = 'Copy';
+                      expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                  }
+
+                  if (isAdmin) {
+                    it('approved problem action button should be flag', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      let buttonText = 'Flag';
+                      expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                    it('flagged problem action button should be approve', async function () {
+                      let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
+                      let buttonText = 'Approve';
+                      expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                  }
+
+                });
+
               });
 
             //RESULTS
-            //Test that card view displays everything properly
-              // privacy, title, description?, status, button, more
             //Test action buttons values should be different based off account type and problem status
               //Test all functions of buttons
               //Edit/Assign/Delete/Add from list view
