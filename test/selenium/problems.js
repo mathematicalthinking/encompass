@@ -629,6 +629,18 @@ describe('Problems', async function () {
                       let buttonText = 'Assign';
                       expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
                     });
+
+                    it('clicking assign button should open assign view', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      await helpers.findAndClickElement(driver, selector);
+                      await driver.sleep(500);
+                      await helpers.waitForTextInDom(driver, 'Create New Assignment');
+                      expect(await helpers.findAndGetText(driver, '#assignmentnewheader')).to.contain('Create New Assignment');
+                      await helpers.findAndClickElement(driver, 'button.cancel-button');
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, '.remove-icon');
+                      await driver.sleep(500);
+                    });
                   }
 
                   if (isPdadmin) {
@@ -641,6 +653,24 @@ describe('Problems', async function () {
                       let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
                       let buttonText = 'Copy';
                       expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
+                    });
+                    it('clicking assign button should open assign view', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      await helpers.findAndClickElement(driver, selector);
+                      await driver.sleep(500);
+                      await helpers.waitForTextInDom(driver, 'Create New Assignment');
+                      expect(await helpers.findAndGetText(driver, '#assignmentnewheader')).to.contain('Create New Assignment');
+                      await helpers.findAndClickElement(driver, 'button.cancel-button');
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, '.remove-icon');
+                      await driver.sleep(500);
+                    });
+                    it('clicking copy button should copy flagged problem to mine', async function () {
+                      let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
+                      await helpers.findAndClickElement(driver, selector);
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
                     });
                   }
 
@@ -655,6 +685,19 @@ describe('Problems', async function () {
                       let buttonText = 'Approve';
                       expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
                     });
+                    // it('clicking approve button should open approve modal and approve problem', async function () {
+                    //   let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                    //   await helpers.findAndClickElement(driver, selector);
+                    //   await driver.sleep(500);
+                    //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
+                    // });
+                    // it('clicking flag button should open approve modal and approve problem', async function () {
+                    //   let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
+                    //   await helpers.findAndClickElement(driver, selector);
+                    //   await driver.sleep(500);
+                    //   await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                    //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
+                    // });
                   }
 
                 });
@@ -663,11 +706,11 @@ describe('Problems', async function () {
 
             //RESULTS
             //Test action buttons values should be different based off account type and problem status
-              //Test all functions of buttons
-              //Edit/Assign/Delete/Add from list view
-              //Admin - flag, pend, approve
+              //Test all functions of buttons - copy, assign
+              //Admin - flag, approve
             //Test more menu shows correct values (based off account type and problem status)
               //Test all functions of buttons
+              //Edit/Assign/Delete/Add from list view
 
               describe('Testing problem card view functionality', function () {
                 before(async function () {
