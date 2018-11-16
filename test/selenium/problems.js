@@ -93,7 +93,7 @@ describe('Problems', async function () {
             });
 
             if (!isStudent) {
-              xdescribe('Clicking on My Org filter option', function () {
+              describe('Clicking on My Org filter option', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
@@ -139,7 +139,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Clicking on Category filter menu', function () {
+              describe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -239,7 +239,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing search bar', function () {
+              describe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
@@ -399,7 +399,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing layout and refresh', function () {
+              describe('Testing layout and refresh', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '.refresh-icon');
@@ -569,7 +569,7 @@ describe('Problems', async function () {
             }
 
             if (isAdmin) {
-              xdescribe('Clicking on Trashed problems', function () {
+              describe('Clicking on Trashed problems', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, '.category-header');
                   await helpers.findAndClickElement(driver, '.more-header');
@@ -608,7 +608,7 @@ describe('Problems', async function () {
                 });
               });
 
-             xdescribe('Clicking on All problems filter', function () {
+             describe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                 });
