@@ -697,7 +697,7 @@ describe('Problems', async function () {
                       await helpers.findAndClickElement(driver, '.swal2-confirm');
                       await helpers.findInputAndType(driver, 'select.swal2-select', 'Inappropriate', true);
                       await driver.sleep(500);
-                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text')).to.contain('Flagged');
+                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text', true)).to.contain('flagged');
                     });
                     it('clicking approve button should open approve modal and approve problem', async function () {
                       let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
@@ -705,7 +705,7 @@ describe('Problems', async function () {
                       await driver.sleep(500);
                       await helpers.findAndClickElement(driver, '.swal2-confirm');
                       await driver.sleep(500);
-                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text')).to.contain('Approved');
+                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text', true)).to.contain('approved');
                     });
                   }
                 });
@@ -799,10 +799,6 @@ describe('Problems', async function () {
                   }
                 });
               });
-
-            //Test more menu shows correct values (based off account type and problem status)
-              //Test all functions of buttons
-              //Edit/Assign/Delete/Add from list view
 
               describe('Testing problem card view functionality', function () {
                 before(async function () {
