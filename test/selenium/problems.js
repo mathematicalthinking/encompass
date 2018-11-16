@@ -726,22 +726,37 @@ describe('Problems', async function () {
                       await helpers.waitForSelector(driver, selectors[1]);
                       expect(await helpers.findAndGetText(driver, selectors[1])).to.contain('Report');
                     });
-                    it("problem more for mine should show 3 options", async function() {
-                      let icons = ['fa-edit', 'fa-exclamation-circle', 'fa-trash'];
-                      let selectors = icons.map((sel) => {
-                        return `.item-section.more span.click-menu ul li label i.${sel}`;
+                    if (isPdadmin) {
+                      it("problem more for mine should show 2 options", async function () {
+                        let icons = ['fa-edit', 'fa-trash'];
+                        let selectors = icons.map((sel) => {
+                          return `.item-section.more span.click-menu ul li label i.${sel}`;
+                        });
+                        await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
+                        await driver.sleep(900);
+                        await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                        await driver.sleep(500);
+                        expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                       });
-                      await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
-                      await driver.sleep(800);
-                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
-                      await driver.sleep(800);
-                      await helpers.checkSelectorsExist(driver, selectors);
-                    });
+                    } else {
+                      it("problem more for mine should show 3 options", async function () {
+                        let icons = ['fa-edit', 'fa-exclamation-circle', 'fa-trash'];
+                        let selectors = icons.map((sel) => {
+                          return `.item-section.more span.click-menu ul li label i.${sel}`;
+                        });
+                        await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
+                        await driver.sleep(900);
+                        await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                        await driver.sleep(500);
+                        expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                      });
+                    }
+
                   }
 
                   if (isAdmin) {
                     it("problem more for public should show 4 options", async function () {
-                      let icons = ['fa-edit', 'fa-list', 'fa-trash', 'fa-clock'];
+                      let icons = ['fa-edit', 'fa-list-ul', 'fa-trash', 'fa-clock'];
                       let selectors = icons.map((sel) => {
                         return `.item-section.more span.click-menu ul li label i.${sel}`;
                       });
@@ -749,7 +764,7 @@ describe('Problems', async function () {
                       await driver.sleep(800);
                       await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                       await driver.sleep(800);
-                      await helpers.checkSelectorsExist(driver, selectors);
+                      expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                     });
                     it("problem more for mine flagged should show 3 options", async function () {
                       let icons = ['fa-edit', 'fa-trash', 'fa-clock'];
@@ -760,8 +775,16 @@ describe('Problems', async function () {
                       await driver.sleep(800);
                       await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                       await driver.sleep(800);
-                      await helpers.checkSelectorsExist(driver, selectors);
+                      expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                     });
+                    // it("problem more for mine flagged should change to pending", async function () {
+                    //   let selector = `label i.fa-clock`;
+                    //   await driver.sleep(800);
+                    //   await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                    //   await driver.sleep(800);
+                    //   await helpers.findAndClickElement(driver, selector);
+                    //   await driver.sleep(5000);
+                    // });
                     it("problem more for mine pending should show 2 options", async function () {
                       let icons = ['fa-edit', 'fa-trash'];
                       let selectors = icons.map((sel) => {
@@ -771,7 +794,7 @@ describe('Problems', async function () {
                       await driver.sleep(800);
                       await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                       await driver.sleep(800);
-                      await helpers.checkSelectorsExist(driver, selectors);
+                      expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                     });
                   }
                 });
@@ -868,6 +891,7 @@ describe('Problems', async function () {
               describe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
+                  await helpers.findAndClickElement(driver, 'span.layout-icons .list-icon');
                 });
 
                 it('should update the problem list and display message', async function () {
@@ -881,13 +905,13 @@ describe('Problems', async function () {
                   await helpers.findAndClickElement(driver, '.sort-bar-item.name');
                   await helpers.findAndClickElement(driver, '.nav-right i.fa-caret-right');
                   await driver.sleep(500);
-                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`Alphabetical Problem`);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`The Shortest Possible Side`);
                 });
 
                 it('should test pagination and go back to the first page', async function () {
                   await helpers.findAndClickElement(driver, '.nav-left i.fa-caret-left');
                   await driver.sleep(500);
-                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`Oldest Problem`);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`Alphabetical Problem`);
                 });
 
                 describe('Searching by organization', function () {
