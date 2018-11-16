@@ -9,7 +9,7 @@ const css = require('./selectors');
 
 const host = helpers.host;
 const testUsers = require('./fixtures/users');
-let topLink = css.topBar.problems;
+const topLink = css.topBar.problems;
 
 const handleRetries = function (driver, fetchPromise, numRetries) {
   console.log('inside handleRetries function');
@@ -786,15 +786,16 @@ describe('Problems', async function () {
                     //   await driver.sleep(5000);
                     // });
                     it("problem more for mine pending should show 2 options", async function () {
-                      let icons = ['fa-edit', 'fa-trash'];
-                      let selectors = icons.map((sel) => {
-                        return `.item-section.more span.click-menu ul li label i.${sel}`;
-                      });
-                      await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
-                      await driver.sleep(800);
-                      await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
-                      await driver.sleep(800);
-                      expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                      // let icons = ['fa-edit', 'fa-trash'];
+                      // let selectors = icons.map((sel) => {
+                      //   return `.item-section.more span.click-menu ul li label i.${sel}`;
+                      // });
+                      await helpers.findAndClickElement(driver, "div.results-message");
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
+                      await driver.sleep(500);
+                      expect(await helpers.getWebElements(driver, '.item-section.more span.click-menu ul>li')).to.have.lengthOf.at.least(2);
+                      // expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                     });
                   }
                 });
