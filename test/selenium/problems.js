@@ -670,6 +670,7 @@ describe('Problems', async function () {
                       await helpers.findAndClickElement(driver, selector);
                       await driver.sleep(500);
                       await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                      await driver.sleep(500);
                       expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
                     });
                   }
@@ -685,29 +686,29 @@ describe('Problems', async function () {
                       let buttonText = 'Approve';
                       expect(await helpers.findAndGetText(driver, selector)).to.contain(buttonText);
                     });
-                    // it('clicking approve button should open approve modal and approve problem', async function () {
-                    //   let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
-                    //   await helpers.findAndClickElement(driver, selector);
-                    //   await driver.sleep(500);
-                    //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
-                    // });
-                    // it('clicking flag button should open approve modal and approve problem', async function () {
-                    //   let selector = '#problem-list-ul li:nth-child(2) .item-section.action button.primary-button';
-                    //   await helpers.findAndClickElement(driver, selector);
-                    //   await driver.sleep(500);
-                    //   await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
-                    //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain('Copy of Flagged Problem');
-                    // });
+                    it('clicking flag button should open flag modal and flag problem', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      await helpers.findAndClickElement(driver, selector);
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, '.swal2-confirm');
+                      await helpers.findInputAndType(driver, 'select.swal2-select', 'Inappropriate', true);
+                      await driver.sleep(500);
+                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text')).to.contain('Flagged');
+                    });
+                    it('clicking approve button should open approve modal and approve problem', async function () {
+                      let selector = '#problem-list-ul li:first-child .item-section.action button.primary-button';
+                      await helpers.findAndClickElement(driver, selector);
+                      await driver.sleep(500);
+                      await helpers.findAndClickElement(driver, '.swal2-confirm');
+                      await driver.sleep(500);
+                      expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text')).to.contain('Approved');
+                    });
                   }
 
                 });
 
               });
 
-            //RESULTS
-            //Test action buttons values should be different based off account type and problem status
-              //Test all functions of buttons - copy, assign
-              //Admin - flag, approve
             //Test more menu shows correct values (based off account type and problem status)
               //Test all functions of buttons
               //Edit/Assign/Delete/Add from list view
