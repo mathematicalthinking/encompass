@@ -578,7 +578,6 @@ describe('Problems', async function () {
               //RESULTS
               //Test that card view displays everything properly
                 // privacy, title, description?, status, button, more
-              //Clicking on title/description shows problem info
 
               //Test action buttons values should be different based off account type and problem status
                 //Test all functions of buttons
@@ -611,6 +610,7 @@ describe('Problems', async function () {
                     await driver.sleep(500);
                     let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+
                   }
                 });
 
@@ -620,6 +620,8 @@ describe('Problems', async function () {
                     await driver.sleep(500);
                     let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                    await driver.sleep(800);
+                    await helpers.findAndClickElement(driver, '.remove-icon');
                   }
                 });
 
