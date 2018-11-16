@@ -93,7 +93,7 @@ describe('Problems', async function () {
             });
 
             if (!isStudent) {
-              describe('Clicking on My Org filter option', function () {
+              xdescribe('Clicking on My Org filter option', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-myOrg label.radio-label');
@@ -139,7 +139,7 @@ describe('Problems', async function () {
                 });
               });
 
-              describe('Clicking on Category filter menu', function () {
+              xdescribe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -239,7 +239,7 @@ describe('Problems', async function () {
                 });
               });
 
-              describe('Testing search bar', function () {
+              xdescribe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
@@ -399,7 +399,7 @@ describe('Problems', async function () {
                 });
               });
 
-              describe('Testing layout and refresh', function () {
+              xdescribe('Testing layout and refresh', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '.refresh-icon');
@@ -431,7 +431,7 @@ describe('Problems', async function () {
                 });
               });
 
-              describe('Testing sortbar functionality', function () {
+              xdescribe('Testing sortbar functionality', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.waitForSelector(driver, '.sort-bar');
@@ -566,10 +566,41 @@ describe('Problems', async function () {
                 });
 
               });
+
+              //RESULTS
+              //Test that list view displays everything properly
+                // privacy, title, description?, status, button, more
+                // Recommended problems should have star next to title
+              //Test that card view displays everything properly
+                // privacy, title, description?, status, button, more
+              //Clicking on title/description shows problem info
+              //Test action buttons values should be different based off account type and problem status
+                //Test all functions of buttons
+                //Edit/Assign/Delete/Add from list view
+                //Admin - flag, pend, approve
+              //Test more menu shows correct values (based off account type and problem status)
+                //Test all display options○ Test all functions of buttons
+
+              describe('Testing problem list item functionality', function () {
+                before(async function () {
+                  if (!isStudent) {
+                    await helpers.waitForSelector(driver, '.sort-bar');
+                    await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                  }
+                });
+
+                it('should have sortbar with many options', async function () {
+                  if (!isStudent) {
+                    let selectors = ['.sort-bar-item.privacy', '.sort-bar-item.name', '.sort-bar-item.date','.sort-bar-item.status'];
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+                });
+
+              });
             }
 
             if (isAdmin) {
-              describe('Clicking on Trashed problems', function () {
+              xdescribe('Clicking on Trashed problems', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, '.category-header');
                   await helpers.findAndClickElement(driver, '.more-header');
@@ -599,7 +630,7 @@ describe('Problems', async function () {
                   await helpers.waitForTextInDom(driver, resultsMsg);
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
 
-                  await helpers.findAndClickElement(driver, '#toggle-trashed');
+                  await helpers.findAndClickElement(driver, '.more-filter-list .subfilter input#toggle-trashed');
                   let updatedMsg = `${problems.mine.count} problems found`;
 
                   await helpers.waitForTextInDom(driver, updatedMsg);
@@ -608,7 +639,7 @@ describe('Problems', async function () {
                 });
               });
 
-             describe('Clicking on All problems filter', function () {
+              xdescribe('Clicking on All problems filter', function () {
                 before(async function () {
                   await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
                 });
@@ -618,6 +649,19 @@ describe('Problems', async function () {
                   let resultsMsg = `${problems.all.total} problems found`;
                   await helpers.waitForTextInDom(driver, resultsMsg);
                   expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                });
+
+                it('should test pagination and go to the second page', async function () {
+                  await helpers.findAndClickElement(driver, '.sort-bar-item.name');
+                  await helpers.findAndClickElement(driver, '.nav-right i.fa-caret-right');
+                  await driver.sleep(500);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`Alphabetical Problem`);
+                });
+
+                it('should test pagination and go back to the first page', async function () {
+                  await helpers.findAndClickElement(driver, '.nav-left i.fa-caret-left');
+                  await driver.sleep(500);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain(`Oldest Problem`);
                 });
 
                 describe('Searching by organization', function () {
@@ -726,15 +770,4 @@ describe('Problems', async function () {
 });
 
 
-
-
-//RESULTS
-//Test that list view displays everything properly
-//Test that card view displays everything properly
-//Test that values update when changes are made
-//Test button values are acurate
-//Test more menu shows correct values
-//Test button actions perform correctly
-//Test more actions perform correctly
-//Test pagination works
 
