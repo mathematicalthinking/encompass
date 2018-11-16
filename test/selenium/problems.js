@@ -512,7 +512,7 @@ describe('Problems', async function () {
                   }
                 });
 
-                it('should be filtered out approved problems', async function () {
+                it('should filter out approved problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.status.pending} problems found`;
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -524,19 +524,46 @@ describe('Problems', async function () {
                   }
                 });
 
-                if (!isTeacher) {
-                  it('should be filtered out approved problems', async function () {
-                    if (!isStudent) {
-                      let resultsMsg = `${problems.status.flagged} problems found`;
-                      await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                it('should filter out pending problems', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.status.flagged} problems found`;
+                    await helpers.findAndClickElement(driver, '.sort-bar-item.status');
+                    await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="pending"]');
+                    await driver.sleep(500);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should filter out flagged and only show approved problems', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.status.approved} problems found`;
+                    if (!isTeacher) {
                       await helpers.findAndClickElement(driver, '.sort-bar-item.status');
-                      await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="pending"]');
-                      await driver.sleep(500);
-                      await helpers.waitForTextInDom(driver, resultsMsg);
-                      expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                      await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="flagged"]');
                     }
-                  });
-                }
+                    await helpers.findAndClickElement(driver, '.sort-bar-item.status');
+                    await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="approved"]');
+                    await driver.sleep(500);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
+
+                it('should show all problems no matter the status', async function () {
+                  if (!isStudent) {
+                    let resultsMsg = `${problems.status.total} problems found`;
+                    if (!isTeacher) {
+                      await helpers.findAndClickElement(driver, '.sort-bar-item.status');
+                      await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="flagged"]');
+                    }
+                    await helpers.findAndClickElement(driver, '.sort-bar-item.status');
+                    await helpers.findAndClickElement(driver, '.hover-menu ul li label input[value="pending"]');
+                    await driver.sleep(500);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
+                    expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+                  }
+                });
 
               });
             }

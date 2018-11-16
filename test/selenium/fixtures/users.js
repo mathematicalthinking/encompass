@@ -122,6 +122,7 @@ module.exports = {
       status: {
         total: 14,
         pending: 3,
+        flagged: 0,
         approved: 11,
       }
     }
@@ -199,10 +200,10 @@ module.exports = {
         private: 1,
       },
       status: {
-        total: 22,
-        pending: 6,
+        total: 16,
+        pending: 5,
         flagged: 2,
-        approved: 16,
+        approved: 11,
       }
     }
   },
