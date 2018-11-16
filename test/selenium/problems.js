@@ -38,6 +38,7 @@ describe('Problems', async function () {
           driver = new Builder()
             .forBrowser('chrome')
             .build();
+          driver.manage().window().setRect({ width: 1580, height: 1080 });
             await dbSetup.prepTestDb();
             return helpers.login(driver, host, user);
           });
@@ -117,6 +118,13 @@ describe('Problems', async function () {
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
+
+                it('should show recommended problems with stars', async function () {
+                  if (!isStudent) {
+                    expect(await helpers.isElementVisible(driver, '#problem-list-ul li:first-child .item-section.name span:nth-child(2)')).to.be.true;
+                  }
+                });
+
 
                 it('should update problem list when unchecking recommended', async function () {
                   if (!isStudent) {
@@ -568,12 +576,10 @@ describe('Problems', async function () {
               });
 
               //RESULTS
-              //Test that list view displays everything properly
-                // privacy, title, description?, status, button, more
-                // Recommended problems should have star next to title
               //Test that card view displays everything properly
                 // privacy, title, description?, status, button, more
               //Clicking on title/description shows problem info
+
               //Test action buttons values should be different based off account type and problem status
                 //Test all functions of buttons
                 //Edit/Assign/Delete/Add from list view
@@ -584,14 +590,35 @@ describe('Problems', async function () {
               describe('Testing problem list item functionality', function () {
                 before(async function () {
                   if (!isStudent) {
-                    await helpers.waitForSelector(driver, '.sort-bar');
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
+                    await helpers.waitForSelector(driver, '#problem-list-ul');
                   }
                 });
 
-                it('should have sortbar with many options', async function () {
+                it('problem list item should have 7 items', async function () {
                   if (!isStudent) {
-                    let selectors = ['.sort-bar-item.privacy', '.sort-bar-item.name', '.sort-bar-item.date','.sort-bar-item.status'];
+                    let itemSection = ['privacy', 'name', 'description', 'date', 'status', 'action', 'more'];
+                    let selectors = itemSection.map((sel) => {
+                      return `#problem-list-ul li:first-child .item-section.${sel}`;
+                    });
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+                });
+
+                it('clicking on problem title should show problem info', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
+                    await driver.sleep(500);
+                    let selectors = ['.info-header', '.side-info-menu'];
+                    expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+                });
+
+                it('clicking on problem description should show problem info', async function () {
+                  if (!isStudent) {
+                    await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-section.description span:first-child');
+                    await driver.sleep(500);
+                    let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
                   }
                 });
