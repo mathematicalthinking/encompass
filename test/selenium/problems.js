@@ -170,7 +170,7 @@ describe('Problems', async function () {
                     await helpers.clearElement(driver, '#categories-filter-selectized');
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', 'CCSS.Math.Content.K');
                     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f673"]');
-                    // await helpers.waitForTextInDom(driver, resultsMsg);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
