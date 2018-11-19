@@ -82,7 +82,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       create: this.create || false,
       persist: this.persist || false,
       createFilter: this.createFilter || null,
-      preload: this.preload || false
+      preload: this.preload || false,
     };
 
     let that = this;
