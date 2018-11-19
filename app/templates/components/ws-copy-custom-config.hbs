@@ -1,0 +1,64 @@
+<h5>Choose Submissions</h5>>
+
+<input type="radio" checked={{answerOptions.all}} required="true" name="answerOptions" value="all" onclick={{action "setAnswerConfig" value}}>
+<label>All</label>
+
+<input type="radio" checked={{is-equal answerOptions.all false}} required="true" name="answerOptions" value="byStudent" onclick={{action (mut answerOptions.all) false}}>
+<label>By Student</label>
+
+{{#if (is-equal mainOptions.answerOptions.selectedValue 'byStudent')}}
+  {{selectize-input
+  inputId="answers-by-student"
+  initialOptions=studentSelectOptions
+  maxItems=studentSelectOptions.length
+  onItemAdd=(action "updateMultiSelect")
+  onItemRemove=(action "updateMultiSelect")
+  labelField="label"
+  valueField="value"
+  searchField="label"
+  propToUpdate="answerStudents"
+  placeholder="Add students"}}
+
+  {{#each answerStudents as |student|}}
+  <p>{{student}}</p>
+  {{/each}}
+{{/if}}
+
+<h5>Choose Selections</h5>
+
+<input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all"
+onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
+<label>All</label>
+
+<input type="radio" checked={{selectionOptions.none}} required="true" name="selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "selectionOptions"}}>
+<label>None</label>
+
+<input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
+<label>Custom</label>
+
+<h5>Choose Comments</h5>
+
+<input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
+onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
+<label>All</label>
+
+<input type="radio" checked={{commentOptions.none}} required="true" name="commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "commentOptions"}}>
+<label>None</label>
+
+<input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
+<label>Custom</label>
+
+<h5>Choose Responses</h5>
+
+<input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all"
+onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
+<label>All</label>
+
+<input type="radio" checked={{responseOptions.none}} required="true" name="responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "responseOptions"}}>
+<label>None</label>
+
+<input type="radio" checked={{responseOptions.custom}} required="true" name="responseOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "responseOptions"}}>
+<label>Custom</label>
+
+
+
