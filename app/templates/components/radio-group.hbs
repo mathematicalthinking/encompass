@@ -1,0 +1,15 @@
+{{#each options.inputs as |input|}}
+  <ol>
+    <li>
+      <input
+        type="radio"
+        checked={{input.isChecked}}
+        required={{options.isRequired}}
+        name={{options.groupName}}
+        value={{input.value}}
+        onclick={{action "setValue"}}
+        >
+      <label>{{input.label}}</label>
+    </li>
+  </ol>
+{{/each}}
