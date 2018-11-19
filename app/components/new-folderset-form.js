@@ -1,6 +1,14 @@
 Encompass.NewFoldersetFormComponent = Ember.Component.extend({
   elementId: 'new-folderset-form',
   privacySetting: 'M',
+  utils: Ember.inject.service('utility-methods'),
+
+  didReceiveAttrs() {
+    if (this.get('utils').isNullOrUndefined(this.get('privacySetting'))) {
+      this.set('privacySetting', 'M');
+    }
+    this._super(...arguments);
+  },
 
   privacyInputs: {
     groupName: 'privacySetting',
@@ -22,5 +30,6 @@ Encompass.NewFoldersetFormComponent = Ember.Component.extend({
         isChecked: false
       },
     ]
-  }
+  },
+
 });

@@ -1,5 +1,5 @@
 <h5>Name</h5>
-{{input id="name" type="text" value=defaultName placeholder="Name for new workspace"}}
+{{input id="name" type="text" value=selectedName placeholder="Name for new workspace"}}
 
 <h5>Owner</h5>
 {{selectize-input
@@ -22,12 +22,16 @@ placeholder="Search users to choose as owner"}}
 
 <h5>Folder Set</h5>
 {{#if isCopyingFolders}}
-  <p>Do you want to save this folder structure as a folder set for future use</p>
-  {{radio-group options=folderSetInputs selectedValue=doCreateFolderSet}}
+<p>Do you want to save this folder structure as a folder set for future use?</p>
+  <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet true}} onclick={{action "toggleCreateFolderset" true}}>
+  <label>Yes</label>
+   <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet false}} onclick={{action "toggleCreateFolderset" false}}>
+  <label>No</label>
 
   {{#if doCreateFolderSet}}
     {{new-folderset-form name=folderSetName privacySetting=folderSetPrivacy}}
   {{/if}}
+
 {{else}}
   <p>Your resulting workspace will have 0 folders. You can select a preexisting folderSet from the dropdown below or continue on without any folders.</p>
 

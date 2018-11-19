@@ -1,9 +1,17 @@
 Encompass.WsCopyConfigComponent = Ember.Component.extend({
   elementId: 'ws-copy-config',
-  selectedConfig: 'A',
   showCustomConfig: Ember.computed.equal('selectedConfig', 'D'),
+  utils: Ember.inject.service('utility-methods'),
 
   didReceiveAttrs() {
+
+    const newWsConfig = this.get('newWsConfig');
+    if (this.get('utils').isNullOrUndefined(newWsConfig)) {
+      this.set('selectedConfig', 'A');
+    } else {
+      this.set('selectedConfig', newWsConfig);
+    }
+
     this._super(...arguments);
   },
 

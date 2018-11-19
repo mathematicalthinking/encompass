@@ -1,94 +1,57 @@
-<h3>Create a copy of an existing workspace</h3>
+<div class="header">
+  <h3>Create a copy of an existing workspace</h3>
+</div>
 
-  {{#if (is-equal currentStep 1)}}
-  {{selectize-input
-      store=store
-      inputId="select-workspace"
-      isAsync=true
-      maxItems=1
-      onItemAdd=(action "setOriginalWorkspace")
-      labelField="name"
-      searchField="name"
-      valueField="id"
-      model="workspace"
-      queryParamsKey="query"
-      searchCriterion="name"
-      topLevelQueryParams="searchBy"
-      placeholder="Search for workspaces by name..."
-      preload="focus"
-    }}
+<div class="ws-copy-details">
+  <ul>
+    {{#each detailsItems as |item|}}
+      {{details-list-item
+        label = item.label
+        displayValue = item.displayValue
+        propName = item.propName
+        editValue = (action "goToStep")
+        associatedStep=item.associatedStep
+      }}
+    {{/each}}
+  </ul>
+</div>
 
-  {{else}}
-  {{#if workspaceToCopy}}
-    <h5>Selected Workspace</h5>
-    <p>{{workspaceToCopy.name}}</p>
-    {{/if}}
-  {{/if}}
+<div class="step-display">
+  <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+</div>
 
-
-  {{#if (is-equal currentStep 2)}}
-   <h5>Configure New Workspace</h5>
-    <input type="radio" checked={{is-equal selectedConfig "A"}} required="true" name="selectedConfig" value="A" onclick={{action (mut selectedConfig) "A"}}>
-    <label>Shallow with Folder Structure</label>
-
-    <input type="radio" checked={{is-equal selectedConfig "B"}} required="true" name="selectedConfig" value="B" onclick={{action (mut selectedConfig) "B"}}>
-    <label>Shallow with No Folders</label>
-
-    <input type="radio" checked={{is-equal selectedConfig "C"}} required="true" name="selectedConfig" value="C" onclick={{action (mut selectedConfig) "C"}}>
-    <label>Full Deep Copy</label>
-
-     <input type="radio" checked={{is-equal selectedConfig "D"}} required="true" name="selectedConfig" value="D" onclick={{action (mut selectedConfig) "D"}}>
-    <label>Custom</label>
-
-  {{else}}
-  {{#if selectedConfig}}
-    <h5>Selected Config</h5>
-    <p>{{selectedConfigDisplay}}</p>
-
-    {{!-- {{#if (is-equal selectedConfig "A")}}
-      <p>Do you want to save this folder structure as a folder set for future use?</p>
-       <input type="radio" checked={{is-equal doCreateFolderSet "1"}} required="true"  name="doCreateFolderSet" value="1" onclick={{action (mut doCreateFolderSet) true}}>
-      <label>Yes</label>
-      <input type="radio" checked={{is-equal doCreateFolderSet false}} required="true"  name="doCreateFolderSet" value=false onclick={{action (mut doCreateFolderSet) false}}>
-      <label>No</label>
-    {{/if}} --}}
-  {{/if}}
-
-
-{{/if}}
-  {{#if (is-equal currentStep 'owner')}}
-      {{selectize-input
-    store=store
-    inputId="owner-select"
-    onItemAdd=(action "setOwner")
-    labelField="username"
-    valueField="id"
-    searchField="username"
-    model="user"
-    queryParamsKey="usernameSearch"
-    isAsync=true
-    placeholder="Search users to choose as owner"
-  }}
-{{/if}}
-{{#if owner}}
-    <h5>Selected Owner</h5>
-    <p>{{owner.username}}</p>
-
-      <h5>Privacy Setting</h5>
-    <input type="radio" checked={{is-equal privacySetting "M"}} required="true" name="selectedConfig" value="M" onclick={{action (mut privacySetting) "M"}}>
-    <label>Private</label>
-
-    <input type="radio" checked={{is-equal privacySetting "O"}} required="true" name="privacySetting" value="B" onclick={{action (mut privacySetting) "O"}}>
-    <label>My Org</label>
-
-    <input type="radio" checked={{is-equal privacySetting "E"}} required="true" name="privacySetting" value="C" onclick={{action (mut privacySetting) "E"}}>
-    <label>Public</label>
+{{#if showSelectWorkspace}}
+  {{ws-copy-workspace store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace onProceed=(action "setOriginalWorkspace")}}
 {{/if}}
 
-{{input id="name" type="text" value=name placeholder="Give your workspace a name (optional)"}}
+{{#if showSelectConfig}}
+  {{ws-copy-config newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig")}}
+{{/if}}
 
-<button {{action "createCopyRequest"}}>Submit</button>
+{{#if showOwnerSettings}}
+  {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders }}
+{{/if}}
 
+{{#if showPermissions}}
+  {{ws-copy-permissions createCopyRequest=(action "createCopyRequest")}}
+{{/if}}
+
+
+{{!-- <div class="nav-buttons">
+  {{#unless (is-equal currentStep.value 1)}}
+  <button {{action "changeStep" -1}}>Prev</button>
+{{/unless}}
+
+{{#if (is-equal currentStep.value maxSteps)}}
+  <button {{action copyRequest}}>Submit Copy Request</button>
+{{else}}
+  <button {{action "proceed" 1}}>Next</button>
+{{/if}}
+</div> --}}
+
+{{#each validationErrors as |error|}}
+
+{{/each}}
 {{#if copyWorkspaceError}}
   <p class="error-message">{{copyWorkspaceError}}</p>
 {{/if}}
@@ -96,10 +59,3 @@
 {{#each serverErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
-
-
-
-
-
-
-
