@@ -1014,7 +1014,7 @@ describe('Problems', async function () {
                   await driver.sleep(500);
                   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain("Summer's Org Problem");
                 });
-                it("report button in more menu should report modal and remove problem from view", async function() {
+                it("report button in more menu should report modal and mark problem as flagged", async function() {
                   await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-exclamation-circle');
                   await driver.sleep(500);
@@ -1045,7 +1045,7 @@ describe('Problems', async function () {
                   await driver.sleep(500);
                   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
                 });
-                it("report button in more menu should report modal and remove problem from view", async function() {
+                it("report button in more menu should report modal and mark problem as flagged", async function() {
                   await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
                   await driver.sleep(800);
                   await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
@@ -1066,34 +1066,38 @@ describe('Problems', async function () {
                   await driver.sleep(800);
                   expect(await helpers.isElementVisible(driver, '#problem-info input#title')).to.be.true;
                 });
-                // it("delete button in more menu should show delete modal and remove problem", async function() {
-                //   await helpers.findAndClickElement(driver, '.remove-icon');
-                //   await driver.sleep(500);
-                //   await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
-                //   await driver.sleep(800);
-                //   await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
-                //   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-trash');
-                //   await driver.sleep(500);
-                //   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
-                //   await driver.sleep(500);
-                //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
-                // });
-                // it("report button in more menu should report modal and remove problem from view", async function() {
-                //   await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
-                //   await driver.sleep(800);
-                //   await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
-                //   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-exclamation-circle');
-                //   await driver.sleep(500);
-                //   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
-                //   await driver.sleep(800);
-                //   await helpers.findInputAndType(driver, 'select.swal2-select', 'Inappropriate', true);
-                //   await driver.sleep(800);
-                //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text', true)).to.contain("flagged");
-                // });
+                it("pending button in more menu should show pending modal and mark as pending", async function() {
+                  await helpers.findAndClickElement(driver, '.remove-icon');
+                  await driver.sleep(800);
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                  await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-clock');
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  await driver.sleep(500);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text', true)).to.contain("pending");
+                });
+                it("assign button in more menu should show problem assign view", async function() {
+                  await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                  await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-list-ul');
+                  await driver.sleep(500);
+                  await helpers.waitForTextInDom(driver, 'Create New Assignment');
+                  expect(await helpers.findAndGetText(driver, '#assignmentnewheader')).to.contain('Create New Assignment');
+                  await helpers.findAndClickElement(driver, 'button.cancel-button');
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, '.remove-icon');
+                  await driver.sleep(500);
+                });
+                it("delete button in more menu should show delete modal and remove problem", async function() {
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
+                  await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-trash');
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  await driver.sleep(500);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
+                });
               }
-
-
-
             });
 
           });
