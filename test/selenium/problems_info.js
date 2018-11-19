@@ -74,15 +74,14 @@ describe('Problems', async function () {
                 }
               });
 
-              // it('should open problem new page from plus icon', async function () {
-              //   if (!isStudent) {
-              //     await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-              //     await helpers.waitForSelector(driver, css.resultsMesasage);
-              //     let resultsMsg = `${problems.org.recommended} problems found`;
-              //     await helpers.waitForTextInDom(driver, resultsMsg);
-              //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-              //   }
-              // });
+              it('should open problem new page from plus icon', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, '.remove-icon');
+                  await driver.sleep(800);
+                  await helpers.waitForAndClickElement(driver, 'div.searchbar #problem-new-link');
+                  expect(await helpers.findAndGetText(driver, '#problem-new .side-info-menu .info-details .info-main .heading')).to.contain('Create New Problem');
+                }
+              });
 
               // it('should show recommended problems with stars', async function () {
               //   if (!isStudent) {
