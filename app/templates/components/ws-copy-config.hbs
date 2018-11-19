@@ -1,0 +1,8 @@
+<h5>Choose configuration</h5>
+{{radio-group options=copyConfig selectedValue=selectedConfig}}
+
+{{#if showCustomConfig}}
+  {{ws-copy-custom-config submissionThreads=submissionThreads customConfig=customConfig}}
+{{/if}}
+
+<button {{action "next"}}>Next</button>
