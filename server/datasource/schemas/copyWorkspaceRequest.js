@@ -27,12 +27,13 @@ var CopyWorkspaceRequestSchema = new Schema({
     includeStructureOnly: { type: Boolean },
     folderSetOptions: {
       doCreateFolderSet: { type: Boolean },
-      name: { type: String },
+      existingFolderSetToUse: {type: ObjectId, ref: 'FolderSet'},
+      name: { type: String, trim: true },
       privacySetting: { type: String, enum: ['M', 'O', 'E'] }
     },
     all: { type: Boolean },
     none: { type: Boolean },
-    selectionIds: [{ type: ObjectId, ref: 'Folder' }]
+    folderIds: [{ type: ObjectId, ref: 'Folder' }]
   },
   selectionOptions: {
     all: { type: Boolean },
@@ -47,7 +48,7 @@ var CopyWorkspaceRequestSchema = new Schema({
   responseOptions: {
     all: Boolean,
     none: Boolean,
-    responseIds: [{ type: ObjectId, ref: 'Comment' }]
+    responseIds: [{ type: ObjectId, ref: 'Response' }]
   },
   permissionOptions: {
     doUseOriginal: { type: Boolean },
