@@ -86,7 +86,7 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         //user.set('seenTour', new Date());
         //user.save();
         console.info('starting the tour!');
-        route.send('startTour', 'workspace');
+        route.controller.send('startTour', 'workspace');
       }
     });
   },
