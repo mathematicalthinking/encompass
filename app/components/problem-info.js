@@ -25,6 +25,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   showCategories: false,
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('problem-permissions'),
+  utils: Ember.inject.service('utility-methods'),
 
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
@@ -157,6 +158,9 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   keywordSelectOptions: function() {
     let keywords = this.get('problem.keywords');
+    if (!_.isArray(keywords)) {
+      return [];
+    }
     return _.map(keywords, (keyword) => {
       return {
         value: keyword,
@@ -813,6 +817,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       let keywords = this.get('problem.keywords');
+      if (!_.isArray(keywords)) {
+        this.get('problem').set('keywords', []);
+        keywords = this.get('problem.keywords');
+      }
       let isRemoval = _.isNull($item);
 
       if (isRemoval) {
