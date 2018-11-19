@@ -1,0 +1,42 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#workspace-new-copy {
+  .header {
+    margin-left: 20px;
+  }
+  .ws-copy-details {
+    margin: 25px 0 25px 20px;
+    p {
+      margin-bottom: 5px;
+    }
+  }
+
+  .selectize-comp {
+    max-width: 500px;
+    margin-left: 20px;
+  }
+
+  .step-display {
+    margin-bottom: 25px;
+    margin-left: 20px;
+
+  }
+
+  .current-step-input {
+    width: 50%;
+    margin-bottom: 25px;
+    margin-left: 20px;
+    input[type=text] {
+      padding: 12px 20px;
+        margin: 8px 0;
+        font-size: 1em;
+        display: inline-block;
+        border: 1px solid $input-border;
+        border-radius: 4px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+  }
+}
