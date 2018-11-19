@@ -148,7 +148,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Clicking on Category filter menu', function () {
+              describe('Clicking on Category filter menu', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -248,7 +248,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing search bar', function () {
+              describe('Testing search bar', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
@@ -408,7 +408,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing layout and refresh', function () {
+              describe('Testing layout and refresh', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, '.refresh-icon');
@@ -440,7 +440,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing sortbar functionality', function () {
+              describe('Testing sortbar functionality', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.waitForSelector(driver, '.sort-bar');
@@ -576,7 +576,7 @@ describe('Problems', async function () {
 
               });
 
-              xdescribe('Testing problem list item functionality', function () {
+              describe('Testing problem list item functionality', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -787,7 +787,7 @@ describe('Problems', async function () {
                 });
               });
 
-              xdescribe('Testing problem card view functionality', function () {
+              describe('Testing problem card view functionality', function () {
                 before(async function () {
                   if (!isStudent) {
                     await helpers.findAndClickElement(driver, 'li.filter-everyone label.radio-label');
@@ -1036,14 +1036,14 @@ describe('Problems', async function () {
                 it("delete button in more menu should show delete modal and remove problem", async function() {
                   await helpers.findAndClickElement(driver, '.remove-icon');
                   await driver.sleep(500);
-                  await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
+                  await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
                   await driver.sleep(800);
-                  await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-trash');
                   await driver.sleep(500);
                   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
-                  await driver.sleep(500);
-                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
+                  await driver.sleep(5000);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.name span:first-child')).to.contain("How High Is Enough?");
                 });
                 it("report button in more menu should report modal and mark problem as flagged", async function() {
                   await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
