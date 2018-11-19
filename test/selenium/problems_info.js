@@ -83,11 +83,15 @@ describe('Problems', async function () {
                 }
               });
 
-              // it('should show recommended problems with stars', async function () {
-              //   if (!isStudent) {
-              //     expect(await helpers.isElementVisible(driver, '#problem-list-ul li:first-child .item-section.name span:nth-child(2)')).to.be.true;
-              //   }
-              // });
+              it('should show a new form with 4 headers, inputs and tooltips', async function () {
+                if (!isStudent) {
+                  let tabNames = ['general', 'categories', 'additional', 'legal'];
+                  let selectors = tabNames.map((tab) => {
+                    return `#problem-new .side-info-menu .info-details .info-menu button.tab-name.${tab}`;
+                  });
+                  expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+              });
 
 
               // it('should update problem list when unchecking recommended', async function () {
