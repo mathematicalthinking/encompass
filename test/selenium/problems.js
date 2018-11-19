@@ -1045,7 +1045,42 @@ describe('Problems', async function () {
                   await driver.sleep(500);
                   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
                 });
+                it("report button in more menu should report modal and remove problem from view", async function() {
+                  await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
+                  await driver.sleep(800);
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                  await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-exclamation-circle');
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                  await driver.sleep(800);
+                  await helpers.findInputAndType(driver, 'select.swal2-select', 'Inappropriate', true);
+                  await driver.sleep(800);
+                  expect(await helpers.findAndGetText(driver, '#problem-list-ul li:first-child .item-section.status span.status-text', true)).to.contain("flagged");
+                });
+              }
+
+              if (isAdmin) {
+                it("edit button in more menu should show problem in edit view", async function() {
+                  await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
+                  await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-edit');
+                  await driver.sleep(800);
+                  expect(await helpers.isElementVisible(driver, '#problem-info input#title')).to.be.true;
+                });
+                // it("delete button in more menu should show delete modal and remove problem", async function() {
+                //   await helpers.findAndClickElement(driver, '.remove-icon');
+                //   await driver.sleep(500);
+                //   await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
+                //   await driver.sleep(800);
+                //   await helpers.findAndClickElement(driver, "#problem-list-ul li:nth-child(2) .item-section.more");
+                //   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-trash');
+                //   await driver.sleep(500);
+                //   await helpers.findAndClickElement(driver, 'button.swal2-confirm');
+                //   await driver.sleep(500);
+                //   expect(await helpers.findAndGetText(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child')).to.contain("Flagged Problem");
+                // });
                 // it("report button in more menu should report modal and remove problem from view", async function() {
+                //   await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
+                //   await driver.sleep(800);
                 //   await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
                 //   await helpers.findAndClickElement(driver, '.item-section.more span.click-menu ul li label i.fa-exclamation-circle');
                 //   await driver.sleep(500);
@@ -1057,30 +1092,7 @@ describe('Problems', async function () {
                 // });
               }
 
-              // if (isAdmin) {
-              //   it("problem more for public should show 4 options", async function () {
-              //     let icons = ['fa-edit', 'fa-list-ul', 'fa-trash', 'fa-clock'];
-              //     let selectors = icons.map((sel) => {
-              //       return `.item-section.more span.click-menu ul li label i.${sel}`;
-              //     });
-              //     await helpers.findAndClickElement(driver, "li.filter-everyone label.radio-label");
-              //     await driver.sleep(800);
-              //     await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
-              //     await driver.sleep(800);
-              //     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              //   });
-              //   it("problem more for mine flagged should show 3 options", async function () {
-              //     let icons = ['fa-edit', 'fa-trash', 'fa-clock'];
-              //     let selectors = icons.map((sel) => {
-              //       return `.item-section.more span.click-menu ul li label i.${sel}`;
-              //     });
-              //     await helpers.findAndClickElement(driver, "li.filter-mine label.radio-label");
-              //     await driver.sleep(800);
-              //     await helpers.findAndClickElement(driver, "#problem-list-ul li:first-child .item-section.more");
-              //     await driver.sleep(800);
-              //     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              //   });
-              // }
+
 
             });
 
