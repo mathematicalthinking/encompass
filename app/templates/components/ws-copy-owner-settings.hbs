@@ -1,0 +1,38 @@
+<h5>Name</h5>
+{{input id="name" type="text" value=defaultName placeholder="Name for new workspace"}}
+
+<h5>Owner</h5>
+{{selectize-input
+store=store
+inputId="owner-select"
+initialOptions=initialOwnerOptions
+initialItems=initialOwnerItem
+maxItems=1
+onItemAdd=(action "setOwner")
+labelField="username"
+valueField="id"
+searchField="username"
+model="user"
+queryParamsKey="usernameSearch"
+isAsync=true
+placeholder="Search users to choose as owner"}}
+
+<h5>Privacy Setting</h5>
+{{radio-group options=modeInputs selectedValue=selectedMode}}
+
+<h5>Folder Set</h5>
+{{#if isCopyingFolders}}
+  <p>Do you want to save this folder structure as a folder set for future use</p>
+  {{radio-group options=folderSetInputs selectedValue=doCreateFolderSet}}
+
+  {{#if doCreateFolderSet}}
+    {{new-folderset-form name=folderSetName privacySetting=folderSetPrivacy}}
+  {{/if}}
+{{else}}
+  <p>Your resulting workspace will have 0 folders. You can select a preexisting folderSet from the dropdown below or continue on without any folders.</p>
+
+  {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
+  (mut existingFolderSetToUse))}}
+{{/if}}
+
+<button {{action "next"}}>Next</button>
