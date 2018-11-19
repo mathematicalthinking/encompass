@@ -1,0 +1,24 @@
+<h5>Choose workspace to copy</h5>
+
+{{selectize-input
+  store=store
+  inputId="select-workspace"
+  isAsync=true
+  maxItems=1
+  onItemAdd=(action "setSelectedWorkspace")
+  labelField="name"
+  searchField="name"
+  valueField="id"
+  model="workspace"
+  queryParamsKey="query"
+  searchCriterion="name"
+  topLevelQueryParams="searchBy"
+  placeholder="Search for workspaces by name..."
+  preload="focus"
+}}
+
+{{#if selectedWorkspace}}
+  {{workspace-info-summary workspace=selectedWorkspace}}
+{{/if}}
+
+<button {{action "next"}}>Next</button>
