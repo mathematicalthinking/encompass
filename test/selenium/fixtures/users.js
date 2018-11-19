@@ -1,70 +1,70 @@
 module.exports = {
-  // pdAdminDrexel: {
-  //   testDescriptionTitle: 'PD Admin',
-  //   _id: '5b7321ee59a672806ec903d5',
-  //   username: 'pdadmin',
-  //   password: 'pdadmin',
-  //   accountType: 'P',
-  //   organization: 'Drexel University',
-  //   sections: {
-  //     own: {
-  //      count: 0
-  //     },
-  //     collab: {
-  //       count: 0
-  //     },
-  //     org: {
-  //       count: 2
-  //     },
-  //     testExample: {
-  //       _id: '5b913e723add43b868ae9804',
-  //       name: `Morty's Math 101`,
-  //       teachers: ['morty'],
-  //       students: ['alex8', 'sam3', 'jamie4']
-  //     },
-  //     newSection: {
-  //       name: `pdAdminDrexel Test Section`,
-  //       teacher: `morty`,
-  //     }
-  //    },
-  //   problems : {
-  //     public: {
-  //       count: 16
-  //     },
-  //     mine : {
-  //       count: 1
-  //     },
-  //     org: {
-  //       total: 11,
-  //       recommended: 3,
-  //       members: 10,
-  //     },
-  //     category: {
-  //       total: 3,
-  //       k: 2,
-  //       ee: 1,
-  //       noSub: 2,
-  //     },
-  //     search: {
-  //       public: 11,
-  //       mine: 0,
-  //       org: 9,
-  //       title: 1,
-  //       clear: 1,
-  //     },
-  //     privacy: {
-  //       total: 1,
-  //       public: 1,
-  //       private: 0,
-  //     },
-  //     status: {
-  //       total: 16,
-  //       pending: 5,
-  //       flagged: 2,
-  //       approved: 11,
-  //     }
-  //   }
-  // },
+  pdAdminDrexel: {
+    testDescriptionTitle: 'PD Admin',
+    _id: '5b7321ee59a672806ec903d5',
+    username: 'pdadmin',
+    password: 'pdadmin',
+    accountType: 'P',
+    organization: 'Drexel University',
+    sections: {
+      own: {
+       count: 0
+      },
+      collab: {
+        count: 0
+      },
+      org: {
+        count: 2
+      },
+      testExample: {
+        _id: '5b913e723add43b868ae9804',
+        name: `Morty's Math 101`,
+        teachers: ['morty'],
+        students: ['alex8', 'sam3', 'jamie4']
+      },
+      newSection: {
+        name: `pdAdminDrexel Test Section`,
+        teacher: `morty`,
+      }
+     },
+    problems : {
+      public: {
+        count: 16
+      },
+      mine : {
+        count: 1
+      },
+      org: {
+        total: 11,
+        recommended: 3,
+        members: 10,
+      },
+      category: {
+        total: 3,
+        k: 2,
+        ee: 1,
+        noSub: 2,
+      },
+      search: {
+        public: 11,
+        mine: 0,
+        org: 9,
+        title: 1,
+        clear: 1,
+      },
+      privacy: {
+        total: 1,
+        public: 1,
+        private: 0,
+      },
+      status: {
+        total: 16,
+        pending: 5,
+        flagged: 2,
+        approved: 11,
+      }
+    }
+  },
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
