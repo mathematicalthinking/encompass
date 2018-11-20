@@ -18,6 +18,10 @@ Encompass.WsCopyConfigComponent = Ember.Component.extend({
   actions: {
     next() {
       this.get('onProceed')(this.get('selectedConfig'));
+    },
+
+    nextCustom(customConfig) {
+      this.get('onProceed')(this.get('selectedConfig'), customConfig);
     }
   }
 });

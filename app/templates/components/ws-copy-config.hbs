@@ -2,7 +2,9 @@
 {{radio-group options=copyConfig selectedValue=selectedConfig}}
 
 {{#if showCustomConfig}}
-  {{ws-copy-custom-config submissionThreads=submissionThreads customConfig=customConfig}}
+  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom")}}
+  {{else}}
+  <button {{action "next"}}>Next</button>
 {{/if}}
 
-<button {{action "next"}}>Next</button>
+

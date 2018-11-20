@@ -1616,17 +1616,26 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     const { originalWsId } = wsInfo;
 
-    let { includeStructureOnly, all, none, folderIds, folderSetOptions } = options;
-
+    let { includeStructureOnly, all, none, folderSetOptions } = options;
     let folderIdsToCopy;
 
     if (none) {
       if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
         return results;
       }
-      folderIdsToCopy = [];
+      // just create folder structure from folderSet Id;
+      let folderSetInfo;
+      if (folderSetOptions.existingFolderSetToUse) {
+        folderSetInfo = { folderSetId: folderSetOptions.existingFolderSetToUse };
+      }
+      const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
+
+      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+        results.folders = newFolderIds;
+      }
+      return results;
     } else {
-      folderIdsToCopy = all ? [...oldFolderIds] : [...folderIds];
+      folderIdsToCopy = all ? [...oldFolderIds] : [];
     }
 
      let taggingsKey = {};
@@ -1640,7 +1649,6 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
         folderSetObjects: array of objects that can be passed to newFolderStructure
       */
       let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
-
       // newFolderStructure returns array of newly created FolderIds
       const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
 
@@ -1651,7 +1659,6 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     } else {
       taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
-
       let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
 
       results.folders = folderIds;
@@ -1907,7 +1914,7 @@ async function cloneWorkspace(req, res, next) {
     // check if user has permission to copy this workspace
     // console.log('clone request options', JSON.stringify(req.body));
     const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
-
+    console.log('CWR', JSON.stringify(copyWorkspaceRequest, null, 2));
     if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
       return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
     }

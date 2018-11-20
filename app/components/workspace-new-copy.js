@@ -289,8 +289,11 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       this.set('currentStep', this.get('steps')[2]);
     },
 
-    setConfig(config) {
+    setConfig(config, customConfig) {
       this.set('newWsConfig', config);
+      if (customConfig) {
+        this.set('customConfig', customConfig);
+      }
       this.set('currentStep', this.get('steps')[3]);
     },
     setOwnerSettings(name, owner, mode, folderSetOptions) {
@@ -364,6 +367,15 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         baseOptions.responseOptions.all = true;
         delete baseOptions.responseOptions.none;
         requestSource = Object.assign(base, baseOptions);
+      } else if (selectedConfig === 'D') {
+        const customConfig = this.get('customConfig');
+        if (this.get('utils').isNonEmptyObject(customConfig)) {
+          customConfig.folderOptions.folderSetOptions = folderSetOptions;
+          requestSource = Object.assign(base, customConfig);
+        } else {
+          this.set('customConfigError', true);
+          return;
+        }
       }
       copyRequest = this.get('store').createRecord('copyWorkspaceRequest', requestSource);
 

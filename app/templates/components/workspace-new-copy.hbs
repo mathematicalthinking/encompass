@@ -25,7 +25,7 @@
 {{/if}}
 
 {{#if showSelectConfig}}
-  {{ws-copy-config newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig")}}
+  {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig")}}
 {{/if}}
 
 {{#if showOwnerSettings}}
@@ -52,6 +52,10 @@
 {{#each validationErrors as |error|}}
 
 {{/each}}
+
+{{#if customConfigError}}
+  <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
+{{/if}}
 {{#if copyWorkspaceError}}
   <p class="error-message">{{copyWorkspaceError}}</p>
 {{/if}}

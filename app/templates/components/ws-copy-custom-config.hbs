@@ -1,12 +1,13 @@
-<h5>Choose Submissions</h5>>
+{{log 'formatted config' formattedConfig}}
+<h5>Choose Submissions</h5>
 
-<input type="radio" checked={{answerOptions.all}} required="true" name="answerOptions" value="all" onclick={{action "setAnswerConfig" value}}>
+<input type="radio" checked={{answerOptions.all}} required="true" name="answerOptions" value="all" onclick={{action "updateCollectionOptions" "all" "answerOptions"}}>
 <label>All</label>
 
-<input type="radio" checked={{is-equal answerOptions.all false}} required="true" name="answerOptions" value="byStudent" onclick={{action (mut answerOptions.all) false}}>
+<input type="radio" checked={{answerOptions.byStudent}} required="true" name="answerOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "answerOptions"}}>
 <label>By Student</label>
-
-{{#if (is-equal mainOptions.answerOptions.selectedValue 'byStudent')}}
+{{log 'show student answer input' showStudentAnswerInput}}
+{{#if showStudentAnswerInput}}
   {{selectize-input
   inputId="answers-by-student"
   initialOptions=studentSelectOptions
@@ -23,8 +24,15 @@
   <p>{{student}}</p>
   {{/each}}
 {{/if}}
+{{#if noAnswersToCopy}}
+  <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
+{{/if}}
+{{!-- <button {{action "setAnswers"}}>Next</button> --}}
+
+{{!-- {{#if showSelectionInputs}} --}}
 
 <h5>Choose Selections</h5>
+<p>Based on your Submission choices, there are {{selectionsFromSubmissions.length}} selections to choose from.</p>
 
 <input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
@@ -36,8 +44,26 @@ onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
 <input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
 <label>Custom</label>
 
-<h5>Choose Comments</h5>
+<h5>Choose Folders</h5>
 
+<input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all"
+onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
+<label>All</label>
+
+<input type="radio" checked={{folderOptions.none}} required="true" name="folderOptions" value="none" onclick={{action "updateCollectionOptions" "none" "folderOptions"}}>
+<label>None</label>
+
+{{#if folderOptions.all}}
+  <input type="checkbox" checked={{folderOptions.includeStructureOnly}} name="includeStructureOnly">
+  <label>Include Structure Only</label>
+{{/if}}
+
+
+
+
+
+<h5>Choose Comments</h5>
+<p>Based on your Selection choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
 <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 <label>All</label>
@@ -49,6 +75,7 @@ onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 <label>Custom</label>
 
 <h5>Choose Responses</h5>
+<p>Based on your Submission choices, there are {{responsesFromSubmissions.length}} responses to choose from.</p>
 
 <input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
@@ -59,6 +86,10 @@ onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
 
 <input type="radio" checked={{responseOptions.custom}} required="true" name="responseOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "responseOptions"}}>
 <label>Custom</label>
+
+{{!-- {{/if}} --}}
+<button {{action "next"}}>Next</button>
+
 
 
 
