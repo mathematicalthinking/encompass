@@ -1,3 +1,29 @@
 <h5>Permission Settings</h5>
 
-<button {{action "submit"}}>Submit</button>
+<p>Add Collaborators</p>
+{{selectize-input
+store=store
+inputId="collab-select"
+maxItems=1
+onItemAdd=(action "setCollaborator")
+labelField="username"
+valueField="id"
+searchField="username"
+model="user"
+queryParamsKey="usernameSearch"
+isAsync=true
+placeholder="Search users to choose as owner"}}
+
+{{#if selectedCollaborator}}
+  {{ws-permissions-new onSave=(action "savePermissions") selectedUser=selectedCollaborator}}
+{{/if}}
+
+
+<h5>Collaborators</h5>
+<ol>
+  {{#each permissions as |permission|}}
+    <li>{{permission.user.username}}</li>
+  {{/each}}
+</ol>
+
+<button {{action "next"}}>Review Request</button>

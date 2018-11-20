@@ -1,0 +1,18 @@
+
+<h3>Configure Permissions for {{selectedUser.username}}</h3>
+
+{{radio-group options=answerItems selectedValue=answers}}
+{{radio-group options=globalItems selectedValue=global}}
+
+{{#if showCustom}}
+
+  {{radio-group options=selectionItems selectedValue=selections}}
+  {{radio-group options=commentItems selectedValue=comments}}
+  {{radio-group options=folderItems selectedValue=folders}}
+  {{radio-group options=feedbackItems selectedValue=feedback}}
+{{/if}}
+
+{{#if saveError}}
+  <p class="error-message">Sorry, something went wrong. Please try again.</p>
+{{/if}}
+<button {{action "savePermissions"}}>Save Permissions </button>
