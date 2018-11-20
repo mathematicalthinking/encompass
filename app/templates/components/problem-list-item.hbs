@@ -38,14 +38,18 @@
       {{#if showMoreMenu}}
         <span class="click-menu">
           <ul>
-            {{#each ellipsisMenuOptions as |option|}}
-            <li {{action option.action}}>
-              <label>
-                <span class="icon-text">{{option.label}}</span>
-                <i class={{option.icon}}></i>
-              </label>
-            </li>
-            {{/each}}
+            {{#if ellipsisMenuOptions}}
+              {{#each ellipsisMenuOptions as |option|}}
+              <li {{action option.action}}>
+                <label>
+                  <span class="icon-text">{{option.label}}</span>
+                  <i class={{option.icon}}></i>
+                </label>
+              </li>
+              {{/each}}
+            {{else}}
+              <li>No options</li>
+            {{/if}}
           </ul>
         </span>
       {{/if}}
