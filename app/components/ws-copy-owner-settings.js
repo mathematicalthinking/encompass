@@ -76,7 +76,7 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       }
       const folderSetOptions = {
         doCreateFolderSet: doCreateFolderSet,
-        existingFolderSetToUse: this.get('existingFolderSetToUse'),
+        existingFolderSetToUse: this.get('existingFolderSetToUse.id'),
         name: this.get('folderSetName'),
         privacySetting: this.get('folderSetPrivacy')
       };
