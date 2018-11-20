@@ -33,10 +33,10 @@
       <div class="subheading">{{format-date problem.createDate 'MM/DD/YYYY'}}</div>
     </div>
     <div class="info-menu">
-      <button class="tab-link {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
-      <button class="tab-link {{if showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
-      <button class="tab-link {{if showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
-      <button class="tab-link {{if showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
+      <button class="tab-link general {{if showGeneral 'active-btn'}}" {{action 'showGeneral'}}>General</button>
+      <button class="tab-link categories {{if showCats 'active-btn'}}" {{action 'showCats'}}>Categories</button>
+      <button class="tab-link additional {{if showAdditional 'active-btn'}}" {{action 'showAdditional'}}>Additional</button>
+      <button class="tab-link legal {{if showLegal 'active-btn'}}" {{action 'showLegal'}}>Legal</button>
     </div>
     <div class="info-content">
       {{#if showGeneral}}
@@ -166,7 +166,7 @@
           {{/if}}
         </div>
         <p class="info-content-label">Problem Keywords</p>
-        <div class="info-content-block">
+        <div class="info-content-block keywords">
           {{#if isEditing}}
             {{selectize-input
             inputId="select-edit-keywords"
