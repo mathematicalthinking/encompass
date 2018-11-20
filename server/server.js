@@ -78,7 +78,11 @@ console.log(`database name: '${dbConf.name}'`);
 // //   pass: dbConf.pass,
 // });
 
+// Determines whether index on schema should run - only runs on seed_db
+let autoIndexValue = (dbConf.name === "encompass_seed") ? true : false;
+
 mongoose.connect(`mongodb://${dbConf.host}:27017/${dbConf.name}`, {
+  autoIndex: autoIndexValue,
   useMongoClient: true
 });
 

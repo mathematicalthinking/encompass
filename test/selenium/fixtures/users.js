@@ -44,6 +44,24 @@ module.exports = {
         k: 2,
         ee: 1,
         noSub: 2,
+      },
+      search: {
+        public: 11,
+        mine: 0,
+        org: 9,
+        title: 1,
+        clear: 1,
+      },
+      privacy: {
+        total: 1,
+        public: 1,
+        private: 0,
+      },
+      status: {
+        total: 16,
+        pending: 5,
+        flagged: 2,
+        approved: 11,
       }
     }
   },
@@ -88,6 +106,24 @@ module.exports = {
         k: 2,
         ee: 1,
         noSub: 2,
+      },
+      search: {
+        public: 9,
+        mine: 5,
+        org: 6,
+        title: 1,
+        clear: 5,
+      },
+      privacy: {
+        total: 5,
+        public: 4,
+        private: 1,
+      },
+      status: {
+        total: 14,
+        pending: 3,
+        flagged: 0,
+        approved: 11,
       }
     }
   },
@@ -149,6 +185,25 @@ module.exports = {
           public: 5,
           private: 1,
         }
+      },
+      search: {
+        all: 15,
+        public: 11,
+        mine: 3,
+        org: 9,
+        title: 1,
+        clear: 22,
+      },
+      privacy: {
+        total: 4,
+        public: 3,
+        private: 1,
+      },
+      status: {
+        total: 16,
+        pending: 5,
+        flagged: 2,
+        approved: 11,
       }
     }
   },

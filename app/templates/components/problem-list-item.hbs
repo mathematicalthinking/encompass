@@ -32,48 +32,24 @@
       <button {{action actionButton.function problem actionButton.argument1 actionButton.argument2}} class="primary-button">
         {{actionButton.name}}
       </button>
-      {{!-- {{#if currentUser.isAdmin}}
-        {{#unless problem.isTrashed}}
-          {{#if (is-equal problem.status 'approved')}}
-            <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
-            {{else}}
-            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
-          {{/if}}
-        {{/unless}}
-        {{#if problem.isTrashed}}
-          <button {{action "restoreProblem"}} class="primary-button approve">Restore</button>
-        {{/if}}
-      {{else}}
-        {{#if (is-equal problem.status 'approved')}}
-          <button class="primary-button" {{action "assignProblem"}}>Assign</button>
-        {{else}}
-        {{#if canDelete}}
-          {{#if currentUser.isPdAdmin}}
-            {{#unless (is-equal problem.privacySetting 'E')}}
-              <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
-            {{/unless}}
-          {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
-          {{/if}}
-          {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
-        {{/if}}
-        {{/if}}
-      {{/if}} --}}
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>
       {{#if showMoreMenu}}
         <span class="click-menu">
           <ul>
-            {{#each ellipsisMenuOptions as |option|}}
-            <li {{action option.action}}>
-              <label>
-                <span class="icon-text">{{option.label}}</span>
-                <i class={{option.icon}}></i>
-              </label>
-            </li>
-            {{/each}}
+            {{#if ellipsisMenuOptions}}
+              {{#each ellipsisMenuOptions as |option|}}
+              <li {{action option.action}}>
+                <label>
+                  <span class="icon-text">{{option.label}}</span>
+                  <i class={{option.icon}}></i>
+                </label>
+              </li>
+              {{/each}}
+            {{else}}
+              <li>No options</li>
+            {{/if}}
           </ul>
         </span>
       {{/if}}
@@ -132,39 +108,11 @@
           {{problem.status}}
         </span>
       </div>
-    <div class="item-section action">
-      <button {{action actionButton.function problem actionButton.argument1 actionButton.argument2}} class="primary-button">
+      <div class="item-card action">
+        <button {{action actionButton.function problem actionButton.argument1 actionButton.argument2}} class="primary-button">
         {{actionButton.name}}
       </button>
-      {{!-- {{#if currentUser.isAdmin}}
-        {{#unless problem.isTrashed}}
-          {{#if (is-equal problem.status 'approved')}}
-            <button {{action "confirmStatusUpdate" problem "title" "flagged"}} class="primary-button">Flag</button>
-            {{else}}
-            <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
-          {{/if}}
-        {{/unless}}
-        {{#if problem.isTrashed}}
-          <button {{action "restoreProblem"}} class="primary-button approve">Restore</button>
-        {{/if}}
-      {{else}}
-        {{#if (is-equal problem.status 'approved')}}
-          <button class="primary-button" {{action "assignProblem"}}>Assign</button>
-        {{else}}
-        {{#if canDelete}}
-          {{#if currentUser.isPdAdmin}}
-            {{#unless (is-equal problem.privacySetting 'E')}}
-              <button {{action "confirmStatusUpdate" problem "title" "approved"}} class="primary-button approve">Approve</button>
-            {{/unless}}
-          {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
-          {{/if}}
-          {{else}}
-            <button class="primary-button" {{action "addToMyProblems"}}>Copy</button>
-        {{/if}}
-        {{/if}}
-      {{/if}} --}}
-    </div>
+      </div>
     </div>
   </div>
 {{/if}}

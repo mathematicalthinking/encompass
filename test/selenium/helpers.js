@@ -117,12 +117,15 @@ const navigateAndWait = async function (webDriver, url, selector, timeout=timeou
   return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
 };
 
-const findAndGetText = async function (webDriver, selector) {
+const findAndGetText = async function (webDriver, selector, caseInsenstive=false) {
   let text;
   try {
     let webElements = await webDriver.findElements(By.css(selector));
     if (webElements.length === 1) {
       text = await webElements[0].getText();
+    }
+    if (caseInsenstive) {
+      text = text.toLowerCase();
     }
   } catch (err) {
     console.log(err);

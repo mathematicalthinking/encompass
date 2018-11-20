@@ -2,21 +2,42 @@
 @import "mixins";
 @import "responsive-font-size";
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 430px) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 374px) {
   .results-list {
     .layout-icons {
       display: none;
     }
   }
-}
-
-@media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
   #layout-view {
     &.grid-view {
       .problem-list {
-        .main-list {
-          .problem-list-item {
-            width: 300px;
+        .main-list ul {
+          li {
+            .item-card.row-3 {
+              width: 225px;
+              margin: 0 auto;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 375px) and (max-width: 430px) {
+  .results-list {
+    .layout-icons {
+      display: none;
+    }
+  }
+  #layout-view {
+    &.grid-view {
+      .problem-list {
+        .main-list ul {
+          li {
+            .item-card.row-3 {
+              width: 275px;
+            }
           }
         }
       }
@@ -167,13 +188,15 @@
     }
     .problem-list {
       width: inherit;
-      .main-list {
+      .main-list ul {
         width: auto;
         @include flex-container(auto, auto, row, wrap, center, center, center);
+        li {
+          @include flex-item(1, auto, 1 1 auto);
+          width: 450px;
+        }
       }
       .problem-list-item {
-        @include flex-item(1, auto, 1 1 auto);
-        width: 450px;
         .item-card-container {
           margin: 5px;
           box-shadow: $box-shadow;

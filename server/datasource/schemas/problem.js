@@ -40,6 +40,31 @@ var ProblemSchema = new Schema({
     flaggedDate: { type: Date, default: Date.now() },
   }
 }, { versionKey: false });
+
+
+ProblemSchema.index({
+  "title": "text",
+  "text": "text",
+  "additionalInfo": "text",
+  "status": "text",
+  "flagReason": "text",
+  "copyrightNotice": "text",
+  "sharingAuth": "text",
+  "author": "text"
+}, {
+  weights: {
+    "additionalInfo": 50,
+    "author": 75,
+    "copyrightNotice": 1,
+    "flagReason": 20,
+    "sharingAuth": 1,
+    "status": 10,
+    "text": 100,
+    "title": 300
+  },
+  name: "textSearch"
+});
+
 /**
   * ## Pre-Validation
   * Before saving we must verify (synchonously) that:

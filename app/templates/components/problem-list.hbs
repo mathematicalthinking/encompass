@@ -3,7 +3,9 @@
     {{#if isSearching}}
       <p class="loading-message">Searching problems...</p>
     {{else}}
+    <ul id="problem-list-ul">
       {{#each problems as |problem|}}
+      <li>
         {{problem-list-item
         problem=problem
         isList=isList
@@ -12,9 +14,12 @@
         flagProblem=(action "flagProblem")
         moreMenuOptions=moreMenuOptions
         toProblemInfo=(action "toProblemInfo")}}
+      </li>
       {{/each}}
+      </ul>
     {{/if}}
   </div>
+
 
 
 
