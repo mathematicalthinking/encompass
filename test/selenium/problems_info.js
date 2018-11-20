@@ -93,14 +93,17 @@ describe('Problems', async function () {
                   }
               });
 
-              it('should show a new form with 4 headers, inputs and tooltips', async function () {
+              it('general page should have four inputs with labels', async function () {
                 if (!isStudent) {
-                  let tabNames = ['general', 'categories', 'additional', 'legal'];
-                  let selectors = tabNames.map((tab) => {
-                    return `#problem-new .side-info-menu .info-details .info-menu button.tab-name.${tab}`;
-                  });
-                  expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-                  }
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'title', true)).to.contain('problem title');
+                  expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#title')).to.be.true;
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'statement', true)).to.contain('problem statement');
+                  expect(await helpers.isElementVisible(driver, css.problemNew.inputQuill + '#editor')).to.be.true;
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'author', true)).to.contain('author');
+                  expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#author')).to.be.true;
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'privacy', true)).to.contain('privacy');
+                  expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + ' ul li')).to.have.lengthOf(3);
+                }
               });
 
 
