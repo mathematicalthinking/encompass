@@ -1,4 +1,5 @@
-Encompass.FolderSet = DS.Model.extend({
-  label: Ember.computed.alias('id'),
-  name: DS.attr('string')
+Encompass.FolderSet = DS.Model.extend(Encompass.Auditable, {
+  name: DS.attr('string'),
+  privacySetting: DS.attr('string'),
+  folders: DS.attr()
 });
