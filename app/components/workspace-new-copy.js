@@ -322,18 +322,27 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         createdBy: this.get('currentUser')
       };
 
+      let folderSetOptions = this.get('newFolderSetOptions');
+
+      if (!folderSetOptions.doCreateFolderSet) {
+        delete folderSetOptions.name;
+        delete folderSetOptions.privacySetting;
+        if (!folderSetOptions.existingFolderSetToUse) {
+          delete folderSetOptions.existingFolderSetToUse;
+        }
+      }
+
       let baseOptions = {
         answerOptions : { all: true },
         folderOptions : {
           includeStructureOnly: true,
-          folderSetOptions: this.get('folderSetOptions'),
+          folderSetOptions: this.get('newFolderSetOptions'),
           all: true
         },
         selectionOptions : { none: true },
         commentOptions : { none: true },
         responseOptions : {  none: true}
       };
-
         // basic shallow with folders
 
       if (selectedConfig === 'A') {
