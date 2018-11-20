@@ -63,11 +63,10 @@ const newProblem = {
   finalTitle: 'New Test Problem',
   text: 'Test problem content',
   author: 'Test author',
-  category: '',
-  additionalInfo: 'Be careful!',
-  copyrightNotice: "Apple Computer Co",
-  sharingAuth: "So Sue Me",
-  imageUrl: ''
+  keywords: ['math', 'geometry', 'puzzle'],
+  additionalInfo: 'Test additional info',
+  copyrightNotice: "Test Problem Copyright",
+  sharingAuth: "Test Problem Sharing",
 };
 
 

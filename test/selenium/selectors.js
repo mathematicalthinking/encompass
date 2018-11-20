@@ -222,6 +222,7 @@ module.exports = {
     showCatsBtn: 'button.show-cats-btn',
     hideCatsBtn: 'button.hide-cats-btn',
     inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
+    inputSelectizeType: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp  .selectize-control .selectize-input input',
     errorMsgGeneral: 'Please provide all required fields',
     errorMsgLegal: 'Please verify that you have permission to post this problem',
     errorMsgTitle: 'There is already an existing public problem with that title',
@@ -236,6 +237,7 @@ module.exports = {
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
     problemMenu: '#problem-info .side-info-menu .info-details .info-menu button.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
+    problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author',
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
   },
 

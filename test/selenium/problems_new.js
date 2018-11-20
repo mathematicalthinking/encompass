@@ -147,16 +147,16 @@ describe('Problems New', async function () {
               });
 
               it('should let you hide the categories menu', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemNew.HidCatsBtn);
+                await helpers.waitForAndClickElement(driver, css.problemNew.hideCatsBtn);
                 await driver.sleep(500);
                 expect(await helpers.findAndGetText(driver, css.problemNew.showCatsBtn, true)).to.contain('show category menu');
               });
 
               it('should let you add problem keywords', async function () {
-                await helpers.findInputAndType(driver, css.problemNew.inputSelectize + ' .selectize-control .selectize-input input', 'math', true);
-                await helpers.findInputAndType(driver, css.problemNew.inputSelectize + ' .selectize-control .selectize-input input', 'geometry', true);
-                await helpers.findInputAndType(driver, css.problemNew.inputSelectize + ' .selectize-control .selectize-input input', 'puzzle', true);
-                //TEST THAT THERE ARE KEYWORDS!!
+                let keywords = problem.keywords;
+                await helpers.findInputAndType(driver, css.problemNew.inputSelectizeType, keywords[0], true);
+                await helpers.findInputAndType(driver, css.problemNew.inputSelectizeType, keywords[1], true);
+                await helpers.findInputAndType(driver, css.problemNew.inputSelectizeType, keywords[2], true);
               });
 
               it('the additional page should have two inputs with labels', async function () {
@@ -168,7 +168,7 @@ describe('Problems New', async function () {
               });
 
               it('should type in additional info and continue to next page', async function () {
-                await helpers.findInputAndType(driver, css.problemNew.inputContentBlock + ' .input-container textarea', 'Test additional info');
+                await helpers.findInputAndType(driver, css.problemNew.inputContentBlock + ' .input-container textarea', problem.additionalInfo);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'copyright', true)).to.contain('copyright notice');
               });
@@ -191,8 +191,8 @@ describe('Problems New', async function () {
               });
 
               it('should fill in inputs and check legal notice', async function () {
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#copyright', 'Test Problem Copyright');
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#sharing', 'Test Problem Sharing Authorization');
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#copyright', problem.copyrightNotice);
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#sharing', problem.sharingAuth);
                 await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + ' #legal-notice');
               });
 
@@ -206,29 +206,29 @@ describe('Problems New', async function () {
               });
 
               it('the general page should have inputs still filled in and change title to duplicate', async function () {
-                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#title')).to.contain(' New Test Problem ');
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputQuill + '#editor .ql-editor p')).to.contain('Test problem content');
+                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#title')).to.contain(problem.startTitle);
+                expect(await helpers.findAndGetText(driver, css.problemNew.inputQuill + '#editor .ql-editor p')).to.contain(problem.text);
                 await helpers.clearElement(driver, css.problemNew.inputTextbox + '#title');
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', 'Alphabetical Problem');
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', problem.duplicateTitle);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 await driver.sleep(800);
-                await helpers.waitForAndClickElement(driver, 'button.swal2-confirm');
+                await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
                 await driver.sleep(800);
               });
 
               it('the categories page should still have categories and keywords', async function () {
-                expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item')).to.have.lengthOf(1);
+                expect(await helpers.getWebElements(driver, css.problemNew.selectedCatsList)).to.have.lengthOf(1);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
               });
 
               it('the additional page should still have inputs filled in', async function () {
-                expect(await helpers.getWebElementValue(driver, css.problemNew.inputContentBlock + ' .input-container input#additionalInfo')).to.contain('Test additional info');
+                expect(await helpers.getWebElementValue(driver, css.problemNew.inputContentBlock + ' .input-container input#additionalInfo')).to.contain(problem.additionalInfo);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
               });
 
               it('the legal page should still have inputs filled in', async function () {
-                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#copyright')).to.contain('Test Problem Copyright');
-                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#sharing')).to.contain('Test Problem Sharing Authorization');
+                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#copyright')).to.contain(problem.copyrightNotice);
+                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#sharing')).to.contain(problem.sharingAuth);
               });
 
               it('creating a problem with duplicate name should throw error', async function () {
@@ -237,15 +237,15 @@ describe('Problems New', async function () {
                 await helpers.waitForTextInDom(driver, css.problemNew.errorMsgTitle);
                 expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgTitle);
                 await helpers.waitForAndClickElement(driver, css.problemNew.errorBoxDismiss);
-                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#title')).to.contain('Alphabetical Problem');
+                expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#title')).to.contain(problem.duplicateTitle);
                });
 
               it('change problem title and submit problem', async function () {
                 await helpers.clearElement(driver, css.problemNew.inputTextbox + '#title');
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', 'Test New Problem');
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', problem.finalTitle);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 await driver.sleep(500);
-                await helpers.waitForAndClickElement(driver, 'button.swal2-confirm');
+                await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
                 await driver.sleep(300);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 await driver.sleep(300);
@@ -253,13 +253,19 @@ describe('Problems New', async function () {
                 await driver.sleep(300);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 await driver.sleep(1000);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Test New Problem');
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problem.finalTitle);
               });
 
               it('newly created problem - general page should have correct info', async function () {
                 expect(await helpers.isElementVisible(driver, css.problemInfo.privacySetting + 'fa-globe-americas')).to.be.true;
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Test New Problem');
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatement)).to.contain('');
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problem.finalTitle);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatement)).to.contain(problem.text);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemAuthor)).to.contain(problem.author);
+                if (!isAdmin) {
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain('pending');
+                } else {
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain('approved');
+                }
 
                 // expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Test New Problem');
 
