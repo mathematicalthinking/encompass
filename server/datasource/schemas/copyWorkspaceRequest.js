@@ -33,7 +33,6 @@ var CopyWorkspaceRequestSchema = new Schema({
     },
     all: { type: Boolean },
     none: { type: Boolean },
-    folderIds: [{ type: ObjectId, ref: 'Folder' }]
   },
   selectionOptions: {
     all: { type: Boolean },
