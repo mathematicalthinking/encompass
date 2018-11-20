@@ -94,16 +94,16 @@ describe('Problems New', async function () {
                 await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', problem.startTitle);
                 await helpers.findInputAndType(driver, css.problemNew.inputQuill + '#editor .ql-editor', problem.text);
                 await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#author', problem.author);
-                await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + '.privacy ul li.radio-item label.radio-label input.everyone');
+                await helpers.waitForAndClickElement(driver, css.problemNew.privacySetting);
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                expect(await helpers.findAndGetText(driver, 'h2#swal2-title', true)).to.contain('are you sure you want to create a public problem');
-                await helpers.waitForAndClickElement(driver, 'button.swal2-confirm');
+                expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to create a public problem');
+                await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
               });
 
               it('the categories page should have two inputs with labels', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
-                expect(await helpers.isElementVisible(driver, 'button.show-cats-btn')).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemNew.showCatsBtn)).to.be.true;
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'keywords', true)).to.contain('problem keywords');
                 expect(await helpers.isElementVisible(driver, css.problemNew.inputSelectize)).to.be.true;
               });
@@ -126,7 +126,7 @@ describe('Problems New', async function () {
               });
 
               it('should let you add categories to problem', async function () {
-                await helpers.waitForAndClickElement(driver, 'button.show-cats-btn');
+                await helpers.waitForAndClickElement(driver, css.problemNew.showCatsBtn);
                 await driver.sleep(500);
                 await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
                 await driver.sleep(300);
@@ -137,19 +137,19 @@ describe('Problems New', async function () {
                 await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.5"]');
                 await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.6"]');
                 await driver.sleep(500);
-                expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item')).to.have.lengthOf(2);
+                expect(await helpers.getWebElements(driver, css.problemNew.selectedCatsList)).to.have.lengthOf(2);
               });
 
               it('should let you remove categories to problem', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item:first-child button.remove-cat');
+                await helpers.waitForAndClickElement(driver, css.problemNew.removeCategoryBtn);
                 await driver.sleep(500);
-                expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item')).to.have.lengthOf(1);
+                expect(await helpers.getWebElements(driver, css.problemNew.selectedCatsList)).to.have.lengthOf(1);
               });
 
               it('should let you hide the categories menu', async function () {
-                await helpers.waitForAndClickElement(driver, 'button.hide-cats-btn');
+                await helpers.waitForAndClickElement(driver, css.problemNew.HidCatsBtn);
                 await driver.sleep(500);
-                expect(await helpers.findAndGetText(driver, 'button.show-cats-btn', true)).to.contain('show category menu');
+                expect(await helpers.findAndGetText(driver, css.problemNew.showCatsBtn, true)).to.contain('show category menu');
               });
 
               it('should let you add problem keywords', async function () {

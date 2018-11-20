@@ -163,7 +163,6 @@ module.exports = {
   resultsMesasage: 'div.results-message',
   noResultsMsg: 'No results found. Please try expanding your filter criteria.',
 
-
   problemFilterList: {
     primaryFilters: [
       { primaryFilterList: ".primary-filter-list" },
@@ -204,6 +203,11 @@ module.exports = {
     ]
   },
 
+  sweetAlert: {
+    heading: 'h2#swal2-title',
+    confirmBtn: 'button.swal2-confirm',
+  },
+
   problemNew: {
     problemNewHeading: '#problem-new .side-info-menu .info-details .info-main .heading',
     problemNewBtn: 'div.searchbar #problem-new-link',
@@ -212,6 +216,11 @@ module.exports = {
     inputTextbox: '#problem-new .side-info-menu .info-content .info-content-block .input-container input',
     inputQuill: '#problem-new .side-info-menu .info-content .info-content-block .quill-container section',
     inputContentBlock: '#problem-new .side-info-menu .info-content .info-content-block',
+    privacySetting: '#problem-new .side-info-menu .info-content .info-content-block.privacy ul li.radio-item label.radio-label input.everyone',
+    selectedCatsList: '#problem-new .side-info-menu .info-content .info-content-block.categories ul.problem-info li.category-item',
+    removeCategoryBtn: '#problem-new .side-info-menu .info-content .info-content-block.categories ul.problem-info li.category-item:first-child button.remove-cat',
+    showCatsBtn: 'button.show-cats-btn',
+    hideCatsBtn: 'button.hide-cats-btn',
     inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
     errorMsgGeneral: 'Please provide all required fields',
     errorMsgLegal: 'Please verify that you have permission to post this problem',
