@@ -112,6 +112,17 @@ const getWebElements = async function (webDriver, selector) {
   return webElements;
 };
 
+const getWebElementValue = async function (webDriver, selector) {
+  let webElement, webValue;
+  try {
+    webElement = await webDriver.findElement(By.css(selector));
+    webValue = await webElement.getAttribute('value');
+  } catch (err) {
+    console.log(err);
+  }
+  return webValue;
+};
+
 const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
   await webDriver.get(url);
   return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -367,6 +378,7 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
 
 
 module.exports.getWebElements = getWebElements;
+module.exports.getWebElementValue = getWebElementValue;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
 module.exports.findAndGetText = findAndGetText;
