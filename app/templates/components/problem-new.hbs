@@ -48,7 +48,7 @@
           Privacy Setting <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
-        <div class="info-content-block">
+        <div class="info-content-block privacy">
           <ul>
             <li class="radio-item">
               <label class="radio-label">
@@ -73,7 +73,7 @@
       {{/if}}
 
       {{#if showCats}}
-        <p class="info-content-label">
+        <p class="info-content-label categories">
           Problem Categories
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.categories}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -93,7 +93,7 @@
             {{categories-menu categories=categoryTree store=store addCategories="addCategories"}}
           {{/if}}
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label keywords">
           Problem Keywords
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.keywords}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -112,7 +112,7 @@
       {{/if}}
 
       {{#if showAdditional}}
-        <p class="info-content-label">
+        <p class="info-content-label additional">
           Additional Information
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalInfo}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -122,7 +122,7 @@
             {{input id="additionalInfo" type="hidden" value=additionalInfo }}
           </div>
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label image">
           Additional Image
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.additionalImage}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -136,7 +136,7 @@
       {{/if}}
 
       {{#if showLegal}}
-        <p class="info-content-label">
+        <p class="info-content-label copyright">
           Copyright Notice
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.copyrightNotice}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -146,7 +146,7 @@
             {{input name="copyright" id="copyright" type="text" value=copyrightNotice placeholder="Add Copyright Notice"}}
           </div>
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label sharing">
           Sharing Authorization
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.sharingAuth}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -155,7 +155,7 @@
             {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}
           </div>
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label legal">
           Legal Notice <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.legalNotice}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
