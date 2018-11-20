@@ -211,6 +211,7 @@ module.exports = {
     inputContentBlock: '#problem-new .side-info-menu .info-content .info-content-block',
     inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
     errorMsgGeneral: 'Please provide all required fields',
+    errorMsgLegal: 'Please verify that you have permission to post this problem',
     primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
   },

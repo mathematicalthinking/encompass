@@ -174,13 +174,35 @@ describe('Problems New', async function () {
 
               it('the legal page should have three inputs with labels', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'copyright', true)).to.contain('copyright notice');
+                expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#copyright')).to.be.true;
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'sharing', true)).to.contain('sharing authorization');
+                expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#sharing')).to.be.true;
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'legal', true)).to.contain('legal notice');
-                // expect(await helpers.isElementVisible(driver, css.problemNew.inputContentBlock + ' .input-container textarea')).to.be.true;
-                // expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'image', true)).to.contain('additional image');
-                // expect(await helpers.isElementVisible(driver, css.problemNew.inputContentBlock + ' #image-upload')).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemNew.inputContentBlock + ' #legal-notice')).to.be.true;
               });
 
+              it('should show an error when trying to submit without checking legal notice', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
+                await driver.sleep(800);
+                await helpers.waitForTextInDom(driver, css.problemNew.errorMsgLegal);
+                expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgLegal);
+                await helpers.waitForAndClickElement(driver, '.error-box p button i.fa-times');
+              });
+
+              it('should fill in inputs and check legal notice', async function () {
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#copyright', 'Test Problem Copyright');
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#sharing', 'Test Problem Sharing Authorization');
+                await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + ' #legal-notice');
+              });
+
+              it('should go all the way back to the general page', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemNew.cancelButton);
+                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'additional', true)).to.contain('additional information');
+                await helpers.waitForAndClickElement(driver, css.problemNew.cancelButton);
+                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
+                await helpers.waitForAndClickElement(driver, css.problemNew.cancelButton);
+                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'title', true)).to.contain('problem title');
+              });
 
             });
           });
