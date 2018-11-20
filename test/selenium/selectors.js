@@ -205,6 +205,7 @@ module.exports = {
   },
 
   problemNew: {
+    problemNewHeading: '#problem-new .side-info-menu .info-details .info-main .heading',
     inputLabel: '#problem-new .side-info-menu .info-content .info-content-label.',
     inputTextbox: '#problem-new .side-info-menu .info-content .info-content-block .input-container input',
     inputQuill: '#problem-new .side-info-menu .info-content .info-content-block .quill-container section',
@@ -212,8 +213,18 @@ module.exports = {
     inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
     errorMsgGeneral: 'Please provide all required fields',
     errorMsgLegal: 'Please verify that you have permission to post this problem',
+    errorMsgTitle: 'There is already an existing public problem with that title',
     primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
+  },
+
+  problemInfo: {
+    privacySetting: '#problem-info .info-header span.top-left-icon i.',
+    problemName: '#problem-info .side-info-menu .info-details .info-main .heading',
+    problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
+    problemMenu: '#problem-info .side-info-menu .info-details .info-menu button.',
+    problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
+    problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
