@@ -93,7 +93,7 @@ describe('Problems', async function () {
                   }
               });
 
-              it('general page should have four inputs with labels', async function () {
+              it('the general page should have four inputs with labels', async function () {
                 if (!isStudent) {
                   expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'title', true)).to.contain('problem title');
                   expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#title')).to.be.true;
@@ -106,26 +106,95 @@ describe('Problems', async function () {
                 }
               });
 
+              it('should show an error if navigating to next page without filling in required fields', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
+                  await driver.sleep(800);
+                  await helpers.waitForTextInDom(driver, css.problemNew.errorMsgGeneral);
+                  expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgGeneral);
+                  await helpers.waitForAndClickElement(driver, '.error-box p button i.fa-times');
+                }
+              });
 
-              // it('should update problem list when unchecking recommended', async function () {
-              //   if (!isStudent) {
-              //     await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
-              //     await helpers.waitForSelector(driver, css.resultsMesasage);
-              //     await helpers.waitForTextInDom(driver, css.noResultsMsg);
-              //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(css.noResultsMsg);
-              //   }
-              // });
+              it('should show a modal if creating a public problem and go to next page', async function () {
+                if (!isStudent) {
+                  await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', ' New Test Problem ');
+                  await helpers.findInputAndType(driver, css.problemNew.inputQuill + '#editor .ql-editor', 'Test problem content');
+                  await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#author', 'Test author');
+                  await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + '.privacy ul li.radio-item label.radio-label input.everyone');
+                  await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
+                  expect(await helpers.findAndGetText(driver, 'h2#swal2-title', true)).to.contain('are you sure you want to create a public problem');
+                  await helpers.waitForAndClickElement(driver, 'button.swal2-confirm');
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
+                }
+              });
 
-              // it('should update problem list when checking created by members', async function () {
-              //   if (!isStudent) {
-              //     await helpers.waitForAndClickElement(driver, 'li.fromOrg label.checkbox-label');
-              //     await helpers.waitForSelector(driver, css.resultsMesasage);
-              //     let resultsMsg = `${problems.org.members} problems found`;
-              //     await helpers.waitForTextInDom(driver, resultsMsg);
-              //     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
-              //     await helpers.waitForAndClickElement(driver, 'li.recommended label.checkbox-label');
-              //   }
-              // });
+              it('the categories page should have two inputs with labels', async function () {
+                if (!isStudent) {
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
+                  expect(await helpers.isElementVisible(driver, 'button.show-cats-btn')).to.be.true;
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'keywords', true)).to.contain('problem keywords');
+                  expect(await helpers.isElementVisible(driver, css.problemNew.inputSelectize)).to.be.true;
+                }
+              });
+
+              it('should let you continue without selecting categories or keywords', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'additional', true)).to.contain('additional information');
+                }
+              });
+
+              it('should let you continue without adding any additional info', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'copyright', true)).to.contain('copyright notice');
+                }
+              });
+
+              it('should let you go back to categories page', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, css.problemNew.cancelButton);
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'additional', true)).to.contain('additional information');
+                  await helpers.waitForAndClickElement(driver, css.problemNew.cancelButton);
+                  expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
+                }
+              });
+
+              it('should let you add categories to problem', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, 'button.show-cats-btn');
+                  await driver.sleep(500);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G.B"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.5"]');
+                  await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.6"]');
+                  await driver.sleep(500);
+                  expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item')).to.have.lengthOf(2);
+                }
+              });
+
+              it('should let you remove categories to problem', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item:first-child button.remove-cat');
+                  await driver.sleep(500);
+                  expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + '.categories ul.problem-info li.category-item')).to.have.lengthOf(1);
+                  }
+              });
+
+              it('should let you hide the categories menu', async function () {
+                if (!isStudent) {
+                  await helpers.waitForAndClickElement(driver, 'button.hide-cats-btn');
+                  await driver.sleep(500);
+                  expect(await helpers.findAndGetText(driver, 'button.show-cats-btn', true)).to.contain('show category menu');
+
+                }
+              });
+
             });
 
 
