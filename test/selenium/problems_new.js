@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 
 // REQUIRE FILES
 const helpers = require('./helpers');
+const problem = helpers.newProblem;
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
@@ -58,14 +59,14 @@ describe('Problems New', async function () {
               it('should open problem new page from plus icon', async function () {
                 await helpers.waitForAndClickElement(driver, '.remove-icon');
                 await driver.sleep(800);
-                await helpers.waitForAndClickElement(driver, 'div.searchbar #problem-new-link');
+                await helpers.waitForAndClickElement(driver, css.problemNew.problemNewBtn);
                 expect(await helpers.findAndGetText(driver, css.problemNew.problemNewHeading)).to.contain('Create New Problem');
               });
 
               it('should show a new problem form with 4 headers', async function () {
                 let tabNames = ['general', 'categories', 'additional', 'legal'];
                 let selectors = tabNames.map((tab) => {
-                  return `#problem-new .side-info-menu .info-details .info-menu button.tab-name.${tab}`;
+                  return css.problemNew.menuTab + tab;
                 });
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
@@ -86,13 +87,13 @@ describe('Problems New', async function () {
                 await driver.sleep(800);
                 await helpers.waitForTextInDom(driver, css.problemNew.errorMsgGeneral);
                 expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgGeneral);
-                await helpers.waitForAndClickElement(driver, '.error-box p button i.fa-times');
+                await helpers.waitForAndClickElement(driver, css.problemNew.errorBoxDismiss);
               });
 
               it('should show a modal if creating a public problem and go to next page', async function () {
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', ' New Test Problem ');
-                await helpers.findInputAndType(driver, css.problemNew.inputQuill + '#editor .ql-editor', 'Test problem content');
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#author', 'Test author');
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', problem.startTitle);
+                await helpers.findInputAndType(driver, css.problemNew.inputQuill + '#editor .ql-editor', problem.text);
+                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#author', problem.author);
                 await helpers.waitForAndClickElement(driver, css.problemNew.inputContentBlock + '.privacy ul li.radio-item label.radio-label input.everyone');
                 await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
                 expect(await helpers.findAndGetText(driver, 'h2#swal2-title', true)).to.contain('are you sure you want to create a public problem');
@@ -186,7 +187,7 @@ describe('Problems New', async function () {
                 await driver.sleep(800);
                 await helpers.waitForTextInDom(driver, css.problemNew.errorMsgLegal);
                 expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgLegal);
-                await helpers.waitForAndClickElement(driver, '.error-box p button i.fa-times');
+                await helpers.waitForAndClickElement(driver, css.problemNew.errorBoxDismiss);
               });
 
               it('should fill in inputs and check legal notice', async function () {
@@ -235,7 +236,7 @@ describe('Problems New', async function () {
                 await driver.sleep(800);
                 await helpers.waitForTextInDom(driver, css.problemNew.errorMsgTitle);
                 expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgTitle);
-                await helpers.waitForAndClickElement(driver, '.error-box p button i.fa-times');
+                await helpers.waitForAndClickElement(driver, css.problemNew.errorBoxDismiss);
                 expect(await helpers.getWebElementValue(driver, css.problemNew.inputTextbox + '#title')).to.contain('Alphabetical Problem');
                });
 

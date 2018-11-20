@@ -58,18 +58,19 @@ const signinErrors = {
 };
 
 const newProblem = {
-  details: {
-    name: 'Test Problem',
-    question: 'What is it?',
-    category: '',
-    additionalInfo: 'Be careful!',
-    copyrightNotice: "Apple Computer Co",
-    sharingAuth: "So Sue Me",
-    author: "Steve Jobs",
-  },
-  privacySetting: 'E',
+  startTitle: ' New Test Problem ',
+  duplicateTitle: 'Alphabetical Problem',
+  finalTitle: 'New Test Problem',
+  text: 'Test problem content',
+  author: 'Test author',
+  category: '',
+  additionalInfo: 'Be careful!',
+  copyrightNotice: "Apple Computer Co",
+  sharingAuth: "So Sue Me",
   imageUrl: ''
 };
+
+
 
 const newSection = {
   details: {

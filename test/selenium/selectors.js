@@ -206,6 +206,8 @@ module.exports = {
 
   problemNew: {
     problemNewHeading: '#problem-new .side-info-menu .info-details .info-main .heading',
+    problemNewBtn: 'div.searchbar #problem-new-link',
+    menuTab: '#problem-new .side-info-menu .info-details .info-menu button.tab-name.',
     inputLabel: '#problem-new .side-info-menu .info-content .info-content-label.',
     inputTextbox: '#problem-new .side-info-menu .info-content .info-content-block .input-container input',
     inputQuill: '#problem-new .side-info-menu .info-content .info-content-block .quill-container section',
@@ -214,6 +216,7 @@ module.exports = {
     errorMsgGeneral: 'Please provide all required fields',
     errorMsgLegal: 'Please verify that you have permission to post this problem',
     errorMsgTitle: 'There is already an existing public problem with that title',
+    errorBoxDismiss: '.error-box p button i.fa-times',
     primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
   },
