@@ -209,6 +209,10 @@ module.exports = {
     inputTextbox: '#problem-new .side-info-menu .info-content .info-content-block .input-container input',
     inputQuill: '#problem-new .side-info-menu .info-content .info-content-block .quill-container section',
     inputContentBlock: '#problem-new .side-info-menu .info-content .info-content-block',
+    inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
+    errorMsgGeneral: 'Please provide all required fields',
+    primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
+    cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
