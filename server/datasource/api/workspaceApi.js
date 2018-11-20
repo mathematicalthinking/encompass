@@ -1339,6 +1339,14 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
       folderSetObjects: [],
       isInvalidWorkspace: false
     };
+    if (apiUtils.isNonEmptyObject(folderSetOptions)) {
+      const { existingFolderSetToUse } = folderSetOptions;
+
+      if (existingFolderSetToUse) {
+        results.folderSetId = existingFolderSetToUse;
+        return results;
+      }
+    }
 
     const workspace = await models.Workspace.findById(originalWsId).populate('folders').lean().exec();
 
@@ -1452,7 +1460,7 @@ function copyTagging(id, newFolder, taggingsKey, wsInfo) {
 
 function copyTaggings(oldTaggingIds, newFolder, taggingsKey, wsInfo) {
   if (!apiUtils.isNonEmptyArray(oldTaggingIds)) {
-    return [];
+    return Promise.resolve([]);
   }
 
   return Promise.all(
@@ -1610,11 +1618,17 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     let { includeStructureOnly, all, none, folderIds, folderSetOptions } = options;
 
+    let folderIdsToCopy;
+
     if (none) {
-      return results;
+      if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
+        return results;
+      }
+      folderIdsToCopy = [];
+    } else {
+      folderIdsToCopy = all ? [...oldFolderIds] : [...folderIds];
     }
 
-     let folderIdsToCopy = all ? [...oldFolderIds] : [...folderIds];
      let taggingsKey = {};
 
     if (includeStructureOnly) {
@@ -1677,7 +1691,6 @@ function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
       }
       const oldCommentSelectionId = oldComment.selection;
 
-
       const newComment = new models.Comment({
         createdBy: oldComment.createdBy,
         lastModifiedBy: oldComment.lastModifiedBy,
@@ -1702,7 +1715,7 @@ function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
 function copyComments(commentsKey, newSub, selectionsKey, newWsId) {
   const oldCommentIds = newSub.comments;
   if (!apiUtils.isNonEmptyArray(oldCommentIds)) {
-    return [];
+    return Promise.resolve([]);
   }
 
   return Promise.all(
@@ -2097,7 +2110,6 @@ async function cloneWorkspace(req, res, next) {
         .map(sub => sub.selections)
         .flatten()
         .value();
-
 
     /*
       commentssKey is used to determine which commentss should be copied
