@@ -298,6 +298,7 @@
           </span>
           {{#unless currentUser.isTeacher}}
             {{#unless problem.isTrashed}}
+            {{#unless (is-equal problem.status 'flagged')}}
               {{#if isRecommended}}
                 <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip="Remove this Problem from Recommended">
                   <button class="button-icon star-icon" {{action 'removeRecommend'}}>
@@ -311,6 +312,7 @@
                   </button>
                 </span>
               {{/if}}
+            {{/unless}}
             {{/unless}}
           {{/unless}}
         {{/if}}
@@ -330,7 +332,9 @@
             {{/if}}
           {{/if}}
             {{#unless problem.isTrashed}}
+              {{#unless (is-equal problem.status 'flagged')}}
               <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+              {{/unless}}
             {{/unless}}
         {{/if}}
         {{#if problem.isTrashed}}

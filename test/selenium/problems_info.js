@@ -83,6 +83,16 @@ describe('Problems', async function () {
                 }
               });
 
+              it('should show a new problem form with 4 headers', async function () {
+                if (!isStudent) {
+                  let tabNames = ['general', 'categories', 'additional', 'legal'];
+                  let selectors = tabNames.map((tab) => {
+                    return `#problem-new .side-info-menu .info-details .info-menu button.tab-name.${tab}`;
+                  });
+                  expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                  }
+              });
+
               it('should show a new form with 4 headers, inputs and tooltips', async function () {
                 if (!isStudent) {
                   let tabNames = ['general', 'categories', 'additional', 'legal'];
