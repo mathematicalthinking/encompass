@@ -19,7 +19,7 @@
     </div>
     <div class="info-content">
       {{#if showGeneral}}
-        <p class="info-content-label">
+        <p class="info-content-label title">
           Problem Title <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.name}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -28,14 +28,14 @@
             {{input id="title" required="true" type="text" value=title placeholder="Enter Problem Title" action="resetErrors" on="key-down"}}
           </div>
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label statement">
           Problem Statement <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.statement}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
         <div class="info-content-block">
           {{quill-container setup="insertQuillContent"}}
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label author">
           Author
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.author}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
@@ -44,7 +44,7 @@
             {{input name="author" id="author" type="text" value=author}}
           </div>
         </div>
-        <p class="info-content-label">
+        <p class="info-content-label privacy">
           Privacy Setting <span class="required-star">*</span>
           <span class="info-text-tip simptip-position-left simptip-multiline simptip-smooth" data-tooltip={{tooltips.privacySettings}}><i class="fas fa-info-circle info-icon"></i></span>
         </p>
