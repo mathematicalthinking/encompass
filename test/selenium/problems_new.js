@@ -17,6 +17,7 @@ describe('Problems New', async function () {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
+      const isAdmin = accountType === 'A';
 
       describe(`As ${testDescriptionTitle}`, function () {
         this.timeout(helpers.timeoutTestMsStr);
@@ -266,27 +267,35 @@ describe('Problems New', async function () {
                 } else {
                   expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain('approved');
                 }
-
-                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Test New Problem');
-
-                // await helpers.clearElement(driver, css.problemNew.inputTextbox + '#title');
-                // await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', 'Test New Problem');
-                // await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                // await driver.sleep(500);
-                // await helpers.waitForAndClickElement(driver, 'button.swal2-confirm');
-                // await driver.sleep(300);
-                // await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                // await driver.sleep(300);
-                // await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                // await driver.sleep(300);
-                // await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                // await driver.sleep(1000);
-                // expect(await helpers.findAndGetText(driver, '#problem-info .side-info-menu .info-details .info-main .heading')).to.contain('Test New Problem');
               });
 
+              it('newly created problem - categories page should have correct info', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
+                await driver.sleep(500);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain('math');
+                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
+                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
+              });
 
-               //test that problem was created correctly
-//if admin problem should not be pending
+              // it('newly created problem - additional page should have correct info', async function () {
+              //   await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'additional');
+              //   await driver.sleep(500);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
+              // });
+
+              // it('newly created problem - legal page should have correct info', async function () {
+              //   await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
+              //   await driver.sleep(500);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
+              // });
+
 
             });
           });

@@ -63,6 +63,7 @@ const newProblem = {
   finalTitle: 'New Test Problem',
   text: 'Test problem content',
   author: 'Test author',
+  category: 'CCSS.Math.Content.K.G.B.5',
   keywords: ['math', 'geometry', 'puzzle'],
   additionalInfo: 'Test additional info',
   copyrightNotice: "Test Problem Copyright",
