@@ -312,6 +312,7 @@ var data = [{
     "organization": "5b4a64a028e4b75919c28512",
     "location": "Philadelphia, PA",
     "username": "pdadmin",
+    "actingRole": 'teacher',
     "password": "$2a$12$nQafJwfxx19P2vyBhDLXUeDFNdZU81t1eosZEvs.plyCP1HNSZFtW",
     "isAuthorized": true,
     "accountType": "P",
