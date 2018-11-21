@@ -25,15 +25,19 @@
 {{/if}}
 
 {{#if showSelectConfig}}
-  {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig")}}
+  {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
 {{/if}}
 
 {{#if showOwnerSettings}}
-  {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders }}
+  {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
 {{/if}}
 
 {{#if showPermissions}}
-  {{ws-copy-permissions createCopyRequest=(action "createCopyRequest")}}
+  {{ws-copy-permissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+{{/if}}
+
+{{#if showReview}}
+  {{ws-copy-review onProceed=(action "createCopyRequest")}}
 {{/if}}
 
 
