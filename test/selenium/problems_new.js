@@ -273,28 +273,25 @@ describe('Problems New', async function () {
                 await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
                 await driver.sleep(500);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain('math');
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(problem.keywords[0]);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(2)')).to.contain(problem.keywords[1]);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(3)')).to.contain(problem.keywords[2]);
+              });
+
+              it('newly created problem - additional page should have correct info', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'additional');
+                await driver.sleep(800);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.additionalInfo)).to.contain(problem.additionalInfo);
+              });
+
+              it('newly created problem - legal page should have correct info', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'legal');
+                await driver.sleep(800);
+                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
+                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
                 // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
                 // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
               });
-
-              // it('newly created problem - additional page should have correct info', async function () {
-              //   await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'additional');
-              //   await driver.sleep(500);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
-              // });
-
-              // it('newly created problem - legal page should have correct info', async function () {
-              //   await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
-              //   await driver.sleep(500);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
-              // });
 
 
             });
