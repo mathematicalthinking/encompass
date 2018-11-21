@@ -8,6 +8,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   newWsName: null,
   newWsMode: null,
   newWsOwner: null,
+  newWsPermissions: null,
   newFolderSetOptions: null,
   utils: Ember.inject.service('utility-methods'),
   submissions: Ember.computed.alias('workspaceToCopy.submissions'),
@@ -66,6 +67,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
   showOwnerSettings: Ember.computed.equal('currentStep.value', 3),
   showPermissions: Ember.computed.equal('currentStep.value', 4),
+  showReview: Ember.computed.equal('currentStep.value', 5),
 
   maxSteps: function() {
     return this.get('steps.length') - 1;
@@ -237,6 +239,20 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   }.property('newWsMode'),
 
+  formatPermissionsObjects() {
+    const objects = this.get('newWsPermissions');
+
+    if (this.get('utils').isNonEmptyArray(objects)) {
+      return objects.map((obj) => {
+        let user = obj.user;
+        if (user && user.id) {
+          obj.user = user.id;
+        }
+        return obj;
+      });
+    }
+  },
+
   actions: {
     goToStep(stepValue) {
       if(!stepValue) {
@@ -261,7 +277,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     // },
 
     changeStep(direction) {
-      let currentStep = this.get('currentStep');
+      let currentStep = this.get('currentStep.value');
       let maxStep = this.get('maxSteps');
       if (direction === 1) {
         if (currentStep === maxStep) {
@@ -275,14 +291,11 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         if (currentStep === 1) {
           return;
         }
-        this.set('currentStep', currentStep - 1);
+        this.set('currentStep', this.get('steps')[currentStep - 1]);
       }
     },
     setOriginalWorkspace() {
       const workspace = this.get('selectedWorkspace');
-      if (!workspace) {
-        return;
-      }
 
       this.set('workspaceToCopy', workspace);
       this.set('defaultName', `Copy of ${workspace.get('name')}`);
@@ -305,12 +318,18 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       this.set('currentStep', this.get('steps')[4]);
 
     },
+    setPermissions(permissions) {
+      this.set('newWsPermissions', permissions);
+      this.set('currentStep', this.get('steps')[5]);
+    },
     createCopyRequest() {
       const selectedConfig = this.get('newWsConfig');
       const owner = this.get('newWsOwner');
       const name = this.get('newWsName');
       const originalWsId = this.get('workspaceToCopy');
       const mode = this.get('newWsMode');
+
+      const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
 
       let copyRequest;
       let requestSource;
@@ -344,7 +363,10 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         },
         selectionOptions : { none: true },
         commentOptions : { none: true },
-        responseOptions : {  none: true}
+        responseOptions : {  none: true},
+        permissionOptions: {
+          permissionObjects: formattedPermissionObjects
+        }
       };
         // basic shallow with folders
 
