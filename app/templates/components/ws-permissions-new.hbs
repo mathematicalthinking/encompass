@@ -1,5 +1,5 @@
 
-<h3>Configure Permissions for {{selectedUser.username}}</h3>
+<h5>Configure Permissions for {{selectedUser.username}}</h5>
 
 {{radio-group options=answerItems selectedValue=answers}}
 {{radio-group options=globalItems selectedValue=global}}
@@ -15,4 +15,4 @@
 {{#if saveError}}
   <p class="error-message">Sorry, something went wrong. Please try again.</p>
 {{/if}}
-<button {{action "savePermissions"}}>Save Permissions </button>
+<button class="save-permissions" {{action "savePermissions"}}>Save User Permissions </button>

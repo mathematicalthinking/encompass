@@ -1,18 +1,19 @@
 <h5>Permission Settings</h5>
 
-<p>Add Collaborators</p>
+<p>Select a user to configure their permissions for this workspace.</p>
 {{selectize-input
 store=store
 inputId="collab-select"
 maxItems=1
 onItemAdd=(action "setCollaborator")
+onItemRemove=(action "setCollaborator")
 labelField="username"
 valueField="id"
 searchField="username"
 model="user"
 queryParamsKey="usernameSearch"
 isAsync=true
-placeholder="Search users to choose as owner"}}
+placeholder="Search for collaborators to add"}}
 
 {{#if selectedCollaborator}}
   {{ws-permissions-new onSave=(action "savePermissions") selectedUser=selectedCollaborator}}
@@ -22,9 +23,14 @@ placeholder="Search users to choose as owner"}}
 <h5>Collaborators</h5>
 <ol>
   {{#each permissions as |permission|}}
-    <li>{{permission.user.username}}</li>
+    <li>{{permission.user.username}}
+      <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
+      <i {{action "removeCollab" permission}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
+    </li>
   {{/each}}
 </ol>
 
-<button {{action "back"}}>Prev</button>
-<button {{action "next"}}>Review Request</button>
+<div class="nav-btn-container">
+  <button {{action "back"}}>Prev</button>
+  <button {{action "next"}}>Review Request</button>
+</div>

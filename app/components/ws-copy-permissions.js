@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
   elementId: 'ws-copy-permissions',
   utils: Ember.inject.service('utility-methods'),
@@ -8,12 +9,40 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
       if (!val) {
         return;
       }
+
+      const isRemoval = _.isNull($item);
+      if (isRemoval) {
+        this.set('selectedCollaborator', null);
+        return;
+      }
       const user = this.get('store').peekRecord('user', val);
       this.set('selectedCollaborator', user);
     },
+    removeCollab(permissionObj) {
+      if (this.get('utils').isNonEmptyObject(permissionObj)) {
+        this.get('permissions').removeObject(permissionObj);
+      }
+    },
+    editCollab(permissionObj) {
+      const utils = this.get('utils');
+      if (utils.isNonEmptyObject(permissionObj)) {
+        const user = permissionObj.user;
+        if (utils.isNonEmptyObject(user)) {
+          this.set('selectedCollaborator', user);
+        }
+      }
+    },
     savePermissions(permissionsObject) {
-      if (!this.get('utils').isNonEmptyObject) {
+      if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
         return;
+      }
+      const permissions = this.get('permissions');
+      // check if user already is in array
+      let existingObj = permissions.findBy('user', permissionsObject.user);
+
+      // remove existing permissions obj and add modified one
+      if (existingObj) {
+        permissions.removeObject(existingObj);
       }
 
       this.get('permissions').addObject(permissionsObject);
