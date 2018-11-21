@@ -163,7 +163,6 @@ module.exports = {
   resultsMesasage: 'div.results-message',
   noResultsMsg: 'No results found. Please try expanding your filter criteria.',
 
-
   problemFilterList: {
     primaryFilters: [
       { primaryFilterList: ".primary-filter-list" },
@@ -204,15 +203,47 @@ module.exports = {
     ]
   },
 
+  sweetAlert: {
+    heading: 'h2#swal2-title',
+    confirmBtn: 'button.swal2-confirm',
+  },
+
   problemNew: {
+    problemNewHeading: '#problem-new .side-info-menu .info-details .info-main .heading',
+    problemNewBtn: 'div.searchbar #problem-new-link',
+    menuTab: '#problem-new .side-info-menu .info-details .info-menu button.tab-name.',
     inputLabel: '#problem-new .side-info-menu .info-content .info-content-label.',
     inputTextbox: '#problem-new .side-info-menu .info-content .info-content-block .input-container input',
     inputQuill: '#problem-new .side-info-menu .info-content .info-content-block .quill-container section',
     inputContentBlock: '#problem-new .side-info-menu .info-content .info-content-block',
+    privacySetting: '#problem-new .side-info-menu .info-content .info-content-block.privacy ul li.radio-item label.radio-label input.everyone',
+    selectedCatsList: '#problem-new .side-info-menu .info-content .info-content-block.categories ul.problem-info li.category-item',
+    removeCategoryBtn: '#problem-new .side-info-menu .info-content .info-content-block.categories ul.problem-info li.category-item:first-child button.remove-cat',
+    showCatsBtn: 'button.show-cats-btn',
+    hideCatsBtn: 'button.hide-cats-btn',
     inputSelectize: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp',
+    inputSelectizeType: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp  .selectize-control .selectize-input input',
     errorMsgGeneral: 'Please provide all required fields',
+    errorMsgLegal: 'Please verify that you have permission to post this problem',
+    errorMsgTitle: 'There is already an existing public problem with that title',
+    errorBoxDismiss: '.error-box p button i.fa-times',
     primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
+  },
+
+  problemInfo: {
+    privacySetting: '#problem-info .info-header span.top-left-icon i.',
+    problemName: '#problem-info .side-info-menu .info-details .info-main .heading',
+    problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
+    problemMenuBtn: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
+    problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
+    problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author',
+    problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
+    problemCategory: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item a',
+    problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
+    additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
+    copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
+    sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",

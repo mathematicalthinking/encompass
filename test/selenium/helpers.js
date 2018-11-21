@@ -58,18 +58,19 @@ const signinErrors = {
 };
 
 const newProblem = {
-  details: {
-    name: 'Test Problem',
-    question: 'What is it?',
-    category: '',
-    additionalInfo: 'Be careful!',
-    copyrightNotice: "Apple Computer Co",
-    sharingAuth: "So Sue Me",
-    author: "Steve Jobs",
-  },
-  privacySetting: 'E',
-  imageUrl: ''
+  startTitle: ' New Test Problem ',
+  duplicateTitle: 'Alphabetical Problem',
+  finalTitle: 'New Test Problem',
+  text: 'Test problem content',
+  author: 'Test author',
+  category: 'CCSS.Math.Content.K.G.B.6',
+  keywords: ['math', 'geometry', 'puzzle'],
+  additionalInfo: 'Test additional info',
+  copyrightNotice: "Test Problem Copyright",
+  sharingAuth: "Test Problem Sharing",
 };
+
+
 
 const newSection = {
   details: {
@@ -110,6 +111,17 @@ const getWebElements = async function (webDriver, selector) {
     console.log(err);
   }
   return webElements;
+};
+
+const getWebElementValue = async function (webDriver, selector) {
+  let webElement, webValue;
+  try {
+    webElement = await webDriver.findElement(By.css(selector));
+    webValue = await webElement.getAttribute('value');
+  } catch (err) {
+    console.log(err);
+  }
+  return webValue;
 };
 
 const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
@@ -367,6 +379,7 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
 
 
 module.exports.getWebElements = getWebElements;
+module.exports.getWebElementValue = getWebElementValue;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
 module.exports.findAndGetText = findAndGetText;
