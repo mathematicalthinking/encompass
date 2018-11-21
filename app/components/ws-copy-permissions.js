@@ -27,6 +27,10 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     },
     next() {
       this.get('onProceed')(this.get('permissions'));
+    },
+
+    back() {
+      this.get('onBack')(-1);
     }
   }
 });

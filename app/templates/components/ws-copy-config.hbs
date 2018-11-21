@@ -4,6 +4,12 @@
 {{#if showCustomConfig}}
   {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom")}}
   {{else}}
+
+  {{#if invalidOrMissingConfig}}
+    {{error-box showDismiss=true error="Please select a valid configuration option." resetError=(action (mut invalidOrMissingConfig) null)}}
+  {{/if}}
+  <button {{action "back"}}>Prev</button>
+
   <button {{action "next"}}>Next</button>
 {{/if}}
 

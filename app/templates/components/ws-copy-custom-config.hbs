@@ -27,9 +27,6 @@
 {{#if noAnswersToCopy}}
   <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
 {{/if}}
-{{!-- <button {{action "setAnswers"}}>Next</button> --}}
-
-{{!-- {{#if showSelectionInputs}} --}}
 
 <h5>Choose Selections</h5>
 <p>Based on your Submission choices, there are {{selectionsFromSubmissions.length}} selections to choose from.</p>
@@ -88,6 +85,9 @@ onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
 <label>Custom</label>
 
 {{!-- {{/if}} --}}
+
+<button {{action "back"}}>Prev</button>
+
 <button {{action "next"}}>Next</button>
 
 

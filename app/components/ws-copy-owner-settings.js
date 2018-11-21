@@ -1,6 +1,43 @@
+/*global _:false */
 Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'ws-copy-owner-settings',
   utils: Ember.inject.service('utility-methods'),
+
+  constraints: function() {
+    return {
+      name: {
+        presence: { allowEmpty: false },
+        length: { maximum: 500 },
+      },
+
+      owner: {
+        presence: { allowEmpty: false }
+      },
+
+      mode: {
+        inclusion: {
+          within: this.get('validModeValues'),
+          message: 'Please select a valid mode.'
+        }
+      },
+      doCreateFolderSet: {
+        inclusion: {
+          within: [true, false],
+          message: ''
+        }
+      }
+    };
+  }.property('validModeValues'),
+
+  validModeValues: function() {
+    const modeInputs = this.get('modeInputs.inputs');
+
+    if (this.get('utils').isNonEmptyArray(modeInputs)) {
+      return modeInputs.map(input => input.value);
+    }
+    return [];
+
+  }.property('modeInputs'),
 
   didReceiveAttrs() {
     const newWsOwner = this.get('newWsOwner');
@@ -68,7 +105,19 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       const owner = this.get('selectedOwner');
       const mode = this.get('selectedMode');
 
+
       const doCreateFolderSet = this.get('doCreateFolderSet');
+
+      const errors = window.validate({name, owner, mode, doCreateFolderSet}, this.get('constraints'));
+
+      if (this.get('utils').isNonEmptyObject(errors)) {
+        for (let key of Object.keys(errors)) {
+          let errorProp = `${key}Errors`;
+          this.set(errorProp, errors[key]);
+        }
+        return;
+      }
+
       // clear old values if the 'No' radio button is selected and next is hit
       if (!doCreateFolderSet) {
         this.set('folderSetName', null);
@@ -87,11 +136,19 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       if (!val) {
         return;
       }
+      const isRemoval = _.isNull($item);
+      if (isRemoval) {
+        this.set('selectedOwner', null);
+        return;
+      }
       const user = this.get('store').peekRecord('user', val);
       this.set('selectedOwner', user);
     },
     toggleCreateFolderset(val) {
       this.set('doCreateFolderSet', val);
+    },
+    back() {
+      this.get('onBack')(-1);
     }
   }
 });

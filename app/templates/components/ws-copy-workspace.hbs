@@ -8,6 +8,7 @@
   initialOptions=initialWorkspaceOptions
   initialItems=initialWorkspaceItem
   onItemAdd=(action "setSelectedWorkspace")
+  onItemRemove=(action "setSelectedWorkspace")
   labelField="name"
   searchField="name"
   valueField="id"
@@ -23,4 +24,10 @@
   {{workspace-info-summary workspace=selectedWorkspace}}
 {{/if}}
 
+{{#if missingWorkspace}}
+  {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
+{{/if}}
+{{#if tooFewSubmissions}}
+  {{error-box error="Please select a workspace with at least 1 submission." resetError=(action (mut tooFewSubmissions) null) showDismiss=true }}
+{{/if}}
 <button {{action "next"}}>Next</button>

@@ -1,6 +1,10 @@
 <h5>Name</h5>
 {{input id="name" type="text" value=selectedName placeholder="Name for new workspace"}}
 
+{{#each nameErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
+{{/each}}
+
 <h5>Owner</h5>
 {{selectize-input
 store=store
@@ -9,6 +13,7 @@ initialOptions=initialOwnerOptions
 initialItems=initialOwnerItem
 maxItems=1
 onItemAdd=(action "setOwner")
+onItemRemove=(action "setOwner")
 labelField="username"
 valueField="id"
 searchField="username"
@@ -17,8 +22,16 @@ queryParamsKey="usernameSearch"
 isAsync=true
 placeholder="Search users to choose as owner"}}
 
+{{#each ownerErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+{{/each}}
+
 <h5>Privacy Setting</h5>
 {{radio-group options=modeInputs selectedValue=selectedMode}}
+
+{{#each modeErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut modeErrors) null)}}
+{{/each}}
 
 <h5>Folder Set</h5>
 {{#if isCopyingFolders}}
@@ -38,5 +51,7 @@ placeholder="Search users to choose as owner"}}
   {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
   (mut existingFolderSetToUse))}}
 {{/if}}
+
+<button {{action "back"}}>Prev</button>
 
 <button {{action "next"}}>Next</button>
