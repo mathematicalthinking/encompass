@@ -253,7 +253,7 @@
 
       {{#if showLegal}}
         <p class="info-content-label">Copyright Notice</p>
-        <div class="info-content-block">
+        <div class="info-content-block copyright">
           {{#if isEditing}}
             <div class="input-container" id="copyright-container">
               <span id="icon">&copy;</span>
@@ -268,7 +268,7 @@
           {{/if}}
         </div>
         <p class="info-content-label">Sharing Authorization</p>
-        <div class="info-content-block">
+        <div class="info-content-block sharing">
           {{#if isEditing}}
             <div class="input-container">
               {{input name="sharing" id="sharing" type="text" value=sharingAuth placeholder="Add Sharing Authorization"}}

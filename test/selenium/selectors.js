@@ -242,6 +242,8 @@ module.exports = {
     problemCategory: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item a',
     problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
     additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
+    copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
+    sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",

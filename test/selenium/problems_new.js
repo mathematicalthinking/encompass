@@ -271,7 +271,7 @@ describe('Problems New', async function () {
 
               it('newly created problem - categories page should have correct info', async function () {
                 await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
-                await driver.sleep(500);
+                await driver.sleep(800);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(problem.keywords[0]);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(2)')).to.contain(problem.keywords[1]);
@@ -287,10 +287,8 @@ describe('Problems New', async function () {
               it('newly created problem - legal page should have correct info', async function () {
                 await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'legal');
                 await driver.sleep(800);
-                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
-                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[0]);
-                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[1]);
-                // expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywords)).to.contain(problem.keywords[2]);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problem.copyrightNotice);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problem.sharingAuth);
               });
 
 
@@ -300,10 +298,6 @@ describe('Problems New', async function () {
 
       });
     }
-    // for (let user of Object.keys(users)) {
-    //   // eslint-disable-next-line no-await-in-loop
-    //   await _runTests(users[user]);
-    // }
     return Promise.all(Object.keys(users).map(user => _runTests(users[user])));
   }
   await runTests(testUsers);
