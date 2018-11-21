@@ -2186,6 +2186,16 @@ async function cloneWorkspace(req, res, next) {
   newWs.folders = newFolders.folders;
   newWs.taggings = newFolders.taggings;
 
+  // set Permissions
+
+  const { permissionsOptions } = { copyWorkspaceRequest };
+
+  if (apiUtils.isNonEmptyObject(permissionsOptions)) {
+    if (apiUtils.isNonEmptyArray(permissionsOptions.permissionObjects)) {
+      newWs.permissions = permissionsOptions.permissionObjects;
+    }
+  }
+
   savedWs = await newWs.save();
 
   requestDoc.createdWorkspace = savedWs._id;
