@@ -1992,7 +1992,7 @@ async function cloneWorkspace(req, res, next) {
       createdBy: createdBy || user._id
     });
 
-    let savedWs = await newWs.save();
+    // let savedWs = await newWs.save();
 
     // destructure options parameters
     // will be used to determine which records to copy
@@ -2196,7 +2196,7 @@ async function cloneWorkspace(req, res, next) {
     }
   }
 
-  savedWs = await newWs.save();
+  const savedWs = await newWs.save();
 
   requestDoc.createdWorkspace = savedWs._id;
 

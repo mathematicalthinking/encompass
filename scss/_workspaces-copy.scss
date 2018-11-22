@@ -110,12 +110,18 @@
   }
 }
 
-#ws-permissions-new{
+#ws-permissions-new {
   .radio-group {
     margin-top: 15px;
   }
   .save-permissions {
     margin-top: 15px;
     margin-bottom: 15px;
+  }
+}
+
+#ws-copy-review {
+  button {
+    margin-top: 15px;
   }
 }
