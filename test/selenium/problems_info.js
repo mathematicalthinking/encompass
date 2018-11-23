@@ -49,10 +49,9 @@ describe('Problems New', async function () {
           describe('Visiting problem info', function () {
             before(async function () {
               await helpers.waitForAndClickElement(driver, topLink);
-              await helpers.waitForSelector(driver, css.problemPageSelectors.problemContainer);
 
             });
-            describe('Clicking on a problem title', function () {
+            describe(`Viewing a problem's info`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, topLink);
                 await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
@@ -118,3 +117,20 @@ describe('Problems New', async function () {
   }
   await runTests(testUsers);
 });
+
+//Test following is always visible
+  // Privacy Setting with tooltip
+  // Close Icon
+  // Problem Title
+  // Problem Create Date
+  // 4 meny headers (change active status)
+  // Copy
+  // Recommend (not teacher)
+  // Edit btn
+  // Assign btn
+
+// Test visible for general
+  // Problem Statement
+  // Problem Status
+  // Author?
+  // Flag reaason - Admin
