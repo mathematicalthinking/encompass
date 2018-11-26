@@ -69,6 +69,11 @@ module.exports = {
       privacySetting: 'Everyone',
       title: 'How High Is Enough?',
       createDate: '09/26/2018',
+      statement: 'A narrow strip of very flexible elastic is firmly fastened to a wooden table top at two points (A and B) 30 centimeters apart. While the strip lies FLAT on the table, a point C is located that divides AB in a 1 : 4 ratio.\nYou now take hold of the strip at point C and begin slowly lifting it vertically. As you do this, the elastic segments AC and BC stretch out and form an obtuse angle.\nAs you lift higher, the measurement of the angle decreases. If you go sufficiently high, you will have an acute angle. But at some moment in this process, there will be a height at which angle ACB is a right angle.\nPlease tell me that height.\nExtra: What is the perimeter of this triangle ACB? [Recall that AC and CB are made of the elastic strip, whereas AB is merely the undrawn line on the table top.] Give your answer rounded to the nearest millimeter.',
+      status: 'approved',
+      categories: ['CCSS.Math.Content.1.MD.A.2', 'CCSS.Math.Content.5.G.A', 'CCSS.Math.Content.8.G.B.6'],
+      categoryDesc: 'Express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
+      keywords: ['math', 'measuring'],
     }
   },
 
@@ -137,6 +142,8 @@ module.exports = {
       privacySetting: 'My Organization',
       title: `Summer's Org Problem`,
       createDate: '09/06/2018',
+      statement: `This is Summer's org problem`,
+      status: 'approved',
     }
   },
 
@@ -223,6 +230,9 @@ module.exports = {
       privacySetting: 'Just Me',
       title: `Rick's Private`,
       createDate: '09/04/2018',
+      statement: `And have to a do cognitive their wasn't were pity from eye then and in volumes got sure with belly treble-range to they train average she the of place her and got being into even by such the their in a field large is into than an hills taken preparations at create the if sitting as was brothers slept greediness based a behind the dry laid assumed trusted sleeping least plan text flatter know line constructing bad it enough men, the time then fur was have the place working designer leave the relations apartment, seven. Much have way but is.`,
+      status: 'approved',
+      author: 'Steve Jobs',
     }
   },
 
