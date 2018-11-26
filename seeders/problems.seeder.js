@@ -408,7 +408,7 @@ var data = [
     "title": "How High Is Enough?",
     "puzzleId": 1324,
     "text": "A narrow strip of very flexible elastic is firmly fastened to a wooden table top at two points (A and B) 30 centimeters apart. While the strip lies FLAT on the table, a point C is located that divides AB in a <b>1 : 4</b> ratio.\r\n<p>You now take hold of the strip at point C and begin slowly lifting it vertically. As you do this, the elastic segments AC and BC stretch out and form an obtuse angle.</p>\r\n\r\n<p>As you lift higher, the measurement of the angle decreases. If you go sufficiently high, you will have an acute angle. But at some moment in this process, there will be a height at which angle ACB is a right angle.</p>\r\n\r\n<p>Please tell me that height.</p>\r\n\r\n<p><b>Extra:</b> What is the perimeter of this triangle ACB? [Recall that AC and CB are made of the elastic strip, whereas AB is merely the undrawn line on the table top.] Give your answer rounded to the <b>nearest millimeter</b>.</p>\r\n",
-    "additionalInfo": "",
+    "additionalInfo": "This problem has additional info for testing",
     "privacySetting": "E",
     "isUsed": false,
     "categories": ["5bb650e1fefbf3cf9e88f832", "5bb650e1fefbf3cf9e88f904", "5bb650e1fefbf3cf9e88f8f6"],

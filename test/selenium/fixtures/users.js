@@ -75,6 +75,7 @@ module.exports = {
       categories: ['CCSS.Math.Content.1.MD.A.2', 'CCSS.Math.Content.5.G.A', 'CCSS.Math.Content.8.G.B.6'],
       categoryDesc: 'express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
       keywords: ['math', 'measuring'],
+      additionalInfo: 'This problem has additional info for testing',
     }
   },
 
@@ -241,7 +242,8 @@ module.exports = {
       org: 'drexel university',
       status2: 'flagged',
       flagReason: 'reason: inappropriate content',
-      flagDetails: 'by morty on oct 21st 2018'
+      flagDetails: 'by morty on oct 21st 2018',
+      additionalInfo: 'Be careful!',
     }
   },
 

@@ -176,44 +176,56 @@ describe('Problems Info', async function () {
 
             });
 
-            xdescribe(`Checking additional page displays correct info`, function () {
+      // Test visible for additional
+        // Additional info textarea - 2 should have additional info
+        // Additional image (if applicable) - add one
+        // Created by as link to user profile - if admin
+        // Problem origin (if copied) - make one
+
+            describe(`Checking additional page displays correct info`, function () {
               before(async function () {
-                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
-                await driver.sleep(500);
-                await helpers.findAndClickElement(driver, problemInfo.selector);
-                await driver.sleep(500);
-                let selectors = ['.info-header', '.side-info-menu'];
-                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'additional');
+                await driver.sleep(800);
+                await helpers.waitForSelector(driver, css.problemInfo.additionalInfo);
               });
 
-              it('should should privacy setting icon with hover tooltip', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
-                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
-              });
-
-              it('should show problem title and create date', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.problemName);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              });
-
-              it('should show 4 clickable menu headers', async function () {
-                let tabNames = ['general', 'categories', 'additional', 'legal'];
-                let selectors = tabNames.map((tab) => {
-                  return css.problemInfo.problemMenuTab + tab;
-                });
-                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              });
-
-              it('should show the applicable action buttons', async function () {
-                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
-                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
-                if (!isTeacher) {
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+              it('should show additional info - if applicable', async function () {
+                if (problemInfo.additionalInfo) {
+                  await helpers.waitForSelector(driver, css.problemInfo.additionalInfo);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalInfo)).to.contain(problemInfo.additionalInfo);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.additionalInfo);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalInfo, true)).to.contain('no additional info');
                 }
               });
+
+              it('should show additional image - if applicable', async function () {
+                if (problemInfo.additionalImage) {
+                  await helpers.waitForSelector(driver, css.problemInfo.additionalImage);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalImage)).to.contain(problemInfo.additionalInfo);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.additionalImage);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalImage, true)).to.contain('no additional image');
+                }
+              });
+
+              // it('should show problem origin - if applicable', async function () {
+              //   await helpers.waitForSelector(driver, css.problemInfo.problemName);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+              //   await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              // });
+
+              // if (isAdmin) {
+              //   it('should show problem creator as a link', async function () {
+              //     await helpers.waitForSelector(driver, css.problemInfo.problemName);
+              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+              //     await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              //   });
+              // }
+
+
             });
 
             xdescribe(`Checking legal page displays correct info`, function () {
@@ -267,13 +279,6 @@ describe('Problems Info', async function () {
   }
   await runTests(testUsers);
 });
-
-
-// Test visible for additional
-  // Additional info textarea
-  // Additional image (if applicable)
-  // Created by as link to user profile
-  // Problem origin (if copied)
 
 // Test visible for legal
   // Copyright notice value
