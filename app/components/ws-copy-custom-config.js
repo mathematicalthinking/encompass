@@ -65,7 +65,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     }
 
     delete selectionOptions.all;
-    selectionOptions.selectionIds = this.get('selectionsFromSubmissions');
+    selectionOptions.selectionIds = this.get('selectionsFromSubmissions').mapBy('id');
 
     return selectionOptions;
   }.property('selectionOptions.all', 'selectionOptions.none', 'selectionOptions.custom', 'selectionsFromSubmissions.[]'),
@@ -87,7 +87,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     }
 
     delete commentOptions.all;
-    commentOptions.commentIds = this.get('commentsFromSelections');
+    commentOptions.commentIds = this.get('commentsFromSelections').mapBy('id');
 
     return commentOptions;
   }.property('commentsFromSelections.[]', 'commentOptions.all', 'commentOptions.none', 'commentOptions.custom'),
@@ -108,7 +108,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       return responseOptions;
     }
     delete responseOptions.all;
-    responseOptions.responseIds = this.get('responsesFromSubmissions');
+    responseOptions.responseIds = this.get('responsesFromSubmissions').mapBy('id');
 
     return responseOptions;
   }.property('responsesFromSubmissions.[]', 'responseOptions.all', 'responseOptions.none', 'responseOptions.custom'),
@@ -194,10 +194,14 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   }.property('submissionsFromStudents.[]'),
 
   commentsFromSelections: function() {
+    if (this.get('selectionOptions.none') === true) {
+      return [];
+    }
+
     return this.get('workspace.comments').filter((comment) => {
       return this.get('selectionsFromSubmissions').includes(comment.get('selection.content'));
     });
-  }.property('selectionsFromSubmissions.[]',),
+  }.property('selectionsFromSubmissions.[]', 'selectionOptions.none'),
 
   responsesFromSubmissions: function() {
     return this.get('workspace.responses').filter((response) => {
