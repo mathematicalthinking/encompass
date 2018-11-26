@@ -255,6 +255,8 @@ module.exports = {
     problemKeywordHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
     additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
     additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image',
+    origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin',
+    creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator',
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
     assignButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.assign',

@@ -239,13 +239,13 @@
         </div>
         {{#if problem.origin}}
           <p class="info-content-label">Problem Origin</p>
-          <div class="info-content-block">
+          <div class="info-content-block origin">
             <p>{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
           </div>
         {{/if}}
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Created By</p>
-        <div class="info-content-block">
+        <div class="info-content-block creator">
           <p>{{#link-to 'user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
         </div>
         {{/if}}

@@ -149,6 +149,7 @@ module.exports = {
       status: 'approved',
       author: 'Charles Dickens',
       keywords: ['graphing', 'testing'],
+      origin: "summer's private problem",
     }
   },
 
@@ -244,6 +245,7 @@ module.exports = {
       flagReason: 'reason: inappropriate content',
       flagDetails: 'by morty on oct 21st 2018',
       additionalInfo: 'Be careful!',
+      creator: 'rick',
     }
   },
 

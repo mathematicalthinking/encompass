@@ -176,12 +176,6 @@ describe('Problems Info', async function () {
 
             });
 
-      // Test visible for additional
-        // Additional info textarea - 2 should have additional info
-        // Additional image (if applicable) - add one
-        // Created by as link to user profile - if admin
-        // Problem origin (if copied) - make one
-
             describe(`Checking additional page displays correct info`, function () {
               before(async function () {
                 await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'additional');
@@ -202,30 +196,26 @@ describe('Problems Info', async function () {
               it('should show additional image - if applicable', async function () {
                 if (problemInfo.additionalImage) {
                   await helpers.waitForSelector(driver, css.problemInfo.additionalImage);
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalImage)).to.contain(problemInfo.additionalInfo);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.additionalImage)).to.contain(problemInfo.additionalImage);
                 } else {
                   await helpers.waitForSelector(driver, css.problemInfo.additionalImage);
                   expect(await helpers.findAndGetText(driver, css.problemInfo.additionalImage, true)).to.contain('no additional image');
                 }
               });
 
-              // it('should show problem origin - if applicable', async function () {
-              //   await helpers.waitForSelector(driver, css.problemInfo.problemName);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-              //   await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              // });
+              if (problemInfo.origin) {
+                it('should show problem origin - if applicable', async function () {
+                  await helpers.waitForSelector(driver, css.problemInfo.origin);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.origin, true)).to.contain(problemInfo.origin);
+                });
+              }
 
-              // if (isAdmin) {
-              //   it('should show problem creator as a link', async function () {
-              //     await helpers.waitForSelector(driver, css.problemInfo.problemName);
-              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-              //     await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              //   });
-              // }
-
-
+              if (isAdmin) {
+                it('should show problem creator', async function () {
+                  await helpers.waitForSelector(driver, css.problemInfo.creator);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.creator, true)).to.contain(problemInfo.creator);
+                });
+              }
             });
 
             xdescribe(`Checking legal page displays correct info`, function () {
