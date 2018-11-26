@@ -2,7 +2,7 @@
 {{radio-group options=copyConfig selectedValue=selectedConfig}}
 
 {{#if showCustomConfig}}
-  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom")}}
+  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom") onBack=(action "back")}}
   {{else}}
 
   {{#if invalidOrMissingConfig}}
