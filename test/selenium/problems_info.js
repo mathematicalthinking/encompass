@@ -90,9 +90,168 @@ describe('Problems New', async function () {
                   expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
                 }
               });
-
-
             });
+
+            // Test visible for general
+              // Problem Statement
+              // Problem Status
+              // Author (if applicable)
+              // Organization (if applicable)
+              // Flag reason - Admin
+
+            describe(`Checking general page displays correct info`, function () {
+
+              it('should should the problem statement', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemStatementCont);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatementCont)).to.contain(problemInfo.statement);
+              });
+
+              // it('should show problem status', async function () {
+              //   await helpers.waitForSelector(driver, css.problemInfo.problemName);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+              //   await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              // });
+
+              // it('should show 4 clickable menu headers', async function () {
+              //   let tabNames = ['general', 'categories', 'additional', 'legal'];
+              //   let selectors = tabNames.map((tab) => {
+              //     return css.problemInfo.problemMenuTab + tab;
+              //   });
+              //   expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              // });
+
+              // it('should show the applicable action buttons', async function () {
+              //   expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
+              //   expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
+              //   if (!isTeacher) {
+              //     expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
+              //     expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+              //   }
+              // });
+            });
+
+            xdescribe(`Checking categories page displays correct info`, function () {
+              before(async function () {
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, problemInfo.selector);
+                await driver.sleep(500);
+                let selectors = ['.info-header', '.side-info-menu'];
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should should privacy setting icon with hover tooltip', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
+                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
+              });
+
+              it('should show problem title and create date', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemName);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              });
+
+              it('should show 4 clickable menu headers', async function () {
+                let tabNames = ['general', 'categories', 'additional', 'legal'];
+                let selectors = tabNames.map((tab) => {
+                  return css.problemInfo.problemMenuTab + tab;
+                });
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should show the applicable action buttons', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
+                if (!isTeacher) {
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+                }
+              });
+            });
+
+            xdescribe(`Checking additional page displays correct info`, function () {
+              before(async function () {
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, problemInfo.selector);
+                await driver.sleep(500);
+                let selectors = ['.info-header', '.side-info-menu'];
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should should privacy setting icon with hover tooltip', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
+                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
+              });
+
+              it('should show problem title and create date', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemName);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              });
+
+              it('should show 4 clickable menu headers', async function () {
+                let tabNames = ['general', 'categories', 'additional', 'legal'];
+                let selectors = tabNames.map((tab) => {
+                  return css.problemInfo.problemMenuTab + tab;
+                });
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should show the applicable action buttons', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
+                if (!isTeacher) {
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+                }
+              });
+            });
+
+            xdescribe(`Checking legal page displays correct info`, function () {
+              before(async function () {
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, problemInfo.selector);
+                await driver.sleep(500);
+                let selectors = ['.info-header', '.side-info-menu'];
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should should privacy setting icon with hover tooltip', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
+                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
+              });
+
+              it('should show problem title and create date', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemName);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
+              });
+
+              it('should show 4 clickable menu headers', async function () {
+                let tabNames = ['general', 'categories', 'additional', 'legal'];
+                let selectors = tabNames.map((tab) => {
+                  return css.problemInfo.problemMenuTab + tab;
+                });
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              it('should show the applicable action buttons', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
+                if (!isTeacher) {
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+                }
+              });
+            });
+
+
 
           });
         }
@@ -104,14 +263,6 @@ describe('Problems New', async function () {
   await runTests(testUsers);
 });
 
-
-
-// Test visible for general
-  // Problem Statement
-  // Problem Status
-  // Author (if applicable)
-  // Organization (if applicable)
-  // Flag reason - Admin
 
 // Test visible for categories
   // Categories

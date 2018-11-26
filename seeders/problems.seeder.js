@@ -414,7 +414,7 @@ var data = [
     "isTrashed": false,
     "createDate": "2018-09-26T22:28:10.813Z",
     "copyrightNotice": "National Council of Teachers of Mathematics",
-    "keywords": [],
+    "keywords": ['math', 'measuring'],
     "sharingAuth": "Used with the permission of NCTM.",
     "status": "approved"
   },
