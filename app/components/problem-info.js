@@ -534,6 +534,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let originalTitle = problem.get('title');
       let title = 'Copy of ' + originalTitle;
       let text = problem.get('text');
+      let author = problem.get('author');
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
       let image = problem.get('image');
@@ -548,6 +549,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let newProblem = this.store.createRecord('problem', {
         title: title,
         text: text,
+        author: author,
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
