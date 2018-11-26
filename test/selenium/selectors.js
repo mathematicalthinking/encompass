@@ -232,6 +232,7 @@ module.exports = {
   },
 
   problemInfo: {
+    privacySettingParent: '#problem-info .info-header span.top-left-icon',
     privacySetting: '#problem-info .info-header span.top-left-icon i.',
     problemName: '#problem-info .side-info-menu .info-details .info-main .heading',
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',

@@ -63,6 +63,12 @@ module.exports = {
         flagged: 2,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:first-child .item-section.name span:first-child',
+      privacySetting: 'Everyone',
+      title: 'How High Is Enough?',
+      createDate: '09/26/2018',
     }
   },
 
@@ -125,6 +131,12 @@ module.exports = {
         flagged: 0,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:nth-child(2) .item-section.name span:first-child',
+      privacySetting: 'My Organization',
+      title: `Summer's Org Problem`,
+      createDate: '09/06/2018',
     }
   },
 
@@ -205,6 +217,12 @@ module.exports = {
         flagged: 2,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:nth-child(3) .item-section.name span:first-child',
+      privacySetting: 'Just Me',
+      title: `Rick's Private`,
+      createDate: '09/04/2018',
     }
   },
 

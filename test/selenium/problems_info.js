@@ -6,7 +6,6 @@ const expect = require('chai').expect;
 
 // REQUIRE FILES
 const helpers = require('./helpers');
-const problem = helpers.newProblem;
 const dbSetup = require('../data/restore');
 const css = require('./selectors');
 
@@ -20,7 +19,8 @@ describe('Problems New', async function () {
       const {
         accountType,
         actingRole,
-        testDescriptionTitle
+        testDescriptionTitle,
+        problemInfo
       } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
@@ -52,7 +52,6 @@ describe('Problems New', async function () {
             });
 
             //Test following is always visible
-            // Privacy Setting with tooltip
             // Problem Title
             // Problem Create Date
             // 4 meny headers (change active status) - be able to click any
@@ -64,22 +63,22 @@ describe('Problems New', async function () {
             describe(`Checking the following is always visible`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, topLink);
-                await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
+                await helpers.findAndClickElement(driver, problemInfo.selector);
                 await driver.sleep(500);
                 let selectors = ['.info-header', '.side-info-menu'];
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
               it('should should privacy setting icon with hover tooltip', async function () {
-                await helpers.waitForSelector(driver, 'div#problem-info .info-header span.top-left-icon');
-                expect(await helpers.hasTooltipValue(driver, 'div#problem-info .info-header span.top-left-icon', 'Everyone')).to.be.true;
+                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
+                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
               });
 
               it('should show problem title and create date', async function () {
-                await helpers.waitForAndClickElement(driver, '.remove-icon');
-                await driver.sleep(800);
-                await helpers.waitForAndClickElement(driver, css.problemNew.problemNewBtn);
-                expect(await helpers.findAndGetText(driver, css.problemNew.problemNewHeading)).to.contain('Create New Problem');
+                await helpers.waitForSelector(driver, css.problemInfo.problemName);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
+                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
               });
 
               it('should show 4 clickable menu headers', async function () {
