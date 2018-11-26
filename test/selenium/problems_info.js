@@ -243,6 +243,34 @@ describe('Problems Info', async function () {
               });
             });
 
+            describe(`Checking functionality of buttons`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, problemInfo.selector);
+                await driver.sleep(800);
+              });
+
+              it('should show create new assignment when clicking assign', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.assignButton);
+                await driver.sleep(500);
+                await helpers.waitForTextInDom(driver, 'Create New Assignment');
+                expect(await helpers.findAndGetText(driver, '#assignmentnewheader', true)).to.contain('create new assignment');
+                await helpers.findAndClickElement(driver, 'button.cancel-button');
+                await driver.sleep(500);
+              });
+
+              // it('should create a copy of current problem when clicking copy', async function () {
+              //   await helpers.waitForAndClickElement(driver, css.problemInfo.copyButton);
+              //   expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemInfo.copyright);
+              // });
+
+              // if (!isTeacher) {
+              //   it('should show modal and fill in star when clicking recommend', async function () {
+              //   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
+              //   });
+              // }
+
+            });
+
           });
         }
 
@@ -252,9 +280,3 @@ describe('Problems Info', async function () {
   }
   await runTests(testUsers);
 });
-
-  // Test button functions
-    // Copy
-    // Recommend
-    // Assign
-    // Edit - new set of tests
