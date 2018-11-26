@@ -6,6 +6,11 @@
   .header {
     margin-left: 20px;
   }
+  .workspace-info-summary {
+    li {
+      margin-bottom: 5px;
+    }
+  }
   .error-box {
     max-width: 500px;
   }
@@ -48,6 +53,7 @@
     }
   }
 }
+
 
 // ws-copy-workspace component
 #ws-copy-workspace {
