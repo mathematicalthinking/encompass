@@ -545,6 +545,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let currentUser = this.get('currentUser');
       let keywords = this.get('keywords');
       let organization = currentUser.get('organization');
+      let copyright = problem.get('copyrightNotice');
+      let sharingAuth = problem.get('copyrightAuth');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
@@ -559,6 +561,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         image: image,
         organization: organization,
         privacySetting: "M",
+        copyrightNotice: copyright,
+        sharingAuth: sharingAuth,
         status: status,
         createDate: new Date(),
         keywords: keywords
