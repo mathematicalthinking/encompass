@@ -115,6 +115,7 @@ var data = [
     "modifiedBy" : null,
     "organization" : "5b4e4d5f808c7eebc9f9e82c",
     "categories" : [],
+    "keywords" : ['graphing', 'testing'],
     "lastModifiedDate" : null,
     "isTrashed" : false,
     "isUsed": true,

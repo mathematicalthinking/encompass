@@ -147,6 +147,7 @@ module.exports = {
       statement: `This is Summer's org problem`,
       status: 'approved',
       author: 'Charles Dickens',
+      keywords: ['graphing', 'testing'],
     }
   },
 

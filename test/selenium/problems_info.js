@@ -140,10 +140,6 @@ describe('Problems Info', async function () {
 
             });
 
-            // Test visible for categories
-            // Categories
-            //If exists, should have url and description
-            // Keywords
             describe(`Checking categories page displays correct info`, function () {
               before(async function () {
                 await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'categories');
@@ -166,11 +162,17 @@ describe('Problems Info', async function () {
                 }
               });
 
-
-              // it('should problem keywords - if applicable', async function () {
-              //   await helpers.waitForSelector(driver, css.problemInfo.problemKeyword);
-              //   expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              // });
+              it('should problem keywords - if applicable', async function () {
+                if (problemInfo.keywords) {
+                  let keywords = problemInfo.keywords;
+                  await helpers.waitForSelector(driver, css.problemInfo.problemKeyword);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(keywords[0]);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(2)')).to.contain(keywords[1]);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.problemKeywordHeader);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywordNone, true)).to.contain('no problem keywords');
+                }
+              });
 
             });
 

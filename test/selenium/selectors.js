@@ -251,6 +251,7 @@ module.exports = {
     problemCategoryItem: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item',
     problemCategoryHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories',
     problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
+    problemKeywordNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
     problemKeywordHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
     additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
