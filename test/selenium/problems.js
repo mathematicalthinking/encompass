@@ -285,9 +285,9 @@ describe('Problems', async function () {
 
                 it('should show search results for Mine', async function () {
                   if (!isStudent) {
-                    let resultsMsg= `Based off your filter criteria, we found ${problems.search.mine} problems that contains "problem"`;
+                    let resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problems that contain "problem"`;
                     if (problems.search.mine === 1) {
-                      resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problem that contain "problem"`;
+                      resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problem that contains "problem"`;
                     }
                     await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                     await helpers.waitForTextInDom(driver, resultsMsg);
