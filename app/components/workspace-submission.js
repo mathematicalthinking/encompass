@@ -77,6 +77,11 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
+  canDeleteSelection: function() {
+    const workspace = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(workspace, 'selections', 4);
+  }.property('currentSubmission.id', 'currentWorkspace.id'),
+
   actions: {
     addSelection: function( selection ){
       this.set('isDirty', true);

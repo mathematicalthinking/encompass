@@ -2,7 +2,7 @@
   {{!bind-attr class=":selectionLink selection.id:"}}
   <span class="selectionLink">{{selection.text}}</span>
   {{/link-to}}
-{{#if deleteSelection}}
-<span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
+{{#if canDelete}}
+  <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
 {{/if}}
 
