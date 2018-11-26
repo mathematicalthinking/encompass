@@ -235,6 +235,11 @@ module.exports = {
       statement: `And have to a do cognitive their wasn't were pity from eye then and in volumes got sure with belly treble-range to they train average she the of place her and got being into even by such the their in a field large is into than an hills taken preparations at create the if sitting as was brothers slept greediness based a behind the dry laid assumed trusted sleeping least plan text flatter know line constructing bad it enough men, the time then fur was have the place working designer leave the relations apartment, seven. Much have way but is.`,
       status: 'approved',
       author: 'Steve Jobs',
+      selector2: '#problem-list-ul li:first-child .item-section.name span:first-child',
+      org: 'drexel university',
+      status2: 'flagged',
+      flagReason: 'reason: inappropriate content',
+      flagDetails: 'by morty on oct 21st 2018'
     }
   },
 

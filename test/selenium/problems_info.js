@@ -92,10 +92,6 @@ describe('Problems New', async function () {
               });
             });
 
-            // Test visible for general
-              // Organization (if applicable)
-              // Flag reason - Admin
-
             describe(`Checking general page displays correct info`, function () {
 
               it('should should the problem statement', async function () {
@@ -113,13 +109,38 @@ describe('Problems New', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemAuthor)).to.contain(problemInfo.author);
               });
 
+              if (isAdmin) {
+                describe(`Checking general page displays info for admins`, function () {
+                  before(async function () {
+                    await helpers.waitForAndClickElement(driver, '.remove-icon');
+                    await driver.sleep(800);
+                    await helpers.findAndClickElement(driver, problemInfo.selector2);
+                    await driver.sleep(500);
+                  });
 
+                  it('should show problem organization', async function () {
+                    await helpers.waitForSelector(driver, css.problemInfo.problemOrg);
+                    expect(await helpers.findAndGetText(driver, css.problemInfo.problemOrg, true)).to.contain(problemInfo.org);
+                  });
 
+                  it('should show flagged problem', async function () {
+                    await helpers.waitForSelector(driver, css.problemInfo.problemStatus);
+                    expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain(problemInfo.status2);
+                  });
+
+                  it('should display flag reason and more detials', async function () {
+                    await helpers.findAndClickElement(driver, css.problemInfo.flagReasonBtn);
+                    await helpers.waitForSelector(driver, css.problemInfo.flagReasonCont);
+                    expect(await helpers.findAndGetText(driver, css.problemInfo.flagReason, true)).to.contain(problemInfo.flagReason);
+                    expect(await helpers.findAndGetText(driver, css.problemInfo.flagReasonDetails, true)).to.contain(problemInfo.flagDetails);
+                  });
+                });
+              }
 
 
             });
 
-            xdescribe(`Checking categories page displays correct info`, function () {
+            describe(`Checking categories page displays correct info`, function () {
               before(async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 await driver.sleep(500);
