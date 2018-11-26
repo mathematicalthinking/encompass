@@ -48,7 +48,29 @@
             {{{problem.text}}}
           {{/if}}
         </div>
-        {{#if problem.author}}
+        {{#if isEditing}}
+          <p class="info-content-label">Author</p>
+          <div class="info-content-block author">
+            {{#if problem.author}}
+              <div class="input-container">
+                {{input name="author" id="author" type="text" value=author}}
+              </div>
+            {{else}}
+              <div class="input-container">
+                {{input name="author" id="author" type="text" placeholder="Add author" value=author}}
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          {{#if problem.author}}
+            <p class="info-content-label">Author</p>
+            <div class="info-content-block author">
+              {{problem.author}}
+            </div>
+          {{/if}}
+        {{/if}}
+
+        {{!-- {{#if problem.author}}
           <p class="info-content-label">Author</p>
           <div class="info-content-block author">
             {{#if isEditing}}
@@ -59,7 +81,8 @@
               {{problem.author}}
             {{/if}}
           </div>
-        {{/if}}
+        {{/if}} --}}
+
         {{#if problem.organization}}
           {{#if currentUser.isAdmin}}
           <p class="info-content-label">Organization</p>
