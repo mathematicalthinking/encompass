@@ -342,14 +342,15 @@ describe('Problems Info', async function () {
 
               it('should show the problem statement and edit it', async function () {
                 expect(await helpers.isElementVisible(driver, css.problemEdit.problemStatement)).to.be.true;
+                await helpers.clearElement(driver, css.problemEdit.problemStatement);
+                await helpers.findInputAndType(driver, css.problemEdit.problemStatement, 'Test Edit Problem Content');
               });
 
               it('should show problem author and change it', async function () {
-                //pdadmin jk rowling
-                //teacher charles dickens
-                //admin has steve jobs
                 expect(await helpers.isElementVisible(driver, css.problemEdit.problemAuthor)).to.be.true;
-                expect(await helpers.getWebElements(driver, css.problemEdit.problemAuthor, true)).to.contain(problemInfo.author);
+                expect(await helpers.getWebElementValue(driver, css.problemEdit.problemAuthor)).to.contain(problemInfo.author);
+                await helpers.clearElement(driver, css.problemEdit.problemAuthor);
+                await helpers.findInputAndType(driver, css.problemEdit.problemAuthor, 'Test Problem Author');
               });
 
               if (isAdmin) {

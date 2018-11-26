@@ -274,7 +274,7 @@ module.exports = {
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
     problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.quill-container section#editor div.ql-editor',
-    problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author input#author',
+    problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author div.input-container input#author',
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block #my-select',
     problemStatusFixed: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
 
