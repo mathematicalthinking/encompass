@@ -320,27 +320,27 @@
       <span class="right-buttons">
         {{#if isEditing}}
           <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
-          <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
+          <button class="primary-button save" {{action 'checkPrivacy'}}>Save</button>
         {{else}}
           {{#if canEdit}}
             {{#if problem.isUsed}}
               {{#if currentUser.isAdmin}}
-                <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+                <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
               {{/if}}
             {{else}}
-              <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+              <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
             {{/if}}
           {{/if}}
             {{#unless problem.isTrashed}}
               {{#unless (is-equal problem.status 'flagged')}}
-              <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+              <button class="primary-button assign" {{action 'showAssignment'}}>Assign</button>
               {{/unless}}
             {{/unless}}
         {{/if}}
         {{#if problem.isTrashed}}
           {{#if currentUser.isAdmin}}
             {{#unless isEditing}}
-              <button class="primary-button" {{action 'restoreProblem'}}>Restore</button>
+              <button class="primary-button restore" {{action 'restoreProblem'}}>Restore</button>
             {{/unless}}
           {{/if}}
         {{/if}}
