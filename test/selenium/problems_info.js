@@ -54,7 +54,7 @@ describe('Problems New', async function () {
             describe(`Viewing a problem's info`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, topLink);
-                await helpers.waitForAndClickElement(driver, css.topBar.problemsNew);
+                //click first problem name
               });
 
               it('should open problem new page from topbar', async function () {
@@ -123,7 +123,7 @@ describe('Problems New', async function () {
   // Close Icon
   // Problem Title
   // Problem Create Date
-  // 4 meny headers (change active status)
+  // 4 meny headers (change active status) - be able to click any
   // Copy
   // Recommend (not teacher)
   // Edit btn
@@ -132,5 +132,29 @@ describe('Problems New', async function () {
 // Test visible for general
   // Problem Statement
   // Problem Status
-  // Author?
-  // Flag reaason - Admin
+  // Author (if applicable)
+  // Organization (if applicable)
+  // Flag reason - Admin
+
+// Test visible for categories
+  // Categories
+    //If exists, should have url and description
+  // Keywords
+
+// Test visible for additional
+  // Additional info textarea
+  // Additional image (if applicable)
+  // Created by as link to user profile
+  // Problem origin (if copied)
+
+// Test visible for legal
+  // Copyright notice value
+  // Sharing Auth value
+  // Created by as link to user profile
+  // Problem origin (if copied)
+
+  // Test button functions
+    // Copy
+    // Recommend
+    // Assign
+    // Edit - new set of tests
