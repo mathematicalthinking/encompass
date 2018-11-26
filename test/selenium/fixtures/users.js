@@ -87,6 +87,8 @@ module.exports = {
       author: 'Test Problem Author',
       copyright: 'National Council of Teachers of Mathematics',
       sharingAuth: 'Used with the permission of NCTM.',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
     }
   },
 
@@ -168,6 +170,8 @@ module.exports = {
       statement: 'Test Edit Problem Content',
       status: 'pending',
       author: 'Test Problem Author',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
     }
   },
 
@@ -273,6 +277,8 @@ module.exports = {
       author: 'Test Problem Author',
       copyright: 'Apple Corps',
       sharingAuth: 'stolen goods',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
     }
   },
 

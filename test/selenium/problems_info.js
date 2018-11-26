@@ -447,6 +447,8 @@ describe('Problems Info', async function () {
                 } else {
                   expect(await helpers.getWebElementValue(driver, css.problemEdit.copyright)).to.contain('');
                 }
+                await helpers.clearElement(driver, css.problemEdit.copyright);
+                await helpers.findInputAndType(driver, css.problemEdit.copyright, 'Test Problem Copyright');
               });
 
               it('should show and edit sharing authorization', async function () {
@@ -456,8 +458,27 @@ describe('Problems Info', async function () {
                 } else {
                   expect(await helpers.getWebElementValue(driver, css.problemEdit.sharingAuth)).to.contain('');
                 }
+                await helpers.clearElement(driver, css.problemEdit.sharingAuth);
+                await helpers.findInputAndType(driver, css.problemEdit.sharingAuth, 'Test Problem Sharing Auth');
               });
 
+            });
+
+            describe(`Saving legal page and that changes persists`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+                await driver.sleep(500);
+              });
+
+              it('copyright notice should have changed', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.copyright);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemEdit.copyright2);
+              });
+
+              it('sharing authorization should have changed', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problemEdit.sharingAuth2);
+              });
             });
 
           });
