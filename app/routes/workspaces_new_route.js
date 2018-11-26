@@ -2,12 +2,12 @@ Encompass.WorkspacesNewRoute = Encompass.AuthenticatedRoute.extend({
   beforeModel: function() {
     this._super.apply(this, arguments);
 
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
+    // const user = this.modelFor('application');
+    // const isStudent = user.get('isStudent');
 
-    if (isStudent) {
-      this.transitionTo('/');
-    }
+    // if (isStudent) {
+    //   this.transitionTo('/');
+    // }
   },
   model: function() {
     return Ember.RSVP.hash({

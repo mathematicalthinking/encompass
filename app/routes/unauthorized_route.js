@@ -9,8 +9,6 @@ Encompass.UnauthorizedRoute = Ember.Route.extend({
 
   model: function() {
     let user = this.modelFor('application');
-    console.log('user', user);
-    console.log('needs info', user.get('needAdditionalInfo'));
     if (user.get('needAdditionalInfo')) {
       return this.store.findAll('organization');
     }
