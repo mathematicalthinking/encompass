@@ -441,22 +441,20 @@ describe('Problems Info', async function () {
               });
 
               it('should show and edit copyright notice', async function () {
-                if (problemInfo.copyright) {
-                  await helpers.waitForSelector(driver, css.problemInfo.copyright);
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemInfo.copyright);
+                await helpers.waitForSelector(driver, css.problemEdit.copyright);
+                if (problemEdit.copyright) {
+                  expect(await helpers.getWebElementValue(driver, css.problemEdit.copyright)).to.contain(problemEdit.copyright);
                 } else {
-                  await helpers.waitForSelector(driver, css.problemInfo.copyrightNone);
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyrightNone, true)).to.contain('no copyright notice');
+                  expect(await helpers.getWebElementValue(driver, css.problemEdit.copyright)).to.contain('');
                 }
               });
 
               it('should show and edit sharing authorization', async function () {
-                if (problemInfo.sharingAuth) {
-                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problemInfo.sharingAuth);
+                await helpers.waitForSelector(driver, css.problemEdit.sharingAuth);
+                if (problemEdit.sharingAuth) {
+                  expect(await helpers.getWebElementValue(driver, css.problemEdit.sharingAuth)).to.contain(problemEdit.sharingAuth);
                 } else {
-                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth, true)).to.contain('no sharing authorization');
+                  expect(await helpers.getWebElementValue(driver, css.problemEdit.sharingAuth)).to.contain('');
                 }
               });
 

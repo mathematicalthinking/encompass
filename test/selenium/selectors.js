@@ -281,7 +281,6 @@ module.exports = {
     problemCategoryRemove: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories ul li:first-child button.remove-cat i.fa-times-cirlce',
     problemCategoryAdd: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories div.button-row button.cancel-button',
 
-
     // problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
     // problemKeywordNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
     // problemKeywordHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
@@ -290,9 +289,9 @@ module.exports = {
     // additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image',
     // origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin',
     // creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator',
-    // copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
-    // copyrightNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright',
-    // sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
+
+    copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright input#copyright',
+    sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing input#sharing',
     deleteButton: 'section.info-actions .buttons-container .left-buttons button.button-icon i.fa-trash',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
     saveButton: 'section.info-actions .buttons-container .right-buttons button.save',

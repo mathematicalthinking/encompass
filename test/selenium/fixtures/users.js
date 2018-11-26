@@ -85,6 +85,8 @@ module.exports = {
       statement: 'Test Edit Problem Content',
       status: 'pending',
       author: 'Test Problem Author',
+      copyright: 'National Council of Teachers of Mathematics',
+      sharingAuth: 'Used with the permission of NCTM.',
     }
   },
 
@@ -269,6 +271,8 @@ module.exports = {
       statement: 'Test Edit Problem Content',
       status: 'approved',
       author: 'Test Problem Author',
+      copyright: 'Apple Corps',
+      sharingAuth: 'stolen goods',
     }
   },
 
