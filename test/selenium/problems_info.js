@@ -218,47 +218,36 @@ describe('Problems Info', async function () {
               }
             });
 
-            xdescribe(`Checking legal page displays correct info`, function () {
+          // Test visible for legal
+            // Copyright notice value
+            // Sharing Auth value
+
+            describe(`Checking legal page displays correct info`, function () {
               before(async function () {
-                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
-                await driver.sleep(500);
-                await helpers.findAndClickElement(driver, problemInfo.selector);
-                await driver.sleep(500);
-                let selectors = ['.info-header', '.side-info-menu'];
-                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'legal');
+                await driver.sleep(800);
               });
 
-              it('should should privacy setting icon with hover tooltip', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
-                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
+              it('should show copyright notice - if applicable', async function () {
+                if (problemInfo.copyright) {
+                  await helpers.waitForSelector(driver, css.problemInfo.copyright);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemInfo.copyright);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.copyrightNone);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyrightNone, true)).to.contain('no copyright notice');
+                }
               });
 
-              it('should show problem title and create date', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.problemName);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              });
-
-              it('should show 4 clickable menu headers', async function () {
-                let tabNames = ['general', 'categories', 'additional', 'legal'];
-                let selectors = tabNames.map((tab) => {
-                  return css.problemInfo.problemMenuTab + tab;
-                });
-                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              });
-
-              it('should show the applicable action buttons', async function () {
-                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
-                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
-                if (!isTeacher) {
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+              it('should show sharing authorization - if applicable', async function () {
+                if (problemInfo.sharingAuth) {
+                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problemInfo.sharingAuth);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth, true)).to.contain('no sharing authorization');
                 }
               });
             });
-
-
 
           });
         }
@@ -269,12 +258,6 @@ describe('Problems Info', async function () {
   }
   await runTests(testUsers);
 });
-
-// Test visible for legal
-  // Copyright notice value
-  // Sharing Auth value
-  // Created by as link to user profile
-  // Problem origin (if copied)
 
   // Test button functions
     // Copy

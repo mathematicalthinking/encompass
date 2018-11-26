@@ -258,6 +258,7 @@ module.exports = {
     origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin',
     creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator',
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
+    copyrightNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
     assignButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.assign',
     editButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.edit',

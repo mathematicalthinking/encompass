@@ -76,6 +76,8 @@ module.exports = {
       categoryDesc: 'express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
       keywords: ['math', 'measuring'],
       additionalInfo: 'This problem has additional info for testing',
+      copyright: 'National Council of Teachers of Mathematics',
+      sharingAuth: 'Used with the permission of NCTM.',
     }
   },
 
