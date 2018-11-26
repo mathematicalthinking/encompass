@@ -78,6 +78,13 @@ module.exports = {
       additionalInfo: 'This problem has additional info for testing',
       copyright: 'National Council of Teachers of Mathematics',
       sharingAuth: 'Used with the permission of NCTM.',
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'pending',
+      author: 'Test Problem Author',
     }
   },
 
@@ -152,6 +159,13 @@ module.exports = {
       author: 'Charles Dickens',
       keywords: ['graphing', 'testing'],
       origin: "summer's private problem",
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'pending',
+      author: 'Test Problem Author',
     }
   },
 
@@ -248,6 +262,13 @@ module.exports = {
       flagDetails: 'by morty on oct 21st 2018',
       additionalInfo: 'Be careful!',
       creator: 'rick',
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'pending',
+      author: 'Test Problem Author',
     }
   },
 
