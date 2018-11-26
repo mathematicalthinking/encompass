@@ -93,9 +93,6 @@ describe('Problems New', async function () {
             });
 
             // Test visible for general
-              // Problem Statement
-              // Problem Status
-              // Author (if applicable)
               // Organization (if applicable)
               // Flag reason - Admin
 
@@ -106,29 +103,20 @@ describe('Problems New', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatementCont)).to.contain(problemInfo.statement);
               });
 
-              // it('should show problem status', async function () {
-              //   await helpers.waitForSelector(driver, css.problemInfo.problemName);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-              //   await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              // });
+              it('should show problem status', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemStatus);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain(problemInfo.status);
+              });
 
-              // it('should show 4 clickable menu headers', async function () {
-              //   let tabNames = ['general', 'categories', 'additional', 'legal'];
-              //   let selectors = tabNames.map((tab) => {
-              //     return css.problemInfo.problemMenuTab + tab;
-              //   });
-              //   expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              // });
+              it('should show problem author', async function () {
+                await helpers.waitForSelector(driver, css.problemInfo.problemAuthor);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemAuthor)).to.contain(problemInfo.author);
+              });
 
-              // it('should show the applicable action buttons', async function () {
-              //   expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
-              //   expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
-              //   if (!isTeacher) {
-              //     expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
-              //     expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
-              //   }
-              // });
+
+
+
+
             });
 
             xdescribe(`Checking categories page displays correct info`, function () {

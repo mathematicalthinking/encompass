@@ -120,6 +120,7 @@ var data = [
     "isUsed": true,
     "createDate" : "2018-09-06T18:37:22.437Z",
     "status": "approved",
+    "author": 'Charles Dickens',
   },
   {
     "_id" : "5b9173e23da5efca74705772",
@@ -413,6 +414,7 @@ var data = [
     "lastModifiedDate": "2018-09-26T22:28:10.813Z",
     "isTrashed": false,
     "createDate": "2018-09-26T22:28:10.813Z",
+    "author": 'J.K. Rowling',
     "copyrightNotice": "National Council of Teachers of Mathematics",
     "keywords": ['math', 'measuring'],
     "sharingAuth": "Used with the permission of NCTM.",
