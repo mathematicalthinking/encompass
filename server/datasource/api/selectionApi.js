@@ -115,12 +115,12 @@ function postSelection(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.selection.workspace;
 
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if (wsAccess.canModify(user, ws)) {
+    if (wsAccess.canModify(user, ws, 'selections', 2)) {
       var selection = new models.Selection(req.body.selection);
       selection.createdBy = user;
       selection.createDate = Date.now();

@@ -154,7 +154,7 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
   */
 function sendWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       console.error(`Error sendWorkspace: ${err}`);
       console.trace();
@@ -186,7 +186,7 @@ function putWorkspace(req, res, next) {
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
 
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.status(403).send("You don't have permission to modify this workspace");
@@ -2188,11 +2188,17 @@ async function cloneWorkspace(req, res, next) {
 
   // set Permissions
 
-  const { permissionsOptions } = { copyWorkspaceRequest };
+  const { permissionOptions } = copyWorkspaceRequest;
 
-  if (apiUtils.isNonEmptyObject(permissionsOptions)) {
-    if (apiUtils.isNonEmptyArray(permissionsOptions.permissionObjects)) {
-      newWs.permissions = permissionsOptions.permissionObjects;
+  if (apiUtils.isNonEmptyObject(permissionOptions)) {
+    if (apiUtils.isNonEmptyArray(permissionOptions.permissionObjects)) {
+      newWs.permissions = permissionOptions.permissionObjects;
+
+      const userIdsToUpdate = permissionOptions.permissionObjects.map( obj => obj.user);
+      let updateRes = await models.User.updateMany({_id: {$in: userIdsToUpdate}}, {$addToSet: {accessibleWorkspaces: newWs._id }});
+
+      // update accessibleWorkspaces Array for collaborators
+      // each permissionObject has userId
     }
   }
 

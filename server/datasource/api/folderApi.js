@@ -139,12 +139,12 @@ async function getFolders(req, res, next) {
 function postFolder(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 2)) {
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
       folder.createDate = Date.now();
@@ -175,13 +175,13 @@ function postFolder(req, res, next) {
 function putFolder(req, res, next) {
 
   var user = userAuth.requireUser(req);
-  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 3)) {
       models.Folder.findById(req.params.id,
         function (err, doc) {
           if(err) {
@@ -211,9 +211,7 @@ function putFolder(req, res, next) {
       );
     } else {
       logger.info("permission denied");
-      // res.send(403, "You don't have permission for this workspace");
       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
-
     }
   });
 }
