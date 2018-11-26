@@ -266,11 +266,23 @@ describe('Problems Info', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Copy of ' + problemInfo.title);
               });
 
-              // if (!isTeacher) {
-              //   it('should show modal and fill in star when clicking recommend', async function () {
-              //   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
-              //   });
-              // }
+              if (!isTeacher) {
+                it('should fill in star icon when recommended', async function () {
+                  await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
+                  await driver.sleep(500);
+                  await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
+                  await driver.sleep(500);
+                  if (isAdmin) {
+                    await helpers.findInputAndType(driver, css.sweetAlert.select, 'Drexel', true);
+                  }
+                  await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled');
+                });
+                it('should remove fill for star icon when removed from recommended', async function () {
+                  await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
+                  await driver.sleep(500);
+                  await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line');
+                });
+              }
 
             });
 

@@ -206,6 +206,7 @@ module.exports = {
   sweetAlert: {
     heading: 'h2#swal2-title',
     confirmBtn: 'button.swal2-confirm',
+    select: 'select.swal2-select'
   },
 
   problemNew: {
