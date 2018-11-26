@@ -24,6 +24,7 @@ describe('Problems New', async function () {
       } = user;
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
+      const isTeacher = accountType === 'T';
 
       describe(`As ${testDescriptionTitle}`, function () {
         this.timeout(helpers.timeoutTestMsStr);
@@ -51,16 +52,10 @@ describe('Problems New', async function () {
               await helpers.waitForAndClickElement(driver, topLink);
             });
 
-            //Test following is always visible
-            // 4 meny headers (change active status) - be able to click any
-            // Copy
-            // Recommend (not teacher)
-            // Edit btn
-            // Assign btn
-
             describe(`Checking the following is always visible`, function () {
               before(async function () {
-                await helpers.waitForAndClickElement(driver, topLink);
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                await driver.sleep(500);
                 await helpers.findAndClickElement(driver, problemInfo.selector);
                 await driver.sleep(500);
                 let selectors = ['.info-header', '.side-info-menu'];
@@ -88,15 +83,14 @@ describe('Problems New', async function () {
               });
 
               it('should show the applicable action buttons', async function () {
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'title', true)).to.contain('problem title');
-                expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#title')).to.be.true;
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'statement', true)).to.contain('problem statement');
-                expect(await helpers.isElementVisible(driver, css.problemNew.inputQuill + '#editor')).to.be.true;
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'author', true)).to.contain('author');
-                expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#author')).to.be.true;
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'privacy', true)).to.contain('privacy');
-                expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + ' ul li')).to.have.lengthOf(3);
+                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
+                if (!isTeacher) {
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+                }
               });
+
 
             });
 

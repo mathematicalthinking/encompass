@@ -245,6 +245,10 @@ module.exports = {
     additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
+    assignButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.assign',
+    editButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.edit',
+    copyButton: 'section.info-actions .buttons-container .left-buttons span button i.fa-copy',
+    recommendButton: 'section.info-actions .buttons-container .left-buttons span button.star-icon',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
