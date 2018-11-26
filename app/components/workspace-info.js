@@ -3,12 +3,32 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   comments: Ember.inject.controller,
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('workspace-permissions'),
+  utils: Ember.inject.service('utility-methods'),
   isEditing: false,
   selectedMode: null,
   updateRecordErrors: [],
+  workspacePermissions: Ember.computed.alias('workspace.permissions'),
 
-  didInsertElement: function() {
-    this.set('addEditorTypeahead', this.getAddableEditors.call(this));
+  didReceiveAttrs() {
+    this._super(...arguments);
+
+    const collaborators = this.get('workspace.collaborators');
+    // array of Ids, query for users;
+
+    if (!this.get('utils').isNonEmptyArray(collaborators)) {
+      this.set('originalCollaborators', []);
+      return;
+    }
+
+    return this.get('store').query('user', {
+      ids: collaborators
+    })
+    .then((users) => {
+      this.set('originalCollaborators', users.toArray());
+    })
+    .catch((err) => {
+      this.handleErrors(err, 'queryErrors');
+    });
   },
 
   willDestroyElement: function () {
@@ -16,32 +36,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     workspace.save();
     this._super(...arguments);
   },
-
-  getAddableEditors: function() {
-    const store = this.get('store');
-
-    let ret = function(query, syncCb, asyncCb) {
-      let selectedUsers = this.get('workspace.editors');
-
-      let text = query.replace(/\W+/g, "");
-      return store.query('user', {
-        usernameSearch: text,
-        }).then((users) => {
-          if (!users) {
-            return [];
-          }
-          users = users.rejectBy('accountType', 'S');
-          let filtered = users.filter((user) => {
-            return !selectedUsers.includes(user);
-          });
-          return asyncCb(filtered.toArray());
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'queryErrors');
-        });
-      };
-      return ret.bind(this);
-    },
 
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');
@@ -57,24 +51,71 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   }),
 
   modes: function () {
-    return Permissions.modeValues();
-  }.property(),
+    const basic = ['private', 'org', 'public'];
+
+    if (!this.get('currentUser.isAdmin')) {
+      return basic;
+    }
+
+    return ['private', 'org', 'public', 'internet'];
+
+  }.property('currentUser.isAdmin'),
 
   actions: {
-    removeEditor: function (editor) {
-      let workspace = this.get('workspace');
-      let username = editor.get('username');
-      workspace.get('editors').removeObject(editor);
-      this.get('alert').showToast('success', `${username} removed`, 'bottom-end', 3000, null, false);
-    },
-
-    addEditor: function (editor) {
-      let workspace = this.get('workspace');
-      let username = editor.get('username');
-      if (!workspace.get('editors').contains(editor)) {
-        workspace.get('editors').pushObject(editor);
-        this.get('alert').showToast('success', `${username} added`, 'bottom-end', 3000, null, false);
+    removeCollab(user) {
+      const utils = this.get('utils');
+      if (!utils.isNonEmptyObject(user)) {
+        return;
       }
+      const permissions = this.get('workspacePermissions');
+
+      if (utils.isNonEmptyArray(permissions)) {
+        const objToRemove = permissions.findBy('user', user.id);
+        if (objToRemove) {
+          permissions.removeObject(objToRemove);
+          const collaborators = this.get('originalCollaborators');
+          collaborators.removeObject(user);
+          this.get('alert').showToast('success', `${user.get('username')} removed`, 'bottom-end', 3000, null, false);
+        }
+      }
+    },
+    savePermissions(permissionsObject) {
+      if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
+        return;
+      }
+      const permissions = this.get('workspacePermissions');
+
+      // array of user records for display purposes
+      const collaborators = this.get('originalCollaborators');
+      // check if user already is in array
+      let existingObj = permissions.findBy('user', permissionsObject.user.id);
+
+      // remove existing permissions obj and add modified one
+      if (existingObj) {
+        permissions.removeObject(existingObj);
+      }
+      collaborators.addObject(permissionsObject.user);
+
+      // eslint-disable-next-line prefer-object-spread
+      let copy = Object.assign({}, permissionsObject);
+
+      copy.user = copy.user.id;
+      permissions.addObject(copy);
+
+      // clear selectedCollaborator
+      // clear selectize input
+
+      this.set('selectedCollaborator', null);
+      this.$('select#collab-select')[0].selectize.clear();
+
+      this.get('alert').showToast('success', `Permissions set for ${permissionsObject.user.get('username')}`, 'bottom-end', 3000, null, false);
+     },
+
+    editCollab: function(user) {
+      if (!this.get('utils').isNonEmptyObject(user)) {
+        return;
+      }
+      this.set('selectedCollaborator', user);
     },
 
     editOwner: function () {
@@ -91,6 +132,30 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       }).catch((err) => {
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });
+    },
+
+    setOwner(val, $item) {
+      if (!val) {
+        return;
+      }
+
+      // const isRemoval = _.isNull($item);
+      // // if (isRemoval) {
+      // //   this.set('selectedOwner', null);
+      // //   return;
+      // // }
+      const workspace = this.get('workspace');
+
+      const user = this.get('store').peekRecord('user', val);
+      if (this.get('utils').isNonEmptyObject(user)) {
+        workspace.set('owner', user);
+        workspace.save().then((res) => {
+          this.set('isChangingOwner', false);
+          this.get('alert').showToast('success', `Owner is now ${user.get('username')}`, 'bottom-end', 3000, null, false);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', workspace);
+        });
+      }
     },
 
     editWorkspace: function () {

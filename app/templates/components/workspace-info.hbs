@@ -54,7 +54,20 @@
                 <button {{action 'editOwner' workspace.owner}}> Change owner</button>
               {{/unless}}
               {{#if isChangingOwner}}
-                {{twitter-typeahead sourceFunction=addEditorTypeahead placeholder="username" onSelect="changeOwner" isAsync=true optionLabelPath="username" allowMultiple=true}}
+                {{selectize-input
+                  store=store
+                  inputId="owner-select"
+                  maxItems=1
+                  onItemAdd=(action "setOwner")
+                  onItemRemove=(action "setOwner")
+                  labelField="username"
+                  valueField="id"
+                  searchField="username"
+                  model="user"
+                  queryParamsKey="usernameSearch"
+                  isAsync=true
+                  placeholder="Search for user"}}
+
               {{/if}}
             {{else}}
               <span class="owner username">{{workspace.owner.username}}</span>
@@ -82,14 +95,15 @@
           </td>
         </tr>
         <tr>
-          <th>Editors</th>
+          <th>Collaborators</th>
           <td>
             <ul>
-              {{#each workspace.editors as |editor|}}
-              <li class="editor">
-                {{editor.displayName}}
+              {{#each originalCollaborators as |collaborator|}}
+              <li class="collaborator">
+                {{collaborator.displayName}}
                   {{#if isEditing}}
-                    <span {{action 'removeEditor' editor}} class="remove_editor"><i class="fas fa-minus-circle"></i></span>
+                    <span {{action 'editCollab' collaborator}}><i class="far fa-edit"></i></span>
+                    <span {{action 'removeCollab' collaborator}} class="remove_editor"><i class="fas fa-minus-circle"></i></span>
                   {{/if}}
               </li>
               {{/each}}
@@ -102,22 +116,23 @@
 
     <div class="half">
       {{#if isEditing}}
-      <label>Add Editor</label>
-      {{twitter-typeahead sourceFunction=addEditorTypeahead placeholder="username" onSelect="addEditor" isAsync=true optionLabelPath="username" allowMultiple=true}}
+       <label>Add Collaborator</label>
+      {{ws-info-permissions selectedCollaborator=selectedCollaborator collaborators=collaborators store=store permissions=workspace.permissions removeCollab=(action "removeCollab") savePermissions=(action "savePermissions")}}
 
       {{else}} {{#if canEdit}}
       <p>
         Click
-        <span {{action 'editWorkspace'}}>Edit</span> to rename the workspace, change the mode, or add/remove editors. You'll have to click Save for your changes
+        <span {{action 'editWorkspace'}}>Edit</span> to rename the workspace, change the mode, or add/remove collaborators. You'll have to click Save for your changes
         to persist.
       </p>
       {{/if}}
-      <p>The owner cannot be changed. Only the owner of a workspace can change the attributes.</p>
+      <p>Only the owner of a workspace can change the attributes.</p>
       <p>For mode: "public" means anyone who can access EnCoMPASS can visit the workspace. "private" means only the owner and
-        editors can view it.</p>
+        editors can view it. "org" means anyone who is a member of your organization will be able to view it.</p>
       <p>
-        Editors are able to do everything the owner can do (except for changing the attributes here). Editors can make, file, and
-        comment on selections; add, remove, reorganize folders.
+        For further customization of permissions for your workspace, you can add collaborators.
+        Collaborators can range from only being able to view the content of a workspace to being able to create, modify, and delete
+        selections, comments, folders, and responses (or somewhere in between).
       </p>
       {{/if}}
     </div>
