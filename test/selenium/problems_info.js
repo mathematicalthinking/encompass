@@ -49,27 +49,40 @@ describe('Problems New', async function () {
           describe('Visiting problem info', function () {
             before(async function () {
               await helpers.waitForAndClickElement(driver, topLink);
-
             });
-            describe(`Viewing a problem's info`, function () {
+
+            //Test following is always visible
+            // Privacy Setting with tooltip
+            // Problem Title
+            // Problem Create Date
+            // 4 meny headers (change active status) - be able to click any
+            // Copy
+            // Recommend (not teacher)
+            // Edit btn
+            // Assign btn
+
+            describe(`Checking the following is always visible`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, topLink);
-                //click first problem name
+                await helpers.findAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
+                await driver.sleep(500);
+                let selectors = ['.info-header', '.side-info-menu'];
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
-              it('should open problem new page from topbar', async function () {
-                await helpers.waitForSelector(driver, '#problem-new');
-                expect(await helpers.findAndGetText(driver, css.problemNew.problemNewHeading)).to.contain('Create New Problem');
+              it('should should privacy setting icon with hover tooltip', async function () {
+                await helpers.waitForSelector(driver, 'div#problem-info .info-header span.top-left-icon');
+                expect(await helpers.hasTooltipValue(driver, 'div#problem-info .info-header span.top-left-icon', 'Everyone')).to.be.true;
               });
 
-              it('should open problem new page from plus icon', async function () {
+              it('should show problem title and create date', async function () {
                 await helpers.waitForAndClickElement(driver, '.remove-icon');
                 await driver.sleep(800);
                 await helpers.waitForAndClickElement(driver, css.problemNew.problemNewBtn);
                 expect(await helpers.findAndGetText(driver, css.problemNew.problemNewHeading)).to.contain('Create New Problem');
               });
 
-              it('should show a new problem form with 4 headers', async function () {
+              it('should show 4 clickable menu headers', async function () {
                 let tabNames = ['general', 'categories', 'additional', 'legal'];
                 let selectors = tabNames.map((tab) => {
                   return css.problemNew.menuTab + tab;
@@ -77,7 +90,7 @@ describe('Problems New', async function () {
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
-              it('the general page should have four inputs with labels', async function () {
+              it('should show the applicable action buttons', async function () {
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'title', true)).to.contain('problem title');
                 expect(await helpers.isElementVisible(driver, css.problemNew.inputTextbox + '#title')).to.be.true;
                 expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'statement', true)).to.contain('problem statement');
@@ -88,26 +101,8 @@ describe('Problems New', async function () {
                 expect(await helpers.getWebElements(driver, css.problemNew.inputContentBlock + ' ul li')).to.have.lengthOf(3);
               });
 
-              it('should show an error if navigating to next page without filling in required fields', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                await driver.sleep(800);
-                await helpers.waitForTextInDom(driver, css.problemNew.errorMsgGeneral);
-                expect(await helpers.findAndGetText(driver, '.error-box')).to.contain(css.problemNew.errorMsgGeneral);
-                await helpers.waitForAndClickElement(driver, css.problemNew.errorBoxDismiss);
-              });
-
-              it('should show a modal if creating a public problem and go to next page', async function () {
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#title', problem.startTitle);
-                await helpers.findInputAndType(driver, css.problemNew.inputQuill + '#editor .ql-editor', problem.text);
-                await helpers.findInputAndType(driver, css.problemNew.inputTextbox + '#author', problem.author);
-                await helpers.waitForAndClickElement(driver, css.problemNew.privacySetting);
-                await helpers.waitForAndClickElement(driver, css.problemNew.primaryButton);
-                expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to create a public problem');
-                await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
-                expect(await helpers.findAndGetText(driver, css.problemNew.inputLabel + 'categories', true)).to.contain('problem categories');
-              });
-
             });
+
           });
         }
 
@@ -118,16 +113,7 @@ describe('Problems New', async function () {
   await runTests(testUsers);
 });
 
-//Test following is always visible
-  // Privacy Setting with tooltip
-  // Close Icon
-  // Problem Title
-  // Problem Create Date
-  // 4 meny headers (change active status) - be able to click any
-  // Copy
-  // Recommend (not teacher)
-  // Edit btn
-  // Assign btn
+
 
 // Test visible for general
   // Problem Statement

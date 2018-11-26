@@ -600,7 +600,6 @@ describe('Problems', async function () {
                     await driver.sleep(500);
                     let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-
                   }
                 });
 
