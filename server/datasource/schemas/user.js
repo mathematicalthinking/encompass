@@ -79,6 +79,10 @@ var UserSchema = new Schema({
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
   assignments: [{type: ObjectId, ref: 'Assignment'}],
+
+  // workspaces where user has been added as a collaborator
+  // only used for non-admins because admins can access any workspace by default
+  accessibleWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
   seenTour: { type: Date },
   lastSeen: { type: Date },
   history: [Log] // currently not working
