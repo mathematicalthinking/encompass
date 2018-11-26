@@ -112,8 +112,6 @@ describe('Problems Info', async function () {
               if (isAdmin) {
                 describe(`Checking general page displays info for admins`, function () {
                   before(async function () {
-                    await helpers.waitForAndClickElement(driver, '.remove-icon');
-                    await driver.sleep(800);
                     await helpers.findAndClickElement(driver, problemInfo.selector2);
                     await driver.sleep(500);
                   });
@@ -217,10 +215,6 @@ describe('Problems Info', async function () {
                 });
               }
             });
-
-          // Test visible for legal
-            // Copyright notice value
-            // Sharing Auth value
 
             describe(`Checking legal page displays correct info`, function () {
               before(async function () {

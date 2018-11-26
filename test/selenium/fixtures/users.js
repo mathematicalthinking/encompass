@@ -46,8 +46,8 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 11,
-        mine: 0,
+        public: 12,
+        mine: 1,
         org: 9,
         title: 1,
         clear: 1,
@@ -124,7 +124,7 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 9,
+        public: 10,
         mine: 5,
         org: 6,
         title: 1,
@@ -214,8 +214,8 @@ module.exports = {
         }
       },
       search: {
-        all: 15,
-        public: 11,
+        all: 16,
+        public: 12,
         mine: 3,
         org: 9,
         title: 1,
