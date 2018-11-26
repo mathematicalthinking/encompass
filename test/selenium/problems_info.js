@@ -13,7 +13,7 @@ const host = helpers.host;
 const testUsers = require('./fixtures/users');
 const topLink = css.topBar.problems;
 
-describe('Problems New', async function () {
+describe('Problems Info', async function () {
   function runTests(users) {
     function _runTests(user) {
       const {
@@ -62,7 +62,7 @@ describe('Problems New', async function () {
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
-              it('should should privacy setting icon with hover tooltip', async function () {
+              it('should show privacy setting icon with hover tooltip', async function () {
                 await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
                 expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
               });
@@ -94,7 +94,7 @@ describe('Problems New', async function () {
 
             describe(`Checking general page displays correct info`, function () {
 
-              it('should should the problem statement', async function () {
+              it('should show the problem statement', async function () {
                 await helpers.waitForSelector(driver, css.problemInfo.problemStatementCont);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatementCont)).to.contain(problemInfo.statement);
               });
@@ -140,44 +140,38 @@ describe('Problems New', async function () {
 
             });
 
+            // Test visible for categories
+            // Categories
+            //If exists, should have url and description
+            // Keywords
             describe(`Checking categories page displays correct info`, function () {
               before(async function () {
-                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
-                await driver.sleep(500);
-                await helpers.findAndClickElement(driver, problemInfo.selector);
-                await driver.sleep(500);
-                let selectors = ['.info-header', '.side-info-menu'];
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'categories');
+                await driver.sleep(800);
+                let selectors = [css.problemInfo.problemCategoryHeader, css.problemInfo.problemKeywordHeader];
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
-              it('should should privacy setting icon with hover tooltip', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.privacySettingParent);
-                expect(await helpers.hasTooltipValue(driver, css.problemInfo.privacySettingParent, problemInfo.privacySetting)).to.be.true;
-              });
-
-              it('should show problem title and create date', async function () {
-                await helpers.waitForSelector(driver, css.problemInfo.problemName);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain(problemInfo.title);
-                await helpers.waitForSelector(driver, css.problemInfo.problemDate);
-                expect(await helpers.findAndGetText(driver, css.problemInfo.problemDate)).to.contain(problemInfo.createDate);
-              });
-
-              it('should show 4 clickable menu headers', async function () {
-                let tabNames = ['general', 'categories', 'additional', 'legal'];
-                let selectors = tabNames.map((tab) => {
-                  return css.problemInfo.problemMenuTab + tab;
-                });
-                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-              });
-
-              it('should show the applicable action buttons', async function () {
-                expect(await helpers.isElementVisible(driver, css.problemInfo.assignButton)).to.be.true;
-                expect(await helpers.isElementVisible(driver, css.problemInfo.copyButton)).to.be.true;
-                if (!isTeacher) {
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.editButton)).to.be.true;
-                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton)).to.be.true;
+              it('should show list of categories - if applicable', async function () {
+                if (problemInfo.categories) {
+                  await helpers.waitForSelector(driver, css.problemInfo.problemCategory);
+                  let categories = problemInfo.categories;
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategoryItem + ':first-child')).to.contain(categories[0]);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategoryItem + ':first-child p.category-description', true)).to.contain(problemInfo.categoryDesc);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategoryItem + ':nth-child(2)')).to.contain(categories[1]);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategoryItem + ':nth-child(3)')).to.contain(categories[2]);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.problemCategoryHeader);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategoryNone, true)).to.contain('no problem categories');
                 }
               });
+
+
+              // it('should problem keywords - if applicable', async function () {
+              //   await helpers.waitForSelector(driver, css.problemInfo.problemKeyword);
+              //   expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              // });
+
             });
 
             xdescribe(`Checking additional page displays correct info`, function () {
@@ -272,11 +266,6 @@ describe('Problems New', async function () {
   await runTests(testUsers);
 });
 
-
-// Test visible for categories
-  // Categories
-    //If exists, should have url and description
-  // Keywords
 
 // Test visible for additional
   // Additional info textarea

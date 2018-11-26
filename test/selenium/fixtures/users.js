@@ -73,10 +73,11 @@ module.exports = {
       status: 'approved',
       author: 'J.K. Rowling',
       categories: ['CCSS.Math.Content.1.MD.A.2', 'CCSS.Math.Content.5.G.A', 'CCSS.Math.Content.8.G.B.6'],
-      categoryDesc: 'Express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
+      categoryDesc: 'express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
       keywords: ['math', 'measuring'],
     }
   },
+
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
