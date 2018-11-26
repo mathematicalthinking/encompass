@@ -75,25 +75,29 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   isCopyingFolders: function() {
     const newWsConfig = this.get('newWsConfig');
+    const utils = this.get('utils');
+    const isCustomWithNoFolders = this.get('customConfig.folderOptions.none');
+
+    // user has not picked a config yet
+    if (utils.isNullOrUndefined(newWsConfig)) {
+      return null;
+    }
+
+    // Shallow with no folders
     if (newWsConfig === 'B') {
       return false;
     }
 
-    const customConfig = this.get('customConfig');
-
+    // custom config selected
     if (newWsConfig === 'D') {
-      if (customConfig) {
-        if (customConfig.folderOptions.none) {
-          return false;
-        }
+
+      // none option selected
+      if (isCustomWithNoFolders) {
+        return false;
       }
-      return null;
-    }
-    if (newWsConfig === null) {
-      return null;
     }
     return true;
-  }.property('newWsConfig', 'customConfig'),
+  }.property('newWsConfig', 'customConfig.folderOptions.@each{all,includeStructureOnly,none}'),
 
   submissionThreads: function() {
 
