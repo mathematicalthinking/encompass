@@ -94,7 +94,6 @@ describe('Problems Info', async function () {
             });
 
             describe(`Checking general page displays correct info`, function () {
-
               it('should show the problem statement', async function () {
                 await helpers.waitForSelector(driver, css.problemInfo.problemStatementCont);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatementCont)).to.contain(problemInfo.statement);
@@ -393,8 +392,73 @@ describe('Problems Info', async function () {
                 await helpers.waitForSelector(driver, css.problemInfo.problemStatus);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemStatus, true)).to.contain(problemEdit.status);
               });
+            });
 
-              //save this page check that all changes were saved and then go to next page
+            xdescribe(`Checking categories page can edit info`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'categories');
+                await driver.sleep(800);
+                let selectors = [css.problemInfo.problemCategoryHeader, css.problemInfo.problemKeywordHeader];
+                expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
+              });
+
+              // it('should be able to edit or add categores to list', async function () {
+              //   expect(await helpers.isElementVisible(driver, css.problemEdit.problemCategoryAdd)).to.be.true;
+              //   if (problemInfo.categories) {
+              //     // expect(await helpers.isElementVisible(driver, css.problemEdit.problemCategoryRemove)).to.be.true;
+              //     await helpers.findAndClickElement(driver, 'div.categories ul li:first-child button i.fa-times-circle');
+              //     await driver.sleep(5000);
+              //     await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryRemove);
+              //   } else {
+              //     await helpers.waitForSelector(driver, css.problemInfo.problemCategoryHeader);
+              //     await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
+              //     await driver.sleep(5000);
+              //   }
+              // });
+
+              // it('should show editable problem keywords - if applicable', async function () {
+              //   if (problemInfo.keywords) {
+              //     let keywords = problemInfo.keywords;
+              //     await helpers.waitForSelector(driver, css.problemInfo.problemKeyword);
+              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(keywords[0]);
+              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(2)')).to.contain(keywords[1]);
+              //   } else {
+              //     await helpers.waitForSelector(driver, css.problemInfo.problemKeywordHeader);
+              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywordNone, true)).to.contain('no problem keywords');
+              //   }
+              // });
+
+            });
+
+            describe(`Checking legal page can edit info`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'legal');
+                await driver.sleep(800);
+              });
+
+              it('should show and edit copyright notice', async function () {
+                if (problemInfo.copyright) {
+                  await helpers.waitForSelector(driver, css.problemInfo.copyright);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemInfo.copyright);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.copyrightNone);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.copyrightNone, true)).to.contain('no copyright notice');
+                }
+              });
+
+              it('should show and edit sharing authorization', async function () {
+                if (problemInfo.sharingAuth) {
+                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problemInfo.sharingAuth);
+                } else {
+                  await helpers.waitForSelector(driver, css.problemInfo.sharingAuth);
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth, true)).to.contain('no sharing authorization');
+                }
+              });
 
             });
 
