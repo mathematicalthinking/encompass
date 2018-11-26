@@ -15,27 +15,23 @@ const accessibleSubmissionsQuery = async function(user, ids) {
       filter._id = {$in : ids};
     }
 
-
-    // should students ever be getting submissions?
-    // or should they be able to see submissions which have a response addressed to them?
-    // or just any submissions that they are creator of?
-    if (actingRole === 'student' || accountType === 'S') {
-      //filter.createdBy = user.id;
-      filter['creator.studentId'] = user._id;
+    if (accountType === 'A' && actingRole !== 'student') {
       return filter;
     }
-    // will only reach here if admins/pdadmins are in actingRole teacher
-
-    if (accountType === 'A') {
-      return filter;
-    }
-
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
     // everyone should have access to all submissions that belong to a workspace that they have access to
     filter.$or = [];
     filter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaceIds} }});
 
+    // for now students can only access submissions that are in a workspace they have access to
+    if (actingRole === 'student' || accountType === 'S') {
+      // //filter.createdBy = user.id;
+      // filter['creator.studentId'] = user._id;
+      return filter;
+    }
+
+    // will only reach here if admins/pdadmins are in actingRole teacher
     //should have access to all submissions that you created
     // in case they are not in a workspace
 

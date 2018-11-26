@@ -116,34 +116,34 @@ function fetchUser(options) {
   return (_fetchUser);
 }
 
-function determineStudentAccess(user, path, method) {
-  if (!user) {
-    return;
-  }
+// function determineStudentAccess(user, path, method) {
+//   if (!user) {
+//     return;
+//   }
 
-  const {accountType, actingRole} = user;
+//   const {accountType, actingRole} = user;
 
-  if (accountType !== 'S' && actingRole !== 'student') {
-    return true;
-  }
-  const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
-  const allowedPostPutPaths = ['answers', 'image', 'errors', 'users'];
+//   if (accountType !== 'S' && actingRole !== 'student') {
+//     return true;
+//   }
+//   const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
+//   const allowedPostPutPaths = ['answers', 'image', 'errors', 'users'];
 
-  if (method === 'GET') {
-    // students currently cannot make any requests related to workspaces
-    let isForbiddenPath = _.any(forbiddenGetPaths, (p) => {
-      return path.includes(p);
-    });
-    return !isForbiddenPath;
+//   if (method === 'GET') {
+//     // students currently cannot make any requests related to workspaces
+//     let isForbiddenPath = _.any(forbiddenGetPaths, (p) => {
+//       return path.includes(p);
+//     });
+//     return !isForbiddenPath;
 
-  } else {
-    // students currently can only make POST/PUT requests to /answers, /image
-    let isAllowedPath = _.any(allowedPostPutPaths, (p) => {
-      return path.includes(p);
-    });
-    return isAllowedPath;
-  }
-}
+//   } else {
+//     // students currently can only make POST/PUT requests to /answers, /image
+//     let isAllowedPath = _.any(allowedPostPutPaths, (p) => {
+//       return path.includes(p);
+//     });
+//     return isAllowedPath;
+//   }
+// }
 
 /*
   General layer of protection for all requests
@@ -178,13 +178,13 @@ function protect(options) {
       return utils.sendError.InvalidCredentialsError('You are not Authenticated.', res);
     }
 
-    if (user.accountType === 'S' || user.actingRole === 'student') {
-     let isAllowed = determineStudentAccess(user, req.path, req.method);
-     if (isAllowed) {
-      return next();
-     }
-     return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
-    }
+    // if (user.accountType === 'S' || user.actingRole === 'student') {
+    //  let isAllowed = determineStudentAccess(user, req.path, req.method);
+    //  if (isAllowed) {
+    //   return next();
+    //  }
+    //  return utils.sendError.NotAuthorizedError('You are not Authorized.', res);
+    // }
 
     // will only reach here if non-student
     var userAuthorized = (userAuthenticated && (user.accountType === 'A' || user.isAuthorized));

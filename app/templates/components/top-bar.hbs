@@ -44,20 +44,20 @@
           {{else}}
             <li>{{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes{{/link-to}}</li>
           {{/if}}
-          {{#if notStudent}}
+          {{!-- {{#if notStudent}} --}}
           <li>
             <div class="dropdown">
               {{#link-to 'workspaces' classNames='menu workspaces'}}workspaces <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
               <div class="dropdown-content">
                 {{#link-to 'workspaces.new' classNames='menu workspaces-new'}}new{{/link-to}}
-                {{#if notStudent}}
+                {{!-- {{#if notStudent}} --}}
                   {{#link-to 'import' classNames='menu import'}}import{{/link-to}}
                   {{#link-to 'workspaces.copy' classNames='menu import'}}copy{{/link-to}}
-                {{/if}}
+                {{!-- {{/if}} --}}
               </div>
             </div>
           </li>
-          {{/if}}
+          {{!-- {{/if}} --}}
           <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
           {{#if notStudent}}
             {{#if user.isAdmin}}
@@ -108,9 +108,9 @@
           <li>{{#link-to 'problems'}}problems{{/link-to}}</li>
         {{/unless}}
         <li>{{#link-to 'sections.home'}}classes{{/link-to}}</li>
-        {{#unless currentUser.isStudent}}
+        {{!-- {{#unless currentUser.isStudent}} --}}
           <li>{{#link-to 'workspaces'}}workspaces{{/link-to}}</li>
-        {{/unless}}
+        {{!-- {{/unless}} --}}
         {{#unless currentUser.isStudent}}
         <li>{{#link-to 'import'}}import{{/link-to}}</li>
         {{/unless}}
