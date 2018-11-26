@@ -1,5 +1,4 @@
-{{log 'formatted config' formattedConfig}}
-<h5>Choose Submissions</h5>
+<h5>Submissions</h5>
 
 <input type="radio" checked={{answerOptions.all}} required="true" name="answerOptions" value="all" onclick={{action "updateCollectionOptions" "all" "answerOptions"}}>
 <label>All</label>
@@ -28,7 +27,7 @@
   <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
 {{/if}}
 
-<h5>Choose Selections</h5>
+<h5>Selections</h5>
 <p>Based on your Submission choices, there are {{selectionsFromSubmissions.length}} selections to choose from.</p>
 
 <input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all"
@@ -41,7 +40,7 @@ onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
 <input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
 <label>Custom</label>
 
-<h5>Choose Folders</h5>
+<h5>Folders</h5>
 
 <input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
@@ -51,15 +50,11 @@ onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
 <label>None</label>
 
 {{#if folderOptions.all}}
-  <input type="checkbox" checked={{folderOptions.includeStructureOnly}} name="includeStructureOnly">
   <label>Include Structure Only</label>
+  <input type="checkbox" checked={{folderOptions.includeStructureOnly}} name="includeStructureOnly">
 {{/if}}
 
-
-
-
-
-<h5>Choose Comments</h5>
+<h5>Comments</h5>
 <p>Based on your Selection choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
 <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
@@ -71,7 +66,7 @@ onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 <input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
 <label>Custom</label>
 
-<h5>Choose Responses</h5>
+<h5>Responses</h5>
 <p>Based on your Submission choices, there are {{responsesFromSubmissions.length}} responses to choose from.</p>
 
 <input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all"
