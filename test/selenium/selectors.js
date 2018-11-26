@@ -236,7 +236,7 @@ module.exports = {
     privacySetting: '#problem-info .info-header span.top-left-icon i.',
     problemName: '#problem-info .side-info-menu .info-details .info-main .heading',
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
-    problemMenuBtn: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
+    problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
     problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author',
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',

@@ -52,8 +52,6 @@ describe('Problems New', async function () {
             });
 
             //Test following is always visible
-            // Problem Title
-            // Problem Create Date
             // 4 meny headers (change active status) - be able to click any
             // Copy
             // Recommend (not teacher)
@@ -84,7 +82,7 @@ describe('Problems New', async function () {
               it('should show 4 clickable menu headers', async function () {
                 let tabNames = ['general', 'categories', 'additional', 'legal'];
                 let selectors = tabNames.map((tab) => {
-                  return css.problemNew.menuTab + tab;
+                  return css.problemInfo.problemMenuTab + tab;
                 });
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
