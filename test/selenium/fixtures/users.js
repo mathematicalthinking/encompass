@@ -267,7 +267,7 @@ module.exports = {
       privacySetting: 'Everyone',
       title: 'Test Edit Problem',
       statement: 'Test Edit Problem Content',
-      status: 'pending',
+      status: 'approved',
       author: 'Test Problem Author',
     }
   },
