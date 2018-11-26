@@ -238,6 +238,7 @@ module.exports = {
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
     problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
+    problemStatementCont: '#problem-info .side-info-menu .info-details .info-content .info-content-block.statement',
     problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author',
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
     problemCategory: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item a',
