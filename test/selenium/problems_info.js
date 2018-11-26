@@ -258,10 +258,13 @@ describe('Problems Info', async function () {
                 await driver.sleep(500);
               });
 
-              // it('should create a copy of current problem when clicking copy', async function () {
-              //   await helpers.waitForAndClickElement(driver, css.problemInfo.copyButton);
-              //   expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problemInfo.copyright);
-              // });
+              it('should create a copy of current problem when clicking copy', async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.copyButton);
+                await driver.sleep(500);
+                await helpers.waitForAndClickElement(driver,'#problem-list-ul li:first-child .item-section.name span:first-child');
+                await driver.sleep(800);
+                expect(await helpers.findAndGetText(driver, css.problemInfo.problemName)).to.contain('Copy of ' + problemInfo.title);
+              });
 
               // if (!isTeacher) {
               //   it('should show modal and fill in star when clicking recommend', async function () {
