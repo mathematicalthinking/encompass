@@ -208,7 +208,7 @@ describe('Problems', async function () {
                 it('there should be no change when adding category with no problems', async function () {
                   if (!isStudent) {
                     let resultsMsg = `${problems.category.ee} problems found`;
-                    await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.1', true);
+                    await helpers.findInputAndType(driver, '#categories-filter-selectized', 'Math.Content.4', true);
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
@@ -286,6 +286,9 @@ describe('Problems', async function () {
                 it('should show search results for Mine', async function () {
                   if (!isStudent) {
                     let resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problems that contain "problem"`;
+                    if (problems.search.mine === 1) {
+                      resultsMsg = `Based off your filter criteria, we found ${problems.search.mine} problem that contains "problem"`;
+                    }
                     await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                     await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
@@ -600,7 +603,6 @@ describe('Problems', async function () {
                     await driver.sleep(500);
                     let selectors = ['.info-header', '.side-info-menu'];
                     expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
-
                   }
                 });
 

@@ -270,7 +270,7 @@ describe('Problems New', async function () {
               });
 
               it('newly created problem - categories page should have correct info', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'categories');
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuTab + 'categories');
                 await driver.sleep(800);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemCategory)).to.contain(problem.category);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(problem.keywords[0]);
@@ -279,13 +279,13 @@ describe('Problems New', async function () {
               });
 
               it('newly created problem - additional page should have correct info', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'additional');
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuTab + 'additional');
                 await driver.sleep(800);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.additionalInfo)).to.contain(problem.additionalInfo);
               });
 
               it('newly created problem - legal page should have correct info', async function () {
-                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuBtn + 'legal');
+                await helpers.waitForAndClickElement(driver, css.problemInfo.problemMenuTab + 'legal');
                 await driver.sleep(800);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.copyright)).to.contain(problem.copyrightNotice);
                 expect(await helpers.findAndGetText(driver, css.problemInfo.sharingAuth)).to.contain(problem.sharingAuth);

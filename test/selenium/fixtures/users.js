@@ -46,8 +46,8 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 11,
-        mine: 0,
+        public: 12,
+        mine: 1,
         org: 9,
         title: 1,
         clear: 1,
@@ -63,8 +63,24 @@ module.exports = {
         flagged: 2,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:first-child .item-section.name span:first-child',
+      privacySetting: 'Everyone',
+      title: 'How High Is Enough?',
+      createDate: '09/26/2018',
+      statement: 'A narrow strip of very flexible elastic is firmly fastened to a wooden table top at two points (A and B) 30 centimeters apart. While the strip lies FLAT on the table, a point C is located that divides AB in a 1 : 4 ratio.\nYou now take hold of the strip at point C and begin slowly lifting it vertically. As you do this, the elastic segments AC and BC stretch out and form an obtuse angle.\nAs you lift higher, the measurement of the angle decreases. If you go sufficiently high, you will have an acute angle. But at some moment in this process, there will be a height at which angle ACB is a right angle.\nPlease tell me that height.\nExtra: What is the perimeter of this triangle ACB? [Recall that AC and CB are made of the elastic strip, whereas AB is merely the undrawn line on the table top.] Give your answer rounded to the nearest millimeter.',
+      status: 'approved',
+      author: 'J.K. Rowling',
+      categories: ['CCSS.Math.Content.1.MD.A.2', 'CCSS.Math.Content.5.G.A', 'CCSS.Math.Content.8.G.B.6'],
+      categoryDesc: 'express the length of an object as a whole number of length units, by laying multiple copies of a shorter object (the length unit) end to end; understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps.',
+      keywords: ['math', 'measuring'],
+      additionalInfo: 'This problem has additional info for testing',
+      copyright: 'National Council of Teachers of Mathematics',
+      sharingAuth: 'Used with the permission of NCTM.',
     }
   },
+
 
   teacherMT: {
     testDescriptionTitle: 'Teacher',
@@ -108,7 +124,7 @@ module.exports = {
         noSub: 2,
       },
       search: {
-        public: 9,
+        public: 10,
         mine: 5,
         org: 6,
         title: 1,
@@ -125,6 +141,17 @@ module.exports = {
         flagged: 0,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:nth-child(2) .item-section.name span:first-child',
+      privacySetting: 'My Organization',
+      title: `Summer's Org Problem`,
+      createDate: '09/06/2018',
+      statement: `This is Summer's org problem`,
+      status: 'approved',
+      author: 'Charles Dickens',
+      keywords: ['graphing', 'testing'],
+      origin: "summer's private problem",
     }
   },
 
@@ -187,8 +214,8 @@ module.exports = {
         }
       },
       search: {
-        all: 15,
-        public: 11,
+        all: 16,
+        public: 12,
         mine: 3,
         org: 9,
         title: 1,
@@ -205,6 +232,22 @@ module.exports = {
         flagged: 2,
         approved: 11,
       }
+    },
+    problemInfo: {
+      selector: '#problem-list-ul li:nth-child(3) .item-section.name span:first-child',
+      privacySetting: 'Just Me',
+      title: `Rick's Private`,
+      createDate: '09/04/2018',
+      statement: `And have to a do cognitive their wasn't were pity from eye then and in volumes got sure with belly treble-range to they train average she the of place her and got being into even by such the their in a field large is into than an hills taken preparations at create the if sitting as was brothers slept greediness based a behind the dry laid assumed trusted sleeping least plan text flatter know line constructing bad it enough men, the time then fur was have the place working designer leave the relations apartment, seven. Much have way but is.`,
+      status: 'approved',
+      author: 'Steve Jobs',
+      selector2: '#problem-list-ul li:first-child .item-section.name span:first-child',
+      org: 'drexel university',
+      status2: 'flagged',
+      flagReason: 'reason: inappropriate content',
+      flagDetails: 'by morty on oct 21st 2018',
+      additionalInfo: 'Be careful!',
+      creator: 'rick',
     }
   },
 

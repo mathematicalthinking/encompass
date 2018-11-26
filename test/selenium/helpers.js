@@ -124,6 +124,17 @@ const getWebElementValue = async function (webDriver, selector) {
   return webValue;
 };
 
+const getWebElementTooltip = async function (webDriver, selector) {
+  let webElement, webValue;
+  try {
+    webElement = await webDriver.findElement(By.css(selector));
+    webValue = await webElement.getAttribute('data-tooltip');
+  } catch (err) {
+    console.log(err);
+  }
+  return webValue;
+};
+
 const navigateAndWait = async function (webDriver, url, selector, timeout=timeoutMs) {
   await webDriver.get(url);
   return webDriver.wait(until.elementLocated(By.css(selector)), timeout);
@@ -156,6 +167,17 @@ const isTextInDom = async function (webDriver, text) {
     console.log(err);
   }
   return isInDom;
+};
+
+const hasTooltipValue = async function (webDriver, selector, value) {
+  let hasValue;
+  try {
+    let dataValue = await getWebElementTooltip(webDriver, selector);
+    hasValue = (dataValue === value) ? true : false;
+  } catch (err) {
+    console.log(err);
+  }
+  return hasValue;
 };
 
 const findAndClickElement = async function (webDriver, selector) {
@@ -380,10 +402,12 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
 
 module.exports.getWebElements = getWebElements;
 module.exports.getWebElementValue = getWebElementValue;
+module.exports.getWebElementTooltip = getWebElementTooltip;
 module.exports.navigateAndWait = navigateAndWait;
 module.exports.isElementVisible = isElementVisible;
 module.exports.findAndGetText = findAndGetText;
 module.exports.isTextInDom = isTextInDom;
+module.exports.hasTooltipValue = hasTooltipValue;
 module.exports.findAndClickElement = findAndClickElement;
 module.exports.waitForSelector = waitForSelector;
 module.exports.findInputAndType = findInputAndType;

@@ -41,7 +41,7 @@
     <div class="info-content">
       {{#if showGeneral}}
         <p class="info-content-label">Problem Statement</p>
-        <div class="info-content-block large-content">
+        <div class="info-content-block statement large-content">
           {{#if isEditing}}
             {{quill-container setup="insertQuillContent"}}
           {{else}}
@@ -63,7 +63,7 @@
         {{#if problem.organization}}
           {{#if currentUser.isAdmin}}
           <p class="info-content-label">Organization</p>
-          <div class="info-content-block">
+          <div class="info-content-block org">
             {{#if problem.organization}}
               {{problem.organization.name}}
             {{/if}}
@@ -112,7 +112,7 @@
 
       {{#if showCats}}
         <p class="info-content-label">Problem Categories</p>
-        <div class="info-content-block">
+        <div class="info-content-block categories">
           {{#if isEditing}}
             {{#if problem.categories}}
               <ul>
@@ -217,7 +217,7 @@
           </div>
           {{/if}}
         <p class="info-content-label">Additional Image</p>
-        <div class="info-content-block">
+        <div class="info-content-block image">
           {{#if problem.image}}
             <a {{action 'toggleImageSize'}}>
               <img src="{{problem.image.imageData}}" alt="Image Error" class="additional-image {{if isWide "wide"}}">
@@ -239,13 +239,13 @@
         </div>
         {{#if problem.origin}}
           <p class="info-content-label">Problem Origin</p>
-          <div class="info-content-block">
+          <div class="info-content-block origin">
             <p>{{#link-to 'problem' problem.origin.id}}{{problem.origin.title}}{{/link-to}}</p>
           </div>
         {{/if}}
         {{#if currentUser.isAdmin}}
         <p class="info-content-label">Created By</p>
-        <div class="info-content-block">
+        <div class="info-content-block creator">
           <p>{{#link-to 'user' problem.createdBy.username}}{{problem.createdBy.username}}{{/link-to}}</p>
         </div>
         {{/if}}
@@ -320,27 +320,27 @@
       <span class="right-buttons">
         {{#if isEditing}}
           <button class="action_button cancel-button" {{action 'cancelEdit'}}>Cancel</button>
-          <button class="primary-button" {{action 'checkPrivacy'}}>Save</button>
+          <button class="primary-button save" {{action 'checkPrivacy'}}>Save</button>
         {{else}}
           {{#if canEdit}}
             {{#if problem.isUsed}}
               {{#if currentUser.isAdmin}}
-                <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+                <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
               {{/if}}
             {{else}}
-              <button class="primary-button" {{action 'editProblem'}}>Edit</button>
+              <button class="primary-button edit" {{action 'editProblem'}}>Edit</button>
             {{/if}}
           {{/if}}
             {{#unless problem.isTrashed}}
               {{#unless (is-equal problem.status 'flagged')}}
-              <button class="primary-button" {{action 'showAssignment'}}>Assign</button>
+              <button class="primary-button assign" {{action 'showAssignment'}}>Assign</button>
               {{/unless}}
             {{/unless}}
         {{/if}}
         {{#if problem.isTrashed}}
           {{#if currentUser.isAdmin}}
             {{#unless isEditing}}
-              <button class="primary-button" {{action 'restoreProblem'}}>Restore</button>
+              <button class="primary-button restore" {{action 'restoreProblem'}}>Restore</button>
             {{/unless}}
           {{/if}}
         {{/if}}

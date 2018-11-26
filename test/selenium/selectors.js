@@ -206,6 +206,7 @@ module.exports = {
   sweetAlert: {
     heading: 'h2#swal2-title',
     confirmBtn: 'button.swal2-confirm',
+    select: 'select.swal2-select'
   },
 
   problemNew: {
@@ -232,18 +233,38 @@ module.exports = {
   },
 
   problemInfo: {
+    privacySettingParent: '#problem-info .info-header span.top-left-icon',
     privacySetting: '#problem-info .info-header span.top-left-icon i.',
     problemName: '#problem-info .side-info-menu .info-details .info-main .heading',
     problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
-    problemMenuBtn: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
+    problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
     problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block p',
+    problemStatementCont: '#problem-info .side-info-menu .info-details .info-content .info-content-block.statement',
     problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author',
+    problemOrg: '#problem-info .side-info-menu .info-details .info-content .info-content-block.org',
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
+    flagReasonBtn: '#problem-info .side-info-menu .info-details .info-content .info-content-block .show-reason',
+    flagReasonCont: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.flag-reason',
+    flagReason: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.flag-reason p.reason',
+    flagReasonDetails: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.flag-reason p.details',
     problemCategory: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item a',
+    problemCategoryNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories',
+    problemCategoryItem: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item',
+    problemCategoryHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories',
     problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
+    problemKeywordNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
+    problemKeywordHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
     additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
+    additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image',
+    origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin',
+    creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator',
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright p',
+    copyrightNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing',
+    assignButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.assign',
+    editButton: 'section.info-actions .buttons-container .right-buttons button.primary-button.edit',
+    copyButton: 'section.info-actions .buttons-container .left-buttons span button i.fa-copy',
+    recommendButton: 'section.info-actions .buttons-container .left-buttons span button.star-icon',
   },
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
