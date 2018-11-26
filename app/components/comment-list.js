@@ -130,7 +130,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   canComment: function() {
     let ws = this.currentWorkspace;
-    return this.get('permissions').canEdit(ws);
+    return this.get('permissions').canEdit(ws, 'comments', 2);
   }.property('onSelection', 'allowedToComment'),
 
   handleLoadingMessage: function() {

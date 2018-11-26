@@ -17,7 +17,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     var showing = this.get('showingSelections');
     var transitioning = this.get('isTransitioning');
     var ws = this.get('currentWorkspace');
-    let canSelect = this.get('permissions').canEdit(ws);
+    let canSelect = this.get('permissions').canEdit(ws, 'selections', 2);
     return (making || showing) && !transitioning && !this.switching && canSelect;
   }),
 
@@ -45,13 +45,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       workspace.set('lastModifiedBy', this.get('currentUser'));
     }
     workspace.save();
-
-    // workspace.save().catch((err) => {
-
-    //   this.handleErrors(err, 'wsSaveErrors', workspace);
-    // });
-    // can't set errors on destroyed component
-
     this._super(...arguments);
   },
 
@@ -80,31 +73,26 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   canSelect: function () {
     var cws = this.get('currentWorkspace');
-    let canEdit = this.get('permissions').canEdit(cws);
-    // console.log('canEdit in worksapce sub controller is', canEdit);
+    let canEdit = this.get('permissions').canEdit(cws, 'selections', 2);
     return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
   actions: {
     addSelection: function( selection ){
-      // console.log("workspace-submission sending action up to controller...");
       this.set('isDirty', true);
       this.sendAction( 'addSelection', selection );
     },
 
     deleteSelection: function( selection ){
-      // console.log("workspace-submission sending DELETE action up to controller...");
       this.set('isDirty', true);
       this.sendAction( 'deleteSelection', selection );
     },
 
     showSelections: function() {
-      // console.log("Show Selections True");
       this.set('showingSelections', true);
     },
 
     hideSelections: function() {
-      // console.log('hiding selections');
       this.set('showingSelections', false);
     },
     toggleSelecting: function() {

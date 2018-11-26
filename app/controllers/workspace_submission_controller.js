@@ -35,7 +35,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
 
   canSelect: function() {
     var cws = this.get('currentWorkspace');
-    let canEdit = this.get('permissions').canEdit(cws);
+    let canEdit = this.get('permissions').canEdit(cws, 'selections', 2);
     console.log('canEdit in worksapce sub controller is', canEdit);
     return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
@@ -51,7 +51,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   //permittedToComment: true,
   permittedToComment: function() {
     var cws = this.get('currentWorkspace');
-    let canComment = this.get('permissions').canEdit(cws);
+    let canComment = this.get('permissions').canEdit(cws, 'comments', 2);
     console.log('canComment', canComment);
     return canComment;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),

@@ -13,9 +13,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   willDestroyElement: function () {
     let workspace = this.get('workspace');
-    workspace.save().catch((err) => {
-      this.handleErrors(err, 'updateRecordErrors', workspace);
-    });
+    workspace.save();
     this._super(...arguments);
   },
 
@@ -47,15 +45,15 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   canEdit: Ember.computed('workspace.id', function () {
     let workspace = this.get('workspace');
-    let owner = workspace.get('owner');
-    let creator = owner.get('content');
+    let ownerId = workspace.get('owner.id');
+    let creatorId = workspace.get('createdBy.id');
     let currentUser = this.get('currentUser');
     let accountType = currentUser.get('accountType');
-    let isAdmin = accountType === "A" ? true : false;
-    let isOwner = creator.id === currentUser.id ? true : false;
+    let isAdmin = accountType === "A";
+    let isOwner = ownerId === currentUser.id;
+    let isCreator = creatorId === currentUser.id;
 
-    let canEdit = isAdmin || isOwner;
-    return canEdit;
+    return isAdmin || isOwner || isCreator;
   }),
 
   modes: function () {
