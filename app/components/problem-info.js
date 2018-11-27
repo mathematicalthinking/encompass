@@ -127,10 +127,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
   // Empty quill editor .html() property returns <p><br></p>
-  // For quill to not be empty, there must either be some text or a student
-  // must have uploaded an img so there must be an img tag
+  // For quill to not be empty, there must either be some text or
+  // a student must have uploaded an img so there must be an img tag
   isQuillValid: function() {
-    let pText = this.$('.ql-editor p').text();
+    let pText = this.$('.ql-editor p').text().trim();
     if (pText.length > 0) {
       return true;
     }
