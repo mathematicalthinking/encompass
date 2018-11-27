@@ -100,6 +100,17 @@ WorkspaceSchema.post('save', function (workspace) {
     function (err, affected, results) {
       if (err) { throw new Error(err.message); }
     });
+    if (Array.isArray(workspace.permissions)) {
+      let collaboratorIds = workspace.permissions.map(obj => obj.user);
+      if (collaboratorIds.length > 0) {
+        mongoose.models.User.update({_id: {$in: collaboratorIds}}, {
+          $addToSet: { accessibleWorkspaces: workspace._id }
+        }, {multi: true}, (err, affected, results) => {
+          if (err) {throw new Error(err.message);}
+          console.log('updated user accessible workspaces', affected, results);
+        });
+      }
+    }
 });
 
 module.exports.Workspace = mongoose.model('Workspace', WorkspaceSchema);
