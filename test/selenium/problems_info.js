@@ -60,7 +60,7 @@ describe('Problems Info', async function () {
                 await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 await driver.sleep(500);
                 await helpers.findAndClickElement(driver, problemInfo.selector);
-                await driver.sleep(500);
+                await driver.sleep(800);
                 let selectors = ['.info-header', '.side-info-menu'];
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });

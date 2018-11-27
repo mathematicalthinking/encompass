@@ -169,7 +169,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.selectOption(driver, 'my-select', 'Admin');
         await helpers.findAndClickElement(driver, 'button.save-user');
-        await driver.sleep(100);
+        await driver.sleep(500);
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
@@ -181,7 +181,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'input.user-email-auth');
         await helpers.findAndClickElement(driver, 'button.save-user');
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(3000);
+        await driver.sleep(5000);
         expect(await helpers.findAndGetText(driver, 'td.is-email-confirm')).to.contain('true');
       });
     }
