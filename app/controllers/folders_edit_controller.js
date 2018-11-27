@@ -39,7 +39,6 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   }.property('currentUser', 'currentWorkspace'),
 
   evidence: function() {
-    console.log('calculating evidence!');
     if(this.get('includeSubfolders')){
       return this.model.get('_selections');
     }

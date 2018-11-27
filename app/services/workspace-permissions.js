@@ -67,7 +67,6 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     }
 
     const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
-    console.log('userPermissions', userPermissions);
 
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;

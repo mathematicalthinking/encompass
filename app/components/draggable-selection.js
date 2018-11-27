@@ -4,13 +4,11 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
   dragStart: function(event) {
     this._super(event);
     var dataTransfer = event.originalEvent.dataTransfer;
-    console.log("get 1");
     // stringify just returns the non-ember properties, so the id isn't included
     var data = JSON.stringify(this.selection);
     var dataWithId = '{"id": "' + this.selection.get('id') + '",' +  data.substring(1);
     dataTransfer.setData('application/json', dataWithId );
     dataTransfer.setData('text/plain', 'selection');
-    console.log("get 2");
 
     /*
     controller.get('model').get('selections').forEach(function(selection) {
@@ -34,7 +32,6 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
 
   actions: {
     deleteSelection: function( selection ){
-      console.log("draggable-selection sending DELETE action up...");
       this.sendAction( 'deleteSelection', selection );
     }
   }

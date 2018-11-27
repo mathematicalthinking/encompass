@@ -97,7 +97,6 @@ Encompass.SearchBarComponent = Ember.Component.extend({
       }
     },
     searchAction: function() {
-      console.log("searching!");
       this.send("validate");
     }
   }

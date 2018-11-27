@@ -18,7 +18,6 @@ Encompass.LogInComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, 
       var password = that.get('password');
 
       if (!usernameTrim || !password) {
-        console.log('missing credentials');
         that.set('missingCredentials', true);
         return;
       }

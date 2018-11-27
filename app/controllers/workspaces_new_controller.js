@@ -21,7 +21,6 @@ Encompass.WorkspacesNewController = Ember.Controller.extend(Encompass.CurrentUse
 
   actions: {
     radioSelect: function( value ){
-      console.log("Radio select: " + value );
       this.set('importMode', value );
     },
 

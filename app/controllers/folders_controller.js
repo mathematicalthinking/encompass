@@ -191,7 +191,9 @@ Encompass.FoldersController = Ember.Controller.extend(Encompass.CurrentUserMixin
       controller.propertyDidChange('content');
     },
     editFolderName: function() {
-      console.log('folder name edited');
+      // console.log('folder name edited');
+      // TODO: display message to user
+
       //handling the event that was bubbled in the itemController to avoid an error
       // not sure why we need to do this since it works for simpler cases
       //see folder_controller

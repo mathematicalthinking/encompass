@@ -28,7 +28,7 @@ Encompass.TopBarComponent = Ember.Component.extend(Encompass.CurrentUserMixin, E
       this.set('isSmallHeader', true);
     },
     toggleMenu: function () {
-      console.log('toggle called', this.openMenu);
+      // console.log('toggle called', this.openMenu);
     },
     showToggleModal: function () {
       this.get('alert').showModal('question', 'Are you sure you want to switch roles?', 'If you are currently modifying or creating a new record, you will lose all unsaved progress', 'Ok')

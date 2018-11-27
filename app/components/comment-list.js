@@ -214,7 +214,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         comp.clearCommentParent();
         comp.get('comments').pushObject(record);
       }).catch((err) => {
-        console.log('error creating comment', err);
         this.handleErrors(err, 'createRecordErrors');
       });
     },
@@ -235,7 +234,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
           // this.set('commentDeleteSuccess', true);
         }).catch((err) => {
-          console.log('error deleting comment', err);
           this.handleErrors(err, 'updateRecordErrors');
         });
       });

@@ -67,7 +67,6 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend(
 
     showPassword: function () {
       var isShowingPassword = this.get('showingPassword');
-      console.log('isShowingPassword =', isShowingPassword);
       if (isShowingPassword === false) {
         this.set('showingPassword', true);
         this.set('fieldType', 'text');

@@ -59,7 +59,6 @@ Encompass.ResetPasswordComponent = Ember.Component.extend(Encompass.ErrorHandlin
         });
     },
     resetErrors: function(e) {
-      console.log('event', e);
       const errors = ['matchError', 'missingCredentials'];
       for (let error of errors) {
         if (this.get(error)) {

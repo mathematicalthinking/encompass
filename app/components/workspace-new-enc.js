@@ -151,7 +151,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
     buildCriteria: function() {
       if (!this.get('isFormValid')) {
         if (this.get('missingRequiredFields')) {
-          console.log('missingRequredFields is already true');
           $('.error-box').removeClass('fadeIn');
           $('.error-box').addClass('pulse');
         }

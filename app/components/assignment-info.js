@@ -15,7 +15,6 @@ Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUser
       })
       .catch((err) => {
         this.handleErrors(err, 'initialLoadErrors');
-        console.log('err',err);
       });
     }
   },

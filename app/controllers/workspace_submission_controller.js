@@ -36,7 +36,6 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   canSelect: function() {
     var cws = this.get('currentWorkspace');
     let canEdit = this.get('permissions').canEdit(cws, 'selections', 2);
-    console.log('canEdit in worksapce sub controller is', canEdit);
     return canEdit;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
@@ -52,7 +51,6 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   permittedToComment: function() {
     var cws = this.get('currentWorkspace');
     let canComment = this.get('permissions').canEdit(cws, 'comments', 2);
-    console.log('canComment', canComment);
     return canComment;
   }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
 
@@ -209,12 +207,10 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     },
 
     cancelComment: function(){
-      console.log("Cancelling comment!");
       this.transitionToRoute('workspace.submission');
     },
 
     addSelection: function(selection) {
-      console.log("Controller Adding a new selection.");
       var user = this.get('currentUser');
       var workspace = this.get('currentWorkspace');
       var submission = this.get('model');
@@ -223,7 +219,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       var alreadyExists = this.get('model.selections').filterBy('id', selection.id);
 
       if(alreadyExists.length > 0) {
-        console.error("That selection already exists");
+        // TODO: display message to user
+        // console.error("That selection already exists");
         return;
       }
 
@@ -257,7 +254,9 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         break;
 
       default:
-        console.error('Invalid Selection Type');
+        // TODO: display message to user
+
+        // console.error('Invalid Selection Type');
         return;
       }
 
@@ -277,7 +276,6 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
           guiders.hideAll();
 
           if(!user.get('seenTour')) {
-            console.log('ignoring tour');
             //guiders._highlightElement('#al_center'); //shouldn't need to do this...
             //guiders.show('submissions.selections');
           }
@@ -286,7 +284,6 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     },
 
     deleteSelection: function(selection) {
-      console.log("W-S controller, delete selection");
       var controller = this;
 
       selection.set('isTrashed', true);
@@ -306,7 +303,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
 
       selection.save().then(function(record) {
         record.deleteRecord(); // Locally delete the object to update UI
-        console.info('deleted selection: ' + record.get('id'));
+        // TODO: display message to user
+        // console.info('deleted selection: ' + record.get('id'));
         controller.transitionToRoute('workspace.submission', controller.get('model'));
       });
     },

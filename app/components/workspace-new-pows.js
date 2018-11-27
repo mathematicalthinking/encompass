@@ -14,7 +14,6 @@ Encompass.WorkspaceNewPowsComponent = Ember.Component.extend({
 
   actions: {
     radioSelect: function( value ){
-      console.log("Radio select: " + value );
       this.set('importMode', value );
     },
 

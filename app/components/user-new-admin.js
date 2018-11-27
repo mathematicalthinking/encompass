@@ -271,7 +271,6 @@ Encompass.UserNewAdminComponent = Ember.Component.extend(Encompass.CurrentUserMi
      },
 
     closeError: function (error) {
-      console.log('error clicked on', error);
       $(`.${error}`).addClass('fadeOutRight');
       Ember.run.later(() => {
         $(`.${error}`).removeClass('fadeOutRight');

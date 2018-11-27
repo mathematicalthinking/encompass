@@ -57,7 +57,6 @@ Encompass.FormValidatorService = Ember.Service.extend({
 
   init() {
     this._super(...arguments);
-    console.log('initializing form validator');
   },
 
   initialize: function(formId, isMissing) {
@@ -143,7 +142,6 @@ Encompass.FormValidatorService = Ember.Service.extend({
   clearForm: function() {
     this.set('isPristine', true);
     let $inputs = this.getInputs(this.get('formId'));
-    console.log('inputs', $inputs);
     $inputs.each(function() {
       if($(this).is(':radio') || $(this).is(':checkbox')) {
         $(this).prop('checked', false);

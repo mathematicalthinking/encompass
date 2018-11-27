@@ -134,7 +134,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     moveOut: function(folder) {
-      console.log("Move Out folder List! " + folder.get('name') );
       var parent = folder.get('parent');
       var newParent = parent.get('parent');
       // var weight = parent.get('weight');
