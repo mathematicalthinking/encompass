@@ -74,10 +74,10 @@ function getFolderSets(req, res, next) {
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-  let { accountType, actingRole } = user;
-  if (accountType === 'S' || actingRole === 'student') {
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  }
+  // let { accountType, actingRole } = user;
+  // if (accountType === 'S' || actingRole === 'student') {
+  //   return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  // }
 return models.FolderSet.find({}).lean().exec()
   .then((folderSets => {
     const data = { folderSets };
