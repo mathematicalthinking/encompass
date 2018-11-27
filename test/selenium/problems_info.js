@@ -20,6 +20,7 @@ describe('Problems Info', async function () {
         accountType,
         actingRole,
         testDescriptionTitle,
+        problems,
         problemInfo,
         problemEdit
       } = user;
@@ -274,12 +275,12 @@ describe('Problems Info', async function () {
                   if (isAdmin) {
                     await helpers.findInputAndType(driver, css.sweetAlert.select, 'Drexel', true);
                   }
-                  await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled');
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled')).to.be.true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
                   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
                   await driver.sleep(500);
-                  await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line');
+                  expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line')).to.be.true;
                 });
               }
 
@@ -603,13 +604,54 @@ describe('Problems Info', async function () {
             });
 
             it('should show error when saving a problem without a statement', async function () {
-              await helpers.clearElement(driver, css.problemEdit.problemNameInput);
+              await helpers.waitForAndClickElement(driver, css.problemEdit.cancelButton);
+              await driver.sleep(200);
+              await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+              await driver.sleep(300);
+              await helpers.clearElement(driver, css.problemEdit.problemStatement);
               await driver.sleep(500);
               await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
               expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('Please fill in all required fields');
             });
+
+            it('should delete a problem you created with no answers', async function () {
+              await helpers.waitForAndClickElement(driver, css.problemEdit.deleteButton);
+              await driver.sleep(200);
+              await helpers.waitForAndClickElement(driver, css.sweetAlert.confirmBtn);
+              await driver.sleep(300);
+              await helpers.waitForAndClickElement(driver, '.refresh-icon');
+              let resultsMsg = `${problems.mine.count} problems found`;
+              await helpers.waitForTextInDom(driver, resultsMsg);
+              expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
+            });
+
+            if (!isTeacher) {
+              it('should show warning modal if editing assigned problem', async function () {
+                await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
+                await driver.sleep(500);
+                await helpers.waitForAndClickElement(driver, '#problem-list-ul li:nth-child(2) .item-section.name span:first-child');
+                await driver.sleep(500);
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                await driver.sleep(500);
+                expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to edit a problem that has already been assigned');
+                await helpers.waitForAndClickElement(driver, css.sweetAlert.cancelBtn);
+              });
+            }
+
+            if (isAdmin) {
+              it('should show warning modal if editing problem with answers', async function () {
+                await helpers.findAndClickElement(driver, 'li.filter-all label.radio-label');
+                await helpers.waitForAndClickElement(driver, '#problem-list-ul li:nth-child(1) .item-section.name span:first-child');
+                await driver.sleep(500);
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                await driver.sleep(500);
+                expect(await helpers.findAndGetText(driver, css.sweetAlert.heading, true)).to.contain('are you sure you want to edit a problem with answers?');
+                await helpers.waitForAndClickElement(driver, css.sweetAlert.cancelBtn);
+              });
+            }
+
 
           });
         }
