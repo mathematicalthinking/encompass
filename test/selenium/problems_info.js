@@ -462,6 +462,56 @@ describe('Problems Info', async function () {
               });
             });
 
+            describe(`Checking additional page can edit info`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+                await driver.sleep(500);
+                await helpers.findAndClickElement(driver, css.problemInfo.problemMenuTab + 'additional');
+                await driver.sleep(800);
+              });
+
+              it('should show and edit additional info', async function () {
+                expect(await helpers.getWebElementValue(driver, css.problemEdit.additionalInfo)).to.contain(problemEdit.additionalInfo);
+                await helpers.clearElement(driver, css.problemEdit.additionalInfo);
+                await helpers.findInputAndType(driver, css.problemEdit.additionalInfo, 'Test Problem Additional Info');
+              });
+
+              it('should show upload additional image option', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemEdit.additionalImage)).to.be.true;
+              });
+
+              it('should show problem origin', async function () {
+                expect(await helpers.findAndGetText(driver, css.problemEdit.origin)).to.contain(problemInfo.title);
+              });
+
+              if (isAdmin) {
+                it('should show problem origin', async function () {
+                  expect(await helpers.findAndGetText(driver, css.problemEdit.origin)).to.contain('rick');
+                });
+              }
+            });
+
+            describe(`Saving additional page and that changes persist`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+                await driver.sleep(500);
+              });
+
+              it('should show and edit additional info', async function () {
+                expect(await helpers.findAndGetText(driver, css.problemInfo.additionalInfo)).to.contain('Test Problem Additional Info');
+              });
+
+              it('should show problem origin', async function () {
+                expect(await helpers.findAndGetText(driver, css.problemInfo.origin)).to.contain(problemInfo.title);
+              });
+
+              if (isAdmin) {
+                it('should show problem origin', async function () {
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.origin)).to.contain('rick');
+                });
+              }
+            });
+
             describe(`Checking legal page can edit info`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);

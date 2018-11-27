@@ -91,6 +91,7 @@ module.exports = {
       sharingAuth2: 'Test Problem Sharing Auth',
       keywordsLength: 4,
       categoriesLength: 2,
+      additionalInfo: 'This problem has additional info for testing',
     }
   },
 
@@ -176,6 +177,7 @@ module.exports = {
       sharingAuth2: 'Test Problem Sharing Auth',
       keywordsLength: 4,
       categoriesLength: 1,
+      additionalInfo: '',
     }
   },
 
@@ -285,6 +287,7 @@ module.exports = {
       sharingAuth2: 'Test Problem Sharing Auth',
       keywordsLength: 2,
       categoriesLength: 1,
+      additionalInfo: 'Be careful!',
     }
   },
 

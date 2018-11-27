@@ -284,11 +284,10 @@ module.exports = {
     keywordParent: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp #select-edit-keywords div.selectize-control.multi',
     keywordInput: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp div.selectize-control.multi div.selectize-input input#select-edit-keywords-selectized',
     keywordsListing: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
-
-    // additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
-    // additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image',
-    // origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin',
-    // creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator',
+    additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional div.input-container textarea.additional-info-area',
+    additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image div.input-container div#image-upload',
+    origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin p a',
+    creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator p a',
 
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright input#copyright',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing input#sharing',

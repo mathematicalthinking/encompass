@@ -69,20 +69,6 @@
             </div>
           {{/if}}
         {{/if}}
-
-        {{!-- {{#if problem.author}}
-          <p class="info-content-label">Author</p>
-          <div class="info-content-block author">
-            {{#if isEditing}}
-              <div class="input-container">
-                {{input name="author" id="author" type="text" value=author}}
-              </div>
-            {{else}}
-              {{problem.author}}
-            {{/if}}
-          </div>
-        {{/if}} --}}
-
         {{#if problem.organization}}
           {{#if currentUser.isAdmin}}
           <p class="info-content-label">Organization</p>
@@ -224,7 +210,7 @@
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
           {{#if isEditing}}
-          <div class="info-content-block">
+          <div class="info-content-block additional">
             <div class="input-container">
               {{textarea class="additional-info-area" value=additionalInfo rows="4" placeholder="Additional info..."}}
               {{input id="additionalInfo" type="hidden" value=additionalInfo }}
