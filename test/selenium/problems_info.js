@@ -485,8 +485,8 @@ describe('Problems Info', async function () {
               });
 
               if (isAdmin) {
-                it('should show problem origin', async function () {
-                  expect(await helpers.findAndGetText(driver, css.problemEdit.origin)).to.contain('rick');
+                it('should show problem creator', async function () {
+                  expect(await helpers.findAndGetText(driver, css.problemEdit.creator)).to.contain('rick');
                 });
               }
             });
@@ -506,8 +506,8 @@ describe('Problems Info', async function () {
               });
 
               if (isAdmin) {
-                it('should show problem origin', async function () {
-                  expect(await helpers.findAndGetText(driver, css.problemInfo.origin)).to.contain('rick');
+                it('should show problem creator', async function () {
+                  expect(await helpers.findAndGetText(driver, css.problemInfo.creator)).to.contain('rick');
                 });
               }
             });
