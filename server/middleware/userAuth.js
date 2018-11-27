@@ -127,7 +127,7 @@ function determineStudentAccess(user, path, method) {
     return true;
   }
   const forbiddenGetPaths = [];
-  const forbiddenPostPutPaths = ['sections', 'assignments', 'organizations', 'categories', 'copyWorkspaceRequests'];
+  const forbiddenPostPutPaths = ['sections', 'assignments', 'organizations', 'categories', 'copyWorkspaceRequests', 'problems'];
 
   if (method === 'GET') {
     // students currently cannot make any requests related to workspaces
