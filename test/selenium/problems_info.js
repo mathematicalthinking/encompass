@@ -394,7 +394,7 @@ describe('Problems Info', async function () {
               });
             });
 
-            xdescribe(`Checking categories page can edit info`, function () {
+            describe(`Checking categories page can edit info`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
                 await driver.sleep(500);
@@ -404,19 +404,40 @@ describe('Problems Info', async function () {
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
 
-              // it('should be able to edit or add categores to list', async function () {
-              //   expect(await helpers.isElementVisible(driver, css.problemEdit.problemCategoryAdd)).to.be.true;
-              //   if (problemInfo.categories) {
-              //     // expect(await helpers.isElementVisible(driver, css.problemEdit.problemCategoryRemove)).to.be.true;
-              //     await helpers.findAndClickElement(driver, 'div.categories ul li:first-child button i.fa-times-circle');
-              //     await driver.sleep(5000);
-              //     await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryRemove);
-              //   } else {
-              //     await helpers.waitForSelector(driver, css.problemInfo.problemCategoryHeader);
-              //     await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
-              //     await driver.sleep(5000);
-              //   }
-              // });
+              it('should be able to edit or add categores to list', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemEdit.problemCategoryAdd)).to.be.true;
+                if (problemInfo.categories) {
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryRemove);
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryRemove);
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
+                  await driver.sleep(1000);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G.B"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.5"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
+                  await driver.sleep(500);
+                  expect(await helpers.getWebElements(driver, css.problemEdit.problemCategoryList)).to.have.lengthOf(2);
+                } else {
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
+                  await driver.sleep(1000);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'label[for="CCSS.Math.Content.K.G.B"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, 'button[id="CCSS.Math.Content.K.G.B.5"]');
+                  await driver.sleep(300);
+                  await helpers.findAndClickElement(driver, css.problemEdit.problemCategoryAdd);
+                  await driver.sleep(500);
+                  expect(await helpers.getWebElements(driver, css.problemEdit.problemCategoryList)).to.have.lengthOf(1);
+                }
+              });
 
               // it('should show editable problem keywords - if applicable', async function () {
               //   if (problemInfo.keywords) {

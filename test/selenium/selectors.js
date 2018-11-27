@@ -278,8 +278,9 @@ module.exports = {
     problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block #my-select',
     problemStatusFixed: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
     problemCategoryItem: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item',
-    problemCategoryRemove: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories ul li:first-child button.remove-cat i.fa-times-cirlce',
-    problemCategoryAdd: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories div.button-row button.cancel-button',
+    problemCategoryRemove: 'button.remove-cat',
+    problemCategoryAdd: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories div button.cancel-button',
+    problemCategoryList: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories ul li',
 
     // problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
     // problemKeywordNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
