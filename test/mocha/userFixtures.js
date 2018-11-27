@@ -70,7 +70,7 @@ const admin = {
     },
   },
   folders: {
-    accessibleFolderCount: 36,
+    accessibleFolderCount: 45,
     accessibleFolder: {
       _id: '5bb814d19885323f6d894975'
     },
@@ -371,7 +371,7 @@ const teacherMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 31,
+    accessibleFolderCount: 40,
     inaccessibleFolder: {
       _id: '53e11b0ab48b12793f000ab1'
     },
@@ -506,6 +506,7 @@ const studentMT = {
     },
   },
   folders: {
+    accessibleFolderCount: 0,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -513,6 +514,11 @@ const studentMT = {
       name: 'test folder',
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '5bb814d19885323f6d894974'
+    },
+    // TODO: update this when seeder data is added for accessibleWorkspaces for students
+    modifiableFolder: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
     },
   },
   sections: {
@@ -626,6 +632,7 @@ const teacherActingStudent = {
     },
   },
   folders: {
+    accessibleFolderCount: 0,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -633,6 +640,11 @@ const teacherActingStudent = {
       name: 'test folder',
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '5bb814d19885323f6d894974'
+    },
+    // TODO: update this when seeder data is added for accessibleWorkspaces for students
+    modifiableFolder: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
     },
   },
   sections: {
