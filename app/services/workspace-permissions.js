@@ -50,7 +50,6 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
 
   canEdit: function (ws, recordType, requiredPermissionLevel) {
     const utils = this.get('utils');
-
     if (!utils.isNonEmptyObject(ws)) {
       return false;
     }
@@ -61,13 +60,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
 
     // check ws permissions
 
-    const wsPermissions = ws.permissions;
+    const wsPermissions = ws.get('permissions');
     if (!utils.isNonEmptyArray(wsPermissions)) {
       return false;
     }
 
     const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
-
     if (!utils.isNonEmptyObject(userPermissions)) {
       return false;
     }
@@ -84,12 +82,11 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     // else custom
 
     const permissionLevel = userPermissions[recordType];
-
     if (recordType === 'feedback') {
       return permissionLevel !== 'none';
     }
 
-    return permissionLevel > requiredPermissionLevel;
+    return permissionLevel >= requiredPermissionLevel;
   },
 
 });
