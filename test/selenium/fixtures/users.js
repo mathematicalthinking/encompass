@@ -89,6 +89,8 @@ module.exports = {
       sharingAuth: 'Used with the permission of NCTM.',
       copyright2: 'Test Problem Copyright',
       sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 4,
+      categoriesLength: 2,
     }
   },
 
@@ -172,6 +174,8 @@ module.exports = {
       author: 'Test Problem Author',
       copyright2: 'Test Problem Copyright',
       sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 4,
+      categoriesLength: 1,
     }
   },
 
@@ -279,6 +283,8 @@ module.exports = {
       sharingAuth: 'stolen goods',
       copyright2: 'Test Problem Copyright',
       sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 2,
+      categoriesLength: 1,
     }
   },
 

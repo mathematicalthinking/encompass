@@ -370,7 +370,7 @@ describe('Problems Info', async function () {
               });
             });
 
-            describe(`Saving general page and that changes persists`, function () {
+            describe(`Saving general page and that changes persist`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
                 await driver.sleep(500);
@@ -439,18 +439,27 @@ describe('Problems Info', async function () {
                 }
               });
 
-              // it('should show editable problem keywords - if applicable', async function () {
-              //   if (problemInfo.keywords) {
-              //     let keywords = problemInfo.keywords;
-              //     await helpers.waitForSelector(driver, css.problemInfo.problemKeyword);
-              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':first-child')).to.contain(keywords[0]);
-              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeyword + ':nth-child(2)')).to.contain(keywords[1]);
-              //   } else {
-              //     await helpers.waitForSelector(driver, css.problemInfo.problemKeywordHeader);
-              //     expect(await helpers.findAndGetText(driver, css.problemInfo.problemKeywordNone, true)).to.contain('no problem keywords');
-              //   }
-              // });
+              it('should be able to delete and add keywords', async function () {
+                  let keywords = ['test', 'keywords'];
+                  await helpers.findInputAndType(driver, css.problemEdit.keywordInput, keywords[0], true);
+                  await driver.sleep(300);
+                  await helpers.findInputAndType(driver, css.problemEdit.keywordInput, keywords[1], true);
+              });
+            });
 
+            describe(`Saving categories page and that changes persist`, function () {
+              before(async function () {
+                await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+                await driver.sleep(500);
+              });
+
+              it('categories list should have changed', async function () {
+                expect(await helpers.getWebElements(driver, css.problemEdit.problemCategoryList)).to.have.lengthOf(problemEdit.categoriesLength);
+              });
+
+              it('keywords list should have changed', async function () {
+                expect(await helpers.getWebElements(driver, css.problemEdit.keywordsListing)).to.have.lengthOf(problemEdit.keywordsLength);
+              });
             });
 
             describe(`Checking legal page can edit info`, function () {
@@ -485,7 +494,7 @@ describe('Problems Info', async function () {
 
             });
 
-            describe(`Saving legal page and that changes persists`, function () {
+            describe(`Saving legal page and that changes persist`, function () {
               before(async function () {
                 await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
                 await driver.sleep(500);

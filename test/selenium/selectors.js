@@ -281,10 +281,9 @@ module.exports = {
     problemCategoryRemove: 'button.remove-cat',
     problemCategoryAdd: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories div button.cancel-button',
     problemCategoryList: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories ul li',
-
-    // problemKeyword: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
-    // problemKeywordNone: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
-    // problemKeywordHeader: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords',
+    keywordParent: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp #select-edit-keywords div.selectize-control.multi',
+    keywordInput: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp div.selectize-control.multi div.selectize-input input#select-edit-keywords-selectized',
+    keywordsListing: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
 
     // additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional',
     // additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image',
