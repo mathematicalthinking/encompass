@@ -175,7 +175,7 @@ describe(`Copy Workspace operations by account type`, function() {
         mongoose.connection.close();
         agent.close();
       });
-        describe('Basic shallow request', async function() {
+        describe('Basic shallow request', function() {
           const request = basicShallowRequest;
 
 
@@ -228,7 +228,7 @@ describe(`Copy Workspace operations by account type`, function() {
 
         describe('Basic Deep Clone Workspace', function() {
           const request = deepCloneRequest;
-          let newWs;
+          // let newWs;
             it('should post request successfully', function() {
               return agent
               .post(baseUrl)

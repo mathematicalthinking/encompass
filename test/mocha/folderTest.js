@@ -4,7 +4,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
 
