@@ -45,17 +45,13 @@ describe('Selection CRUD operations by account type', async function() {
             if (err) {
               console.error(err);
             }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.all.keys('selections');
-              expect(res.body.selections).to.be.a('array');
-              expect(res.body.selections).to.have.lengthOf(accessibleSelectionCount);
-              done();
-            }
-          });
+
+          expect(res).to.have.status(200);
+          expect(res.body).to.have.all.keys('selections');
+          expect(res.body.selections).to.be.a('array');
+          expect(res.body.selections).to.have.lengthOf(accessibleSelectionCount);
+          done();
+        });
         });
       });
       if (accountType !== 'A') {

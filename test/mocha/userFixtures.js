@@ -58,7 +58,7 @@ const admin = {
     accessibleAnswerCount: 3,
   },
   selections: {
-    accessibleSelectionCount: 73,
+    accessibleSelectionCount: 77,
     accessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -353,7 +353,7 @@ const teacherMT = {
     accessibleAnswerCount: 1,
   },
   selections: {
-    accessibleSelectionCount: 62,
+    accessibleSelectionCount: 66,
     inaccessibleSelection: {
       _id: '53e12211b48b12793f000b7e'
     },
@@ -492,6 +492,7 @@ const studentMT = {
     accessibleAnswerCount: 1,
   },
   selections: {
+    accessibleSelectionCount: 0,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -618,6 +619,7 @@ const teacherActingStudent = {
     accessibleAnswerCount: 0,
   },
   selections: {
+    accessibleSelectionCount: 0,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
