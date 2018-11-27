@@ -407,12 +407,13 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 },
 
 buildCollabFilter() {
-  // should be used only for non-admins
-  const accessibleWorkspaces = this.get('currentUser.accessibleWorkspaces.content');
-  let ids;
   const utils = this.get('utils');
+  const accessibleWorkspaces = this.get('currentUser.accessibleWorkspaces');
+
+  let ids;
   let filter = {};
-  if (!utils.isNullOrUndefined(accessibleWorkspaces)) {
+
+  if (utils.isNonEmptyArray(accessibleWorkspaces)) {
     ids = accessibleWorkspaces.mapBy('id');
   }
   // user is not a collaborator for any workspaces
@@ -421,6 +422,7 @@ buildCollabFilter() {
     return filter;
   }
   filter._id = { $in: ids };
+
   return filter;
 },
 
