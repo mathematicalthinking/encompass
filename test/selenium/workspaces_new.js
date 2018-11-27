@@ -9,7 +9,6 @@ const css = require('./selectors');
 const testUsers = require('./fixtures/users');
 
 const host = helpers.host;
-let topLink = css.topBar.workspacesNew;
 let url = `${host}/#/workspaces/new`;
 
 describe('Workspaces New', async function() {
