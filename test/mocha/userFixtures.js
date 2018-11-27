@@ -55,7 +55,7 @@ const admin = {
     },
   },
   answers: {
-    accessibleAnswerCount: 3,
+    accessibleAnswerCount: 4,
   },
   selections: {
     accessibleSelectionCount: 77,
@@ -350,7 +350,7 @@ const teacherMT = {
     },
   },
   answers: {
-    accessibleAnswerCount: 1,
+    accessibleAnswerCount: 2,
   },
   selections: {
     accessibleSelectionCount: 66,
