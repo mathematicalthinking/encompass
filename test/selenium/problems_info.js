@@ -27,6 +27,7 @@ describe('Problems Info', async function () {
       const isStudent = accountType === 'S' || actingRole === 'student';
       const isAdmin = accountType === 'A';
       const isTeacher = accountType === 'T';
+      const isPdadmin = accountType === 'P';
 
       describe(`As ${testDescriptionTitle}`, function () {
         this.timeout(helpers.timeoutTestMsStr);
@@ -627,7 +628,7 @@ describe('Problems Info', async function () {
               expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
             });
 
-            if (!isTeacher) {
+            if (isPdadmin) {
               it('should show warning modal if editing assigned problem', async function () {
                 await helpers.findAndClickElement(driver, "li.filter-myOrg label.radio-label");
                 await driver.sleep(500);

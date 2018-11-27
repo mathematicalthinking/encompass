@@ -48,7 +48,7 @@ module.exports = {
       search: {
         public: 12,
         mine: 1,
-        org: 9,
+        org: 10,
         title: 1,
         clear: 1,
       },
@@ -240,10 +240,10 @@ module.exports = {
         }
       },
       search: {
-        all: 16,
+        all: 17,
         public: 12,
         mine: 3,
-        org: 9,
+        org: 10,
         title: 1,
         clear: 22,
       },
