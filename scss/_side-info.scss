@@ -306,6 +306,9 @@
         font-size: 1.4em;
         color: $primary-font-color;
         cursor: pointer;
+        &.no-cursor {
+          cursor: default;
+        }
         &:focus {
           outline: none;
         }

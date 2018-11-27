@@ -48,7 +48,7 @@ module.exports = {
       search: {
         public: 12,
         mine: 1,
-        org: 9,
+        org: 10,
         title: 1,
         clear: 1,
       },
@@ -78,6 +78,20 @@ module.exports = {
       additionalInfo: 'This problem has additional info for testing',
       copyright: 'National Council of Teachers of Mathematics',
       sharingAuth: 'Used with the permission of NCTM.',
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'pending',
+      author: 'Test Problem Author',
+      copyright: 'National Council of Teachers of Mathematics',
+      sharingAuth: 'Used with the permission of NCTM.',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 4,
+      categoriesLength: 2,
+      additionalInfo: 'This problem has additional info for testing',
     }
   },
 
@@ -152,6 +166,18 @@ module.exports = {
       author: 'Charles Dickens',
       keywords: ['graphing', 'testing'],
       origin: "summer's private problem",
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'pending',
+      author: 'Test Problem Author',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 4,
+      categoriesLength: 1,
+      additionalInfo: '',
     }
   },
 
@@ -214,10 +240,10 @@ module.exports = {
         }
       },
       search: {
-        all: 16,
+        all: 17,
         public: 12,
         mine: 3,
-        org: 9,
+        org: 10,
         title: 1,
         clear: 22,
       },
@@ -248,6 +274,20 @@ module.exports = {
       flagDetails: 'by morty on oct 21st 2018',
       additionalInfo: 'Be careful!',
       creator: 'rick',
+    },
+    problemEdit: {
+      privacySetting: 'Everyone',
+      title: 'Test Edit Problem',
+      statement: 'Test Edit Problem Content',
+      status: 'approved',
+      author: 'Test Problem Author',
+      copyright: 'Apple Corps',
+      sharingAuth: 'stolen goods',
+      copyright2: 'Test Problem Copyright',
+      sharingAuth2: 'Test Problem Sharing Auth',
+      keywordsLength: 2,
+      categoriesLength: 1,
+      additionalInfo: 'Be careful!',
     }
   },
 

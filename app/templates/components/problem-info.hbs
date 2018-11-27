@@ -48,17 +48,26 @@
             {{{problem.text}}}
           {{/if}}
         </div>
-        {{#if problem.author}}
+        {{#if isEditing}}
           <p class="info-content-label">Author</p>
           <div class="info-content-block author">
-            {{#if isEditing}}
+            {{#if problem.author}}
               <div class="input-container">
                 {{input name="author" id="author" type="text" value=author}}
               </div>
             {{else}}
-              {{problem.author}}
+              <div class="input-container">
+                {{input name="author" id="author" type="text" placeholder="Add author" value=author}}
+              </div>
             {{/if}}
           </div>
+        {{else}}
+          {{#if problem.author}}
+            <p class="info-content-label">Author</p>
+            <div class="info-content-block author">
+              {{problem.author}}
+            </div>
+          {{/if}}
         {{/if}}
         {{#if problem.organization}}
           {{#if currentUser.isAdmin}}
@@ -201,7 +210,7 @@
       {{#if showAdditional}}
         <p class="info-content-label">Additional Info</p>
           {{#if isEditing}}
-          <div class="info-content-block">
+          <div class="info-content-block additional">
             <div class="input-container">
               {{textarea class="additional-info-area" value=additionalInfo rows="4" placeholder="Additional info..."}}
               {{input id="additionalInfo" type="hidden" value=additionalInfo }}
@@ -315,6 +324,13 @@
             {{/unless}}
             {{/unless}}
           {{/unless}}
+          {{#if currentUser.isTeacher}}
+            {{#if isRecommended}}
+              <button class="button-icon star-icon no-cursor">
+                <i class="fas fa-star star-filled"></i>
+              </button>
+            {{/if}}
+          {{/if}}
         {{/if}}
       </span>
       <span class="right-buttons">
@@ -347,24 +363,27 @@
       </span>
     </div>
   </section>
+  {{#if isMissingRequiredFields}}
+    {{error-box error="Please fill in all required fields" showDismiss=true}}
+  {{/if}}
+
+  {{#each updateProblemErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+  {{#each imageUploadErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+  {{#each createRecordErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+  {{#each findRecordErrors as |error|}}
+    {{error-box error=error showDismiss=true}}
+  {{/each}}
+
+  {{#if showAssignment}}
+    {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
+  {{/if}}
 </div>
 
-{{#if isMissingRequiredFields}}
-  <p class="error-message">Please fill in all required fields.</p>
-{{/if}}
-{{#each updateProblemErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each imageUploadErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each createRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
-{{#each findRecordErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
 
-{{#if showAssignment}}
-  {{assignment-new cancel=(action (mut showAssignment) null) fromProblemInfo=true problems=problemList selectedProblem=problem sections=sectionList store=store toAssignmentInfo="toAssignmentInfo"}}
-{{/if}}
+

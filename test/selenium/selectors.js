@@ -206,6 +206,7 @@ module.exports = {
   sweetAlert: {
     heading: 'h2#swal2-title',
     confirmBtn: 'button.swal2-confirm',
+    cancelBtn: 'button.swal2-cancel',
     select: 'select.swal2-select'
   },
 
@@ -266,6 +267,38 @@ module.exports = {
     copyButton: 'section.info-actions .buttons-container .left-buttons span button i.fa-copy',
     recommendButton: 'section.info-actions .buttons-container .left-buttons span button.star-icon',
   },
+
+  problemEdit: {
+    privacySettingIcon: '#problem-info .info-header span.top-left-icon i',
+    privacySettingSelect: '#problem-info .info-header div.select-container select#privacy-select',
+    problemNameInput: '#problem-info .side-info-menu .info-details .info-main .heading input#title',
+    problemDate: '#problem-info .side-info-menu .info-details .info-main .subheading',
+    problemMenuTab: '#problem-info .side-info-menu .info-details .info-menu button.tab-link.',
+    problemStatement: '#problem-info .side-info-menu .info-details .info-content .info-content-block div.quill-container section#editor div.ql-editor',
+    problemAuthor: '#problem-info .side-info-menu .info-details .info-content .info-content-block.author div.input-container input#author',
+    problemStatus: '#problem-info .side-info-menu .info-details .info-content .info-content-block #my-select',
+    problemStatusFixed: '#problem-info .side-info-menu .info-details .info-content .info-content-block .status-text',
+    problemCategoryItem: '#problem-info .side-info-menu .info-details .info-content .info-content-block ul li.category-item',
+    problemCategoryRemove: 'button.remove-cat',
+    problemCategoryAdd: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories div button.cancel-button',
+    problemCategoryList: '#problem-info .side-info-menu .info-details .info-content .info-content-block.categories ul li',
+    keywordParent: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp #select-edit-keywords div.selectize-control.multi',
+    keywordInput: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords .selectize-comp div.selectize-control.multi div.selectize-input input#select-edit-keywords-selectized',
+    keywordsListing: '#problem-info .side-info-menu .info-details .info-content .info-content-block.keywords ul li',
+    additionalInfo: '#problem-info .side-info-menu .info-details .info-content .info-content-block.additional div.input-container textarea.additional-info-area',
+    additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image div.input-container div#image-upload',
+    origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin p a',
+    creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator p a',
+    copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright input#copyright',
+    sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing input#sharing',
+    deleteButton: 'section.info-actions .buttons-container .left-buttons button.button-icon i.fa-trash',
+    cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
+    saveButton: 'section.info-actions .buttons-container .right-buttons button.save',
+    errorBox: '#problem-info .side-info-menu div.error-box',
+    errorBoxText: '#problem-info .side-info-menu div.error-box p span.error-text',
+    errorBoxDismiss: '#problem-info .side-info-menu div.error-box p button.dismiss i',
+  },
+
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
 };

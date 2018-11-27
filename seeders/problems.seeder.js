@@ -56,6 +56,7 @@ var data = [
   {
     "_id": "5b1e7a0ba5d2157ef4c91028",
     "title": "Mr. W. Goes Across Australia",
+    "text": 'Testing problem text',
     "createdBy": "5b245841ac75842be3189526",
     "puzzleId": 973,
     "categories": ['5bb650e1fefbf3cf9e88f675'],
@@ -69,6 +70,7 @@ var data = [
     "_id": "5bac07fdea4c0a230b2c7cc4",
     "title": "Old PoWs Problem",
     "createdBy": "5b245841ac75842be3189526",
+    "text": 'Lorem ipsum',
     "puzzleId": 974,
     "categories": ['5bb650e1fefbf3cf9e88f675'],
     "privacySetting": 'E',

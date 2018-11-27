@@ -127,10 +127,10 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
   // Empty quill editor .html() property returns <p><br></p>
-  // For quill to not be empty, there must either be some text or a student
-  // must have uploaded an img so there must be an img tag
+  // For quill to not be empty, there must either be some text or
+  // a student must have uploaded an img so there must be an img tag
   isQuillValid: function() {
-    let pText = this.$('.ql-editor p').text();
+    let pText = this.$('.ql-editor p').text().trim();
     if (pText.length > 0) {
       return true;
     }
@@ -534,6 +534,7 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let originalTitle = problem.get('title');
       let title = 'Copy of ' + originalTitle;
       let text = problem.get('text');
+      let author = problem.get('author');
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
       let image = problem.get('image');
@@ -542,12 +543,15 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       let categories = problem.get('categories');
       let status = problem.get('status');
       let currentUser = this.get('currentUser');
-      let keywords = this.get('keywords');
+      let keywords = problem.get('keywords');
       let organization = currentUser.get('organization');
+      let copyright = problem.get('copyrightNotice');
+      let sharingAuth = problem.get('sharingAuth');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
         text: text,
+        author: author,
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
@@ -557,6 +561,8 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
         image: image,
         organization: organization,
         privacySetting: "M",
+        copyrightNotice: copyright,
+        sharingAuth: sharingAuth,
         status: status,
         createDate: new Date(),
         keywords: keywords
