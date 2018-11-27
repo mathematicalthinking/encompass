@@ -324,6 +324,13 @@
             {{/unless}}
             {{/unless}}
           {{/unless}}
+          {{#if currentUser.isTeacher}}
+            {{#if isRecommended}}
+              <button class="button-icon star-icon no-cursor">
+                <i class="fas fa-star star-filled"></i>
+              </button>
+            {{/if}}
+          {{/if}}
         {{/if}}
       </span>
       <span class="right-buttons">
