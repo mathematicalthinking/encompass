@@ -117,7 +117,6 @@ describe('Problems Info', async function () {
                   });
 
                   it('should show problem organization', async function () {
-                    await helpers.waitForSelector(driver, css.problemInfo.problemOrg);
                     expect(await helpers.findAndGetText(driver, css.problemInfo.problemOrg, true)).to.contain(problemInfo.org);
                   });
 
@@ -562,8 +561,58 @@ describe('Problems Info', async function () {
             });
 
           });
-        }
 
+          describe('General problem info testing', function() {
+            before(async function () {
+              await helpers.waitForAndClickElement(driver, topLink);
+              await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+              await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
+              await driver.sleep(500);
+            });
+
+            it('cancel button should stop editing view', async function () {
+              await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+              await driver.sleep(500);
+              expect(await helpers.isElementVisible(driver, css.problemEdit.problemNameInput)).to.be.true;
+              await helpers.waitForAndClickElement(driver, css.problemEdit.cancelButton);
+              expect(await helpers.isElementVisible(driver, css.problemInfo.problemName)).to.be.true;
+            });
+
+            it('should show error when trying to create public problem with duplicate name', async function () {
+              await helpers.waitForAndClickElement(driver, css.problemInfo.editButton);
+              await driver.sleep(500);
+              await helpers.clearElement(driver, css.problemEdit.problemNameInput);
+              await helpers.findInputAndType(driver, css.problemEdit.problemNameInput, 'Alphabetical Problem');
+              await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+              await driver.sleep(800);
+              await helpers.waitForSelector(driver, css.problemEdit.errorBox);
+              expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('There is already an existing public problem with that title.');
+              await helpers.waitForAndClickElement(driver, css.problemEdit.errorBoxDismiss);
+
+            });
+
+            it('should show error when saving a problem without a name', async function () {
+              await helpers.clearElement(driver, css.problemEdit.problemNameInput);
+              await driver.sleep(500);
+              await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+              await driver.sleep(800);
+              await helpers.waitForSelector(driver, css.problemEdit.errorBox);
+              expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('Please fill in all required fields');
+              await helpers.waitForAndClickElement(driver, css.problemEdit.errorBoxDismiss);
+              await driver.sleep(500);
+            });
+
+            it('should show error when saving a problem without a statement', async function () {
+              await helpers.clearElement(driver, css.problemEdit.problemNameInput);
+              await driver.sleep(500);
+              await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
+              await driver.sleep(800);
+              await helpers.waitForSelector(driver, css.problemEdit.errorBox);
+              expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('Please fill in all required fields');
+            });
+
+          });
+        }
       });
     }
     return Promise.all(Object.keys(users).map(user => _runTests(users[user])));

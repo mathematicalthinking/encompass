@@ -288,12 +288,14 @@ module.exports = {
     additionalImage: '#problem-info .side-info-menu .info-details .info-content .info-content-block.image div.input-container div#image-upload',
     origin: '#problem-info .side-info-menu .info-details .info-content .info-content-block.origin p a',
     creator: '#problem-info .side-info-menu .info-details .info-content .info-content-block.creator p a',
-
     copyright: '#problem-info .side-info-menu .info-details .info-content .info-content-block.copyright input#copyright',
     sharingAuth: '#problem-info .side-info-menu .info-details .info-content .info-content-block.sharing input#sharing',
     deleteButton: 'section.info-actions .buttons-container .left-buttons button.button-icon i.fa-trash',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
     saveButton: 'section.info-actions .buttons-container .right-buttons button.save',
+    errorBox: '#problem-info .side-info-menu div.error-box',
+    errorBoxText: '#problem-info .side-info-menu div.error-box p span.error-text',
+    errorBoxDismiss: '#problem-info .side-info-menu div.error-box p button.dismiss i',
   },
 
 
