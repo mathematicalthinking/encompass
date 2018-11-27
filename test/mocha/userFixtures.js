@@ -24,7 +24,7 @@ const admin = {
     accessibleUserCount: 37,
   },
   submissions: {
-    accessibleSubmissionCount: 54,
+    accessibleSubmissionCount: 56,
     accessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
@@ -313,7 +313,7 @@ const teacherMT = {
     accessibleUserCount: 19,
   },
   submissions: {
-    accessibleSubmissionCount: 18,
+    accessibleSubmissionCount: 20,
     unaccessibleSubmission: {
       _id: "53e1156db48b12793f000417"
     },
@@ -468,6 +468,7 @@ const studentMT = {
     },
   },
   submissions: {
+    accessibleSubmissionCount: 0,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4df"
     },
@@ -595,6 +596,7 @@ const teacherActingStudent = {
     },
   },
   submissions: {
+    accessibleSubmissionCount: 0,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4db"
     },
