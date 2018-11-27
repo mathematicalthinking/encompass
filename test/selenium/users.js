@@ -167,10 +167,13 @@ describe('Users', function() {
       it('should change a teacher to an admin', async function () {
         await helpers.findAndClickElement(driver, 'button.edit-user');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
+        await driver.sleep(500);
         await helpers.selectOption(driver, 'my-select', 'Admin');
+        await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button.save-user');
         await driver.sleep(500);
         await helpers.waitForSelector(driver, '#user-info');
+        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
     }

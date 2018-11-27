@@ -57,8 +57,9 @@ describe('Problems Info', async function () {
 
             describe(`Checking the following is always visible`, function () {
               before(async function () {
-                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
                 await driver.sleep(500);
+                await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
+                await driver.sleep(800);
                 await helpers.findAndClickElement(driver, problemInfo.selector);
                 await driver.sleep(800);
                 let selectors = ['.info-header', '.side-info-menu'];
