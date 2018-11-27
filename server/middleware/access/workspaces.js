@@ -128,14 +128,14 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) 
 
   filter.$and.push({ isTrashed: false });
 
-  if (ids) {
+  if (apiUtils.isNonEmptyArray(ids)) {
     filter.$and.push({_id: {$in : ids } });
   }
-  if (!_.isEmpty(filterBy)) {
+  if (apiUtils.isNonEmptyObject(filterBy)) {
     filter.$and.push(filterBy);
   }
 
-  if (searchBy) {
+  if (apiUtils.isNonEmptyObject(searchBy)) {
     filter.$and.push(searchBy);
   }
 
