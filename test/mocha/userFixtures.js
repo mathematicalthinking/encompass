@@ -517,7 +517,7 @@ const studentMT = {
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '5bb814d19885323f6d894974'
     },
-    // TODO: update this when seeder data is added for accessibleWorkspaces for students
+    // TODO: update this when seeder data is added for collabWorkspaces for students
     modifiableFolder: {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
@@ -645,7 +645,7 @@ const teacherActingStudent = {
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
       workspace: '5bb814d19885323f6d894974'
     },
-    // TODO: update this when seeder data is added for accessibleWorkspaces for students
+    // TODO: update this when seeder data is added for collabWorkspaces for students
     modifiableFolder: {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'

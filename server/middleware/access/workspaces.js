@@ -68,7 +68,7 @@ const canLoadWorkspace = function(user, ws) {
 
 
   // Students can access workspaces they've created and workspaces they've been added as collabs
-  // (in their accessibleWorkspaces array)
+  // (in their collabWorkspaces array)
   if (accountType === 'S' || actingRole === 'student') {
     return isCreator || isOwner || isCollaborator || isInternet;
   }
@@ -120,7 +120,7 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) 
   if (!apiUtils.isNonEmptyObject(user)) {
     return [];
   }
-  const { accountType, actingRole, accessibleWorkspaces } = user;
+  const { accountType, actingRole, collabWorkspaces } = user;
 
   let filter = {
     $and: []
@@ -147,8 +147,8 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) 
     accessCrit.$or.push({ owner: user.id});
     accessCrit.$or.push({ mode: 'internet' });
 
-    if (apiUtils.isNonEmptyArray(accessibleWorkspaces)) {
-      accessCrit.$or.push({_id: {$in: accessibleWorkspaces}});
+    if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
+      accessCrit.$or.push({_id: {$in: collabWorkspaces}});
     }
 
     filter.$and.push(accessCrit);
@@ -165,8 +165,8 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) 
   accessCrit.$or.push({ createdBy : user.id });
 
 
- if (apiUtils.isNonEmptyArray(accessibleWorkspaces)) {
-  accessCrit.$or.push({_id: {$in: accessibleWorkspaces}});
+ if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
+  accessCrit.$or.push({_id: {$in: collabWorkspaces}});
 }
 // will only reach here if admins/pdadmins are in actingRole teacher
 // Teachers and PdAdmins

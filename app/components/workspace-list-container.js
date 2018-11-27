@@ -408,13 +408,13 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
 buildCollabFilter() {
   const utils = this.get('utils');
-  const accessibleWorkspaces = this.get('currentUser.accessibleWorkspaces');
+  const collabWorkspaces = this.get('currentUser.collabWorkspaces');
 
   let ids;
   let filter = {};
 
-  if (utils.isNonEmptyArray(accessibleWorkspaces)) {
-    ids = accessibleWorkspaces.mapBy('id');
+  if (utils.isNonEmptyArray(collabWorkspaces)) {
+    ids = collabWorkspaces.mapBy('id');
   }
   // user is not a collaborator for any workspaces
   if (!this.get('utils').isNonEmptyArray(ids)) {

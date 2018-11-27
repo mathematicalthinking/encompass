@@ -82,7 +82,7 @@ var UserSchema = new Schema({
 
   // workspaces where user has been added as a collaborator
   // only used for non-admins because admins can access any workspace by default
-  accessibleWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
+  collabWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
   seenTour: { type: Date },
   lastSeen: { type: Date },
   history: [Log] // currently not working

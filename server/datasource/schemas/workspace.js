@@ -104,10 +104,10 @@ WorkspaceSchema.post('save', function (workspace) {
       let collaboratorIds = workspace.permissions.map(obj => obj.user);
       if (collaboratorIds.length > 0) {
         mongoose.models.User.update({_id: {$in: collaboratorIds}}, {
-          $addToSet: { accessibleWorkspaces: workspace._id }
+          $addToSet: { collabWorkspaces: workspace._id }
         }, {multi: true}, (err, affected, results) => {
           if (err) {throw new Error(err.message);}
-          console.log('updated user accessible workspaces', affected, results);
+          console.log('updated user collab workspaces', affected, results);
         });
       }
     }

@@ -2196,9 +2196,9 @@ async function cloneWorkspace(req, res, next) {
       newWs.permissions = permissionOptions.permissionObjects;
 
       const userIdsToUpdate = permissionOptions.permissionObjects.map( obj => obj.user);
-      await models.User.updateMany({_id: {$in: userIdsToUpdate}}, {$addToSet: {accessibleWorkspaces: newWs._id }});
+      await models.User.updateMany({_id: {$in: userIdsToUpdate}}, {$addToSet: {collabWorkspaces: newWs._id }});
 
-      // update accessibleWorkspaces Array for collaborators
+      // update collabWorkspaces Array for collaborators
       // each permissionObject has userId
     }
   }
