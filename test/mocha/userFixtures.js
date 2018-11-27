@@ -30,7 +30,7 @@ const admin = {
     },
   },
   comments: {
-    accessibleCommentCount: 5,
+    accessibleCommentCount: 9,
     accessibleComment: {
       _id: "53e12507b48b12793f000b91"
     },
@@ -322,7 +322,7 @@ const teacherMT = {
     },
   },
   comments: {
-    accessibleCommentCount: 2,
+    accessibleCommentCount: 6,
     accessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -473,6 +473,7 @@ const studentMT = {
     },
   },
   comments: {
+    accessibleCommentCount: 0,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -592,6 +593,7 @@ const teacherActingStudent = {
     },
   },
   comments: {
+    accessibleCommentCount: 0,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },

@@ -26,7 +26,8 @@ describe('Base API tests by account type', function() {
       const { username, password, accountType, actingRole} = user.details;
       const collections = ['answers', 'assignments', 'selections', 'sections', 'problems', 'workspaces', 'submissions', 'taggings', 'organizations', 'comments', 'folders', 'categories', 'responses', 'users', 'images'];
 
-      const forbiddenStudentGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
+      // const forbiddenStudentGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
+      const forbiddenStudentGetPaths = [];
 
       const adminTrashedPaths = ['problems'];
 
