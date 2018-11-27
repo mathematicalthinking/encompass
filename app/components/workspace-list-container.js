@@ -415,14 +415,12 @@ buildCollabFilter() {
   if (!utils.isNullOrUndefined(accessibleWorkspaces)) {
     ids = accessibleWorkspaces.mapBy('id');
   }
-  console.log('ids', ids);
   // user is not a collaborator for any workspaces
   if (!this.get('utils').isNonEmptyArray(ids)) {
     this.set('criteriaTooExclusive', true);
     return filter;
   }
   filter._id = { $in: ids };
-  console.log('filter collab', filter);
   return filter;
 },
 
