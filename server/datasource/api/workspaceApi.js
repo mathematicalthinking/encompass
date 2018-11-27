@@ -1422,7 +1422,6 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
       return results;
     }
     // else just return the folder objects
-    // console.log('not creating folderset');
     return results;
   }catch(err) {
     console.error(`Error copyAndSaveFolderStructure: ${err}`);
@@ -2060,7 +2059,6 @@ async function cloneWorkspace(req, res, next) {
     // json objects that will be converted to mongoose docs and saved to db
     // does not handle copying of existing submissions' commments, selections, responses, etc
     let subs = await answersToSubmissions(answersToClone);
-
     // convert sub json objects to mongoose docs and save
     const submissions = await Promise.all(subs.map((obj) => {
       let sub = new models.Submission(obj);
@@ -2099,8 +2097,17 @@ async function cloneWorkspace(req, res, next) {
         // use oldSub document to set original comments, responses on new sub doc
         // these will be updated later
         let oldSub = submissionsMap[submission._id];
-        submission.comments = oldSub.comments;
-        submission.responses = oldSub.responses;
+        // some old submissions are missing comments/responses fields
+         if (_.isArray(oldSub.comments)) {
+          submission.comments = oldSub.comments;
+        } else {
+          submission.comments = [];
+        }
+        if (_.isArray(oldSub.responses)) {
+          submission.responses = oldSub.responses;
+        } else {
+          submission.responses = [];
+        }
 
         // copy selections and set new selections on new submission
         return copySelections(user, selectionsKey, oldSub, submission, newWs._id)
@@ -2120,7 +2127,7 @@ async function cloneWorkspace(req, res, next) {
         .value();
 
     /*
-      commentssKey is used to determine which commentss should be copied
+      commentsKey is used to determine which commentss should be copied
       {
         commentId: true
       }
