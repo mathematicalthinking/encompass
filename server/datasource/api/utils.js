@@ -258,13 +258,20 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let limitObj = { "$limit": limit };
   let skipObj = { "$skip": skip };
 
-  console.log('criteria is', criteria);
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
   criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
       let value = criterion.createdBy;
       let updatedValue = mongoose.Types.ObjectId(value);
       criterion.createdBy = updatedValue;
+    }
+    if (criterion.hasOwnProperty('_id')) {
+      let value = criterion._id;
+      if (value.hasOwnProperty('$in')) {
+        value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
+      } else {
+        criterion._id = mongoose.Types.ObjectId(value);
+      }
     }
     if (criterion.hasOwnProperty('$or')) {
       criterion.$or.forEach((crit) => {
@@ -276,9 +283,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
         if (crit.hasOwnProperty('owner')) {
           let value = crit.owner;
           if (value.hasOwnProperty('$in')) {
-            value.$in.forEach((val) => {
-              val = mongoose.Types.ObjectId(val);
-            });
+          value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
           } else {
             let updatedValue = mongoose.Types.ObjectId(value);
             crit.owner = updatedValue;
@@ -287,7 +292,6 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       });
     }
   });
-
   let matchObj = { "$match" : criteria };
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };

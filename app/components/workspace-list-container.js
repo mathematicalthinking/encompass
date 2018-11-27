@@ -3,6 +3,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   elementId: 'workspace-list-container',
   showList: true,
   showGrid: false,
+  utils: Ember.inject.service('utility-methods'),
 
   sortProperties: ['name'],
   workspaceToDelete: null,
@@ -209,12 +210,12 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
                 }
               }
             },
-            // member: {
-            //   label: "Member",
-            //   value: "member",
-            //   isChecked: true,
-            //   icon: "fas fa-users"
-            // },
+            collab: {
+              label: "Collaborator",
+              value: "collab",
+              isChecked: false,
+              icon: "fas fa-users"
+            },
             myOrg: {
               label: "My Org",
               value: "myOrg",
@@ -405,6 +406,26 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   }
 },
 
+buildCollabFilter() {
+  // should be used only for non-admins
+  const accessibleWorkspaces = this.get('currentUser.accessibleWorkspaces.content');
+  let ids;
+  const utils = this.get('utils');
+  let filter = {};
+  if (!utils.isNullOrUndefined(accessibleWorkspaces)) {
+    ids = accessibleWorkspaces.mapBy('id');
+  }
+  console.log('ids', ids);
+  // user is not a collaborator for any workspaces
+  if (!this.get('utils').isNonEmptyArray(ids)) {
+    this.set('criteriaTooExclusive', true);
+    return filter;
+  }
+  filter._id = { $in: ids };
+  console.log('filter collab', filter);
+  return filter;
+},
+
   buildModeFilter: function() {
     //privacy setting determined from privacy drop down on main display
     let mode = this.get('modeFilter');
@@ -450,6 +471,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
     if (primaryFilterValue === 'mine') {
       filterBy = this.buildMineFilter();
+    }
+
+    if (primaryFilterValue === 'collab') {
+      filterBy = this.buildCollabFilter();
     }
 
     if (primaryFilterValue === 'everyone') {
