@@ -80,11 +80,11 @@
       @include flex-item(10, center, .07 0 auto);
       width: 7%;
     }
-    &.info-item {
-      @include flex-item(2, center, .01 0 auto);
-      width: 1%;
-      text-align: left;
-    }
+    // &.info-item {
+    //   @include flex-item(2, center, .01 0 auto);
+    //   width: 1%;
+    //   text-align: left;
+    // }
     &.more {
       @include flex-item(11, center, .01 0 auto);
       width: 1%;
@@ -179,7 +179,7 @@
                 }
                 .more {
                   float: right;
-                  font-size: 1.3em;
+                  font-size: 1em;
                   margin-top: 5px;
                   cursor: pointer;
                 }
