@@ -62,7 +62,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   selectedMode: ['public', 'private'],
 
   moreMenuOptions: [
-    {label: 'Info', value:'edit', action: 'editWorkspace', icon: 'fa fa-info-circle'},
+    // {label: 'Info', value:'edit', action: 'editWorkspace', icon: 'fa fa-info-circle'},
     {label: 'Copy', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-copy'},
     {label: 'Assign', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-list-ul'},
     {label: 'Hide', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-archive'},

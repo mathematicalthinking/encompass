@@ -1,7 +1,8 @@
+/*global _:false */
 Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   classNames: ['workspace-list-item'],
-
   alert: Ember.inject.service('sweet-alert'),
+
   permissions: Ember.inject.service('problem-permissions'),
   canEdit: Ember.computed.alias('writePermissions.canEdit'),
   canDelete: Ember.computed.alias('writePermissions.canDelete'),
@@ -31,33 +32,23 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
 
   ellipsisMenuOptions: function () {
-    // let canDelete = this.get('canDelete');
-    // let canAssign = this.get('canAssign');
+    let canDelete = this.get('canDelete');
+    let canAssign = this.get('canAssign');
     let moreMenuOptions = this.get('menuOptions');
-    // let isAdmin = this.get('currentUser.isAdmin');
-    // let options = moreMenuOptions.slice();
-    // let status = this.get('problem.status');
-    // let deleted = this.get('problem.isTrashed');
+    let isAdmin = this.get('currentUser.isAdmin');
+    let options = moreMenuOptions.slice();
+    let deleted = this.get('workspace.isTrashed');
 
-    // if (!canDelete) {
-    //   // dont show delete or edit option
-    //   options = _.filter(moreMenuOptions, (option) => {
-    //     return option.value !== 'edit' && option.value !== 'delete';
-    //   });
-    // }
+    if (!canDelete) {
+      // dont show delete or edit option
+      options = _.filter(moreMenuOptions, (option) => {
+        return option.value !== 'edit' && option.value !== 'delete';
+      });
+    }
 
-    // if (isAdmin) {
-    //   // if problem is approved, admins will have exposed Flag button so no need in more menu
-    //   if (canAssign) {
-    //     options = _.filter(options, (option) => {
-    //       return !_.contains(['flag'], option.value);
-    //     });
-    //   } else {
-    //     options = _.filter(options, (option) => {
-    //       return !_.contains(['assign'], option.value);
-    //     });
-    //   }
-    // }
+    if (isAdmin) {
+      // if problem is approved, admins will have exposed Flag button so no need in more menu
+    }
 
     // if (!isAdmin) {
     //   // remove any admin only options for non admins
@@ -84,12 +75,12 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
     //   });
     // }
 
-    // if (deleted) {
-    //   options = _.filter(options, (option) => {
-    //     return !_.contains(['delete'], option.value);
-    //   });
-    // }
-    let options = moreMenuOptions;
+    if (deleted) {
+      options = _.filter(options, (option) => {
+        return !_.contains(['delete'], option.value);
+      });
+    }
+
     return options;
   }.property('workspace.id', 'workspace.isTrashed'),
 

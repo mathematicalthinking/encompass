@@ -32,11 +32,11 @@
     <div class="item-section editors">
       {{workspace.editorsLength}}
     </div>
-    {{!-- <div class="item-section info-item">
+    <div class="item-section info-item">
       {{#link-to 'workspace.info' workspace.id}}
         <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
       {{/link-to}}
-    </div> --}}
+    </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>
       {{#if showMoreMenu}}
@@ -94,9 +94,9 @@
       <div class="item-card name">
         {{#link-to 'workspace.work' workspace class="workspace-name"}}
           {{{workspace.name}}}
-            {{!-- {{#link-to 'workspace.info' workspace.id}}
+            {{#link-to 'workspace.info' workspace.id}}
               <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-            {{/link-to}} --}}
+            {{/link-to}}
         {{/link-to}}
       </div>
     </div>

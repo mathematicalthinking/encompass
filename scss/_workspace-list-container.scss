@@ -80,11 +80,11 @@
       @include flex-item(10, center, .07 0 auto);
       width: 7%;
     }
-    // &.info-item {
-    //   @include flex-item(2, center, .01 0 auto);
-    //   width: 1%;
-    //   text-align: left;
-    // }
+    &.info-item {
+      @include flex-item(2, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
+    }
     &.more {
       @include flex-item(11, center, .01 0 auto);
       width: 1%;
@@ -186,7 +186,6 @@
               }
               &.row-2 {
                 @include flex-item(2, auto, 1 0 auto);
-                // border: 1px solid blue;
                 padding: 20px 15px 15px 15px;
                 a {
                   color: black;
@@ -201,7 +200,6 @@
               &.row-3 {
                 @include flex-item(3, auto, 1 0 auto);
                 padding: 0px 15px 15px 15px;
-                // border: 1px solid orange;
                 a {
                   &.active {
                     font-weight: $bolder-font-weight;
@@ -212,13 +210,10 @@
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
                 padding: 20px 10px 20px 10px;
-                // border: 1px solid purple;
                 .workspace-stats {
                   text-align: center;
-                  // border: 1px solid red;
                   @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
                   li {
-                    // border: 1px solid green;
                     @include flex-item(1, auto, 1 0 auto);
                     line-height: 2em;
                     min-width: 100px;
