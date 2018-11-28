@@ -62,11 +62,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   selectedMode: ['public', 'private'],
 
   moreMenuOptions: [
-    // {label: 'Info', value:'edit', action: 'editWorkspace', icon: 'fa fa-info-circle'},
-    {label: 'Copy', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-copy'},
-    {label: 'Assign', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-list-ul'},
-    {label: 'Hide', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-archive'},
-    {label: 'Delete', value: 'delete', action: 'trashWorkspace', icon: 'fas fa-trash'},
+    {label: 'Copy', value: 'copy', action: 'copyWorkspace', icon: 'fas fa-copy'},
+    {label: 'Assign', value: 'assign', action: 'assignWorkspace', icon: 'fas fa-list-ul'},
+    {label: 'Hide', value: 'hide', action: 'hideWorkspace', icon: 'fas fa-archive'},
+    {label: 'Delete', value: 'delete', action: 'deleteWorkspace', icon: 'fas fa-trash'},
   ],
 
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
@@ -530,6 +529,17 @@ buildCollabFilter() {
     return filterBy;
   },
 
+  displayWorkspaces: function () {
+    let workspaces = this.get('workspaces');
+    if (workspaces) {
+      if (this.get('toggleTrashed')) {
+        return workspaces;
+      } else {
+        return workspaces.rejectBy('isTrashed');
+      }
+    }
+  }.property('workspaces.@each.isTrashed', 'toggleTrashed'),
+
   buildQueryParams: function(page) {
     let sortBy = this.buildSortBy();
     let filterBy = this.buildFilterBy();
@@ -683,31 +693,6 @@ buildCollabFilter() {
           this.send('trashWorkspace', ws);
         }
       });
-    },
-
-    trashWorkspace: function(ws) {
-      const id = ws.id;
-      const workspaces = this.get('workspaces');
-      const filtered = workspaces.filterBy('id', id);
-      if (!Ember.isEmpty(filtered)) {
-        const ws = filtered.objectAt(0);
-        ws.set('isTrashed', true);
-        ws.save().then(() => {
-          this.set('workspaceToDelete', null);
-          this.get('alert').showToast('success', 'Workspace Deleted', 'bottom-end', 5000, true, 'Undo').then((result) => {
-            if (result.value) {
-              ws.set('isTrashed', false);
-              ws.save().then(() => {
-                this.get('alert').showToast('success', 'Workspace Restored', 'bottom-end', 3000, null);
-              });
-            }
-          });
-        })
-        .catch((err) => {
-          this.set('workspaceToDelete', null);
-          this.set('workspaceDeleteError', err);
-        });
-      }
     },
 
     toggleFilter: function(key) {
