@@ -106,7 +106,8 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
       return permissions.mapBy('user');
     }
     return [];
-  }.property('permissions.[]')
+  }.property('permissions.[]'),
+  sourceWorkspace: DS.attr(),
 
 //  comments: function() {
 //    var allComments = [];
