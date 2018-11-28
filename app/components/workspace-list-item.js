@@ -22,58 +22,26 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
   ellipsisMenuOptions: function () {
     let ws = this.get('workspace');
+    let deleted = this.get('workspace.isTrashed');
+
     let canDelete = this.get('permissions').canDelete(ws);
-    console.log('canDelete is', canDelete);
+    let canCopy = this.get('permissions').canCopy(ws);
     // let canAssign = this.get('canAssign');
-    // let canCopy = this.get('canAssign');
     // let canHide = this.get('canAssign');
-    // let deleted = this.get('workspace.isTrashed');
     let moreMenuOptions = this.get('menuOptions');
-    // let isAdmin = this.get('currentUser.isAdmin');
     let options = moreMenuOptions.slice();
-    console.log('options are', options);
 
-    // if (!canDelete) {
-    //   // dont show delete or edit option
-    //   options = _.filter(moreMenuOptions, (option) => {
-    //     return option.value !== 'edit' && option.value !== 'delete';
-    //   });
-    // }
+    if (!canDelete || deleted) {
+      options = _.filter(options, (option) => {
+        return option.value !== 'delete';
+      });
+    }
 
-    // if (isAdmin) {
-    //   if problem is approved, admins will have exposed Flag button so no need in more menu
-    // }
-
-    // if (!isAdmin) {
-    //   // remove any admin only options for non admins
-    //   options = _.filter(options, (option) => {
-    //     return !option.adminOnly;
-    //   });
-    //   if (status === "approved") {
-    //     options = _.filter(options, (option) => {
-    //       return !_.contains(['assign'], option.value);
-    //     });
-    //   }
-    // }
-    // if (status === 'pending') {
-    //   // dont show pend or assign option if status is pending
-    //   options = _.filter(options, (option) => {
-    //     return !_.contains(['pending', 'assign'], option.value);
-    //   });
-    // }
-
-    // if (status === 'flagged') {
-    //   // dont show flag or assign if status is flagged
-    //   options = _.filter(options, (option) => {
-    //     return !_.contains(['flag', 'assign'], option.value);
-    //   });
-    // }
-
-    // if (deleted) {
-    //   options = _.filter(options, (option) => {
-    //     return !_.contains(['delete'], option.value);
-    //   });
-    // }
+    if (!canCopy) {
+      options = _.filter(options, (option) => {
+        return option.value !== 'copy';
+      });
+    }
 
     return options;
   }.property('workspace.id', 'workspace.isTrashed'),
