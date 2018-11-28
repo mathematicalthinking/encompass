@@ -312,11 +312,13 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       this.send('toProblemInfo', problem);
     },
 
+
     addToMyProblems: function () {
       let problem = this.get('problem');
       let originalTitle = problem.get('title');
       let title = 'Copy of ' + originalTitle;
       let text = problem.get('text');
+      let author = problem.get('author');
       let additionalInfo = problem.get('additionalInfo');
       let isPublic = problem.get('isPublic');
       let image = problem.get('image');
@@ -325,11 +327,15 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
       let categories = problem.get('categories');
       let status = problem.get('status');
       let currentUser = this.get('currentUser');
+      let keywords = problem.get('keywords');
       let organization = currentUser.get('organization');
+      let copyright = problem.get('copyrightNotice');
+      let sharingAuth = problem.get('sharingAuth');
 
       let newProblem = this.store.createRecord('problem', {
         title: title,
         text: text,
+        author: author,
         additionalInfo: additionalInfo,
         imageUrl: imageUrl,
         isPublic: isPublic,
@@ -339,8 +345,11 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
         image: image,
         organization: organization,
         privacySetting: "M",
+        copyrightNotice: copyright,
+        sharingAuth: sharingAuth,
         status: status,
-        createDate: new Date()
+        createDate: new Date(),
+        keywords: keywords
       });
 
       newProblem.save()
@@ -348,8 +357,8 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           let name = problem.get('title');
           this.set('savedProblem', problem);
           this.get('alert').showToast('success', `${name} added to your problems`, 'bottom-end', 3000, false, null);
-          let parentData = this.get('parentData');
-          this.get('parentActions.refreshList').call(parentData);
+          let parentView = this.get('parentView');
+          this.get('parentActions.refreshList').call(parentView);
         }).catch((err) => {
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
           // this.handleErrors(err, 'createRecordErrors', newProblem);

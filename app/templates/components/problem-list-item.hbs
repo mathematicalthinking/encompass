@@ -64,21 +64,25 @@
         <span class="privacy-icon">{{{public-private problem.privacySetting}}}</span>
         <span class="date">{{format-date problem.createDate 'MM/DD/YY'}}</span>
       </div>
-      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
+      <div class="item-section more" {{action "toggleShowMoreMenu"}}>
         <i class="fas fa-ellipsis-v more-menu"></i>
         {{#if showMoreMenu}}
-        <span class="click-menu">
-          <ul>
-            {{#each ellipsisMenuOptions as |option|}}
-            <li {{action option.action}}>
-              <label>
-                <span class="icon-text">{{option.label}}</span>
-                <i class={{option.icon}}></i>
-              </label>
-            </li>
-            {{/each}}
-          </ul>
-        </span>
+          <span class="click-menu">
+            <ul>
+              {{#if ellipsisMenuOptions}}
+                {{#each ellipsisMenuOptions as |option|}}
+                <li {{action option.action}}>
+                  <label>
+                    <span class="icon-text">{{option.label}}</span>
+                    <i class={{option.icon}}></i>
+                  </label>
+                </li>
+                {{/each}}
+              {{else}}
+                <li>No options</li>
+              {{/if}}
+            </ul>
+          </span>
         {{/if}}
       </div>
     </div>
