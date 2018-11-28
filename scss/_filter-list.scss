@@ -710,7 +710,10 @@
                 &.status {
                   @include flex-item(5, center, .08 0 auto);
                   width: 8%;
-                  .status-text{
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                  .status-text {
                     text-transform: capitalize;
                   }
                 }

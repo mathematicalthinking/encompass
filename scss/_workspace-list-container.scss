@@ -27,6 +27,9 @@
   .sort-bar-item, .item-section {
     font-size: .9em;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
       font-size: .7em;
       position: relative;
@@ -75,9 +78,6 @@
     &.owner {
       @include flex-item(9, center, .08 0 auto);
       width: 8%;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
     &.editors {
       @include flex-item(10, center, .07 0 auto);
@@ -87,11 +87,13 @@
       @include flex-item(2, center, .01 0 auto);
       width: 1%;
       text-align: left;
+      overflow: visible;
     }
     &.more {
       @include flex-item(11, center, .01 0 auto);
       width: 1%;
       text-align: left;
+      overflow: visible;
     }
   }
   .item-section {
