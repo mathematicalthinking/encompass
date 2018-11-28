@@ -70,12 +70,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
 
-    const global = userPermissions.global;
+    const globalSetting = userPermissions.global;
 
-    if (global === 'viewOnly') {
+    if (globalSetting === 'viewOnly') {
       return false;
     }
-    if (global === 'editor') {
+    if (globalSetting === 'editor') {
       return true;
     }
 

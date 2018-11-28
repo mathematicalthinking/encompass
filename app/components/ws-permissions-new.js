@@ -81,16 +81,16 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
 
   buildPermissionsObject() {
     const user = this.get('selectedUser');
-    const global = this.get('global');
+    const globalSetting = this.get('global');
     const answers = this.get('answers');
 
     const results = {
       user,
       answers,
-      global
+      global: globalSetting
     };
 
-    if (global === 'viewOnly') {
+    if (globalSetting === 'viewOnly') {
       results.folders = 1;
       results.selections = 1;
       results.comments = 1;
@@ -98,7 +98,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
 
       return results;
     }
-    if (global === 'editor') {
+    if (globalSetting === 'editor') {
       results.folders = 4;
       results.selections = 4;
       results.comments = 4;
