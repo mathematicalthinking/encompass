@@ -51,7 +51,6 @@
       @include flex-item(3, center, .24 0 auto);
       width: 24%;
       text-align: left;
-      // padding-left: 10px;
     }
     &.last-viewed {
       @include flex-item(4, center, .08 0 auto);
@@ -74,8 +73,8 @@
       width: 7%;
     }
     &.owner {
-      @include flex-item(9, center, .09 0 auto);
-      width: 9%;
+      @include flex-item(9, center, .08 0 auto);
+      width: 8%;
     }
     &.editors {
       @include flex-item(10, center, .07 0 auto);
@@ -83,6 +82,11 @@
     }
     &.info-item {
       @include flex-item(2, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
+    }
+    &.more {
+      @include flex-item(11, center, .01 0 auto);
       width: 1%;
       text-align: left;
     }
@@ -133,7 +137,7 @@
             @include flex-item(8, center, .10 0 auto);
             width: 10%;
           }
-          &.info-item, &.owner {
+          &.info-item, &.owner, &.more {
             display: none;
           }
         }
