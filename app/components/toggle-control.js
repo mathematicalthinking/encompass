@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ToggleControlComponent = Ember.Component.extend({
   classNames: [],
   currentValue: null,

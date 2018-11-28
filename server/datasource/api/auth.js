@@ -25,7 +25,6 @@ const localLogin = (req, res, next) => {
       //failwithError: true,
   },
 function(err, user, info) {
-  console.log('info', info);
   if (err) {
     return next(err);
   }

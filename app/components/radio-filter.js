@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.RadioFilterComponent = Ember.Component.extend({
   classNames: ['radio-filter'],
 

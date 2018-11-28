@@ -151,7 +151,6 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
     buildCriteria: function() {
       if (!this.get('isFormValid')) {
         if (this.get('missingRequiredFields')) {
-          console.log('missingRequredFields is already true');
           $('.error-box').removeClass('fadeIn');
           $('.error-box').addClass('pulse');
         }
@@ -190,7 +189,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
         section: this.get('selectedSection'),
         startDate: startDate,
         endDate: endDate,
-        folderSetName: this.get('selectedFolderSet.name'),
+        folderSet: this.get('selectedFolderSet'),
         requestedName,
         mode,
         owner

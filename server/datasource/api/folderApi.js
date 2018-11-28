@@ -11,7 +11,6 @@ const logger   = require('log4js').getLogger('server');
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
-const data     = require('./data');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
@@ -75,12 +74,20 @@ function getFolderSets(req, res, next) {
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-  let { accountType, actingRole } = user;
-  if (accountType === 'S' || actingRole === 'student') {
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  }
-
-  res.send({folderSet: data.folderSets});
+  // let { accountType, actingRole } = user;
+  // if (accountType === 'S' || actingRole === 'student') {
+  //   return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  // }
+return models.FolderSet.find({}).lean().exec()
+  .then((folderSets => {
+    const data = { folderSets };
+    return utils.sendResponse(res, data);
+  }))
+  .catch((err) => {
+    console.error(`Error getFolderSets: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  });
 }
 
 /**
@@ -132,12 +139,12 @@ async function getFolders(req, res, next) {
 function postFolder(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.folder.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 2)) {
       var folder = new models.Folder(req.body.folder);
       folder.createdBy = user;
       folder.createDate = Date.now();
@@ -168,13 +175,13 @@ function postFolder(req, res, next) {
 function putFolder(req, res, next) {
 
   var user = userAuth.requireUser(req);
-  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findOne({folders: req.params.id}).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 3)) {
       models.Folder.findById(req.params.id,
         function (err, doc) {
           if(err) {
@@ -204,11 +211,71 @@ function putFolder(req, res, next) {
       );
     } else {
       logger.info("permission denied");
-      // res.send(403, "You don't have permission for this workspace");
       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
-
     }
   });
+}
+
+function getFolderSet(req, res, next) {
+  const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+
+  const { id } = req.params;
+
+  if (!id) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  return models.FolderSet.findById(id).lean().exec()
+    .then((folderSet) => {
+      const data = { folderSet };
+      return utils.sendResponse(res, data);
+    })
+    .catch((err) => {
+      console.error(`Error getFolderSet: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(null, res);
+    });
+}
+
+async function postFolderSet(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+
+
+
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
+
+    const { folderSet } = req.body;
+
+    if (!folderSet) {
+      return utils.sendError.InvalidContentError(null, res);
+    }
+
+    const { name, privacySetting, folders } = folderSet;
+
+    const record = new models.FolderSet({
+      name,
+      privacySetting,
+      folders,
+      createdBy: user._id,
+      lastModifiedBy: user._id
+    });
+
+    const saved = await record.save();
+    const data = { folderSet: saved };
+    return utils.sendResponse(res, data);
+
+
+  }catch(err) {
+    console.error(`Error postFolderSet: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
 }
 
 module.exports.get.folderSets = getFolderSets;
@@ -216,3 +283,5 @@ module.exports.get.folder = getFolder;
 module.exports.get.folders = getFolders;
 module.exports.post.folder = postFolder;
 module.exports.put.folder = putFolder;
+module.exports.post.folderSet = postFolderSet;
+module.exports.get.folderSet = getFolderSet;

@@ -135,7 +135,6 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         return;
       }
       if (detailName === 'uploadedFiles') {
-        console.log('clicked the x on uploaded files');
         let uploadedFiles = this.get('uploadedFiles');
         uploadedFiles.forEach((image) => {
           this.get('store').findRecord('image', image._id).then((image) => {

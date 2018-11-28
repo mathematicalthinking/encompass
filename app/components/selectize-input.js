@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.SelectizeInputComponent = Ember.Component.extend({
   showInput: true,
   classNames: ['selectize-comp'],
@@ -81,7 +82,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       create: this.create || false,
       persist: this.persist || false,
       createFilter: this.createFilter || null,
-      preload: this.preload || false
+      preload: this.preload || false,
     };
 
     let that = this;
@@ -116,6 +117,14 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     }
 
     let key = this.get('queryParamsKey');
+    /*
+      for api that is expecting searchBy to be in shape:
+      searchBy: {
+        query: string,
+        criterion: string
+      }
+    */
+    let searchCriterion = this.get('searchCriterion');
     let queryParams = {};
     let topLevelQueryParams = this.get('topLevelQueryParams');
 
@@ -123,6 +132,9 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       queryParams[topLevelQueryParams] = {
         [key]: query
       };
+      if (searchCriterion) {
+        queryParams[topLevelQueryParams].criterion = searchCriterion;
+      }
     } else {
       queryParams = {
         [key]: query

@@ -6,16 +6,14 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
   filterAssignments: function() {
     let currentUser = this.get('currentUser');
     let filtered = this.assignments.filter((assignment) => {
-      // console.log('assign date is', assignment.get('assignedDate'));
       return assignment.id && !assignment.get('isTrashed');
     });
     filtered = filtered.sortBy('createDate').reverse();
     if (currentUser.get('accountType') === 'S') {
-      console.log('current user is a student');
+      // what is this if block for?
+      // console.log('current user is a student');
     }
-    let currentDate = new Date();
-    console.log('current Date is', currentDate);
-
+    // let currentDate = new Date();
     this.set('assignmentList', filtered);
   }.observes('assignments.@each.isTrashed', 'currentUser.isStudent'),
 

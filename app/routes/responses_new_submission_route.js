@@ -9,13 +9,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
 
   },
 
-  afterModel: function(model){
-    console.log(model);
-  },
-
   model: function(params) {
     var route      = this;
-    // jshint camelcase: false
     var submission = this.store.find('submission', params.submission_id);
 
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {

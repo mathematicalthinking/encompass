@@ -1,0 +1,11 @@
+{{#if options.groupLabel}}
+  <h5>{{options.groupLabel}}</h5>
+{{/if}}
+
+{{#each options.inputs as |input|}}
+ <ol>
+    <li>
+        {{radio-group-item selectedValue=selectedValue label=input.label name=options.groupName isRequired=options.isRequired value=input.value onClick=(action "setValue")}}
+    </li>
+  </ol>
+{{/each}}

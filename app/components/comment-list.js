@@ -10,6 +10,7 @@
  *   TODO:
  *   - Test the hashtag stuff to see if that is still working.
  */
+/*global _:false */
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),
@@ -129,7 +130,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   canComment: function() {
     let ws = this.currentWorkspace;
-    return this.get('permissions').canEdit(ws);
+    return this.get('permissions').canEdit(ws, 'comments', 2);
   }.property('onSelection', 'allowedToComment'),
 
   handleLoadingMessage: function() {
@@ -213,7 +214,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         comp.clearCommentParent();
         comp.get('comments').pushObject(record);
       }).catch((err) => {
-        console.log('error creating comment', err);
         this.handleErrors(err, 'createRecordErrors');
       });
     },
@@ -234,7 +234,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
           });
           // this.set('commentDeleteSuccess', true);
         }).catch((err) => {
-          console.log('error deleting comment', err);
           this.handleErrors(err, 'updateRecordErrors');
         });
       });

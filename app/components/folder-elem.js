@@ -108,7 +108,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   },
 
   putInFolder: function(folder, type, data) {
-    console.log("Put in folder");
     var obj = JSON.parse(data);
 
     if( this.model.hasSelection(obj.id) ) {
@@ -117,30 +116,31 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     }
 
     if( type === "selection" ){
-      console.log("Put SELECTION in folder");
       this.sendAction('dropped', obj.id, this.model);
     } else if( type === "folder" ){
       this.propertyWillChange('model');
       this.putFolderInFolder(obj, this.model);
       this.propertyDidChange('model');
     } else {
-      console.info("we don't support dropping " + type + " objects in folders");
+      // display error or some kind of message?
+      // console.info("we don't support dropping " + type + " objects in folders");
     }
   },
 
   putSelectionInFolder: function(id, folder) {
-    console.log("Put selection (folder-elem) in folder");
+    // console.log("Put selection (folder-elem) in folder");
   },
 
   putFolderInFolder: function(child, parent) {
-    console.log("Put folder " + child.id + " into " + this.model.get('name') );
+    // console.log("Put folder " + child.id + " into " + this.model.get('name') );
     let parentName = this.model.get('name');
     var droppedFolder = false;
     var parentOfDropped = false;
     var iterator    = parent;
 
     if (child.id === this.model.get('id')) {
-      console.info('You cannot drop a folder into itself.');
+      // TODO: give user feedback
+      // console.info('You cannot drop a folder into itself.');
       return;
     }
 
@@ -148,10 +148,10 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     droppedFolder = folders.filterBy('id', child.id).get('firstObject');
 
     let childName = droppedFolder.get('name');
-    console.log('dropped folder name', childName);
 
     if (!droppedFolder) {
-      console.info('Could not retrieve the folder\'s model...');
+      // TODO: give user feedback
+      // console.info('Could not retrieve the folder\'s model...');
       return;
     }
 
@@ -160,7 +160,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       iterator = iterator.get('parent');
 
       if (iterator.get('id') === droppedFolder.get('id')) {
-        console.info('You cannot drop a folder into one of its subfolders.');
+        // TODO: give user feedback
+        // console.info('You cannot drop a folder into one of its subfolders.');
         return;
       }
     }
@@ -185,7 +186,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
     droppedFolder.save().then((res) => {
       this.get('alert').showToast('success', `${childName} is now inside ${parentName}`, 'bottom-end', 3000, false, null);
-      console.log('folder dropped in folder success!');
     }).catch((err) => {
       this.handleErrors(err, 'updateRecordErrors', droppedFolder);
     });
@@ -193,7 +193,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   actions: {
     toggle: function() {
-      console.log("expand folder " + this.model.get('name') );
       this.set('model.isExpanded', !this.get('model.isExpanded'));
     },
 
@@ -229,11 +228,10 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     },
 
     showFolder: function() {
-      console.log("Show folder!");
+      // console.log("Show folder!");
     },
 
     updateTaggings: function() {
-      console.log('updating taggings for: ', this.model.name);
       let tags = this.model.get('taggings');
       let tagIds = tags.mapBy('id');
 

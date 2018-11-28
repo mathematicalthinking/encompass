@@ -6,6 +6,7 @@
   * @since 1.0.1
   * @see workspace_submissions_route
   */
+/*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
 
   /*
@@ -16,14 +17,12 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   */
 
   setupController: function(controller, model) {
-    console.log("W-S Route!");
     this._super(controller, model);
     var currentWs = controller.get('currentWorkspace');
     currentWs.set('owner', currentWs.get('owner'));
   },
 
   afterModel: function( model, transition ){
-    console.log("W-s After Model!");
   },
 
   activate: function() {
@@ -35,7 +34,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   },
 
   renderTemplate: function(controller, model) {
-    console.log("Rendering template for W-S");
     var route = this;
 
     var foldersController = route.controllerFor('folders');
@@ -84,8 +82,7 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       if(!user.get('seenTour')) {
         //user.set('seenTour', new Date());
         //user.save();
-        console.info('starting the tour!');
-        route.send('startTour', 'workspace');
+        route.controller.send('startTour', 'workspace');
       }
     });
   },
@@ -96,12 +93,10 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
     },
 
     addSelection: function( selection ){
-      console.log("W-S Route: Got add selection action!");
     },
 
     tagSelection: function(selection, tags){
       var route = this;
-      console.log('tagging selection: ' + selection);
       var workspace = this.modelFor('workspace');
       workspace.get('folders').then(function(folders){
         var lcFolders = {};
@@ -116,7 +111,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       });
     },
     fileSelectionInFolder: function(selectionId, folder){
-      console.log('tagging selection: ' + selectionId);
       var store = this.get('store');
       var currentUser = this.get('currentUser');
 
@@ -136,7 +130,6 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
               });
 
               tagging.save().then(function(obj) {
-                console.debug('saved tag: ' + obj.get('id'));
                 selection.get('taggings').then(function(taggings){
                   taggings.pushObject(tagging);
                 });

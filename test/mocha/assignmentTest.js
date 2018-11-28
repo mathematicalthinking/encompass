@@ -87,39 +87,39 @@ describe('Assignment CRUD operations by account type', function() {
       });
 
       /** POST **/
-      xdescribe('/POST assignment', () => {
-        it('should post a new assignment', done => {
-          agent
-          .post(baseUrl)
-          .send({assignment: validAssignment})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            expect(res).to.have.status(200);
-            expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
-            expect(res.body.assignment.explanation).to.eql('I put 2 and 2 together');
-            done();
-          });
-        });
-      });
+      // xdescribe('/POST assignment', () => {
+      //   it('should post a new assignment', done => {
+      //     agent
+      //     .post(baseUrl)
+      //     .send({assignment: validAssignment})
+      //     .end((err, res) => {
+      //       if (err) {
+      //         console.error(err);
+      //       }
+      //       expect(res).to.have.status(200);
+      //       expect(res.body.assignment).to.have.any.keys('problem', 'assignment');
+      //       expect(res.body.assignment.explanation).to.eql('I put 2 and 2 together');
+      //       done();
+      //     });
+      //   });
+      // });
 
-      /** PUT name**/
-      xdescribe('/PUT update assignment explanation for already submitted', () => {
-        it('should return an error,', done => {
-          let url = baseUrl + _id;
-          agent
-          .put(url)
-          .send({assignment: updated})
-          .end((err, res) => {
-            if (err) {
-              console.error(err);
-            }
-            expect(res).to.have.status(403);
-            done();
-          });
-        });
-      });
+      // /** PUT name**/
+      // xdescribe('/PUT update assignment explanation for already submitted', () => {
+      //   it('should return an error,', done => {
+      //     let url = baseUrl + _id;
+      //     agent
+      //     .put(url)
+      //     .send({assignment: updated})
+      //     .end((err, res) => {
+      //       if (err) {
+      //         console.error(err);
+      //       }
+      //       expect(res).to.have.status(403);
+      //       done();
+      //     });
+      //   });
+      // });
 
     });
   }

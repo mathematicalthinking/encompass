@@ -189,6 +189,7 @@ var data = [{
     "isEmailConfirmed": true,
     "actingRole": "teacher",
     "createdBy": "5b245760ac75842be3189525",
+    "seenTour": "2018-11-17T10:20:51.382Z"
   }, {
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
@@ -202,7 +203,8 @@ var data = [{
     "isEmailConfirmed": true,
     "createDate": "2018-08-17T10:20:51.382Z",
     "actingRole": "teacher",
-    "createdBy": "5b245841ac75842be3189526"
+    "createdBy": "5b245841ac75842be3189526",
+    "seenTour": "2018-11-17T10:24:51.382Z"
   }, {
     "_id": "5b3688218610e3bfecca403c",
     "accountType": 'S',
@@ -321,7 +323,8 @@ var data = [{
     "isTrashed": false,
     "createDate": "2018-08-14T18:20:51.382Z",
     "lastSeen": "2018-08-16T20:19:26.457Z",
-    "createdBy": "5b245760ac75842be3189525"
+    "createdBy": "5b245760ac75842be3189525",
+    "seenTour": "2018-11-18T10:20:51.382Z"
   },
   {
     "_id": "52964653e4bad7087700014b",
@@ -438,7 +441,7 @@ var data = [{
   "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "history" : [],
   "assignments" : ["5b91743a3da5efca74705773"],
-  "answers" : [],
+  "answers" : ["5bec35898c73047613e2f34b"],
   "sections" : [
       {
           "sectionId" : "5b9149a32ecaf7c30dd4748f",
@@ -505,7 +508,7 @@ var data = [{
   "lastSeen" : null,
   "organizationRequest" : null,
   "requestReason" : null,
-  "seenTour" : null
+  "seenTour" : "2018-11-13T10:20:51.382Z"
 },
 {
   "_id" : "5b4e4b48808c7eebc9f9e827",
@@ -536,7 +539,7 @@ var data = [{
   "authorizedBy" : null,
   "createdBy" : "5b4e4b48808c7eebc9f9e827",
   "lastModifiedBy" : "5b245760ac75842be3189525",
-  "seenTour" : null,
+  "seenTour" : "2018-11-22T10:20:51.382Z",
 },
 {
   "_id" : "5b99146e25b620610ceead75",
@@ -567,7 +570,7 @@ var data = [{
   "authorizedBy" : null,
   "createdBy" : null,
   "lastModifiedBy" : "5b245760ac75842be3189525",
-  "seenTour" : null
+  "seenTour" : "2018-11-14T10:20:51.382Z"
 },
 {
   "_id" : "52a695c2cc319831440007d0",

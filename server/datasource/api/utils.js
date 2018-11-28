@@ -101,6 +101,11 @@ function isNonEmptyString(val) {
   return _.isString(val) && val.length > 0;
 }
 
+// not array or function
+function isNonEmptyObject(val) {
+  return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
+}
+
 function getFirstCharOfStr(str) {
   if (!_.isString(str)) {
     return;
@@ -237,10 +242,6 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
-const stringToObjectId = function(id) {
-  console.log('id is', id);
-};
-
 const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Limit and skip are passed in with the req
   let limit = req.query.limit;
@@ -257,13 +258,20 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   let limitObj = { "$limit": limit };
   let skipObj = { "$skip": skip };
 
-  console.log('criteria is', criteria);
   // Match Obj takes the passed in criteria, as well as checking sortable field exists
   criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
       let value = criterion.createdBy;
       let updatedValue = mongoose.Types.ObjectId(value);
       criterion.createdBy = updatedValue;
+    }
+    if (criterion.hasOwnProperty('_id')) {
+      let value = criterion._id;
+      if (value.hasOwnProperty('$in')) {
+        value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
+      } else {
+        criterion._id = mongoose.Types.ObjectId(value);
+      }
     }
     if (criterion.hasOwnProperty('$or')) {
       criterion.$or.forEach((crit) => {
@@ -275,9 +283,7 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
         if (crit.hasOwnProperty('owner')) {
           let value = crit.owner;
           if (value.hasOwnProperty('$in')) {
-            value.$in.forEach((val) => {
-              val = mongoose.Types.ObjectId(val);
-            });
+          value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
           } else {
             let updatedValue = mongoose.Types.ObjectId(value);
             crit.owner = updatedValue;
@@ -286,7 +292,6 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
       });
     }
   });
-
   let matchObj = { "$match" : criteria };
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };
@@ -310,6 +315,47 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
 };
 
 
+function cloneDocuments(model, documents) {
+
+    if (!model) {
+      return;
+    }
+    let input;
+    // documents should be either a single document or an array of documents
+    if (!_.isArray(documents)) {
+      input = [document];
+    } else {
+      input = [ ...documents];
+    }
+    // returns array of new cloned docs
+    return Promise.all(input.map((doc) => {
+      return models[model].findById(doc._id).lean().exec()
+      .then((json) => {
+        delete json._id;
+        let newDoc = new models[model](json);
+        return newDoc.save();
+      })
+      .then((doc => {
+        return doc;
+      }))
+      .catch((err) => {
+        console.error(`Error cloneDocuments: ${err}`);
+      });
+    }));
+}
+
+function mapObjectsToIds(objects, asStrings=false) {
+  if (!isNonEmptyArray(objects)) {
+    return;
+  }
+
+  if (asStrings) {
+    return _.map(objects, obj => obj._id.toString());
+  }
+  return _.map(objects, obj => obj._id);
+
+}
+
 
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
@@ -322,5 +368,6 @@ module.exports.capitalizeWord = capitalizeWord;
 module.exports.getSafeName = getSafeName;
 module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
-module.exports.stringToObjectId = stringToObjectId;
-
+module.exports.cloneDocuments = cloneDocuments;
+module.exports.isNonEmptyObject = isNonEmptyObject;
+module.exports.mapObjectsToIds = mapObjectsToIds;

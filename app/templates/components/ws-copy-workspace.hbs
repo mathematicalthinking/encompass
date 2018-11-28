@@ -1,0 +1,36 @@
+<h5>Choose workspace to copy</h5>
+
+{{selectize-input
+  store=store
+  inputId="select-workspace"
+  isAsync=true
+  maxItems=1
+  initialOptions=initialWorkspaceOptions
+  initialItems=initialWorkspaceItem
+  onItemAdd=(action "setSelectedWorkspace")
+  onItemRemove=(action "setSelectedWorkspace")
+  labelField="name"
+  searchField="name"
+  valueField="id"
+  model="workspace"
+  queryParamsKey="query"
+  searchCriterion="name"
+  topLevelQueryParams="searchBy"
+  placeholder="Search for workspaces by name..."
+  preload="focus"
+}}
+
+{{#if selectedWorkspace}}
+  {{workspace-info-summary workspace=selectedWorkspace}}
+{{/if}}
+
+{{#if missingWorkspace}}
+  {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
+{{/if}}
+{{#if tooFewSubmissions}}
+  {{error-box error="Please select a workspace with at least 1 submission." resetError=(action (mut tooFewSubmissions) null) showDismiss=true }}
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="btn-next" {{action "next"}}>Next</button>
+</div>

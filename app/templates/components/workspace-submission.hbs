@@ -127,7 +127,7 @@
       <li class="selection">
         {{#unless selection.isTrashed}}
           {{#if canSelect}}
-            {{draggable-selection selection=selection deleteSelection=(action "deleteSelection") }}
+            {{draggable-selection selection=selection canDelete=canDeleteSelection deleteSelection=(action "deleteSelection") }}
           {{else}}
 
           <span class="selection_text selectionLink {{id}}">{{selection.text}}</span>

@@ -11,6 +11,7 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const workspaceApi = require('./workspaceApi');
+const apiUtils = require('../api/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -28,7 +29,7 @@ module.exports.put = {};
 /* jshint ignore:start */
 const buildSubmissionSet = async function (submissions, user) {
   let submissionSet;
-  if (!Array.isArray(submissions)) {
+  if (!apiUtils.isNonEmptyArray(submissions)) {
     return;
   }
   const submissionIds = submissions.map((sub) => {
@@ -36,7 +37,6 @@ const buildSubmissionSet = async function (submissions, user) {
   });
 
   var matchBy = {
-    "teacher.id": submissions[0].teacher.id,
     "_id": {
       $in: submissionIds
     },
@@ -58,6 +58,14 @@ const buildSubmissionSet = async function (submissions, user) {
       $in: [null, false]
     } //submissions that are not deleted
   };
+
+  let teacher = submissions[0].teacher;
+  let teacherId;
+  if (!apiUtils.isNullOrUndefined(teacher)) {
+    teacherId = teacher.id;
+    matchBy["teacher.id"] = teacherId;
+  }
+
   var sortBy = {
     "createDate": 1
   };
@@ -125,9 +133,12 @@ const buildSubmissionSet = async function (submissions, user) {
       }
     ]);
   } catch (err) {
-    console.log(err);
+    console.error(`Error buildSubmissionSet: ${err}`);
   }
-  return submissionSet[0].submissionSet;
+  if (apiUtils.isNonEmptyArray(submissionSet)) {
+    return submissionSet[0].submissionSet;
+  }
+  return null;
 };
 
 /* jshint ignore:start */

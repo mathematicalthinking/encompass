@@ -1,7 +1,9 @@
+/*global _:false */
 Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-list-container',
   showList: true,
   showGrid: false,
+  utils: Ember.inject.service('utility-methods'),
 
   sortProperties: ['name'],
   workspaceToDelete: null,
@@ -208,12 +210,12 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
                 }
               }
             },
-            // member: {
-            //   label: "Member",
-            //   value: "member",
-            //   isChecked: true,
-            //   icon: "fas fa-users"
-            // },
+            collab: {
+              label: "Collaborator",
+              value: "collab",
+              isChecked: false,
+              icon: "fas fa-users"
+            },
             myOrg: {
               label: "My Org",
               value: "myOrg",
@@ -404,6 +406,26 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   }
 },
 
+buildCollabFilter() {
+  const utils = this.get('utils');
+  const collabWorkspaces = this.get('currentUser.collabWorkspaces');
+
+  let ids;
+  let filter = {};
+
+  if (utils.isNonEmptyArray(collabWorkspaces)) {
+    ids = collabWorkspaces.mapBy('id');
+  }
+  // user is not a collaborator for any workspaces
+  if (!this.get('utils').isNonEmptyArray(ids)) {
+    this.set('criteriaTooExclusive', true);
+    return filter;
+  }
+  filter._id = { $in: ids };
+
+  return filter;
+},
+
   buildModeFilter: function() {
     //privacy setting determined from privacy drop down on main display
     let mode = this.get('modeFilter');
@@ -449,6 +471,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
     if (primaryFilterValue === 'mine') {
       filterBy = this.buildMineFilter();
+    }
+
+    if (primaryFilterValue === 'collab') {
+      filterBy = this.buildCollabFilter();
     }
 
     if (primaryFilterValue === 'everyone') {

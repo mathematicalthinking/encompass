@@ -5,7 +5,6 @@
   * @since 1.0.0
   */
 
-  /*jshint ignore:start*/
 //REQUIRE MODULES
 const mongoose = require('mongoose');
 const logger = require('log4js').getLogger('server');
@@ -17,7 +16,6 @@ const helper = require('util');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils  = require('../../middleware/requestHandler');
-const data   = require('./data');
 const access = require('../../middleware/access/workspaces');
 const answerAccess = require('../../middleware/access/answers');
 const accessUtils = require('../../middleware/access/utils');
@@ -156,7 +154,7 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
   */
 function sendWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       console.error(`Error sendWorkspace: ${err}`);
       console.trace();
@@ -188,7 +186,7 @@ function putWorkspace(req, res, next) {
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
 
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if(!access.get.workspace(user, ws)) {
       logger.info("permission denied");
       res.status(403).send("You don't have permission to modify this workspace");
@@ -205,6 +203,7 @@ function putWorkspace(req, res, next) {
         ws.lastViewed = new Date();
         ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
         ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
+        ws.permissions = req.body.workspace.permissions;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
@@ -334,69 +333,88 @@ function updateWorkspaces(workspaces, submissionSet){
   * @param {Workspace} ws       The workspace this folder structure will be in
   * @return {Promise}  Resolves when all the folders are created
  */
-function newFolderStructure(user, ws, folderSetName) {
-  var promise = new mongoose.Promise();
-  var tasks = [];
+async function newFolderStructure(user, wsInfo, folderSetHash) {
+  try {
+    let folders = [];
+    const folderIds = [];
 
-  var folders = []; // 'none' and anything else will use the empty set
+    if (!apiUtils.isNonEmptyObject(wsInfo) || !apiUtils.isNonEmptyObject(folderSetHash)) {
+      return;
+    }
 
-  if(!folderSetName) { folderSetName = 'none'; }
+    let { folderSetId, folderSetObjects } = folderSetHash;
+    const { newWsId, newWsOwner } = wsInfo;
 
-  if(folderSetName === 'default' || folderSetName === 'Math Forum Default Folders') {
-    folders = data.mathforumFolders;
-  }
+    if(!folderSetId && !folderSetObjects) {
+      return folders;
+    }
 
-  if(folderSetName === 'Simple Folder Set') {
-    //yes, we could do data[folderSetName] but that requires a lot of sanitizing
-    //since we are getting the param from the request
-    folders = data.simple;
-  }
+    if (apiUtils.isNonEmptyArray(folderSetObjects)) {
+      folders = folderSetObjects;
+    } else if (folderSetId) {
+      // lookup folderSet in db
+      const folderSet = await models.FolderSet.findById(folderSetId).lean().exec();
+      folderSetObjects = folderSet.folders;
+    }
 
-  folders.forEach(function(folder){
-    var folderPromise = new mongoose.Promise();
-    var f = new models.Folder({
-      //owner: user,
-      name: folder.name,
-      workspace: ws._id,
-      weight: folder.weight ? folder.weight : 0,
-      parent: null
-    });
-    f.save(function(err, fSaved){
-      if(err) {
-        logger.error(err);
-        folderPromise.reject(err);
-      } else {
-        if(folder.children) {
-          folder.children.forEach(function(child){
-            //not sure this is kosher - the promise is resolving
-            //whenever one of the children saves...?
-            var c = new models.Folder({
-              //owner: user,
-              name: child.name,
-              workspace: ws._id,
-              weight: child.weight ? child.weight : 0,
-              parent: fSaved
-            });
-            c.save(function(err, doc){
-              if(err) {
-                logger.error(err);
-                folderPromise.reject(err);
-              } else {
-                folderPromise.resolve();
-              }
-            });
-          });
-        } else {
-          folderPromise.resolve(); //no children, we're good
+    const recurse = async function(folderObj, parentId) {
+      try {
+        if (!folderObj) {
+          return;
         }
+        // console.log(`parent for folderObj: ${folderObj.name}: ${parentId}`);
+
+        let f = new models.Folder({
+          owner: newWsOwner,
+          name: folderObj.name,
+          weight: folderObj.weight ? folderObj.weight : 0,
+          createdBy: user._id,
+          lastModifiedBy: user._id,
+          children: [],
+          workspace: newWsId
+        });
+
+        if (parentId) {
+          f.parent = parentId;
+        }
+
+        const children = folderObj.children;
+        if (_.isEmpty(children)) {
+          return f.save()
+          .then((doc) => {
+            folderIds.push(doc._id);
+            return doc;
+          });
+        }
+
+        f.children = await Promise.all(_.map(children, (child => {
+          return recurse(child, f._id);
+        })));
+
+        let newChildren = f.children;
+        let mapped = _.map(newChildren, (child => {
+          // can only save the id of the child folder in children array
+          return child._id;
+        }));
+
+        f.children = mapped;
+        return f.save()
+          .then((doc) => {
+            folderIds.push(doc._id);
+            return doc;
+          });
+      }catch(err) {
+        console.error(`Error recurse : ${err}`);
       }
-    });
-    tasks.push(folderPromise);
-  });
-  Q.all(tasks).then(function(){
-    promise.resolve();
-  });
-  return promise;
+    };
+
+    folders = await Promise.all(_.map(folderSetObjects, (obj => {
+      return recurse(obj, null);
+    })));
+    return folderIds;
+  }catch(err) {
+    console.error(`Error newFolderStructure: ${err}`);
+  }
 }
 
 /**
@@ -435,7 +453,7 @@ function nameWorkspace(submissionSet, user, isPows) {
   * @param  {User}   user    We use the user's name for the workspace name, also set them as the owner
   * @return {Promise}   resolves when the workspace is stored
  */
-function newWorkspace(submissionSet, user, folderSetName) {
+function newWorkspace(submissionSet, user, folderSetId) {
   var workspace = new models.Workspace({
     name: nameWorkspace(submissionSet, user),
     submissionSet: submissionSet,
@@ -449,9 +467,11 @@ function newWorkspace(submissionSet, user, folderSetName) {
   var promise = new mongoose.Promise();
   workspace.save(function(err, ws){
     if (err) {
-      return utils.sendError.InternalError(err, res);
+      console.error(`Error newWorkspace save: ${err}`);
     }
-    newFolderStructure(user, ws, folderSetName).then(function(){
+    var wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+    var folderSetInfo = { folderSetId: folderSetId, folderSetObjects: null };
+    newFolderStructure(user, wsInfo, folderSetInfo).then(function(){
       promise.resolve();
     });
   });
@@ -464,7 +484,7 @@ function newWorkspace(submissionSet, user, folderSetName) {
   * @description Handles a submission set for a user
   * @see prepareAndUpdateWorkspaces
  */
-function handleSubmissionSet(submissionSet, user, folderSetName) {
+function handleSubmissionSet(submissionSet, user, folderSetId) {
   var promise = new mongoose.Promise();
   var prefix = 'submissionSet.criteria.';
   var criteria = {'$and': []};
@@ -501,7 +521,7 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
       });//
     } else {
     // if not, make a new one
-    return newWorkspace(submissionSet, user, folderSetName).then(function(){
+    return newWorkspace(submissionSet, user, folderSetId).then(function(){
         promise.resolve();
       });
     }
@@ -516,12 +536,12 @@ function handleSubmissionSet(submissionSet, user, folderSetName) {
   * @see `handleSubmissionSet` for each of the args
   * @return {Promise}  a grouped promise
   */
-function handleSubmissionSets(submissionSets, user, folderSetName) {
+function handleSubmissionSets(submissionSets, user, folderSetId) {
   logger.debug('There are ' + submissionSets.length + 'submission sets.');
   logger.debug('looking for filters');
   var tasks = [];
   submissionSets.forEach(function(submissionSet){
-    tasks.push(handleSubmissionSet(submissionSet, user, folderSetName));
+    tasks.push(handleSubmissionSet(submissionSet, user, folderSetId));
   });
   return Q.all(tasks);
 }
@@ -778,11 +798,11 @@ function postWorkspace(req, res, next) {
 function newWorkspaceRequest(req, res, next) {
   var user = userAuth.requireUser(req);
   var pdSetName = req.body.newWorkspaceRequest.pdSetName;
-  var folderSetName = req.body.newWorkspaceRequest.folderSetName;
+  var folderSetId = req.body.newWorkspaceRequest.folderSetId;
   // logger.debug('creating new workspace for pdset: ' + pdSetName);
 
   //copy over all of the pdsubmissions
-  prepareUserSubmissions(user, pdSetName, folderSetName, function () {
+  prepareUserSubmissions(user, pdSetName, folderSetId, function () {
     var matchBy = {
       "teacher.username": user.username,
       "pdSet": pdSetName, // submissions that belong to our pdSet
@@ -843,7 +863,7 @@ function newWorkspaceRequest(req, res, next) {
         return  (!(set.criteria && set.description && set.submissions));
       });
 
-      handleSubmissionSets(submissionSets, user, folderSetName).then(function() {
+      handleSubmissionSets(submissionSets, user, folderSetId).then(function() {
         sendWorkspaces(req, res, next);
       });
     });
@@ -865,7 +885,7 @@ function newWorkspaceRequest(req, res, next) {
   let { ids, filterBy, sortBy, searchBy, page, } = req.query;
 
       if (filterBy) {
-        console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        // console.log('filterBy workspace API:', JSON.stringify(filterBy));
         let { all } = filterBy;
 
         if (all) {
@@ -965,12 +985,10 @@ function newWorkspaceRequest(req, res, next) {
        }
 
       const pageCount = Math.ceil(itemCount / req.query.limit);
-      console.log('pageCount', pageCount);
       let currentPage = page;
       if (!currentPage) {
         currentPage = 1;
       }
-      console.log('currentPage', currentPage);
       const data = {
         'workspaces': results,
         'meta': {
@@ -1107,25 +1125,13 @@ async function buildCriteria(accessibleCriteria, requestFilter, user) {
 
 }
 
-async function getAnswerIds(criteria) {
-  const answers = await models.Answer.find(criteria, {_id: 1}).lean().exec();
-  return answers.map(obj => obj._id);
-}
-
-async function populateAnswers(answers) {
-  // return Promise.all(answerIds.map((ans) => {
-  //   return ans.populate('createdBy').populate('section').populate('problem').execPopulate();
-  // }));
+function populateAnswers(answers) {
   const opts = [
     {path: 'createdBy', select: 'username'},
     {path: 'problem', select: 'title'},
     {path: 'section', select: ['name', 'teachers']}
   ];
-  try {
-     return await models.Answer.populate(answers, opts);
-  } catch(err) {
-    console.error(err);
-  }
+    return models.Answer.populate(answers, opts);
 }
 
 async function answersToSubmissions(answers) {
@@ -1182,12 +1188,11 @@ async function answersToSubmissions(answers) {
         clazz.sectionId = section._id;
         clazz.name = section.name;
         teachers = section.teachers;
-        if (_.isArray(teachers)) {
+        if (apiUtils.isNonEmptyArray(teachers)) {
           primaryTeacher = teachers[0];
           teacher.id = primaryTeacher;
         }
       }
-
       let sub = {
         //longAnswer: ans.explanation,
         //shortAnswer: ans.answer,
@@ -1207,13 +1212,13 @@ async function answersToSubmissions(answers) {
 }
 
 async function postWorkspaceEnc(req, res, next) {
-  const user = req.user;
+  const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('You must be logged in!', res);
+  }
+
   const workspaceCriteria = req.body.encWorkspaceRequest;
-  // const requestedName = workspaceCriteria.requestedName;
-
-  // const folderSetName = workspaceCriteria.folderSetName;
-
-  const { requestedName, mode, folderSetName, owner } = workspaceCriteria;
+  const { requestedName, mode, folderSet, owner } = workspaceCriteria;
 
   try {
     const pruned = pruneObj(workspaceCriteria);
@@ -1243,15 +1248,15 @@ async function postWorkspaceEnc(req, res, next) {
 
 
     if (_.isEmpty(answers) || _.isUndefined(answers)) {
-      //let rec = req.body.encWorkspaceRequest;
       let rec = pruned;
       rec.isEmptyAnswerSet = true;
+
       let enc = new models.EncWorkspaceRequest(rec);
       let saved = await enc.save();
 
       const data = { encWorkspaceRequest: saved };
-        return utils.sendResponse(res, data);
-      }
+      return utils.sendResponse(res, data);
+    }
 
     let subs = await answersToSubmissions(answers);
     const submissions = await Promise.all(subs.map((obj) => {
@@ -1259,53 +1264,972 @@ async function postWorkspaceEnc(req, res, next) {
       sub.createdBy = user;
       sub.createDate = Date.now();
       return sub.save();
-}));
-const submissionIds = submissions.map((sub) => {
-  return sub._id;
-});
-const submissionSet = await importApi.buildSubmissionSet(submissions, user);
-let name;
+    }));
 
-if (requestedName) {
-  name = requestedName;
-} else {
-  name = nameWorkspace(submissionSet, user, false);
-}
+    const submissionIds = submissions.map((sub) => {
+      return sub._id;
+    });
+    const submissionSet = await importApi.buildSubmissionSet(submissions, user);
+    let name;
 
-let workspace = new models.Workspace({
-  mode,
-  name,
-  owner,
-  submissionSet: submissionSet,
-  submissions: submissionIds,
-  createdBy: user,
-  lastModifiedBy: user,
-  lastModifiedDate: new Date(),
-  lastViewed: new Date(),
-});
-let ws = await workspace.save();
-//const data = {'workspaceId': ws._id};
+    if (requestedName) {
+      name = requestedName;
+    } else {
+      name = nameWorkspace(submissionSet, user, false);
+    }
 
-let newFolderSet = await newFolderStructure(user, ws, folderSetName);
+    let workspace = new models.Workspace({
+      mode,
+      name,
+      owner,
+      submissionSet: submissionSet,
+      submissions: submissionIds,
+      createdBy: user,
+      lastModifiedBy: user,
+      lastModifiedDate: new Date(),
+      lastViewed: new Date(),
+    });
+    let ws = await workspace.save();
 
-let rec = pruned;
-rec.createdWorkspace = ws._id;
-const encRequest = new models.EncWorkspaceRequest(rec);
-const saved = await encRequest.save();
-// saved.workspaceId = ws._id;
-// saved.submissionId = ws.submissions[0];
+    const wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+    const folderSetInfo = { folderSetId: folderSet, folderSetObjects: null };
 
-const data = { encWorkspaceRequest: saved };
+    // creates new folders for workspace
+    await newFolderStructure(user, wsInfo, folderSetInfo);
 
-return utils.sendResponse(res,  data);
+    let rec = pruned;
+    rec.createdWorkspace = ws._id;
+    const encRequest = new models.EncWorkspaceRequest(rec);
+    const saved = await encRequest.save();
+
+    const data = { encWorkspaceRequest: saved };
+
+    return utils.sendResponse(res,  data);
 
   } catch(err) {
     return utils.sendError.InternalError(err, res);
   }
 }
 
-module.exports.post.workspaceEnc = postWorkspaceEnc;
+function buildAnswersToClone(answers, hash) {
+  // answers is array of populated answer docs
+  if (!answers || !_.isArray(answers)) {
+    return;
+  }
+  let { all, none, answerIds } = hash;
 
+  if (all) {
+    return [...answers];
+  }
+
+  if (none || !apiUtils.isNonEmptyArray(answerIds)) {
+    return [];
+  }
+
+  return _.filter(answers, (answer) => {
+    return _.contains(answerIds, answer._id.toString());
+  });
+}
+
+async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderSetOptions) {
+
+  // check if user has proper permissions
+  try {
+    const results = {
+      folderSetId: null,
+      folderSetObjects: [],
+      isInvalidWorkspace: false
+    };
+    if (apiUtils.isNonEmptyObject(folderSetOptions)) {
+      const { existingFolderSetToUse } = folderSetOptions;
+
+      if (existingFolderSetToUse) {
+        results.folderSetId = existingFolderSetToUse;
+        return results;
+      }
+    }
+
+    const workspace = await models.Workspace.findById(originalWsId).populate('folders').lean().exec();
+
+    if (_.isNull(workspace)) {
+      results.isInvalidWorkspace = true;
+      return results;
+    }
+    const folders = workspace.folders;
+    if (_.isEmpty(folders)) {
+      // console.log('no folders in original ws:', originalWsId);
+      return results;
+    }
+
+    const topLevelFolders = _.filter(folders, (folder => {
+      return apiUtils.isNullOrUndefined(folder.parent) && _.contains(_.map(folderIds, id => id.toString()), folder._id.toString());
+    }));
+    const topLevelFolderIds = _.map(topLevelFolders, folder => folder._id);
+    const recurse = function(folderId) {
+      if (!folderId) {
+        return;
+      }
+      let ret = {};
+
+      return models.Folder.findById(folderId).lean().exec()
+        .then(async (doc) => {
+          if (_.isNull(doc)) {
+            return null;
+          }
+          ret = {
+            name: doc.name,
+            weight: doc.weight ? doc.weight : 0,
+            children: [],
+          };
+
+          const children = doc.children;
+          if (_.isEmpty(children)) {
+            return ret;
+          }
+          ret.children = await Promise.all(_.map(children, (child => {
+            return recurse(child);
+          })));
+
+          return ret;
+
+        })
+        .catch((err) => {
+          console.log('err', err);
+        });
+    };
+
+    const folderObjects = await Promise.all(_.map(topLevelFolderIds, (folderId) => {
+      return recurse(folderId);
+    }));
+
+    results.folderSetObjects = folderObjects;
+
+    const { doCreateFolderSet, name, privacySetting } = folderSetOptions;
+
+    if (doCreateFolderSet) {
+      // verify this is a valid enum value?
+
+      const folderSet = new models.FolderSet({
+        name,
+        privacySetting,
+        folders: folderObjects,
+        createdBy: user._id,
+        lastModifiedBy: user._id
+      });
+
+      const saved = await folderSet.save();
+      results.folderSetId = saved._id;
+      return results;
+    }
+    // else just return the folder objects
+    return results;
+  }catch(err) {
+    console.error(`Error copyAndSaveFolderStructure: ${err}`);
+  }
+}
+
+function copyTagging(id, newFolder, taggingsKey, wsInfo) {
+/*
+ taggingsKey map betweeen oldTagging and newSelectionId
+*/
+  return models.Tagging.findById(id).lean().exec()
+    .then(async (tagging) => {
+      if (_.isNull(tagging)) {
+        return null;
+      }
+      //remove told tagging references from selection
+      await models.Selection.update({_id: taggingsKey[tagging._id]}, {$pull: {taggings: tagging._id}});
+
+      const { newWsId } = wsInfo;
+
+      const newTagging = new models.Tagging({
+        workspace: newWsId,
+        createdBy: tagging.createdBy,
+        lastModifiedBy: tagging.lastModifiedBy,
+        lastModifiedDate: tagging.lastModifiedDate,
+        folder: newFolder._id,
+        selection: taggingsKey[tagging._id]
+      });
+
+      return newTagging.save();
+    })
+    .then((tag) => {
+      return tag._id;
+    });
+}
+
+function copyTaggings(oldTaggingIds, newFolder, taggingsKey, wsInfo) {
+  if (!apiUtils.isNonEmptyArray(oldTaggingIds)) {
+    return Promise.resolve([]);
+  }
+
+  return Promise.all(
+    _.chain(oldTaggingIds)
+      .filter((taggingId) => {
+        return taggingsKey[taggingId];
+      })
+      .map((id) => {
+        return copyTagging(id, newFolder, taggingsKey, wsInfo);
+      })
+      .value()
+  );
+
+}
+
+function copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo) {
+  const { newWsId, newWsOwner } = wsInfo;
+  const folderIds = [];
+  const taggingIds = [];
+
+  const recurse = async function(folder, parentId) {
+    if (!folder) {
+      return;
+    }
+    // check if folder passed in is objectId
+    let isObjectId = mongoose.Types.ObjectId.isValid(folder);
+
+    if (isObjectId) {
+      // lookup folder
+      folder = await models.Folder.findById(folder).lean().exec();
+    }
+
+    let f = new models.Folder({
+      owner: newWsOwner,
+      name: folder.name,
+      weight: folder.weight ? folder.weight : 0,
+      createdBy: user._id,
+      lastModifiedBy: user._id,
+      children: [],
+      workspace: newWsId
+    });
+
+    if (parentId) {
+      f.parent = parentId;
+    }
+
+    const taggings = folder.taggings;
+
+    if (apiUtils.isNonEmptyArray(taggings)) {
+
+      let ids = await copyTaggings(taggings, f, taggingsKey, wsInfo);
+      taggingIds.push(...ids);
+      f.taggings = ids;
+    }
+
+    const children = folder.children;
+
+    if (_.isEmpty(children)) {
+      return f.save()
+      .then((doc) => {
+        folderIds.push(doc._id);
+        return doc;
+      });
+    }
+
+    f.children = await Promise.all(_.map(children, (child => {
+      return recurse(child, f._id);
+    })));
+
+    let newChildren = f.children;
+    // can only save the id of the child folder in children array
+    f.children = _.map(newChildren, child => child._id);
+
+    return f.save()
+      .then((doc) => {
+        folderIds.push(doc._id);
+        return doc;
+    });
+  };
+
+  return Promise.all(
+    _.map(oldTopLevelFolders, (obj => {
+      return recurse(obj, null);
+  })))
+    .then((folders) => {
+      return [folderIds, taggingIds];
+    });
+}
+
+//deepCloneFolders(folderIdsToCopy, taggingsKey, wsInfo)
+async function deepCloneFolders(user, folderIds, taggingsKey, wsInfo) {
+  // taggings key is hash where key is oldTaggingId and value is new selectionId
+
+  try {
+    if (!apiUtils.isNonEmptyArray(folderIds) || !apiUtils.isNonEmptyObject(wsInfo)) {
+      return;
+    }
+    // do we need to check for isTrashed here?
+    const oldFolders = await models.Folder.find({_id: { $in: folderIds }}).lean().exec();
+    const oldTopLevelFolders = _.filter(oldFolders, (folder => {
+      return apiUtils.isNullOrUndefined(folder.parent);
+    }));
+
+    return copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo);
+
+  }catch(err) {
+    console.error(`Error deepCloneFolders: ${err}`);
+  }
+}
+
+async function buildTaggingsKey(folderIdsToCopy, selectionsKey) {
+  const hash = {};
+  if (!apiUtils.isNonEmptyArray(folderIdsToCopy)) {
+    return hash;
+  }
+
+  const folders = await models.Folder.find({_id: {$in: folderIdsToCopy}}).populate('taggings').lean().exec();
+  if (_.isEmpty(folders)) {
+    return hash;
+  }
+
+  _.chain(folders)
+  .map(folder => folder.taggings)
+  .flatten()
+  .filter((tagging) => {
+    return tagging.selection && selectionsKey[tagging.selection];
+  })
+  .each((tagging) => {
+    // set value to new selectionId
+    hash[tagging._id] = selectionsKey[tagging.selection];
+  })
+  .value();
+
+  return hash;
+
+}
+
+async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsKey) {
+  try {
+    // check user permissions
+    const results = {
+      folders: [],
+      taggings: [],
+      folderSet: null
+    };
+    /*
+    wsInfo = {
+     originalWsId
+     newWsId:
+     newWsOwner
+   };
+    */
+
+    const { originalWsId } = wsInfo;
+
+    let { includeStructureOnly, all, none, folderSetOptions } = options;
+    let folderIdsToCopy;
+
+    if (none) {
+      if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
+        return results;
+      }
+      // just create folder structure from folderSet Id;
+      let folderSetInfo;
+      if (folderSetOptions.existingFolderSetToUse) {
+        folderSetInfo = { folderSetId: folderSetOptions.existingFolderSetToUse };
+      }
+      const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
+
+      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+        results.folders = newFolderIds;
+      }
+      return results;
+    } else {
+      folderIdsToCopy = all ? [...oldFolderIds] : [];
+    }
+
+     let taggingsKey = {};
+
+    if (includeStructureOnly) {
+      // need to copy and make new folder set
+
+      //should return object
+      /*
+        folderSetId: objectId or null,
+        folderSetObjects: array of objects that can be passed to newFolderStructure
+      */
+      let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
+      // newFolderStructure returns array of newly created FolderIds
+      const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
+
+      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+        results.folders = newFolderIds;
+      }
+      return results;
+
+    } else {
+      taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
+      let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
+
+      results.folders = folderIds;
+      results.taggings = taggingIds;
+      return results;
+      // need to copy folder AND taggings (and selections)
+      // and create new folder
+      // make new folderSet too?
+    }
+  }catch(err) {
+    console.error(`Error handleNewFolders: ${err}`);
+  }
+}
+
+function buildSelectionsKey(submissionSels, originalSelectionIds, selectionsConfig) {
+  const hash = {};
+  const { all, none, selectionIds } = selectionsConfig;
+
+  if (none) {
+    return hash;
+  }
+
+  const ids = all ? originalSelectionIds : selectionIds;
+  _.chain(ids)
+    .filter(id => submissionSels[id])
+    .each((id) => {
+      hash[id] = true;
+    })
+    .value();
+    return hash;
+}
+function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
+  return models.Comment.findById(oldCommentId).lean().exec()
+    .then((oldComment => {
+      if (_.isNull(oldComment)) {
+        return null;
+      }
+      const oldCommentSelectionId = oldComment.selection;
+
+      const newComment = new models.Comment({
+        createdBy: oldComment.createdBy,
+        lastModifiedBy: oldComment.lastModifiedBy,
+        coordinates: oldComment.coordinates,
+        text: oldComment.text,
+        label: oldComment.label,
+        useForResponse: oldComment.useForResponse,
+        selection: selectionsKey[oldCommentSelectionId],
+        submission: newSub._id,
+        workspace: newWsId,
+        type: oldComment.type
+      });
+      return newComment.save().then((comment) => {
+        return comment._id;
+      });
+    }))
+    .catch((err => {
+      console.error(`Error copyComment: ${err}`);
+    }));
+}
+
+function copyComments(commentsKey, newSub, selectionsKey, newWsId) {
+  const oldCommentIds = newSub.comments;
+  if (!apiUtils.isNonEmptyArray(oldCommentIds)) {
+    return Promise.resolve([]);
+  }
+
+  return Promise.all(
+    _.chain(oldCommentIds)
+      .filter((commentId) => {
+        return commentsKey[commentId];
+      })
+      .map((id) => {
+        return copyComment(id, newSub, selectionsKey, newWsId);
+      })
+      .value()
+  );
+}
+
+function copySelection(user, oldSelId, newSubId, newWsId, selectionsKey) {
+  // oldSel is objectId
+  // oldSub is json Object
+  // newSub is functional mongoose Submission document
+  // folderOptions will determine if taggings should be copied
+
+  return models.Selection.findById(oldSelId).lean().exec()
+    .then((oldSelection => {
+      // sel does not exist
+      if (_.isNull(oldSelection)) {
+        return null;
+      }
+      const newSel = new models.Selection({
+        createdBy: oldSelection.createdBy,
+        lastModifiedBy: oldSelection.lastModifiedBy,
+        coordinates: oldSelection.coordinates,
+        text: oldSelection.text,
+        submission: newSubId,
+        workspace: newWsId,
+        comments: oldSelection.comments,
+        taggings: oldSelection.taggings
+      });
+
+      // selections have array of comments
+      // const newComments = await copyComments(oldSelection.comments, newSel._id, newSub._id);
+      return newSel.save().then((sel) => {
+        selectionsKey[oldSelId] = sel._id;
+        return sel;
+      });
+
+    }))
+    .catch((err) => {
+      console.error(`Error copySelection: ${err}`);
+    });
+}
+// copySelections(user, selectionsKey, oldSub, newSub, newWs._id)
+function copySelections(user, selectionsKey, oldSub, newSub, newWsId) {
+  //selectionsKey is hash where keys are oldSelectionIds to be copied and value is true
+  const oldSelections = oldSub.selections;
+  if (!apiUtils.isNonEmptyArray(oldSelections)) {
+    return Promise.resolve([]);
+  }
+  return Promise.all(
+    _.chain(oldSelections)
+      .reject((selId) => {
+        return _.isUndefined(selectionsKey[selId.toString()]);
+      })
+      .map((selId) => {
+        // update selectionsKey
+        return copySelection(user, selId, newSub._id, newWsId, selectionsKey)
+          .then((newSel) => {
+            return newSel._id;
+
+          });
+      })
+      .value()
+  );
+}
+
+// buildCommentsKey(selectionsKey, originalWs.comments, commentsConfig);
+async function buildCommentsKey(selectionsKey, originalCommentIds, commentsConfig) {
+  const hash = {};
+  const { all, none, commentIds } = commentsConfig;
+  if (none) {
+    return hash;
+  }
+
+  const ids = all ? originalCommentIds : commentIds;
+  // filter ids based on selectionsKey
+
+const comments = await models.Comment.find({_id: {$in: ids}});
+
+_.chain(comments)
+  .filter(comment => selectionsKey[comment.selection])
+  .each((comment) => {
+    hash[comment._id] = true;
+  })
+  .value();
+  return hash;
+}
+
+// await handleResponses(user, workspaceInfo, originalWs.responses, responseOptions);
+function buildResponsesKey(originalResponseIds, responseOptions) {
+  const hash = {};
+  const { all, none, responseIds } = responseOptions;
+  if (none) {
+    return hash;
+  }
+
+  const ids = all ? originalResponseIds : responseIds;
+
+  _.each(ids, (id) => {
+    hash[id] = true;
+  });
+  return hash;
+}
+function copyResponse(originalResponseId, newSubId, newWsId) {
+  return models.Response.findById(originalResponseId).lean().exec()
+    .then((oldResponse) => {
+      if (_.isNull(oldResponse)) {
+        return null;
+      }
+      const newResponse = new models.Response({
+        createdBy: oldResponse.createdBy,
+        lastModifiedBy: oldResponse.lastModifiedBy,
+        text: oldResponse.text,
+        source: oldResponse.source,
+        original: oldResponse.original,
+        recipient: oldResponse.recipient,
+        workspace: newWsId,
+        submission: newSubId
+      });
+      return newResponse.save().then(doc => doc._id);
+    });
+}
+//copyResponses(responsesKey, submission, newWs._id)
+function copyResponses(responsesKey, newSubmission, newWsId) {
+  if (!apiUtils.isNonEmptyArray(newSubmission.responses)) {
+    return Promise.resolve([]);
+  }
+  return Promise.all(
+    _.chain(newSubmission.responses)
+      .filter(responseId => responsesKey[responseId])
+      .map(id => copyResponse(id, newSubmission._id, newWsId))
+      .reject(apiUtils.isNullOrUndefined)
+      .value()
+  );
+}
+
+function buildAnswerSetAndSubmissionsMap(originalWs) {
+  const copiedAnswers = originalWs.answers;
+  // submissions map is used to keep track of the relationship between an answer and its submission
+  const submissionsMap = {};
+  let answerSet;
+  let error = null;
+
+  // let results = [error, answerSet, submissionsMap];
+
+  // currently workspaces do not have answers field but could in future?
+  if (apiUtils.isNonEmptyArray(copiedAnswers)) {
+    answerSet = copiedAnswers;
+    return [null, answerSet, null];
+  } else {
+    // use the original workspace's submissions array to get the answer pool
+    const submissions = originalWs.submissions;
+
+    // return error if there are no submissions (and thus answers) to copy from original workspace
+    if (!apiUtils.isNonEmptyArray(submissions)) {
+      error = 'Workspace does not have any submissions to copy.';
+      return [error, null, null];
+    }
+    // all submissions (except currently 15 extraneous KenKen submissions) should have an associated Encompass answer record
+    const subsWithAnswers = _.reject(submissions, (sub => apiUtils.isNullOrUndefined(sub.answer)));
+
+    // return error if there are no answers associated with submissions
+    if (!apiUtils.isNonEmptyArray(subsWithAnswers)) {
+      error = 'This workspace does not have any answers';
+      return [error, null, null];
+    }
+
+
+    answerSet = _.map(subsWithAnswers, (sub => {
+      submissionsMap[sub.answer._id] = sub;
+      return sub.answer;
+    }));
+
+    return [null, answerSet, submissionsMap];
+  }
+
+}
+
+async function cloneWorkspace(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
+    // check if user has permission to copy this workspace
+    // console.log('clone request options', JSON.stringify(req.body));
+    const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
+    console.log('CWR', JSON.stringify(copyWorkspaceRequest, null, 2));
+    if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
+      return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
+    }
+
+    const requestDoc = new models.CopyWorkspaceRequest(copyWorkspaceRequest);
+
+    if (!requestDoc.createdBy) {
+      requestDoc.createdBy = user.id;
+    }
+    /*
+    {
+      name: if not provided will be same as original (or possible concatenate copy + sequential number?),
+      owner: default to current user, unless other userId is provided
+      mode: default to original
+      answers: {
+        all: bool,
+        answerIds: [array of answerIds]
+        none: bool,
+      }
+
+      folders: {
+        includeStructureOnly: bool,
+        folderSetOptions: {
+          doCreateFolderSet: bool,
+          name: string,
+          privacySetting: ['M', 'O', 'E']
+        }
+        all: bool,
+        none: bool,
+        folderIds: [array of folderIds]
+
+      }
+      comments: {
+        all: bool,
+        none: bool,
+        commentIds: [array of commentIds]
+      }
+      responses: {
+        all: bool,
+        none: bool,
+        responseIds: [responseIds]
+      }
+
+      comments, selections, taggings are dependent on the setting chosen for answers
+      e.g. if only a subset of the workspace's answers are chosen, 'all' for comments means
+      all of the comments related to that subset of answers
+      permissions?? editors??
+    }
+    */
+
+    // check for optionsHash
+
+    // look up workspace in db by id snd populate submissions (and the submission answers), and answers(if any)
+    const { originalWsId } = copyWorkspaceRequest;
+    const originalWs = await models.Workspace.findById(originalWsId).populate({path: 'submissions', populate: {path: 'answer'}}).populate('answers').lean().exec();
+
+    // workspace does not exist
+    if (_.isNull(originalWs)) {
+      requestDoc.copyWorkspaceError = 'Requested workspace does not exist';
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
+    }
+
+    // process basic settings
+    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+
+    // use original name, mode if not provided
+    // set owner as current user if owner not provided
+    const newWs = new models.Workspace({
+      name: name || originalWs.name,
+      owner: owner || user._id,
+      mode: mode || originalWs.mode,
+      createdBy: createdBy || user._id
+    });
+
+    // let savedWs = await newWs.save();
+
+    // destructure options parameters
+    // will be used to determine which records to copy
+    const { answerOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
+
+    /*
+      answerSet is array of populated answer docs
+      submissionsMap is mapping between an answer and its corresponding submission
+      {
+        answerId: populatedSubmissionDoc
+      }
+    */
+    let [ error, answerSet, submissionsMap] = buildAnswerSetAndSubmissionsMap(originalWs);
+
+    if (error) {
+      requestDoc.copyWorkspaceError = error;
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
+    }
+
+    // answersToClone is filtered answer docs based on request params
+    let answersToClone = buildAnswersToClone(answerSet, answerOptions);
+
+    if (!apiUtils.isNonEmptyArray(answersToClone)) {
+      requestDoc.copyWorkspaceError = `There are no submissions to copy.`;
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
+    }
+
+    /*
+      submissionKey is used to keep track of which original submissions should be copied
+      {
+        submissionId: true
+      }
+    */
+    let submissionsKey = {};
+
+    /*
+      submissionSels is used to keep track of the original selections that belong to an original submission that is in submission key
+      {
+        selectionId: true
+      }
+    */
+    let submissionSels = {};
+
+    _.each(answersToClone, (ans => {
+      let sub = submissionsMap[ans._id];
+
+      if (sub) {
+        submissionsKey[sub._id] = true;
+
+        if (apiUtils.isNonEmptyArray(sub.selections)) {
+          _.each(sub.selections, (selId) => {
+            submissionSels[selId] = true;
+          });
+        }
+      }
+    }));
+
+    // json objects that will be converted to mongoose docs and saved to db
+    // does not handle copying of existing submissions' commments, selections, responses, etc
+    let subs = await answersToSubmissions(answersToClone);
+    // convert sub json objects to mongoose docs and save
+    const submissions = await Promise.all(subs.map((obj) => {
+      let sub = new models.Submission(obj);
+      let ans = obj.answer.toString();
+      let newId = sub._id.toString();
+
+      //eslint-disable-next-line prefer-object-spread
+      submissionsMap[newId] = Object.assign({}, submissionsMap[ans]);
+      delete submissionsMap[ans];
+
+      sub.createdBy = user._id;
+      sub.createDate = Date.now();
+      sub.lastModifiedBy = user._id;
+      return sub.save();
+    }));
+
+    // submissionsMap is now a mapping between the new copied submissionId and the old submission doc
+
+    const workspaceInfo = {
+      originalWsId: originalWsId,
+      newWsId: newWs._id,
+      newWsOwner: newWs.owner
+    };
+
+
+    /*
+      selectionsKey is used to determine which selections should be copied
+      {
+        selectionId: true
+      }
+    */
+    const selectionsKey = buildSelectionsKey(submissionSels, originalWs.selections, selectionOptions);
+
+    const newSubsWithSelections = await Promise.all(
+      _.map(submissions, (submission) => {
+        // use oldSub document to set original comments, responses on new sub doc
+        // these will be updated later
+        let oldSub = submissionsMap[submission._id];
+        // some old submissions are missing comments/responses fields
+         if (_.isArray(oldSub.comments)) {
+          submission.comments = oldSub.comments;
+        } else {
+          submission.comments = [];
+        }
+        if (_.isArray(oldSub.responses)) {
+          submission.responses = oldSub.responses;
+        } else {
+          submission.responses = [];
+        }
+
+        // copy selections and set new selections on new submission
+        return copySelections(user, selectionsKey, oldSub, submission, newWs._id)
+          .then((selIds) => {
+            if (apiUtils.isNonEmptyArray(selIds)) {
+              submission.selections = selIds;
+            } else {
+              submission.selections = [];
+            }
+            return submission.save();
+          });
+      }));
+
+      newWs.selections = _.chain(newSubsWithSelections)
+        .map(sub => sub.selections)
+        .flatten()
+        .value();
+
+    /*
+      commentsKey is used to determine which commentss should be copied
+      {
+        commentId: true
+      }
+    */
+    const commentsKey = await buildCommentsKey(selectionsKey, originalWs.comments, commentOptions);
+
+    const newSubsWithComments = await Promise.all(
+      _.map(newSubsWithSelections, (submission) => {
+        return copyComments(commentsKey, submission, selectionsKey, newWs._id)
+        .then((commentIds) => {
+          if (apiUtils.isNonEmptyArray(commentIds)) {
+            submission.comments = commentIds;
+          } else {
+            submission.comments = [];
+          }
+          return submission.save();
+        });
+      })
+    );
+
+    newWs.comments = _.chain(newSubsWithComments)
+      .map(sub => sub.comments)
+      .flatten()
+      .value();
+
+    const responsesKey = buildResponsesKey(originalWs.responses, responseOptions);
+
+    const newSubsWithResponses = await Promise.all(
+      _.map(newSubsWithComments, (submission) => {
+        return copyResponses(responsesKey, submission, newWs._id)
+        .then((responseIds) => {
+          if (apiUtils.isNonEmptyArray(responseIds)) {
+            submission.responses = responseIds;
+          } else {
+            submission.responses = [];
+          }
+          return submission.save();
+        });
+      })
+    );
+
+    newWs.responses = _.chain(newSubsWithResponses)
+      .map(sub => sub.responses)
+      .flatten()
+      .value();
+    const submissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
+
+
+    const submissionIds = _.map(newSubsWithResponses, sub => sub._id);
+
+    // set submissions and submissionSet on ws
+    newWs.submissions = submissionIds;
+    newWs.submissionSet = submissionSet;
+
+    /*
+    returns {
+    folders: [oIds],
+    taggings: [oIds],
+    folderSet: folderSetId
+  }
+  */
+  const newFolders = await handleNewFolders(user, workspaceInfo, originalWs.folders, folderOptions, selectionsKey);
+
+  newWs.folders = newFolders.folders;
+  newWs.taggings = newFolders.taggings;
+
+  // set Permissions
+
+  const { permissionOptions } = copyWorkspaceRequest;
+
+  if (apiUtils.isNonEmptyObject(permissionOptions)) {
+    if (apiUtils.isNonEmptyArray(permissionOptions.permissionObjects)) {
+      newWs.permissions = permissionOptions.permissionObjects;
+
+      const userIdsToUpdate = permissionOptions.permissionObjects.map( obj => obj.user);
+      await models.User.updateMany({_id: {$in: userIdsToUpdate}}, {$addToSet: {collabWorkspaces: newWs._id }});
+
+      // update collabWorkspaces Array for collaborators
+      // each permissionObject has userId
+    }
+  }
+  newWs.sourceWorkspace = originalWsId;
+
+  const savedWs = await newWs.save();
+
+  requestDoc.createdWorkspace = savedWs._id;
+
+  const savedRequest = await requestDoc.save();
+
+  const data = { copyWorkspaceRequest: savedRequest};
+
+  return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error copyWorkspace: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+  }
+}
+
+module.exports.post.workspaceEnc = postWorkspaceEnc;
+module.exports.post.cloneWorkspace = cloneWorkspace;
 module.exports.get.workspace = sendWorkspace;
 module.exports.get.workspaces = getWorkspaces;
 module.exports.put.workspace = putWorkspace;
@@ -1314,4 +2238,3 @@ module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
 module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
 module.exports.newFolderStructure = newFolderStructure;
-/*jshint ignore:end*/

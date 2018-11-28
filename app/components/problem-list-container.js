@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.CategoriesListMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'problem-list-container',
   showList: true,

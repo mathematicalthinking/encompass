@@ -252,7 +252,7 @@ const getCreatorIds = async function(model, crit={}) {
   }
 };
 
-getProblemsByCategory = async function(query) {
+const getProblemsByCategory = async function(query) {
   try {
     let queryLower = query.toLowerCase();
     let problems = await models.Problem.find({categories: {$ne: []}}, {categories: 1}).populate('categories').lean().exec();

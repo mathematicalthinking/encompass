@@ -404,6 +404,159 @@ var data = [
     "isTrashed" : true,
     "name": "trashed folder",
     "workspace": "5bb814d19885323f6d894974"
+},
+{
+  "_id" : "5bec36c58c73047613e2f352",
+  "name" : "Top Level 1",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : null,
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [
+      "5bec36dd8c73047613e2f355",
+      "5bec36f78c73047613e2f357"
+  ],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:52:53.832Z"
+},
+{
+  "_id" : "5bec36ca8c73047613e2f353",
+  "name" : "Top Level 2",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : null,
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [
+      "5bec37048c73047613e2f358"
+  ],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:52:58.290Z"
+},
+{
+  "_id" : "5bec36cd8c73047613e2f354",
+  "name" : "Top Level 3",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : null,
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec38338c73047613e2f36b"
+  ],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:53:01.979Z"
+},
+{
+  "_id" : "5bec36dd8c73047613e2f355",
+  "name" : "2nd Level 1",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec36c58c73047613e2f352",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [
+      "5bec36e98c73047613e2f356"
+  ],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:53:17.755Z"
+},
+{
+  "_id" : "5bec36e98c73047613e2f356",
+  "name" : "3rd Level 1",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec36dd8c73047613e2f355",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:53:29.115Z"
+},
+{
+  "_id" : "5bec36f78c73047613e2f357",
+  "name" : "2nd Level 2",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec36c58c73047613e2f352",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:53:43.609Z"
+},
+{
+  "_id" : "5bec37048c73047613e2f358",
+  "name" : "2nd Level 3",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec36ca8c73047613e2f353",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec38018c73047613e2f368",
+      "5bec386a8c73047613e2f36d"
+  ],
+  "children" : [
+      "5bec37108c73047613e2f359"
+  ],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:53:56.969Z"
+},
+{
+  "_id" : "5bec37108c73047613e2f359",
+  "name" : "3rd Level 2",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec37048c73047613e2f358",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [],
+  "children" : [
+      "5bec371f8c73047613e2f35a"
+  ],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:54:08.048Z"
+},
+{
+  "_id" : "5bec371f8c73047613e2f35a",
+  "name" : "4th Level 1",
+  "weight" : 0,
+  "createdBy" : "5b9149552ecaf7c30dd4748e",
+  "lastModifiedBy" : null,
+  "parent" : "5bec37108c73047613e2f359",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "taggings" : [
+      "5bec37f48c73047613e2f367"
+  ],
+  "children" : [],
+  "editors" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:54:23.960Z"
 }
 ];
 

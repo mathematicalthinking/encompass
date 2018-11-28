@@ -9,7 +9,6 @@ const css = require('./selectors');
 const testUsers = require('./fixtures/users');
 
 const host = helpers.host;
-let topLink = css.topBar.workspacesNew;
 let url = `${host}/#/workspaces/new`;
 
 describe('Workspaces New', async function() {
@@ -35,8 +34,14 @@ describe('Workspaces New', async function() {
 
         describe('Clicking topbar link', function() {
           if (accountType === 'S' || actingRole === 'student') {
-            it(`link should not be visible`, async function() {
-              expect(await helpers.isElementVisible(driver, topLink)).to.be.false;
+            it('should redirect to homepage', async function() {
+              await helpers.findAndClickElement(driver, css.topBar.workspaces);
+              await helpers.findAndClickElement(driver, css.topBar.workspacesNew);
+
+              await helpers.waitForUrlMatch(driver, /\//);
+
+              expect(await helpers.isTextInDom(driver, 'Welcome Student')).to.be.true;
+              expect(await helpers.isElementVisible(driver, css.newWorkspaceEnc.form)).to.be.false;
             });
           } else {
             it(`should display new workspace creation form`, async function() {

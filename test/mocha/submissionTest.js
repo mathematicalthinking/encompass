@@ -44,17 +44,11 @@ describe('Submission CRUD operations by account type', async function() {
           if (err) {
             console.log(err);
           }
-          if (isStudent) {
-            expect(res).to.have.status(403);
-            done();
-          } else {
-          expect(res).to.have.status(200);
-          expect(res.body).to.have.all.keys('submissions');
-          expect(res.body.submissions).to.be.a('array');
-          expect(res.body.submissions.length).to.eql(accessibleSubmissionCount);
-          done();
-          }
-
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.all.keys('submissions');
+        expect(res.body.submissions).to.be.a('array');
+        expect(res.body.submissions.length).to.eql(accessibleSubmissionCount);
+        done();
         });
       });
     });

@@ -1,0 +1,68 @@
+<div class="ws-copy-input name" >
+  <h5>Name</h5>
+  {{input id="ws-copy-name" type="text" value=selectedName placeholder="Name for new workspace"}}
+</div>
+
+{{#each nameErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
+{{/each}}
+
+<div class="ws-copy-input owner">
+  <h5>Owner</h5>
+{{selectize-input
+store=store
+inputId="owner-select"
+initialOptions=initialOwnerOptions
+initialItems=initialOwnerItem
+maxItems=1
+onItemAdd=(action "setOwner")
+onItemRemove=(action "setOwner")
+labelField="username"
+valueField="id"
+searchField="username"
+model="user"
+queryParamsKey="usernameSearch"
+isAsync=true
+placeholder="Search users to choose as owner"}}
+</div>
+
+{{#each ownerErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+{{/each}}
+
+<div class="ws-copy-input mode">
+  <h5>Privacy Setting</h5>
+  {{radio-group options=modeInputs selectedValue=selectedMode}}
+</div>
+
+{{#each modeErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut modeErrors) null)}}
+{{/each}}
+
+<div class="ws-copy-input folderset">
+  <h5>Folder Set</h5>
+
+  {{#if isCopyingFolders}}
+
+    <p>Do you want to save this folder structure as a folder set for future use?</p>
+      <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet true}} onclick={{action "toggleCreateFolderset" true}}>
+      <label>Yes</label>
+      <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet false}} onclick={{action "toggleCreateFolderset" false}}>
+      <label>No</label>
+
+      {{#if doCreateFolderSet}}
+        {{new-folderset-form name=folderSetName privacySetting=folderSetPrivacy}}
+      {{/if}}
+
+    {{else}}
+      <p>Your resulting workspace will have 0 folders. You can select a preexisting folderSet from the dropdown below or continue on without any folders.</p>
+
+      {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
+      (mut existingFolderSetToUse))}}
+  {{/if}}
+</div>
+
+<div class="nav-btn-container">
+  <button {{action "back"}}>Prev</button>
+  <button {{action "next"}}>Next</button>
+</div>

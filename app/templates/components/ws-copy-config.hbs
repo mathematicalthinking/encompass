@@ -1,0 +1,18 @@
+<h5>Choose configuration</h5>
+{{radio-group options=copyConfig selectedValue=selectedConfig}}
+
+{{#if showCustomConfig}}
+  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom") onBack=(action "back")}}
+  {{else}}
+
+  {{#if invalidOrMissingConfig}}
+    {{error-box showDismiss=true error="Please select a valid configuration option." resetError=(action (mut invalidOrMissingConfig) null)}}
+  {{/if}}
+
+  <div class="nav-btn-container">
+    <button {{action "back"}}>Prev</button>
+    <button {{action "next"}}>Next</button>
+  </div>
+{{/if}}
+
+

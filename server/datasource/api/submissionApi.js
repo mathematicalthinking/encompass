@@ -175,10 +175,10 @@ function getPDSets(req, res, next) {
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-  let { accountType, actingRole } = user;
-  if (accountType === 'S' || actingRole === 'student') {
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  }
+  // let { accountType, actingRole } = user;
+  // if (accountType === 'S' || actingRole === 'student') {
+  //   return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+  // }
 
   models.PDSubmission.aggregate(
     {

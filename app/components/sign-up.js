@@ -1,4 +1,4 @@
-/* eslint-disable */
+/*global _:false */
 Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   classNames: ['signup-page'],
   usernameExists: false,
@@ -98,7 +98,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   getSimilarOrgs(orgRequest) {
     let stopWords = ['university', 'college', 'school', 'the', 'and', 'of', 'for', ' '];
 
-    let orgs = this.get('organizations')
+    let orgs = this.get('organizations');
 
     if (!orgs) {
       return [];
@@ -112,7 +112,6 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       let name = org.get('name');
       let compare = this.get('similarity').convertStringForCompare(name, stopWords);
       let score = this.get('similarity').compareTwoStrings(compare, requestCompare);
-      console.log(`Score comparing requestedOrg: ${orgRequest} versus org: ${name} is: ${score}`);
       return score > 0.5;
     }));
     return similarOrgs;
@@ -309,24 +308,18 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       }
 
       let org = this.get('organizations').findBy('id', val);
-      console.log('org', org);
       if (!org) {
-        console.log('org request!: ', val)
         return;
       }
       this.set('org', org);
-
     },
 
     processOrgRequest(input, callback) {
-      console.log('input',input);
-
       let similarOrgs = this.getSimilarOrgs(input);
       let modalSelectOptions = {};
 
 
       if (similarOrgs.get('length') > 0) {
-        console.log('similarORgs', similarOrgs);
         let text = `Are you sure you want to submit a new organization request for ${input}? We found ${similarOrgs.get('length')} organizations with similar names. Please review the options in the dropdown to see if your desired organization already exists. If you decide to proceed with the organization request, the creation of the organization will be contingent on an admin's approval.`;
         for (let org of similarOrgs) {
           let id = org.get('id');
@@ -334,7 +327,6 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
           modalSelectOptions[id] = name;
         }
         modalSelectOptions[input] = `Yes, I am sure I want to create ${input}`;
-        console.log('options', modalSelectOptions);
 
         this.get('alert').showPromptSelect('Similar Orgs Found', modalSelectOptions, 'Choose existing org or confirm request', text)
         .then((result) => {
@@ -346,10 +338,9 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
               let ret = {
                 name: input,
                 id: input
-              }
+              };
               return callback(ret);
             }
-            console.log('result.value', result.value);
             // user selected an existing org
             this.$('select')[0].selectize.setValue(result.value, true);
             this.$('select')[0].selectize.removeOption(input);

@@ -86,6 +86,84 @@ var data = [
   "submission" : "53e1156db48b12793f000414",
   "workspace" : "53e1156db48b12793f000442",
   "text": "trashed comment"
+},
+{
+  "_id" : "5bec375d8c73047613e2f35e",
+  "label" : "notice",
+  "text" : "This is a notice comment on tracyc's brief summary.",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "selection" : "5bec373d8c73047613e2f35c",
+  "origin" : null,
+  "parent" : null,
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "children" : [],
+  "ancestors" : [],
+  "useForResponse" : false,
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:55:25.108Z"
+},
+
+
+{
+  "_id" : "5bec37708c73047613e2f35f",
+  "label" : "feedback",
+  "text" : "This is a feedback comment on tracyc's explanation.",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "selection" : "5bec37408c73047613e2f35d",
+  "origin" : null,
+  "parent" : null,
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "children" : [],
+  "ancestors" : [],
+  "useForResponse" : true,
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:55:44.886Z"
+},
+
+
+{
+  "_id" : "5bec37a08c73047613e2f364",
+  "label" : "wonder",
+  "text" : "This is a wonder comment on ashleyc's short answer.",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "selection" : "5bec37838c73047613e2f361",
+  "origin" : null,
+  "parent" : null,
+  "submission" : "5bec36958c73047613e2f34d",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "children" : [],
+  "ancestors" : [],
+  "useForResponse" : false,
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:56:32.754Z"
+},
+
+
+{
+  "_id" : "5bec37e38c73047613e2f366",
+  "label" : "notice",
+  "text" : "This is a notice comment on ashleyc's explanation.",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "lastModifiedBy" : null,
+  "selection" : "5bec37a78c73047613e2f365",
+  "origin" : null,
+  "parent" : null,
+  "submission" : "5bec36958c73047613e2f34d",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "children" : [],
+  "ancestors" : [],
+  "useForResponse" : false,
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2018-11-14T14:57:39.094Z"
 }
 ];
 

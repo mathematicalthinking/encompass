@@ -1,4 +1,5 @@
 Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
+  utils: Ember.inject.service('utility-methods'),
 
   isAdmin: function() {
     let accountType = this.get('currentUser').get('accountType');
@@ -30,6 +31,12 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     }
   },
 
+  isCreator: function (ws) {
+    let currentUserId = this.get('currentUser.id');
+    let creatorId = ws.get('createdBy.id');
+    return currentUserId === creatorId;
+  },
+
   isInPdAdminDomain: function(ws) {
     let user = this.get('currentUser');
     let type = user.get('accountType');
@@ -41,8 +48,45 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     return Ember.isEqual(ownerOrg, userOrg);
   },
 
-  canEdit: function (ws) {
-    return this.isAdmin() || this.isOwner(ws)|| this.isEditor(ws) || this.isInPdAdminDomain(ws);
+  canEdit: function (ws, recordType, requiredPermissionLevel) {
+    const utils = this.get('utils');
+    if (!utils.isNonEmptyObject(ws)) {
+      return false;
+    }
+
+    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
+      return true;
+    }
+
+    // check ws permissions
+
+    const wsPermissions = ws.get('permissions');
+    if (!utils.isNonEmptyArray(wsPermissions)) {
+      return false;
+    }
+
+    const userPermissions = wsPermissions.findBy('user', this.get('currentUser.id'));
+    if (!utils.isNonEmptyObject(userPermissions)) {
+      return false;
+    }
+
+    const globalSetting = userPermissions.global;
+
+    if (globalSetting === 'viewOnly') {
+      return false;
+    }
+    if (globalSetting === 'editor') {
+      return true;
+    }
+
+    // else custom
+
+    const permissionLevel = userPermissions[recordType];
+    if (recordType === 'feedback') {
+      return permissionLevel !== 'none';
+    }
+
+    return permissionLevel >= requiredPermissionLevel;
   },
 
 });

@@ -2076,6 +2076,90 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   "_id" : "5bbe073eecd6e597fd9045b0",
   "isTrashed" : true,
   "createdBy" : "5b4e4b48808c7eebc9f9e827"
+},
+{
+"_id" : "5bec36958c73047613e2f34d",
+"createdBy" : "5b4e4b48808c7eebc9f9e827",
+"answer" : "5bec35898c73047613e2f34b",
+"responses" : [
+ "5bec6497aa4a927d50cd5b9b"
+],
+"workspaces" : [
+    "5bec36958c73047613e2f34e"
+],
+"comments" : [
+  "5bec37a08c73047613e2f364",
+  "5bec37e38c73047613e2f366"
+],
+"selections" : [
+    "5bec37838c73047613e2f361",
+    "5bec37a78c73047613e2f365"
+],
+"teacher" : {
+    "id" : "5b4e4b48808c7eebc9f9e827"
+},
+"teachers" : [],
+"pdSet" : "default",
+"publication" : {
+    "publicationId" : null,
+    "puzzle" : {
+        "title" : "Summer's Private Problem",
+        "problemId" : "5b9173e23da5efca74705772"
+    }
+},
+"clazz" : {
+    "sectionId" : "5b9149a32ecaf7c30dd4748f",
+    "name" : "Summer's Algebra 2 1st Period"
+},
+"creator" : {
+    "studentId" : "5b9149c22ecaf7c30dd47490",
+    "username" : "ashleyc"
+},
+"lastModifiedDate" : "2018-11-14T14:30:46.531Z",
+"isTrashed" : false,
+"createDate" : "2018-11-14T14:52:05.678Z"
+},
+{
+"_id" : "5bec36958c73047613e2f34c",
+"createdBy" : "5b4e4b48808c7eebc9f9e827",
+"answer" : "5bb813fc9885323f6d894972",
+"responses" : [
+  "5bec64f7aa4a927d50cd5ba0"
+],
+"workspaces" : [
+    "5bec36958c73047613e2f34e"
+],
+"comments" : [
+  "5bec375d8c73047613e2f35e",
+  "5bec37708c73047613e2f35f",
+],
+"selections" : [
+    "5bec373d8c73047613e2f35c",
+    "5bec37408c73047613e2f35d"
+],
+"teacher" : {
+    "id" : "5b4e4b48808c7eebc9f9e827"
+},
+"teachers" : [],
+"pdSet" : "default",
+"publication" : {
+    "publicationId" : null,
+    "puzzle" : {
+        "title" : "Summer's Private Problem",
+        "problemId" : "5b9173e23da5efca74705772"
+    }
+},
+"clazz" : {
+    "sectionId" : "5b9149a32ecaf7c30dd4748f",
+    "name" : "Summer's Algebra 2 1st Period"
+},
+"creator" : {
+    "studentId" : "5b914a102ecaf7c30dd47492",
+    "username" : "tracyc"
+},
+"lastModifiedDate" : "2018-11-14T14:30:46.531Z",
+"isTrashed" : false,
+"createDate" : "2018-11-14T14:52:05.677Z"
 }
 ];
 

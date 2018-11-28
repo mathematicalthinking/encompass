@@ -17,7 +17,6 @@ Encompass.WorkspacesIndexRoute = Encompass.AuthenticatedRoute.extend({
         }
       };
     }
-    console.log('in index model');
     return Ember.RSVP.hash({
       organizations: store.findAll('organization'),
       workspaces: store.query('workspace', workspaceCriteria),

@@ -45,16 +45,13 @@ describe('Comment CRUD operations by account type', async function() {
             if (err) {
               console.log(err);
             }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
+            expect(res).to.have.status(200);
             expect(res.body.comments).to.be.a('array');
             expect(res.body.comments).to.have.lengthOf(accessibleCommentCount);
-            expect(res.body.comments[0]).to.have.any.keys('label', 'ancestors', 'children', 'text');
-            done();
+            if (accessibleCommentCount > 0) {
+              expect(res.body.comments[0]).to.have.any.keys('label', 'ancestors', 'children', 'text');
             }
+            done();
           });
         });
       });
@@ -183,31 +180,10 @@ describe('Comment CRUD operations by account type', async function() {
               if (err) {
                 console.log(err);
               }
-              if (isStudent) {
-                expect(res).to.have.status(403);
-                done();
-              } else {
-                expect(res).to.have.status(400);
-                done();
-              }
-            });
-          });
 
-          it('should fail if id is invalid', done => {
-            const url = baseUrl + 'badId';
-            agent
-            .get(url)
-            .end((err, res) => {
-              if (err) {
-                console.log(err);
-              }
-              if (isStudent) {
-                expect(res).to.have.status(403);
-                done();
-              } else {
-                expect(res).to.have.status(409);
-                done();
-              }
+              expect(res).to.have.status(400);
+              done();
+
             });
           });
         });

@@ -4,7 +4,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 // REQUIRE FILES
-const fixtures = require('./fixtures');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
 
@@ -47,17 +46,12 @@ describe('Folder CRUD operations by Account Type',
             if (err) {
               console.error(err);
             }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.all.keys('folders');
-              expect(res.body.folders).to.be.a('array');
-              expect(res.body.folders).to.have.lengthOf(accessibleFolderCount);
-              done();
-            }
 
+            expect(res).to.have.status(200);
+            expect(res.body).to.have.all.keys('folders');
+            expect(res.body.folders).to.be.a('array');
+            expect(res.body.folders).to.have.lengthOf(accessibleFolderCount);
+            done();
           });
         });
       });
@@ -130,7 +124,6 @@ describe('Folder CRUD operations by Account Type',
 
         let folder = modifiableFolder;
         if (isStudent) {
-          folder = fixtures.folder.validFolder;
           msg = 'should return 403 error';
         }
 

@@ -86,12 +86,12 @@ function postTagging(req, res, next) {
 
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 3)) {
 
       var tagging = new models.Tagging(req.body.tagging);
       tagging.createdBy = user;
@@ -126,12 +126,12 @@ function putTagging(req, res, next) {
 
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.tagging.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'folders', 4)) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {
           if(err) {

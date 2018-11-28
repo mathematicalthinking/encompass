@@ -1,3 +1,4 @@
+/*eslint-env node, mocha */
 // REQUIRE MODULES
 const { Builder } = require('selenium-webdriver');
 const expect = require('chai').expect;

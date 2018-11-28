@@ -10,8 +10,4 @@ Encompass.WorkspacesRoute = Encompass.AuthenticatedRoute.extend({
     return this.get('store').findAll('user');
   },
 
-  renderTemplate: function(){
-    console.log('rendering workspaces template');
-  },
-
 });

@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.AdminProblemFilterComponent = Ember.Component.extend({
   elementId: 'admin-problem-filter',
   mainFilter: Ember.computed.alias('secondaryFilter.selectedValue'),

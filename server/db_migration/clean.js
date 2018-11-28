@@ -22,7 +22,7 @@ const workspaceMinimum = {
   taggings: 0,
   folders: 3,
   selections: 0
-}
+};
 
 // builds the criteria that will be passed to the find operation
 function buildCriteria(options) {
@@ -48,7 +48,7 @@ async function pruneWorkspaces() {
     ids = workspaces.map(ws => ws._id);
     deleted = await models.Workspace.deleteMany({_id: {$nin: ids}});
   }catch(err) {
-    console.log(err)
+    console.log(err);
   }
   return deleted;
 }
@@ -68,7 +68,7 @@ async function removeTrashedDocuments() {
 
 // collections where the schema has a workspace field which contains a single
 // reference to a workspace ObjectId
-const belongsToWs = ['Selection', 'Comment', 'Response', 'Folder']
+const belongsToWs = ['Selection', 'Comment', 'Response', 'Folder'];
 
 // removes all documents whose workspace field references a workspace
 // ObjectId that no longer exists in database

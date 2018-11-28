@@ -77,7 +77,6 @@ Encompass.TwitterTypeaheadComponent = Ember.Component.extend({
       this.$('.typeahead').on('typeahead:change', function(ev, val) {
 
         if (that.get('isDestroyed') || that.get('isDestroying')) {
-          console.log('isdestroying or is destroyed');
           return;
         }
         let selectedValue = that.get('selectedValue');

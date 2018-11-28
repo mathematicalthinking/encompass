@@ -123,7 +123,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     var selections = [];
     var imgTags = [];
 
-    console.log(this.model); // This should never be null (ENC-479 possibility)
+    // console.log(this.model); // This should never be null (ENC-479 possibility)
     if (this.model) {
       this.model.get('selections').forEach(function(selection) {
         if (selection.get('isTrashed')) {

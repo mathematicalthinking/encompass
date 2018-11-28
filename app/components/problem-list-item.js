@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   classNames: ['problem-list-item'],
   classNameBindings: ['isPublic', 'isPrivate', 'isOrg', 'isPows'],
@@ -350,7 +351,6 @@ Encompass.ProblemListItemComponent = Ember.Component.extend(Encompass.CurrentUse
           let parentData = this.get('parentData');
           this.get('parentActions.refreshList').call(parentData);
         }).catch((err) => {
-          console.log('err is', err);
           this.get('alert').showToast('error', `${err}`, 'bottom-end', 3000, false, null);
           // this.handleErrors(err, 'createRecordErrors', newProblem);
         });

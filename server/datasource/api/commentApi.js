@@ -188,12 +188,12 @@ async function getComment(req, res, next) {
 function postComment(req, res, next) {
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'comments', 2)) {
       var comment = new models.Comment(req.body.comment);
       comment.createdBy = user;
       comment.createDate = Date.now();
@@ -224,12 +224,12 @@ function putComment(req, res, next) {
 
   var user = userAuth.requireUser(req);
   var workspaceId = req.body.comment.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').exec(function(err, ws){
+  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws)) {
+    if(wsAccess.canModify(user, ws, 'comments', 3)) {
 
       models.Comment.findById(req.params.id,
         function (err, doc) {
@@ -256,7 +256,6 @@ function putComment(req, res, next) {
       );
     } else { //not permitted
       logger.info("permission denied");
-      // res.send(403, "You don't have permission for this workspace");
       return utils.sendError.NotAuthorizedError(`You don't have permission for this workspace`, res);
     }
   });

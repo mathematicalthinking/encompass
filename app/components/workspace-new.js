@@ -4,7 +4,6 @@ Encompass.WorkspaceNewComponent = Ember.Component.extend({
 
   actions: {
     toggleView: function(view) {
-      console.log('view', view);
       if (view === 'pows') {
         this.set('isPows', true);
       } else {

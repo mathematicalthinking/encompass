@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.AdminWorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'admin-workspace-filter',
   mainFilter: Ember.computed.alias('secondaryFilter.selectedValue'),

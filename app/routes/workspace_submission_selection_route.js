@@ -9,13 +9,11 @@ Encompass.WorkspaceSubmissionSelectionRoute = Ember.Route.extend({
   },
 
   doTour: function() {
-    console.log('doing tour');
     var user = this.modelFor('application');
 
     Ember.run.schedule('afterRender', function() {
       if(!user.get('seenTour')) { //customize for this part of the tour
         guiders.hideAll();
-        console.log('ignoring tour');
         //guiders.show('comments');
       }
     });

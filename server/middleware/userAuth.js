@@ -126,8 +126,8 @@ function determineStudentAccess(user, path, method) {
   if (accountType !== 'S' && actingRole !== 'student') {
     return true;
   }
-  const forbiddenGetPaths = ['workspaces', 'comments', 'folders', 'taggings', 'selections', 'pdSets', 'folderSets', 'submissions'];
-  const allowedPostPutPaths = ['answers', 'image', 'errors', 'users'];
+  const forbiddenGetPaths = [];
+  const forbiddenPostPutPaths = ['sections', 'assignments', 'organizations', 'categories', 'copyWorkspaceRequests', 'problems'];
 
   if (method === 'GET') {
     // students currently cannot make any requests related to workspaces
@@ -138,10 +138,10 @@ function determineStudentAccess(user, path, method) {
 
   } else {
     // students currently can only make POST/PUT requests to /answers, /image
-    let isAllowedPath = _.any(allowedPostPutPaths, (p) => {
+    let isForbiddenPath = _.any(forbiddenPostPutPaths, (p) => {
       return path.includes(p);
     });
-    return isAllowedPath;
+    return !isForbiddenPath;
   }
 }
 

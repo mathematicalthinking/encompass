@@ -51,7 +51,6 @@ describe('Problem CRUD operations by account type', function() {
             expect(res).to.have.status(200);
             expect(res.body).to.have.all.keys('problems', 'meta');
             expect(res.body.problems).to.be.a('array');
-            console.log('length', res.body.problems.length);
             expect(res.body.problems.length).to.eql(accessibleProblemCount);
             done();
           });
