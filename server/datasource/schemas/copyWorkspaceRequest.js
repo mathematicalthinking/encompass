@@ -18,6 +18,7 @@ var CopyWorkspaceRequestSchema = new Schema({
   originalWsId: { type: ObjectId, ref: 'Workspace' },
   owner: { type: ObjectId, ref: 'User' },
   name: { type: String },
+  mode: { type: String, enum: ['private', 'org', 'public', 'internet']},
   answerOptions: {
     all: { type: Boolean },
     none: { type: Boolean },
