@@ -25,6 +25,7 @@ error*.txt
 # conversion files
 errorProblems.txt
 dump/**/*
+server/db_migration/missingPowsSubs.json
 
 #babel files
 babel/
