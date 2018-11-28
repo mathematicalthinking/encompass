@@ -75,6 +75,9 @@
     &.owner {
       @include flex-item(9, center, .08 0 auto);
       width: 8%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     &.editors {
       @include flex-item(10, center, .07 0 auto);
