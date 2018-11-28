@@ -37,6 +37,27 @@
         <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
       {{/link-to}}
     </div>
+    <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+      <i class="fas fa-ellipsis-v more-menu"></i>
+      {{#if showMoreMenu}}
+      <span class="click-menu">
+        <ul>
+          {{#if ellipsisMenuOptions}}
+          {{#each ellipsisMenuOptions as |option|}}
+          <li {{action option.action}}>
+            <label>
+              <span class="icon-text">{{option.label}}</span>
+              <i class={{option.icon}}></i>
+            </label>
+          </li>
+          {{/each}}
+          {{else}}
+          <li>No options</li>
+          {{/if}}
+        </ul>
+      </span>
+      {{/if}}
+    </div>
   </div>
 {{/if}}
 
@@ -47,16 +68,35 @@
         <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
         <span class="date">{{format-date workspace.lastModifiedDateComp 'L'}}</span>
       </div>
-      <div class="item-card more">
-        {{#link-to 'workspace.info' workspace.id}}
-          <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-        {{/link-to}}
+      <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+        <i class="fas fa-ellipsis-v more-menu"></i>
+        {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#if ellipsisMenuOptions}}
+            {{#each ellipsisMenuOptions as |option|}}
+            <li {{action option.action}}>
+              <label>
+                <span class="icon-text">{{option.label}}</span>
+                <i class={{option.icon}}></i>
+              </label>
+            </li>
+            {{/each}}
+            {{else}}
+            <li>No options</li>
+            {{/if}}
+          </ul>
+        </span>
+        {{/if}}
       </div>
     </div>
     <div class="item-card row-2">
       <div class="item-card name">
         {{#link-to 'workspace.work' workspace class="workspace-name"}}
           {{{workspace.name}}}
+            {{#link-to 'workspace.info' workspace.id}}
+              <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
+            {{/link-to}}
         {{/link-to}}
       </div>
     </div>
