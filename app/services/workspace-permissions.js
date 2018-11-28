@@ -21,7 +21,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   isEditor: function (ws) {
-    let currentUser= this.get('currentUser');
+    let currentUser = this.get('currentUser');
     let editors = ws.get('editors');
 
     if (editors.includes(currentUser)) {
@@ -46,6 +46,10 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     let userOrg = user.get('organization.content');
     let ownerOrg = ws.get('owner.organization.content');
     return Ember.isEqual(ownerOrg, userOrg);
+  },
+
+  canDelete: function(ws) {
+    return this.isCreator(ws) || this.isOwner(ws) || this.isAdmin();
   },
 
   canEdit: function (ws, recordType, requiredPermissionLevel) {
