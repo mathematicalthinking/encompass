@@ -66,13 +66,14 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   canCopy: function(ws) {
+    // let canCopy = ws.get('canCopy');
+    // have to add a check is workspace is allowed to be copied
     if (this.canDelete(ws) || this.isPdAdmin() && this.isInPdAdminDomain(ws)) {
       return true;
     } else {
       return false;
     }
   },
-
 
   canEdit: function (ws, recordType, requiredPermissionLevel) {
     const utils = this.get('utils');

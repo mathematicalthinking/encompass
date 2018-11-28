@@ -23,7 +23,6 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
   ellipsisMenuOptions: function () {
     let ws = this.get('workspace');
     let deleted = this.get('workspace.isTrashed');
-
     let canDelete = this.get('permissions').canDelete(ws);
     let canCopy = this.get('permissions').canCopy(ws);
     // let canAssign = this.get('canAssign');
@@ -69,7 +68,6 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
     },
 
     deleteWorkspace: function () {
-      console.log('deleteWorkspace Called');
       let workspace = this.get('workspace');
       this.get('alert').showModal('warning', 'Are you sure you want to delete this workspace?', null, 'Yes, delete it')
         .then((result) => {
@@ -96,13 +94,11 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
         });
     },
 
-    assignProblem() {
-      // this.set('creatingAssignment', true);
-      // send to parent to handle?
-      let problem = this.get('problem');
-      problem.set('isForAssignment', true);
-      this.send('toProblemInfo', problem);
-
+    copyWorkspace: function () {
+      console.log('copyWorkspace Called');
+      let workspace = this.get('workspace');
+      workspace.set('isForCopy', true);
+      this.send('toCopyWorkspace', workspace);
     },
 
     editProblem() {
@@ -112,8 +108,8 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
       this.send('toProblemInfo', problem);
     },
 
-    toProblemInfo(problem) {
-      this.get('toProblemInfo')(problem);
+    toCopyWorkspace(workspace) {
+      this.get('toCopyWorkspace')(workspace);
     },
 
   }

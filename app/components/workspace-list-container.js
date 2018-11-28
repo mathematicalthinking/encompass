@@ -769,12 +769,9 @@ buildCollabFilter() {
       $('#arrow-icon').toggleClass('fa-rotate-180');
       $('#filter-list-side').addClass('animated slideInLeft');
     },
-    toWorkspaceInfo(workspace) {
-      this.sendAction('toWorkspaceInfo', workspace);
-      this.$('#outlet').removeClass('hidden');
-
+    toCopyWorkspace(workspace) {
+      console.log('toCopyWorkspace called on parent');
+      this.sendAction('toCopyWorkspace', workspace);
     }
   }
-
-
 });
