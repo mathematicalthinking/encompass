@@ -59,7 +59,8 @@ var WorkspaceSchema = new Schema({
     feedback: { type: String, enum: ['none', 'authReq', 'preAuth'] }
 
   }],
-  feedbackAuthorizers: [ {type: ObjectId, ref: 'User'}]
+  feedbackAuthorizers: [ {type: ObjectId, ref: 'User'}],
+  sourceWorkspace: { type: ObjectId, ref: 'Workspace'}
 }, {versionKey: false});
 
 /**

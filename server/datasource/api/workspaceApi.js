@@ -2209,6 +2209,7 @@ async function cloneWorkspace(req, res, next) {
       // each permissionObject has userId
     }
   }
+  newWs.sourceWorkspace = originalWsId;
 
   const savedWs = await newWs.save();
 
