@@ -6,7 +6,7 @@
 
     <div class="item-section name">
       {{#link-to 'workspace.work' workspace class="workspace-name"}}
-        {{{workspace.name}}}
+        <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
       {{/link-to}}
     </div>
     <div class="item-section last-viewed">
@@ -93,7 +93,7 @@
     <div class="item-card row-2">
       <div class="item-card name">
         {{#link-to 'workspace.work' workspace class="workspace-name"}}
-          {{{workspace.name}}}
+          <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
             {{#link-to 'workspace.info' workspace.id}}
               <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
             {{/link-to}}

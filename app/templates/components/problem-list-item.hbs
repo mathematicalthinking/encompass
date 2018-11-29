@@ -89,7 +89,7 @@
     <div class="item-card row-2">
       <div class="item-card name">
         {{#link-to 'problem' problem class="problem-title"}}
-          {{{problem.title}}}
+          <span class={{if problem.isTrashed 'strikethrough'}}>{{{problem.title}}}</span>
           {{#if isRecommended}}
             <span><i class="fas fa-star star-icon"></i></span>
           {{/if}}
