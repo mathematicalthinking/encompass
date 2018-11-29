@@ -236,13 +236,14 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
   */
 function sendWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
+
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       console.error(`Error sendWorkspace: ${err}`);
       console.trace();
       return utils.sendError.InternalError(err, res);
     }
-    if (!ws || ws.isTrashed) {
+    if (!ws || !ws.isTrashed) {
       return utils.sendResponse(res, null);
     }
 
@@ -1037,7 +1038,10 @@ function filterRequestedWorkspaceData(user, results) {
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
 
-  let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+
+  let { ids, filterBy, sortBy, searchBy, page, isTrashed } = req.query;
+
+  console.log('req query is', req.query);
 
       if (filterBy) {
         // console.log('filterBy workspace API:', JSON.stringify(filterBy));
