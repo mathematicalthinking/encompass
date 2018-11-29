@@ -11,7 +11,7 @@ const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
-
+const access   = require('../../middleware/access/taggings');
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
@@ -27,13 +27,20 @@ module.exports.put = {};
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getTaggings(req, res, next) {
-  var criteria;
+async function getTaggings(req, res, next) {
+  const user = userAuth.requireUser(req);
+  if (!user) {
+    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+  }
+  let ids = req.query.ids;
+  let criteria;
+  try {
+    criteria = await access.get.taggings(user, ids);
 
-  criteria = utils.buildCriteria(req);
-
-  if (req.query.ids) {
-    criteria._id = { $in: req.query.ids };
+  }catch(err) {
+    console.error(`Error building selections criteria: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
 
   models.Tagging.find(criteria)
@@ -58,20 +65,38 @@ function getTaggings(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function getTagging(req, res, next) {
-  models.Tagging.findById(req.params.id)
-    .exec(function(err, tagging) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      if (!tagging || tagging.isTrashed) {
-        return utils.sendResponse(res, null);
-      }
+async function getTagging(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
 
-      var data = {'tagging': tagging};
-      utils.sendResponse(res, data);
-    });
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    }
+
+    let id = req.params.id;
+
+    let tagging = await models.Tagging.findById(id);
+
+    if (!tagging || tagging.isTrashed) { // record not found in db
+      return utils.sendResponse(res, null);
+    }
+
+    let canLoadTagging = await access.get.tagging(user, id);
+
+    if (!canLoadTagging) { // user does not have permission to access tagging
+      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+    }
+
+    const data = { // user has permission; send back record
+      tagging
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getTagging: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 /**
