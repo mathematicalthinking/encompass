@@ -3,15 +3,17 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   utils: Ember.inject.service('utility-methods'),
 
   showCustom: Ember.computed.equal('global', 'custom'),
+  showCustomSubmissions: Ember.computed.equal('submissions', 'custom'),
 
   global: 'viewOnly',
-  answerItems: {
-    groupName: 'answers',
-    groupLabel: 'Answer Permissions',
+  submissionItems: {
+    groupName: 'submissions',
+    groupLabel: 'Submission Permissions',
     required: true,
     inputs: [
       { label: 'All', value: 'all' },
-      { label: 'Own Only', value: 'user' }
+      { label: 'Own Only', value: 'user' },
+      { label: 'Custom', value: 'custom' }
     ]
   },
 
@@ -74,19 +76,53 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   },
 
   folders: 1,
-  answers: 'all',
+  submissions: 'all',
   comments: 1,
   selections: 1,
   feedback: 'authReq',
 
+  buildCustomSubmissionIds(submissionsValue) {
+    if (submissionsValue === 'custom') {
+      let ids = this.get('customSubmissionIds');
+      if (this.get('utils').isNonEmptyArray(ids)) {
+        return ids;
+      }
+      return [];
+    } else if (submissionsValue === 'user') {
+      // filter for only submissions that have selectedUser as student
+      const subs = this.get('workspace.submissions.content');
+      const selectedUsername = this.get('selectedUser.username');
+      const selectedUserId = this.get('selectedUser.id');
+      if (subs) {
+        const filtered = subs.filter((sub) => {
+          return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
+        });
+        return filtered.mapBy('id');
+      }
+
+    }
+    return [];
+  },
+
   buildPermissionsObject() {
     const user = this.get('selectedUser');
     const globalSetting = this.get('global');
-    const answers = this.get('answers');
+    const submissions = this.get('submissions');
+
+    const includeAllSubs = submissions === 'all';
+    let submissionOptions = {
+      all: includeAllSubs,
+      submissionIds: []
+    };
+
+    if (!includeAllSubs) {
+      submissionOptions.submissionIds = this.buildCustomSubmissionIds(submissions);
+    }
+
 
     const results = {
       user,
-      answers,
+      submissions: submissionOptions,
       global: globalSetting
     };
 
