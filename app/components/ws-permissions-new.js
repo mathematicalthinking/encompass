@@ -11,7 +11,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     required: true,
     inputs: [
       { label: 'All', value: 'all' },
-      { label: 'Own Only', value: 'mine' }
+      { label: 'Own Only', value: 'user' }
     ]
   },
 
