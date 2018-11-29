@@ -1039,7 +1039,7 @@ function filterRequestedWorkspaceData(user, results) {
   logger.debug('looking for workspaces for user id' + user._id);
 
 
-  let { ids, filterBy, sortBy, searchBy, page, isTrashed } = req.query;
+  let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
 
   console.log('req query is', req.query);
 
@@ -1125,7 +1125,7 @@ function filterRequestedWorkspaceData(user, results) {
         byRelevance = sortBy.byRelevance;
       }
 
-      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
+      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter, isTrashedOnly);
       let results, itemCount;
 
       let sortField = Object.keys(sortParam)[0];

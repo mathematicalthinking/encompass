@@ -143,10 +143,13 @@ const canLoadWorkspace = function(user, ws) {
 
 };
 
-const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) {
+const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
 
   if (!apiUtils.isNonEmptyObject(user)) {
     return {};
+  }
+  if (isTrashedOnly) {
+    return { isTrashed: true };
   }
   const { accountType, actingRole, collabWorkspaces } = user;
 
