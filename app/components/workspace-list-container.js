@@ -414,7 +414,7 @@ buildCollabFilter() {
   let filter = {};
 
   if (utils.isNonEmptyArray(collabWorkspaces)) {
-    ids = collabWorkspaces.mapBy('id');
+    ids = collabWorkspaces;
   }
   // user is not a collaborator for any workspaces
   if (!this.get('utils').isNonEmptyArray(ids)) {
