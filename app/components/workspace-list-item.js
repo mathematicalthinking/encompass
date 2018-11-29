@@ -42,6 +42,10 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
       });
     }
 
+    if (deleted) {
+      //add restore option to menu
+    }
+
     return options;
   }.property('workspace.id', 'workspace.isTrashed'),
 

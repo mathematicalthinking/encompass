@@ -3,6 +3,8 @@
     {{workspace-filter
       store=store
       onUpdate=(action "triggerFetch")
+      triggerShowTrashed=(action "triggerShowTrashed")
+      toggleTrashed=toggleTrashed
       filter=filter
       primaryFilter=primaryFilter
       adminFilterSelect=adminFilterSelect
@@ -32,10 +34,10 @@
     <div class="results-list">
       <div class="results-info">
         <div class="results-message">
-          {{listResultsMessage}}
+          {{{listResultsMessage}}}
         </div>
         <div class="side-icons">
-          <i class="fas fa-redo-alt refresh-icon" {{action 'triggerFetch'}} title="Refresh Workspace list"></i>
+          <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Workspace list"></i>
           <span class="layout-icons">
           {{#if showList}}
             <img src="/images/grid.svg" alt="grid" {{action 'setGrid'}} title="Show in grid view">

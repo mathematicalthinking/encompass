@@ -3,6 +3,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   elementId: 'workspace-list-container',
   showList: true,
   showGrid: false,
+  toggleTrashed: false,
   utils: Ember.inject.service('utility-methods'),
 
   sortProperties: ['name'],
@@ -116,9 +117,17 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       return msg;
     }
     msg = `${this.get('workspacesMetadata.total')} workspaces found`;
+
+    let toggleTrashed = this.get('toggleTrashed');
+
+    if (toggleTrashed) {
+      msg = `${msg} - <strong>Displaying Trashed Workspaces</strong>`;
+    }
+
     return msg;
 
   }.property('criteriaTooExclusive', 'isDisplayingSearchResults', 'workspaces.@each.isTrashed', 'isFetchingWorkspaces', 'showLoadingMessage'),
+
 
   init: function() {
     this.getUserOrg()
@@ -540,7 +549,17 @@ buildCollabFilter() {
     }
   }.property('workspaces.@each.isTrashed', 'toggleTrashed'),
 
-  buildQueryParams: function(page) {
+  buildQueryParams: function(page, isTrashedOnly) {
+    let params = {};
+    if (page) {
+      params.page = page;
+    }
+
+    if (isTrashedOnly) {
+      params.isTrashedOnly = true;
+      return params;
+    }
+
     let sortBy = this.buildSortBy();
     let filterBy = this.buildFilterBy();
 
@@ -551,18 +570,18 @@ buildCollabFilter() {
       this.set('isFetchingWorkspaces', false);
       return;
     }
-    let params = {
+    params = {
       sortBy,
       filterBy
     };
 
+    if (page) {
+      params.page = page;
+    }
+
     if (this.get('doUseSearchQuery')) {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
-    }
-
-    if (page) {
-      params.page = page;
     }
 
     return params;
@@ -582,10 +601,11 @@ buildCollabFilter() {
     }, 300);
   }.observes('isFetchingWorkspaces'),
 
-  getWorkspaces: function(page) {
+  getWorkspaces: function(page, isTrashedOnly=false) {
 
     this.set('isFetchingWorkspaces', true);
-    let queryParams = this.buildQueryParams(page);
+    let queryParams = this.buildQueryParams(page, isTrashedOnly);
+    console.log('queryParams are', queryParams);
 
     if (this.get('criteriaTooExclusive')) {
       if (this.get('isFetchingWorkspaces')) {
@@ -694,14 +714,19 @@ buildCollabFilter() {
         }
       });
     },
-
+    refreshList() {
+      let isTrashedOnly = this.get('toggleTrashed');
+      this.getWorkspaces(null, isTrashedOnly);
+    },
     toggleFilter: function(key) {
       if (key === this.get('listFilter')) {
         return;
       }
       this.set('listFilter', key);
     },
-
+    triggerShowTrashed() {
+      this.send('triggerFetch', this.get('toggleTrashed'));
+    },
     clearSearchResults: function() {
       this.set('searchQuery', null);
       this.set('searchInputValue', null);
@@ -723,8 +748,10 @@ buildCollabFilter() {
     },
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
-      this.getWorkspaces(page);
+      let isTrashedOnly = this.get('toggleTrashed');
+      this.getWorkspaces(page, isTrashedOnly);
     },
+
     updateFilter: function(id, checked) {
       let filter = this.get('filter');
       let keys = Object.keys(filter);
