@@ -4,20 +4,6 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('workspace-permissions'),
   menuOptions: Ember.computed.alias('parentView.moreMenuOptions'),
-  parentData: Ember.computed.alias('parentView.containerData'),
-  parentActions: Ember.computed.alias("parentView.containerActions"),
-
-  isPublic: function () {
-    return this.get('privacySetting') === 'E';
-  }.property('problem.privacySetting'),
-
-  isOrg: function () {
-    return this.get('privacySetting') === 'O';
-  }.property('problem.privacySetting'),
-
-  isPrivate: function () {
-    return this.get('privacySetting') === 'M';
-  }.property('problem.privacySetting'),
 
 
   ellipsisMenuOptions: function () {
@@ -56,21 +42,6 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
       this.set('showMoreMenu', !isShowing);
     },
 
-    restoreProblem: function () {
-      let problem = this.get('problem');
-      this.get('alert').showModal('warning', 'Are you sure you want to restore this problem?', null, 'Yes, restore')
-        .then((result) => {
-          if (result.value) {
-            problem.set('isTrashed', false);
-            problem.save().then(() => {
-              this.get('alert').showToast('success', 'Problem Restored', 'bottom-end', 3000, false, null);
-              let parentData = this.get('parentData');
-              this.get('parentActions.refreshList').call(parentData);
-            });
-          }
-        });
-    },
-
     deleteWorkspace: function () {
       let workspace = this.get('workspace');
       this.get('alert').showModal('warning', 'Are you sure you want to delete this workspace?', null, 'Yes, delete it')
@@ -104,7 +75,7 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
         .then((result) => {
           if (result.value) {
             workspace.set('isTrashed', false);
-            workspace.save().then((workspace) => {
+            workspace.save().then(() => {
               if (this.get('showMoreMenu')) {
                 this.set('showMoreMenu', false);
               }
