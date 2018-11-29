@@ -602,7 +602,6 @@ buildCollabFilter() {
   }.observes('isFetchingWorkspaces'),
 
   getWorkspaces: function(page, isTrashedOnly=false) {
-
     this.set('isFetchingWorkspaces', true);
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
     console.log('queryParams are', queryParams);
@@ -765,14 +764,13 @@ buildCollabFilter() {
       this.set('sortCriterion', criterion);
       this.send('triggerFetch');
     },
-    triggerFetch() {
+    triggerFetch(isTrashedOnly=false) {
       for (let prop of ['criteriaTooExclusive']) {
         if (this.get(prop)) {
           this.set(prop, null);
         }
       }
-
-      this.getWorkspaces();
+      this.getWorkspaces(null, isTrashedOnly);
     },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');
