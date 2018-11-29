@@ -95,20 +95,7 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
     },
 
     copyWorkspace: function () {
-      console.log('copyWorkspace Called');
       let workspace = this.get('workspace');
-      workspace.set('isForCopy', true);
-      this.send('toCopyWorkspace', workspace);
-    },
-
-    editProblem() {
-      // send to parent to handle?
-      let problem = this.get('problem');
-      problem.set('isForEdit', true);
-      this.send('toProblemInfo', problem);
-    },
-
-    toCopyWorkspace(workspace) {
       this.get('toCopyWorkspace')(workspace);
     },
 

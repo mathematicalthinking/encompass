@@ -3,7 +3,7 @@ Encompass.WorkspaceListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   actions: {
     toCopyWorkspace(workspace) {
-      this.sendAction("toCopyWorkspace", workspace);
+      this.get("toCopyWorkspace")(workspace);
     }
   }
 

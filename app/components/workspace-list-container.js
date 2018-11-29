@@ -770,7 +770,6 @@ buildCollabFilter() {
       $('#filter-list-side').addClass('animated slideInLeft');
     },
     toCopyWorkspace(workspace) {
-      console.log('toCopyWorkspace called on parent');
       this.sendAction('toCopyWorkspace', workspace);
     }
   }

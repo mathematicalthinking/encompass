@@ -9,8 +9,6 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   taggings: DS.hasMany('tagging', {async: false}),
   lastViewed: DS.attr('date'),
   lastModifiedDate: DS.attr('date'),
-  isForCopy: DS.attr('boolean', { default: false }),
-  isForAssignment: DS.attr('boolean', {default: false}),
   lastViewedDate: Ember.computed(function() {
     if (!this.get('lastViewed')) {
       return this.get('lastModifiedDate');
