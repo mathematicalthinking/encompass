@@ -4,10 +4,6 @@ Encompass.WorkspacesCopyRoute = Encompass.AuthenticatedRoute.extend({
 
     let workspace = transition.queryParams.workspace;
     this.set('workspaceId', workspace);
-    console.log('workspaceId', this.get('workspaceId'));
-
-    //set on the route then return it on the model
-
   },
 
   model: function() {
@@ -15,7 +11,7 @@ Encompass.WorkspacesCopyRoute = Encompass.AuthenticatedRoute.extend({
     this.set('workspaceToCopy', this.get('workspaceId'));
     return Ember.RSVP.hash({
       folderSets: store.findAll('folderSet'),
-      workspacetoCopy: this.get('workspaceId'),
+      workspaceToCopy: this.get('workspaceId'),
     });
 
   },
