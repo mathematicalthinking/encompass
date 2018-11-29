@@ -55,7 +55,10 @@ var CopyWorkspaceRequestSchema = new Schema({
     permissionObjects: [{
       user: { type: ObjectId, ref: 'User'},
       global: {type: String, enum: ['viewOnly', 'editor', 'custom'] },
-      answers: { type: String, enum: ['all', 'user'] },
+      submissions: {
+        all: { type: Boolean },
+        submissionIds: [ {type: ObjectId, ref: 'Submission'} ]
+      },
       folders: { type: Number, enum: [0, 1, 2, 3, 4] },
       comments: { type: Number, enum: [0, 1, 2, 3, 4] },
       selections: { type: Number, enum: [0, 1, 2, 3, 4] },

@@ -59,7 +59,7 @@ const canLoadWorkspace = function(user, ws) {
       return [true, null];
     }
     if (isCollaborator) {
-      if (userPermissions.answers === 'user') {
+      if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
         return [true, userPermissions];
       }
       if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
@@ -120,7 +120,7 @@ const canLoadWorkspace = function(user, ws) {
   }
 
   if (isCollaborator) {
-    if (userPermissions.answers === 'user') {
+    if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
       return [true, userPermissions];
     }
     if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {

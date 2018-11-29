@@ -36,25 +36,24 @@ function getRestrictedDataMap(user, permissions, ws) {
   }
 
   const dataMap = {};
-  const { answers, folders, selections, comments } = permissions;
+  const { submissions, folders, selections, comments } = permissions;
 
-  // filter submissions to only currentUsers
-  if (answers === 'user') {
+  // filter submissions to requestedIds
+  if (_.propertyOf(submissions)('all') !== true) {
+    const submissionIds = _.propertyOf(submissions)('submissionIds');
     const wsSubs = ws.submissions;
-    if (apiUtils.isNonEmptyArray(wsSubs)) {
-      let userSubs = _.filter(wsSubs, (sub) => {
-        const creatorId = _.propertyOf(sub)(['creator', 'studentId']);
-        return creatorId === user.id;
+    if (apiUtils.isNonEmptyArray(wsSubs) && _.isArray(submissionIds)) {
+      let filteredSubs = _.filter(wsSubs, (sub) => {
+        return _.contains(_.map(submissionIds, id => id.toString()), sub._id.toString());
       });
-      dataMap.submissions = userSubs;
-
+      dataMap.submissions = filteredSubs;
       // can only take selections that correspond to these submissions
       if (selections === 0) {
         dataMap.selections = [];
         dataMap.comments = [];
         dataMap.taggings = [];
       } else {
-        const subIds = _.map(userSubs, sub => sub._id.toString());
+        const subIds = _.map(filteredSubs, sub => sub._id.toString());
         const subSels = _.chain(ws.selections)
           .filter(sel => subIds.includes(sel.submission.toString()))
           .flatten()
@@ -997,6 +996,7 @@ function filterRequestedWorkspaceData(user, results) {
       .populate('createdBy')
       .lean().exec()
       .then((populatedWs) => {
+        // eslint-disable-next-line no-unused-vars
         const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
 
         const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
