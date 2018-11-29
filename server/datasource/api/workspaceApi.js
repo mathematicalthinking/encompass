@@ -243,7 +243,7 @@ function sendWorkspace(req, res, next) {
       console.trace();
       return utils.sendError.InternalError(err, res);
     }
-    if (!ws || !ws.isTrashed) {
+    if (!ws || ws.isTrashed) {
       return utils.sendResponse(res, null);
     }
 
