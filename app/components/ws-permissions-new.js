@@ -113,6 +113,11 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
    }
   },
 
+  willDestroyElement() {
+    this.set('selectedUser', null);
+    this._super(...arguments);
+  },
+
   buildCustomSubmissionIds(submissionsValue) {
     if (submissionsValue === 'custom') {
       let ids = this.get('customSubmissionIds');
