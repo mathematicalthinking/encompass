@@ -37,6 +37,7 @@
       {{#if canEdit}}
         {{#if isEditing}}
           <button class="action_button" {{action 'saveWorkspace'}}>Save</button>
+          <button class="action_button" {{action (mut isEditing) null}}>Cancel</button>
         {{else}}
           <button class="action_button" {{action 'editWorkspace'}}>Edit</button>
         {{/if}}
