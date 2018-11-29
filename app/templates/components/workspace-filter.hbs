@@ -34,5 +34,18 @@
       </li>
     {{/each}}
   </ul>
+    {{#if currentUser.isAdmin}}
+    <h3 {{action 'toggleMoreFilters'}} class="more-header {{if closedMenu 'closed'}}">
+      <i class="fas {{if showMoreFilters 'fa-chevron-down'}}{{unless showMoreFilters 'fa-chevron-right'}}"></i> More
+    </h3>
+    {{#if showMoreFilters}}
+      <ul class="more-filter-list">
+        <h5>Trashed Workspaces</h5>
+        <label class="subfilter">
+          {{input id="toggle-trashed" type="checkbox" checked=showTrashedWorkspaces change=(action "toggleTrashedWorkspaces")}} <span>Show All Trashed Workspaces</span>
+        </label>
+      </ul>
+    {{/if}}
+  {{/if}}
   </div>
 

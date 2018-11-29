@@ -106,7 +106,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     if (toggleTrashed) {
       msg = `${msg} - <strong>Displaying Trashed Problems</strong>`;
     }
-
     return msg;
 
   }.property('criteriaTooExclusive', 'areNoRecommendedProblems', 'isDisplayingSearchResults', 'problems.@each.isTrashed', 'isFetchingProblems', 'showLoadingMessage'),
@@ -695,7 +694,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
       let isTrashedOnly = this.get('toggleTrashed');
-
       this.getProblems(page, isTrashedOnly);
     },
     addCategory: function(cat) {
