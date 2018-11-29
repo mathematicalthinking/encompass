@@ -276,9 +276,7 @@ function getUserOrg(userId) {
       return user.organization;
     }
   });
-
 }
-
 
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;
