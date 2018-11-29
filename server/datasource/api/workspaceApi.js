@@ -1401,6 +1401,7 @@ async function postWorkspaceEnc(req, res, next) {
     delete pruned.isTrashed;
     delete pruned.isEmptyAnswerSet;
 
+    const ownerOrg = await userAuth.getUserOrg(owner);
     const accessibleCriteria = await answerAccess.get.answers(user);
 
     let wsCriteria;
@@ -1456,6 +1457,7 @@ async function postWorkspaceEnc(req, res, next) {
       mode,
       name,
       owner,
+      organization: ownerOrg,
       submissionSet: submissionSet,
       submissions: submissionIds,
       createdBy: user,
@@ -2212,15 +2214,17 @@ async function cloneWorkspace(req, res, next) {
 
     // process basic settings
     const { name, owner, mode, createdBy } = copyWorkspaceRequest;
-
+    const ownerOrg = await userAuth.getUserOrg(owner);
     // use original name, mode if not provided
     // set owner as current user if owner not provided
     const newWs = new models.Workspace({
       name: name || originalWs.name,
       owner: owner || user._id,
       mode: mode || originalWs.mode,
-      createdBy: createdBy || user._id
+      createdBy: createdBy || user._id,
+      organization: ownerOrg
     });
+
 
     // let savedWs = await newWs.save();
 
@@ -2317,7 +2321,7 @@ async function cloneWorkspace(req, res, next) {
     const workspaceInfo = {
       originalWsId: originalWsId,
       newWsId: newWs._id,
-      newWsOwner: newWs.owner
+      newWsOwner: newWs.owner,
     };
 
 
