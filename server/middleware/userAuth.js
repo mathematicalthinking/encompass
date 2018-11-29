@@ -270,6 +270,16 @@ function getEmailAuth() {
   return ({"username": emailUsername, "password": emailPassword});
 }
 
+function getUserOrg(userId) {
+  return models.User.findById(userId).lean().exec().then((user) => {
+    if (user) {
+      return user.organization;
+    }
+  });
+
+}
+
+
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;
 module.exports.protect = protect;
@@ -279,3 +289,4 @@ module.exports.requireUser = requireUser;
 module.exports.loadAccessibleWorkspaces = loadAccessibleWorkspaces;
 module.exports.accessibleWorkspacesQuery = accessibleWorkspacesQuery;
 module.exports.getEmailAuth = getEmailAuth;
+module.exports.getUserOrg = getUserOrg;
