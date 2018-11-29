@@ -24,6 +24,7 @@ var WorkspaceSchema = new Schema({
   editors: [{type: ObjectId, ref: 'User'}],
   mode: { type: String, enum: ['internet', 'public', 'org', 'private'] },
   folders: [{type: ObjectId, ref: 'Folder'}],
+  organization: {type: ObjectId, ref: 'Organization'}, // owner's org
   submissionSet: {
     criteria: Object,
     description: Object, // firstSubmissionDate // lastSubmissionDate
