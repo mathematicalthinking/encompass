@@ -14,6 +14,7 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
   showCategoryFilters: false,
   showMoreFilters: false,
+  closedMenu: true,
 
 
   init: function () {
@@ -104,6 +105,7 @@ Encompass.ProblemFilterComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     toggleMoreFilters() {
       this.set('showMoreFilters', !this.get('showMoreFilters'));
+      this.set('closedMenu', !this.get('closedMenu'));
     },
 
     toggleTrashedProblems() {
