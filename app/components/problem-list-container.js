@@ -770,7 +770,6 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
 
     },
     toProblemInfo(problem) {
-      console.log('to problem info on component called');
       this.sendAction('toProblemInfo', problem);
       this.$('#outlet').removeClass('hidden');
     }

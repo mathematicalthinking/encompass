@@ -92,7 +92,6 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
     },
 
     toggleTrashedWorkspaces() {
-      console.log('clicked on toggleTrashedWorkspaces');
       this.set('toggleTrashed', !this.get('toggleTrashed'));
       this.get('triggerShowTrashed')();
     },

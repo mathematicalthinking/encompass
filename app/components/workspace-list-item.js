@@ -43,7 +43,7 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
     }
 
     if (deleted) {
-      //add restore option to menu
+      options = [{label: 'Restore', value: 'restore', action: 'restoreWorkspace', icon: 'fas fa-undo'}];
     }
 
     return options;
@@ -91,6 +91,24 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
                     });
                   }
                 });
+            }).catch((err) => {
+              console.log('error', err);
+            });
+          }
+        });
+    },
+
+    restoreWorkspace: function () {
+      let workspace = this.get('workspace');
+      this.get('alert').showModal('warning', 'Are you sure you want to restore this workspace?', null, 'Yes, restore it')
+        .then((result) => {
+          if (result.value) {
+            workspace.set('isTrashed', false);
+            workspace.save().then((workspace) => {
+              if (this.get('showMoreMenu')) {
+                this.set('showMoreMenu', false);
+              }
+              this.get('alert').showToast('success', 'Workspace Restored', 'bottom-end', 5000, false, null);
             }).catch((err) => {
               console.log('error', err);
             });
