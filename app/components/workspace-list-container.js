@@ -202,6 +202,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               value: "mine",
               isChecked: true,
               icon: "fas fa-user",
+              order: 1,
               secondaryFilters: {
                 selectedValues: ["createdBy", "owner"],
                 inputs: {
@@ -226,19 +227,22 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               label: "Collaborator",
               value: "collab",
               isChecked: false,
-              icon: "fas fa-users"
+              icon: "fas fa-users",
+              order: 2,
             },
             myOrg: {
               label: "My Org",
               value: "myOrg",
               isChecked: false,
               icon: "fas fa-university",
+              order: 3,
             },
             everyone: {
               label: "Public",
               value: "everyone",
               isChecked: false,
               icon: "fas fa-globe",
+              order: 4,
           }
         }
       }
@@ -252,6 +256,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
         value:'all',
         icon: "fas fa-infinity",
         isChecked: true,
+        order: 0,
         secondaryFilters: {
           selectedValue: 'org',
           initialItems: ['org'],

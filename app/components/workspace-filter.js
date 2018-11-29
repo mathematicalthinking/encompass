@@ -32,7 +32,7 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
     let mapped = _.map(this.get('primaryFilterInputs'), (val, key) => {
       return val;
     });
-    return _.sortBy(mapped, 'label');
+    return _.sortBy(mapped, 'order');
   }.property('filter'),
 
   secondaryFilterOptions: function() {
