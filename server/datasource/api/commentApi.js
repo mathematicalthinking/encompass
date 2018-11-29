@@ -81,8 +81,9 @@ async function getComments(req, res, next) {
   models.Comment.find(criteria)
     .populate('selection')
     .populate('submission')
-    .populate('workspace')
+    // .populate('workspace')
     .populate('createdBy')
+    .lean()
     .exec(function(err, comments) {
       if(err) {
         logger.error(err);
@@ -94,7 +95,7 @@ async function getComments(req, res, next) {
       var relatedData = {
         'selection': {},
         'submission': {},
-        'workspace': {},
+        // 'workspace': {},
         'createdBy': {}
       };
 
@@ -107,7 +108,7 @@ async function getComments(req, res, next) {
             comment[key] = comment[key]._id;
           } else {
             logger.error('comment ' + comment._id + ' missing ' + key);
-            delete comment.key;
+            delete comment[key];
           }
         });
         data.comments.push(comment);

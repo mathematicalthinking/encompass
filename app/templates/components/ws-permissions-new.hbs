@@ -1,7 +1,10 @@
 
 <h5>Configure Permissions for {{selectedUser.username}}</h5>
 
-{{radio-group options=answerItems selectedValue=answers}}
+{{radio-group options=submissionItems selectedValue=submissions}}
+{{#if showCustomSubmissions}}
+  <p>Use submission viewer component here</p>
+{{/if}}
 {{radio-group options=globalItems selectedValue=global}}
 
 {{#if showCustom}}

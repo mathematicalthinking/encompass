@@ -1,9 +1,10 @@
-/* jshint ignore:start */
 const models = require('../../datasource/schemas');
 const _ = require('underscore');
 
 const wsAuth =require('./workspaces');
 const assignmentAuth = require('./assignments');
+const apiUtils = require('../../datasource/api/utils');
+const wsApi = require('../../datasource/api/workspaceApi');
 
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
@@ -297,6 +298,96 @@ const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
   }
 };
 
+function getRestrictedWorkspaceData(user, requestedModel) {
+  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyString(requestedModel)) {
+    return [];
+  }
+
+  const { accountType, actingRole, collabWorkspaces } = user;
+
+  const isStudent = accountType === 'S' || actingRole === 'student';
+
+  // admins in non-student role have 0 restrictions
+  if (accountType === 'A' && !isStudent) {
+    return [];
+  }
+  // if collabWorkspaces is empty, user has not been added as a collab on any workspaces
+  // and thus does not have any accessible workspaces with restricted access
+
+  if (!apiUtils.isNonEmptyArray(collabWorkspaces)) {
+    return [];
+  }
+
+  return Promise.all(
+    _.map(collabWorkspaces, (wsId) => {
+      return models.Workspace.findById(wsId)
+      .populate('selections')
+      .populate('submissions')
+      .populate('folders')
+      .populate('taggings')
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .lean().exec()
+      .then((populatedWs) => {
+        const [canLoad, specialPermissions] = wsAuth.get.workspace(user, populatedWs);
+
+        const restrictedDataMap = wsApi.getRestrictedDataMap(user, specialPermissions, populatedWs);
+        console.log('RDM', restrictedDataMap);
+
+        // no restrictions
+        if (!apiUtils.isNonEmptyObject(restrictedDataMap)) {
+          return [];
+        }
+
+        // if the workspace does not have records of requested type, there is nothing to restrict
+        const allRecords = populatedWs[requestedModel];
+        if (!apiUtils.isNonEmptyArray(allRecords)) {
+          return [];
+        }
+
+        // if this is undefined, means no restrictions
+        // if empty array, means everything is restricted
+        const allowedValues = _.propertyOf(restrictedDataMap)(requestedModel);
+        if (_.isUndefined(allowedValues)) {
+          return [];
+        }
+        let allowedIds;
+
+        if (!apiUtils.isNullOrUndefined(allowedValues)) {
+          if (Array.isArray(allowedValues)) {
+            allowedIds = _.map(allowedValues, (val) => {
+             if (val._id) {
+               return val._id.toString();
+             }
+             return val.toString();
+             });
+           } else {
+             allowedIds = allowedValues.toString();
+           }
+        } else {
+          allowedIds = [];
+        }
+
+        const restrictedValues = _.filter(allRecords, (record) => {
+          let idAsString;
+          if (record._id) {
+            idAsString = record._id.toString();
+          } else {
+            idAsString = record.toString();
+          }
+          return !_.contains(allowedIds, idAsString);
+        });
+
+        return _.map(restrictedValues, (val) => {
+          return val._id || val;
+        });
+       });
+      })
+  )
+  .then(_.flatten);
+}
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -313,4 +404,4 @@ module.exports.getAssignmentProblems = getAssignmentProblems;
 module.exports.getCreatorIds = getCreatorIds;
 module.exports.getProblemsByCategory = getProblemsByCategory;
 module.exports.getAllChildCategories = getAllChildCategories;
-/* jshint ignore:end */
+module.exports.getRestrictedWorkspaceData = getRestrictedWorkspaceData;

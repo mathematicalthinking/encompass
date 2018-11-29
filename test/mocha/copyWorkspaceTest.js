@@ -46,9 +46,9 @@ describe(`Copy Workspace operations by account type`, function () {
 
       const originalWs = fixtures.originalWorkspace;
       const isStudent = accountType === 'S' || actingRole === 'student';
-      let baseWsId = originalWs._id;
+      // let baseWsId = originalWs._id;
       let newWsName = "New Cloned Workspace";
-      let newWsOwner = "5b9149552ecaf7c30dd4748e";
+      // let newWsOwner = "5b9149552ecaf7c30dd4748e";
       let studentOwner = "5b914a102ecaf7c30dd47492";
 
       /*
@@ -315,6 +315,21 @@ describe(`Copy Workspace operations by account type`, function () {
               let [request, lengths] = buildShallowRequest(settings, originalWs);
               makeCopyRequestAsync(request, lengths);
             });
+            describe('Student as view only collab', function () {
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
+
+                }]
+              };
+              let [request, lengths] = buildShallowRequest(settings, originalWs);
+              makeCopyRequestAsync(request, lengths);
+            });
           });
 
           describe('Including Folders', function () {
@@ -356,8 +371,21 @@ describe(`Copy Workspace operations by account type`, function () {
               };
               let [request, lengths] = buildShallowRequest(settings, originalWs, null, true);
               makeCopyRequestAsync(request, lengths);
+            });
+            describe('Student as view only collaborator', function () {
+              let settings = {
+                newOwnerId: _id,
 
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
 
+                }]
+              };
+              let [request, lengths] = buildShallowRequest(settings, originalWs, null, true);
+              makeCopyRequestAsync(request, lengths);
             });
           });
 
@@ -407,6 +435,23 @@ describe(`Copy Workspace operations by account type`, function () {
               let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
               makeCopyRequestAsync(request, lengths);
             });
+            describe('Student as view only collaborator', function () {
+              let answerIds = ["5bec35898c73047613e2f34b"];
+
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
+
+                }]
+              };
+              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
+              makeCopyRequestAsync(request, lengths);
+            });
           });
 
           describe('Including Folders', function () {
@@ -446,6 +491,23 @@ describe(`Copy Workspace operations by account type`, function () {
                 permissions: [{
                   user: studentOwner,
                   global: 'editor'
+
+                }]
+              };
+              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds, true);
+              makeCopyRequestAsync(request, lengths);
+            });
+            describe('Student as view only collaborator', function () {
+              let answerIds = ["5bec35898c73047613e2f34b"];
+
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
 
                 }]
               };
@@ -505,8 +567,21 @@ describe(`Copy Workspace operations by account type`, function () {
               };
               let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths);
               makeCopyRequestAsync(request, lengths);
+            });
+            describe('Student as view only collaborator', function () {
+              let settings = {
+                newOwnerId: _id,
 
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
 
+                }]
+              };
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths);
+              makeCopyRequestAsync(request, lengths);
             });
           });
           describe('Not Including Folders', function () {
@@ -549,6 +624,19 @@ describe(`Copy Workspace operations by account type`, function () {
                 permissions: [{
                   user: studentOwner,
                   global: 'editor'
+                }]
+              };
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, null, false);
+              makeCopyRequestAsync(request, lengths);
+            });
+            describe('Student as view only collaborator', function () {
+              let settings = {
+                newOwnerId: _id,
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
                 }]
               };
               let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, null, false);
@@ -607,6 +695,23 @@ describe(`Copy Workspace operations by account type`, function () {
 
 
             });
+            describe('Student as view only collaborator', function () {
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
+
+                }]
+              };
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds);
+              makeCopyRequestAsync(request, lengths);
+
+
+            });
           });
           describe('Not Including Folders', function () {
             let expectedLengths = {
@@ -646,6 +751,19 @@ describe(`Copy Workspace operations by account type`, function () {
                 permissions: [{
                   user: studentOwner,
                   global: 'editor'
+                }]
+              };
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);
+              makeCopyRequestAsync(request, lengths);
+            });
+            describe('Student as view only collaborator', function () {
+              let settings = {
+                newOwnerId: _id,
+                newWsName: `Tracy as Editor`,
+                newMode: originalWs.mode,
+                permissions: [{
+                  user: studentOwner,
+                  global: 'viewOnly'
                 }]
               };
               let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);

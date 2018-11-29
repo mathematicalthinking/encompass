@@ -1,45 +1,56 @@
 const utils = require('./utils');
+const apiUtils = require('../../datasource/api/utils');
 
 module.exports.get = {};
 
 const accessibleFoldersQuery = async function(user, ids) {
   try {
-    const accountType = user.accountType;
-    const actingRole = user.actingRole;
+    if (!apiUtils.isNonEmptyObject(user)) {
+      return {};
+    }
+
+    const { accountType, actingRole } = user;
+
+    const isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
-      isTrashed: false,
+      $and: [
+        { isTrashed: false }
+      ]
     };
 
-    if (ids) {
-      if (Array.isArray(ids)) {
-        filter._id = {$in : ids};
-      } else {
-        filter._id = ids;
-      }
+    if (apiUtils.isNonEmptyArray(ids)) {
+      filter.$and.push({ _id: { $in : ids } });
+    } else if(!apiUtils.isNullOrUndefined(ids)) {
+      filter.$and.push({ _id: ids });
     }
 
-
-    // should students ever be getting folders?
-    if (actingRole === 'student' || accountType === 'S') {
-      filter.createdBy = user._id;
+    if (accountType === 'A' && !isStudent) {
       return filter;
     }
-    // will only reach here if admins/pdadmins are in actingRole teacher
 
-    if (accountType === 'A') {
-      return filter;
-    }
 
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
-
     // everyone should have access to all folders that belong to a workspace that they have access to
-    filter.$or = [];
-    filter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
+    const orFilter = { $or: [] };
+    orFilter.$or.push({ createdBy: user._id });
+    orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
     //should have access to all folders that you created
     // in case they are not in a workspace
+
+    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'folders');
+    console.log('restrictedFolderIds', restrictedRecords);
+
+    if (apiUtils.isNonEmptyArray(restrictedRecords)) {
+      filter.$and.push({ _id: { $nin: restrictedRecords } });
+    }
+
+    if (isStudent) {
+      filter.$and.push(orFilter);
+      return filter;
+    }
 
     if (accountType === 'P') {
       // PDamins can get any folders created by someone from their organization
@@ -49,13 +60,16 @@ const accessibleFoldersQuery = async function(user, ids) {
       const userIds = await utils.getModelIds('User', {organization: userOrg});
       userIds.push(user._id);
 
-      filter.$or.push({createdBy : {$in : userIds}});
+      orFilter.$or.push({createdBy : {$in : userIds}});
+      filter.$and.push(orFilter);
+
       return filter;
     }
 
     if (accountType === 'T') {
-    // should teachers be able to get all folders from organization?
-    filter.$or.push({ createdBy : user._id });
+      // should teachers be able to get all folders from organization?
+      // filter.$or.push({ createdBy : user._id });
+      filter.$and.push(orFilter);
 
       return filter;
     }
@@ -72,12 +86,9 @@ const canGetFolder = async function(user, folderId) {
   }
 
   const { accountType, actingRole } = user;
+  const isStudent = accountType === 'S' || actingRole === 'student';
 
-  if (accountType === 'S' || actingRole === 'student') {
-    return false; // currently we are blocking students from getting folders
-  }
-
-  if (accountType === 'A') {
+  if (accountType === 'A' && !isStudent) {
     return true; // admins currently can get all folders
   }
 
@@ -88,10 +99,7 @@ const canGetFolder = async function(user, folderId) {
 
   accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
 
-    if (accessibleIds.includes(folderId)) {
-      return true;
-    }
-    return false;
+  return accessibleIds.includes(folderId);
 };
 
 module.exports.get.folders = accessibleFoldersQuery;

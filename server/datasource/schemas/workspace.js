@@ -24,6 +24,7 @@ var WorkspaceSchema = new Schema({
   editors: [{type: ObjectId, ref: 'User'}],
   mode: { type: String, enum: ['internet', 'public', 'org', 'private'] },
   folders: [{type: ObjectId, ref: 'Folder'}],
+  organization: {type: ObjectId, ref: 'Organization'}, // owner's org
   submissionSet: {
     criteria: Object,
     description: Object, // firstSubmissionDate // lastSubmissionDate
@@ -52,7 +53,10 @@ var WorkspaceSchema = new Schema({
   permissions: [ {
     user: { type: ObjectId, ref: 'User'},
     global: {type: String, enum: ['viewOnly', 'editor', 'custom'] },
-    answers: { type: String, enum: ['all', 'user'] },
+    submissions: {
+      all: { type: Boolean },
+      submissionIds: [ {type: ObjectId, ref: 'Submission'} ]
+    },
     folders: { type: Number, enum: [0, 1, 2, 3, 4] },
     comments: { type: Number, enum: [0, 1, 2, 3, 4] },
     selections: { type: Number, enum: [0, 1, 2, 3, 4] },

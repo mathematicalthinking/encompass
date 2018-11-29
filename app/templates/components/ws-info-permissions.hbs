@@ -15,6 +15,6 @@
 }}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new onSave=(action "savePermissions") selectedUser=selectedCollaborator}}
+  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") selectedUser=selectedCollaborator}}
 {{/if}}
 
