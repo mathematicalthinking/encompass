@@ -27,6 +27,80 @@ module.exports.post = {};
 module.exports.put = {};
 
 
+function getRestrictedDataMap(user, permissions, ws) {
+  // check if user has specific permissions in ws permissions array
+  // ws has selections, submissions, folders, taggings populated
+
+  if (apiUtils.isNullOrUndefined(permissions) || !apiUtils.isNonEmptyObject(ws)) {
+    return {};
+  }
+
+  const dataMap = {};
+  const { answers, folders, selections, comments } = permissions;
+
+  // filter submissions to only currentUsers
+  if (answers === 'user') {
+    const wsSubs = ws.submissions;
+    if (apiUtils.isNonEmptyArray(wsSubs)) {
+      let userSubs = _.filter(wsSubs, (sub) => {
+        const creatorId = _.propertyOf(sub)(['creator', 'studentId']);
+        return creatorId === user.id;
+      });
+      dataMap.submissions = userSubs;
+
+      // can only take selections that correspond to these submissions
+      if (selections === 0) {
+        dataMap.selections = [];
+        dataMap.comments = [];
+        dataMap.taggings = [];
+      } else {
+        const subIds = _.map(userSubs, sub => sub._id.toString());
+        const subSels = _.chain(ws.selections)
+          .filter(sel => subIds.includes(sel.submission.toString()))
+          .flatten()
+          .value();
+
+        dataMap.selections = subSels;
+
+        if (folders === 0) {
+          dataMap.taggings = [];
+        } else {
+          const selIds = _.map(subSels, sel => sel._id.toString());
+          const selTaggings = _.chain(ws.taggings)
+            .filter(tagging => _.contains(selIds, tagging.selection.toString()))
+            .flatten()
+            .value();
+          dataMap.taggings = selTaggings;
+        }
+        if (comments === 0) {
+          dataMap.comments = [];
+        } else {
+          const selComments = _.chain(subSels)
+          .map(sel => sel.comments)
+          .flatten()
+          .value();
+           dataMap.comments = selComments;
+        }
+      }
+    }
+  } else {
+    // returning all submisisons
+
+    if (selections === 0) {
+      dataMap.selections = [];
+      dataMap.comments = [];
+    }
+    if (comments === 0) {
+      dataMap.comments = [];
+    }
+  }
+
+  if (folders === 0) {
+    dataMap.folders = [];
+    dataMap.taggings = [];
+  }
+  return dataMap;
+}
 /**
   * @private
   * @method getWorkspaces
@@ -37,7 +111,7 @@ module.exports.put = {};
   * @throws {MongoError} Data retrieval failed
   * @todo This should really accept a node-style callback
   */
-function getWorkspace(id, callback) {
+function getWorkspace(id, user, specialPermissions, callback) {
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
@@ -50,9 +124,18 @@ function getWorkspace(id, callback) {
     if(!ws) {
       return callback();
     }
+
+    const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, ws);
+    _.each(restrictedDataMap, (val, key) => {
+      if (ws[key]) {
+        ws[key] = val;
+      }
+    });
+
     var data = {
       workspace: ws
     };
+
     var dataMap = {
       'selections':  'selection',
       'submissions': 'submission',
@@ -81,7 +164,7 @@ function getWorkspace(id, callback) {
         ws[key] = idBag;
       } else {
         logger.error('workspace ' + ws._id + ' missing ' + key);
-        delete ws.key;
+        delete ws[key];
       }
     });
 
@@ -163,11 +246,17 @@ function sendWorkspace(req, res, next) {
     if (!ws || ws.isTrashed) {
       return utils.sendResponse(res, null);
     }
-    if(!access.get.workspace(user, ws)) {
+
+    const [ canLoad, specialPermissions ] = access.get.workspace(user, ws);
+    console.log('canLoad', canLoad);
+    console.log('spec permis', specialPermissions);
+    if(!canLoad) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
-      getWorkspace(req.params.id, function(data) {
+
+      //need to check that the user's permissions aren't limited for this workspace
+      getWorkspace(req.params.id, user, specialPermissions, function(data) {
         utils.sendResponse(res, data);
       });
     }
@@ -870,6 +959,71 @@ function newWorkspaceRequest(req, res, next) {
   });
 }
 
+function filterRequestedWorkspaceData(user, results) {
+  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyArray(results)) {
+    return [];
+  }
+
+  const { accountType, actingRole } = user;
+
+  const isStudent = accountType === 'S' || actingRole === 'student';
+
+  if (accountType === 'A' && !isStudent) {
+    return results;
+  }
+
+  return Promise.all(
+    _.map(results, (ws) => {
+      // check if user has a special permission object
+
+      // if no permisisons object, just return ws;
+      if (!apiUtils.isNonEmptyArray(ws.permissions)) {
+        return ws;
+      }
+
+      // if there is no permisisonObject for user, just return ws
+      const permissionObject = _.find(ws.permissions, obj => _.isEqual(user._id, obj.user));
+      if (apiUtils.isNullOrUndefined(permissionObject)) {
+        return ws;
+      }
+
+      return models.Workspace.findById(ws._id)
+      .populate('selections')
+      .populate('submissions')
+      .populate('folders')
+      .populate('taggings')
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .lean().exec()
+      .then((populatedWs) => {
+        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
+
+        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
+        console.log('restrictedDataMap', restrictedDataMap);
+        // val is array of populated Docs, but we just need Ids
+        _.each(restrictedDataMap, (val, key) => {
+          if (ws[key]) {
+            if (Array.isArray(val)) {
+              ws[key] = _.map(val, (val) => {
+                if (val._id) {
+                  return val._id;
+                }
+                return val;
+              });
+            } else {
+              ws[key] = val;
+            }
+          }
+        });
+
+        return ws;
+      });
+    })
+  );
+  }
+
+
 /**
   * @public
   * @method getWorkspaces
@@ -989,8 +1143,13 @@ function newWorkspaceRequest(req, res, next) {
       if (!currentPage) {
         currentPage = 1;
       }
+
+      // have to check to make sure we are only sending back the allowed data
+
+      const filteredResults = await filterRequestedWorkspaceData(user, results);
+      console.log('filteredResults', filteredResults);
       const data = {
-        'workspaces': results,
+        'workspaces': filteredResults,
         'meta': {
           'total': itemCount,
           pageCount,
@@ -2238,3 +2397,4 @@ module.exports.post.newWorkspaceRequest = newWorkspaceRequest;
 module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
 module.exports.newFolderStructure = newFolderStructure;
+module.exports.getRestrictedDataMap = getRestrictedDataMap;

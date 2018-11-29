@@ -15,7 +15,6 @@ function getUserWsPermissions(user, ws) {
   }
 
   const permissionObjects = ws.permissions;
-
   if (!apiUtils.isNonEmptyArray(permissionObjects)) {
     return;
   }
@@ -26,34 +25,19 @@ function getUserWsPermissions(user, ws) {
 }
 
 // ws has owner and editors populated
+// should return [boolean can Load, customPermissions]
+// only return customPermissions if restricted else null
 // eslint-disable-next-line complexity
 const canLoadWorkspace = function(user, ws) {
   if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyObject(ws)) {
-    return false;
+    return [false, null];
   }
-  const userId = user._id;
-  if (apiUtils.isNullOrUndefined(userId)) {
-    return false;
-  }
+  const userId = _.propertyOf(user)('_id');
+  const ownerId = _.propertyOf(ws)(['owner','_id']);
+  const creatorId = _.propertyOf(ws)(['createdBy', '_id']);
 
-  const owner = ws.owner;
-  if (!apiUtils.isNonEmptyObject(owner)) {
-    return false;
-  }
-
-  const ownerId = owner._id;
-  if (apiUtils.isNullOrUndefined(ownerId)) {
-    return false;
-  }
-
-  const creator = ws.createdBy;
-  if (!apiUtils.isNonEmptyObject(creator)) {
-    return false;
-  }
-
-  const creatorId = creator._id;
-  if (apiUtils.isNullOrUndefined(creatorId)) {
-    return false;
+  if (apiUtils.isNullOrUndefined(userId) || apiUtils.isNullOrUndefined(ownerId) || apiUtils.isNullOrUndefined(creatorId)) {
+    return [false, null];
   }
 
   const accountType = user.accountType;
@@ -61,21 +45,44 @@ const canLoadWorkspace = function(user, ws) {
 
   const isCreator = userId.toString() === creatorId.toString();
   const isOwner = userId.toString() === ownerId.toString();
-  const isCollaborator = !_.isUndefined(getUserWsPermissions(user, ws));
+
+  const userPermissions = getUserWsPermissions(user, ws);
+  const isCollaborator = !_.isUndefined(userPermissions);
 
   const isPublic = ws.mode === 'public';
   const isInternet = ws.mode === 'internet';
 
-
   // Students can access workspaces they've created and workspaces they've been added as collabs
   // (in their collabWorkspaces array)
   if (accountType === 'S' || actingRole === 'student') {
-    return isCreator || isOwner || isCollaborator || isInternet;
+    if (isCreator || isOwner || isInternet) {
+      return [true, null];
+    }
+    if (isCollaborator) {
+      if (userPermissions.answers === 'user') {
+        return [true, userPermissions];
+      }
+      if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
+        return [true, null];
+      }
+        // make sure no restrictions
+        const { folders, selections, comments } = userPermissions;
+
+        if (folders === 0 || selections === 0 || comments === 0) {
+          return [true, userPermissions];
+        }
+
+        // student has permission with no view restrictions
+        return [true, null];
+
+      }
+      // student does not have permission
+      return [false, null];
   }
 
   // Admins can get any workspace
   if (accountType === 'A') {
-    return true;
+    return [true, null];
   }
 
   let ownerOrg;
@@ -103,22 +110,43 @@ const canLoadWorkspace = function(user, ws) {
   // PdAdmins can get any workspace that is owned by a member of their org
   if (accountType === 'P') {
     if (ownerOrg === userOrg || creatorOrg === userOrg) {
-      return true;
+      return [true, null];
     }
   }
 
-
-
   // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
-  // Should we allow students be added as an editor to a WS? Or view as read-only public workspaces?
+  if (isOwner || isCreator || isPublic || isInternet) {
+    return [true, null];
+  }
 
-  return isOwner || isCreator || isCollaborator || isPublic || isInternet;
+  if (isCollaborator) {
+    if (userPermissions.answers === 'user') {
+      return [true, userPermissions];
+    }
+    if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
+      return [true, null];
+    }
+      // make sure no restrictions
+      const { folders, selections, comments } = userPermissions;
+
+
+      if (folders === 0 || selections === 0 || comments === 0) {
+        return [true, userPermissions];
+      }
+
+      // user has permission with no view restrictions
+      return [true, null];
+
+    }
+    // user is neither owner, creator, collaborator and workspace is not public
+    return [false, null];
+
 };
 
 const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) {
 
   if (!apiUtils.isNonEmptyObject(user)) {
-    return [];
+    return {};
   }
   const { accountType, actingRole, collabWorkspaces } = user;
 
@@ -172,12 +200,12 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy) 
 // Teachers and PdAdmins
 
   if (accountType === 'P') {
-
     const userOrg = user.organization;
-    const userIds = await utils.getModelIds('User', { organization: userOrg, accountType: {$ne: 'S'} });
+    const userIds = await utils.getModelIds('User', { organization: userOrg });
 
     accessCrit.$or.push({owner: {$in : userIds}});
     accessCrit.$or.push({createdBy: {$in : userIds}});
+    accessCrit.$or.push({organization: user.organization});
 
     filter.$and.push(accessCrit);
 

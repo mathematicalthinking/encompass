@@ -1,42 +1,55 @@
 const utils = require('./utils');
+const apiUtils = require('../../datasource/api/utils');
+const _ = require('underscore');
 
 module.exports.get = {};
 
 const accessibleCommentsQuery = async function(user, ids) {
   try {
-    const accountType = user.accountType;
-    const actingRole = user.actingRole;
+    if (!apiUtils.isNonEmptyObject(user)) {
+      return {};
+    }
+
+    const { accountType, actingRole } = user;
+
+    const isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
-      isTrashed: false,
+      $and: [
+        { isTrashed: false }
+      ]
     };
 
-    if (ids) {
-      if (Array.isArray(ids)) {
-        filter._id = {$in : ids};
-      } else {
-        filter._id = ids;
+
+      if (apiUtils.isNonEmptyArray(ids)) {
+        filter.$and.push({ _id: { $in : ids } });
+      } else if(!apiUtils.isNullOrUndefined(ids)) {
+        filter.$and.push({ _id: ids });
       }
-    }
 
-
-    // should students ever be getting comments?
-    if (actingRole === 'student' || accountType === 'S') {
-      filter.createdBy = user._id;
-      return filter;
-    }
-    // will only reach here if admins/pdadmins are in actingRole teacher
-
-    if (accountType === 'A') {
-      return filter;
-    }
-
+      if (accountType === 'A' && !isStudent) {
+        return filter;
+      }
     const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
 
 
     // everyone should have access to all comments that belong to a workspace that they have access to
-    filter.$or = [];
-    filter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
+    const orFilter = { $or: [] };
+    orFilter.$or = [];
+    orFilter.$or.push({ createdBy: user._id });
+    orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
+
+    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'comments');
+    console.log('restrictedCommentIds', restrictedRecords);
+
+    if (apiUtils.isNonEmptyArray(restrictedRecords)) {
+      filter.$and.push({ _id: { $nin: restrictedRecords } });
+    }
+
+    if (isStudent) {
+      filter.$and.push(orFilter);
+      return filter;
+    }
 
     //should have access to all comments that you created
     // in case they are not in a workspace
@@ -49,7 +62,9 @@ const accessibleCommentsQuery = async function(user, ids) {
       const userIds = await utils.getModelIds('User', {organization: userOrg});
       userIds.push(user._id);
 
-      filter.$or.push({createdBy : {$in : userIds}});
+      orFilter.$or.push({createdBy : {$in : userIds}});
+      filter.$and.push(orFilter);
+
       return filter;
     }
 
@@ -57,10 +72,11 @@ const accessibleCommentsQuery = async function(user, ids) {
     // teachers can get any comments where they are the primary teacher or in the teachers array
     // should teachers be able to get all comments from organization?
 
-
-      filter.$or.push({ createdBy : user._id });
+    // createdBy is already taken care of above
+      // filter.$or.push({ createdBy : user._id });
       // filter.$or.push({ 'teacher.id': user.id });
       // filter.$or.push({ teachers : user.id });
+      filter.$and.push(orFilter);
 
       return filter;
     }
@@ -77,12 +93,13 @@ const canGetComment = async function(user, commentId) {
   }
 
   const { accountType, actingRole } = user;
+  const isStudent = accountType === 'S' || actingRole === 'student';
 
-  if (accountType === 'S' || actingRole === 'student') {
-    return false; // currently we are blocking students from getting comments
-  }
+  // if (accountType === 'S' || actingRole === 'student') {
+  //   return false; // currently we are blocking students from getting comments
+  // }
 
-  if (accountType === 'A') {
+  if (accountType === 'A' && !isStudent) {
     return true; // admins currently can get all comments
   }
 
@@ -92,11 +109,7 @@ const canGetComment = async function(user, commentId) {
   let accessibleIds = await utils.getModelIds('Comment', criteria);
 
   accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
-
-    if (accessibleIds.includes(commentId)) {
-      return true;
-    }
-    return false;
+  return _.contains(accessibleIds, commentId);
 };
 
 module.exports.get.comments = accessibleCommentsQuery;
