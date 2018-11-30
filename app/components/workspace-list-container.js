@@ -10,7 +10,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   workspaceToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
 
-  searchOptions: ['all', 'name', 'owner', 'editors'],
+  searchOptions: ['all', 'name', 'owner', 'collaborators'],
   searchCriterion: 'all',
   sortCriterion: { name: 'Newest', sortParam: { lastModifiedDate: -1 }, doCollate: true, type: 'lastModifiedDate' },
   sortOptions: {
@@ -139,6 +139,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     });
     this._super(...arguments);
   },
+
   getUserOrg () {
     return this.get('currentUser.organization').then((org) => {
       return org.get('name');
