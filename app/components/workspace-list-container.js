@@ -355,33 +355,15 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   },
 
   buildMyOrgFilter() {
-    console.log('buildMyOrgFilter ran');
     let filter = {};
     let userOrgId = this.get('currentUser').get('organization.id');
-    console.log('userOrgId is', userOrgId);
-
-    //we want to find all workspaces that have the same org as the user and have mode org
 
     filter.mode = 'org';
 
-    // // 1 option : fromOrg
-    // let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
+    filter.$or = [];
 
-    // // let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
-    // let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+    filter.$or.push({ organization: userOrgId });
 
-    // // immediately return 0 results
-    // if (!includeFromOrg) {
-    //   this.set('criteriaTooExclusive', true);
-    //   return;
-    // }
-
-    // filter.$or = [];
-
-    // if (includeFromOrg) {
-    //   filter.$or.push({organization: this.get('currentUser.organization.id') });
-    // }
-    console.log('org filter is', filter);
     return filter;
   },
 
@@ -576,7 +558,6 @@ buildCollabFilter() {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
-    console.log('params are', params);
     return params;
   },
 
