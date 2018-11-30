@@ -68,6 +68,8 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
 
     if (organization) {
       createUserData.organization = organization.id;
+    } else {
+      createUserData.organization = this.get('currentUser.organization.id');
     }
 
     return Ember.$.post({
