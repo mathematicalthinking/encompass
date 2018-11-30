@@ -132,7 +132,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   init: function() {
     this.getUserOrg()
     .then((name) => {
-      this.set('userOrgName', name );
+      this.set('userOrgName', name);
       this.configureFilter();
       this.configurePrimaryFilter();
       this.getWorkspaces();
@@ -141,9 +141,14 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   },
 
   getUserOrg () {
-    return this.get('currentUser.organization').then((org) => {
-      return org.get('name');
-    });
+   return this.get('currentUser.organization').then((org) => {
+     if (org) {
+       return org.get('name');
+     } else {
+       this.get('alert').showModal('warning', 'You currently do not belong to any organization', 'Please add or request an organization in order to get the best user experience', 'Ok');
+       return 'undefined';
+     }
+   });
   },
 
   didReceiveAttrs() {
@@ -191,7 +196,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   },
 
   configureFilter: function() {
-    // let currentUserOrgName = this.get('userOrgName');
+    let currentUserOrgName = this.get('userOrgName');
 
     let filter = {
       primaryFilters:
@@ -249,6 +254,28 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       }
     };
     let isAdmin = this.get('currentUser.isAdmin');
+    let isPdadmin = this.get('currentUser.accountType') === "P";
+    if (isPdadmin) {
+      filter.primaryFilters.inputs.myOrg.secondaryFilters = {
+        selectedValues: ["orgProblems", "fromOrg"],
+        inputs: {
+          orgProblems: {
+            label: `Visbile to ${currentUserOrgName}`,
+            value: "orgProblems",
+            isChecked: true,
+            isApplied: true,
+            icon: "fas fa-dot-circle"
+          },
+          fromOrg: {
+            label: `Created by ${currentUserOrgName} Members`,
+            value: "fromOrg",
+            isChecked: true,
+            isApplied: true,
+            icon: "fas fa-users"
+          }
+        }
+      };
+    }
 
     if (isAdmin) {
       filter.primaryFilters.inputs.mine.isChecked = false;
@@ -363,6 +390,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     filter.$or = [];
 
     filter.$or.push({ organization: userOrgId });
+
+    //if user is pdadmin they should have two sub fitlers
+    // workspaces in their org with mode org
+    // workspaces where the owner is in their org
 
     return filter;
   },
