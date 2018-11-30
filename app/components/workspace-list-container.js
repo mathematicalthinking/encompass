@@ -165,15 +165,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
         }
       }
     }
-
-    // if (!Ember.isEqual(workspaces, model)) {
-    //   this.set('workspaces', model);
-    //   let metaPropName = `${workspaces}Metadata`;
-    //   let meta = model.get('meta');
-    //   if (meta) {
-    //     this.set(metaPropName, meta);
-    //   }
-    // }
     this._super(...arguments);
   },
 
@@ -397,6 +388,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
       if (includeFromOrg) {
         console.log('includeFromOrg');
+        this.set('selectedMode', ['org', 'private', 'public']);
         //filter mode should be all
         //check if creator belongs to current users org
         // workspaces where the owner is in their org
@@ -520,6 +512,7 @@ buildCollabFilter() {
 
   buildFilterBy: function() {
     let primaryFilterValue = this.get('primaryFilterValue');
+    let isPdadmin = this.get('currentUser.accountType') === "P";
     let filterBy;
 
     if (primaryFilterValue === 'mine') {
@@ -548,7 +541,12 @@ buildCollabFilter() {
     if (primaryFilterValue === 'everyone') {
       filterBy.mode = {$in: ['public']};
     } else if (primaryFilterValue === 'myOrg') {
-      filterBy.mode = {$in: ['org']};
+      if (isPdadmin) {
+        let mode = this.get('modeFilter');
+        filterBy.mode = mode;
+      } else {
+        filterBy.mode = { $in: ['org'] };
+      }
     } else {
       let mode = this.get('modeFilter');
       filterBy.mode = mode;
