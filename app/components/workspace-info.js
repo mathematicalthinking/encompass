@@ -141,22 +141,65 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });
     },
+    // changeOwner: function (owner) {
+    //   let workspace = this.get('workspace');
+    //   let username = owner.get('username');
+    //   let ownerOrg = owner.get('organization');
+    //   let workspaceOrg = workspace.get('org');
+
+    //   workspace.set('owner', owner);
+
+    //   console.log('ownerOrg is', ownerOrg);
+    //   console.log('workspace Org is', workspaceOrg);
+
+    //   if (workspaceOrg) {
+    //     if (workspaceOrg !== ownerOrg) {
+    //       console.log('workspaceOrg and owner org dont match');
+    //       // prompt user they are changing the users org
+    //     } else {
+    //       console.log('workspace org and owner org are the same');
+    //     }
+    //   } else {
+    //     console.log('workspace doesnt have an org');
+    //     workspace.set('organization', ownerOrg);
+    //   }
+
+    //   workspace.save().then((res) => {
+    //     this.set('isChangingOwner', false);
+    //     this.get('alert').showToast('success', `Owner is now ${username}`, 'bottom-end', 3000, null, false);
+    //   }).catch((err) => {
+    //     this.handleErrors(err, 'updateRecordErrors', workspace);
+    //   });
+    // },
 
     setOwner(val, $item) {
+      const workspace = this.get('workspace');
+
       if (!val) {
         return;
       }
 
-      // const isRemoval = _.isNull($item);
-      // // if (isRemoval) {
-      // //   this.set('selectedOwner', null);
-      // //   return;
-      // // }
-      const workspace = this.get('workspace');
-
       const user = this.get('store').peekRecord('user', val);
       if (this.get('utils').isNonEmptyObject(user)) {
         workspace.set('owner', user);
+        let ownerOrg = user.get('organization.id');
+        let workspaceOrg = workspace.get('organization.id');
+        // console.log('ownerOrg is', ownerOrg.get('id'));
+        // console.log('workspace Org is', workspaceOrg.get('id'));
+
+        if (workspaceOrg) {
+          if (workspaceOrg !== ownerOrg) {
+            console.log('workspaceOrg and owner org dont match');
+            // prompt user they are changing the users org
+          } else {
+            console.log('workspace doesnt have an org');
+            workspace.set('organization', ownerOrg);
+          }
+        } else {
+          console.log('workspace doesnt have an org');
+          workspace.set('organization', ownerOrg);
+        }
+
         workspace.save().then((res) => {
           this.set('isChangingOwner', false);
           this.get('alert').showToast('success', `Owner is now ${user.get('username')}`, 'bottom-end', 3000, null, false);
