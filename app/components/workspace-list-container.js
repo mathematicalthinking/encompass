@@ -296,13 +296,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               subFilters: {
                 selectedValues: ["fromOrg"],
                 inputs: {
-                  // recommended: {
-                  //   label: "Recommended",
-                  //   value: "recommended",
-                  //   isChecked: true,
-                  //   isApplied: true,
-                  //   icon: "fas fa-lightbulb"
-                  // },
                     fromOrg: {
                       label: `Created by Members`,
                       value: "fromOrg",
@@ -384,17 +377,37 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   buildMyOrgFilter() {
     let filter = {};
     let userOrgId = this.get('currentUser').get('organization.id');
+    let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
 
-    filter.mode = 'org';
+    if (secondaryValues) {
+      let includeOrgProblems = _.indexOf(secondaryValues, 'orgProblems') !== -1;
+      let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
 
-    filter.$or = [];
+      if (!includeOrgProblems && !includeFromOrg) {
+        this.set("criteriaTooExclusive", true);
+        return;
+      }
 
-    filter.$or.push({ organization: userOrgId });
+      if (includeOrgProblems) {
+        console.log('includeOrgProblems');
+        filter.mode = 'org';
+        filter.$or = [];
+        filter.$or.push({ organization: userOrgId });
+      }
 
-    //if user is pdadmin they should have two sub fitlers
-    // workspaces in their org with mode org
-    // workspaces where the owner is in their org
+      if (includeFromOrg) {
+        console.log('includeFromOrg');
+        //filter mode should be all
+        //check if creator belongs to current users org
+        // workspaces where the owner is in their org
 
+      }
+    } else {
+      filter.mode = 'org';
+      filter.$or = [];
+      filter.$or.push({ organization: userOrgId });
+    }
+    console.log('org filter is', filter);
     return filter;
   },
 
