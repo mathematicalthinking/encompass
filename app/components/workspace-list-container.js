@@ -369,6 +369,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     let filter = {};
     let userOrgId = this.get('currentUser').get('organization.id');
     let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
+    filter.$or = [];
 
     if (secondaryValues) {
       let includeOrgProblems = _.indexOf(secondaryValues, 'orgProblems') !== -1;
@@ -380,28 +381,25 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       }
 
       if (includeOrgProblems) {
-        console.log('includeOrgProblems');
-        filter.mode = 'org';
-        filter.$or = [];
+        this.set("selectedMode", ["org"]);
         filter.$or.push({ organization: userOrgId });
       }
 
       if (includeFromOrg) {
-        console.log('includeFromOrg');
         this.set('selectedMode', ['org', 'private', 'public']);
-        //filter mode should be all
-        //check if creator belongs to current users org
-        // workspaces where the owner is in their org
-
+        // filter.$or.push({ owner: { organization: { $eq: userOrgId } } });
+        //find all workspaces who's owner's org is same as yours
       }
+
     } else {
       filter.mode = 'org';
-      filter.$or = [];
       filter.$or.push({ organization: userOrgId });
     }
-    console.log('org filter is', filter);
     return filter;
   },
+
+
+
 
 
   buildAllFilter() {
