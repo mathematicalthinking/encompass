@@ -65,6 +65,7 @@ Encompass.WsCopyWorkspaceComponent = Ember.Component.extend({
         // only allowing workspaces with > 0 submissions
         if (submissionsLength > 0) {
           this.get('onProceed')();
+          return;
         }
         this.set('tooFewSubmissions', true);
         return;
