@@ -60,7 +60,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     {id: 2, label: 'Public', value: ['public'], isChecked: false, icon: 'fas fa-globe-americas'},
     {id: 3, label: 'Private', value: ['private'], isChecked: false, icon: 'fas fa-lock'},
   ],
-  selectedMode: ['public', 'private'],
+  selectedMode: ['public', 'private', 'org'],
 
   moreMenuOptions: [
     {label: 'Copy', value: 'copy', action: 'copyWorkspace', icon: 'fas fa-copy'},
@@ -355,28 +355,37 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   },
 
   buildMyOrgFilter() {
+    console.log('buildMyOrgFilter ran');
     let filter = {};
+    let userOrgId = this.get('currentUser').get('organization.id');
+    console.log('userOrgId is', userOrgId);
 
-    // 1 option : fromOrg
-    let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
+    //we want to find all workspaces that have the same org as the user and have mode org
 
-    // let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
-    let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+    filter.mode = 'org';
 
-    // immediately return 0 results
-    if (!includeFromOrg) {
-      this.set('criteriaTooExclusive', true);
-      return;
-    }
+    // // 1 option : fromOrg
+    // let secondaryValues = this.get('primaryFilter.secondaryFilters.selectedValues');
 
-    filter.$or = [];
+    // // let includeRecommended = _.indexOf(secondaryValues, 'recommended') !== -1;
+    // let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
 
-    if (includeFromOrg) {
-      filter.$or.push({organization: this.get('currentUser.organization.id') });
-    }
+    // // immediately return 0 results
+    // if (!includeFromOrg) {
+    //   this.set('criteriaTooExclusive', true);
+    //   return;
+    // }
 
+    // filter.$or = [];
+
+    // if (includeFromOrg) {
+    //   filter.$or.push({organization: this.get('currentUser.organization.id') });
+    // }
+    console.log('org filter is', filter);
     return filter;
   },
+
+
   buildAllFilter() {
     let filter = {};
     let adminFilter = this.get('adminFilter');
@@ -512,35 +521,13 @@ buildCollabFilter() {
     // primary public filter should disable privacy setting dropdown?
     if (primaryFilterValue === 'everyone') {
       filterBy.mode = {$in: ['public']};
+    } else if (primaryFilterValue === 'myOrg') {
+      filterBy.mode = {$in: ['org']};
     } else {
       let mode = this.get('modeFilter');
       filterBy.mode = mode;
     }
 
-
-    // let categoriesFilter = this.get('categoriesFilter');
-
-    // if (!_.isEmpty(categoriesFilter)) {
-    //   let filterType = 'or';
-    //   let includeSubCats = this.get('doIncludeSubCategories');
-    //   let ids = categoriesFilter.mapBy('id');
-    //   filterBy.categories = {};
-
-    //   if (filterType === 'or') {
-    //     filterBy.categories.ids = ids;
-    //     filterBy.categories.includeSubCats = includeSubCats;
-    //   } else if (filterType === 'and') {
-    //     // todo and filter
-    //   }
-    // }
-
-    // let statusFilter = this.get('statusFilter');
-    // if (!_.isEmpty(statusFilter)) {
-    //   filterBy.status = { $in: statusFilter };
-    // } else {
-    //   this.set('criteriaTooExclusive', true);
-    //   return;
-    // }
     return filterBy;
   },
 
@@ -589,7 +576,7 @@ buildCollabFilter() {
       let searchBy = this.buildSearchBy();
       params.searchBy = searchBy;
     }
-
+    console.log('params are', params);
     return params;
   },
 
@@ -610,6 +597,7 @@ buildCollabFilter() {
   getWorkspaces: function(page, isTrashedOnly=false) {
     this.set('isFetchingWorkspaces', true);
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
+    console.log('queryParams are', queryParams);
 
     if (this.get('criteriaTooExclusive')) {
       if (this.get('isFetchingWorkspaces')) {
