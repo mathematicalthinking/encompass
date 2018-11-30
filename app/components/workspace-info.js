@@ -182,17 +182,19 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       const user = this.get('store').peekRecord('user', val);
       if (this.get('utils').isNonEmptyObject(user)) {
         workspace.set('owner', user);
-        let ownerOrg = user.get('organization.id');
-        let workspaceOrg = workspace.get('organization.id');
+        let ownerOrg = user.get('organization');
+        let ownerOrgId = ownerOrg.get('id');
+        let workspaceOrg = workspace.get('organization');
+        let workspaceOrgId = workspaceOrg.get('id');
         // console.log('ownerOrg is', ownerOrg.get('id'));
         // console.log('workspace Org is', workspaceOrg.get('id'));
 
-        if (workspaceOrg) {
-          if (workspaceOrg !== ownerOrg) {
+        if (workspaceOrgId) {
+          if (workspaceOrgId !== ownerOrgId) {
             console.log('workspaceOrg and owner org dont match');
             // prompt user they are changing the users org
           } else {
-            console.log('workspace doesnt have an org');
+            console.log('workspace has org but is same as owner');
             workspace.set('organization', ownerOrg);
           }
         } else {

@@ -293,6 +293,7 @@ function putWorkspace(req, res, next) {
         ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
         ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
         ws.permissions = req.body.workspace.permissions;
+        ws.organization = req.body.workspace.organization;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
