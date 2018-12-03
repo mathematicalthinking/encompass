@@ -242,6 +242,27 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
   return firstName;
 }
 
+function isValidMongoId(val) {
+  var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+  return checkForHexRegExp.test(val);
+}
+
+// takes an array and filters out any non-valid mongo objectIds
+// if doConvert is passed in as true, will return new array where
+// any string values are converted to objectIds
+function cleanObjectIdArray(arr, doConvert=false) {
+  if (!isNonEmptyArray(arr)) {
+    return [];
+  }
+
+  const filtered = _.filter(arr, val => isValidMongoId(val));
+  if (!doConvert) {
+    return filtered;
+  }
+
+  return _.map(filtered, val => mongoose.Types.ObjectId(val));
+}
+
 const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Limit and skip are passed in with the req
   let limit = req.query.limit;
@@ -250,7 +271,6 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   // Determine which field should be sorted and what value
   let sortField = Object.keys(sortParam)[0];
   let value = parseInt(sortParam[sortField], 0);
-
   let aggregateArray = [];
 
   // Creating objects to add to the aggregate pipeline
@@ -262,31 +282,79 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
       let value = criterion.createdBy;
-      let updatedValue = mongoose.Types.ObjectId(value);
-      criterion.createdBy = updatedValue;
+      if (value.hasOwnProperty('$in')) {
+        const pruned = cleanObjectIdArray(value.$in, true);
+        if (isNonEmptyArray(pruned)) {
+          value.$in = pruned;
+        } else {
+          delete value.$in;
+        }
+      } else {
+        if (isValidMongoId(value)) {
+          let updatedValue = mongoose.Types.ObjectId(value);
+          criterion.createdBy = updatedValue;
+        } else {
+          // bad objectId, delete filter property
+          delete criterion.createdBy;
+        }
+      }
     }
     if (criterion.hasOwnProperty('_id')) {
       let value = criterion._id;
       if (value.hasOwnProperty('$in')) {
-        value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
+        const pruned = cleanObjectIdArray(value.$in, true);
+        if (isNonEmptyArray(pruned)) {
+          value.$in = pruned;
+        } else {
+          delete value.$in;
+        }
       } else {
-        criterion._id = mongoose.Types.ObjectId(value);
+        if (isValidMongoId(value)) {
+          criterion._id = mongoose.Types.ObjectId(value);
+        } else {
+          // bad objectId, delete filter property
+          delete criterion._id;
+        }
       }
     }
     if (criterion.hasOwnProperty('$or')) {
       criterion.$or.forEach((crit) => {
         if (crit.hasOwnProperty('createdBy')) {
           let value = crit.createdBy;
-          let updatedValue = mongoose.Types.ObjectId(value);
-          crit.createdBy = updatedValue;
+          if (value.hasOwnProperty('$in')) {
+            const pruned = cleanObjectIdArray(value.$in, true);
+            if (isNonEmptyArray(pruned)) {
+              value.$in = pruned;
+            } else {
+              delete value.$in;
+            }
+          } else {
+            if (isValidMongoId(value)) {
+              let updatedValue = mongoose.Types.ObjectId(value);
+              crit.createdBy = updatedValue;
+            } else {
+              // bad objectId, delete filter property
+              delete crit.createdBy;
+            }
+          }
         }
         if (crit.hasOwnProperty('owner')) {
           let value = crit.owner;
           if (value.hasOwnProperty('$in')) {
-          value.$in = _.map(value.$in, val => mongoose.Types.ObjectId(val));
+            const pruned = cleanObjectIdArray(value.$in, true);
+            if (isNonEmptyArray(pruned)) {
+              value.$in = pruned;
+            } else {
+              delete value.$in;
+            }
           } else {
-            let updatedValue = mongoose.Types.ObjectId(value);
-            crit.owner = updatedValue;
+            if (isValidMongoId(value)) {
+              let updatedValue = mongoose.Types.ObjectId(value);
+              crit.owner = updatedValue;
+            } else {
+              // bad objectId, delete filter property
+              delete crit.owner;
+            }
           }
         }
       });
@@ -371,3 +439,5 @@ module.exports.sortWorkspaces = sortWorkspaces;
 module.exports.cloneDocuments = cloneDocuments;
 module.exports.isNonEmptyObject = isNonEmptyObject;
 module.exports.mapObjectsToIds = mapObjectsToIds;
+module.exports.isValidMongoId = isValidMongoId;
+module.exports.cleanObjectIdArray = cleanObjectIdArray;
