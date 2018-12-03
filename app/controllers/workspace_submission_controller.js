@@ -200,10 +200,16 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         '#takeTour',
         null,
         9,
-        [{name: "Close"}],
+        [{name: "Close", onclick: this.send('doneTour')}],
         true,
         null,
       );
+    },
+
+    doneTour: function() {
+      let user = this.get('currentUser');
+      user.set('seenTour', new Date());
+      user.save();
     },
 
     cancelComment: function(){
