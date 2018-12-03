@@ -618,7 +618,6 @@ buildCollabFilter() {
   getWorkspaces: function(page, isTrashedOnly=false) {
     this.set('isFetchingWorkspaces', true);
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
-    console.log('queryParams are', queryParams);
 
     if (this.get('criteriaTooExclusive')) {
       if (this.get('isFetchingWorkspaces')) {

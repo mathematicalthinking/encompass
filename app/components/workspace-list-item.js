@@ -8,11 +8,12 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
   ellipsisMenuOptions: function () {
     let ws = this.get('workspace');
+    let currentUser = this.get('currentUser');
+    let hiddenWorkspaces = currentUser.get('hiddenWorkspaces');
     let deleted = this.get('workspace.isTrashed');
     let canDelete = this.get('permissions').canDelete(ws);
     let canCopy = this.get('permissions').canCopy(ws);
-    // let canAssign = this.get('canAssign');
-    // let canHide = this.get('canAssign');
+
     let moreMenuOptions = this.get('menuOptions');
     let options = moreMenuOptions.slice();
 
@@ -28,12 +29,22 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
       });
     }
 
+    if (hiddenWorkspaces.length >= 1) {
+      let wsId = ws.get('id');
+      if (hiddenWorkspaces.includes(wsId)) {
+        options = _.filter(options, (option) => {
+          return option.value !== 'hide';
+        });
+      }
+    }
+
     if (deleted) {
       options = [{label: 'Restore', value: 'restore', action: 'restoreWorkspace', icon: 'fas fa-undo'}];
     }
 
+
     return options;
-  }.property('workspace.id', 'workspace.isTrashed'),
+  }.property('workspace.id', 'workspace.isTrashed', 'currentUser.hiddenWorkspaces'),
 
 
   actions: {
@@ -71,7 +82,6 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
 
     hideWorkspace: function () {
       let workspaceId = this.get('workspace.id');
-      console.log('workspaceId', workspaceId);
       let user = this.get('currentUser');
       this.get('alert').showModal('question', 'Are you sure you want to hide this workspace?', 'This will remove this workspace from your view, you can always restore this later', 'Yes, hide it')
         .then((result) => {
