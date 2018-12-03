@@ -71,7 +71,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         "Your workspace is a place where you can browse, organize, and comment on submissions.  Let's get started!",null, null, null,
         [{name: "Next"}],
         true,
-        null
+        null,
+        this.send('doneTour'),
       ).show();
 
       this.get('guider').createGuider(
@@ -84,7 +85,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         'rightTop',
         [{name: "Next"}],
         true,
-        '250px'
+        '250px',
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'submissions.nav',
@@ -97,6 +99,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'submissions.text',
@@ -109,6 +112,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'submissions.selection',
@@ -121,6 +125,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         '200px',
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'submissions.selections',
@@ -133,6 +138,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         '300px',
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'comments',
@@ -145,6 +151,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         '250px',
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'comments.comment',
@@ -157,6 +164,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'folders',
@@ -169,6 +177,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'folders.counts',
@@ -181,6 +190,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'folders.counts',
@@ -191,6 +201,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Next"}],
         true,
         null,
+        this.send('doneTour'),
       );
       this.get('guider').createGuider(
         'done',
@@ -203,6 +214,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         [{name: "Close", onclick: this.send('doneTour')}],
         true,
         null,
+        this.send('doneTour'),
       );
     },
 

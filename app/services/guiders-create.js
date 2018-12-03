@@ -27,7 +27,7 @@ Encompass.GuidersCreateService = Ember.Service.extend({
   xButton: (optional) if true, a X will appear in the top right corner of the guider, as another way to close the guider
 */
 
-  createGuider: function (id, next, title, description, attachTo, highlight, position, buttons, overlay, width) {
+  createGuider: function (id, next, title, description, attachTo, highlight, position, buttons, overlay, width, onClose) {
     return window.guiders.createGuider({
       id,
       next,
@@ -39,6 +39,7 @@ Encompass.GuidersCreateService = Ember.Service.extend({
       buttons,
       overlay,
       width,
+      onClose,
       xButton: true,
       closeOnEscape: true,
       autoFocus: true,
