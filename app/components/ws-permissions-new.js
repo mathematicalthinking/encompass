@@ -88,7 +88,14 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     const utils = this.get('utils');
 
    if (!utils.isNullOrUndefined(selectedUserId) && utils.isNonEmptyArray(permissions)) {
-     const userPermissions = permissions.findBy('user', selectedUserId);
+     const userPermissions = permissions.find((obj) => {
+      let user = obj.user;
+      if (utils.isNonEmptyObject(user)) {
+        return user.get('id') === selectedUserId;
+      }
+      return user === selectedUserId;
+     });
+
      if (utils.isNonEmptyObject(userPermissions)) {
       //prefill for editing
       _.each(['folders', 'comments', 'selections', 'feedback', 'global'], (prop) => {
@@ -106,7 +113,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
           this.set('submissions', 'userOnly');
         } else if (_.isArray(submissions.submissionIds)) {
           this.set('submissions', 'custom');
-          this.set('customSubmissionIds', submissions.submissionIds);
+          this.set('customSubmissionIds', [...submissions.submissionIds]);
         }
       }
      }
@@ -197,7 +204,12 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       this.set('saveError', true);
     },
     updateCustomSubs(id) {
+      if (!this.get('utils').isNonEmptyArray(this.get('customSubmissionIds'))) {
+        this.set('customSubmissionIds', []);
+      }
+
       const customSubmissionIds = this.get('customSubmissionIds');
+
       const isIn = customSubmissionIds.includes(id);
       if (isIn) {
         // remove

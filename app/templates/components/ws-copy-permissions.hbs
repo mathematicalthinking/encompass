@@ -16,7 +16,7 @@ isAsync=true
 placeholder="Search for collaborators to add"}}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") selectedUser=selectedCollaborator}}
+  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
 {{/if}}
 
 
