@@ -398,10 +398,6 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     return filter;
   },
 
-
-
-
-
   buildAllFilter() {
     let filter = {};
     let adminFilter = this.get('adminFilter');
@@ -554,12 +550,19 @@ buildCollabFilter() {
   },
 
   displayWorkspaces: function () {
+    let hiddenWorkspaces = this.get('currentUser.hiddenWorkspaces');
     let workspaces = this.get('workspaces');
-    if (workspaces) {
-      if (this.get('toggleTrashed')) {
-        return workspaces;
+    let visibileWorkspaces = workspaces.filter((workspace) => {
+      if (!hiddenWorkspaces.includes(workspace.id)) {
+        return workspace;
+      }
+    });
+
+    if (visibileWorkspaces) {
+      if (this.get("toggleTrashed")) {
+        return visibileWorkspaces;
       } else {
-        return workspaces.rejectBy('isTrashed');
+        return visibileWorkspaces.rejectBy("isTrashed");
       }
     }
   }.property('workspaces.@each.isTrashed', 'toggleTrashed'),
