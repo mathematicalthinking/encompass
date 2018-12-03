@@ -1042,10 +1042,9 @@ function filterRequestedWorkspaceData(user, results) {
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
 
-  console.log('req query is', req.query);
-
       if (filterBy) {
-        // console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        console.log('filterBy workspace API:', JSON.stringify(filterBy));
+
         let { all } = filterBy;
 
         if (all) {

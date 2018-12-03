@@ -387,7 +387,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
       if (includeFromOrg) {
         this.set('selectedMode', ['org', 'private', 'public']);
-        // filter.$or.push({ owner: { organization: { $eq: userOrgId } } });
+        filter.$or.push({ owner: { organization: { $eq: userOrgId } } });
         //find all workspaces who's owner's org is same as yours
       }
 
