@@ -72,10 +72,15 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       if (utils.isNonEmptyArray(permissions)) {
         const objToRemove = permissions.findBy('user', user.id);
         if (objToRemove) {
-          permissions.removeObject(objToRemove);
-          const collaborators = this.get('originalCollaborators');
-          collaborators.removeObject(user);
-          this.get('alert').showToast('success', `${user.get('username')} removed`, 'bottom-end', 3000, null, false);
+          this.get('alert').showModal('warning', `Are you sure you want to remove ${user.get('username')} as a collaborator?`, `This may affect their ability to access ${this.get('workspace.name')} `, 'Yes, remove.')
+        .then((result) => {
+          if (result.value) {
+            permissions.removeObject(objToRemove);
+            const collaborators = this.get('originalCollaborators');
+            collaborators.removeObject(user);
+            this.get('alert').showToast('success', `${user.get('username')} removed`, 'bottom-end', 3000, null, false);
+          }
+        });
         }
       }
     },
@@ -123,6 +128,9 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
 
     changeOwner: function (owner) {
+      if (!this.get('utils').isNonEmptyObject(owner)) {
+        return;
+      }
       let workspace = this.get('workspace');
       let username = owner.get('username');
       workspace.set('owner', owner);
