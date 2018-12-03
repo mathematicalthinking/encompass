@@ -53,13 +53,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   modes: function () {
     const basic = ['private', 'org', 'public'];
 
-    if (!this.get('currentUser.isAdmin')) {
+    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin')) {
       return basic;
     }
 
     return ['private', 'org', 'public', 'internet'];
 
-  }.property('currentUser.isAdmin'),
+  }.property('currentUser.isAdmin', 'currentUser.isStudent'),
 
   actions: {
     removeCollab(user) {

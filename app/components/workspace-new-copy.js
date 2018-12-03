@@ -39,28 +39,37 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         }
       ]
     },
-  modeInputs: {
-    groupName: 'mode',
-    required: true,
-    inputs: [
-      {
-        value: 'private',
-        label: 'Private',
-      },
-      {
-        value: 'org',
-        label: 'My Org',
-      },
-      {
-        value: 'public',
-        label: 'Public',
-      },
-      {
-        value: 'internet',
-        label: 'Internet',
-      }
-    ]
-  },
+
+  modeInputs: function() {
+    let res = {
+      groupName: 'mode',
+      required: true,
+      inputs: [
+        {
+          value: 'private',
+          label: 'Private',
+        },
+        {
+          value: 'org',
+          label: 'My Org',
+        },
+        {
+          value: 'public',
+          label: 'Public',
+        },
+      ]
+    };
+
+    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin') ) {
+      return res;
+    }
+
+    res.inputs.push({
+      value: 'internet',
+      label: 'Internet',
+    });
+    return res;
+  }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
