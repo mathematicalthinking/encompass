@@ -1031,6 +1031,7 @@ function filterRequestedWorkspaceData(user, results) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
+ // eslint-disable-next-line complexity
  async function getWorkspaces(req, res, next) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
@@ -1048,12 +1049,12 @@ function filterRequestedWorkspaceData(user, results) {
             let crit = {};
             let { organizations } = org;
 
-            if (organizations) {
+            if (apiUtils.isNonEmptyArray(organizations)) {
             if (!crit.$or) {
               crit.$or = [];
             }
-             crit.$or.push({organization: {$in: organizations}});
-           }
+              crit.$or.push({organization: {$in: organizations}});
+            }
 
            if (!filterBy.$and) {
              filterBy.$and = [];
@@ -1084,16 +1085,24 @@ function filterRequestedWorkspaceData(user, results) {
 
           let combined = _.flatten(ownerIds.concat(editorIds));
           let uniqueIds = _.uniq(combined);
-          searchFilter.$or.push({ _id: {$in: uniqueIds} });
+
+          if (apiUtils.isNonEmptyArray(uniqueIds)) {
+            searchFilter.$or.push({ _id: {$in: uniqueIds} });
+          }
 
 
         } else if (criterion === 'owner') {
           let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
-          searchFilter = {_id: {$in: ids}};
+
+          if (apiUtils.isNonEmptyArray(ids)) {
+            searchFilter = {_id: {$in: ids}};
+          }
 
         } else if (criterion === 'editors') {
           let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
-          searchFilter = {_id: {$in: ids}};
+          if (apiUtils.isNonEmptyArray(ids)) {
+            searchFilter = {_id: {$in: ids}};
+          }
 
         } else {
           query = query.replace(/\s+/g, "");
@@ -1124,8 +1133,10 @@ function filterRequestedWorkspaceData(user, results) {
           models.Workspace.count(criteria)
         ]);
       } else if (sortParam && sortableFields.includes(sortField)) {
-        results = await apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria);
-        itemCount = await models.Workspace.count(criteria);
+        [ results, itemCount ] = await Promise.all([
+          apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria),
+          models.Workspace.count(criteria)
+        ]);
       } else if (doCollate) {
         [results, itemCount] = await Promise.all([
           models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
