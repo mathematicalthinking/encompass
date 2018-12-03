@@ -4,6 +4,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   showList: true,
   showGrid: false,
   toggleTrashed: false,
+  toggleHidden: false,
   utils: Ember.inject.service('utility-methods'),
 
   sortProperties: ['name'],
@@ -561,11 +562,16 @@ buildCollabFilter() {
     if (visibileWorkspaces) {
       if (this.get("toggleTrashed")) {
         return visibileWorkspaces;
+      } else if (this.get('toggleHidden')) {
+        console.log('toggleHidden in displayWorkspaces');
+        return this.store.query('workspace', { filter: {_id: hiddenWorkspaces }});
+        //get
+
       } else {
         return visibileWorkspaces.rejectBy("isTrashed");
       }
     }
-  }.property('workspaces.@each.isTrashed', 'toggleTrashed'),
+  }.property('workspaces.@each.isTrashed', 'toggleTrashed', 'currentUser.hiddenWorkspaces'),
 
   buildQueryParams: function(page, isTrashedOnly) {
     let params = {};
@@ -618,7 +624,7 @@ buildCollabFilter() {
     }, 300);
   }.observes('isFetchingWorkspaces'),
 
-  getWorkspaces: function(page, isTrashedOnly=false) {
+  getWorkspaces: function(page, isTrashedOnly=false, isHiddenOnly=false) {
     this.set('isFetchingWorkspaces', true);
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
 
@@ -651,6 +657,10 @@ buildCollabFilter() {
 
       if (this.get('isChangingPage')) {
         this.set('isChangingPage', false);
+      }
+
+      if (isHiddenOnly) {
+        console.log('getWorksapces and isHiddenOnly is', isHiddenOnly);
       }
     }).catch((err) => {
       this.handleErrors(err, 'workspaceLoadErrors');
@@ -731,7 +741,8 @@ buildCollabFilter() {
     },
     refreshList() {
       let isTrashedOnly = this.get('toggleTrashed');
-      this.getWorkspaces(null, isTrashedOnly);
+      let isHiddenOnly = this.get('toggleHidden');
+      this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
     },
     toggleFilter: function(key) {
       if (key === this.get('listFilter')) {
@@ -741,6 +752,9 @@ buildCollabFilter() {
     },
     triggerShowTrashed() {
       this.send('triggerFetch', this.get('toggleTrashed'));
+    },
+    triggerShowHidden() {
+      this.send('triggerFetch', this.get('toggleHidden'));
     },
     clearSearchResults: function() {
       this.set('searchQuery', null);
@@ -764,7 +778,8 @@ buildCollabFilter() {
     initiatePageChange: function(page) {
       this.set('isChangingPage', true);
       let isTrashedOnly = this.get('toggleTrashed');
-      this.getWorkspaces(page, isTrashedOnly);
+      let isHiddenOnly = this.get('toggleHidden');
+      this.getWorkspaces(page, isTrashedOnly, isHiddenOnly);
     },
 
     updateFilter: function(id, checked) {
@@ -780,13 +795,13 @@ buildCollabFilter() {
       this.set('sortCriterion', criterion);
       this.send('triggerFetch');
     },
-    triggerFetch(isTrashedOnly=false) {
+    triggerFetch(isTrashedOnly=false, isHiddenOnly=false) {
       for (let prop of ['criteriaTooExclusive']) {
         if (this.get(prop)) {
           this.set(prop, null);
         }
       }
-      this.getWorkspaces(null, isTrashedOnly);
+      this.getWorkspaces(null, isTrashedOnly, isHiddenOnly);
     },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');

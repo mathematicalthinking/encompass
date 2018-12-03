@@ -96,5 +96,10 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
       this.get('triggerShowTrashed')();
     },
 
+    toggleHiddenWorkspaces() {
+      this.set('toggleHidden', !this.get('toggleHidden'));
+      this.get('triggerShowHidden')();
+    },
+
   }
 });
