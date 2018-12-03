@@ -68,13 +68,13 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         'workspace',
         'submissions',
         'Welcome to your Workspace',
-        "Your workspace is a place where you can browse, organize, and comment on submissions.  Let's get started!",null, null, null,
+        "Your workspace is a place where you can browse, organize, and comment on submissions.  Let's get started!",
+        null, null, null,
         [{name: "Next"}],
         true,
         null,
         this.send('doneTour'),
       ).show();
-
       this.get('guider').createGuider(
         'submissions',
         'submissions.nav',
