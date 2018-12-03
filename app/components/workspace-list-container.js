@@ -564,9 +564,9 @@ buildCollabFilter() {
         return visibileWorkspaces;
       } else if (this.get('toggleHidden')) {
         console.log('toggleHidden in displayWorkspaces');
-        return this.store.query('workspace', { filter: {_id: hiddenWorkspaces }});
-        //get
-
+        // this.get('store').findRecord('workspace', hiddenWorkspaces[0]).then((workspaces) => {
+        //   console.log(workspaces.id);
+        // });
       } else {
         return visibileWorkspaces.rejectBy("isTrashed");
       }
