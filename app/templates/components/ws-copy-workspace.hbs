@@ -30,7 +30,7 @@
 {{#if tooFewSubmissions}}
   {{error-box error="Please select a workspace with at least 1 submission." resetError=(action (mut tooFewSubmissions) null) showDismiss=true }}
 {{/if}}
-{{#if loadingSubmissions}}
+{{#if showLoadingSubmissions}}
   <p class="loading-message">Loading submissions... Thank you for your patience.</p>
 {{/if}}
 {{#each loadSubmissionErrors as |error|}}

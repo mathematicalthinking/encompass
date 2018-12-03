@@ -262,6 +262,23 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       });
     }
   },
+  handleSubmissionsLoadingMessage: function() {
+    const that = this;
+    if (!this.get('loadingSubmissions')) {
+      this.set('showLoadingSubmissions', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying) {
+        return;
+      }
+      if (!that.get('loadingSubmissions')) {
+        return;
+      }
+      that.set('showLoadingSubmissions', true);
+    }, 500);
+
+  }.observes('loadingSubmissions'),
 
   actions: {
     goToStep(stepValue) {
