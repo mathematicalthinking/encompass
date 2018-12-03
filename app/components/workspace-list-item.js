@@ -69,6 +69,38 @@ Encompass.WorkspaceListItemComponent = Ember.Component.extend(Encompass.CurrentU
         });
     },
 
+    hideWorkspace: function () {
+      let workspaceId = this.get('workspace.id');
+      console.log('workspaceId', workspaceId);
+      let user = this.get('currentUser');
+      this.get('alert').showModal('question', 'Are you sure you want to hide this workspace?', 'This will remove this workspace from your view, you can always restore this later', 'Yes, hide it')
+        .then((result) => {
+          if (result.value) {
+            let hiddenWorkspaces = user.get('hiddenWorkspaces');
+            hiddenWorkspaces.pushObject(workspaceId);
+            user.set('hiddenWorkspaces', hiddenWorkspaces);
+            user.save().then((user) => {
+              if (this.get('showMoreMenu')) {
+                this.set('showMoreMenu', false);
+              }
+              this.get('alert').showToast('success', 'Workspace Hidden', 'bottom-end', 5000, true, 'Undo')
+                .then((result) => {
+                  if (result.value) {
+                    let hiddenWorkspaces = user.get('hiddenWorkspaces');
+                    hiddenWorkspaces.removeObject(workspaceId);
+                    user.set('hiddenWorkspaces', hiddenWorkspaces);
+                    user.save().then(() => {
+                      this.get('alert').showToast('success', 'Workspace Restored', 'bottom-end', 3000, false, null);
+                    });
+                  }
+                });
+            }).catch((err) => {
+              console.log('error', err);
+            });
+          }
+        });
+    },
+
     restoreWorkspace: function () {
       let workspace = this.get('workspace');
       this.get('alert').showModal('warning', 'Are you sure you want to restore this workspace?', null, 'Yes, restore it')
