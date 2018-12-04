@@ -1038,14 +1038,20 @@ function filterRequestedWorkspaceData(user, results) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
+  let doOrgSearch;
 
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
+  //if users hiddenWorksapces is not an empty array add $nin
 
       if (filterBy) {
         console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        let { all, includeFromOrg } = filterBy;
 
-        let { all } = filterBy;
+        if (includeFromOrg) {
+          doOrgSearch = true;
+          delete filterBy.includeFromOrg;
+        }
 
         if (all) {
           let { org } = all;
@@ -1162,7 +1168,6 @@ function filterRequestedWorkspaceData(user, results) {
       // have to check to make sure we are only sending back the allowed data
 
       const filteredResults = await filterRequestedWorkspaceData(user, results);
-      console.log('filteredResults', filteredResults);
       const data = {
         'workspaces': filteredResults,
         'meta': {
