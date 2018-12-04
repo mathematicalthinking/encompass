@@ -1,0 +1,8 @@
+ <button {{action "selectAll"}}>Check All</button>
+ <button {{action "unselectAll"}}>Uncheck All</button>
+<ul>
+    {{#each submissions as |submission|}}
+      {{submission-viewer-list-item submission=submission selectedSubmissionIds=selectedSubmissionIds onSelect=(action "onSelect")
+      }}
+    {{/each}}
+</ul>

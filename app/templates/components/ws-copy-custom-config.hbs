@@ -26,14 +26,9 @@
   {{/each}}
 {{/if}}
 {{#if showCustomSubmissionViewer}}
-  <ul>
-  {{#each workspace.submissions.content as |submission|}}
-    <li>
-       <input type="checkbox" checked={{is-in customSubmissionIds submission.id}} name="customIds" value={{submission.id}} onclick={{action "updateCustomSubs" submission.id}}>
-      <span>{{submission.id}} by {{submission.student}}</span>
-    </li>
-  {{/each}}
-  </ul>
+ {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
+ onSelectAll=(action "selectAllSubmissions") onUnselectAll=(action "deselectAllSubmissions")
+ }}
 {{/if}}
 {{#if noSubmissionsToCopy}}
   <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>

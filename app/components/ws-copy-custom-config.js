@@ -215,7 +215,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       .map(student => threads.get(student))
       .flatten()
       .value();
-  }.property('submissionStudents.[]', 'customSubmissionIds.[]', 'submissionOptions.all', 'workspace.id', 'submissionOptions.custom', 'submissionOptions.byStudent', 'submissionThreads'),
+  }.property('submissionStudents.[]', 'customSubmissionIds.[]', 'submissionOptions.all', 'workspace.id', 'submissionOptions.custom', 'submissionOptions.byStudent', 'submissionThreads', 'doSelectAll', 'doDeselectAll'),
 
   selectionsFromSubmissions: function() {
     return this.get('workspace.selections').filter((selection) => {
@@ -323,6 +323,12 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
         customSubmissionIds.addObject(id);
       }
 
+    },
+    selectAllSubmissions: function() {
+      this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
+    },
+    deselectAllSubmissions: function() {
+      this.set('customSubmissionIds', []);
     }
   },
 
