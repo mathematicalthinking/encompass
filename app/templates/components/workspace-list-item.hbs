@@ -3,7 +3,11 @@
     <div class="item-section mode">
       {{{public-private workspace.mode}}}
     </div>
-
+    <div class="item-section info-item">
+      {{#link-to 'workspace.info' workspace.id}}
+      <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
+      {{/link-to}}
+    </div>
     <div class="item-section name">
       {{#link-to 'workspace.work' workspace class="workspace-name"}}
         <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
@@ -31,11 +35,6 @@
     </div>
     <div class="item-section editors">
       {{workspace.editorsLength}}
-    </div>
-    <div class="item-section info-item">
-      {{#link-to 'workspace.info' workspace.id}}
-        <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-      {{/link-to}}
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>

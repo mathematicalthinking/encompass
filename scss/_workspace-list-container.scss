@@ -50,6 +50,12 @@
         }
       }
     }
+    &.info-item {
+      @include flex-item(2, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
+      overflow: visible;
+    }
     &.name {
       @include flex-item(3, center, .24 0 auto);
       width: 24%;
@@ -82,12 +88,6 @@
     &.editors {
       @include flex-item(10, center, .07 0 auto);
       width: 7%;
-    }
-    &.info-item {
-      @include flex-item(2, center, .01 0 auto);
-      width: 1%;
-      text-align: left;
-      overflow: visible;
     }
     &.more {
       @include flex-item(11, center, .01 0 auto);
