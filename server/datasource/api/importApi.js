@@ -191,7 +191,7 @@ if (requestedName) {
   name = workspaceApi.nameWorkspace(submissionSet, user, false);
 }
 
-
+const ownerOrg = await userAuth.getUserOrg(user.id);
 
 let workspace = new models.Workspace({
   mode: workspaceMode || 'private',
@@ -200,7 +200,8 @@ let workspace = new models.Workspace({
   submissionSet: submissionSet,
   submissions: submissionIds,
   createdBy: user,
-  lastModifiedBy: user
+  lastModifiedBy: user,
+  organization: ownerOrg
 });
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName); // eslint-disable-line no-unused-vars

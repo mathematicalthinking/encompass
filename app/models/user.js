@@ -78,5 +78,6 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   }.property('googleId', 'requestReason', 'isAuthz'),
 
   shouldSendAuthEmail: DS.attr('boolean'),
-  collabWorkspaces: DS.attr()
+  collabWorkspaces: DS.attr(),
+  hiddenWorkspaces: DS.attr()
 });

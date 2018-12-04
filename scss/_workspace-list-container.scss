@@ -27,6 +27,9 @@
   .sort-bar-item, .item-section {
     font-size: .9em;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
       font-size: .7em;
       position: relative;
@@ -51,7 +54,6 @@
       @include flex-item(3, center, .24 0 auto);
       width: 24%;
       text-align: left;
-      // padding-left: 10px;
     }
     &.last-viewed {
       @include flex-item(4, center, .08 0 auto);
@@ -74,8 +76,8 @@
       width: 7%;
     }
     &.owner {
-      @include flex-item(9, center, .09 0 auto);
-      width: 9%;
+      @include flex-item(9, center, .08 0 auto);
+      width: 8%;
     }
     &.editors {
       @include flex-item(10, center, .07 0 auto);
@@ -85,6 +87,13 @@
       @include flex-item(2, center, .01 0 auto);
       width: 1%;
       text-align: left;
+      overflow: visible;
+    }
+    &.more {
+      @include flex-item(11, center, .01 0 auto);
+      width: 1%;
+      text-align: left;
+      overflow: visible;
     }
   }
   .item-section {
@@ -133,7 +142,7 @@
             @include flex-item(8, center, .10 0 auto);
             width: 10%;
           }
-          &.info-item, &.owner {
+          &.info-item, &.owner, &.more {
             display: none;
           }
         }
@@ -175,14 +184,13 @@
                 }
                 .more {
                   float: right;
-                  font-size: 1.3em;
+                  font-size: 1em;
                   margin-top: 5px;
                   cursor: pointer;
                 }
               }
               &.row-2 {
                 @include flex-item(2, auto, 1 0 auto);
-                // border: 1px solid blue;
                 padding: 20px 15px 15px 15px;
                 a {
                   color: black;
@@ -197,7 +205,6 @@
               &.row-3 {
                 @include flex-item(3, auto, 1 0 auto);
                 padding: 0px 15px 15px 15px;
-                // border: 1px solid orange;
                 a {
                   &.active {
                     font-weight: $bolder-font-weight;
@@ -208,13 +215,10 @@
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
                 padding: 20px 10px 20px 10px;
-                // border: 1px solid purple;
                 .workspace-stats {
                   text-align: center;
-                  // border: 1px solid red;
                   @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
                   li {
-                    // border: 1px solid green;
                     @include flex-item(1, auto, 1 0 auto);
                     line-height: 2em;
                     min-width: 100px;

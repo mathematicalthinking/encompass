@@ -25,7 +25,7 @@ Encompass.WorkspaceNewEncComponent = Ember.Component.extend(Encompass.CurrentUse
       owner: 'Who will have ownership of this workspace',
       name: 'Give your workspace a name. If not, workspace names are generated based off given criteria',
       folders: 'Choose a starter folder set, you can create your own later',
-      privacy: 'Private workspaces are only visibile by the owner and editors. Public workspaces are visibile to all users',
+      privacy: 'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
     };
     this.set('tooltips', tooltips);
     $(function () {

@@ -236,6 +236,7 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
   */
 function sendWorkspace(req, res, next) {
   var user = userAuth.requireUser(req);
+
   models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
     if (err) {
       console.error(`Error sendWorkspace: ${err}`);
@@ -292,6 +293,7 @@ function putWorkspace(req, res, next) {
         ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
         ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
         ws.permissions = req.body.workspace.permissions;
+        ws.organization = req.body.workspace.organization;
 
         // only admins or ws owner should be able to trash ws
         if (user.accountType === 'A' || user.id === ws.owner.toString()) {
@@ -1036,12 +1038,20 @@ function filterRequestedWorkspaceData(user, results) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
   logger.debug('looking for workspaces for user id' + user._id);
+  let doOrgSearch;
 
-  let { ids, filterBy, sortBy, searchBy, page, } = req.query;
+
+  let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
+  //if users hiddenWorksapces is not an empty array add $nin
 
       if (filterBy) {
-        // console.log('filterBy workspace API:', JSON.stringify(filterBy));
-        let { all } = filterBy;
+        console.log('filterBy workspace API:', JSON.stringify(filterBy));
+        let { all, includeFromOrg } = filterBy;
+
+        if (includeFromOrg) {
+          doOrgSearch = true;
+          delete filterBy.includeFromOrg;
+        }
 
         if (all) {
           let { org } = all;
@@ -1121,7 +1131,7 @@ function filterRequestedWorkspaceData(user, results) {
         byRelevance = sortBy.byRelevance;
       }
 
-      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter);
+      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter, isTrashedOnly);
       let results, itemCount;
 
       let sortField = Object.keys(sortParam)[0];
@@ -1158,7 +1168,6 @@ function filterRequestedWorkspaceData(user, results) {
       // have to check to make sure we are only sending back the allowed data
 
       const filteredResults = await filterRequestedWorkspaceData(user, results);
-      console.log('filteredResults', filteredResults);
       const data = {
         'workspaces': filteredResults,
         'meta': {
@@ -1397,6 +1406,7 @@ async function postWorkspaceEnc(req, res, next) {
     delete pruned.isTrashed;
     delete pruned.isEmptyAnswerSet;
 
+    const ownerOrg = await userAuth.getUserOrg(owner);
     const accessibleCriteria = await answerAccess.get.answers(user);
 
     let wsCriteria;
@@ -1452,6 +1462,7 @@ async function postWorkspaceEnc(req, res, next) {
       mode,
       name,
       owner,
+      organization: ownerOrg,
       submissionSet: submissionSet,
       submissions: submissionIds,
       createdBy: user,
@@ -2208,15 +2219,17 @@ async function cloneWorkspace(req, res, next) {
 
     // process basic settings
     const { name, owner, mode, createdBy } = copyWorkspaceRequest;
-
+    const ownerOrg = await userAuth.getUserOrg(owner);
     // use original name, mode if not provided
     // set owner as current user if owner not provided
     const newWs = new models.Workspace({
       name: name || originalWs.name,
       owner: owner || user._id,
       mode: mode || originalWs.mode,
-      createdBy: createdBy || user._id
+      createdBy: createdBy || user._id,
+      organization: ownerOrg
     });
+
 
     // let savedWs = await newWs.save();
 
@@ -2313,7 +2326,7 @@ async function cloneWorkspace(req, res, next) {
     const workspaceInfo = {
       originalWsId: originalWsId,
       newWsId: newWs._id,
-      newWsOwner: newWs.owner
+      newWsOwner: newWs.owner,
     };
 
 

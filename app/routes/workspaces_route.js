@@ -10,4 +10,11 @@ Encompass.WorkspacesRoute = Encompass.AuthenticatedRoute.extend({
     return this.get('store').findAll('user');
   },
 
+  actions: {
+    toCopyWorkspace(workspace) {
+      let workspaceId = workspace.get('id');
+      this.transitionTo('workspaces.copy', { queryParams: { workspace: workspaceId }});
+    },
+  }
+
 });

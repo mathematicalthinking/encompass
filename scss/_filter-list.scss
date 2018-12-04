@@ -341,6 +341,9 @@
         .more-header {
           cursor: pointer;
           margin-top: 35px;
+          &.closed {
+            height: 75px;
+          }
         }
         .category-filter-list, .more-filter-list {
           margin: 0 0 50px 20px;
@@ -709,7 +712,10 @@
                 &.status {
                   @include flex-item(5, center, .08 0 auto);
                   width: 8%;
-                  .status-text{
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                  .status-text {
                     text-transform: capitalize;
                   }
                 }

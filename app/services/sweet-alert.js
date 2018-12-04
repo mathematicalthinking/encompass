@@ -45,7 +45,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
     });
   },
 
-  showModal: function(type, title, text, confirmText) {
+  showModal: function(type, title, text, confirmText, cancelText='Cancel') {
     return window.swal({
       type: type,
       title: title,
@@ -53,6 +53,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
       showCancelButton: true,
       showConfirmButton: true,
       confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
     });
   },
 

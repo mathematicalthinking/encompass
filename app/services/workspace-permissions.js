@@ -10,6 +10,15 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     }
   },
 
+  isPdAdmin: function() {
+    let accountType = this.get('currentUser').get('accountType');
+    if (accountType === "P") {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
   isOwner: function (ws) {
     let currentUserId = this.get('currentUser').get('id');
     let ownerId = ws.get('owner').get('id');
@@ -21,7 +30,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
   },
 
   isEditor: function (ws) {
-    let currentUser= this.get('currentUser');
+    let currentUser = this.get('currentUser');
     let editors = ws.get('editors');
 
     if (editors.includes(currentUser)) {
@@ -46,6 +55,24 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     let userOrg = user.get('organization.content');
     let ownerOrg = ws.get('owner.organization.content');
     return Ember.isEqual(ownerOrg, userOrg);
+  },
+
+  canDelete: function(ws) {
+    if (this.isCreator(ws) || this.isOwner(ws) || this.isAdmin()) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  canCopy: function(ws) {
+    // let canCopy = ws.get('canCopy');
+    // have to add a check is workspace is allowed to be copied
+    if (this.canDelete(ws) || this.isPdAdmin() && this.isInPdAdminDomain(ws)) {
+      return true;
+    } else {
+      return false;
+    }
   },
 
   canEdit: function (ws, recordType, requiredPermissionLevel) {

@@ -7,6 +7,7 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
   secondaryFilter: Ember.computed.alias('primaryFilter.secondaryFilters'),
   showAdminFilters: Ember.computed.equal('primaryFilter.value', 'all'),
   adminFilter: Ember.computed.alias('filter.primaryFilters.inputs.all'),
+  closedMenu: true,
 
   currentValues: function() {
     return this.get('secondaryFilter.selectedValues');
@@ -31,7 +32,7 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
     let mapped = _.map(this.get('primaryFilterInputs'), (val, key) => {
       return val;
     });
-    return _.sortBy(mapped, 'label');
+    return _.sortBy(mapped, 'order');
   }.property('filter'),
 
   secondaryFilterOptions: function() {
@@ -83,6 +84,21 @@ Encompass.WorkspaceFilterComponent = Ember.Component.extend(Encompass.CurrentUse
 
     onUpdate() {
       this.get('onUpdate')();
+    },
+
+    toggleMoreFilters() {
+      this.set('showMoreFilters', !this.get('showMoreFilters'));
+      this.set('closedMenu', !this.get('closedMenu'));
+    },
+
+    toggleTrashedWorkspaces() {
+      this.set('toggleTrashed', !this.get('toggleTrashed'));
+      this.get('triggerShowTrashed')();
+    },
+
+    toggleHiddenWorkspaces() {
+      this.set('toggleHidden', !this.get('toggleHidden'));
+      this.get('triggerShowHidden')();
     },
 
   }

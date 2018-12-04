@@ -77,6 +77,18 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   showPermissions: Ember.computed.equal('currentStep.value', 4),
   showReview: Ember.computed.equal('currentStep.value', 5),
 
+  didReceiveAttrs: function() {
+    let hasWorkspaceToCopy = this.get('model.workspaceToCopy');
+    if (hasWorkspaceToCopy) {
+      return this.store.findRecord('workspace', hasWorkspaceToCopy)
+      .then((workspace) => {
+        this.set('workspaceToCopy', workspace);
+        this.set('selectedWorkspace', workspace);
+        this.set('fromWorkspaceList', true);
+      });
+    }
+  },
+
   maxSteps: function() {
     return this.get('steps.length') - 1;
   }.property('steps'),
