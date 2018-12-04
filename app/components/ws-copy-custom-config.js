@@ -15,7 +15,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   customSubmissionIds: [],
 
   didReceiveAttrs() {
-    console.log('did receive attra ws-copy-custom-config');
+    // console.log('did receive attra ws-copy-custom-config');
     this._super(...arguments);
   },
 
@@ -160,7 +160,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     selectionOptions: {
       all: true,
       none: false,
-      custom: false,
+      // custom: false,
       selectionIds: []
     },
     commentOptions: {

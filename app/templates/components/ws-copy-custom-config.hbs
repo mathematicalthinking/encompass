@@ -44,8 +44,8 @@ onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
 <input type="radio" checked={{selectionOptions.none}} required="true" name="selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "selectionOptions"}}>
 <label>None</label>
 
-<input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
-<label>Custom</label>
+{{!-- <input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
+<label>Custom</label> --}}
 
 <h5>Folders</h5>
 
@@ -62,7 +62,7 @@ onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
 {{/if}}
 
 <h5>Comments</h5>
-<p>Based on your Selection choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
+<p>Based on your Submission choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
 <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 <label>All</label>
@@ -70,8 +70,8 @@ onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 <input type="radio" checked={{commentOptions.none}} required="true" name="commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "commentOptions"}}>
 <label>None</label>
 
-<input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
-<label>Custom</label>
+{{!-- <input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
+<label>Custom</label> --}}
 
 <h5>Responses</h5>
 <p>Based on your Submission choices, there are {{responsesFromSubmissions.length}} responses to choose from.</p>
@@ -83,8 +83,8 @@ onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
 <input type="radio" checked={{responseOptions.none}} required="true" name="responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "responseOptions"}}>
 <label>None</label>
 
-<input type="radio" checked={{responseOptions.custom}} required="true" name="responseOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "responseOptions"}}>
-<label>Custom</label>
+{{!-- <input type="radio" checked={{responseOptions.custom}} required="true" name="responseOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "responseOptions"}}>
+<label>Custom</label> --}}
 
 {{!-- {{/if}} --}}
 
