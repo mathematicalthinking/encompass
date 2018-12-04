@@ -182,14 +182,29 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('selectedMode', workspace.get('mode'));
     },
 
+    checkWorkspace: function () {
+      let workspace = this.get('workspace');
+      let workspaceOrg = workspace.get('organization.content');
+      let workspaceOwner = workspace.get('owner');
+      let ownerOrg = workspaceOwner.get('organization');
+      let ownerOrgName = ownerOrg.get('name');
+      let mode = this.get('selectedMode');
+      workspace.set('mode', mode);
+      if (mode === 'org' && workspaceOrg === null) {
+        this.get('alert').showModal('info', `Do you want to make this workspace visibile to ${ownerOrgName}`, `Everyone in this organization will be able to see this workspace`, 'Yes', 'No').then((results) => {
+          if (results.value) {
+            workspace.set('organization', ownerOrg);
+            this.send('saveWorkspace');
+          }
+        });
+      } else {
+        this.send('saveWorkspace');
+      }
+    },
+
     saveWorkspace: function () {
       this.set('isEditing', false);
-      let mode = this.get('selectedMode');
-      if (mode === 'org') {
-        console.log('changing workspace mode to org');
-      }
       let workspace = this.get('workspace');
-      workspace.set('mode', mode);
       workspace.save().then((res) => {
         this.get('alert').showToast('success', 'Workspace Updated', 'bottom-end', 3000, null, false);
       }).catch((err) => {
