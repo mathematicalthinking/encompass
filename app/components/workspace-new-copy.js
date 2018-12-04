@@ -394,7 +394,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       }
 
       let baseOptions = {
-        answerOptions : { all: true },
+        submissionOptions : { all: true },
         folderOptions : {
           includeStructureOnly: true,
           folderSetOptions: this.get('newFolderSetOptions'),

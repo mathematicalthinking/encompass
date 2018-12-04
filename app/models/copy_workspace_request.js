@@ -3,7 +3,7 @@ Encompass.CopyWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
   owner: DS.belongsTo('user', { inverse: null }),
   mode: DS.attr('string'),
   originalWsId: DS.belongsTo('workspace', {inverse: null}),
-  answerOptions: DS.attr(),
+  submissionOptions: DS.attr(),
   folderOptions: DS.attr(),
   selectionOptions: DS.attr(),
   commentOptions: DS.attr(),

@@ -1,32 +1,32 @@
 /*global _:false */
 Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   elementId: 'ws-copy-custom-config',
-  answerStudents: [],
+  submissionStudents: [],
   utils: Ember.inject.service('utility-methods'),
 
-  answerIds: Ember.computed.alias('customConfig.answerIds'),
-  answerOptions: Ember.computed.alias('customConfig.answerOptions'),
+  SubmissionIds: Ember.computed.alias('customConfig.SubmissionIds'),
+  submissionOptions: Ember.computed.alias('customConfig.submissionOptions'),
   selectionOptions: Ember.computed.alias('customConfig.selectionOptions'),
   commentOptions: Ember.computed.alias('customConfig.commentOptions'),
   responseOptions: Ember.computed.alias('customConfig.responseOptions'),
   folderOptions: Ember.computed.alias('customConfig.folderOptions'),
-  showStudentAnswerInput: Ember.computed.equal('answerOptions.byStudent', true),
+  showStudentSubmissionInput: Ember.computed.equal('submissionOptions.byStudent', true),
 
-  formattedAnswerOptions: function() {
-    let answerOptions = {
+  formattedSubmissionOptions: function() {
+    let submissionOptions = {
       all: true,
     };
 
-    if (this.get('answerOptions.all')) {
-      return answerOptions;
+    if (this.get('submissionOptions.all')) {
+      return submissionOptions;
     }
-    delete answerOptions.all;
+    delete submissionOptions.all;
 
-    answerOptions.answerIds = this.get('answerIdsFromStudents');
+    submissionOptions.submissionIds = this.get('submissionsFromStudents').mapBy('id');
 
-    return answerOptions;
+    return submissionOptions;
 
-  }.property('answerOptions.all', 'submissionsFromStudents.[]'),
+  }.property('submissionOptions.all', 'submissionsFromStudents.[]'),
 
   formattedFolderOptions: function() {
     let folderOptions = {
@@ -116,19 +116,19 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   formattedConfig: function() {
 
     return {
-      answerOptions: this.get('formattedAnswerOptions'),
+      submissionOptions: this.get('formattedSubmissionOptions'),
       folderOptions: this.get('formattedFolderOptions'),
       selectionOptions: this.get('formattedSelectionOptions'),
       commentOptions: this.get('formattedCommentOptions'),
       responseOptions: this.get('formattedResponseOptions')
     };
-  }.property('formattedAnswerOptions.@each{all,none,custom}', 'formattedSelectionOptions.@each{all,none,custom}', 'formattedCommentOptions.@each{all,none,custom}', 'formattedResponseOptions.@each{all,none,custom}', 'formattedFolderOptions.@each{all,none,includeStructureOnly}'),
+  }.property('formattedSubmissionOptions.@each{all,none,custom}', 'formattedSelectionOptions.@each{all,none,custom}', 'formattedCommentOptions.@each{all,none,custom}', 'formattedResponseOptions.@each{all,none,custom}', 'formattedFolderOptions.@each{all,none,includeStructureOnly}'),
 
   customConfig: {
-    answerOptions: {
+    submissionOptions: {
       all: true,
       byStudent: false,
-      answerIds: []
+      submissionIds: []
     },
     folderOptions: {
       includeStructureOnly: true,
@@ -173,11 +173,11 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   }.property('submissionThreads'),
 
   submissionsFromStudents: function() {
-    if (this.get('answerOptions.all')) {
+    if (this.get('submissionOptions.all')) {
       return this.get('workspace.submissions');
     }
     const threads = this.get('submissionThreads');
-    const students = this.get('answerStudents');
+    const students = this.get('submissionStudents');
     if (!threads || !this.get('utils').isNonEmptyArray(students) ) {
       return [];
     }
@@ -185,7 +185,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       .map(student => threads.get(student))
       .flatten()
       .value();
-  }.property('answerStudents.[]', 'answerOptions.all', 'workspace.id', 'submissionThreads'),
+  }.property('submissionStudents.[]', 'submissionOptions.all', 'workspace.id', 'submissionThreads'),
 
   selectionsFromSubmissions: function() {
     return this.get('workspace.selections').filter((selection) => {
@@ -209,10 +209,10 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     });
   }.property('submissionsFromStudents.[]'),
 
-  answerIdsFromStudents: function() {
+  submissionIdsFromStudents: function() {
     const subs = this.get('submissionsFromStudents');
 
-    return subs.mapBy('answer.content.id');
+    return subs.mapBy('id');
   }.property('submissionsFromStudents.[]'),
 
   actions: {
@@ -228,15 +228,15 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       this.get(propToUpdate).pushObject(val);
     },
 
-    setAnswers() {
-      if (this.get('showStudentAnswerInput')) {
-        const answerIds = this.get('answerIdsFromStudents');
-        if (this.get('utils').isNonEmptyArray(answerIds)) {
-          this.set('answerIds', [...answerIds]);
+    setSubmissions() {
+      if (this.get('showStudentSubmissionInput')) {
+        const submissionIds = this.get('submissionIdsFromStudents');
+        if (this.get('utils').isNonEmptyArray(submissionIds)) {
+          this.set('submissionIds', [...submissionIds]);
           this.set('showSelectionInputs', true);
           return;
         }
-        this.set('noAnswersToCopy', true);
+        this.set('noSubmissionssToCopy', true);
         return;
       }
       this.set('showSelectionInputs', true);
@@ -246,7 +246,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     updateCollectionOptions(val, propName) {
       let keys = ['all', 'none', 'custom'];
 
-      if (propName === 'answerOptions') {
+      if (propName === 'submissionOptions') {
         keys = ['all', 'byStudent'];
       }
 
@@ -267,6 +267,9 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
         }
       });
 
+    },
+    toggleIncludeStructureOnly() {
+      this.toggleProperty('folderOptions.includeStructureOnly');
     },
     next(){
       this.get('onProceed')(this.get('formattedConfig'));

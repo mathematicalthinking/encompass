@@ -19,10 +19,10 @@ var CopyWorkspaceRequestSchema = new Schema({
   owner: { type: ObjectId, ref: 'User' },
   name: { type: String },
   mode: { type: String, enum: ['private', 'org', 'public', 'internet']},
-  answerOptions: {
+  submissionOptions: {
     all: { type: Boolean },
     none: { type: Boolean },
-    answerIds: [{ type: ObjectId, ref: 'Answer' }]
+    submissionIds: [{ type: ObjectId, ref: 'Answer' }]
   },
   folderOptions: {
     includeStructureOnly: { type: Boolean },
