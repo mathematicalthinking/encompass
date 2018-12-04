@@ -63,23 +63,23 @@ describe(`Copy Workspace operations by account type`, function () {
       }
       */
       // return array [ copyWorkspaceRequest, hash of expected lengths]
-      function buildShallowRequest(settings, workspace, answerIds = null, doIncludeFolders = false) {
+      function buildShallowRequest(settings, workspace, submissionIds = null, doIncludeFolders = false) {
         let { newOwnerId, newWsName, newMode, permissions } = settings;
         if (!Array.isArray(permissions)) {
           permissions = [];
         }
 
-        let includeAllAnswers;
+        let includeAllSubmissions;
         let subsLength;
         let foldersLength;
 
-        if (Array.isArray(answerIds)) {
-          includeAllAnswers = false;
-          subsLength = answerIds.length;
+        if (Array.isArray(submissionIds)) {
+          includeAllSubmissions = false;
+          subsLength = submissionIds.length;
         } else {
-          includeAllAnswers = true;
+          includeAllSubmissions = true;
           subsLength = workspace.submissions.length;
-          answerIds = [];
+          submissionIds = [];
         }
 
         if (doIncludeFolders) {
@@ -105,9 +105,9 @@ describe(`Copy Workspace operations by account type`, function () {
               owner: newOwnerId,
               name: newWsName,
               mode: newMode,
-              answerOptions: {
-                all: includeAllAnswers,
-                answerIds: answerIds
+              submissionOptions: {
+                all: includeAllSubmissions,
+                submissionIds: submissionIds
               },
               folderOptions: {
                 includeStructureOnly: true,
@@ -137,25 +137,25 @@ describe(`Copy Workspace operations by account type`, function () {
         ];
       }
 
-      function buildDeepCloneRequest(settings, workspace, expectedLengths, answerIds = null, doIncludeFolders = true) {
+      function buildDeepCloneRequest(settings, workspace, expectedLengths, submissionIds = null, doIncludeFolders = true) {
         let { newOwnerId, newWsName, newMode, permissions } = settings;
         if (!Array.isArray(permissions)) {
           permissions = [];
         }
 
-        let includeAllAnswers;
+        let includeAllSubmissions;
         let subsLength;
         let foldersLength;
 
         let { taggings, selections, comments, responses } = expectedLengths;
 
-        if (Array.isArray(answerIds)) {
-          includeAllAnswers = false;
-          subsLength = answerIds.length;
+        if (Array.isArray(submissionIds)) {
+          includeAllSubmissions = false;
+          subsLength = submissionIds.length;
         } else {
-          includeAllAnswers = true;
+          includeAllSubmissions = true;
           subsLength = workspace.submissions.length;
-          answerIds = [];
+          submissionIds = [];
         }
 
         if (doIncludeFolders) {
@@ -181,9 +181,9 @@ describe(`Copy Workspace operations by account type`, function () {
               owner: newOwnerId,
               name: newWsName,
               mode: newMode,
-              answerOptions: {
-                all: includeAllAnswers,
-                answerIds: answerIds
+              submissionOptions: {
+                all: includeAllSubmissions,
+                submissionIds: submissionIds
               },
               folderOptions: {
                 includeStructureOnly: false,
@@ -212,6 +212,61 @@ describe(`Copy Workspace operations by account type`, function () {
 
         ];
       }
+
+      function buildCustomRequest(settings, workspace, customConfig, expectedLengths, existingFolderSetInfo) {
+        let { newOwnerId, newWsName, newMode, permissions } = settings;
+
+        if (!Array.isArray(permissions)) {
+          permissions = [];
+        }
+        let { submissionOptions, folderOptions } = customConfig;
+        let subsLength, foldersLength;
+
+        if (submissionOptions.all === true) {
+          subsLength = workspace.submissions.length;
+        } else {
+          subsLength = submissionOptions.submissionIds.length;
+        }
+        if (folderOptions.all === true) {
+          foldersLength = workspace.folders.length;
+        } else if (existingFolderSetInfo) {
+          foldersLength = existingFolderSetInfo.numFolders;
+        } else {
+          foldersLength = 0;
+        }
+
+        let { taggings, selections, comments, responses } = expectedLengths;
+
+        let lengths = {
+          submissions: subsLength,
+          taggings: taggings,
+          selections: selections,
+          comments: comments,
+          responses: responses,
+          folders: foldersLength,
+          permissions: permissions.length
+        };
+
+        let customRequest = {};
+
+        let target = {
+          originalWsId: workspace._id,
+          owner: newOwnerId,
+          name: newWsName,
+          mode: newMode,
+          permissionOptions: {
+            permissionObjects: permissions
+          }
+      };
+
+        let combined = Object.assign(target, customConfig);
+        customRequest.copyWorkspaceRequest = combined;
+        return [
+          customRequest,
+          lengths
+        ];
+      }
+
       function makeCopyRequestAsync(request, expectedCollectionLengths) {
         try {
           let newWs;
@@ -394,7 +449,7 @@ describe(`Copy Workspace operations by account type`, function () {
         describe('Copying Subset of Submissions', function () {
           describe('Not Including Folders', function () {
             describe('Current user as owner', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -402,11 +457,11 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as owner', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: studentOwner,
@@ -415,11 +470,11 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as editor', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -432,11 +487,11 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as view only collaborator', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -449,14 +504,14 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
           });
 
           describe('Including Folders', function () {
             describe('Current user as owner', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -464,11 +519,11 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds, true);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds, true);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as owner', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: studentOwner,
@@ -477,11 +532,11 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds, true);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds, true);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as editor', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -494,11 +549,11 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds, true);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds, true);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as view only collaborator', function () {
-              let answerIds = ["5bec35898c73047613e2f34b"];
+              let submissionIds = ["5bec36958c73047613e2f34d"];
 
               let settings = {
                 newOwnerId: _id,
@@ -511,7 +566,7 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildShallowRequest(settings, originalWs, answerIds, true);
+              let [request, lengths] = buildShallowRequest(settings, originalWs, submissionIds, true);
               makeCopyRequestAsync(request, lengths);
             });
           });
@@ -535,8 +590,6 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              //         let { taggings, selections, comments, responses } = expectedLengths;
-
 
               let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths);
               makeCopyRequestAsync(request, lengths);
@@ -598,8 +651,6 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              //         let { taggings, selections, comments, responses } = expectedLengths;
-
 
               let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, null, false);
               makeCopyRequestAsync(request, lengths);
@@ -645,7 +696,7 @@ describe(`Copy Workspace operations by account type`, function () {
           });
         });
         describe('Copying Subset of Submissions', function () {
-          let answerIds = ["5bb813fc9885323f6d894972"];
+          let submissionIds = ["5bec36958c73047613e2f34c"];
           describe('Including Folders', function () {
             let expectedLengths = {
               taggings: 2,
@@ -663,7 +714,7 @@ describe(`Copy Workspace operations by account type`, function () {
               //         let { taggings, selections, comments, responses } = expectedLengths;
 
 
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
 
@@ -674,7 +725,7 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds);
               makeCopyRequestAsync(request, lengths);
             });
 
@@ -690,7 +741,7 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds);
               makeCopyRequestAsync(request, lengths);
 
 
@@ -707,7 +758,7 @@ describe(`Copy Workspace operations by account type`, function () {
 
                 }]
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds);
               makeCopyRequestAsync(request, lengths);
 
 
@@ -728,7 +779,7 @@ describe(`Copy Workspace operations by account type`, function () {
                 permissions: []
               };
 
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds, false);
               makeCopyRequestAsync(request, lengths);
             });
 
@@ -739,7 +790,7 @@ describe(`Copy Workspace operations by account type`, function () {
                 newMode: originalWs.mode,
                 permissions: []
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds, false);
               makeCopyRequestAsync(request, lengths);
             });
 
@@ -753,7 +804,7 @@ describe(`Copy Workspace operations by account type`, function () {
                   global: 'editor'
                 }]
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds, false);
               makeCopyRequestAsync(request, lengths);
             });
             describe('Student as view only collaborator', function () {
@@ -766,9 +817,3475 @@ describe(`Copy Workspace operations by account type`, function () {
                   global: 'viewOnly'
                 }]
               };
-              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, answerIds, false);
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, submissionIds, false);
               makeCopyRequestAsync(request, lengths);
             });
+          });
+        });
+      });
+
+      describe('Custom Requests', function() {
+        describe('Copying All Submissions', function () {
+          describe('Including Folders', function () {
+            describe('Including structure only', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const associatedCommentIds = ["5bec375d8c73047613e2f35e","5bec37e38c73047613e2f366"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37708c73047613e2f35f","5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: commentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+            describe('Including Folder Contents', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: originalWs.taggings.length,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: originalWs.taggings.length,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: originalWs.taggings.length,
+                  selections: originalWs.selections.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const associatedCommentIds = ["5bec375d8c73047613e2f35e","5bec37e38c73047613e2f366"];
+                const associatedTaggingIds = ["5bec37f48c73047613e2f367", "5bec38338c73047613e2f36b"];
+                let expectedLengths = {
+                  taggings: associatedTaggingIds.length,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37708c73047613e2f35f","5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: originalWs.taggings.length,
+                  selections: originalWs.selections.length,
+                  comments: commentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+
+          });
+
+          describe('Not Including Folders', function() {
+            describe('Using Existing Folder Set', function() {
+              const folderSetInfo = {
+                folderSetId: "5bec409176124a776f2ff00e",
+                numFolders: 9
+              };
+
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: originalWs.responses.length,
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const associatedCommentIds = ["5bec375d8c73047613e2f35e","5bec37e38c73047613e2f366"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37708c73047613e2f35f","5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: commentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+            describe('Not Using Existing Folder Set', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: originalWs.responses.length,
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: originalWs.comments.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const associatedCommentIds = ["5bec375d8c73047613e2f35e","5bec37e38c73047613e2f366"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37708c73047613e2f35f","5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: originalWs.selections.length,
+                  comments: commentIds.length,
+                  responses: originalWs.responses.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    all: true,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+
+          });
+        });
+        describe('Copying Subset of Submissions', function() {
+          let submissionIds = [ "5bec36958c73047613e2f34d"];
+          let allSelectionIds = ["5bec37838c73047613e2f361", "5bec37a78c73047613e2f365"];
+          let allResponseIds = ["5bec6497aa4a927d50cd5b9b"];
+          let allCommentIds = ["5bec37a08c73047613e2f364", "5bec37e38c73047613e2f366"];
+          let allTaggingIds = ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368"];
+          describe('Including Folders', function () {
+            describe('Including structure only', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec37838c73047613e2f361"];
+                const associatedCommentIds = ["5bec37a08c73047613e2f364"];
+                const associatedResponseIds = ["5bec36958c73047613e2f34d"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: associatedResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: commentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: true,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+            describe('Including Folder Contents', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: allTaggingIds.length,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: allTaggingIds.length,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: allTaggingIds.length,
+                  selections: allSelectionIds.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec37838c73047613e2f361"];
+                const associatedCommentIds = ["5bec37a08c73047613e2f364"];
+                const associatedResponseIds = ["5bec36958c73047613e2f34d"];
+                const associatedTaggingIds = ["5bec38018c73047613e2f368"];
+                let expectedLengths = {
+                  taggings: associatedTaggingIds.length,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: associatedResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: allTaggingIds.length,
+                  selections: allSelectionIds.length,
+                  comments: commentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  includeStructureOnly: false,
+                  folderSetOptions: {
+                    doCreateFolderSet: false,
+                  },
+                  all: true,
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+
+          });
+
+          describe('Not Including Folders', function() {
+            describe('Using Existing Folder Set', function() {
+              const folderSetInfo = {
+                folderSetId: "5bec409176124a776f2ff00e",
+                numFolders: 9
+              };
+
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: allResponseIds.length,
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec37838c73047613e2f361"];
+                const associatedCommentIds = ["5bec37a08c73047613e2f364"];
+                const associatedResponseIds = ["5bec36958c73047613e2f34d"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: associatedResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: commentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: folderSetInfo.folderSetId,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths, folderSetInfo);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+            describe('Not Using Existing Folder Set', function() {
+              describe('All Selections, Comments, and Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: allResponseIds.length,
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections and Comments with No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: allCommentIds.length,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('All Selections with No Comments and No Responses', function() {
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: 0,
+                  responses: 0
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  none: true
+                },
+                responseOptions: {
+                  none: true
+                }
+              };
+                describe('Current user as owner', function () {
+                  let settings = {
+                    newOwnerId: _id,
+                    newWsName: newWsName,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as owner', function () {
+                  let settings = {
+                    newOwnerId: studentOwner,
+                    newWsName: `Tracy's copy`,
+                    newMode: originalWs.mode,
+                    permissions: []
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+
+                describe('Student as editor', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'editor'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+                describe('Student as view only collaborator', function () {
+                  let settings = {
+                    newOwnerId: _id,
+
+                    newWsName: `Tracy as Editor`,
+                    newMode: originalWs.mode,
+                    permissions: [{
+                      user: studentOwner,
+                      global: 'viewOnly'
+
+                    }]
+                  };
+                  let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                  makeCopyRequestAsync(request, lengths);
+                });
+              });
+              describe('Subset of selections with all comments/responses', function() {
+                const selectionIds = ["5bec37838c73047613e2f361"];
+                const associatedCommentIds = ["5bec37a08c73047613e2f364"];
+                const associatedResponseIds = ["5bec36958c73047613e2f34d"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: selectionIds.length,
+                  comments: associatedCommentIds.length,
+                  responses: associatedResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: false,
+                  selectionIds
+                },
+                commentOptions: {
+                  all: true,
+
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+              describe('Subset of comments with all selections/responses', function() {
+                // const selectionIds = ["5bec373d8c73047613e2f35c", "5bec37a78c73047613e2f365"];
+                const commentIds = ["5bec37a08c73047613e2f364"];
+                let expectedLengths = {
+                  taggings: 0,
+                  selections: allSelectionIds.length,
+                  comments: commentIds.length,
+                  responses: allResponseIds.length
+                };
+
+                let customConfig = {
+                  submissionOptions: {
+                    submissionIds,
+                },
+                folderOptions: {
+                  folderSetOptions: {
+                    existingFolderSetToUse: null,
+                  },
+                  all: false,
+                  none: true
+                },
+                selectionOptions: {
+                  all: true
+                },
+                commentOptions: {
+                  all: false,
+                  commentIds
+                },
+                responseOptions: {
+                  all: true
+                }
+              };
+              describe('Current user as owner', function () {
+                let settings = {
+                  newOwnerId: _id,
+                  newWsName: newWsName,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                //         let { taggings, selections, comments, responses } = expectedLengths;
+
+
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as owner', function () {
+                let settings = {
+                  newOwnerId: studentOwner,
+                  newWsName: `Tracy's copy`,
+                  newMode: originalWs.mode,
+                  permissions: []
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+
+              describe('Student as editor', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'editor'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              describe('Student as view only collaborator', function () {
+                let settings = {
+                  newOwnerId: _id,
+
+                  newWsName: `Tracy as Editor`,
+                  newMode: originalWs.mode,
+                  permissions: [{
+                    user: studentOwner,
+                    global: 'viewOnly'
+
+                  }]
+                };
+                let [request, lengths] = buildCustomRequest(settings, originalWs, customConfig, expectedLengths);
+                makeCopyRequestAsync(request, lengths);
+              });
+              });
+            });
+
           });
         });
       });
