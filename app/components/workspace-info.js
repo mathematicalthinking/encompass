@@ -127,21 +127,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('isChangingOwner', true);
     },
 
-    changeOwner: function (owner) {
-      if (!this.get('utils').isNonEmptyObject(owner)) {
-        return;
-      }
-      let workspace = this.get('workspace');
-      let username = owner.get('username');
-      workspace.set('owner', owner);
-      workspace.save().then((res) => {
-        this.set('isChangingOwner', false);
-        this.get('alert').showToast('success', `Owner is now ${username}`, 'bottom-end', 3000, null, false);
-      }).catch((err) => {
-        this.handleErrors(err, 'updateRecordErrors', workspace);
-      });
-    },
-
     setOwner(val, $item) {
       const workspace = this.get('workspace');
 
@@ -200,6 +185,9 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     saveWorkspace: function () {
       this.set('isEditing', false);
       let mode = this.get('selectedMode');
+      if (mode === 'org') {
+        console.log('changing workspace mode to org');
+      }
       let workspace = this.get('workspace');
       workspace.set('mode', mode);
       workspace.save().then((res) => {
