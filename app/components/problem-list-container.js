@@ -22,7 +22,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   privacySettingOptions: [
     {id: 1, label: 'All', value: ['M', 'O', 'E'], isChecked: true, icon: 'fas fa-list'},
     {id: 2, label: 'Public', value: ['O', 'E'], isChecked: false, icon: 'fas fa-globe-americas'},
-    {id: 3, label: 'Private', value: ['M'], isChecked: false, icon: 'fas fa-lock'},
+    {id: 3, label: 'Private', value: ['M'], isChecked: false, icon: 'fas fa-user'},
   ],
   adminFilterSelect:  {
     defaultValue: ['organization'],
@@ -233,7 +233,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                 label: "Public",
                 value: "everyone",
                 isChecked: false,
-                icon: "fas fa-globe",
+                icon: "fas fa-globe-americas",
               }
             }
           }
@@ -297,7 +297,7 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
                     value: "unshared",
                     isChecked: true,
                     isApplied: true,
-                    icon: 'fas fa-lock',
+                    icon: 'fas fa-user',
                   },
                   shared: {
                     label: "Public",
