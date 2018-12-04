@@ -259,7 +259,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
             icon: "fas fa-dot-circle"
           },
           fromOrg: {
-            label: `Created by ${currentUserOrgName} Members`,
+            label: `${currentUserOrgName} Workspaces`,
             value: "fromOrg",
             isChecked: true,
             isApplied: true,
@@ -373,22 +373,22 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
     filter.$or = [];
 
     if (secondaryValues) {
-      let includeOrgProblems = _.indexOf(secondaryValues, 'orgProblems') !== -1;
+      let includeOrgWorkspaces = _.indexOf(secondaryValues, 'orgProblems') !== -1;
       let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
 
-      if (!includeOrgProblems && !includeFromOrg) {
+      if (!includeOrgWorkspaces && !includeFromOrg) {
         this.set("criteriaTooExclusive", true);
         return;
       }
 
-      if (includeOrgProblems) {
+      if (includeOrgWorkspaces) {
         this.set("selectedMode", ["org"]);
         filter.$or.push({ organization: userOrgId });
       }
 
       if (includeFromOrg) {
         this.set('selectedMode', ['org', 'private', 'public']);
-        filter.$or.push({ owner: { organization: { $eq: userOrgId } } });
+        filter.includeFromOrg = true;
         //find all workspaces who's owner's org is same as yours
       }
 
