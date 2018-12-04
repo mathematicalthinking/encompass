@@ -11,6 +11,13 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   responseOptions: Ember.computed.alias('customConfig.responseOptions'),
   folderOptions: Ember.computed.alias('customConfig.folderOptions'),
   showStudentSubmissionInput: Ember.computed.equal('submissionOptions.byStudent', true),
+  showCustomSubmissionViewer: Ember.computed.equal('submissionOptions.custom', true),
+  customSubmissionIds: [],
+
+  didReceiveAttrs() {
+    // console.log('did receive attra ws-copy-custom-config');
+    this._super(...arguments);
+  },
 
   formattedSubmissionOptions: function() {
     let submissionOptions = {
@@ -22,9 +29,22 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     }
     delete submissionOptions.all;
 
-    submissionOptions.submissionIds = this.get('submissionsFromStudents').mapBy('id');
+    if (this.get('submissionOptions.byStudent')) {
+      submissionOptions.submissionIds = this.get('submissionsFromStudents').mapBy('id');
 
-    return submissionOptions;
+      return submissionOptions;
+    }
+
+    if (this.get('submissionOptions.custom')) {
+      const customIds = this.get('customSubmissionIds');
+      if (this.get('utils').isNonEmptyArray(customIds)) {
+        submissionOptions.submissionIds = customIds;
+      } else {
+        submissionOptions.submissionIds = [];
+      }
+      return submissionOptions;
+    }
+
 
   }.property('submissionOptions.all', 'submissionsFromStudents.[]'),
 
@@ -128,6 +148,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     submissionOptions: {
       all: true,
       byStudent: false,
+      custom: false,
       submissionIds: []
     },
     folderOptions: {
@@ -139,7 +160,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     selectionOptions: {
       all: true,
       none: false,
-      custom: false,
+      // custom: false,
       selectionIds: []
     },
     commentOptions: {
@@ -176,6 +197,15 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     if (this.get('submissionOptions.all')) {
       return this.get('workspace.submissions');
     }
+    if (this.get('submissionOptions.custom')) {
+      const customIds = this.get('customSubmissionIds');
+      if (!this.get('utils').isNonEmptyArray(customIds)) {
+        return [];
+      }
+      return this.get('workspace.submissions').filter((sub) => {
+        return customIds.includes(sub.get('id'));
+      });
+    }
     const threads = this.get('submissionThreads');
     const students = this.get('submissionStudents');
     if (!threads || !this.get('utils').isNonEmptyArray(students) ) {
@@ -185,13 +215,13 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       .map(student => threads.get(student))
       .flatten()
       .value();
-  }.property('submissionStudents.[]', 'submissionOptions.all', 'workspace.id', 'submissionThreads'),
+  }.property('submissionStudents.[]', 'customSubmissionIds.[]', 'submissionOptions.all', 'workspace.id', 'submissionOptions.custom', 'submissionOptions.byStudent', 'submissionThreads', 'doSelectAll', 'doDeselectAll'),
 
   selectionsFromSubmissions: function() {
     return this.get('workspace.selections').filter((selection) => {
-      return this.get('submissionsFromStudents').includes(selection.get('submission.content'));
+      return this.get('submissionIdsFromStudents').includes(selection.get('submission.content.id'));
     });
-  }.property('submissionsFromStudents.[]'),
+  }.property('submissionsFromStudents.[]', 'customSubmissionIds.[]'),
 
   commentsFromSelections: function() {
     if (this.get('selectionOptions.none') === true) {
@@ -247,7 +277,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       let keys = ['all', 'none', 'custom'];
 
       if (propName === 'submissionOptions') {
-        keys = ['all', 'byStudent'];
+        keys = ['all', 'byStudent', 'custom'];
       }
 
       if (!_.contains(keys, val)) {
@@ -276,6 +306,29 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     },
     back() {
       this.get('onBack')(-1);
+    },
+    updateCustomSubs(id) {
+      if (!this.get('utils').isNonEmptyArray(this.get('customSubmissionIds'))) {
+        this.set('customSubmissionIds', []);
+      }
+
+      const customSubmissionIds = this.get('customSubmissionIds');
+
+      const isIn = customSubmissionIds.includes(id);
+      if (isIn) {
+        // remove
+        customSubmissionIds.removeObject(id);
+      } else {
+        //add
+        customSubmissionIds.addObject(id);
+      }
+
+    },
+    selectAllSubmissions: function() {
+      this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
+    },
+    deselectAllSubmissions: function() {
+      this.set('customSubmissionIds', []);
     }
   },
 
