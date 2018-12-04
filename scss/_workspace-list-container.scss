@@ -57,8 +57,8 @@
       overflow: visible;
     }
     &.name {
-      @include flex-item(3, center, .24 0 auto);
-      width: 24%;
+      @include flex-item(3, center, .23 0 auto);
+      width: 23%;
       text-align: left;
     }
     &.last-viewed {
@@ -66,8 +66,8 @@
       width: 8%;
     }
     &.submissions {
-      @include flex-item(5, center, .07 0 auto);
-      width: 7%;
+      @include flex-item(5, center, .08 0 auto);
+      width: 8%;
     }
     &.selections {
       @include flex-item(6, center, .07 0 auto);
