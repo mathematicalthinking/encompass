@@ -15,7 +15,7 @@ const accessibleSubmissionsQuery = async function(user, ids) {
 
     let filter = {
       $and: [
-        { isTrashed: false }
+        { isTrashed: { $ne: true } }
       ]
     };
 
