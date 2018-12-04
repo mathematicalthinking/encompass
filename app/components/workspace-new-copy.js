@@ -11,7 +11,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   newWsPermissions: null,
   newFolderSetOptions: null,
   utils: Ember.inject.service('utility-methods'),
-  submissions: Ember.computed.alias('workspaceToCopy.submissions'),
   currentStep: {
     value: 1,
     display: 'Choose Workspace to Copy',
@@ -40,28 +39,37 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         }
       ]
     },
-  modeInputs: {
-    groupName: 'mode',
-    required: true,
-    inputs: [
-      {
-        value: 'private',
-        label: 'Private',
-      },
-      {
-        value: 'org',
-        label: 'My Org',
-      },
-      {
-        value: 'public',
-        label: 'Public',
-      },
-      {
-        value: 'internet',
-        label: 'Internet',
-      }
-    ]
-  },
+
+  modeInputs: function() {
+    let res = {
+      groupName: 'mode',
+      required: true,
+      inputs: [
+        {
+          value: 'private',
+          label: 'Private',
+        },
+        {
+          value: 'org',
+          label: 'My Org',
+        },
+        {
+          value: 'public',
+          label: 'Public',
+        },
+      ]
+    };
+
+    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin') ) {
+      return res;
+    }
+
+    res.inputs.push({
+      value: 'internet',
+      label: 'Internet',
+    });
+    return res;
+  }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
@@ -100,13 +108,12 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   }.property('newWsConfig', 'customConfig.folderOptions.@each{all,includeStructureOnly,none}'),
 
   submissionThreads: function() {
-
     if (!this.get('submissions')) {
       return [];
     }
     const threads = Ember.Map.create();
 
-    this.get('submissions.content')
+    this.get('submissions')
       .sortBy('student')
       .getEach('student')
       .uniq()
@@ -116,7 +123,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
           threads.set(student, submissions);
         }
       });
-
     return threads;
   }.property('submissions.[]'),
 
@@ -256,6 +262,23 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       });
     }
   },
+  handleSubmissionsLoadingMessage: function() {
+    const that = this;
+    if (!this.get('loadingSubmissions')) {
+      this.set('showLoadingSubmissions', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying) {
+        return;
+      }
+      if (!that.get('loadingSubmissions')) {
+        return;
+      }
+      that.set('showLoadingSubmissions', true);
+    }, 500);
+
+  }.observes('loadingSubmissions'),
 
   actions: {
     goToStep(stepValue) {
@@ -303,7 +326,19 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
       this.set('workspaceToCopy', workspace);
       this.set('defaultName', `Copy of ${workspace.get('name')}`);
-      this.set('currentStep', this.get('steps')[2]);
+
+      // start process of loading submissions - may need these for config step
+      // for large workspaces(i.e. 1000+ submissions - this could take a long time)
+      this.set('loadingSubmissions', true);
+      this.get('workspaceToCopy.submissions').then((submissions) => {
+        this.set('submissions', submissions);
+        this.set('loadingSubmissions', false);
+        this.set('currentStep', this.get('steps')[2]);
+      })
+      .catch((err) => {
+        this.set('loadingSubmissions', false);
+        this.handleErrors(err, 'loadSubmissionsError');
+      });
     },
 
     setConfig(config, customConfig) {
@@ -359,7 +394,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       }
 
       let baseOptions = {
-        answerOptions : { all: true },
+        submissionOptions : { all: true },
         folderOptions : {
           includeStructureOnly: true,
           folderSetOptions: this.get('newFolderSetOptions'),

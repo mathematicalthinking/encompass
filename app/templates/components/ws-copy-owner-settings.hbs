@@ -51,7 +51,7 @@ placeholder="Search users to choose as owner"}}
       <label>No</label>
 
       {{#if doCreateFolderSet}}
-        {{new-folderset-form name=folderSetName privacySetting=folderSetPrivacy}}
+        {{new-folderset-form nameErrors=folderSetNameErrors privacyErrors=folderSetPrivacySettingErrors name=folderSetName privacySetting=folderSetPrivacy}}
       {{/if}}
 
     {{else}}

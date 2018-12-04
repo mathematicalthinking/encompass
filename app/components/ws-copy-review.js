@@ -4,6 +4,9 @@ Encompass.WsCopyReviewComponent = Ember.Component.extend({
   actions: {
     next() {
       this.get('onProceed')();
+    },
+    back() {
+      this.get('onBack')(-1);
     }
   }
 

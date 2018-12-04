@@ -3,7 +3,16 @@
 
 {{radio-group options=submissionItems selectedValue=submissions}}
 {{#if showCustomSubmissions}}
-  <p>Use submission viewer component here</p>
+<ul>
+
+
+  {{#each workspace.submissions.content as |submission|}}
+    <li>
+       <input type="checkbox" checked={{is-in customSubmissionIds submission.id}} name="customIds" value={{submission.id}} onclick={{action "updateCustomSubs" submission.id}}>
+      <span>{{submission.id}} by {{submission.student}}</span>
+    </li>
+  {{/each}}
+  </ul>
 {{/if}}
 {{radio-group options=globalItems selectedValue=global}}
 
@@ -19,3 +28,4 @@
   <p class="error-message">Sorry, something went wrong. Please try again.</p>
 {{/if}}
 <button class="save-permissions" {{action "savePermissions"}}>Save User Permissions </button>
+<button {{action (mut selectedUser) null}}>Cancel</button>

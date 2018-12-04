@@ -1031,6 +1031,7 @@ function filterRequestedWorkspaceData(user, results) {
   * @returns {Object} A 'named' array of workspace objects by creator
   * @throws {RestError} Something? went wrong
   */
+ // eslint-disable-next-line complexity
  async function getWorkspaces(req, res, next) {
   var user = userAuth.requireUser(req);
   logger.info('in getWorkspaces');
@@ -1048,12 +1049,12 @@ function filterRequestedWorkspaceData(user, results) {
             let crit = {};
             let { organizations } = org;
 
-            if (organizations) {
+            if (apiUtils.isNonEmptyArray(organizations)) {
             if (!crit.$or) {
               crit.$or = [];
             }
-             crit.$or.push({organization: {$in: organizations}});
-           }
+              crit.$or.push({organization: {$in: organizations}});
+            }
 
            if (!filterBy.$and) {
              filterBy.$and = [];
@@ -1084,16 +1085,24 @@ function filterRequestedWorkspaceData(user, results) {
 
           let combined = _.flatten(ownerIds.concat(editorIds));
           let uniqueIds = _.uniq(combined);
-          searchFilter.$or.push({ _id: {$in: uniqueIds} });
+
+          if (apiUtils.isNonEmptyArray(uniqueIds)) {
+            searchFilter.$or.push({ _id: {$in: uniqueIds} });
+          }
 
 
         } else if (criterion === 'owner') {
           let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
-          searchFilter = {_id: {$in: ids}};
+
+          if (apiUtils.isNonEmptyArray(ids)) {
+            searchFilter = {_id: {$in: ids}};
+          }
 
         } else if (criterion === 'editors') {
           let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
-          searchFilter = {_id: {$in: ids}};
+          if (apiUtils.isNonEmptyArray(ids)) {
+            searchFilter = {_id: {$in: ids}};
+          }
 
         } else {
           query = query.replace(/\s+/g, "");
@@ -1124,8 +1133,10 @@ function filterRequestedWorkspaceData(user, results) {
           models.Workspace.count(criteria)
         ]);
       } else if (sortParam && sortableFields.includes(sortField)) {
-        results = await apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria);
-        itemCount = await models.Workspace.count(criteria);
+        [ results, itemCount ] = await Promise.all([
+          apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria),
+          models.Workspace.count(criteria)
+        ]);
       } else if (doCollate) {
         [results, itemCount] = await Promise.all([
           models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
@@ -1468,6 +1479,25 @@ async function postWorkspaceEnc(req, res, next) {
   } catch(err) {
     return utils.sendError.InternalError(err, res);
   }
+}
+function buildSubmissionsToClone(submissions, hash) {
+  // submissions is array of populated submission docs
+  if (!submissions || !_.isArray(submissions)) {
+    return;
+  }
+  let { all, none, submissionIds } = hash;
+
+  if (all) {
+    return [...submissions];
+  }
+
+  if (none || !apiUtils.isNonEmptyArray(submissionIds)) {
+    return [];
+  }
+
+  return _.filter(submissions, (submission) => {
+    return _.contains(submissionIds, submission._id.toString());
+  });
 }
 
 function buildAnswersToClone(answers, hash) {
@@ -2049,7 +2079,6 @@ function buildAnswerSetAndSubmissionsMap(originalWs) {
     }
     // all submissions (except currently 15 extraneous KenKen submissions) should have an associated Encompass answer record
     const subsWithAnswers = _.reject(submissions, (sub => apiUtils.isNullOrUndefined(sub.answer)));
-
     // return error if there are no answers associated with submissions
     if (!apiUtils.isNonEmptyArray(subsWithAnswers)) {
       error = 'This workspace does not have any answers';
@@ -2057,13 +2086,51 @@ function buildAnswerSetAndSubmissionsMap(originalWs) {
     }
 
 
-    answerSet = _.map(subsWithAnswers, (sub => {
-      submissionsMap[sub.answer._id] = sub;
+    answerSet = _.map(subsWithAnswers, ((sub) => {
+      let ansId = sub.answer._id;
+      if (submissionsMap[ansId]) {
+        submissionsMap[ansId].push(sub);
+      } else {
+        submissionsMap[sub.answer._id] = [sub];
+
+      }
       return sub.answer;
     }));
-
     return [null, answerSet, submissionsMap];
   }
+
+}
+
+function buildSubmissionSetAndSubmissionsMap(originalWs) {
+  // submissions map is used to keep track of the relationship between an submission and its submission
+  const submissionsMap = {};
+  let submissionSet;
+  let error = null;
+
+  // let results = [error, submissionSet, submissionsMap];
+
+    // use the original workspace's submissions array to get the submission pool
+    const submissions = originalWs.submissions;
+
+    // return error if there are no submissions (and thus submissions) to copy from original workspace
+    if (!apiUtils.isNonEmptyArray(submissions)) {
+      error = 'Workspace does not have any submissions to copy.';
+      return [error, null, null];
+    }
+    // all submissions (except currently 15 extraneous KenKen submissions) should have an associated Encompass answer record
+    const subsWithAnswers = _.reject(submissions, (sub => apiUtils.isNullOrUndefined(sub.answer)));
+    // return error if there are no submissions associated with submissions
+    if (!apiUtils.isNonEmptyArray(subsWithAnswers)) {
+      error = 'This workspace does not have any submissions';
+      return [error, null, null];
+    }
+
+    submissionSet = _.map(subsWithAnswers, ((sub) => {
+      submissionsMap[sub._id] = sub;
+
+      return sub;
+    }));
+    return [null, submissionSet, submissionsMap];
 
 }
 
@@ -2155,16 +2222,17 @@ async function cloneWorkspace(req, res, next) {
 
     // destructure options parameters
     // will be used to determine which records to copy
-    const { answerOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
+    const { submissionOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
 
     /*
-      answerSet is array of populated answer docs
-      submissionsMap is mapping between an answer and its corresponding submission
-      {
-        answerId: populatedSubmissionDoc
+      submissionSet is array of populated submission docs
+      submissionsMap is mapping between submissionId and populated submission doc
+       submissionId: populatedSubmissionDoc
       }
     */
-    let [ error, answerSet, submissionsMap] = buildAnswerSetAndSubmissionsMap(originalWs);
+    // let [ error, answerSet, submissionsMap] = buildAnswerSetAndSubmissionsMap(originalWs);
+
+    let [error, submissionSet, submissionsMap] = buildSubmissionSetAndSubmissionsMap(originalWs);
 
     if (error) {
       requestDoc.copyWorkspaceError = error;
@@ -2174,10 +2242,11 @@ async function cloneWorkspace(req, res, next) {
       return utils.sendResponse(res, data);
     }
 
-    // answersToClone is filtered answer docs based on request params
-    let answersToClone = buildAnswersToClone(answerSet, answerOptions);
+    // submissionsToClone is filtered submission docs based on request params
+    // let answersToClone = buildAnswersToClone(answerSet, answerOptions);
+    let submissionsToClone = buildSubmissionsToClone(submissionSet, submissionOptions);
 
-    if (!apiUtils.isNonEmptyArray(answersToClone)) {
+    if (!apiUtils.isNonEmptyArray(submissionsToClone)) {
       requestDoc.copyWorkspaceError = `There are no submissions to copy.`;
       let saved = await requestDoc.save();
       const data = { copyWorkspaceRequest: saved };
@@ -2200,37 +2269,42 @@ async function cloneWorkspace(req, res, next) {
       }
     */
     let submissionSels = {};
-
-    _.each(answersToClone, (ans => {
-      let sub = submissionsMap[ans._id];
-
-      if (sub) {
-        submissionsKey[sub._id] = true;
-
+    _.each(submissionsToClone, (sub => {
+      submissionsKey[sub._id] = true;
         if (apiUtils.isNonEmptyArray(sub.selections)) {
           _.each(sub.selections, (selId) => {
             submissionSels[selId] = true;
           });
-        }
       }
-    }));
 
+    }));
     // json objects that will be converted to mongoose docs and saved to db
     // does not handle copying of existing submissions' commments, selections, responses, etc
-    let subs = await answersToSubmissions(answersToClone);
+    // let subs = await answersToSubmissions(answersToClone);
     // convert sub json objects to mongoose docs and save
-    const submissions = await Promise.all(subs.map((obj) => {
-      let sub = new models.Submission(obj);
-      let ans = obj.answer.toString();
+
+    // create new submission records
+    const submissions = await Promise.all(submissionsToClone.map((obj) => {
+      // eslint-disable-next-line prefer-object-spread
+      const oldSubCopy = Object.assign({}, obj);
+
+      for (let prop of ['_id', 'workspaces', 'createdBy', 'createDate', 'lastModifiedDate']) {
+        if (oldSubCopy.hasOwnProperty(prop)) {
+          delete oldSubCopy[prop];
+        }
+      }
+      let sub = new models.Submission(oldSubCopy);
+      // let ans = obj.answer.toString();
       let newId = sub._id.toString();
 
       //eslint-disable-next-line prefer-object-spread
-      submissionsMap[newId] = Object.assign({}, submissionsMap[ans]);
-      delete submissionsMap[ans];
+      submissionsMap[newId] = obj;
+      delete submissionsMap[obj._id];
 
       sub.createdBy = user._id;
       sub.createDate = Date.now();
       sub.lastModifiedBy = user._id;
+      sub.lastModifiedDate = Date.now();
       return sub.save();
     }));
 
@@ -2332,14 +2406,14 @@ async function cloneWorkspace(req, res, next) {
       .map(sub => sub.responses)
       .flatten()
       .value();
-    const submissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
+    const newSubmissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
 
 
     const submissionIds = _.map(newSubsWithResponses, sub => sub._id);
 
     // set submissions and submissionSet on ws
     newWs.submissions = submissionIds;
-    newWs.submissionSet = submissionSet;
+    newWs.submissionSet = newSubmissionSet;
 
     /*
     returns {

@@ -21,7 +21,7 @@
 </div>
 
 {{#if showSelectWorkspace}}
-  {{ws-copy-workspace store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace onProceed=(action "setOriginalWorkspace")}}
+  {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace onProceed=(action "setOriginalWorkspace")}}
 {{/if}}
 
 {{#if showSelectConfig}}
@@ -37,7 +37,7 @@
 {{/if}}
 
 {{#if showReview}}
-  {{ws-copy-review onProceed=(action "createCopyRequest")}}
+  {{ws-copy-review onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
 {{/if}}
 
 

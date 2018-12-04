@@ -1,8 +1,14 @@
 <div class="new-folderset name">
   <p>Name</p>
   {{input id="folderset-name" type="text" value=name placeholder="Name for new folder set"}}
+  {{#each nameErrors as |error|}}
+    {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
+  {{/each}}
 </div>
 <div class="new-folderset privacy">
   <p>Privacy Setting</p>
   {{radio-group options=privacyInputs selectedValue=privacySetting}}
+  {{#each privacyErrors as |error|}}
+    {{error-box error=error showDismiss=true resetError=(action (mut privacyErrors) null)}}
+  {{/each}}
 </div>

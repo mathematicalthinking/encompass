@@ -4,7 +4,7 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
   utils: Ember.inject.service('utility-methods'),
 
   constraints: function() {
-    return {
+    let res = {
       name: {
         presence: { allowEmpty: false },
         length: { maximum: 500 },
@@ -25,9 +25,26 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
           within: [true, false],
           message: ''
         }
+      },
+    };
+
+    if (!this.get('doCreateFolderSet')) {
+      return res;
+    }
+
+    res.folderSetName = {
+      presence: { allowEmpty: false },
+      length: { maximum: 500 },
+    };
+
+    res.folderSetPrivacySetting = {
+      inclusion: {
+        within: ['M', 'O', 'E'],
       }
     };
-  }.property('validModeValues'),
+    return res;
+
+  }.property('validModeValues', 'doCreateFolderSet'),
 
   validModeValues: function() {
     const modeInputs = this.get('modeInputs.inputs');
@@ -104,11 +121,21 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       const name = this.get('selectedName');
       const owner = this.get('selectedOwner');
       const mode = this.get('selectedMode');
-
+      const folderSetName = this.get('folderSetName');
+      const folderSetPrivacySetting = this.get('folderSetPrivacy');
 
       const doCreateFolderSet = this.get('doCreateFolderSet');
 
-      const errors = window.validate({name, owner, mode, doCreateFolderSet}, this.get('constraints'));
+      // clear old values if the 'No' radio button is selected and next is hit
+      let errors;
+
+      if (!doCreateFolderSet) {
+        this.set('folderSetName', null);
+        this.set('folderSetPrivacy', null);
+        errors = window.validate({name, owner, mode, doCreateFolderSet}, this.get('constraints'));
+      } else {
+        errors = window.validate({name, owner, mode, doCreateFolderSet, folderSetName, folderSetPrivacySetting }, this.get('constraints'));
+      }
 
       if (this.get('utils').isNonEmptyObject(errors)) {
         for (let key of Object.keys(errors)) {
@@ -118,16 +145,11 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
         return;
       }
 
-      // clear old values if the 'No' radio button is selected and next is hit
-      if (!doCreateFolderSet) {
-        this.set('folderSetName', null);
-        this.set('folderSetPrivacy', null);
-      }
       const folderSetOptions = {
         doCreateFolderSet: doCreateFolderSet,
         existingFolderSetToUse: this.get('existingFolderSetToUse.id'),
-        name: this.get('folderSetName'),
-        privacySetting: this.get('folderSetPrivacy')
+        name: folderSetName,
+        privacySetting: folderSetPrivacySetting
       };
 
       this.get('onProceed')(name, owner, mode, folderSetOptions);
