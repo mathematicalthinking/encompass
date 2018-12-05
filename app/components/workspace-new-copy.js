@@ -490,6 +490,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
           }
         })
         .catch((err) => {
+          this.set('isRequestInProgress', false);
           this.handleErrors(err, 'serverErrors');
         });
 
