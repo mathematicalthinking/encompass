@@ -270,50 +270,73 @@ function sendWorkspace(req, res, next) {
   * @howto Ideally we'd send back the workspace with all of it's dependencies.
            It's sending back way too much data right now
   */
-function putWorkspace(req, res, next) {
-  var user = userAuth.requireUser(req);
+async function putWorkspace(req, res, next) {
+  try {
+    const user = userAuth.requireUser(req);
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
+  const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec();
 
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if(!access.get.workspace(user, ws)) {
-      logger.info("permission denied");
-      res.status(403).send("You don't have permission to modify this workspace");
-      // res.send(403, "You don't have permission to modify this workspace"); deprecated
-      if (err) {
-        console.log('putWorkspace error is', err);
-      }
-    } else {
-      models.Workspace.findById(req.params.id).exec(function(err, ws){
-        ws.editors = req.body.workspace.editors;
-        ws.mode    = req.body.workspace.mode;
-        ws.name = req.body.workspace.name;
-        ws.owner = req.body.workspace.owner;
-        ws.lastViewed = new Date();
-        ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
-        ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
-        ws.permissions = req.body.workspace.permissions;
-        ws.organization = req.body.workspace.organization;
+  if (apiUtils.isNullOrUndefined(popWs || popWs.isTrashed)) {
+    return utils.sendResponse(res, null);
+  }
+  if(!access.get.workspace(user, popWs)) {
+    logger.info("permission denied");
+    // res.status(403).send("You don't have permission to modify this workspace");
+    return utils.sendError.NotAuthorizedError("You don't have permission to modify this workspace", res);
+    // res.send(403, "You don't have permission to modify this workspace"); deprecated
+  }
 
-        // only admins or ws owner should be able to trash ws
-        if (user.accountType === 'A' || user.id === ws.owner.toString()) {
-          ws.isTrashed = req.body.workspace.isTrashed;
-        }
+  const ws = await models.Workspace.findById(req.params.id).exec();
 
-        if (err) {
-          console.log('error', err);
-        }
-
-        ws.save(function(err, workspace) {
-          if (err) {
-            return utils.sendError.InternalError(err, res);
-          }
-          utils.sendResponse(res, {workspace: workspace});
-        });
-      });
-
+  const originalPermissions = ws.permissions;
+    let originalCollabIds = [];
+    if (apiUtils.isNonEmptyArray(originalPermissions)) {
+      originalCollabIds = _.chain(originalPermissions)
+      .filter(obj => !apiUtils.isNullOrUndefined(obj.user))
+      .map(obj => obj.user.toString())
+      .value();
     }
-  });
+
+    // should we be validating these before setting?
+    ws.editors = req.body.workspace.editors;
+    ws.mode    = req.body.workspace.mode;
+    ws.name = req.body.workspace.name;
+    ws.owner = req.body.workspace.owner;
+    ws.lastViewed = new Date();
+    ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
+    ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
+    ws.permissions = req.body.workspace.permissions;
+    ws.organization = req.body.workspace.organization;
+
+    // only admins or ws owner should be able to trash ws
+    // this check should be done for mode, name, owner, organization, and permissions(?)
+    if (user.accountType === 'A' || user.id === ws.owner.toString()) {
+      ws.isTrashed = req.body.workspace.isTrashed;
+    }
+
+    const savedWorkspace = await ws.save();
+    const wsPermissions = savedWorkspace.permissions;
+
+      if (_.isArray(wsPermissions)) {
+
+        const newCollabIds = _.chain(wsPermissions)
+        .filter(obj => !apiUtils.isNullOrUndefined(obj.user))
+        .map(obj => obj.user.toString())
+        .value();
+
+        let removedCollabs = _.difference(originalCollabIds, newCollabIds);
+        console.log('removedCollabs', removedCollabs);
+        // remove workspace from users' collabWorkspaces if they were removed as collab
+        await models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
+        }
+      return utils.sendResponse(res, {workspace: savedWorkspace});
+
+  }catch(err) {
+    console.error(`Error putWorkspace: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 
@@ -1806,6 +1829,13 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       taggings: [],
       folderSet: null
     };
+
+    // verify before destructuring
+    if (!apiUtils.isNonEmptyObject(options) || !apiUtils.isNonEmptyObject(wsInfo)) {
+      return results;
+    }
+
+    // if oldFolderIds is not a nonEmptyArray, return results
     /*
     wsInfo = {
      originalWsId
@@ -1813,13 +1843,15 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
      newWsOwner
    };
     */
+   const areOldIdsToCopy = apiUtils.isNonEmptyArray(oldFolderIds);
 
     const { originalWsId } = wsInfo;
 
     let { includeStructureOnly, all, none, folderSetOptions } = options;
     let folderIdsToCopy;
 
-    if (none) {
+    if (none || !areOldIdsToCopy) {
+      // return right away if no folderIds to copy and user did not request to use an existing folder set
       if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
         return results;
       }
@@ -1835,6 +1867,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       }
       return results;
     } else {
+      // copying all old folders
       folderIdsToCopy = all ? [...oldFolderIds] : [];
     }
 
@@ -1858,15 +1891,13 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       return results;
 
     } else {
+      // copying contents of folders as well
       taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
       let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
 
       results.folders = folderIds;
       results.taggings = taggingIds;
       return results;
-      // need to copy folder AND taggings (and selections)
-      // and create new folder
-      // make new folderSet too?
     }
   }catch(err) {
     console.error(`Error handleNewFolders: ${err}`);
@@ -2122,7 +2153,6 @@ function buildSubmissionSetAndSubmissionsMap(originalWs) {
 
     // use the original workspace's submissions array to get the submission pool
     const submissions = originalWs.submissions;
-
     // return error if there are no submissions (and thus submissions) to copy from original workspace
     if (!apiUtils.isNonEmptyArray(submissions)) {
       error = 'Workspace does not have any submissions to copy.';
