@@ -1111,8 +1111,8 @@ function filterRequestedWorkspaceData(user, results) {
             searchFilter.$or.push({[prop]: regex});
           }
           let [ownerIds, editorIds] = await Promise.all([
-            await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
-            await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
+            apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
+            apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
           ]);
 
 
