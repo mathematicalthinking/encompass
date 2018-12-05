@@ -1830,6 +1830,11 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       folderSet: null
     };
 
+    // verify before destructuring
+    if (!apiUtils.isNonEmptyObject(options) || !apiUtils.isNonEmptyObject(wsInfo)) {
+      return results;
+    }
+
     // if oldFolderIds is not a nonEmptyArray, return results
     /*
     wsInfo = {
@@ -1844,7 +1849,9 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     let { includeStructureOnly, all, none, folderSetOptions } = options;
     let folderIdsToCopy;
+
     if (none || !areOldIdsToCopy) {
+      // return right away if no folderIds to copy and user did not request to use an existing folder set
       if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
         return results;
       }
@@ -1860,6 +1867,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       }
       return results;
     } else {
+      // copying all old folders
       folderIdsToCopy = all ? [...oldFolderIds] : [];
     }
 
@@ -1883,15 +1891,13 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       return results;
 
     } else {
+      // copying contents of folders as well
       taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
       let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
 
       results.folders = folderIds;
       results.taggings = taggingIds;
       return results;
-      // need to copy folder AND taggings (and selections)
-      // and create new folder
-      // make new folderSet too?
     }
   }catch(err) {
     console.error(`Error handleNewFolders: ${err}`);
