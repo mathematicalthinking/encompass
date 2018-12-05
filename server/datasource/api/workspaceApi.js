@@ -2181,7 +2181,7 @@ async function cloneWorkspace(req, res, next) {
     // check if user has permission to copy this workspace
     // console.log('clone request options', JSON.stringify(req.body));
     const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
-    console.log('CWR', JSON.stringify(copyWorkspaceRequest, null, 2));
+    // console.log('CWR', JSON.stringify(copyWorkspaceRequest, null, 2));
     if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
       return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
     }
