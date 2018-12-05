@@ -230,7 +230,7 @@ function putComment(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws, 'comments', 3)) {
+    if(_.isEqual(user.id, req.body.comment.createdBy) || wsAccess.canModify(user, ws, 'comments', 3)) {
 
       models.Comment.findById(req.params.id,
         function (err, doc) {
