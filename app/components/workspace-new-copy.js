@@ -294,6 +294,23 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     }, 500);
 
   }.observes('loadingSubmissions'),
+  handleInProgressRequest: function() {
+    const that = this;
+    if (!this.get('isRequestInProgress')) {
+      this.set('showRequestLoading', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying) {
+        return;
+      }
+      if (!that.get('isRequestInProgress')) {
+        return;
+      }
+      that.set('showRequestLoading', true);
+    }, 500);
+
+  }.observes('isRequestInProgress'),
 
   actions: {
     goToStep(stepValue) {
@@ -454,9 +471,10 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         }
       }
       copyRequest = this.get('store').createRecord('copyWorkspaceRequest', requestSource);
-
+      this.set('isRequestInProgress', true);
       copyRequest.save()
         .then((result) => {
+          this.set('isRequestInProgress', false);
           const error = result.get('copyWorkspaceError');
           if (error) {
             this.set('copyWorkspaceError', error);
@@ -466,6 +484,9 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
           if (createdWorkspace) {
             this.sendAction('toWorkspace', createdWorkspace);
+          } else {
+            // something went wrong?
+            this.set('copyWorkspaceError', 'Sorry, there was an unknown error.');
           }
         })
         .catch((err) => {

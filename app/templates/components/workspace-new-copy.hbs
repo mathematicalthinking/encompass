@@ -37,7 +37,7 @@
 {{/if}}
 
 {{#if showReview}}
-  {{ws-copy-review onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+  {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
 {{/if}}
 
 
