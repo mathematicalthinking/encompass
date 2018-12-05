@@ -5,7 +5,7 @@
   */
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
-
+const _ = require('underscore');
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
@@ -156,7 +156,7 @@ function putTagging(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws, 'folders', 4)) {
+    if(_.isEqual(user.id, req.body.tagging.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {
           if(err) {

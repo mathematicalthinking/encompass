@@ -30,12 +30,15 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   showSelectionFolders: true,
 
   showSubmissionSelectionsStuff: Ember.computed.or('showSubmissionSelectionsComments', 'showSubmissionSelectionsFolders'),
+  permissions: Ember.inject.service('workspace-permissions'),
 
   canEdit: function() {
-    var user = this.get('currentUser'),
-        ws   = this.get('currentWorkspace');
+    // var user = this.get('currentUser'),
+    //     ws   = this.get('currentWorkspace');
 
-    return Permissions.userCan(user, ws, "SELECTIONS");
+    // return Permissions.userCan(user, ws, "SELECTIONS");
+    const workspace = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(workspace, 'folders', 4);
   }.property('currentUser', 'currentWorkspace'),
 
   evidence: function() {
