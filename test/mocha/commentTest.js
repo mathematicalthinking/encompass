@@ -119,7 +119,7 @@ describe('Comment CRUD operations by account type', async function() {
           });
         });
 
-        describe('/PUT update comment text', () => {
+        xdescribe('/PUT update comment text', () => {
           let changeTextMsg = 'should change the text field to "this is a test"';
           let failMissingFieldsMsg= 'should fail to update because of missing required fields';
           let commentId;
