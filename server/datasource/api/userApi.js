@@ -241,8 +241,9 @@ function postUser(req, res, next) {
     if (user.actingRole === 'student') {
       models.User.findByIdAndUpdate(
         req.params.id,
-        /* actingRole students can only update their actingRole */
-        { actingRole: req.body.user.actingRole },
+        /* actingRole students can only update their actingRole and seenTour */
+        { actingRole: req.body.user.actingRole,
+          seenTour : req.body.user.seenTour },
         { new: true }
       ).exec((err, doc) => {
         if (err) {

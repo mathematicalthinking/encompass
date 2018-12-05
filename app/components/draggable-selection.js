@@ -1,6 +1,6 @@
 require('app/components/Draggable');
 
-Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDrop.Draggable, {
+Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDrop.Draggable, Encompass.CurrentUserMixin, {
   dragStart: function(event) {
     this._super(event);
     var dataTransfer = event.originalEvent.dataTransfer;
@@ -29,6 +29,12 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
     // Let the controller know this view is done dragging
     this.set('selection.isDragging', false);
   },
+
+  canDelete: function() {
+    const currentUserId = this.get('currentUser.id');
+    const creatorId = this.get('selection.createdBy.id');
+    return currentUserId === creatorId || this.get('canDeleteSelections');
+  }.property('canDeleteSelections', 'selection.createdBy.id', 'currentUser.id'),
 
   actions: {
     deleteSelection: function( selection ){

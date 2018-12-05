@@ -1,14 +1,20 @@
 {{! TODO: restore drag an drop, see original ../folder.hbs}}
 <div class="folder draggable">
 		{{#if this.editFolderMode}}
-		  {{#if model.parent}}
-        <span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
-      {{/if}}
+		  {{#if canEditFolders}}
+				{{#if model.parent}}
+        	<span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
+      	{{/if}}
 		  <span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
 		  <span {{action 'moveDown' model target=folderList}} class="al_wtf move_down"></span>
                               {{! Need to send askToDelete action to folder-list to confirm deletion }}
-			<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
-      {{input value=model.name focus-out='editFolderName' size=10}}
+			{{/if}}
+			{{#if canDeleteFolder}}
+				<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
+			{{/if}}
+			{{#if canEditFolder}}
+      	{{input value=model.name focus-out='editFolderName' size=10}}
+			{{/if}}
 			{{#each updateRecordErrors as |error|}}
     		<p class="error-message">{{error}}</p>
   		{{/each}}
@@ -56,7 +62,10 @@
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped}}
+        {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped
+				canEditFolders=canEditFolders
+      	canDeleteFolders=canDeleteFolders
+				}}
       {{/each}}
     </ul>
 {{/if}}

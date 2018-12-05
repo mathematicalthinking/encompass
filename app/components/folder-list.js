@@ -18,20 +18,37 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   sortProperties: ['weight', 'name'],
   createRecordErrors: [],
   updateRecordErrors: [],
+  permissions: Ember.inject.service('workspace-permissions'),
 
 
   canManageFolders: function() {
-    let workspace = this.workspace;
-    let owner = workspace.get('owner').get('id');
-    let editors = workspace.get('editors');
-    let currentUser = this.get('currentUser');
-    let accountType = currentUser.get('accountType');
-    let isAdmin = accountType === "A";
-    let isOwner = currentUser.get('id') === owner;
-    let isEditor = editors.includes(currentUser);
+    // let workspace = this.workspace;
+    // let owner = workspace.get('owner').get('id');
+    // let editors = workspace.get('editors');
+    // let currentUser = this.get('currentUser');
+    // let accountType = currentUser.get('accountType');
+    // let isAdmin = accountType === "A";
+    // let isOwner = currentUser.get('id') === owner;
+    // let isEditor = editors.includes(currentUser);
 
-    return isAdmin || isEditor || isOwner;
-  }.property('currentUser', 'workspace.owner', 'workspace.editors.[].username'),
+    // return isAdmin || isEditor || isOwner;
+    return this.get('canCreate') || this.get('canEdit') || this.get('canDelete');
+  }.property('canCreate', 'canDelete', 'canEdit'),
+
+  canCreate: function() {
+    let ws = this.get('workspace');
+    return this.get('permissions').canEdit(ws, 'folders', 2);
+  }.property('workspace.id', 'currentUser.id'),
+
+  canEdit: function() {
+    let ws = this.get('workspace');
+    return this.get('permissions').canEdit(ws, 'folders', 3);
+  }.property('workspace.id', 'currentUser.id'),
+
+  canDelete: function() {
+    let ws = this.get('workspace');
+    return this.get('permissions').canEdit(ws, 'folders', 4);
+  }.property('workspace.id', 'currentUser.id'),
 
   init: function() {
     this._super(...arguments);

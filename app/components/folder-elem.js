@@ -15,7 +15,7 @@
  * - Replace folderList reference with a passed in action.
  * - drag folder out, then put back in - it won't go back in until you refresh.  Ember seems to be sending the correct data to the server api.
  */
-Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, Encompass.ErrorHandlingMixin, {
+Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, Encompass.ErrorHandlingMixin, Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
   tagName: 'li',
   classNames: ['folderItem'],
@@ -27,6 +27,26 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   init: function() {
     this._super(...arguments);
   },
+
+  canDeleteFolder: function() {
+    const creator = this.model.get('createdBy.id');
+    const currentUser = this.get('currentUser.id');
+
+    if (Ember.isEqual(creator, currentUser)) {
+      return true;
+    }
+    return this.get('canDeleteFolders');
+
+  }.property('currentUser.id', 'canDeleteFolders','model.createdBy.id'),
+  canEditFolder: function() {
+    const creator = this.model.get('createdBy.id');
+    const currentUser = this.get('currentUser.id');
+
+    if (Ember.isEqual(creator, currentUser)) {
+      return true;
+    }
+    return this.get('canEditFolders');
+  }.property('currentUser.id','model.createdBy.id', 'canEditFolders'),
 
   containsCurrentSubmission: function(){
     const submissions = this.model.get('submissions');
