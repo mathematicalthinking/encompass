@@ -2,7 +2,23 @@
 Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
   elementId: 'ws-copy-permissions',
   utils: Ember.inject.service('utility-methods'),
-  permissions: [],
+
+  didReceiveAttrs() {
+    // set already saved permissions in case user went back to previous step and then came back to permissions
+    const newWsPermissions = this.get('newWsPermissions');
+    if (_.isArray(newWsPermissions)) {
+      this.set('permissions', [...newWsPermissions]);
+    } else {
+      this.set('permissions', []);
+    }
+    this._super(...arguments);
+  },
+
+  willDestroyElement() {
+    // clearing permissions as potential fix to issue of phantom collaborators displaying
+    this.set('permissions', []);
+    this._super(...arguments);
+  },
 
   actions: {
     setCollaborator(val, $item) {

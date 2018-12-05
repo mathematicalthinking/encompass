@@ -33,7 +33,7 @@
 {{/if}}
 
 {{#if showPermissions}}
-  {{ws-copy-permissions workspace=workspaceToCopy store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+  {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
 {{/if}}
 
 {{#if showReview}}
