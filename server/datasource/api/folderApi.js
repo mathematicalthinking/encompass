@@ -7,6 +7,7 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -181,7 +182,7 @@ function putFolder(req, res, next) {
       return utils.sendError.InternalError(err, res);
     }
     logger.warn("PUTTING FOLDER: " + JSON.stringify(req.body.folder) );
-    if(wsAccess.canModify(user, ws, 'folders', 3)) {
+    if(_.isEqual(user.id, req.body.folder.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
       models.Folder.findById(req.params.id,
         function (err, doc) {
           if(err) {
