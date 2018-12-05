@@ -10,7 +10,9 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
 
   canDelete: function () {
     let ws = this.get('currentWorkspace');
-    return this.get('permissions').canEdit(ws, 'comments', 4);
+    const currentUserId = this.get('currentUser.id');
+    const creatorId = this.get('comment.createdBy.id');
+    return currentUserId === creatorId || this.get('permissions').canEdit(ws, 'comments', 4);
   }.property('currentWorkspace.id', 'comment.workspace.id'),
 
   permittedToComment: function () {
