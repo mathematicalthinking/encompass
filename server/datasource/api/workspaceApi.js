@@ -1806,6 +1806,8 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       taggings: [],
       folderSet: null
     };
+
+    // if oldFolderIds is not a nonEmptyArray, return results
     /*
     wsInfo = {
      originalWsId
@@ -1813,13 +1815,13 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
      newWsOwner
    };
     */
+   const areOldIdsToCopy = apiUtils.isNonEmptyArray(oldFolderIds);
 
     const { originalWsId } = wsInfo;
 
     let { includeStructureOnly, all, none, folderSetOptions } = options;
     let folderIdsToCopy;
-
-    if (none) {
+    if (none || !areOldIdsToCopy) {
       if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
         return results;
       }
