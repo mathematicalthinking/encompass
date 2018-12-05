@@ -4,7 +4,10 @@
   <div class="dropZone" style="height:10px;"></div>
   <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
-      {{folder-elem model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection }}
+      {{folder-elem model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection
+      canEditFolders=canEdit
+      canDeleteFolders=canDelete
+      }}
     {{/each}}
   </ul>
   <div class="dropZone" style="height:10px;"></div>
