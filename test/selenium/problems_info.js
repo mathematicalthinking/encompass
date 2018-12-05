@@ -295,7 +295,7 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, topLink);
               await helpers.findAndClickElement(driver, 'li.filter-mine label.radio-label');
               await helpers.waitForAndClickElement(driver, '#problem-list-ul li:first-child .item-section.name span:first-child');
-              await driver.sleep(500);
+              await driver.sleep(5000);
             });
 
             describe(`Checking the following is always visible`, function () {
@@ -332,12 +332,6 @@ describe('Problems Info', async function () {
                 });
                 expect(await helpers.checkSelectorsExist(driver, selectors)).to.be.true;
               });
-
-              it('should show the applicable action buttons', async function () {
-                expect(await helpers.isElementVisible(driver, css.problemEdit.deleteButton)).to.be.true;
-                expect(await helpers.isElementVisible(driver, css.problemEdit.cancelButton)).to.be.true;
-                expect(await helpers.isElementVisible(driver, css.problemEdit.saveButton)).to.be.true;
-              });
             });
 
             describe(`Checking general page can edit info`, function () {
@@ -369,6 +363,12 @@ describe('Problems Info', async function () {
                   expect(await helpers.isElementVisible(driver, css.problemEdit.problemStatus)).to.be.true;
                   await helpers.findInputAndType(driver, css.problemEdit.problemStatus, 'pending', true);
                 }
+              });
+
+              it('should show the applicable action buttons', async function () {
+                expect(await helpers.isElementVisible(driver, css.problemEdit.deleteButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemEdit.cancelButton)).to.be.true;
+                expect(await helpers.isElementVisible(driver, css.problemEdit.saveButton)).to.be.true;
               });
             });
 
