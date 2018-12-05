@@ -116,8 +116,11 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         return false;
       }
     }
-    return true;
-  }.property('newWsConfig', 'customConfig.folderOptions.@each{all,includeStructureOnly,none}'),
+    // make sure chosen workspace has any folders to copy
+
+    const foldersLength = this.get('workspaceToCopy.foldersLength');
+    return foldersLength > 0;
+  }.property('newWsConfig', 'workspaceToCopy.foldersLength', 'customConfig.folderOptions.@each{all,includeStructureOnly,none}'),
 
   submissionThreads: function() {
     if (!this.get('submissions')) {
