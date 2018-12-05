@@ -78,7 +78,8 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
             permissions.removeObject(objToRemove);
             const collaborators = this.get('originalCollaborators');
             collaborators.removeObject(user);
-            this.get('alert').showToast('success', `${user.get('username')} removed`, 'bottom-end', 3000, null, false);
+            // this.get('alert').showToast('success', `${user.get('username')} removed`, 'bottom-end', 3000, null, false);
+            // remove workspace from user's collab workspaces
           }
         });
         }
