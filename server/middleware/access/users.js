@@ -3,6 +3,7 @@ const _ = require('underscore');
 const utils = require('./utils');
 const models = require('../../datasource/schemas');
 const problemsAccess = require('./problems');
+const apiUtils = require('../../datasource/api/utils');
 
 module.exports.get = {};
 module.exports.put = {};
@@ -201,6 +202,95 @@ const modifiableUserCriteria = function(user) {
   }
 };
 
+const canModifyUser = async function(user, userIdToModify) {
+  if (!apiUtils.isNonEmptyObject(user)) {
+    return false;
+  }
+  const { id, accountType, actingRole } = user;
+
+  const isStudent = accountType === 'S' || actingRole === 'student';
+
+  // admins can always modify any user
+  if (accountType === 'A' && !isStudent) {
+    return true;
+  }
+
+  // can always modify self
+  if (_.isEqual(id, userIdToModify)) {
+    return true;
+  }
+  const criteria = await modifiableUserCriteria(user);
+  const modifiableUsers = await models.User.find(criteria, {_id: 1}).lean().exec();
+  const userIds = modifiableUsers.map(obj => obj._id.toString());
+
+  return _.contains(userIds, userIdToModify);
+
+};
+
+
+// const userConstraints = {
+//   createdBy: {
+//     format: {
+//       pattern: "^[0-9a-fA-F]{24}$",
+//       message: "must be valid ObjectId"
+//     }
+//   },
+//   _id: {
+//     format: {
+//       pattern: "^[0-9a-fA-F]{24}$",
+//       message: "must be valid ObjectId"
+//     }
+//   },
+//   lastModifiedBy: {
+//     format: {
+//       pattern: "^[0-9a-fA-F]{24}$",
+//       message: "must be valid ObjectId"
+//     }
+//   }
+// };
+
+// const parseUserPutRequestBody = function(user, body) {
+//   const results = {
+//     updateHash: {},
+//     errors: []
+//   };
+
+
+//   if (!apiUtils.isNonEmptyObject(user)) {
+//     results.errors.push('Invalid user');
+//     return results;
+//   }
+//   if (!apiUtils.isNonEmptyObject(body)) {
+//     results.errors.push('Invalid Put Request body');
+//     return results;
+//   }
+
+//   // uneditable
+//   delete body.username;
+//   delete body.createDate;
+//   delete body.key;
+
+//   const { accountType, actingRole } = user;
+
+//   results.updateHash.seenTour = body.seenTour;
+//   // does everyone need to be able to update lastModifiedBy?
+//   results.updateHash.lastModifiedBy = body.lastModifiedBy;
+//   results.updateHash.lastModifiedDate = body.lastModifiedDate;
+
+//   // student accounts can currently only update their own seenTour
+//   if (accountType === 'S') {
+//     return results;
+//   }
+
+//   // actingRole student can only update seenTour and actingRole
+//   if (actingRole === 'S') {
+//     results.updateHash.actingRole = body.actingRole;
+//     return results;
+//   }
+
+// };
+
 module.exports.get.users = accessibleUsersQuery;
 module.exports.get.user = canGetUser;
 module.exports.put.user = modifiableUserCriteria;
+module.exports.canModifyUser = canModifyUser;
