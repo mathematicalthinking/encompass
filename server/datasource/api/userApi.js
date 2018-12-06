@@ -273,7 +273,7 @@ function postUser(req, res, next) {
       let recipient = updatedUser.email;
       if (recipient) {
           // send email but do not wait for success to return user response
-        auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized');
+        auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized', null, updatedUser);
 
         }
       }

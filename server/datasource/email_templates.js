@@ -1,5 +1,5 @@
 
-const resetTokenEmail = function(recipient, host, token) {
+const resetTokenEmail = function(recipient, host, token, user) {
   if (!recipient) {
     return;
   }
@@ -13,7 +13,7 @@ const resetTokenEmail = function(recipient, host, token) {
   };
 };
 
-const confirmEmailAddress = function(recipient, host, token) {
+const confirmEmailAddress = function(recipient, host, token, user) {
   if (!recipient) {
     return;
   }
@@ -30,7 +30,7 @@ const confirmEmailAddress = function(recipient, host, token) {
   };
 };
 
-const newlyAuthorized = function(recipient, host, token) {
+const newlyAuthorized = function(recipient, host, token, user) {
   if (!recipient) {
     return;
   }
@@ -44,15 +44,25 @@ const newlyAuthorized = function(recipient, host, token) {
   };
 };
 
-const newUserNotification = function(recipient, host, token) {
+const newUserNotification = function(recipient, host, token, user) {
   if (!recipient) {
     return;
   }
+  let username;
+
+
+  if (user) {
+    username = user.username;
+  } else {
+    username = '';
+  }
+
+
   return {
     to: recipient,
     from: 'encompassmath@gmail.com',
     subject: 'A new user has registered an EnCoMPASS account',
-    text: `A new user just signed up for an EnCoMPASS account and is waiting to be authorized. Please visit http://${host}/ to login and navigate to the users portal to view users that are waiting for authorization.`
+    text: `A new user (username: ${username}) just signed up for an EnCoMPASS account and is waiting to be authorized. Please visit http://${host}/ to login and navigate to the users portal to view users that are waiting for authorization.`
   };
 };
 
