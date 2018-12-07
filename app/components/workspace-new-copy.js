@@ -494,6 +494,11 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
           this.handleErrors(err, 'serverErrors');
         });
 
-    }
+    },
+    toggleMenu: function () {
+      $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+      $('#filter-list-side').addClass('animated slideInLeft');
+    },
   }
 });

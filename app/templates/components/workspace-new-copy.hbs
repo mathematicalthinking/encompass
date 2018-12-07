@@ -1,69 +1,93 @@
-<div class="header">
-  <h3>Create a copy of an existing workspace</h3>
-</div>
-
-<div class="ws-copy-details">
-  <ul>
-    {{#each detailsItems as |item|}}
-      {{details-list-item
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <div class="filter-items">
+      <h2>Summary</h2>
+      <ul>
+        {{#each detailsItems as |item|}}
+        {{details-list-item
         label = item.label
         displayValue = item.displayValue
         propName = item.propName
         editValue = (action "goToStep")
         associatedStep=item.associatedStep
-      }}
-    {{/each}}
-  </ul>
+        }}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex-item-full list-view">
+    <div class="list-container">
+
+      <div class="header">
+        <h3>Create a copy of an existing workspace</h3>
+      </div>
+
+
+      <div class="step-display">
+        <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+      </div>
+
+      {{#if showSelectWorkspace}}
+        {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
+      {{/if}}
+
+      {{#if showSelectConfig}}
+        {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+      {{/if}}
+
+      {{#if showOwnerSettings}}
+        {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
+      {{/if}}
+
+      {{#if showPermissions}}
+        {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+      {{/if}}
+
+      {{#if showReview}}
+        {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+      {{/if}}
+
+
+      {{!-- <div class="nav-buttons">
+        {{#unless (is-equal currentStep.value 1)}}
+        <button {{action "changeStep" -1}}>Prev</button>
+      {{/unless}}
+
+      {{#if (is-equal currentStep.value maxSteps)}}
+        <button {{action copyRequest}}>Submit Copy Request</button>
+      {{else}}
+        <button {{action "proceed" 1}}>Next</button>
+      {{/if}}
+      </div> --}}
+
+      {{#each validationErrors as |error|}}
+
+      {{/each}}
+
+      {{#if customConfigError}}
+        <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
+      {{/if}}
+      {{#if copyWorkspaceError}}
+        <p class="error-message">{{copyWorkspaceError}}</p>
+      {{/if}}
+
+      {{#each serverErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+    </div>
+  </div>
 </div>
 
-<div class="step-display">
-  <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+<div class="toggle-filter-menu">
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 </div>
 
-{{#if showSelectWorkspace}}
-  {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
-{{/if}}
-
-{{#if showSelectConfig}}
-  {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
-{{/if}}
-
-{{#if showOwnerSettings}}
-  {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
-{{/if}}
-
-{{#if showPermissions}}
-  {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
-{{/if}}
-
-{{#if showReview}}
-  {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
-{{/if}}
-
-
-{{!-- <div class="nav-buttons">
-  {{#unless (is-equal currentStep.value 1)}}
-  <button {{action "changeStep" -1}}>Prev</button>
-{{/unless}}
-
-{{#if (is-equal currentStep.value maxSteps)}}
-  <button {{action copyRequest}}>Submit Copy Request</button>
-{{else}}
-  <button {{action "proceed" 1}}>Next</button>
-{{/if}}
-</div> --}}
-
-{{#each validationErrors as |error|}}
-
-{{/each}}
-
-{{#if customConfigError}}
-  <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
-{{/if}}
-{{#if copyWorkspaceError}}
-  <p class="error-message">{{copyWorkspaceError}}</p>
-{{/if}}
-
-{{#each serverErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
+<script>
+  $('.list-view').click(function (e) {
+    if (!($('#filter-list-side').hasClass('collapse'))) {
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+    }
+    $('#filter-list-side').addClass('collapse');
+  });
+</script>
