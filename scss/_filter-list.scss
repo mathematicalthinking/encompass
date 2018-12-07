@@ -331,11 +331,6 @@
         }
         .primary-filter-list {
           margin-bottom: 50px;
-          p {
-            margin-left: 20px;
-            font-weight: $light-font-weight;
-            margin-bottom: 20px;
-          }
         }
         input[type=checkbox] {
           margin-left: 20px
@@ -511,7 +506,7 @@
         color: $accent-color;
         font-size: 1.5em;
       }
-      .fa-lock, .fa-user {
+      .fa-lock, .fa-unlock {
         color: $error-color;
         font-size: 1.5em;
       }

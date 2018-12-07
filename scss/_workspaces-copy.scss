@@ -3,6 +3,21 @@
 @import "responsive-font-size";
 
 #workspace-new-copy {
+  .primary-filter-list {
+    margin-bottom: 50px;
+    p {
+      margin-left: 20px;
+      font-weight: $light-font-weight;
+      margin-bottom: 30px;
+    }
+    h3 {
+      i {
+        position: relative;
+        left: 5px;
+        bottom: 1px;
+      }
+    }
+  }
   .results-list {
     .header {
       h1 {
@@ -73,7 +88,6 @@
         border: 2px solid $accent-color;
       }
     }
-
     .step-content {
       border: 1px solid blue;
     }

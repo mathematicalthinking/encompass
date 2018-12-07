@@ -8,6 +8,7 @@
           label = item.label
           displayValue = item.displayValue
           propName = item.propName
+          children = item.children
           editValue = (action "goToStep")
           associatedStep=item.associatedStep
           }}
@@ -25,11 +26,11 @@
       <div class="step-display">
         <div class="container">
           <ul class="progressbar">
-            <li class="{{if showSelectWorkspace 'active-step'}}">Select Workspace</li>
-            <li class="{{if showSelectConfig 'active-step'}}">Copy Configuration</li>
-            <li class="{{if showSelectConfig 'active-step'}}">Workspace Info</li>
-            <li class="{{if showSelectConfig 'active-step'}}">Collaborators</li>
-            <li class="{{if showSelectConfig 'active-step'}}">Review</li>
+            <li class="step-1 active-step">Select Workspace</li>
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">Copy Configuration</li>
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">Workspace Info</li>
+            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">Collaborators</li>
+            <li class="step-5 {{if (greater-equal currentStep.value 5) 'active-step'}}">Review</li>
           </ul>
         </div>
       </div>

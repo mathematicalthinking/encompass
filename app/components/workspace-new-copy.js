@@ -71,6 +71,15 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     return res;
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
+  activeStep: function() {
+    console.log('activeStep function running');
+    if (this.get('currentStep.value') >= 1) {
+      console.log('yes');
+    }
+  }.property('currentStep.value'),
+
+  //add class active-step if step-# is less than or equal to currentStep.value
+
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
   showOwnerSettings: Ember.computed.equal('currentStep.value', 3),
@@ -163,22 +172,35 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         associatedStep: 2
       },
       {
-        label: 'New Workspace Name',
-        displayValue: this.get('newWsName'),
-        propName: 'newWsName',
-        associatedStep: 3
-      },
-      {
-        label: 'New Workspace Owner',
-        displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
-        propName: 'owner',
-        associatedStep: 3
-      },
-      {
-        label: 'Privacy Setting',
-        displayValue: this.get('modeDisplay'),
-        propName: 'newWsMode',
+        label: 'New Workspace Info',
         associatedStep: 3,
+        propName: 'wsInfo',
+        children: [
+          {
+            label: 'Name',
+            displayValue: this.get('newWsName'),
+            propName: 'newWsName',
+            associatedStep: 3,
+          },
+          {
+            label: 'Owner',
+            displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
+            propName: 'owner',
+            associatedStep: 3
+          },
+          {
+            label: 'Privacy Setting',
+            displayValue: this.get('modeDisplay'),
+            propName: 'newWsMode',
+            associatedStep: 3,
+          },
+        ],
+      },
+      {
+        label: 'Collaborators',
+        displayValue: this.get('newWsPermissions'),
+        propName: 'collabs',
+        associatedStep: 4,
       },
     ];
   }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
@@ -342,7 +364,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         if (currentStep === maxStep) {
           return;
         }
-        this.set('currentStep', currentStep + 1);
         return;
       }
 
@@ -385,7 +406,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       this.set('newWsOwner', owner);
       this.set('newWsMode', mode);
       this.set('newFolderSetOptions', folderSetOptions);
-
       this.set('currentStep', this.get('steps')[4]);
 
     },
