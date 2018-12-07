@@ -131,13 +131,14 @@
     .step-content {
       margin: 0 auto;
       margin-top: 40px;
-      border: 1px solid grey;
+      // border: 1px solid grey;
       min-height: 275px;
       padding: 20px;
       .input-label {
         font-size: 1.2em;
       }
       .selectize-comp {
+        max-width: 600px;
         .selectize-input {
           input {
             font-size: 1.1em;
@@ -156,48 +157,8 @@
     }
   }
 
-  .workspace-info-summary {
-    li {
-      margin-bottom: 5px;
-    }
-  }
   .error-box {
     max-width: 500px;
-  }
-  h5 {
-    margin-bottom: 15px;
-  }
-  .ws-copy-details {
-    margin: 25px 0 25px 20px;
-    p {
-      margin-bottom: 5px;
-    }
-  }
-
-  .selectize-comp {
-    max-width: 500px;
-  }
-
-  .step-display {
-    margin-bottom: 25px;
-    margin-left: 20px;
-
-  }
-
-  .current-step-input {
-    width: 50%;
-    margin-bottom: 25px;
-    margin-left: 20px;
-    input[type=text] {
-      padding: 12px 20px;
-        margin: 8px 0;
-        font-size: 1em;
-        display: inline-block;
-        border: 1px solid $input-border;
-        border-radius: 4px;
-        box-sizing: border-box;
-        width: 100%;
-    }
   }
 }
 
@@ -205,9 +166,8 @@
 // ws-copy-workspace component
 #ws-copy-workspace {
   margin-left: 20px;
-
   .selectize-comp {
-    margin-bottom: 25px;
+    margin-bottom: 75px;
   }
 }
 // ws-copy-config component
@@ -283,8 +243,88 @@
   }
 }
 
-#ws-copy-review {
-  button {
-    margin-top: 15px;
+
+#workspace-new-copy {
+  .workspace-copy-card {
+    @include flex-item(1, auto, 1 1 auto);
+    width: 700px;
+    .item-card-container {
+      margin: 5px;
+      box-shadow: $box-shadow;
+      border-radius: 5px;
+      padding: 10px;
+      display: block;
+      @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
+      &:hover {
+        background-color: $list-hover-color;
+      }
+      .item-card {
+        &.row-1 {
+          @include flex-item(1, auto, 1 0 auto);
+          padding: 15px 10px;
+          .privacy {
+            text-align: left;
+            float: left;
+            .privacy-icon {
+              margin-right: 5px;
+              font-size: 1.2em;
+            }
+            .date {
+              margin-left: 10px;
+              position: relative;
+              top: -3px;
+            }
+          }
+          .more {
+            float: right;
+            font-size: 1em;
+            margin-top: 5px;
+            cursor: pointer;
+          }
+        }
+        &.row-2 {
+          @include flex-item(2, auto, 1 0 auto);
+          padding: 20px 15px 15px 15px;
+          a {
+            color: black;
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+          text-transform: capitalize;
+          overflow-y: hidden;
+        }
+        &.row-3 {
+          @include flex-item(3, auto, 1 0 auto);
+          padding: 0px 15px 15px 15px;
+          a {
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+        }
+        &.row-4 {
+          @include flex-item(4, auto, 1 0 auto);
+          padding: 15px 10px 20px 10px;
+          .workspace-stats {
+            text-align: center;
+            @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+            li {
+              @include flex-item(1, auto, 1 0 auto);
+              line-height: 2em;
+              min-width: 100px;
+              .stat-header {
+                color: black;
+              }
+              .stat-number {
+                font-weight: $light-font-weight;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
