@@ -131,6 +131,11 @@
     .step-content {
       margin: 0 auto;
       margin-top: 40px;
+      border: 1px solid grey;
+      padding: 20px;
+      .input-label {
+        font-size: 1.2em;
+      }
       .nav-btn-container {
         position: absolute;
         bottom: 5%;

@@ -45,8 +45,9 @@
           </ul>
         </div>
       </div>
+
       <div class="step-content">
-        <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+        {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
 
         {{#if showSelectWorkspace}}
           {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}

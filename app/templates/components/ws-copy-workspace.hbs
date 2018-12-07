@@ -1,5 +1,10 @@
 {{#unless fromWorkspaceList}}
-  <h5>Choose workspace to copy</h5>
+  <p class="input-label">
+    Choose a workspace to copy
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the workspace you would like to copy">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
   {{selectize-input
     store=store
     inputId="select-workspace"
