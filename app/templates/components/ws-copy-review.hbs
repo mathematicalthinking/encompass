@@ -3,7 +3,8 @@
 {{#if showLoadingMessage}}
   <p class="loading-message">Your copy request is in progress... Thank you for your patience.</p>
 {{/if}}
+
 <div class="nav-btn-container">
-  <button {{action "back"}}>Prev</button>
-  <button class="ws-copy submit" {{action "next"}}>Submit</button>
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Create</button>
 </div>
