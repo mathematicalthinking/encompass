@@ -23,18 +23,19 @@
       </div>
 
       <div class="step-display">
-          <div class="container">
-            <ul class="progressbar">
-              <li class="active">Select Workspace</li>
-              <li>Copy Configuration</li>
-              <li>Workspace Info</li>
-              <li>Collaborators</li>
-              <li>Review</li>
-            </ul>
-          </div>
-        {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
+        <div class="container">
+          <ul class="progressbar">
+            <li class="{{if showSelectWorkspace 'active-step'}}">Select Workspace</li>
+            <li class="{{if showSelectConfig 'active-step'}}">Copy Configuration</li>
+            <li class="{{if showSelectConfig 'active-step'}}">Workspace Info</li>
+            <li class="{{if showSelectConfig 'active-step'}}">Collaborators</li>
+            <li class="{{if showSelectConfig 'active-step'}}">Review</li>
+          </ul>
+        </div>
       </div>
       <div class="step-content">
+        <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+
         {{#if showSelectWorkspace}}
           {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
         {{/if}}
