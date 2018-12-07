@@ -23,19 +23,23 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       inputs: [
         {
           value: 'A',
-          label: 'Shallow with Folder Structure',
+          label: 'Submissions Only',
+          moreInfo: 'Copy only the submissions used in this workspace'
         },
         {
           value: 'B',
-          label: 'Shallow with No Folders',
+          label: 'Submissions and Folder Structure',
+          moreInfo: 'Copy the submissions and the folder structure (not content) used in this workspace'
         },
         {
           value: 'C',
-          label: 'Full Deep Copy',
+          label: 'Everything',
+          moreInfo: 'Copy everything used in this workspace (submissions, selections, folders, taggings, comments, responses)'
         },
         {
           value: 'D',
           label: 'Custom',
+          moreInfo: 'Decide which to copy for submissions, selections, folders, taggings, comments and responses'
         }
       ]
     },
@@ -81,7 +85,9 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   //add class active-step if step-# is less than or equal to currentStep.value
 
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
+  // showSelectWorkspace: false,
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
+  // showSelectConfig: true,
   showOwnerSettings: Ember.computed.equal('currentStep.value', 3),
   showPermissions: Ember.computed.equal('currentStep.value', 4),
   showReview: Ember.computed.equal('currentStep.value', 5),
@@ -216,9 +222,9 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       return;
     }
     const hash = {
-      A: 'Shallow with Folder Structure',
-      B: 'Shallow with No Folders',
-      C: 'Full Deep Copy',
+      A: 'Submissions Only',
+      B: 'Submissions and Folder Structure',
+      C: 'Everything',
       D: 'Custom'
     };
     return hash[this.get('newWsConfig')];
