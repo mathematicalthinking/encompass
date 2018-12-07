@@ -162,35 +162,40 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       {
         label: 'Selected Workspace',
         displayValue: this.get('workspaceToCopy.name'),
+        emptyValue: 'No workspace',
         propName: 'workspaceToCopy',
         associatedStep: 1
       },
       {
         label: 'Selected Configuration',
         displayValue: this.get('selectedConfigDisplay'),
+        emptyValue: 'No Configuration',
         propName: 'newWsConfig',
         associatedStep: 2
       },
       {
         label: 'New Workspace Info',
-        associatedStep: 3,
         propName: 'wsInfo',
+        associatedStep: 3,
         children: [
           {
             label: 'Name',
             displayValue: this.get('newWsName'),
+            emptyValue: 'No Name',
             propName: 'newWsName',
             associatedStep: 3,
           },
           {
             label: 'Owner',
             displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
+            emptyValue: 'No Owner',
             propName: 'owner',
             associatedStep: 3
           },
           {
             label: 'Privacy Setting',
             displayValue: this.get('modeDisplay'),
+            emptyValue: 'No Privacy Setting',
             propName: 'newWsMode',
             associatedStep: 3,
           },
@@ -199,6 +204,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       {
         label: 'Collaborators',
         displayValue: this.get('newWsPermissions'),
+        emptyValue: 'No Collaborators',
         propName: 'collabs',
         associatedStep: 4,
       },
@@ -411,6 +417,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     },
     setPermissions(permissions) {
       this.set('newWsPermissions', permissions);
+      // console.log('')
       this.set('currentStep', this.get('steps')[5]);
     },
     createCopyRequest() {

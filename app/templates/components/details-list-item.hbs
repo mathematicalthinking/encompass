@@ -5,12 +5,20 @@
       <i {{action "editValue" }} class="far fa-edit" aria-hidden="true" title="Edit"></i>
     {{/if}}
   </h3>
-  <p class="display-info">{{displayValue}}</p>
+  {{#if displayValue}}
+    <p class="display-info">{{displayValue}}</p>
+  {{else}}
+    <p class="display-info">{{emptyValue}}</p>
+  {{/if}}
   {{#if children}}
-    <ul>
+    <ul class="sub-list">
       {{#each children as |child|}}
-        <li>{{child.label}}</li>
-        <li>{{child.displayValue}}</li>
+        <li class="sub-header">{{child.label}}</li>
+        {{#if child.displayValue}}
+          <li class="sub-content">{{child.displayValue}}</li>
+        {{else}}
+          <li class="sub-content">{{child.emptyValue}}</li>
+        {{/if}}
       {{/each}}
     </ul>
   {{/if}}
