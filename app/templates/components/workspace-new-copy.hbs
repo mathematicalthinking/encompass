@@ -17,36 +17,44 @@
   </div>
 
   <div class="flex-item-full list-view">
-    <div class="list-container">
-
+    <div class="results-list">
       <div class="header">
-        <h3>Create a copy of an existing workspace</h3>
+        <h1>Copy Workspace</h1>
       </div>
-
 
       <div class="step-display">
-        <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
+          <div class="container">
+            <ul class="progressbar">
+              <li class="active">Select Workspace</li>
+              <li>Copy Configuration</li>
+              <li>Workspace Info</li>
+              <li>Collaborators</li>
+              <li>Review</li>
+            </ul>
+          </div>
+        {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
       </div>
+      <div class="step-content">
+        {{#if showSelectWorkspace}}
+          {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
+        {{/if}}
 
-      {{#if showSelectWorkspace}}
-        {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
-      {{/if}}
+        {{#if showSelectConfig}}
+          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+        {{/if}}
 
-      {{#if showSelectConfig}}
-        {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
-      {{/if}}
+        {{#if showOwnerSettings}}
+          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
+        {{/if}}
 
-      {{#if showOwnerSettings}}
-        {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
-      {{/if}}
+        {{#if showPermissions}}
+          {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+        {{/if}}
 
-      {{#if showPermissions}}
-        {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
-      {{/if}}
-
-      {{#if showReview}}
-        {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
-      {{/if}}
+        {{#if showReview}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+        {{/if}}
+      </div>
 
 
       {{!-- <div class="nav-buttons">

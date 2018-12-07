@@ -326,11 +326,16 @@
           font-size: 1em;
           text-transform: uppercase;
           font-weight: $main-font-weight;
-          margin-bottom: 10px;
           margin-left: 20px;
+          margin-bottom: 10px;
         }
         .primary-filter-list {
           margin-bottom: 50px;
+          p {
+            margin-left: 20px;
+            font-weight: $light-font-weight;
+            margin-bottom: 20px;
+          }
         }
         input[type=checkbox] {
           margin-left: 20px
@@ -535,7 +540,6 @@
           font-size: 2em;
           color: $dark-font-color;
           font-weight: $main-font-weight;
-          margin-top: 10px;
           width: fit-content;
           height: fit-content;
           margin-top: 12px;
