@@ -12,3 +12,14 @@
   }
 }
 
+.radio-group {
+  z-index: 1;
+  .radio-list {
+    .radio-group-item {
+      margin: 8px 0 10px 8px;
+      span {
+        margin-left: 10px;
+      }
+    }
+  }
+}
