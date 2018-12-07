@@ -151,7 +151,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   detailsItems: function() {
     return [
       {
-        label: 'Workspace to Copy',
+        label: 'Selected Workspace',
         displayValue: this.get('workspaceToCopy.name'),
         propName: 'workspaceToCopy',
         associatedStep: 1

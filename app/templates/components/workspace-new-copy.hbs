@@ -2,15 +2,15 @@
   <div class="flex-item-full filter-options collapse" id="filter-list-side">
     <div class="filter-items">
       <h2>Summary</h2>
-      <ul>
+      <ul class="primary-filter-list">
         {{#each detailsItems as |item|}}
-        {{details-list-item
-        label = item.label
-        displayValue = item.displayValue
-        propName = item.propName
-        editValue = (action "goToStep")
-        associatedStep=item.associatedStep
-        }}
+          {{details-list-item
+          label = item.label
+          displayValue = item.displayValue
+          propName = item.propName
+          editValue = (action "goToStep")
+          associatedStep=item.associatedStep
+          }}
         {{/each}}
       </ul>
     </div>
