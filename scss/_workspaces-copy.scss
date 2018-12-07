@@ -179,7 +179,6 @@
 
 // ws-copy-workspace component
 #ws-copy-workspace {
-  margin: 0 auto;
   .selectize-comp {
     margin-bottom: 60px;
   }
@@ -189,28 +188,13 @@
 }
 // ws-copy-owner-settings component
 #ws-copy-owner-settings {
-  // margin-left: 20px;
-
   .ws-copy-input {
-    margin-bottom: 10px;
-    width: 65%;
-
-    &.folderset {
-      select {
-        margin-top: 10px;
-      }
-    }
-    &.name {
-      input[type=text] {
-        width: 100%;
-        height: 30px;
-        font-size: 1em;
-        text-indent: 10px;
-        max-width: 500px;
-      }
-    }
-    }
+    margin-bottom: 40px;
   }
+  .single-text-input {
+    max-width: 568px;
+  }
+}
 
 #new-folderset-form {
   .new-folderset {
