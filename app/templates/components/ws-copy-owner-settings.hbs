@@ -1,6 +1,11 @@
-<div class="ws-copy-input name" >
-  <h5>Name</h5>
-  {{input id="ws-copy-name" type="text" value=selectedName placeholder="Name for new workspace"}}
+<div class="ws-copy-input name">
+  <p class="input-label">
+    Workspace Name
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide the new name for your workspace">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  {{input class="single-text-input" id="ws-copy-name" type="text" value=selectedName placeholder="Provide a name for your workspace"}}
 </div>
 
 {{#each nameErrors as |error|}}
@@ -8,22 +13,27 @@
 {{/each}}
 
 <div class="ws-copy-input owner">
-  <h5>Owner</h5>
-{{selectize-input
-store=store
-inputId="owner-select"
-initialOptions=initialOwnerOptions
-initialItems=initialOwnerItem
-maxItems=1
-onItemAdd=(action "setOwner")
-onItemRemove=(action "setOwner")
-labelField="username"
-valueField="id"
-searchField="username"
-model="user"
-queryParamsKey="usernameSearch"
-isAsync=true
-placeholder="Search users to choose as owner"}}
+  <p class="input-label">
+    Owner
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Select or type the username of the desired owner for this workspace">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  {{selectize-input
+  store=store
+  inputId="owner-select"
+  initialOptions=initialOwnerOptions
+  initialItems=initialOwnerItem
+  maxItems=1
+  onItemAdd=(action "setOwner")
+  onItemRemove=(action "setOwner")
+  labelField="username"
+  valueField="id"
+  searchField="username"
+  model="user"
+  queryParamsKey="usernameSearch"
+  isAsync=true
+  placeholder="Search users to choose as owner"}}
 </div>
 
 {{#each ownerErrors as |error|}}
@@ -31,7 +41,12 @@ placeholder="Search users to choose as owner"}}
 {{/each}}
 
 <div class="ws-copy-input mode">
-  <h5>Privacy Setting</h5>
+  <p class="input-label">
+    Privacy Setting
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide who can see this workspace, hover over the question icons for more info">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
   {{radio-group options=modeInputs selectedValue=selectedMode}}
 </div>
 
@@ -40,7 +55,12 @@ placeholder="Search users to choose as owner"}}
 {{/each}}
 
 <div class="ws-copy-input folderset">
-  <h5>Folder Set</h5>
+  <p class="input-label">
+    Folder Set
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can save the folder structure from this workspace as a reusable fodler set">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
 
   {{#if isCopyingFolders}}
 
