@@ -15,6 +15,12 @@
           }
         }
       }
+      .step-content {
+        margin: 0 auto;
+        padding: 0px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
     }
   }
 }
@@ -25,6 +31,12 @@
       .step-display {
         height: 70px;
       }
+    }
+    .step-content {
+      margin: 0 auto;
+      padding: 30px 20px;
+      margin-left: 30px;
+      margin-right: 30px;
     }
   }
 }
@@ -60,6 +72,8 @@
     }
   }
   .results-list {
+    position: relative;
+    height: 100%;
     .header {
       h1 {
         font-size: 1.75em;
@@ -129,11 +143,9 @@
       }
     }
     .step-content {
-      margin: 0 auto;
       margin-top: 40px;
-      // border: 1px solid grey;
+      overflow-x: hidden;
       min-height: 275px;
-      padding: 20px;
       .input-label {
         font-size: 1.2em;
       }
@@ -141,15 +153,17 @@
         max-width: 600px;
         .selectize-input {
           input {
-            font-size: 1.1em;
+            font-size: 1.2em;
+            line-height: 1.5em;
             font-weight: $light-font-weight;
           }
         }
       }
       .nav-btn-container {
-        position: absolute;
-        bottom: 5%;
+        position: fixed;
+        margin-top: 20px;
         right: 5%;
+        bottom: 5%;
         button {
           margin-left: 15px;
         }
@@ -165,18 +179,17 @@
 
 // ws-copy-workspace component
 #ws-copy-workspace {
-  margin-left: 20px;
+  margin: 0 auto;
   .selectize-comp {
-    margin-bottom: 75px;
+    margin-bottom: 60px;
   }
 }
 // ws-copy-config component
 #ws-copy-config {
-  margin-left: 20px;
 }
 // ws-copy-owner-settings component
 #ws-copy-owner-settings {
-  margin-left: 20px;
+  // margin-left: 20px;
 
   .ws-copy-input {
     margin-bottom: 10px;
@@ -216,7 +229,7 @@
 }
 
 #ws-copy-permissions {
-  margin-left: 20px;
+  // margin-left: 20px;
 
   .selectize-comp {
     margin-bottom: 25px;
@@ -247,7 +260,7 @@
 #workspace-new-copy {
   .workspace-copy-card {
     @include flex-item(1, auto, 1 1 auto);
-    width: 700px;
+    max-width: 700px;
     .item-card-container {
       margin: 5px;
       box-shadow: $box-shadow;
