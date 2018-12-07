@@ -214,7 +214,7 @@
               }
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
-                padding: 20px 10px 20px 10px;
+                padding: 15px 10px 20px 10px;
                 .workspace-stats {
                   text-align: center;
                   @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
@@ -224,6 +224,9 @@
                     min-width: 100px;
                     .stat-header {
                       color: black;
+                    }
+                    .stat-number {
+                      font-weight: $light-font-weight;
                     }
                   }
                 }

@@ -2,6 +2,33 @@
 @import "mixins";
 @import "responsive-font-size";
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 460px) {
+  #workspace-new-copy {
+    .results-list {
+      .step-display {
+        height: 30px;
+        .progressbar {
+          li {
+            span {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 461px) and (max-width: 10000px) {
+  #workspace-new-copy {
+    .results-list {
+      .step-display {
+        height: 70px;
+      }
+    }
+  }
+}
+
 #workspace-new-copy {
   .primary-filter-list {
     margin-bottom: 50px;
@@ -43,8 +70,7 @@
       }
     }
     .step-display {
-      margin-top: 10px;
-      height: 70px;
+      margin: 0 auto;
       margin-bottom: 15px;
       margin-top: 35px;
       .progressbar {
@@ -103,7 +129,13 @@
       }
     }
     .step-content {
-      border: 1px solid blue;
+      margin: 0 auto;
+      margin-top: 40px;
+      .nav-btn-container {
+        position: absolute;
+        bottom: 5%;
+        right: 5%;
+      }
     }
   }
 
@@ -117,9 +149,6 @@
   }
   h5 {
     margin-bottom: 15px;
-  }
-  .nav-btn-container {
-    margin-top: 15px;
   }
   .ws-copy-details {
     margin: 25px 0 25px 20px;
