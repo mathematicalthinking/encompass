@@ -52,14 +52,17 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         {
           value: 'private',
           label: 'Private',
+          moreInfo: 'Workspace will only be visible to the owner and collaborators',
         },
         {
           value: 'org',
           label: 'My Org',
+          moreInfo: 'Workspace will be visible to everyone belonging to your org',
         },
         {
           value: 'public',
           label: 'Public',
+          moreInfo: 'Workspace will be visible to every Encompass user',
         },
       ]
     };
@@ -71,6 +74,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     res.inputs.push({
       value: 'internet',
       label: 'Internet',
+      moreInfo: 'Workspace will be accesible to any user with a link to the workspace',
     });
     return res;
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
