@@ -84,7 +84,7 @@ async function getAnswers(req, res, next) {
     return utils.sendResponse(res, data);
   }
 
-  let {startDate, endDate } = filterBy;
+  let {startDate, endDate, students } = filterBy;
   if (startDate && endDate) {
     let startDateObj = new Date(startDate);
     let endDateObj = new Date(endDate);
@@ -94,14 +94,22 @@ async function getAnswers(req, res, next) {
         $lte: endDateObj
       };
     }
+  }
+
+  if (apiUtils.isNonEmptyArray(students)) {
+    let pruned = apiUtils.cleanObjectIdArray(students);
+    console.log('pruned', pruned);
+    if (apiUtils.isNonEmptyArray(pruned)) {
+      filterBy.createdBy = {$in: pruned};
+    }
 
   }
-  if (startDate) {
-    delete filterBy.startDate;
-  }
-  if (endDate) {
-    delete filterBy.endDate;
-  }
+  let propsToDelete = ['startDate', 'endDate', 'students'];
+  _.each(propsToDelete, (prop) => {
+    if (filterBy[prop]) {
+      delete filterBy[prop];
+    }
+  });
 
   let searchFilter = {};
   if (searchBy) {
@@ -123,57 +131,76 @@ async function getAnswers(req, res, next) {
         }
       }
     }
-    let sortParam = { createDate: -1 };
-    let doCollate, byRelevance;
+    // let sortParam = { createDate: -1 };
+    // let doCollate, byRelevance;
 
-    if (sortBy) {
-      sortParam = sortBy.sortParam;
-      doCollate = sortBy.doCollate;
-      byRelevance = sortBy.byRelevance;
-    }
+    // if (sortBy) {
+    //   sortParam = sortBy.sortParam;
+    //   doCollate = sortBy.doCollate;
+    //   byRelevance = sortBy.byRelevance;
+    // }
       const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
+      console.log('crit', JSON.stringify(criteria));
       if (_.isNull(criteria)) {
         const data = {
           'answers': [],
           'meta': {
             'total': 0,
-            pageCount: 1,
-            currentPage: 1
           }
         };
         return utils.sendResponse(res, data);
       }
       let results, itemCount;
 
-      let sortField = Object.keys(sortParam)[0];
-      let sortableFields = [];
+      // let sortField = Object.keys(sortParam)[0];
+      // console.log('sortField', sortField);
+      // let sortableFields = ['explanation'];
 
-      if (byRelevance) {
-        [results, itemCount] = await Promise.all([
-          models.Answer.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Answer.count(criteria)
-        ]);
-      } else if (sortParam && sortableFields.includes(sortField)) {
-        [ results, itemCount ] = await Promise.all([
-          apiUtils.sortAnswers('Answer', sortParam, req, criteria),
-          models.Answer.count(criteria)
-        ]);
-      } else if (doCollate) {
-        [results, itemCount] = await Promise.all([
-          models.Answer.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Answer.count(criteria)
-        ]);
-       } else {
-        [ results, itemCount ] = await Promise.all([
-          models.Answer.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Answer.count(criteria)
-        ]);
-       }
-      const pageCount = Math.ceil(itemCount / req.query.limit);
-      let currentPage = page;
-      if (!currentPage) {
-        currentPage = 1;
+      // if (sortField === 'explanation') {
+      //   [ results, itemCount ] = await Promise.all([
+      //     apiUtils.sortAnswersByLength('Answer', sortParam, req, criteria),
+      //     models.Answer.count(criteria)
+      //   ]);
+      // }
+
+      // else if (byRelevance) {
+      //   [results, itemCount] = await Promise.all([
+      //     models.Answer.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+      //     models.Answer.count(criteria)
+      //   ]);
+      // } else if (sortParam && sortableFields.includes(sortField)) {
+      //   [ results, itemCount ] = await Promise.all([
+      //     apiUtils.sortWorkspaces('Answer', sortParam, req, criteria),
+      //     models.Answer.count(criteria)
+      //   ]);
+      // } else if (doCollate) {
+      //   [results, itemCount] = await Promise.all([
+      //     models.Answer.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).lean().exec(),
+      //     models.Answer.count(criteria)
+      //   ]);
+      //  } else {
+        itemCount = await models.Answer.count(criteria);
+        console.log('count', itemCount);
+        if (itemCount > 1000) {
+          const data = {
+            'answers': [],
+            'meta': {
+              'total': itemCount,
+              'doConfirmCriteria': true
+          }
+        };
+        return utils.sendResponse(res, data);
       }
+
+        [ results, itemCount ] = await Promise.all([
+          models.Answer.find(criteria).lean().exec(),
+          models.Answer.count(criteria)
+        ]);
+      // const pageCount = Math.ceil(itemCount / req.query.limit);
+      // let currentPage = page;
+      // if (!currentPage) {
+      //   currentPage = 1;
+      // }
 
       // have to check to make sure we are only sending back the allowed data
 
@@ -183,8 +210,6 @@ async function getAnswers(req, res, next) {
         'answers': results,
         'meta': {
           'total': itemCount,
-          pageCount,
-          currentPage
         }
       };
         return utils.sendResponse(res, data);
