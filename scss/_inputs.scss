@@ -21,14 +21,18 @@
   width: 100%;
 }
 
-.radio-group {
-  z-index: 1;
-  .radio-list {
-    .radio-group-item {
-      margin: 8px 0 10px 8px;
-      span {
-        margin-left: 10px;
-      }
+.radio-list {
+  .radio-group-item {
+    margin: 8px 0 10px 8px;
+    span {
+      position: relative;
+      left: 10px;
+      top: 2px;
     }
   }
+}
+
+.sub-input-label {
+  margin-bottom: 15px;
+  margin-top: -10px;
 }
