@@ -1,12 +1,23 @@
 <div class="new-folderset name">
-  <p>Name</p>
-  {{input id="folderset-name" type="text" value=name placeholder="Name for new folder set"}}
+  <p class="input-label">
+    Folder Set Name
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide a specific enough name for you folder set in order to be able to indentify and reuse it">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  {{input id="folderset-name" class="single-text-input" type="text" value=name placeholder="Provide a name for the new folder set"}}
   {{#each nameErrors as |error|}}
     {{error-box error=error showDismiss=true resetError=(action (mut nameErrors) null)}}
   {{/each}}
 </div>
+
 <div class="new-folderset privacy">
-  <p>Privacy Setting</p>
+  <p class="input-label">
+    Folder Set Privacy Setting
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Folder sets can be shared with other users or private. Hover over the question icon for more info">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
   {{radio-group options=privacyInputs selectedValue=privacySetting}}
   {{#each privacyErrors as |error|}}
     {{error-box error=error showDismiss=true resetError=(action (mut privacyErrors) null)}}
