@@ -12,6 +12,7 @@
   }
 }
 
+
 .single-text-input {
   border: 1px solid $input-border;
   background-color: $background-body;
@@ -29,11 +30,16 @@
       left: 10px;
       top: 2px;
     }
+    i {
+      position: relative;
+      top: -2px;
+    }
   }
 }
 
 .sub-input-label {
   margin-bottom: 15px;
-  margin-top: -10px;
+  margin-top: 10px;
+  font-weight: $light-font-weight;
 }
 
