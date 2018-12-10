@@ -7,6 +7,7 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
+  <p class="sub-input-label">There are {{submissionCount.length}} submissions to choose from.</p>
     <ul class="radio-list">
       <li class="radio-group-item">
         <label>
@@ -17,35 +18,41 @@
       <li class="radio-group-item">
         <label>
           <input type="radio" checked={{submissionOptions.byStudent}} required="true" name="submissionOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "submissionOptions"}}>
-          <span>By Student</span>
+          <span>
+            By Student
+            <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy submissions from a selected student or students">
+              <i class="far fa-question-circle info-icon"></i>
+            </span>
+          </span>
         </label>
+        {{#if showStudentSubmissionInput}}
+          {{selectize-input
+          inputId="submissions-by-student"
+          initialOptions=studentSelectOptions
+          maxItems=studentSelectOptions.length
+          onItemAdd=(action "updateMultiSelect")
+          onItemRemove=(action "updateMultiSelect")
+          labelField="label"
+          valueField="value"
+          searchField="label"
+          propToUpdate="submissionStudents"
+          placeholder="Add students"}}
+        {{/if}}
       </li>
       <li class="radio-group-item">
         <label>
           <input type="radio" checked={{submissionOptions.custom}} required="true" name="submissionOptions" value="custom"
             onclick={{action "updateCollectionOptions" "custom" "submissionOptions"}}>
-          <span>Custom</span>
+          <span>
+            Custom
+            <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="View submission list and select desired submissions">
+              <i class="far fa-question-circle info-icon"></i>
+            </span>
+          </span>
         </label>
       </li>
     </ul>
 
-    {{#if showStudentSubmissionInput}}
-      {{selectize-input
-      inputId="submissions-by-student"
-      initialOptions=studentSelectOptions
-      maxItems=studentSelectOptions.length
-      onItemAdd=(action "updateMultiSelect")
-      onItemRemove=(action "updateMultiSelect")
-      labelField="label"
-      valueField="value"
-      searchField="label"
-      propToUpdate="submissionStudents"
-      placeholder="Add students"}}
-    {{/if}}
-
-    {{#each submissionStudents as |student|}}
-      <p>{{student}}</p>
-    {{/each}}
 
   {{#if showCustomSubmissionViewer}}
   {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
@@ -88,6 +95,7 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
+  <p class="sub-input-label">There are {{foldersCount.length}} folders available to copy.</p>
   <ul class="radio-list">
     <li class="radio-group-item">
       <label>
@@ -106,7 +114,7 @@
     {{/if}} --}}
     <li class="radio-group-item">
       <label>
-        <input type="radio" checked={{folderOptions.includeStructureOnly}} required="true" name="folderOptions" value="structure" onclick={{action "updateCollectionOptions" "structure" "folderOptions"}}>
+        <input type="radio" checked={{folderOptions.includeStructureOnly}} required="true" name="folderOptions" value="includeStructureOnly" onclick={{action "updateCollectionOptions" "includeStructureOnly" "folderOptions"}}>
         <span>
           Just Structure
           <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy only the folders structure without the taggings">
@@ -174,6 +182,16 @@
     </li>
   </ul>
 </div>
+
+{{!-- <div class="selected-count">
+  <h3>Selected Count</h3>
+  <ul>
+    <li>
+      <p>Submissions</p>
+      <p>10</p>
+    </li>
+  </ul>
+</div> --}}
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>

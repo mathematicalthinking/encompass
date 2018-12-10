@@ -51,14 +51,15 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   formattedFolderOptions: function() {
     let folderOptions = {
       all: true,
-      includeStructureOnly: true
     };
 
     if (this.get('folderOptions.all')) {
-      if (this.get('folderOptions.includeStructureOnly')) {
-        return folderOptions;
-      }
       folderOptions.includeStructureOnly = false;
+      return folderOptions;
+    }
+
+    if (this.get('folderOptions.includeStructureOnly')) {
+      folderOptions.includeStructureOnly = true;
       return folderOptions;
     }
     delete folderOptions.all;
@@ -152,8 +153,8 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       submissionIds: []
     },
     folderOptions: {
-      includeStructureOnly: true,
       all: true,
+      includeStructureOnly: false,
       none: false,
       folderIds: [],
     },
@@ -217,6 +218,18 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       .value();
   }.property('submissionStudents.[]', 'customSubmissionIds.[]', 'submissionOptions.all', 'workspace.id', 'submissionOptions.custom', 'submissionOptions.byStudent', 'submissionThreads', 'doSelectAll', 'doDeselectAll'),
 
+  submissionCount: function() {
+    return this.get('workspace.submissions').map((sub) => {
+      return sub.id;
+    });
+  }.property('submissionsFromStudents.[]', 'customSubmissionIds.[]'),
+
+  foldersCount: function() {
+    return this.get('workspace.folders').map((folder) => {
+      return folder.id;
+    });
+  }.property('submissionsFromStudents.[]', 'customSubmissionIds.[]'),
+
   selectionsFromSubmissions: function() {
     return this.get('workspace.selections').filter((selection) => {
       return this.get('submissionIdsFromStudents').includes(selection.get('submission.content.id'));
@@ -279,6 +292,9 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       if (propName === 'submissionOptions') {
         keys = ['all', 'byStudent', 'custom'];
       }
+      if (propName === 'folderOptions') {
+        keys = ['all', 'includeStructureOnly', 'none'];
+      }
 
       if (!_.contains(keys, val)) {
         return;
@@ -298,6 +314,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
       });
 
     },
+
     toggleIncludeStructureOnly() {
       this.toggleProperty('folderOptions.includeStructureOnly');
     },
