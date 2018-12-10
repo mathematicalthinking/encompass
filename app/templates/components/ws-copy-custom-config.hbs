@@ -1,4 +1,6 @@
-<h5>Submissions</h5>
+<p class="input-label">Custom Copy Settings</p>
+
+<p class="input-label">Submissions</p>
 
 <input type="radio" checked={{submissionOptions.all}} required="true" name="submissionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "submissionOptions"}}>
 <label>All</label>
@@ -34,7 +36,7 @@
   <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
 {{/if}}
 
-<h5>Selections</h5>
+<p class="input-label">Selections</p>
 <p>Based on your Submission choices, there are {{selectionsFromSubmissions.length}} selections to choose from.</p>
 
 <input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all"
@@ -47,7 +49,7 @@ onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
 {{!-- <input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
 <label>Custom</label> --}}
 
-<h5>Folders</h5>
+<p class="input-label">Folders</p>
 
 <input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
@@ -61,7 +63,7 @@ onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
   <label>Include Structure Only</label>
 {{/if}}
 
-<h5>Comments</h5>
+<p class="input-label">Comments</p>
 <p>Based on your Submission choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
 <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
 onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
@@ -73,7 +75,7 @@ onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
 {{!-- <input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
 <label>Custom</label> --}}
 
-<h5>Responses</h5>
+<p class="input-label">Responses</p>
 <p>Based on your Submission choices, there are {{responsesFromSubmissions.length}} responses to choose from.</p>
 
 <input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all"
