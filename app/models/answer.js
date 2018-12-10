@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   answerId: Ember.computed.alias('id'),
   studentName: DS.attr('string'),
@@ -18,15 +19,18 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
     if (creatorUsername && creatorUsername !== 'old_pows_user') {
       return creatorUsername;
     }
-    if(this.get('studentName')) {
-      return this.get('studentName');
+    const studentName = this.get('studentName');
+    if (typeof studentName === 'string') {
+      return studentName.trim();
     }
+
     const names = this.get('studentNames');
 
     if (Array.isArray(names)) {
-      if (names.length > 0) {
-        return names[0];
+      let firstStringName = _.find(names, _.isString);
+      if (firstStringName) {
+        return firstStringName.trim();
       }
     }
-  }.property('createdBy.username', 'studentNames', 'studentName'),
+  }.property('createdBy.username', 'studentNames.[]', 'studentName'),
 });
