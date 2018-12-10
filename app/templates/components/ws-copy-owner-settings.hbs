@@ -64,18 +64,28 @@
 
   {{#if isCopyingFolders}}
 
-    <p>Do you want to save this folder structure as a folder set for future use?</p>
-      <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet true}} onclick={{action "toggleCreateFolderset" true}}>
-      <label>Yes</label>
-      <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet false}} onclick={{action "toggleCreateFolderset" false}}>
-      <label>No</label>
+    <p class="sub-input-label">Do you want to save this folder structure as a folder set for future use?</p>
+    <ul class="radio-list">
+      <li class="radio-group-item">
+        <label>
+          <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet true}} onclick={{action "toggleCreateFolderset" true}}>
+          <span>Yes</span>
+        </label>
+      </li>
+      <li class="radio-group-item">
+        <label>
+          <input type="radio" name="doCreateFolderSet" checked={{is-equal doCreateFolderSet false}} onclick={{action "toggleCreateFolderset" false}}>
+          <span>No</span>
+        </label>
+      </li>
+    </ul>
 
-      {{#if doCreateFolderSet}}
-        {{new-folderset-form nameErrors=folderSetNameErrors privacyErrors=folderSetPrivacySettingErrors name=folderSetName privacySetting=folderSetPrivacy}}
-      {{/if}}
+    {{#if doCreateFolderSet}}
+      {{new-folderset-form nameErrors=folderSetNameErrors privacyErrors=folderSetPrivacySettingErrors name=folderSetName privacySetting=folderSetPrivacy}}
+    {{/if}}
 
     {{else}}
-      <p>Your resulting workspace will have 0 folders. You can select a preexisting folderSet from the dropdown below or continue on without any folders.</p>
+      <p>Your resulting workspace will have 0 folders. You can select a pre-existing folder set from the dropdown below or continue on without any folders.</p>
 
       {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
       (mut existingFolderSetToUse))}}
