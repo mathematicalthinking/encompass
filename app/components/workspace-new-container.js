@@ -9,6 +9,8 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   sortProperties: ['name'],
   answerToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
+  selectedAnswerIds: [],
+  doIncludeRevisions: false,
 
   searchOptions: ['all'],
   searchCriterion: 'all',
@@ -237,11 +239,22 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   displayAnswers: function () {
     const answers = this.get('answers');
+    const doIncludeRevisions = this.get('doIncludeRevisions');
     if (answers) {
-      return answers.rejectBy('isTrashed');
+      if (doIncludeRevisions) {
+        return answers.rejectBy('isTrashed');
+      }
+      const threads = this.get('submissionThreads');
+      if (threads) {
+        let results = [];
+        threads.forEach((thread) => {
+          results.addObject(thread.get('firstObject'));
+        });
+        return results;
+      }
     }
     return [];
-  }.property('answers.@each.isTrashed'),
+  }.property('answers.@each.isTrashed', 'doIncludeRevisions', 'submissionThreads'),
 
   buildQueryParams: function(page, isTrashedOnly) {
     let params = {};
@@ -356,6 +369,70 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return list.sortBy('lastModifiedDate').reverse();
 
   },
+  submissionThreads: function() {
+    if (!this.get('answers')) {
+      return [];
+    }
+    const threads = Ember.Map.create();
+
+    this.get('answers')
+      .sortBy('student')
+      .getEach('student')
+      .uniq()
+      .forEach((student) => {
+        if(!threads.has(student)) {
+          const answers = this.studentWork(student);
+          threads.set(student, answers);
+        }
+      });
+    return threads;
+  }.property('answers.[]'),
+
+  studentWork: function(student) {
+    return this.get('answers')
+      .filterBy('student', student)
+      .sortBy('createDate');
+
+  },
+  sortedAnswers: function() {
+    let sortParam = this.get('sortCriterion.sortParam');
+    if (!sortParam) {
+      // default to alphabetical
+      return this.get('displayAnswers');
+    }
+    let field = _.keys(sortParam)[0];
+    let direction = sortParam[field];
+
+    if (field === 'explanation') {
+      let ascending = this.get('displayAnswers').sortBy('explanation.length');
+      if (direction === 1) {
+        return ascending;
+      }
+      return ascending.reverse();
+    }
+
+    if (field === 'createDate') {
+      let ascending = this.get('displayAnswers').sortBy('createDate');
+      if (direction === 1) {
+        return ascending;
+      }
+      return ascending.reverse();
+    }
+
+    if (field === 'revisions') {
+      let ascending = _.sortBy(this.get('displayAnswers'), (answer) => {
+        let student = answer.get('student');
+        let revisionCount = this.get('submissionThreads').get(student).get('length');
+        return revisionCount;
+      });
+      if (direction === 1) {
+        return ascending;
+      }
+      return ascending.reverse();
+    }
+    return this.get('displayAnswers');
+
+  }.property('displayAnswers.[]', 'sortCriterion'),
 
   // displayList: function() {
   //   const filterKey = {
@@ -450,7 +527,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     },
     updateSortCriterion(criterion) {
       this.set('sortCriterion', criterion);
-      this.send('triggerFetch');
     },
     triggerFetch(isTrashedOnly=false, isHiddenOnly=false) {
       for (let prop of ['criteriaTooExclusive']) {
@@ -482,6 +558,12 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         this.set('filterCriteria', criteria);
         this.send('triggerFetch');
       }
+    },
+    updateSelectedAnswerIds(answerId) {
+
+    },
+    toggleIncludeRevisions() {
+      this.toggleProperty('doIncludeRevisions');
     }
   }
 });

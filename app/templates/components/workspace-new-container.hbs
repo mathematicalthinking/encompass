@@ -34,6 +34,8 @@
         <div class="results-message">
           {{{listResultsMessage}}}
         </div>
+        <label>Do Include Revisions</label>
+        <input type="checkbox" checked={{doIncludeRevisions}} onclick={{action "toggleIncludeRevisions"}}>
         <div class="side-icons">
           <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Submission list"></i>
           <span class="layout-icons">
@@ -110,7 +112,11 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if showList}}
-          {{submission-viewer-list isSearching=isSearchingAnswers answers=displayAnswers metadata=answersMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store
+          {{submission-viewer-list isSearching=isSearchingAnswers answers=sortedAnswers metadata=answersMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store
+          onSelect=(action "updateSelectedAnswerIds")
+          selectedAnswerIds=selectedAnswerIds
+          threads=submissionThreads
+
           }}
         {{/if}}
         {{#if showGrid}}
