@@ -44,6 +44,9 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy - mm/dd/yyyy');
     });
   },
+  missingCriteriaMessage: 'Please select either a teacher, assignment, problem, class, or at least one student.',
+  invalidDateRangeMessage: 'Please provide a valid date range.',
+
   doFetchStudents: function() {
     return !this.get('selectedAssignment') && !this.get('selectedSection') && !this.get('selectedTeacher');
   }.property('selectedAssignment', 'selectedSection', 'selectedTeacher'),
@@ -187,19 +190,8 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
     return results;
   }.property('selectedAssignment'),
 
-  // problemIdFilterHash: function() {
-  //   const assignment = this.get('selectedAssignment');
-  //   let hash = {};
-  //   if (assignment) {
-  //     let id = assignment.belongsTo('problem').id();
-  //     hash[id] = true;
-  //   }
-  //   return hash;
-  // }.property('selectedAssignment'),
-
   studentPoolOptions: function() {
     let students = this.get('studentPool');
-    console.log('studentPool', students);
 
     if (!_.isObject(students)) {
       return [];
@@ -465,40 +457,47 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
     this._super(...arguments);
   },
 
-  getTeacherPool: function() {
-    const accountType = this.get('currentUser.accountType');
-    if (accountType === 'T') {
-      return [this.get('currentUser')];
-    }
+  // getTeacherPool: function() {
+  //   const accountType = this.get('currentUser.accountType');
+  //   if (accountType === 'T') {
+  //     return [this.get('currentUser')];
+  //   }
 
-    let teachers = this.get('userList').rejectBy('accountType', 'S');
-    let authTeachers = teachers.filterBy('isAuthorized', true);
+  //   let teachers = this.get('userList').rejectBy('accountType', 'S');
+  //   let authTeachers = teachers.filterBy('isAuthorized', true);
 
 
-    if (accountType === 'P') {
-    let pdOrg = this.get('currentUser.organization');
-      let orgTeachers = authTeachers.filterBy('organization', pdOrg);
-      return orgTeachers;
+  //   if (accountType === 'P') {
+  //   let pdOrg = this.get('currentUser.organization');
+  //     let orgTeachers = authTeachers.filterBy('organization', pdOrg);
+  //     return orgTeachers;
 
-    }
-    if (accountType === 'A') {
-      return authTeachers;
-    }
-  },
+  //   }
+  //   if (accountType === 'A') {
+  //     return authTeachers;
+  //   }
+  // },
 
-  isDateRangeValid: function() {
-    const htmlFormat = 'YYYY-MM-DD';
-    let start = this.get('startDate');
-    let end = this.get('endDate');
+  // isDateRangeValid: function() {
+  //   const htmlFormat = 'YYYY-MM-DD';
+  //   // empty string if no date range is picked
+  //   let dateRangeTextVal = $('#dateRange').val();
 
-    if (Ember.isEmpty(start) || Ember.isEmpty(end)) {
-      return false;
-    }
-    start = moment(start, htmlFormat);
-    end = moment(end, htmlFormat);
+  //   if (!dateRangeTextVal) {
+  //     return;
+  //   }
+  //   let start = this.get('startDate');
+  //   let end = this.get('endDate');
+  //   console.log('start', start);
+  //   console.log('end', end);
+  //   if (Ember.isEmpty(start) || Ember.isEmpty(end)) {
+  //     return false;
+  //   }
+  //   start = moment(start, htmlFormat);
+  //   end = moment(end, htmlFormat);
 
-    return end > start;
-  }.property('startDate', 'endDate'),
+  //   return end > start;
+  // }.property('startDate', 'endDate'),
 
   getMongoDate: function(htmlDateString) {
     const htmlFormat = 'YYYY-MM-DD';
@@ -521,18 +520,18 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
   },
 
   isAnswerCriteriaValid: function() {
+    const utils = this.get('utils');
     const params = ['selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'];
     for (let param of params) {
       if (this.get(param)) {
         return true;
       }
     }
+    if (utils.isNonEmptyArray(this.get('selectedStudents'))) {
+      return true;
+    }
     return false;
-  }.property('selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection'),
-
-  isFormValid: Ember.computed('isDateRangeValid', 'isAnswerCriteriaValid', 'isWorkspaceSettingsValid', function() {
-    return this.get('isDateRangeValid') || this.get('isAnswerCriteriaValid') || this.get('isWorkspaceSettingsValid');
-  }),
+  }.property('selectedTeacher', 'selectedAssignment', 'selectedProblem', 'selectedSection', 'selectedStudents.[]'),
 
   isWorkspaceSettingsValid: function() {
     const params = ['selectedOwner', 'mode'];
@@ -547,14 +546,16 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
 
   actions: {
     buildCriteria: function() {
-      const utils = this.get('utils');
-      if (!this.get('isFormValid')) {
-        if (this.get('missingRequiredFields')) {
-          $('.error-box').removeClass('fadeIn');
-          $('.error-box').addClass('pulse');
+      //clear errors if any
+      let errorProps = ['isMissingCriteria', 'isInvalidDateRange'];
+      _.each(errorProps, (prop) => {
+        if (this.get(prop)) {
+          this.set(prop, null);
         }
-        this.set('missingRequiredFields', true);
-        $('.error-box').show();
+      });
+      const utils = this.get('utils');
+      if (!this.get('isAnswerCriteriaValid')) {
+        this.set('isMissingCriteria', true);
         return;
       }
 
@@ -566,9 +567,21 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
         startDate = this.getMongoDate(start);
         endDate = this.getEndDate(end);
+        if (_.isDate(startDate) && _.isDate(endDate)) {
+          if (startDate > endDate ) {
+            this.set('isInvalidDateRange', true);
+            return;
+          }
+
+        }
       } else {
         startDate = null;
         endDate = null;
+      }
+      const students = this.get('selectedStudents');
+      let studentIds;
+      if (students) {
+        studentIds = students.mapBy('id');
       }
       const criteria = {
         teacher: this.get('selectedTeacher.id'),
@@ -577,7 +590,7 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         section: this.get('selectedSection.id'),
         startDate: startDate,
         endDate: endDate,
-        students: this.get('selectedStudents')
+        students: studentIds
       };
       _.each(criteria, (val, key) => {
         if (utils.isNullOrUndefined(val)|| val === '') {

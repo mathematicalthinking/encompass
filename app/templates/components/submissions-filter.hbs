@@ -125,6 +125,12 @@
 
   </ul>
   </div>
+  {{#if isMissingCriteria}}
+    {{error-box error=missingCriteriaMessage showDismiss=true resetError=(action (mut isMissingCriteria) null) }}
+  {{/if}}
+  {{#if isInvalidDateRange}}
+    {{error-box error=invalidDateRangeMessage showDismiss=true resetError=(action (mut isInvalidDateRange) null) }}
+  {{/if}}
   <button class="action_button search-answers" {{action "buildCriteria"}}>Search</button>
 {{#if isRequestInProgress}}
   <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
