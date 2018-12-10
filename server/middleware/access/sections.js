@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const apiUtils = require('../../datasource/api/utils');
 module.exports.get = {};
 
 const accessibleSectionsQuery = function(user, ids) {
@@ -13,8 +14,13 @@ const accessibleSectionsQuery = function(user, ids) {
     isTrashed: false
   };
 
+  // ids will either be an array of ids or a single id or null
   if (ids) {
-    filter._id = {$in : ids};
+    if (apiUtils.isNonEmptyArray(ids)) {
+      filter._id = { $in: ids };
+    } else if (apiUtils.isValidMongoId(ids)) {
+      filter._id = ids;
+    }
   }
   // Students can get sections they are a student of
   if (actingRole === 'student' || accountType === 'S') {

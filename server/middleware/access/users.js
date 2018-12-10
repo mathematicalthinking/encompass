@@ -29,8 +29,13 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex) {
       isTrashed: false
     };
 
+  // ids will either be an array of ids or a single id or null
   if (ids) {
-    filter._id = {$in : ids};
+    if (apiUtils.isNonEmptyArray(ids)) {
+      filter._id = { $in: ids };
+    } else if (apiUtils.isValidMongoId(ids)) {
+      filter._id = ids;
+    }
   }
 
   if (usernames) {

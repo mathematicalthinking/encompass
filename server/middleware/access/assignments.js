@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const apiUtils = require('../../datasource/api/utils');
 module.exports.get = {};
 
 async function accessibleAssignmentsQuery(user, ids) {
@@ -12,9 +13,9 @@ async function accessibleAssignmentsQuery(user, ids) {
   };
   // ids will either be an array of ids or a single id or null
   if (ids) {
-    if (Array.isArray(ids)) {
+    if (apiUtils.isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else {
+    } else if (apiUtils.isValidMongoId(ids)) {
       filter._id = ids;
     }
   }
