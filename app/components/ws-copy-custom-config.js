@@ -12,6 +12,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   folderOptions: Ember.computed.alias('customConfig.folderOptions'),
   showStudentSubmissionInput: Ember.computed.equal('submissionOptions.byStudent', true),
   showCustomSubmissionViewer: Ember.computed.equal('submissionOptions.custom', true),
+  selectedAllSubmissions: Ember.computed.equal('submissionOptions.all', true),
   customSubmissionIds: [],
 
   didReceiveAttrs() {
