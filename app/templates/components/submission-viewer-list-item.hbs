@@ -1,9 +1,3 @@
-<li>
-  <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
-  <p>Submitted by {{answer.student}} on {{answer.createDate}}</p>
-  <p>Explanation: {{{answer.explanation}}}</p>
- </li>
-
 {{#if isList}}
   <div class="item-container" id="container">
     <div class="toggle-check">
@@ -13,7 +7,7 @@
         {{answer.student}}
     </div>
     <div class="item-section revision">
-      Revisions
+      {{revisionCount}}
     </div>
     <div class="item-section description">
         {{{answer.explanation}}}
