@@ -382,6 +382,143 @@ const sortWorkspaces = function(model, sortParam, req, criteria) {
   return models[model].aggregate(aggregateArray).exec();
 };
 
+const sortAnswersByLength = function(model, sortParam, req, criteria) {
+   // Limit and skip are passed in with the req
+   let limit = req.query.limit;
+   let skip = req.skip;
+
+   // Determine which field should be sorted and what value
+   let sortField = Object.keys(sortParam)[0];
+   let value = parseInt(sortParam[sortField], 0);
+   let aggregateArray = [];
+
+   // Creating objects to add to the aggregate pipeline
+   let sortObj = { "$sort" : { "length": value } };
+   let limitObj = { "$limit": limit };
+   let skipObj = { "$skip": skip };
+  console.log('criteria', criteria);
+   criteria.$and.forEach((criterion) => {
+    if (criterion.hasOwnProperty('createdBy')) {
+      let value = criterion.createdBy;
+      if (value.hasOwnProperty('$in')) {
+        const pruned = cleanObjectIdArray(value.$in, true);
+        if (isNonEmptyArray(pruned)) {
+          value.$in = pruned;
+        } else {
+          delete value.$in;
+        }
+      } else {
+        if (isValidMongoId(value)) {
+          let updatedValue = mongoose.Types.ObjectId(value);
+          criterion.createdBy = updatedValue;
+        } else {
+          // bad objectId, delete filter property
+          delete criterion.createdBy;
+        }
+      }
+    }
+    if (criterion.hasOwnProperty('_id')) {
+      let value = criterion._id;
+      if (value.hasOwnProperty('$in')) {
+        const pruned = cleanObjectIdArray(value.$in, true);
+        if (isNonEmptyArray(pruned)) {
+          value.$in = pruned;
+        } else {
+          delete value.$in;
+        }
+      } else {
+        if (isValidMongoId(value)) {
+          criterion._id = mongoose.Types.ObjectId(value);
+        } else {
+          // bad objectId, delete filter property
+          delete criterion._id;
+        }
+      }
+    }
+    if (criterion.hasOwnProperty('problem')) {
+      let value = criterion.problem;
+      if (value.hasOwnProperty('$in')) {
+        const pruned = cleanObjectIdArray(value.$in, true);
+        if (isNonEmptyArray(pruned)) {
+          value.$in = pruned;
+        } else {
+          delete value.$in;
+        }
+      } else {
+        if (isValidMongoId(value)) {
+          let updatedValue = mongoose.Types.ObjectId(value);
+          criterion.problem = updatedValue;
+        } else {
+          // bad objectId, delete filter property
+          delete criterion.problem;
+        }
+      }
+    }
+    if (criterion.hasOwnProperty('$or')) {
+      criterion.$or.forEach((crit) => {
+        if (crit.hasOwnProperty('createdBy')) {
+          let value = crit.createdBy;
+          if (value.hasOwnProperty('$in')) {
+            const pruned = cleanObjectIdArray(value.$in, true);
+            if (isNonEmptyArray(pruned)) {
+              value.$in = pruned;
+            } else {
+              delete value.$in;
+            }
+          } else {
+            if (isValidMongoId(value)) {
+              let updatedValue = mongoose.Types.ObjectId(value);
+              crit.createdBy = updatedValue;
+            } else {
+              // bad objectId, delete filter property
+              delete crit.createdBy;
+            }
+          }
+        }
+        if (crit.hasOwnProperty('problem')) {
+          let value = crit.problem;
+          if (value.hasOwnProperty('$in')) {
+            const pruned = cleanObjectIdArray(value.$in, true);
+            if (isNonEmptyArray(pruned)) {
+              value.$in = pruned;
+            } else {
+              delete value.$in;
+            }
+          } else {
+            if (isValidMongoId(value)) {
+              let updatedValue = mongoose.Types.ObjectId(value);
+              crit.problem = updatedValue;
+            } else {
+              // bad objectId, delete filter property
+              delete crit.problem;
+            }
+          }
+        }
+      });
+    }
+  });
+  let matchObj = { "$match" : criteria };
+  console.log('match', JSON.stringify(matchObj));
+  let matchNest = matchObj.$match;
+  matchNest[sortField] = { $exists: true, $ne: null };
+
+  // Project object iterates of keys of schema and then adds a length field to selected sortField
+  let projectObj = { "$project" : { } };
+  let projNest = projectObj.$project;
+  let schema = require('mongoose').model(model).schema;
+  let schemaObj = schema.obj;
+  let ObjKeys = Object.keys(schemaObj);
+  ObjKeys.forEach((key) => {
+    projNest[key] = 1;
+  });
+  projNest.length = { "$strLenCP": '$' + sortField };
+
+  // All objects are pushed into the aggregate array
+  aggregateArray.push(matchObj, projectObj, sortObj, skipObj, limitObj);
+console.log('projectOBj', JSON.stringify(projectObj));
+  // Return results of aggregate by provied model
+  return models[model].aggregate(aggregateArray).exec();
+};
 
 function cloneDocuments(model, documents) {
 
@@ -441,3 +578,4 @@ module.exports.isNonEmptyObject = isNonEmptyObject;
 module.exports.mapObjectsToIds = mapObjectsToIds;
 module.exports.isValidMongoId = isValidMongoId;
 module.exports.cleanObjectIdArray = cleanObjectIdArray;
+module.exports.sortAnswersByLength = sortAnswersByLength;
