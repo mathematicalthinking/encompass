@@ -72,14 +72,11 @@ function getTeacherSections(user) {
   });
 }
 
-async function getTeacherSectionsById(userId) {
-  try {
-    const sectionIds = await getModelIds('Section', {teachers: userId});
-    return sectionIds;
-  }catch(err) {
-    console.error(`Error getTeacherSectionsById: ${err}`);
-    console.trace();
+function getTeacherSectionsById(userId) {
+  if (!userId) {
+    return;
   }
+  return getModelIds('Section', {teachers: userId});
 }
 
 const getStudentSections = function(user) {
