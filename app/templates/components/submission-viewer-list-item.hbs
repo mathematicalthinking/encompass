@@ -1,0 +1,137 @@
+<li>
+  <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
+  <p>Submitted by {{answer.student}} on {{answer.createDate}}</p>
+  <p>Explanation: {{{answer.explanation}}}</p>
+ </li>
+
+{{#if isList}}
+  <div class="item-container" id="container">
+    <div class="toggle-check">
+      <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
+      </div>
+    <div class="item-section student">
+        {{answer.student}}
+    </div>
+    <div class="item-section revision">
+      Revisions
+    </div>
+    <div class="item-section description">
+        {{{answer.explanation}}}
+    </div>
+    <div class="item-section section">
+      {{answer.section.name}}
+    </div>
+    <div class="item-section createDate">
+      <span>{{format-date answer.createDate 'L'}}</span>
+    </div>
+    <div class="item-section more" {{action "toggleShowMoreMenu"}}>
+      <i class="fas fa-ellipsis-v more-menu"></i>
+      {{#if showMoreMenu}}
+      <span class="click-menu">
+        <ul>
+          {{#if ellipsisMenuOptions}}
+          {{#each ellipsisMenuOptions as |option|}}
+          <li {{action option.action}}>
+            <label>
+              <span class="icon-text">{{option.label}}</span>
+              <i class={{option.icon}}></i>
+            </label>
+          </li>
+          {{/each}}
+          {{else}}
+          <li>No options</li>
+          {{/if}}
+        </ul>
+      </span>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{!-- {{#if isGrid}}
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">{{{public-private workspace.mode}}}</span>
+        <span class="date">{{format-date workspace.lastModifiedDateComp 'L'}}</span>
+      </div>
+      <div class="item-card more" {{action "toggleShowMoreMenu"}}>
+        <i class="fas fa-ellipsis-v more-menu"></i>
+        {{#if showMoreMenu}}
+        <span class="click-menu">
+          <ul>
+            {{#if ellipsisMenuOptions}}
+            {{#each ellipsisMenuOptions as |option|}}
+            <li {{action option.action}}>
+              <label>
+                <span class="icon-text">{{option.label}}</span>
+                <i class={{option.icon}}></i>
+              </label>
+            </li>
+            {{/each}}
+            {{else}}
+            <li>No options</li>
+            {{/if}}
+          </ul>
+        </span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        {{#link-to 'workspace.work' workspace class="workspace-name"}}
+          <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
+            {{#link-to 'workspace.info' workspace.id}}
+              <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
+            {{/link-to}}
+        {{/link-to}}
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        {{{workspace.owner.displayName}}}
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <ul class="workspace-stats">
+          <li>
+            <p class="stat-header">Submissions</p>
+            <p>{{workspace.submissionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Selections</p>
+            <p>{{workspace.selectionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Comments</p>
+            <p>{{workspace.commentsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Responses</p>
+            <p>{{workspace.responsesLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Collaborators</p>
+            <p>{{workspace.collaborators.length}}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+{{/if}} --}}
+
+<script>
+  $('.workspace-name').click(function (e) {
+    $('.list-outlet').removeClass('hidden');
+    $('.list-outlet').addClass('animated slideInRight');
+  });
+
+  $('.results-list').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+
+  $('.flex-item-full').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+</script>

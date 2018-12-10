@@ -1,0 +1,16 @@
+<div class="main-list">
+    {{#if isSearching}}
+      <p class="loading-message">Searching submissions...</p>
+    {{else}}
+      {{#each answers as |answer|}}
+        {{submission-viewer-list-item
+          answer=answer
+          selectedAnswerIds=selectedAnswerIds
+          onSelect=(action "onSelect")
+          isList=isList
+          isGrid=isGrid
+          store=store
+        }}
+      {{/each}}
+    {{/if}}
+  </div>
