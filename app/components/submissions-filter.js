@@ -561,7 +561,6 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       let startDate;
       let endDate;
       let dateRangeTextVal = $('#dateRange').val(); // empty string if no date range is picked
-
       if (dateRangeTextVal) { // user selected a date range
         const start = $('#dateRange').data('daterangepicker').startDate.format('YYYY-MM-DD');
         const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
@@ -571,7 +570,6 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         startDate = null;
         endDate = null;
       }
-
       const criteria = {
         teacher: this.get('selectedTeacher.id'),
         assignment: this.get('selectedAssignment.id'),
@@ -579,9 +577,10 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         section: this.get('selectedSection.id'),
         startDate: startDate,
         endDate: endDate,
+        students: this.get('selectedStudents')
       };
       _.each(criteria, (val, key) => {
-        if (utils.isNullOrUndefined(val)|| _.isEmpty(val)) {
+        if (utils.isNullOrUndefined(val)|| val === '') {
           delete criteria[key];
         }
       });
