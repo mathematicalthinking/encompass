@@ -148,6 +148,18 @@
       min-height: 275px;
       .input-label {
         font-size: 1.2em;
+        color: black;
+        i {
+          color: $primary-font-color;
+        }
+      }
+      .input-label-custom {
+        color: $primary-font-color;
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        i {
+          font-size: .8em;
+        }
       }
       .selectize-comp {
         max-width: 600px;
@@ -183,9 +195,7 @@
     margin-bottom: 60px;
   }
 }
-// ws-copy-config component
-#ws-copy-config {
-}
+
 // ws-copy-owner-settings component
 #ws-copy-owner-settings {
   .ws-copy-input {
@@ -233,11 +243,21 @@
 }
 
 #ws-copy-custom-config {
-  h5 {
-    margin-top: 20px;
+  margin-top: 40px;
+  .custom-header {
+    margin-bottom: 30px;
   }
-  p {
-    margin-bottom: 5px;
+  .sub-input-label {
+    font-size: 1em;
+  }
+  .custom-config-content {
+    margin-left: 20px;
+    margin-bottom: 40px;
+  }
+  .radio-group-item {
+    i {
+      font-size: .9em;
+    }
   }
 }
 
