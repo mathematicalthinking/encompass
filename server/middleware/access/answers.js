@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const utils = require('./utils');
 const apiUtils = require('../../datasource/api/utils');
 const submissionsAccess = require('./submissions');
@@ -5,13 +6,19 @@ const _ = require('underscore');
 const models = require('../../datasource/schemas');
 module.exports.get = {};
 
-const accessibleAnswersQuery = async function(user, ids) {
+const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly) {
   try {
     if (!apiUtils.isNonEmptyObject(user)) {
       return {};
     }
-
     const { accountType, actingRole } = user;
+
+    if (isTrashedOnly) {
+      if (accountType === 'A') {
+        return { isTrashed: true };
+      }
+      return;
+    }
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -25,6 +32,12 @@ const accessibleAnswersQuery = async function(user, ids) {
       filter.$and.push({ _id: { $in : ids } });
     } else if(!apiUtils.isNullOrUndefined(ids)) {
       filter.$and.push({ _id: ids });
+    }
+    if (apiUtils.isNonEmptyObject(filterBy)) {
+      filter.$and.push(filterBy);
+    }
+    if (apiUtils.isNonEmptyObject(searchBy)) {
+      filter.$and.push(searchBy);
     }
 
     if (accountType === 'A' && !isStudent) {
