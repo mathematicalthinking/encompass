@@ -7,6 +7,7 @@
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const apiUtils = require('../../datasource/api/utils');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -75,13 +76,31 @@ async function getAnswers(req, res, next) {
   let { ids, problem, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
   console.log('filterBy answer API:', JSON.stringify(filterBy));
   if (problem) {
-    console.log('inside problem');
     let criteria = req.query;
     const requestedAnswers = await models.Answer.findOne(criteria).exec();
     let data = {
       'answers': requestedAnswers
     };
     return utils.sendResponse(res, data);
+  }
+
+  let {startDate, endDate } = filterBy;
+  if (startDate && endDate) {
+    let startDateObj = new Date(startDate);
+    let endDateObj = new Date(endDate);
+    if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
+      filterBy.createDate = {
+        $gte: startDateObj,
+        $lte: endDateObj
+      };
+    }
+
+  }
+  if (startDate) {
+    delete filterBy.startDate;
+  }
+  if (endDate) {
+    delete filterBy.endDate;
   }
 
   let searchFilter = {};
@@ -112,8 +131,18 @@ async function getAnswers(req, res, next) {
       doCollate = sortBy.doCollate;
       byRelevance = sortBy.byRelevance;
     }
-
       const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
+      if (_.isNull(criteria)) {
+        const data = {
+          'answers': [],
+          'meta': {
+            'total': 0,
+            pageCount: 1,
+            currentPage: 1
+          }
+        };
+        return utils.sendResponse(res, data);
+      }
       let results, itemCount;
 
       let sortField = Object.keys(sortParam)[0];
@@ -140,7 +169,6 @@ async function getAnswers(req, res, next) {
           models.Answer.count(criteria)
         ]);
        }
-       console.log('req.query.limit', req.query.limit);
       const pageCount = Math.ceil(itemCount / req.query.limit);
       let currentPage = page;
       if (!currentPage) {
