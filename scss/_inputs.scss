@@ -36,3 +36,14 @@
   margin-bottom: 15px;
   margin-top: -10px;
 }
+
+#my-select {
+  width: 100%;
+  select {
+    width: 100%;
+    height: 35px;
+    font-size: 1em;
+    background-color: white;
+    border: 1px solid $input-border;
+  }
+}

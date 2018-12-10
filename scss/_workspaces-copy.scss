@@ -194,6 +194,15 @@
   .single-text-input {
     max-width: 568px;
   }
+  .sub-input-label {
+    margin-top: 10px;
+  }
+  #my-select {
+    max-width: 600px;
+    select {
+      font-size: .8em;
+    }
+  }
 }
 
 #new-folderset-form {

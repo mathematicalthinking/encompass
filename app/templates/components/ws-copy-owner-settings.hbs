@@ -85,8 +85,7 @@
     {{/if}}
 
     {{else}}
-      <p>Your resulting workspace will have 0 folders. You can select a pre-existing folder set from the dropdown below or continue on without any folders.</p>
-
+      <p class="sub-input-label">Your workspace will have 0 folders. Select a pre-existing folder set below or continue on without any folders</p>
       {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
       (mut existingFolderSetToUse))}}
   {{/if}}
