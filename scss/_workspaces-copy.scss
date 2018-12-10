@@ -21,6 +21,15 @@
         margin-left: 10px;
         margin-right: 10px;
       }
+      .nav-btn-container {
+        position: fixed;
+        margin-top: 20px;
+        right: 5%;
+        bottom: 2%;
+        button {
+          margin-left: 15px;
+        }
+      }
     }
   }
 }
@@ -37,6 +46,15 @@
       padding: 30px 20px;
       margin-left: 30px;
       margin-right: 30px;
+    }
+    .nav-btn-container {
+      position: fixed;
+      margin-top: 20px;
+      right: 5%;
+      bottom: 5%;
+      button {
+        margin-left: 15px;
+      }
     }
   }
 }
@@ -73,7 +91,7 @@
   }
   .results-list {
     position: relative;
-    height: 100%;
+    padding-bottom: 50px;
     .header {
       h1 {
         font-size: 1.75em;
@@ -171,15 +189,6 @@
           }
         }
       }
-      .nav-btn-container {
-        position: fixed;
-        margin-top: 20px;
-        right: 5%;
-        bottom: 5%;
-        button {
-          margin-left: 15px;
-        }
-      }
     }
   }
 
@@ -258,6 +267,20 @@
     i {
       font-size: .9em;
     }
+    .selectize-comp {
+      margin-top: 10px;
+      margin-left: 25px;
+      max-width: 500px;
+    }
+  }
+  .selected-count {
+    box-shadow: $box-shadow;
+    width: 300px;
+    position: fixed;
+    top: 270px;
+    right: 40px;
+    border-radius: 5px;
+    background-color: $background-body;
   }
 }
 
