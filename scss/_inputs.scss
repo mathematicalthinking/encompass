@@ -21,6 +21,10 @@
   width: 100%;
 }
 
+.single-text-input-container {
+  @include flex-container(auto, auto, row, no-wrap, center, center, center);
+}
+
 .radio-list {
   .radio-group-item {
     margin: 8px 0 10px 8px;

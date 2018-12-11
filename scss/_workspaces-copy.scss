@@ -60,6 +60,9 @@
 }
 
 #workspace-new-copy {
+  .single-text-input-container {
+    max-width: 600px;
+  }
   .primary-filter-list {
     margin-bottom: 50px;
     .display-info {
@@ -67,6 +70,7 @@
       font-weight: $light-font-weight;
       margin-bottom: 30px;
       padding-right: 10px;
+      font-size: .95em;
     }
     .detail-header {
       font-weight: $bold-font-weight;
@@ -78,7 +82,7 @@
     }
     .sub-list {
       margin-left: 30px;
-      margin-top: -30px;
+      margin-top: -10px;
       margin-bottom: 30px;
       .sub-header {
         font-weight: $bold-font-weight;
@@ -87,6 +91,7 @@
       .sub-content {
         font-weight: $light-font-weight;
         margin-bottom: 20px;
+        font-size: .95em;
       }
     }
   }
@@ -210,9 +215,6 @@
 #ws-copy-owner-settings {
   .ws-copy-input {
     margin-bottom: 40px;
-  }
-  .single-text-input {
-    max-width: 568px;
   }
   .sub-input-label {
     margin-top: 10px;

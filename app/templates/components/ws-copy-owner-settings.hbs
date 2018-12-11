@@ -5,7 +5,9 @@
       <i class="fas fa-info-circle info-icon"></i>
     </span>
   </p>
-  {{input class="single-text-input" id="ws-copy-name" type="text" value=selectedName placeholder="Provide a name for your workspace"}}
+  <div class="single-text-input-container">
+    {{input class="single-text-input" id="ws-copy-name" type="text" value=selectedName placeholder="Provide a name for your workspace"}}
+  </div>
 </div>
 
 {{#each nameErrors as |error|}}
