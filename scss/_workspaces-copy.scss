@@ -282,6 +282,64 @@
     border-radius: 5px;
     background-color: $background-body;
   }
+  #submission-viewer-list {
+    width: 100%;
+    box-shadow: $box-shadow;
+    .sort-bar {
+      background-color: $filter-list-background-color;
+      @include flex-container(auto, auto, row, no-wrap, space-between, center, stretch);
+      .sort-bar-item {
+        text-transform: uppercase;
+        margin-top: 2px;
+        font-size: .9em;
+        text-align: left;
+        padding: 15px 0;
+        .sort-icon {
+          margin-left: 5px;
+        }
+        &.check {
+          padding-left: 25px;
+          @include flex-item(1, center, .06 0 auto);
+          width: 6%;
+          &:hover {
+            cursor: pointer;
+            color: black;
+          }
+        }
+        &.student {
+          @include flex-item(2, center, .15 0 auto);
+          width: 15%;
+          &:hover {
+            cursor: pointer;
+            color: black;
+          }
+        }
+        &.explanation {
+          @include flex-item(3, center, .5 0 auto);
+          width: 50%;
+        }
+        &.selections {
+          @include flex-item(4, center, .15 0 auto);
+          width: 15%;
+          &:hover {
+            cursor: pointer;
+            color: black;
+          }
+        }
+        &.date {
+          @include flex-item(5, center, .10 0 auto);
+          width: 10%;
+          &:hover {
+            cursor: pointer;
+            color: black;
+          }
+        }
+      }
+    }
+  }
+  #submission-viewer-list-item {
+    border-bottom: 1px solid $input-border;
+  }
 }
 
 #ws-permissions-new {
