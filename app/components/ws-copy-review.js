@@ -1,5 +1,6 @@
 Encompass.WsCopyReviewComponent = Ember.Component.extend({
   elementId: 'ws-copy-review',
+  createDate: Date.now(),
 
   actions: {
     next() {

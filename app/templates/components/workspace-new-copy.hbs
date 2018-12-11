@@ -67,7 +67,7 @@
         {{/if}}
 
         {{#if showReview}}
-          {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
         {{/if}}
       </div>
 
