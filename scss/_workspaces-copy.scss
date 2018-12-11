@@ -243,11 +243,16 @@
 }
 
 #ws-copy-permissions {
-  // margin-left: 20px;
-
   .selectize-comp {
     margin-bottom: 25px;
     margin-top: 15px;
+  }
+  .fa-edit {
+    margin-left: 15px;
+  }
+  .fa-minus-circle {
+    color: $error-color;
+    margin-left: 15px;
   }
 }
 
@@ -265,6 +270,7 @@
   }
   .radio-group-item {
     i {
+      margin-left: 10px;
       font-size: .9em;
     }
     .selectize-comp {
@@ -278,7 +284,7 @@
       font-size: 1em;
       font-weight: $light-font-weight;
       position: relative;
-      font-size: .9em;
+      font-size: 1em;
       left: 20px;
       top: 2px;
 
@@ -407,12 +413,32 @@
 }
 
 #ws-permissions-new {
-  .radio-group {
-    margin-top: 15px;
+  .username {
+    font-weight: $light-font-weight;
   }
-  .save-permissions {
-    margin-top: 15px;
-    margin-bottom: 15px;
+  .global-permissions {
+    margin-bottom: 30px;
+    margin-top: 20px;
+  }
+  .submission-permissions {
+    margin-bottom: 30px;
+  }
+  .radio-group {
+    &.label {
+      margin-bottom: 10px;
+      font-size: 1em;
+      color: $primary-font-color;
+      i {
+        margin-left: 15px;
+      }
+    }
+  }
+  .custom-global-permissions {
+    border: 1px solid red;
+    margin-left: 20px;
+  }
+  .primary-button {
+    width: fit-content;
   }
 }
 

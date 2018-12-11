@@ -1,31 +1,39 @@
 
-<h5>Configure Permissions for {{selectedUser.username}}</h5>
+<p class="input-label">
+  Configure Permissions for <span class="username">{{selectedUser.username}}</span>
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Select which permissions this user should have for this new workspace">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
 
+<div class="global-permissions">
+  {{radio-group options=globalItems selectedValue=global}}
+  {{#if showCustom}}
+    <div class="custom-global-permissions">
+      {{radio-group options=selectionItems selectedValue=selections}}
+      {{radio-group options=commentItems selectedValue=comments}}
+      {{radio-group options=folderItems selectedValue=folders}}
+      {{radio-group options=feedbackItems selectedValue=feedback}}
+    </div>
+  {{/if}}
+</div>
+
+<div class="submission-permissions">
 {{radio-group options=submissionItems selectedValue=submissions}}
-{{#if showCustomSubmissions}}
-<ul>
-
-
-  {{#each workspace.submissions.content as |submission|}}
-    <li>
-       <input type="checkbox" checked={{is-in customSubmissionIds submission.id}} name="customIds" value={{submission.id}} onclick={{action "updateCustomSubs" submission.id}}>
-      <span>{{submission.id}} by {{submission.student}}</span>
-    </li>
-  {{/each}}
-  </ul>
-{{/if}}
-{{radio-group options=globalItems selectedValue=global}}
-
-{{#if showCustom}}
-
-  {{radio-group options=selectionItems selectedValue=selections}}
-  {{radio-group options=commentItems selectedValue=comments}}
-  {{radio-group options=folderItems selectedValue=folders}}
-  {{radio-group options=feedbackItems selectedValue=feedback}}
-{{/if}}
+  {{#if showCustomSubmissions}}
+    <ul>
+    {{#each workspace.submissions.content as |submission|}}
+      <li>
+        <input type="checkbox" checked={{is-in customSubmissionIds submission.id}} name="customIds" value={{submission.id}} onclick={{action "updateCustomSubs" submission.id}}>
+        <span>{{submission.id}} by {{submission.student}}</span>
+      </li>
+    {{/each}}
+    </ul>
+  {{/if}}
+</div>
 
 {{#if saveError}}
   <p class="error-message">Sorry, something went wrong. Please try again.</p>
 {{/if}}
-<button class="save-permissions" {{action "savePermissions"}}>Save User Permissions </button>
-<button {{action (mut selectedUser) null}}>Cancel</button>
+
+<button class="primary-button" {{action "savePermissions"}}>Save Permissions</button>

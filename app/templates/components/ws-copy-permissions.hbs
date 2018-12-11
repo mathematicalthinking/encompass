@@ -6,35 +6,37 @@
 </p>
 
 <p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
-{{selectize-input
-store=store
-inputId="collab-select"
-maxItems=1
-onItemAdd=(action "setCollaborator")
-onItemRemove=(action "setCollaborator")
-labelField="username"
-valueField="id"
-searchField="username"
-model="user"
-queryParamsKey="usernameSearch"
-isAsync=true
-placeholder="Search for collaborators to add"}}
-
-{{#if selectedCollaborator}}
-  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
-{{/if}}
+  {{selectize-input
+    store=store
+    inputId="collab-select"
+    maxItems=1
+    onItemAdd=(action "setCollaborator")
+    onItemRemove=(action "setCollaborator")
+    labelField="username"
+    valueField="id"
+    searchField="username"
+    model="user"
+    queryParamsKey="usernameSearch"
+    isAsync=true
+    placeholder="Search for collaborators to add"
+  }}
 
 {{#if permissions}}
   <p class="input-label">Added Collaborators</p>
   <ul>
     {{#each permissions as |permission|}}
-      <li>{{permission.user.username}}
-        <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
-        <i {{action "removeCollab" permission}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
-      </li>
+    <li>{{permission.user.username}}
+      <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
+      <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
+    </li>
     {{/each}}
   </ul>
 {{/if}}
+
+{{#if selectedCollaborator}}
+  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
+{{/if}}
+
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
