@@ -1,0 +1,65 @@
+<h1>Create New Workspace</h1>
+<div class="ws-copy-input name" >
+  <h5>Workspace Name</h5>
+  {{input id="ws-new-name" type="text" value=workspaceName placeholder="Name for new workspace"}}
+</div>
+
+{{#each workspaceNameErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
+{{/each}}
+
+<div class="ws-new owner">
+  <h5>Workspace Owner</h5>
+{{selectize-input
+store=store
+inputId="owner-select"
+initialOptions=ownerOptions
+maxItems=1
+onItemAdd=(action "updateSelectizeSingle")
+onItemRemove=(action "updateSelectizeSingle")
+labelField="username"
+valueField="id"
+searchField="username"
+model="user"
+propToUpdate="selectedOwner"
+placeholder="Search users to choose as owner"}}
+</div>
+
+{{#each ownerErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+{{/each}}
+
+<div class="ws-new mode">
+  <h5>Privacy Setting</h5>
+  {{radio-group options=modeInputs selectedValue=selectedMode}}
+</div>
+
+{{#each privacySettingErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
+{{/each}}
+
+<div class="ws-new folderset">
+  <h5>Folder Set</h5>
+{{selectize-input
+store=store
+inputId="folderset-select"
+initialOptions=folderSetOptions
+maxItems=1
+onItemAdd=(action "updateSelectizeSingle")
+onItemRemove=(action "updateSelectizeSingle")
+labelField="name"
+valueField="id"
+searchField="name"
+model="folder-set"
+propToUpdate="selectedFolderSet"
+placeholder="Select a Folder Set"}}
+</div>
+
+{{#each folderSetErrors as |error|}}
+  {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
+{{/each}}
+
+{{ws-new-settings-permissions permissions=workspacePermissions store=store users=users }}
+
+<button class="action_button" {{action "handleSettings"}}>Create Workspace</button>
+
