@@ -28,7 +28,25 @@ var EncWorkspaceRequestSchema = new Schema({
   section: { type: ObjectId, ref: 'Section' },
   createdWorkspace: { type: ObjectId, ref: 'Workspace' },
   isEmptyAnswerSet: { type: Boolean },
-  createWorkspaceError: { type: String }
+  createWorkspaceError: { type: String },
+  newAnswerSet: {
+    name: {type: String},
+    privacySetting: {type: 'String', enum: ['M', 'O', 'E']}
+  },
+  answers: [{type: ObjectId, ref: 'Answer'}],
+  permissionObjects: [{
+    user: { type: ObjectId, ref: 'User'},
+    global: {type: String, enum: ['viewOnly', 'editor', 'custom'] },
+    submissions: {
+      all: { type: Boolean },
+      submissionIds: [ {type: ObjectId, ref: 'Submission'} ],
+      userOnly: [ { type: Boolean }]
+    },
+    folders: { type: Number, enum: [0, 1, 2, 3, 4] },
+    comments: { type: Number, enum: [0, 1, 2, 3, 4] },
+    selections: { type: Number, enum: [0, 1, 2, 3, 4] },
+    feedback: { type: String, enum: ['none', 'authReq', 'preAuth'] }
+  }]
 }, { versionKey: false });
 
 /**

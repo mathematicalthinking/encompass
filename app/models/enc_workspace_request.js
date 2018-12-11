@@ -12,5 +12,8 @@ Encompass.EncWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
   isEmptyAnswerSet: DS.attr('boolean', { default: null }),
   createWorkspaceError: DS.attr('string'),
   owner: DS.belongsTo('user', { inverse: null }),
-  mode: DS.attr('string')
+  mode: DS.attr('string'),
+  answers: DS.hasMany('answer', { inverse: null }),
+  newAnswerSet: DS.attr(),
+  permissionObjects: DS.attr(),
 });
