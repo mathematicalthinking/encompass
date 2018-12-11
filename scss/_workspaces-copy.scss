@@ -62,12 +62,13 @@
 #workspace-new-copy {
   .primary-filter-list {
     margin-bottom: 50px;
-    p {
+    .display-info {
       margin-left: 20px;
       font-weight: $light-font-weight;
       margin-bottom: 30px;
+      padding-right: 10px;
     }
-    h3 {
+    .detail-header {
       font-weight: $bold-font-weight;
       i {
         position: relative;
