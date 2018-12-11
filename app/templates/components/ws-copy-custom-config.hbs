@@ -58,14 +58,20 @@
             <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="View submission list and select desired submissions">
               <i class="far fa-question-circle info-icon"></i>
             </span>
+            {{#if closedCustomView}}
+              <span class="show-viewer" {{action 'showCustomSelect'}}>Show Viewer</span>
+            {{/if}}
           </span>
         </label>
       </li>
     </ul>
 
   {{#if showCustomSubmissionViewer}}
-    {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
-    onSelectAll=(action "selectAllSubmissions") onUnselectAll=(action "deselectAllSubmissions")
+    {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds
+      onSelect=(action "updateCustomSubs")
+      onSelectAll=(action "selectAllSubmissions")
+      onUnselectAll=(action "deselectAllSubmissions")
+      onDoneSelecting=(action 'setDoneSelecting')
     }}
   {{/if}}
   {{#if noSubmissionsToCopy}}

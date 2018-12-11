@@ -347,7 +347,15 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     },
     deselectAllSubmissions: function() {
       this.set('customSubmissionIds', []);
-    }
+    },
+    setDoneSelecting: function () {
+      this.set('showCustomSubmissionViewer', false);
+      this.set('closedCustomView', true);
+    },
+    showCustomSelect: function () {
+      this.set('showCustomSubmissionViewer', true);
+      this.set('closedCustomView', false);
+    },
   },
 
 

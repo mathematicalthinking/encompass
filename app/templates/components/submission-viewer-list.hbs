@@ -2,9 +2,11 @@
 <h4>Select Submissions</h4>
 
 <div class="info-bar">
-  <div class="info-bar-item message">Selected Submissions</div>
+  <div class="info-bar-item message">{{selectedSubmissionIds.length}} Submissions Selected</div>
   <div class="info-bar-item link">Full view <i class="fas fa-external-link-alt"></i></div>
-  <div class="info-bar-item button"><button class="primary-button">Done</button></div>
+  <div class="info-bar-item button">
+    <button class="primary-button" {{action 'doneSelecting'}}>Done</button>
+  </div>
 </div>
 
 <div class="sort-bar">
