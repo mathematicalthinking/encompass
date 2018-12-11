@@ -9,8 +9,11 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   sortProperties: ['name'],
   answerToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
-  selectedAnswerIds: [],
+  selectedAnswers: [],
   doIncludeRevisions: false,
+  currentStep: 1,
+  showSubmissionViewer: Ember.computed.equal('currentStep', 1),
+  showWorkspaceSettingsMenu: Ember.computed.equal('currentStep', 2),
 
   searchOptions: ['all'],
   searchCriterion: 'all',
@@ -26,7 +29,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'createDate' },
       {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'createDate'}
     ],
-    revision: [
+    revisions: [
       { sortParam: null, icon: 'fas fa-minus'},
       { name: 'Most', sortParam: { revisions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'revisions' },
       { name: 'Fewest', sortParam: { revisions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'revisions'}
@@ -161,27 +164,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     this._super(...arguments);
   },
 
-  buildSortBy: function() {
-    if (this.get('searchByRelevance')) {
-      return {
-        sortParam: {
-          score: { $meta: "textScore" }
-        },
-        doCollate: false,
-        byRelevance: true
-      };
-    }
-
-    let criterion = this.get('sortCriterion');
-    if (!criterion) {
-      return { title: 1, doCollate: true };
-    }
-    let { sortParam, doCollate } = criterion;
-    return {
-      sortParam,
-      doCollate
-    };
-  },
 
   buildSearchBy: function() {
     let criterion = this.get('searchCriterion');
@@ -191,70 +173,32 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       query
     };
   },
-
-  buildFilterBy: function() {
-    let primaryFilterValue = this.get('primaryFilterValue');
-    let isPdadmin = this.get('currentUser.accountType') === "P";
-    let filterBy;
-
-    if (primaryFilterValue === 'mine') {
-      filterBy = this.buildMineFilter();
+  nonTrashedAnswers: function() {
+    if (this.get('answers')) {
+      return this.get('answers').rejectBy('isTrashed');
     }
-
-    if (primaryFilterValue === 'collab') {
-      filterBy = this.buildCollabFilter();
-    }
-
-    if (primaryFilterValue === 'everyone') {
-      filterBy = this.buildPublicFilter();
-    }
-
-    if (primaryFilterValue === 'myOrg') {
-      filterBy = this.buildMyOrgFilter();
-    }
-
-    if (primaryFilterValue === 'all') {
-      filterBy = this.buildAllFilter();
-    }
-    if (_.isUndefined(filterBy) || _.isNull(filterBy)) {
-      filterBy = {};
-    }
-    // primary public filter should disable privacy setting dropdown?
-    if (primaryFilterValue === 'everyone') {
-      filterBy.mode = {$in: ['public']};
-    } else if (primaryFilterValue === 'myOrg') {
-      if (isPdadmin) {
-        let mode = this.get('modeFilter');
-        filterBy.mode = mode;
-      } else {
-        filterBy.mode = { $in: ['org'] };
-      }
-    } else {
-      let mode = this.get('modeFilter');
-      filterBy.mode = mode;
-    }
-
-    return filterBy;
-  },
+    return [];
+  }.property('answers.@each.isTrashed'),
 
   displayAnswers: function () {
-    const answers = this.get('answers');
+    const answers = this.get('nonTrashedAnswers');
     const doIncludeRevisions = this.get('doIncludeRevisions');
     if (answers) {
       if (doIncludeRevisions) {
-        return answers.rejectBy('isTrashed');
+        return answers;
       }
       const threads = this.get('submissionThreads');
       if (threads) {
         let results = [];
         threads.forEach((thread) => {
-          results.addObject(thread.get('firstObject'));
+          // each thread is sorted array of student work (from earliest to latest)
+          results.addObject(thread.get('lastObject'));
         });
         return results;
       }
     }
     return [];
-  }.property('answers.@each.isTrashed', 'doIncludeRevisions', 'submissionThreads'),
+  }.property('nonTrashedAnswers.@each.isTrashed', 'doIncludeRevisions', 'submissionThreads'),
 
   buildQueryParams: function(page, isTrashedOnly) {
     let params = {};
@@ -293,24 +237,11 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return params;
   },
 
-  handleLoadingMessage: function() {
-    const that = this;
-    if (!this.get('isFetchingAnswers')) {
-      this.set('showLoadingMessage', false);
-      return;
-    }
-    Ember.run.later(function() {
-      if (that.isDestroyed || that.isDestroying || !that.get('isFetchingAnswers')) {
-        return;
-      }
-      that.set('showLoadingMessage', true);
-    }, 300);
-  }.observes('isFetchingAnswers'),
-
   getAnswers: function(page, isTrashedOnly=false, isHiddenOnly=false, ) {
     this.set('isFetchingAnswers', true);
+
     let queryParams = this.buildQueryParams(page, isTrashedOnly);
-    console.log('queryParams', queryParams);
+
     if (this.get('criteriaTooExclusive')) {
       if (this.get('isFetchingAnswers')) {
         this.set('isFetchingAnswers', false);
@@ -321,12 +252,10 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     this.store.query('answer',
       queryParams
     ).then((results) => {
-      console.log('answer results', results);
       this.removeMessages('answerLoadErrors');
       this.set('answers', results);
       this.set('answersMetadata', results.get('meta'));
       this.set('isFetchingAnswers', false);
-
 
       let isSearching = this.get('isSearchingAnswers');
 
@@ -395,16 +324,18 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   },
   sortedAnswers: function() {
+    console.log('sortingAnswers!');
     let sortParam = this.get('sortCriterion.sortParam');
+    const defaultSorted = this.get('displayAnswers');
     if (!sortParam) {
       // default to alphabetical
-      return this.get('displayAnswers');
+      return defaultSorted;
     }
     let field = _.keys(sortParam)[0];
     let direction = sortParam[field];
 
     if (field === 'explanation') {
-      let ascending = this.get('displayAnswers').sortBy('explanation.length');
+      let ascending = defaultSorted.sortBy('explanation.length');
       if (direction === 1) {
         return ascending;
       }
@@ -412,7 +343,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     }
 
     if (field === 'createDate') {
-      let ascending = this.get('displayAnswers').sortBy('createDate');
+      let ascending = defaultSorted.sortBy('createDate');
       if (direction === 1) {
         return ascending;
       }
@@ -420,48 +351,30 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     }
 
     if (field === 'revisions') {
-      let ascending = _.sortBy(this.get('displayAnswers'), (answer) => {
+      let ascending = _.sortBy(defaultSorted, (answer) => {
         let student = answer.get('student');
         let revisionCount = this.get('submissionThreads').get(student).get('length');
         return revisionCount;
       });
+      console.log('ascending', ascending, direction);
       if (direction === 1) {
         return ascending;
       }
       return ascending.reverse();
     }
-    return this.get('displayAnswers');
+    if (field === 'student') {
+      console.log('in student', direction);
+      let ascending = defaultSorted.sortBy('student');
+      if (direction === 1) {
+        return ascending;
+        // return defaultSorted.reverse();
+      }
+      return ascending.reverse();
+    }
+    return defaultSorted;
 
   }.property('displayAnswers.[]', 'sortCriterion'),
 
-  // displayList: function() {
-  //   const filterKey = {
-  //     all: 'allAnswers',
-  //   };
-
-  //   const filter = this.get('listFilter');
-
-  //   if (_.isUndefined(filter) || _.isUndefined(filterKey[filter])) {
-  //     return this.get('answers').rejectBy('isTrashed');
-  //   }
-
-  //   const listName = filterKey[filter];
-  //   let displayList = this.get(listName);
-  //   let sorted = this.sortDisplayList(displayList);
-
-  //   // if (sorted) {
-  //   //   this.set('displayList', sorted);
-  //   //   return sorted;
-  //   // } else {
-  //   //   this.set('displayList', this.get(listName));
-  //   // }
-  //   return sorted;
-
-  // }.property('listFilter', 'answers.@each.isTrashed'),
-
-  // setAllAnswers: function() {
-  //   this.set('allAnswers', this.get('answers').rejectBy('isTrashed'));
-  // }.observes('answers.@each.isTrashed'),
 
   actions: {
     showModal: function(answer) {
@@ -559,11 +472,108 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         this.send('triggerFetch');
       }
     },
-    updateSelectedAnswerIds(answerId) {
-
+    updateSelectedAnswers(answer, isChecked) {
+      // if isChecked is false, add answer to selected Answers
+      // if true remove
+      if (!answer) {
+        return;
+      }
+      if (isChecked === true) {
+        this.get('selectedAnswers').removeObject(answer);
+      }
+      if (isChecked === false) {
+        this.get('selectedAnswers').addObject(answer);
+      }
     },
     toggleIncludeRevisions() {
       this.toggleProperty('doIncludeRevisions');
+    },
+    toggleCheckAllAnswers(e) {
+      // if is checked, user just checked box, so select all
+      let isChecked = e.target.checked;
+
+      const utils = this.get('utils');
+      let answers = this.get('nonTrashedAnswers');
+      if (!utils.isNonEmptyArray(answers)) {
+        return;
+      }
+      if (isChecked === false) {
+        this.set('selectedAnswers', []);
+      }
+      if (isChecked === true) {
+        this.get('selectedAnswers').addObjects(answers);
+      }
+    },
+    toSettingsConfig() {
+      const answers = this.get('selectedAnswers');
+      if (!this.get('utils').isNonEmptyArray(answers)) {
+        return;
+      }
+      this.set('currentStep', 2);
+    },
+    createWorkspace(settings) {
+      const utils = this.get('utils');
+      console.log('settings in create ws', settings);
+      let answers = this.get('selectedAnswers');
+
+
+      if (!utils.isNonEmptyObject(settings)) {
+        return;
+      }
+
+      const { requestedName, owner, mode, folderSet, permissionObjects } = settings;
+      if (utils.isNonEmptyArray(permissionObjects)) {
+        permissionObjects.forEach((obj) => {
+          if (obj.user && obj.user.get('id') ) {
+            obj.user = obj.user.get('id');
+          }
+        });
+      }
+      if (!utils.isNonEmptyArray(answers)) {
+        return;
+      }
+      let criteria = {
+        answers,
+        requestedName,
+        owner,
+        mode,
+        folderSet,
+        permissionObjects,
+        createdBy: this.get('currentUser')
+      };
+
+      const encWorkspaceRequest = this.store.createRecord('encWorkspaceRequest', criteria);
+      this.set('isRequestInProgress', true);
+      encWorkspaceRequest.save().then((res) => {
+        this.set('isRequestInProgress', false);
+        if (res.get('isEmptyAnswerSet')) {
+          this.set('isEmptyAnswerSet', true);
+          $('.error-box').show();
+          return;
+        }
+        if (res.get('createWorkspaceError')) {
+          this.set('createWorkspaceError', res.get('createWorkspaceError'));
+          return;
+        }
+        this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 3000, false, null);
+        //Get the created workspaceId from the res
+        let workspaceId = res.get('createdWorkspace').get('id');
+        //Then find the first SubmissionID, this is sent to route in order to redirect
+        this.store.findRecord('workspace', workspaceId).then((workspace) => {
+          let submission = workspace.get('submissions').get('firstObject');
+          let submissionId = submission.get('id');
+          this.sendAction('toWorkspaces', workspaceId, submissionId);
+        }).catch((err) => {
+          this.handleErrors(err, 'findRecordErrors');
+        });
+
+      })
+      .catch((err) => {
+        this.set('isRequestInProgress', false);
+
+        this.handleErrors(err, 'wsRequestErrors', encWorkspaceRequest);
+        return;
+      });
     }
   }
 });
