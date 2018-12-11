@@ -22,15 +22,17 @@
   }}
 
 {{#if permissions}}
-  <p class="input-label">Added Collaborators</p>
-  <ul>
-    {{#each permissions as |permission|}}
-    <li>{{permission.user.username}}
-      <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
-      <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
-    </li>
-    {{/each}}
-  </ul>
+  <div class="collaborator-list">
+    <p class="input-label">Added Collaborators</p>
+    <ul>
+      {{#each permissions as |permission|}}
+      <li>{{permission.user.username}}
+        <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
+        <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
 {{/if}}
 
 {{#if selectedCollaborator}}

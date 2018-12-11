@@ -242,20 +242,6 @@
   }
 }
 
-#ws-copy-permissions {
-  .selectize-comp {
-    margin-bottom: 25px;
-    margin-top: 15px;
-  }
-  .fa-edit {
-    margin-left: 15px;
-  }
-  .fa-minus-circle {
-    color: $error-color;
-    margin-left: 15px;
-  }
-}
-
 #ws-copy-custom-config {
   margin-top: 40px;
   .custom-header {
@@ -412,6 +398,24 @@
   }
 }
 
+
+#ws-copy-permissions {
+  .selectize-comp {
+    margin-bottom: 25px;
+    margin-top: 15px;
+  }
+  .fa-edit {
+    margin-left: 15px;
+  }
+  .fa-minus-circle {
+    color: $error-color;
+    margin-left: 15px;
+  }
+  .collaborator-list {
+    margin: 20px 0 30px 0;
+  }
+}
+
 #ws-permissions-new {
   .username {
     font-weight: $light-font-weight;
@@ -445,6 +449,7 @@
     width: fit-content;
   }
 }
+
 
 #ws-copy-review {
   .sub-input-label {
