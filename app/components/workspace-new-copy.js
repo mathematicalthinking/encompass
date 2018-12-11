@@ -239,34 +239,14 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     {
       value: 1,
       display: 'Choose Workspace to Copy',
-      // constraints: {
-      //   workspace: {
-      //     presence: { allowEmpty: false }
-      //   }
-      // }
     },
      {
       value: 2,
       display: 'Choose Preset or Custom Configuration',
-
-      // constraints: {
-      //   selectedConfig: {
-      //     presence: { allowEmpty: false }
-      //   }
-      // }
     },
    {
       value: 3,
       display: 'Choose Owner Settings',
-      // constraints: {
-      //   name: {
-      //     presence: { allowEmpty: false },
-      //     length: {
-      //       maximum: 500
-      //     }
-      //   }
-      // }
-
     },
    {
       value: 4,
