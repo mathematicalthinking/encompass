@@ -10,6 +10,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   submissionItems: {
     groupName: 'submissions',
     groupLabel: 'Submission Permissions',
+    info: 'Submission permissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
     required: true,
     inputs: [
       { label: 'All', value: 'all' },
@@ -21,6 +22,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   folderItems: {
     groupName: 'folders',
     groupLabel: 'Folder Permissions',
+    info: 'Folder permissions decide what users can do with folders in this workspace. Delete is the highest setting which means this user can do anything related to folders',
     required: true,
     inputs: [
       { label: 'None', value: 0 },
@@ -33,6 +35,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   selectionItems: {
     groupName: 'selections',
     groupLabel: 'Selection Permissions',
+    info: 'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections',
     required: true,
     inputs: [
       { label: 'None', value: 0 },
@@ -45,6 +48,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   commentItems: {
     groupName: 'comments',
     groupLabel: 'Comment Permissions',
+    info: 'Comment permissions decide what users can do with comments in this workspace. Delete is the highest setting which means this user can do anything related to comments',
     required: true,
     inputs: [
       { label: 'None', value: 0 },
@@ -58,6 +62,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   feedbackItems: {
     groupName: 'feedback',
     groupLabel: 'Feedback Permissions',
+    info: 'Feedback permissions dictate whether this user can send feedback to the creator of the submissions. Hover over the question marks for more info.',
     required: true,
     inputs: [
       { label: 'None', value: 'none' },
@@ -68,6 +73,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   globalItems: {
     groupName: 'global',
     groupLabel: 'Global Permissions',
+    info: 'Global permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       { label: 'View Only', value: 'viewOnly' },
