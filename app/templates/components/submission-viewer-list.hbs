@@ -1,14 +1,19 @@
  <button {{action "selectAll"}}>Check All</button>
  <button {{action "unselectAll"}}>Uncheck All</button>
 <div class="sort-bar">
-  <input type="checkbox" class="sort-bar-item check" checked={{isChecked}} name="customIds" value={{submission.id}} onclick={{action "onSelect"}}>
+  <div class="sort-bar-item check">
+    <input type="checkbox" checked={{isChecked}} name="customIds" value={{submission.id}}
+    onclick={{action "onSelect"}}>
+  </div>
   <p class="sort-bar-item student">Student</p>
   <p class="sort-bar-item explanation">Explanation {{{submission.answer.explanation}}}</p>
   <p class="sort-bar-item selections">Selections {{submission.selections.length}}</p>
   <p class="sort-bar-item date">Date {{submission.answer.createDate}}</p>
 </div>
 <ul>
+  <li>
     {{#each submissions as |submission|}}
       {{submission-viewer-list-item submission=submission selectedSubmissionIds=selectedSubmissionIds onSelect=(action "onSelect")}}
     {{/each}}
+  </li>
 </ul>

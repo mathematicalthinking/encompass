@@ -284,6 +284,7 @@
   }
   #submission-viewer-list {
     width: 100%;
+    margin-top: 20px;
     box-shadow: $box-shadow;
     .sort-bar {
       background-color: $filter-list-background-color;
@@ -292,53 +293,74 @@
         text-transform: uppercase;
         margin-top: 2px;
         font-size: .9em;
-        text-align: left;
+        text-align: center;
         padding: 15px 0;
         .sort-icon {
           margin-left: 5px;
         }
         &.check {
-          padding-left: 25px;
-          @include flex-item(1, center, .06 0 auto);
-          width: 6%;
-          &:hover {
-            cursor: pointer;
-            color: black;
+          @include flex-item(1, center, .05 0 auto);
+          width: 5%;
+          input {
+            text-align: center;
           }
         }
         &.student {
-          @include flex-item(2, center, .15 0 auto);
-          width: 15%;
-          &:hover {
-            cursor: pointer;
-            color: black;
-          }
+          @include flex-item(2, center, .12 0 auto);
+          width: 12%;
         }
         &.explanation {
-          @include flex-item(3, center, .5 0 auto);
-          width: 50%;
+          @include flex-item(3, center, .54 0 auto);
+          width: 54%;
+          text-align: left;
         }
         &.selections {
-          @include flex-item(4, center, .15 0 auto);
-          width: 15%;
-          &:hover {
-            cursor: pointer;
-            color: black;
-          }
+          @include flex-item(4, center, .12 0 auto);
+          width: 12%;
         }
         &.date {
-          @include flex-item(5, center, .10 0 auto);
-          width: 10%;
-          &:hover {
-            cursor: pointer;
-            color: black;
-          }
+          @include flex-item(5, center, .13 0 auto);
+          width: 13%;
+        }
+        &:hover {
+          cursor: pointer;
+          color: black;
         }
       }
     }
   }
   #submission-viewer-list-item {
-    border-bottom: 1px solid $input-border;
+    border-bottom: .5px solid $input-border;
+    padding: 10px 0;
+    display: inline-block;
+    @include flex-container(100%, null, row, wrap, space-between, center, stretch);
+    .item-section {
+      text-align: center;
+      &.check {
+        @include flex-item(1, center, .05 0 auto);
+        width: 5%;
+        input {
+          text-align: center;
+        }
+      }
+      &.student {
+        @include flex-item(2, center, .12 0 auto);
+        width: 12%;
+      }
+      &.explanation {
+        @include flex-item(3, center, .54 0 auto);
+        width: 54%;
+        text-align: left;
+      }
+      &.selections {
+        @include flex-item(4, center, .12 0 auto);
+        width: 12%;
+      }
+      &.date {
+        @include flex-item(5, center, .13 0 auto);
+        width: 13%;
+      }
+    }
   }
 }
 

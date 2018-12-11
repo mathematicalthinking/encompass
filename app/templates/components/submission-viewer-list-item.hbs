@@ -1,7 +1,8 @@
-<li>
-  <input type="checkbox" checked={{isChecked}} name="customIds" value={{submission.id}} onclick={{action "onSelect"}}>
-  <p>Student{{submission.student}}</p>
-  <p>Explanation {{{submission.answer.explanation}}}</p>
-  <p>Selections {{submission.selections.length}}</p>
-  <p>Date {{submission.answer.createDate}}</p>
-</li>
+<div class="item-section check">
+  <input type="checkbox" checked={{isChecked}} name="customIds" value={{submission.id}}
+    onclick={{action "onSelect"}}>
+</div>
+<p class="item-section student">{{submission.student}}</p>
+<p class="item-section explanation">{{{submission.answer.explanation}}}</p>
+<p class="item-section selections">{{submission.selections.length}}</p>
+<p class="item-section date">{{format-date submission.answer.createDate 'MM/DD/YY'}}</p>
