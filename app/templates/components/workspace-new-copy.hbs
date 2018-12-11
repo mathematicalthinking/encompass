@@ -67,26 +67,10 @@
         {{/if}}
 
         {{#if showReview}}
-          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName config=newWsConfig workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
         {{/if}}
       </div>
 
-
-      {{!-- <div class="nav-buttons">
-        {{#unless (is-equal currentStep.value 1)}}
-        <button {{action "changeStep" -1}}>Prev</button>
-      {{/unless}}
-
-      {{#if (is-equal currentStep.value maxSteps)}}
-        <button {{action copyRequest}}>Submit Copy Request</button>
-      {{else}}
-        <button {{action "proceed" 1}}>Next</button>
-      {{/if}}
-      </div> --}}
-
-      {{#each validationErrors as |error|}}
-
-      {{/each}}
 
       {{#if customConfigError}}
         <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
