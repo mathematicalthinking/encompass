@@ -9,6 +9,57 @@
   <p class="loading-message">Your copy request is in progress. Thank you for your patience.</p>
 {{/if}}
 
+<div class="workspace-copy-card">
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">
+            <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{mode}}>
+              {{{public-private mode}}}
+            </span>
+        </span>
+        <span class="date">{{format-date createDate 'L'}}</span>
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        <span>{{{name}}}</span>
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        {{{owner.username}}}
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <ul class="workspace-stats">
+          <li>
+            <p class="stat-header">Submissions</p>
+            <p class="stat-number">{{workspace.submissionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Selections</p>
+            <p class="stat-number">{{workspace.selectionsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Comments</p>
+            <p class="stat-number">{{workspace.commentsLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Responses</p>
+            <p class="stat-number">{{workspace.responsesLength}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Collaborators</p>
+            <p class="stat-number">{{workspace.editorsLength}}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
   <button class="primary-button" {{action "next"}}>Create</button>
