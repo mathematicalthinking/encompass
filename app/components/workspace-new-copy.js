@@ -167,6 +167,19 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   },
 
+  collabList: function() {
+    //need to get the permissions object
+    //get username from each permissions object and list them in the sumamry
+    const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
+    if (formattedPermissionObjects) {
+      console.log('fomrattedpermissionsObject', formattedPermissionObjects);
+      return formattedPermissionObjects.map((object) => {
+        return object.user;
+      });
+    }
+  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
+
+
   detailsItems: function() {
     return [
       {
@@ -213,7 +226,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       },
       {
         label: 'Collaborators',
-        displayValue: this.get('newWsPermissions'),
+        displayValue: this.get('collabList'),
         emptyValue: 'No Collaborators',
         propName: 'collabs',
         associatedStep: 4,
