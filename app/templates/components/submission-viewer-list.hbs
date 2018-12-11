@@ -1,14 +1,21 @@
- <button {{action "selectAll"}}>Check All</button>
- <button {{action "unselectAll"}}>Uncheck All</button>
+
+<h4>Select Submissions</h4>
+
+<div class="info-bar">
+  <div class="info-bar-item message">Selected Submissions</div>
+  <div class="info-bar-item link">Full view <i class="fas fa-external-link-alt"></i></div>
+  <div class="info-bar-item button"><button class="primary-button">Done</button></div>
+</div>
+
 <div class="sort-bar">
   <div class="sort-bar-item check">
-    <input type="checkbox" checked={{isChecked}} name="customIds" value={{submission.id}}
-    onclick={{action "onSelect"}}>
+    <input type="checkbox" checked={{isChecked}} name="customIds" value={{isChecked}}
+    onclick={{action "toggleSelect"}}>
   </div>
   <p class="sort-bar-item student">Student</p>
-  <p class="sort-bar-item explanation">Explanation {{{submission.answer.explanation}}}</p>
-  <p class="sort-bar-item selections">Selections {{submission.selections.length}}</p>
-  <p class="sort-bar-item date">Date {{submission.answer.createDate}}</p>
+  <p class="sort-bar-item explanation">Explanation</p>
+  <p class="sort-bar-item selections">Selections</p>
+  <p class="sort-bar-item date">Date</p>
 </div>
 <ul>
   <li>

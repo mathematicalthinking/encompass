@@ -286,6 +286,37 @@
     width: 100%;
     margin-top: 20px;
     box-shadow: $box-shadow;
+    h4 {
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: $main-font-weight;
+      padding: 20px 0 10px 0;
+    }
+    .info-bar {
+      margin: 10px 0;
+      @include flex-container(auto, auto, row, no-wrap, space-between, center, stretch);
+      .info-bar-item {
+        &.message {
+          @include flex-item(1, center, .30 0 auto);
+          width: 30%;
+          text-align: left;
+          font-weight: $light-font-weight;
+          padding-left: 15px;
+        }
+        &.link {
+          @include flex-item(2, center, .30 0 auto);
+          width: 30%;
+          text-align: center;
+          color: $accent-color;
+        }
+        &.button {
+          @include flex-item(3, center, .30 0 auto);
+          width: 30%;
+          text-align: right;
+          padding-right: 15px;
+        }
+      }
+    }
     .sort-bar {
       background-color: $filter-list-background-color;
       @include flex-container(auto, auto, row, no-wrap, space-between, center, stretch);
@@ -299,8 +330,8 @@
           margin-left: 5px;
         }
         &.check {
-          @include flex-item(1, center, .05 0 auto);
-          width: 5%;
+          @include flex-item(1, center, .03 0 auto);
+          width: 3%;
           input {
             text-align: center;
           }
@@ -310,17 +341,17 @@
           width: 12%;
         }
         &.explanation {
-          @include flex-item(3, center, .54 0 auto);
-          width: 54%;
+          @include flex-item(3, center, .60 0 auto);
+          width: 60%;
           text-align: left;
         }
         &.selections {
-          @include flex-item(4, center, .12 0 auto);
-          width: 12%;
+          @include flex-item(4, center, .10 0 auto);
+          width: 10%;
         }
         &.date {
-          @include flex-item(5, center, .13 0 auto);
-          width: 13%;
+          @include flex-item(5, center, .12 0 auto);
+          width: 12%;
         }
         &:hover {
           cursor: pointer;
@@ -337,8 +368,8 @@
     .item-section {
       text-align: center;
       &.check {
-        @include flex-item(1, center, .05 0 auto);
-        width: 5%;
+        @include flex-item(1, center, .03 0 auto);
+        width: 3%;
         input {
           text-align: center;
         }
@@ -348,17 +379,17 @@
         width: 12%;
       }
       &.explanation {
-        @include flex-item(3, center, .54 0 auto);
-        width: 54%;
+        @include flex-item(3, center, .60 0 auto);
+        width: 60%;
         text-align: left;
       }
       &.selections {
-        @include flex-item(4, center, .12 0 auto);
-        width: 12%;
+        @include flex-item(4, center, .10 0 auto);
+        width: 10%;
       }
       &.date {
-        @include flex-item(5, center, .13 0 auto);
-        width: 13%;
+        @include flex-item(5, center, .12 0 auto);
+        width: 12%;
       }
     }
   }
