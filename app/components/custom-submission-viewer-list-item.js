@@ -2,12 +2,10 @@ Encompass.CustomSubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['custom-submission-viewer-list-item'],
 
   isChecked: function() {
-    const ids = this.get('selectedAnswerIds');
-    if (ids) {
-      return ids.includes(this.get('answer.id'));
-    }
-    return false;
-  }.property('selectedAnswerIds.[]'),
+   let id = this.get('answer.id');
+   let prop = `selectedMap.${id}`;
+   return this.get(prop);
+  }.property('answer.id', 'selectedMap'),
   revisionCount: function() {
     let student = this.get('student');
     let threads = this.get('threads');
@@ -22,7 +20,7 @@ Encompass.CustomSubmissionViewerListItemComponent = Ember.Component.extend({
 
   actions: {
     onSelect: function() {
-      this.get('onSelect')(this.get('answer.id'));
+      this.get('onSelect')(this.get('answer'), this.get('isChecked'));
     }
   }
 

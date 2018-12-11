@@ -1,17 +1,16 @@
 <div class="main-list">
-    {{#if isSearching}}
-      <p class="loading-message">Searching submissions...</p>
-    {{else}}
-      {{#each answers as |answer|}}
-        {{submission-viewer-list-item
-          answer=answer
-          selectedAnswerIds=selectedAnswerIds
-          onSelect=(action "onSelect")
-          isList=isList
-          isGrid=isGrid
-          store=store
-          threads=threads
-        }}
-      {{/each}}
-    {{/if}}
+  {{#each answers as |answer|}}
+      {{submission-viewer-list-item
+        answer=answer
+        selectedAnswerIds=selectedAnswerIds
+        onSelect=(action "onSelect")
+        isList=isList
+        isGrid=isGrid
+        store=store
+        threads=threads
+        selectedMap=answersSelectedHash
+      }}
+      {{else}}
+      <p class="info">No submissions found. Please try different filter criteria.</p>
+    {{/each}}
   </div>
