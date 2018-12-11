@@ -1,5 +1,10 @@
 {{#if options.groupLabel}}
-  <h5>{{options.groupLabel}}</h5>
+  <p class="radio-group label">
+    {{options.groupLabel}}
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{options.info}}>
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
 {{/if}}
 
 {{#each options.inputs as |input|}}
