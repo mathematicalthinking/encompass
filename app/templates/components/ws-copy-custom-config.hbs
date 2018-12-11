@@ -63,11 +63,10 @@
       </li>
     </ul>
 
-
   {{#if showCustomSubmissionViewer}}
-  {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
-  onSelectAll=(action "selectAllSubmissions") onUnselectAll=(action "deselectAllSubmissions")
-  }}
+    {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
+    onSelectAll=(action "selectAllSubmissions") onUnselectAll=(action "deselectAllSubmissions")
+    }}
   {{/if}}
   {{#if noSubmissionsToCopy}}
     <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
@@ -118,10 +117,6 @@
         </span>
       </label>
     </li>
-    {{!-- {{#if folderOptions.all}}
-      <input type="checkbox" checked={{folderOptions.includeStructureOnly}} name="includeStructureOnly" onclick={{action "toggleIncludeStructureOnly"}}>
-      <label>Include Structure Only</label>
-    {{/if}} --}}
     <li class="radio-group-item">
       <label>
         <input type="radio" checked={{folderOptions.includeStructureOnly}} required="true" name="folderOptions" value="includeStructureOnly" onclick={{action "updateCollectionOptions" "includeStructureOnly" "folderOptions"}}>
@@ -140,9 +135,7 @@
       </label>
     </li>
   </ul>
-
 </div>
-
 
 <div class="custom-config-content selections">
   <p class="input-label-custom">
@@ -167,7 +160,6 @@
     </li>
   </ul>
 </div>
-
 
 <div class="custom-config-content selections">
   <p class="input-label-custom">
