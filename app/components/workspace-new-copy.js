@@ -44,6 +44,26 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       ]
     },
 
+  submissionsPool: function() {
+    let allSubmissions = this.get('workspaceToCopy.submissions.content');
+    if (!allSubmissions) {
+      return [];
+    }
+    const newWsConfig = this.get('newWsConfig');
+    if (newWsConfig !== 'D' || this.get('customConfig.submissionOptions.all') === true) {
+      return allSubmissions;
+    }
+
+    let customIds = this.get('customConfig.submissionOptions.submissionIds');
+    if (this.get('utils').isNonEmptyArray(customIds)) {
+      return allSubmissions.filter((sub) => {
+        return customIds.includes(sub.get('id'));
+      });
+    }
+    return [];
+
+  }.property('workspaceToCopy', 'newWsConfig'),
+
   modeInputs: function() {
     let res = {
       groupName: 'mode',
