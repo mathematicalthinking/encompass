@@ -29,6 +29,8 @@ p.warning-message {
   width: auto;
   position: relative;
   text-indent: 10px;
+  font-size: .9em;
+  font-weight: $light-font-weight;
 }
 
 .error-box:before {
