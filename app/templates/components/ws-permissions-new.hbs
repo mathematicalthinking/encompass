@@ -27,7 +27,7 @@
 <div class="submission-permissions">
 {{radio-group options=submissionItems selectedValue=submissions}}
   {{#if showCustomSubmissions}}
-    {{submission-viewer-list submissions=workspace.submissions.content
+    {{custom-submission-viewer-list submissions=workspace.submissions.content
       selectedSubmissionIds=workspace.submissions.content
       onSelect=(action "updateCustomSubs")
       onSelectAll=(action "selectAllSubmissions")

@@ -51,8 +51,8 @@
       }
     }
     &.info-item {
-      @include flex-item(2, center, .01 0 auto);
-      width: 1%;
+      @include flex-item(2, center, .02 0 auto);
+      width: 2%;
       text-align: left;
       overflow: visible;
     }
@@ -86,8 +86,8 @@
       width: 8%;
     }
     &.editors {
-      @include flex-item(10, center, .07 0 auto);
-      width: 7%;
+      @include flex-item(10, center, .06 0 auto);
+      width: 6%;
     }
     &.more {
       @include flex-item(11, center, .01 0 auto);

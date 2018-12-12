@@ -1,5 +1,5 @@
-Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
-  elementId: ['submission-viewer-list-item'],
+Encompass.CustomSubmissionViewerListItemComponent = Ember.Component.extend({
+  elementId: ['custom-submission-viewer-list-item'],
 
   isChecked: function() {
     return this.get('selectedSubmissionIds').includes(this.get('submission.id'));
