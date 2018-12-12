@@ -33,12 +33,23 @@
       <div class="results-list">
         <div class="results-info">
           <div class="results-icons">
-            <span class="icon-message submissions"><i class="fas fa-file"></i> {{nonTrashedAnswers.length}} Submissions</span>
-            <span class="icon-message selected"><i class="fas fa-check-circle"></i> {{selectedAnswers.length}} Selected</span>
+            <span class="icon-message submissions">
+              <i class="fas fa-file"></i>
+              {{nonTrashedAnswers.length}} Submissions
+            </span>
+            <span class="icon-message selected">
+              <i class="fas fa-check-circle"></i>
+              {{selectedAnswers.length}} Selected
+            </span>
             {{#if submissionThreads.size}}
-              <span class="icon-message students"><i class="fas fa-user"></i> {{submissionThreads.size}} Students</span>
+              <span class="icon-message students">
+                <i class="fas fa-user"></i>
+                {{submissionThreads.size}} Students
+              </span>
             {{else}}
-              <span class="icon-message students"><i class="fas fa-user"></i> 0 Students</span>
+              <span class="icon-message students">
+                <i class="fas fa-user"></i> 0 Students
+              </span>
             {{/if}}
           </div>
 
@@ -70,7 +81,7 @@
               onUpdate=(action "updateSortCriterion")
               initialState=0
               options=sortOptions.revisions
-              label="Revision"
+              label="Revisions"
               type="revisions"
               activeType=sortCriterion.type
             }}
@@ -107,7 +118,13 @@
             <div class="sort-bar-item more"></div>
           </div>
           {{#if isFetchingAnswers}}
-            <p class="loading-message">Loading submissions... Thank you for your patience</p>
+            <div class="loading-message-container">
+              <p class="loading-message">Loading submissions</p>
+                <div style="color: #3997EE" class="la-ball-clip-rotate la-3x loading">
+                  <div></div>
+                </div>
+              <p class="loading-message">Thank you for your patience</p>
+            </div>
           {{else if isRequestTooLarge}}
             {{tooLargeRequestErrorMessage}}
           {{else}}

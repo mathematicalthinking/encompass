@@ -51,6 +51,18 @@
 }
 
 #workspace-new-container {
+  .loading-message-container {
+    text-align: center;
+    margin-top: 50px;
+    .loading-message {
+      margin-top: 30px;
+      font-weight: $light-font-weight;
+      font-size: 1.2em;
+    }
+    .loading {
+      margin: 50px auto;
+    }
+  }
   .primary-button {
     font-weight: $main-font-weight;
     text-align: center;
@@ -146,6 +158,10 @@
       }
       .item-section {
         font-size: 1em;
+        &:hover {
+          cursor: default;
+          color: $primary-font-color;
+        }
       }
     }
   }
