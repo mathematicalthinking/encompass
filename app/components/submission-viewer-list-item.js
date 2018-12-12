@@ -1,5 +1,6 @@
 Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['submission-viewer-list-item'],
+  student: Ember.computed.alias('answer.student'),
 
   isChecked: function() {
    let id = this.get('answer.id');
@@ -10,8 +11,12 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   revisionCount: function() {
     let student = this.get('student');
     let threads = this.get('threads');
+    console.log('rc student', student);
+    console.log('rc', threads);
     if (threads) {
       let work = threads.get(student);
+      console.log('work', work);
+      console.log('wl', work.get('length'));
       if (work) {
         return work.length;
       }
