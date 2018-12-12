@@ -11,6 +11,10 @@
         selectedMap=answersSelectedHash
       }}
       {{else}}
-      <p class="info">No submissions found. Please try different filter criteria.</p>
+      <div class="no-results-container">
+        <p class="info">No submissions found</p>
+        <img src="/images/no-results.svg" alt="No results">
+        <p class="info">Please change the filter criteria</p>
+      </div>
     {{/each}}
   </div>

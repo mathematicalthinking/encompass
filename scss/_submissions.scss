@@ -1,0 +1,15 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#submission-viewer-list {
+  .no-results-container {
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 20px;
+    .info {
+      font-size: 1.4em;
+      margin: 50px 0 40px 0;
+    }
+  }
+}

@@ -6,6 +6,7 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
    let prop = `selectedMap.${id}`;
    return this.get(prop);
   }.property('answer.id', 'selectedMap'),
+
   revisionCount: function() {
     let student = this.get('student');
     let threads = this.get('threads');
