@@ -1,35 +1,49 @@
-<h5>Permission Settings</h5>
+<p class="input-label">
+  Collaborators
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace, you can customize their permissions settings in detail after you add them">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
 
-<p>Select a user to configure their permissions for this workspace.</p>
-{{selectize-input
-store=store
-inputId="collab-select"
-maxItems=1
-onItemAdd=(action "setCollaborator")
-onItemRemove=(action "setCollaborator")
-labelField="username"
-valueField="id"
-searchField="username"
-model="user"
-placeholder="Search for collaborators to add"}}
+<p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
+  {{selectize-input
+  store=store
+  inputId="collab-select"
+  maxItems=1
+  onItemAdd=(action "setCollaborator")
+  onItemRemove=(action "setCollaborator")
+  labelField="username"
+  valueField="id"
+  searchField="username"
+  model="user"
+  placeholder="Search by username to add a collaborator"}}
 
 {{#if selectedCollaborator}}
-  {{radio-group options=globalItems selectedValue=global}}
+  <div class="global-permissions">
+    {{radio-group options=globalItems selectedValue=global}}
+    <p class="sub-input-label">You can set more custom permissions after you create the workspace</p>
 
-  {{#if saveError}}
-    {{error-box error="Sorry, something went wrong. Please try again" showDismiss=true resetError=(action (mut saveError) null)}}
-  {{/if}}
+    {{#if saveError}}
+      {{error-box error="Sorry, something went wrong. Please try again" showDismiss=true resetError=(action (mut saveError) null)}}
+    {{/if}}
 
-  <button class="save-permissions" {{action "savePermissions"}}>Save User Permissions </button>
-  <button {{action (mut selectedUser) null}}>Cancel</button>
+    <div class="button-container">
+      <button class="secondary-button" {{action "savePermissions"}}>Save Permissions</button>
+      {{!-- <button class="secondary-button cancel-button" {{action (mut selectedUser) null}}>Cancel</button> --}}
+    </div>
+  </div>
 {{/if}}
 
-<h5>Collaborators</h5>
-<ol>
-  {{#each permissions as |permission|}}
+{{#if permissions}}
+<div class="added-collab">
+  <ul>
+    <p class="input-label">Added Collaborators</p>
+    {{#each permissions as |permission|}}
     <li>{{permission.user.username}}
       <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
       <i {{action "removeCollab" permission}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
     </li>
-  {{/each}}
-</ol>
+    {{/each}}
+  </ul>
+</div>
+{{/if}}
