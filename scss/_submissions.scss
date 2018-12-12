@@ -11,7 +11,7 @@
   }
   .primary-filter-list {
     padding: 0 20px;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
     li {
       margin-bottom: 13px;
       label {
@@ -25,13 +25,6 @@
       }
     }
   }
-  .primary-button {
-    font-weight: $main-font-weight;
-    text-align: center;
-    width: 160px;
-    display: block;
-    margin: 0 auto;
-  }
 }
 
 
@@ -43,6 +36,21 @@
     .info {
       font-size: 1.4em;
       margin: 50px 0 40px 0;
+    }
+  }
+}
+
+#workspace-new-container {
+  .primary-button {
+    font-weight: $main-font-weight;
+    text-align: center;
+    width: 160px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 30px;
+    &.create-ws {
+      margin-top: 20%;
+      margin-bottom: 80px;
     }
   }
 }
