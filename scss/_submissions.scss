@@ -2,6 +2,26 @@
 @import "mixins";
 @import "responsive-font-size";
 
+
+#submissions-filter {
+  .filter-items {
+    h2 {
+      margin-bottom: 30px;
+    }
+  }
+  .primary-filter-list {
+    padding: 0 20px;
+    li {
+      margin-bottom: 15px;
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+
 #submission-viewer-list {
   .no-results-container {
     margin: 0 auto;
