@@ -505,6 +505,10 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         if (this.get('utils').isNonEmptyObject(customConfig)) {
           customConfig.folderOptions.folderSetOptions = folderSetOptions;
           requestSource = Object.assign(base, customConfig);
+          // customConfig does not have the permissionOptions
+          requestSource.permissionOptions = {
+            permissionObjects: formattedPermissionObjects
+          };
         } else {
           this.set('customConfigError', true);
           return;
