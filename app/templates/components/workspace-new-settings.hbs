@@ -10,11 +10,10 @@
     <div class="single-text-input-container">
       {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
     </div>
-  </div>
-
   {{#each workspaceNameErrors as |error|}}
     {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
   {{/each}}
+  </div>
 
   <div class="ws-new owner">
     <p class="input-label">
@@ -36,11 +35,10 @@
       model="user"
       propToUpdate="selectedOwner"
       placeholder="Search by username to choose as owner"}}
+    {{#each ownerErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+    {{/each}}
   </div>
-
-  {{#each ownerErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
-  {{/each}}
 
   <div class="ws-new mode">
     <p class="input-label">
@@ -50,11 +48,10 @@
       </span>
     </p>
     {{radio-group options=modeInputs selectedValue=selectedMode}}
+    {{#each privacySettingErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
+    {{/each}}
   </div>
-
-  {{#each privacySettingErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
-  {{/each}}
 
   <div class="ws-new folderset">
     <p class="input-label">
@@ -77,11 +74,10 @@
       propToUpdate="selectedFolderSet"
       placeholder="Select a Folder Set"
     }}
+    {{#each folderSetErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
+    {{/each}}
   </div>
-
-  {{#each folderSetErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
-  {{/each}}
 
   {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users}}
 
