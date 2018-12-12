@@ -54,8 +54,10 @@
           </div>
 
           <div class="side-icons">
-            <label>Do Include Revisions</label>
-            <input type="checkbox" checked={{doIncludeRevisions}} onclick={{action "toggleIncludeRevisions"}}>
+            <label class="show-revisions">
+              <input type="checkbox" checked={{doIncludeRevisions}} onclick={{action "toggleIncludeRevisions"}}>
+              Do Include Revisions
+            </label>
             <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Submission list"></i>
           </div>
         </div>

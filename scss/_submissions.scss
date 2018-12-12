@@ -2,6 +2,57 @@
 @import "mixins";
 @import "responsive-font-size";
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 720px) {
+  #workspace-new-container {
+    .results-list {
+      .results-icons {
+        i {
+          font-size: .8em;
+        }
+        .icon-message {
+          font-size: .85em;
+          &.submissions {
+            width: 120px;
+          }
+          &.selected {
+            width: 100px;
+          }
+          &.students {
+            width: 100px;
+          }
+        }
+      }
+      .side-icons {
+        font-size: .85em;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 721px) and (max-width: 10000px) {
+  #workspace-new-container {
+    .results-list {
+      .results-icons {
+        i {
+          font-size: 1.2em;
+        }
+        .icon-message {
+          font-size: 1em;
+          &.submissions {
+            width: 160px;
+          }
+          &.selected {
+            width: 140px;
+          }
+          &.students {
+            width: 140px;
+          }
+        }
+      }
+    }
+  }
+}
+
 
 #submissions-filter {
   .filter-items {
@@ -90,22 +141,17 @@
     .results-icons {
       i {
         margin-right: 5px;
-        font-size: 1.2em;
       }
       .icon-message {
         font-weight: $light-font-weight;
-        font-size: 1em;
         display: inline-block;
         margin-bottom: 8px;
-        &.submissions {
-          width: 160px;
-        }
-        &.selected {
-          width: 140px;
-        }
-        &.students {
-          width: 140px;
-        }
+      }
+    }
+    .side-icons {
+      width: 220px;
+      .show-revisions {
+        margin-right: 20px;
       }
     }
     .results-items {
