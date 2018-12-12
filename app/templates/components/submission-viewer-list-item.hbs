@@ -13,7 +13,11 @@
         {{{answer.explanation}}}
     </div>
     <div class="item-section section">
-      {{answer.section.name}}
+      {{#if answer.section.name}}
+        {{answer.section.name}}
+      {{else}}
+        N/A
+      {{/if}}
     </div>
     <div class="item-section createDate">
       <span>{{format-date answer.createDate 'L'}}</span>
