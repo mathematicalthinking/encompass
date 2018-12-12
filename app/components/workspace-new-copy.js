@@ -64,6 +64,79 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   }.property('workspaceToCopy', 'newWsConfig'),
 
+  submissionsLength: function() {
+    return this.get('submissionsPool.length') || 0;
+  }.property('submissionsPool'),
+  collaboratorsCount: function() {
+    return this.get('newWsPermissions.length') || 0;
+  }.property('newWsPermissions'),
+
+  getCounts(model) {
+    let models = ['selections', 'comments', 'responses', 'folders'];
+    if (!models.includes(model)) {
+      return;
+    }
+
+    const config = this.get('newWsConfig');
+    let allRecordProp = `workspaceToCopy.${model}Length`;
+    const allOriginalRecords = this.get(allRecordProp);
+    if (!config) {
+      return allOriginalRecords;
+    }
+    if (config === 'A') {
+      return 0;
+    }
+    if (config === 'B' || config === 'C') {
+      return allOriginalRecords;
+    }
+
+    const submissions = this.get('submissionsPool');
+    if (!submissions) {
+      return 0;
+    }
+    if (config === 'D') {
+      let singular = model.slice(0, model.length - 1);
+
+      let isAll = this.get(`customConfig.${singular}Options.all`) === true;
+      let isNone = this.get(`customConfig.${singular}Options.none`) === true;
+
+      if (model === 'folders') {
+        if (isAll) {
+          return allOriginalRecords;
+        }
+        return 0;
+      }
+
+      if (isNone) {
+        return 0;
+      }
+
+      let lengths = submissions.mapBy(`${model}.length`);
+
+      if (isAll) {
+        return  lengths.reduce((memo, val) => {
+          return memo + val;
+        },0);
+      }
+
+      let customCount = this.get(`customConfig.${singular}Options.${singular}Ids.length`);
+
+      return customCount || 0;
+    }
+
+  },
+
+  recordCounts: function() {
+    return {
+      submissions: this.get('submissionsLength'),
+      comments: this.getCounts('comments'),
+      selections: this.getCounts('selections'),
+      responses: this.getCounts('responses'),
+      folders: this.getCounts('folders'),
+      collaborators: this.get('collaboratorsCount')
+    };
+  }.property('workspaceToCopy', 'newWsConfig', 'customConfig', 'newWsPermissions'),
+
   modeInputs: function() {
     let res = {
       groupName: 'mode',
