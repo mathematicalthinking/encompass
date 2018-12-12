@@ -22,6 +22,16 @@
         height: 10px;
         font-size: .8em;
         padding-left: 10px;
+        font-weight: $light-font-weight;
+      }
+      .selectize-comp {
+        .selectize-input {
+          height: 34px;
+        }
+        input {
+          font-size: 1em;
+          font-weight: $light-font-weight;
+        }
       }
     }
   }
@@ -51,6 +61,17 @@
     &.create-ws {
       margin-top: 20%;
       margin-bottom: 80px;
+    }
+  }
+  .list-container {
+    .searchbar {
+      .search-bar-comp {
+        margin-right: 0px;
+        .submit {
+          @include flex-item(3, center, .02 0 auto);
+          text-align: right;
+        }
+      }
     }
   }
 }

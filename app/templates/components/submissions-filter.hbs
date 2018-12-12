@@ -16,7 +16,7 @@
             valueField="id"
             propToUpdate="selectedTeacher"
             model="user"
-            placeholder="Search teachers by username..."
+            placeholder="Search teachers by username"
             isDisabled=isTeacher
         }}
       {{#each teacherFormErrors as |error|}}
@@ -68,7 +68,7 @@
         propToUpdate="selectedProblem"
         queryParamsKey="title"
         topLevelQueryParams="filterBy"
-        placeholder="Start typing a problem title..."
+        placeholder="Search problems by title"
         preload="focus"
         secondaryFilters=problemFilters
       }}
@@ -112,7 +112,7 @@
             valueField="id"
             propToUpdate="selectedStudents"
             model="user"
-            placeholder="Search students by username..."
+            placeholder="Search students by username"
         }}
       {{#each studentFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
