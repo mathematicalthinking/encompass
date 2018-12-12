@@ -107,11 +107,13 @@
           </div>
           {{#if isFetchingAnswers}}
             <p class="loading-message">Loading submissions... Thank you for your patience</p>
+          {{else if isRequestTooLarge}}
+            {{tooLargeRequestErrorMessage}}
           {{else}}
-              {{submission-viewer-list answers=sortedAnswers metadata=answersMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store
-              onSelect=(action "updateSelectedAnswers")
-              selectedAnswers=selectedAnswers
-              threads=submissionThreads}}
+          {{submission-viewer-list answers=sortedAnswers metadata=answersMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store
+            onSelect=(action "updateSelectedAnswers")
+            selectedAnswers=selectedAnswers
+            threads=submissionThreads}}
           {{/if}}
         </div>
       </div>

@@ -56,6 +56,22 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   doUseSearchQuery: Ember.computed.or('isSearchingAnswers', 'isDisplayingSearchResults'),
 
+  maximumAnswers: 1000,
+
+  tooLargeRequestErrorMessage: function() {
+    if(!this.get('isRequestTooLarge')) {
+      return;
+    }
+    let requestedCount = this.get('answersMetadata.total');
+    return `Your filter criteria matches ${requestedCount} submissions. At this time we do not support new workspaces with greater than ${this.get('maximumAnswers')} submissions. Please try modifying your criteria.`;
+  }.property('isRequestTooLarge', 'answersMetadata'),
+
+  confirmLargeRequestMessage: function() {
+    let requestedCount = this.get('answersMetadata.total');
+    return `Your filter criteria matches ${requestedCount} submissions. Are you sure you want to proceed with viewing the submissions?`;
+
+  }.property('answersMetadata.total'),
+
   listResultsMessage: function() {
     let msg;
     // let userOrgName = this.get('userOrgName');
@@ -200,18 +216,15 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return [];
   }.property('nonTrashedAnswers.@each.isTrashed', 'doIncludeRevisions', 'submissionThreads'),
 
-  buildQueryParams: function(page, isTrashedOnly) {
+  buildQueryParams: function(page, isTrashedOnly, didConfirmLargeRequest) {
     let params = {};
-    if (page) {
-      params.page = page;
-    }
 
     if (isTrashedOnly) {
       params.isTrashedOnly = true;
       return params;
     }
 
-    let sortBy = this.buildSortBy();
+    // let sortBy = this.buildSortBy();
     let filterBy = this.get('filterCriteria');
 
     if (this.get('criteriaTooExclusive') ) {
@@ -222,8 +235,8 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       return;
     }
     params = {
-      sortBy,
-      filterBy
+      filterBy,
+      didConfirmLargeRequest
     };
 
     if (page) {
@@ -237,10 +250,10 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return params;
   },
 
-  getAnswers: function(page, isTrashedOnly=false, isHiddenOnly=false, ) {
+  getAnswers: function(page, isTrashedOnly=false, isHiddenOnly=false, didConfirmLargeRequest=false ) {
     this.set('isFetchingAnswers', true);
 
-    let queryParams = this.buildQueryParams(page, isTrashedOnly);
+    let queryParams = this.buildQueryParams(page, isTrashedOnly, didConfirmLargeRequest);
 
     if (this.get('criteriaTooExclusive')) {
       if (this.get('isFetchingAnswers')) {
@@ -253,7 +266,9 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       queryParams
     ).then((results) => {
       this.removeMessages('answerLoadErrors');
+      console.log('results', results);
       this.set('answers', results);
+
       this.set('answersMetadata', results.get('meta'));
       this.set('isFetchingAnswers', false);
 
@@ -275,7 +290,25 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       if (isHiddenOnly) {
         console.log('getAnswers and isHiddenOnly is', isHiddenOnly);
       }
+      if (results.get('meta.areTooManyAnswers')) {
+        // should only be returned for non admins
+        this.set('isRequestTooLarge', true);
+        return;
+      }
+      if (results.get('meta.doConfirmCriteria')) {
+        let prompt = this.get('confirmLargeRequestMessage');
+        return this.get('alert').showModal('warning', prompt, '', 'Proceed').then((result) => {
+          if (result.value) {
+            // resend request with didConfirmFlag true
+            this.send('triggerFetch', false, false, true);
+          }
+      });
+    }
+
+      // check if ned to confirm large request
+
     }).catch((err) => {
+      console.log('err', err);
       this.handleErrors(err, 'answerLoadErrors');
       this.set('isFetchingAnswers', false);
 
@@ -441,14 +474,14 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     updateSortCriterion(criterion) {
       this.set('sortCriterion', criterion);
     },
-    triggerFetch(isTrashedOnly=false, isHiddenOnly=false) {
+    triggerFetch(isTrashedOnly=false, isHiddenOnly=false, didConfirmLargeRequest=false) {
       for (let prop of ['criteriaTooExclusive']) {
         if (this.get(prop)) {
           this.set(prop, null);
         }
       }
 
-      this.getAnswers(null, isTrashedOnly, isHiddenOnly);
+      this.getAnswers(null, isTrashedOnly, isHiddenOnly, didConfirmLargeRequest);
     },
     setGrid: function () {
       $('#layout-view').addClass('grid-view');

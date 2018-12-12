@@ -73,7 +73,7 @@ module.exports.put = {};
 async function getAnswers(req, res, next) {
   var user = userAuth.requireUser(req);
 
-  let { ids, problem, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
+  let { ids, problem, filterBy, sortBy, searchBy, page, isTrashedOnly, didConfirmLargeRequest } = req.query;
   console.log('filterBy answer API:', JSON.stringify(filterBy));
   if (problem) {
     let criteria = req.query;
@@ -140,7 +140,7 @@ async function getAnswers(req, res, next) {
     //   byRelevance = sortBy.byRelevance;
     // }
       const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
-      console.log('crit', JSON.stringify(criteria));
+      // console.log('crit', JSON.stringify(criteria));
       if (_.isNull(criteria)) {
         const data = {
           'answers': [],
@@ -182,6 +182,30 @@ async function getAnswers(req, res, next) {
         itemCount = await models.Answer.count(criteria);
         console.log('count', itemCount);
         if (itemCount > 1000) {
+          if (user.accountType !== 'A') {
+            const data = {
+              answers: [],
+              meta: {
+                total: itemCount,
+                areTooManyAnswers: true
+            }
+          };
+          return utils.sendResponse(res, data);
+
+        } else if (didConfirmLargeRequest === 'false') {
+          const data = {
+            answers: [],
+            meta: {
+              total: itemCount,
+              doConfirmCriteria: true
+          }
+        };
+        return utils.sendResponse(res, data);
+      }
+
+      } else if (itemCount > 500) {
+        // return and ask for confirmation
+        if (didConfirmLargeRequest === 'false') {
           const data = {
             'answers': [],
             'meta': {
@@ -191,6 +215,7 @@ async function getAnswers(req, res, next) {
         };
         return utils.sendResponse(res, data);
       }
+    }
 
         [ results, itemCount ] = await Promise.all([
           models.Answer.find(criteria).lean().exec(),
