@@ -1,11 +1,16 @@
 {{#if options.groupLabel}}
-  <h5>{{options.groupLabel}}</h5>
+  <p class="radio-group-label">
+    {{options.groupLabel}}
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip={{options.info}}>
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
 {{/if}}
 
 {{#each options.inputs as |input|}}
- <ol>
+ <ol class="radio-list">
     <li>
-        {{radio-group-item selectedValue=selectedValue label=input.label name=options.groupName isRequired=options.isRequired value=input.value onClick=(action "setValue")}}
+      {{radio-group-item selectedValue=selectedValue label=input.label name=options.groupName isRequired=options.isRequired value=input.value moreInfo=input.moreInfo onClick=(action "setValue")}}
     </li>
   </ol>
 {{/each}}

@@ -1,36 +1,46 @@
-<h5>Permission Settings</h5>
+<p class="input-label">
+  Collaborators
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace, you can customize their permissions settings in detail after you add them">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
 
-<p>Select a user to configure their permissions for this workspace.</p>
-{{selectize-input
-store=store
-inputId="collab-select"
-maxItems=1
-onItemAdd=(action "setCollaborator")
-onItemRemove=(action "setCollaborator")
-labelField="username"
-valueField="id"
-searchField="username"
-model="user"
-queryParamsKey="usernameSearch"
-isAsync=true
-placeholder="Search for collaborators to add"}}
+<p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
+  {{selectize-input
+    store=store
+    inputId="collab-select"
+    maxItems=1
+    onItemAdd=(action "setCollaborator")
+    onItemRemove=(action "setCollaborator")
+    labelField="username"
+    valueField="id"
+    searchField="username"
+    model="user"
+    queryParamsKey="usernameSearch"
+    isAsync=true
+    placeholder="Search for collaborators to add"
+  }}
+
+{{#if permissions}}
+  <div class="collaborator-list">
+    <p class="input-label">Added Collaborators</p>
+    <ul>
+      {{#each permissions as |permission|}}
+      <li>{{permission.user.username}}
+        <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
+        <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+{{/if}}
 
 {{#if selectedCollaborator}}
   {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
 {{/if}}
 
 
-<h5>Collaborators</h5>
-<ol>
-  {{#each permissions as |permission|}}
-    <li>{{permission.user.username}}
-      <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
-      <i {{action "removeCollab" permission}} class="far fa-times-circle" aria-hidden="true" title="Remove"></i>
-    </li>
-  {{/each}}
-</ol>
-
 <div class="nav-btn-container">
-  <button {{action "back"}}>Prev</button>
-  <button {{action "next"}}>Review Request</button>
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Next</button>
 </div>

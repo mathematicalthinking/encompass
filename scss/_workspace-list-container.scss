@@ -25,7 +25,7 @@
 
 #workspace-list-container {
   .sort-bar-item, .item-section {
-    font-size: .9em;
+    font-size: .8em;
     text-align: center;
     overflow: hidden;
     white-space: nowrap;
@@ -51,8 +51,8 @@
       }
     }
     &.info-item {
-      @include flex-item(2, center, .01 0 auto);
-      width: 1%;
+      @include flex-item(2, center, .02 0 auto);
+      width: 2%;
       text-align: left;
       overflow: visible;
     }
@@ -86,8 +86,8 @@
       width: 8%;
     }
     &.editors {
-      @include flex-item(10, center, .07 0 auto);
-      width: 7%;
+      @include flex-item(10, center, .06 0 auto);
+      width: 6%;
     }
     &.more {
       @include flex-item(11, center, .01 0 auto);
@@ -214,7 +214,7 @@
               }
               &.row-4 {
                 @include flex-item(4, auto, 1 0 auto);
-                padding: 20px 10px 20px 10px;
+                padding: 15px 10px 20px 10px;
                 .workspace-stats {
                   text-align: center;
                   @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
@@ -224,6 +224,9 @@
                     min-width: 100px;
                     .stat-header {
                       color: black;
+                    }
+                    .stat-number {
+                      font-weight: $light-font-weight;
                     }
                   }
                 }

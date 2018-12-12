@@ -1,96 +1,209 @@
-<h5>Submissions</h5>
+<p class="input-label custom-header">Custom Copy Settings</p>
 
-<input type="radio" checked={{submissionOptions.all}} required="true" name="submissionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "submissionOptions"}}>
-<label>All</label>
+<div class="custom-config-content submissions">
+  <p class="input-label-custom">
+    Submissions
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide which submissions to copy to your new workspace">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  <p class="sub-input-label">
+    {{#if selectedAllSubmissions}}
+      You have selected {{submissionCount.length}} submissions to copy
+    {{/if}}
+    {{#if showStudentSubmissionInput}}
+      Based off selected students, you have selected {{submissionsFromStudents.length}} submissions to copy
+    {{/if}}
+    {{#if selectedCustomSubmission}}
+      You have selected {{customSubmissionIds.length}} submissions to copy
+    {{/if}}
+  </p>
+    <ul class="radio-list">
+      <li class="radio-group-item">
+        <label>
+          <input type="radio" checked={{submissionOptions.all}} required="true" name="submissionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "submissionOptions"}}>
+          <span>All</span>
+        </label>
+      </li>
+      <li class="radio-group-item">
+        <label>
+          <input type="radio" checked={{submissionOptions.byStudent}} required="true" name="submissionOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "submissionOptions"}}>
+          <span>
+            By Student
+            <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy submissions from a selected student or students">
+              <i class="far fa-question-circle info-icon"></i>
+            </span>
+          </span>
+        </label>
+        {{#if showStudentSubmissionInput}}
+          {{selectize-input
+          inputId="submissions-by-student"
+          initialOptions=studentSelectOptions
+          maxItems=studentSelectOptions.length
+          onItemAdd=(action "updateMultiSelect")
+          onItemRemove=(action "updateMultiSelect")
+          labelField="label"
+          valueField="value"
+          searchField="label"
+          propToUpdate="submissionStudents"
+          placeholder="Add students"}}
+        {{/if}}
+      </li>
+      <li class="radio-group-item">
+        <label>
+          <input type="radio" checked={{submissionOptions.custom}} required="true" name="submissionOptions" value="custom"
+            onclick={{action "updateCollectionOptions" "custom" "submissionOptions"}}>
+          <span>
+            Custom
+            <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="View submission list and select desired submissions">
+              <i class="far fa-question-circle info-icon"></i>
+            </span>
+            {{#if closedCustomView}}
+              <span class="show-viewer" {{action 'showCustomSelect'}}>Show Viewer</span>
+            {{/if}}
+          </span>
+        </label>
+      </li>
+    </ul>
 
-<input type="radio" checked={{submissionOptions.byStudent}} required="true" name="submissionOptions" value="byStudent" onclick={{action "updateCollectionOptions" "byStudent" "submissionOptions"}}>
-<label>By Student</label>
+  {{#if showCustomSubmissionViewer}}
+    {{custom-submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds
+      onSelect=(action "updateCustomSubs")
+      onSelectAll=(action "selectAllSubmissions")
+      onUnselectAll=(action "deselectAllSubmissions")
+      onDoneSelecting=(action 'setDoneSelecting')
+    }}
+  {{/if}}
+  {{#if noSubmissionsToCopy}}
+    <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
+  {{/if}}
+</div>
 
-<input type="radio" checked={{submissionOptions.custom}} required="true" name="submissionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "submissionOptions"}}>
-<label>Custom</label>
-{{#if showStudentSubmissionInput}}
-  {{selectize-input
-  inputId="submissions-by-student"
-  initialOptions=studentSelectOptions
-  maxItems=studentSelectOptions.length
-  onItemAdd=(action "updateMultiSelect")
-  onItemRemove=(action "updateMultiSelect")
-  labelField="label"
-  valueField="value"
-  searchField="label"
-  propToUpdate="submissionStudents"
-  placeholder="Add students"}}
+<div class="custom-config-content selections">
+  <p class="input-label-custom">
+    Selections
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide which selections to copy to your new workspace. Selections are tied to the submissions you selected">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{selectionsFromSubmissions.length}} selections to choose from</p>
+  <ul class="radio-list">
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all" onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
+        <span>All</span>
+      </label>
+    </li>
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{selectionOptions.none}} required="true" name="selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "selectionOptions"}}>
+        <span>None</span>
+      </label>
+    </li>
+  </ul>
+</div>
 
-  {{#each submissionStudents as |student|}}
-  <p>{{student}}</p>
-  {{/each}}
-{{/if}}
-{{#if showCustomSubmissionViewer}}
- {{submission-viewer-list submissions=workspace.submissions.content selectedSubmissionIds=customSubmissionIds onSelect=(action "updateCustomSubs")
- onSelectAll=(action "selectAllSubmissions") onUnselectAll=(action "deselectAllSubmissions")
- }}
-{{/if}}
-{{#if noSubmissionsToCopy}}
-  <p class="error-message">Your current configuration would result in 0 submissions. Please modify your criteria.</p>
-{{/if}}
+<div class="custom-config-content selections">
+  <p class="input-label-custom">
+    Folders
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide which folders to copy to your workspace, taggings are determined by submissions and selections">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  <p class="sub-input-label">There are {{foldersCount.length}} folders available to copy</p>
+  <ul class="radio-list">
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all" onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
+        <span>
+          All with Content
+          <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy all the folders along with all applicable taggings">
+            <i class="far fa-question-circle info-icon"></i>
+          </span>
+        </span>
+      </label>
+    </li>
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{folderOptions.includeStructureOnly}} required="true" name="folderOptions" value="includeStructureOnly" onclick={{action "updateCollectionOptions" "includeStructureOnly" "folderOptions"}}>
+        <span>
+          Just Structure
+          <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Copy only the folders structure without the taggings">
+            <i class="far fa-question-circle info-icon"></i>
+          </span>
+        </span>
+      </label>
+    </li>
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{folderOptions.none}} required="true" name="folderOptions" value="none" onclick={{action "updateCollectionOptions" "none" "folderOptions"}}>
+        <span>None</span>
+      </label>
+    </li>
+  </ul>
+</div>
 
-<h5>Selections</h5>
-<p>Based on your Submission choices, there are {{selectionsFromSubmissions.length}} selections to choose from.</p>
+<div class="custom-config-content selections">
+  <p class="input-label-custom">
+    Comments
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide which comments to copy. Comments are tied to the selections and submissions">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{commentsFromSelections.length}} comments to choose from</p>
+  <ul class="radio-list">
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all" onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
+        <span>All</span>
+      </label>
+    </li>
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{commentOptions.none}} required="true" name="commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "commentOptions"}}>
+        <span>None</span>
+      </label>
+    </li>
+  </ul>
+</div>
 
-<input type="radio" checked={{selectionOptions.all}} required="true" name="selectionOptions" value="all"
-onclick={{action "updateCollectionOptions" "all" "selectionOptions"}}>
-<label>All</label>
+<div class="custom-config-content selections">
+  <p class="input-label-custom">
+    Responses
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide which responses to copy. Resposnes are tied to selected submissions">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  <p class="sub-input-label">Based on your selected submissions, there are {{responsesFromSubmissions.length}} responses to choose from</p>
+  <ul class="radio-list">
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all" onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
+        <span>All</span>
+      </label>
+    </li>
+    <li class="radio-group-item">
+      <label>
+        <input type="radio" checked={{responseOptions.none}} required="true" name="responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "responseOptions"}}>
+        <span>None</span>
+      </label>
+    </li>
+  </ul>
+</div>
 
-<input type="radio" checked={{selectionOptions.none}} required="true" name="selectionOptions" value="none" onclick={{action "updateCollectionOptions" "none" "selectionOptions"}}>
-<label>None</label>
-
-{{!-- <input type="radio" checked={{selectionOptions.custom}} required="true" name="selectionOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "selectionOptions"}}>
-<label>Custom</label> --}}
-
-<h5>Folders</h5>
-
-<input type="radio" checked={{folderOptions.all}} required="true" name="folderOptions" value="all"
-onclick={{action "updateCollectionOptions" "all" "folderOptions"}}>
-<label>All</label>
-
-<input type="radio" checked={{folderOptions.none}} required="true" name="folderOptions" value="none" onclick={{action "updateCollectionOptions" "none" "folderOptions"}}>
-<label>None</label>
-
-{{#if folderOptions.all}}
-  <input type="checkbox" checked={{folderOptions.includeStructureOnly}} name="includeStructureOnly" onclick={{action "toggleIncludeStructureOnly"}}>
-  <label>Include Structure Only</label>
-{{/if}}
-
-<h5>Comments</h5>
-<p>Based on your Submission choices, there are {{commentsFromSelections.length}} comments to choose from.</p>
-<input type="radio" checked={{commentOptions.all}} required="true" name="commentOptions" value="all"
-onclick={{action "updateCollectionOptions" "all" "commentOptions"}}>
-<label>All</label>
-
-<input type="radio" checked={{commentOptions.none}} required="true" name="commentOptions" value="none" onclick={{action "updateCollectionOptions" "none" "commentOptions"}}>
-<label>None</label>
-
-{{!-- <input type="radio" checked={{commentOptions.custom}} required="true" name="commentOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "commentOptions"}}>
-<label>Custom</label> --}}
-
-<h5>Responses</h5>
-<p>Based on your Submission choices, there are {{responsesFromSubmissions.length}} responses to choose from.</p>
-
-<input type="radio" checked={{responseOptions.all}} required="true" name="responseOptions" value="all"
-onclick={{action "updateCollectionOptions" "all" "responseOptions"}}>
-<label>All</label>
-
-<input type="radio" checked={{responseOptions.none}} required="true" name="responseOptions" value="none" onclick={{action "updateCollectionOptions" "none" "responseOptions"}}>
-<label>None</label>
-
-{{!-- <input type="radio" checked={{responseOptions.custom}} required="true" name="responseOptions" value="custom" onclick={{action "updateCollectionOptions" "custom" "responseOptions"}}>
-<label>Custom</label> --}}
-
-{{!-- {{/if}} --}}
+{{!-- <div class="selected-count">
+  <h3>Selected Count</h3>
+  <ul>
+    <li>
+      <p>Submissions</p>
+      <p>10</p>
+    </li>
+  </ul>
+</div> --}}
 
 <div class="nav-btn-container">
-  <button {{action "back"}}>Prev</button>
-  <button {{action "next"}}>Next</button>
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Next</button>
 </div>
 
 

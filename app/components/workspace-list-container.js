@@ -59,7 +59,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   modeOptions: [
     {id: 1, label: 'All', value: ['public', 'private'], isChecked: true, icon: 'fas fa-list'},
     {id: 2, label: 'Public', value: ['public'], isChecked: false, icon: 'fas fa-globe-americas'},
-    {id: 3, label: 'Private', value: ['private'], isChecked: false, icon: 'fas fa-user'},
+    {id: 3, label: 'Private', value: ['private'], isChecked: false, icon: 'fas fa-unlock'},
   ],
   selectedMode: ['public', 'private', 'org'],
 

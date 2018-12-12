@@ -45,12 +45,6 @@
   }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 600px) {
-  h3 {
-    text-indent: 10px;
-  }
-}
-
 @media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
   .filter-options {
     position: absolute;
@@ -326,8 +320,8 @@
           font-size: 1em;
           text-transform: uppercase;
           font-weight: $main-font-weight;
-          margin-bottom: 10px;
           margin-left: 20px;
+          margin-bottom: 10px;
         }
         .primary-filter-list {
           margin-bottom: 50px;
@@ -506,7 +500,7 @@
         color: $accent-color;
         font-size: 1.5em;
       }
-      .fa-lock, .fa-user {
+      .fa-lock, .fa-unlock {
         color: $error-color;
         font-size: 1.5em;
       }
@@ -535,7 +529,6 @@
           font-size: 2em;
           color: $dark-font-color;
           font-weight: $main-font-weight;
-          margin-top: 10px;
           width: fit-content;
           height: fit-content;
           margin-top: 12px;

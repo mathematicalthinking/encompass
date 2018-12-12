@@ -10,69 +10,154 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   submissionItems: {
     groupName: 'submissions',
     groupLabel: 'Submission Permissions',
+    info: 'Submission permissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
     required: true,
     inputs: [
-      { label: 'All', value: 'all' },
-      { label: 'Own Only', value: 'userOnly' },
-      { label: 'Custom', value: 'custom' }
+      {
+        label: 'All',
+        value: 'all',
+      }, {
+        label: 'Own Only',
+        value: 'userOnly',
+        moreInfo: 'If the user is the creator of any submission in this workspace, they will only see those',
+      }, {
+        label: 'Custom',
+        value: 'custom',
+        moreInfo: 'View all submissions and select specific ones this user can see',
+      }
     ]
   },
 
   folderItems: {
     groupName: 'folders',
     groupLabel: 'Folder Permissions',
+    info: 'Folder permissions decide what users can do with folders in this workspace. Delete is the highest setting which means this user can do anything related to folders',
     required: true,
     inputs: [
-      { label: 'None', value: 0 },
-      { label: 'View Only', value: 1 },
-      { label: 'Create', value: 2 },
-      { label: 'Edit', value: 3 },
-      { label: 'Delete', value: 4 }
+      {
+        label: 'None',
+        value: 0,
+        moreInfo: 'User will see no folders',
+      }, {
+        label: 'View Only',
+        value: 1,
+        moreInfo: 'User will be able to see folders',
+      }, {
+        label: 'Create',
+        value: 2,
+        moreInfo: 'User will be able to see add folders ',
+      }, {
+        label: 'Edit',
+        value: 3,
+        moreInfo: 'User will be able to see, add and edit folders',
+      }, {
+        label: 'Delete',
+        value: 4,
+        moreInfo: 'User will be able to see, add, edit and delete folders',
+      }
     ]
   },
   selectionItems: {
     groupName: 'selections',
     groupLabel: 'Selection Permissions',
+    info: 'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections',
     required: true,
     inputs: [
-      { label: 'None', value: 0 },
-      { label: 'View Only', value: 1 },
-      { label: 'Create', value: 2 },
-      { label: 'Edit', value: 3 },
-      { label: 'Delete', value: 4 }
+      {
+        label: 'None',
+        value: 0,
+        moreInfo: 'User will see no selections',
+      }, {
+        label: 'View Only',
+        value: 1,
+        moreInfo: 'User will be able to see selections',
+      }, {
+        label: 'Create',
+        value: 2,
+        moreInfo: 'User will be able to see add selections ',
+      }, {
+        label: 'Edit',
+        value: 3,
+        moreInfo: 'User will be able to see, add and edit selections',
+      }, {
+        label: 'Delete',
+        value: 4,
+        moreInfo: 'User will be able to see, add, edit and delete selections',
+      }
     ]
   },
   commentItems: {
     groupName: 'comments',
     groupLabel: 'Comment Permissions',
+    info: 'Comment permissions decide what users can do with comments in this workspace. Delete is the highest setting which means this user can do anything related to comments',
     required: true,
     inputs: [
-      { label: 'None', value: 0 },
-      { label: 'View Only', value: 1 },
-      { label: 'Create', value: 2 },
-      { label: 'Edit', value: 3 },
-      { label: 'Delete', value: 4 }
+      {
+        label: 'None',
+        value: 0,
+        moreInfo: 'User will see no comments',
+      }, {
+        label: 'View Only',
+        value: 1,
+        moreInfo: 'User will be able to see comments',
+      }, {
+        label: 'Create',
+        value: 2,
+        moreInfo: 'User will be able to see add comments ',
+      }, {
+        label: 'Edit',
+        value: 3,
+        moreInfo: 'User will be able to see, add and edit comments',
+      }, {
+        label: 'Delete',
+        value: 4,
+        moreInfo: 'User will be able to see, add, edit and delete comments',
+      }
     ]
   },
 
   feedbackItems: {
     groupName: 'feedback',
     groupLabel: 'Feedback Permissions',
+    info: 'Feedback permissions dictate whether this user can send feedback to the creator of the submissions. Hover over the question marks for more info.',
     required: true,
     inputs: [
-      { label: 'None', value: 'none' },
-      { label: 'Authorization Required', value: 'authReq' },
-      { label: 'PreAuthorized', value: 'preAuth' }
+      {
+        label: 'None',
+        value: 'none',
+        moreInfo: 'User will not be able to see feedback',
+      }, {
+        label: 'Authorization Required',
+        value: 'authReq',
+        moreInfo: 'User can send feeback but the owner will have to approve it first',
+      }, {
+        label: 'Pre-authorized',
+        value: 'preAuth',
+        moreInfo: 'User can send feedback directly to students without approval',
+      }
     ]
   },
   globalItems: {
     groupName: 'global',
     groupLabel: 'Global Permissions',
+    info: 'Global permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
-      { label: 'View Only', value: 'viewOnly' },
-      { label: 'Editor', value: 'editor' },
-      { label: 'Custom', value: 'custom' }
+      {
+        label: 'View Only',
+        value: 'viewOnly',
+        moreInfo: 'This user will be able to see the workspace, but not add or make any changes',
+      },
+      {
+        label: 'Editor',
+        value: 'editor',
+        moreInfo: 'This user can add, delete or modify everything in this workspace',
+      },
+      {
+        label: 'Custom',
+        value: 'custom',
+        moreInfo: 'Select this if you want to set permissions for each aspect of a workspace',
+      }
     ]
   },
 

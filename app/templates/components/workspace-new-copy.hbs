@@ -1,69 +1,100 @@
-<div class="header">
-  <h3>Create a copy of an existing workspace</h3>
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <div class="filter-items">
+      <h2>Summary</h2>
+      <ul class="primary-filter-list">
+        {{#each detailsItems as |item|}}
+          {{details-list-item
+          label = item.label
+          displayValue = item.displayValue
+          emptyValue = item.emptyValue
+          propName = item.propName
+          children = item.children
+          editValue = (action "goToStep")
+          associatedStep=item.associatedStep
+          currentStep=currentStep.value
+          }}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex-item-full list-view">
+    <div class="results-list">
+      <div class="header">
+        <h1>Copy Workspace</h1>
+      </div>
+
+      <div class="step-display">
+        <div class="container">
+          <ul class="progressbar">
+            <li class="step-1 active-step">
+              <span>Select Workspace</span>
+            </li>
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+              <span>Copy Configuration</span>
+            </li>
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+              <span>Workspace Info</span>
+            </li>
+            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
+              <span>Collaborators</span>
+            </li>
+            <li class="step-5 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+              <span>Review</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-content">
+        {{!-- <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5> --}}
+
+        {{#if showSelectWorkspace}}
+          {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
+        {{/if}}
+
+        {{#if showSelectConfig}}
+          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+        {{/if}}
+
+        {{#if showOwnerSettings}}
+          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
+        {{/if}}
+
+        {{#if showPermissions}}
+          {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+        {{/if}}
+
+        {{#if showReview}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName config=newWsConfig workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+        {{/if}}
+      </div>
+
+
+      {{#if customConfigError}}
+        <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
+      {{/if}}
+      {{#if copyWorkspaceError}}
+        <p class="error-message">{{copyWorkspaceError}}</p>
+      {{/if}}
+
+      {{#each serverErrors as |error|}}
+        <p class="error-message">{{error}}</p>
+      {{/each}}
+    </div>
+  </div>
 </div>
 
-<div class="ws-copy-details">
-  <ul>
-    {{#each detailsItems as |item|}}
-      {{details-list-item
-        label = item.label
-        displayValue = item.displayValue
-        propName = item.propName
-        editValue = (action "goToStep")
-        associatedStep=item.associatedStep
-      }}
-    {{/each}}
-  </ul>
+<div class="toggle-filter-menu">
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 </div>
 
-<div class="step-display">
-  <h5>Step {{currentStep.value}} / {{maxSteps}}: {{currentStep.display}}</h5>
-</div>
-
-{{#if showSelectWorkspace}}
-  {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}}
-{{/if}}
-
-{{#if showSelectConfig}}
-  {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
-{{/if}}
-
-{{#if showOwnerSettings}}
-  {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
-{{/if}}
-
-{{#if showPermissions}}
-  {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
-{{/if}}
-
-{{#if showReview}}
-  {{ws-copy-review showLoadingMessage=showRequestLoading onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
-{{/if}}
-
-
-{{!-- <div class="nav-buttons">
-  {{#unless (is-equal currentStep.value 1)}}
-  <button {{action "changeStep" -1}}>Prev</button>
-{{/unless}}
-
-{{#if (is-equal currentStep.value maxSteps)}}
-  <button {{action copyRequest}}>Submit Copy Request</button>
-{{else}}
-  <button {{action "proceed" 1}}>Next</button>
-{{/if}}
-</div> --}}
-
-{{#each validationErrors as |error|}}
-
-{{/each}}
-
-{{#if customConfigError}}
-  <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
-{{/if}}
-{{#if copyWorkspaceError}}
-  <p class="error-message">{{copyWorkspaceError}}</p>
-{{/if}}
-
-{{#each serverErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-{{/each}}
+<script>
+  $('.list-view').click(function (e) {
+    if (!($('#filter-list-side').hasClass('collapse'))) {
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+    }
+    $('#filter-list-side').addClass('collapse');
+  });
+</script>

@@ -1,6 +1,27 @@
+{{#if (greater-equal currentStep associatedStep)}}
 <li>
-  <p>{{label}}: {{displayValue}}</p>
-  {{#if doShowRemoveIcon}}
-    <i {{action "editValue" }} class="far fa-edit" aria-hidden="true" title="Edit"></i>
+  <h3 class="detail-header">
+    {{label}}
+    {{#if doShowRemoveIcon}}
+      <i {{action "editValue" }} class="far fa-edit" aria-hidden="true" title="Edit"></i>
+    {{/if}}
+  </h3>
+  {{#if displayValue}}
+    <p class="display-info">{{displayValue}}</p>
+  {{else}}
+    <p class="display-info">{{emptyValue}}</p>
+  {{/if}}
+  {{#if children}}
+    <ul class="sub-list">
+      {{#each children as |child|}}
+        <li class="sub-header">{{child.label}}</li>
+        {{#if child.displayValue}}
+          <li class="sub-content">{{child.displayValue}}</li>
+        {{else}}
+          <li class="sub-content">{{child.emptyValue}}</li>
+        {{/if}}
+      {{/each}}
+    </ul>
   {{/if}}
 </li>
+{{/if}}

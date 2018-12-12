@@ -1,0 +1,48 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.input-label {
+  font-size: 1em;
+  margin-bottom: 20px;
+  color: $primary-font-color;
+  i {
+    margin-left: 10px;
+    font-size: .9em;
+  }
+}
+
+.single-text-input {
+  border: 1px solid $input-border;
+  background-color: $background-body;
+  border-radius: 3px;
+  padding: 10px 15px;
+  font-size: .9em;
+  width: 100%;
+}
+
+.single-text-input-container {
+  @include flex-container(auto, auto, row, no-wrap, center, center, center);
+}
+
+.radio-list {
+  .radio-group-item {
+    margin: 8px 0 10px 8px;
+    span {
+      position: relative;
+      left: 10px;
+      top: 2px;
+    }
+    i {
+      position: relative;
+      top: -2px;
+    }
+  }
+}
+
+.sub-input-label {
+  margin-bottom: 15px;
+  margin-top: 10px;
+  font-weight: $light-font-weight;
+}
+

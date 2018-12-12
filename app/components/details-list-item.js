@@ -7,8 +7,18 @@ doShowRemoveIcon: function() {
     return false;
   }
   const val = this.get('displayValue');
+  const children = this.get('children');
 
-  return !this.get('utils').isNullOrUndefined(val);
+  if (children) {
+    children.map((child) => {
+      let val = child.displayValue;
+      if (!this.get('utils').isNullOrUndefined(val)) {
+        this.set('hasValidChild', true);
+      }
+    });
+  }
+
+  return !this.get('utils').isNullOrUndefined(val) || this.get('hasValidChild');
 }.property('cannotBeRemoved', 'displayValue'),
 
 actions: {

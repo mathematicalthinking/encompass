@@ -23,19 +23,23 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       inputs: [
         {
           value: 'A',
-          label: 'Shallow with Folder Structure',
+          label: 'Submissions Only',
+          moreInfo: 'Copy only the submissions used in this workspace'
         },
         {
           value: 'B',
-          label: 'Shallow with No Folders',
+          label: 'Submissions and Folder Structure',
+          moreInfo: 'Copy the submissions and the folder structure (not content) used in this workspace'
         },
         {
           value: 'C',
-          label: 'Full Deep Copy',
+          label: 'Everything',
+          moreInfo: 'Copy everything used in this workspace (submissions, selections, folders, taggings, comments, responses)'
         },
         {
           value: 'D',
           label: 'Custom',
+          moreInfo: 'Decide which to copy for submissions, selections, folders, taggings, comments and responses'
         }
       ]
     },
@@ -48,14 +52,17 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         {
           value: 'private',
           label: 'Private',
+          moreInfo: 'Workspace will only be visible to the owner and collaborators',
         },
         {
           value: 'org',
           label: 'My Org',
+          moreInfo: 'Workspace will be visible to everyone belonging to your org',
         },
         {
           value: 'public',
           label: 'Public',
+          moreInfo: 'Workspace will be visible to every Encompass user',
         },
       ]
     };
@@ -67,12 +74,24 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     res.inputs.push({
       value: 'internet',
       label: 'Internet',
+      moreInfo: 'Workspace will be accesible to any user with a link to the workspace',
     });
     return res;
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
+  activeStep: function() {
+    console.log('activeStep function running');
+    if (this.get('currentStep.value') >= 1) {
+      console.log('yes');
+    }
+  }.property('currentStep.value'),
+
+  //add class active-step if step-# is less than or equal to currentStep.value
+
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
+  // showSelectWorkspace: false,
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
+  // showSelectConfig: true,
   showOwnerSettings: Ember.computed.equal('currentStep.value', 3),
   showPermissions: Ember.computed.equal('currentStep.value', 4),
   showReview: Ember.computed.equal('currentStep.value', 5),
@@ -148,37 +167,69 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   },
 
+  collabList: function() {
+    //need to get the permissions object
+    //get username from each permissions object and list them in the sumamry
+    const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
+    if (formattedPermissionObjects) {
+      console.log('fomrattedpermissionsObject', formattedPermissionObjects);
+      return formattedPermissionObjects.map((object) => {
+        return object.user;
+      });
+    }
+  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
+
+
   detailsItems: function() {
     return [
       {
-        label: 'Workspace to Copy',
+        label: 'Selected Workspace',
         displayValue: this.get('workspaceToCopy.name'),
+        emptyValue: 'No workspace',
         propName: 'workspaceToCopy',
         associatedStep: 1
       },
       {
         label: 'Selected Configuration',
         displayValue: this.get('selectedConfigDisplay'),
+        emptyValue: 'No Configuration',
         propName: 'newWsConfig',
         associatedStep: 2
       },
       {
-        label: 'New Workspace Name',
-        displayValue: this.get('newWsName'),
-        propName: 'newWsName',
-        associatedStep: 3
-      },
-      {
-        label: 'New Workspace Owner',
-        displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
-        propName: 'owner',
-        associatedStep: 3
-      },
-      {
-        label: 'Privacy Setting',
-        displayValue: this.get('modeDisplay'),
-        propName: 'newWsMode',
+        label: 'New Workspace Info',
+        propName: 'wsInfo',
         associatedStep: 3,
+        children: [
+          {
+            label: 'Name',
+            displayValue: this.get('newWsName'),
+            emptyValue: 'No Name',
+            propName: 'newWsName',
+            associatedStep: 3,
+          },
+          {
+            label: 'Owner',
+            displayValue: this.get('newWsOwner.username') || this.get('newWsOwner.name'),
+            emptyValue: 'No Owner',
+            propName: 'owner',
+            associatedStep: 3
+          },
+          {
+            label: 'Privacy Setting',
+            displayValue: this.get('modeDisplay'),
+            emptyValue: 'No Privacy Setting',
+            propName: 'newWsMode',
+            associatedStep: 3,
+          },
+        ],
+      },
+      {
+        label: 'Collaborators',
+        displayValue: this.get('collabList'),
+        emptyValue: 'No Collaborators',
+        propName: 'collabs',
+        associatedStep: 4,
       },
     ];
   }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
@@ -188,9 +239,9 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       return;
     }
     const hash = {
-      A: 'Shallow with Folder Structure',
-      B: 'Shallow with No Folders',
-      C: 'Full Deep Copy',
+      A: 'Submissions Only',
+      B: 'Submissions and Folder Structure',
+      C: 'Everything',
       D: 'Custom'
     };
     return hash[this.get('newWsConfig')];
@@ -201,34 +252,14 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     {
       value: 1,
       display: 'Choose Workspace to Copy',
-      // constraints: {
-      //   workspace: {
-      //     presence: { allowEmpty: false }
-      //   }
-      // }
     },
      {
       value: 2,
       display: 'Choose Preset or Custom Configuration',
-
-      // constraints: {
-      //   selectedConfig: {
-      //     presence: { allowEmpty: false }
-      //   }
-      // }
     },
    {
       value: 3,
       display: 'Choose Owner Settings',
-      // constraints: {
-      //   name: {
-      //     presence: { allowEmpty: false },
-      //     length: {
-      //       maximum: 500
-      //     }
-      //   }
-      // }
-
     },
    {
       value: 4,
@@ -342,7 +373,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         if (currentStep === maxStep) {
           return;
         }
-        this.set('currentStep', currentStep + 1);
         return;
       }
 
@@ -385,12 +415,12 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       this.set('newWsOwner', owner);
       this.set('newWsMode', mode);
       this.set('newFolderSetOptions', folderSetOptions);
-
       this.set('currentStep', this.get('steps')[4]);
 
     },
     setPermissions(permissions) {
       this.set('newWsPermissions', permissions);
+      // console.log('')
       this.set('currentStep', this.get('steps')[5]);
     },
     createCopyRequest() {
@@ -494,6 +524,11 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
           this.handleErrors(err, 'serverErrors');
         });
 
-    }
+    },
+    toggleMenu: function () {
+      $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+      $('#filter-list-side').addClass('animated slideInLeft');
+    },
   }
 });

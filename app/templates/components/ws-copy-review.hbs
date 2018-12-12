@@ -1,9 +1,66 @@
-<p class="info">Review the details of your request located above. If everything looks correct, hit 'Submit' to create your new copied workspace.</p>
+<p class="input-label">Workspace Review
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="This is a representation of the new workspace you are creating">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
+<p class="sub-input-label">Please review the details of requested workspace. If everything looks correct, go ahead and create your new workspace</p>
 
 {{#if showLoadingMessage}}
-  <p class="loading-message">Your copy request is in progress... Thank you for your patience.</p>
+  <p class="loading-message">Your copy request is in progress. Thank you for your patience.</p>
 {{/if}}
+
+<div class="workspace-copy-card">
+  <div class="item-card-container">
+    <div class="item-card row-1">
+      <div class="item-card privacy">
+        <span class="privacy-icon">
+            <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{mode}}>
+              {{{public-private mode}}}
+            </span>
+        </span>
+        <span class="date">{{format-date createDate 'L'}}</span>
+      </div>
+    </div>
+    <div class="item-card row-2">
+      <div class="item-card name">
+        <span>{{{name}}}</span>
+      </div>
+    </div>
+    <div class="item-card row-3">
+      <div class="item-card description">
+        {{{owner.username}}}
+      </div>
+    </div>
+    <div class="item-card row-4">
+      <div class="item-card status">
+        <ul class="workspace-stats">
+          <li>
+            <p class="stat-header">Submissions</p>
+            <p class="stat-number">{{submissionCount}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Selections</p>
+            <p class="stat-number">{{selectionsCount}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Comments</p>
+            <p class="stat-number">{{commentsCount}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Responses</p>
+            <p class="stat-number">{{responsesCount}}</p>
+          </li>
+          <li>
+            <p class="stat-header">Collaborators</p>
+            <p class="stat-number">{{editorsCount}}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="nav-btn-container">
-  <button {{action "back"}}>Prev</button>
-  <button class="ws-copy submit" {{action "next"}}>Submit</button>
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Create</button>
 </div>
