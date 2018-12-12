@@ -1439,8 +1439,15 @@ async function postWorkspaceEnc(req, res, next) {
         answersToConvert = records;
       } else {
         // something went wrong
-        console.log('something went wrong');
-        return utils.sendError.InternalError(null, res);
+        let rec = pruned;
+        rec.isEmptyAnswerSet = true;
+
+        let enc = new models.EncWorkspaceRequest(rec);
+        let saved = await enc.save();
+
+        const data = { encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+
       }
     } else {
       accessibleCriteria = await answerAccess.get.answers(user);
