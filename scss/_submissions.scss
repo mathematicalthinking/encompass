@@ -81,10 +81,10 @@
         font-size: 1.2em;
       }
       .icon-message {
-        // margin-right: 20px;
         font-weight: $light-font-weight;
         font-size: 1em;
         display: inline-block;
+        margin-bottom: 8px;
         &.submissions {
           width: 160px;
         }
@@ -94,6 +94,58 @@
         &.students {
           width: 140px;
         }
+      }
+    }
+    .results-items {
+      .sort-bar-item, .item-section {
+        font-size: .8em;
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        // border: 1px solid red;
+        .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
+          font-size: .7em;
+          position: relative;
+          top: -1px;
+        }
+        &:hover {
+          cursor: pointer;
+          color: black;
+        }
+        &.toggle-all {
+          @include flex-item(1, center, .04 0 auto);
+          width: 4%;
+          text-align: center;
+        }
+        &.student {
+          @include flex-item(2, center, .08 0 auto);
+          width: 8%;
+        }
+        &.revisions {
+          @include flex-item(3, center, .08 0 auto);
+          width: 8%;
+        }
+        &.explanation {
+          @include flex-item(4, center, .53 0 auto);
+          width: 52%;
+          text-align: left;
+        }
+        &.section {
+          @include flex-item(5, center, .12 0 auto);
+          width: 12%;
+        }
+        &.createDate {
+          @include flex-item(6, center, .12 0 auto);
+          width: 12%;
+        }
+        &.more {
+          @include flex-item(7, center, .01 0 auto);
+          width: 2%;
+        }
+      }
+      .item-section {
+        font-size: 1em;
       }
     }
   }

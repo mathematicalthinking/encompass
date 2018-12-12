@@ -1,15 +1,15 @@
 {{#if isList}}
   <div class="item-container" id="container">
-    <div class="toggle-check">
+    <div class="item-section toggle-all toggle-check">
       <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
       </div>
     <div class="item-section student">
         {{answer.student}}
     </div>
-    <div class="item-section revision">
+    <div class="item-section revisions">
       {{revisionCount}}
     </div>
-    <div class="item-section description">
+    <div class="item-section explanation">
         {{{answer.explanation}}}
     </div>
     <div class="item-section section">

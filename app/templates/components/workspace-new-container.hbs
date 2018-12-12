@@ -35,7 +35,11 @@
           <div class="results-icons">
             <span class="icon-message submissions"><i class="fas fa-file"></i> {{nonTrashedAnswers.length}} Submissions</span>
             <span class="icon-message selected"><i class="fas fa-check-circle"></i> {{selectedAnswers.length}} Selected</span>
-            <span class="icon-message students"><i class="fas fa-user"></i> {{submissionThreads.size}} Students</span>
+            {{#if submissionThreads.size}}
+              <span class="icon-message students"><i class="fas fa-user"></i> {{submissionThreads.size}} Students</span>
+            {{else}}
+              <span class="icon-message students"><i class="fas fa-user"></i> 0 Students</span>
+            {{/if}}
           </div>
 
           <div class="side-icons">
@@ -47,7 +51,6 @@
         <div class="results-items" id="layout-view">
           <div class="sort-bar">
             <div class="sort-bar-item toggle-all">
-              <label>Check All</label>
               <input type="checkbox" onclick={{action "toggleCheckAllAnswers"}}>
             </div>
             {{
@@ -101,8 +104,6 @@
               type="createDate"
               activeType=sortCriterion.type
             }}
-
-            <div class="sort-bar-item info-item"></div>
             <div class="sort-bar-item more"></div>
           </div>
           {{#if isFetchingAnswers}}
