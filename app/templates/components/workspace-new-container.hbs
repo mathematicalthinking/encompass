@@ -139,15 +139,15 @@
       </div>
     </div>
     {{/if}}
-    {{#if showWorkspaceSettingsMenu}}
+  </div>
+  {{#if showWorkspaceSettingsMenu}}
     {{workspace-new-settings
       store=store
       users=model.users
       folderSets=model.folderSets
       onProceed=(action "createWorkspace")
     }}
-    {{/if}}
-  </div>
+  {{/if}}
   {{#if showSubmissionViewer}}
     <div class="toggle-filter-menu">
     <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
