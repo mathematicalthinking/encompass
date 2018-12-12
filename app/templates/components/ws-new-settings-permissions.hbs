@@ -1,0 +1,49 @@
+<p class="input-label">
+  Collaborators
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace, you can customize their permissions settings in detail after you add them">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
+
+<p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
+  {{selectize-input
+  store=store
+  inputId="collab-select"
+  maxItems=1
+  onItemAdd=(action "setCollaborator")
+  onItemRemove=(action "setCollaborator")
+  labelField="username"
+  valueField="id"
+  searchField="username"
+  model="user"
+  placeholder="Search by username to add a collaborator"}}
+
+{{#if selectedCollaborator}}
+  <div class="global-permissions">
+    {{radio-group options=globalItems selectedValue=global}}
+    <p class="sub-input-label">You can set more custom permissions after you create the workspace</p>
+
+    {{#if saveError}}
+      {{error-box error="Sorry, something went wrong. Please try again" showDismiss=true resetError=(action (mut saveError) null)}}
+    {{/if}}
+
+    <div class="button-container">
+      <button class="secondary-button" {{action "savePermissions"}}>Save Permissions</button>
+      {{!-- <button class="secondary-button cancel-button" {{action (mut selectedUser) null}}>Cancel</button> --}}
+    </div>
+  </div>
+{{/if}}
+
+{{#if permissions}}
+<div class="added-collab">
+  <ul>
+    <p class="input-label">Added Collaborators</p>
+    {{#each permissions as |permission|}}
+    <li>{{permission.user.username}}
+      <i {{action "editCollab" permission}} class="far fa-edit" aria-hidden="true" title="Modify"></i>
+      <i {{action "removeCollab" permission}} class="fas fa-minus-circle" aria-hidden="true" title="Remove"></i>
+    </li>
+    {{/each}}
+  </ul>
+</div>
+{{/if}}

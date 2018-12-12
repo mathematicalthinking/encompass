@@ -192,10 +192,10 @@ module.exports = (passport) => {
                         next(err);
                       }
                       // send email to new user asking to confirm email
-                      auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token);
+                      auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token, newUser);
 
                       // send email to encompass main email notifying new user signup
-                      auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification');
+                      auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification', null, newUser);
 
                       return next(null, newUser);
 

@@ -26,7 +26,7 @@ const accessibleTaggingsQuery = async function(user, ids) {
 
       if (apiUtils.isNonEmptyArray(ids)) {
         filter.$and.push({ _id: { $in : ids } });
-      } else if(!apiUtils.isNullOrUndefined(ids)) {
+      } else if(apiUtils.isValidMongoId(ids)) {
         filter.$and.push({ _id: ids });
       }
 

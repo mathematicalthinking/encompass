@@ -17,7 +17,8 @@ const loginUrl = `${host}/#/auth/login`;
 
 const admin = {
   username: 'rick',
-  password: 'sanchez'
+  password: 'sanchez',
+  name: 'Rick Sanchez'
 };
 
 const unauth = {

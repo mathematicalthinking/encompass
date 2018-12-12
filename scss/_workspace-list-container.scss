@@ -238,3 +238,95 @@
     }
   }
 }
+
+#workspace-new-settings {
+  padding: 20px;
+  h1 {
+    margin: 20px 0;
+    font-size: 2em;
+    color: $dark-font-color;
+    font-weight: $main-font-weight;
+    width: 100%;
+  }
+  .create-ws-content {
+    margin: 40px 40px 0 40px;
+    .input-label {
+      color: $dark-font-color;
+      font-size: 1.2em;
+      i {
+        color: $primary-font-color;
+        font-size: .9em;
+      }
+    }
+    .ws-new {
+      margin-bottom: 30px;
+    }
+    .primary-button {
+      float: left;
+      margin-bottom: 40px;
+    }
+    .single-text-input-container {
+      max-width: 600px;
+    }
+    .selectize-comp {
+      max-width: 600px;
+    }
+    .error-box {
+      margin-top: 0px;
+      max-width: 538px;
+    }
+  }
+}
+
+#ws-new-settings-permissions {
+  .global-permissions {
+    margin: 20px 0 20px 20px;
+    .radio-group-label {
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      i {
+        margin-left: 15px;
+        font-size: .9em;
+      }
+    }
+    .sub-input-label {
+      font-size: .9em;
+      margin-left: 20px;
+    }
+  }
+  .button-container {
+    display: block;
+    margin: 15px 0;
+    .secondary-button {
+      // background-color: $accent-color;
+      // color: white;
+      background-color: $cancel-color;
+      color: $primary-font-color;
+      border-radius: 3px;
+      border: 0;
+      padding: 8px 10px;
+      font-size: .75em;
+      margin-right: 10px;
+      &.cancel-button {
+        background-color: $cancel-color;
+        color: $primary-font-color;
+      }
+    }
+  }
+  .added-collab {
+    margin: 30px 0 30px 20px;
+    li {
+      margin: 10px;
+      .fa-edit {
+        margin-left: 15px;
+      }
+      .fa-minus-circle {
+        color: $error-color;
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+
+

@@ -1420,8 +1420,8 @@ async function postWorkspaceEnc(req, res, next) {
   }
 
   const workspaceCriteria = req.body.encWorkspaceRequest;
-  const { requestedName, mode, folderSet, owner } = workspaceCriteria;
-
+  const { requestedName, mode, folderSet, owner, answers, permissionObjects } = workspaceCriteria;
+  console.log('workspaceCriteria post enc', workspaceCriteria);
   try {
     const pruned = pruneObj(workspaceCriteria);
 
@@ -1430,45 +1430,63 @@ async function postWorkspaceEnc(req, res, next) {
     delete pruned.isEmptyAnswerSet;
 
     const ownerOrg = await userAuth.getUserOrg(owner);
-    const accessibleCriteria = await answerAccess.get.answers(user);
+    let accessibleCriteria;
+    let answersToConvert;
 
-    let wsCriteria;
+    if (apiUtils.isNonEmptyArray(answers)) {
+      let records = await models.Answer.find({_id: {$in: answers}});
+      if (apiUtils.isNonEmptyArray(records)) {
+        answersToConvert = records;
+      } else {
+        // something went wrong
+        let rec = pruned;
+        rec.isEmptyAnswerSet = true;
 
-    // returns null if teacher has no sections or assignments
-    if (!_.isNull(accessibleCriteria)) {
-      wsCriteria = await buildCriteria(accessibleCriteria, pruned, user);
+        let enc = new models.EncWorkspaceRequest(rec);
+        let saved = await enc.save();
+
+        const data = { encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+
+      }
+    } else {
+      accessibleCriteria = await answerAccess.get.answers(user);
+
+      let wsCriteria;
+
+      // returns null if teacher has no sections or assignments
+      if (!_.isNull(accessibleCriteria)) {
+        wsCriteria = await buildCriteria(accessibleCriteria, pruned, user);
+      }
+
+      // currently buildCriteria will return null if teacher filter is applied and the chosen
+      // teacher does not have any sections or assignments because currently there is no way
+      // to have any answers associated with a teacher outside of an assignment/section
+      // there can be answers associated with a problem outside of an assignemnt, but these answers
+      // are not associated with a teacher that is an encompass user(??)
+      if (!_.isNull(wsCriteria) && !_.isUndefined(wsCriteria)) {
+        answersToConvert = await models.Answer.find(wsCriteria);
+      }
+
+
+      if (_.isEmpty(answersToConvert) || _.isUndefined(answersToConvert)) {
+        let rec = pruned;
+        rec.isEmptyAnswerSet = true;
+
+        let enc = new models.EncWorkspaceRequest(rec);
+        let saved = await enc.save();
+
+        const data = { encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+      }
     }
-
-    // currently buildCriteria will return null if teacher filter is applied and the chosen
-    // teacher does not have any sections or assignments because currently there is no way
-    // to have any answers associated with a teacher outside of an assignment/section
-    // there can be answers associated with a problem outside of an assignemnt, but these answers
-    // are not associated with a teacher that is an encompass user(??)
-    let answers;
-    if (!_.isNull(wsCriteria) && !_.isUndefined(wsCriteria)) {
-      answers = await models.Answer.find(wsCriteria);
-    }
-
-
-    if (_.isEmpty(answers) || _.isUndefined(answers)) {
-      let rec = pruned;
-      rec.isEmptyAnswerSet = true;
-
-      let enc = new models.EncWorkspaceRequest(rec);
-      let saved = await enc.save();
-
-      const data = { encWorkspaceRequest: saved };
-      return utils.sendResponse(res, data);
-    }
-
-    let subs = await answersToSubmissions(answers);
+    let subs = await answersToSubmissions(answersToConvert);
     const submissions = await Promise.all(subs.map((obj) => {
       let sub = new models.Submission(obj);
       sub.createdBy = user;
       sub.createDate = Date.now();
       return sub.save();
     }));
-
     const submissionIds = submissions.map((sub) => {
       return sub._id;
     });
@@ -1485,6 +1503,7 @@ async function postWorkspaceEnc(req, res, next) {
       mode,
       name,
       owner,
+      permissions: permissionObjects,
       organization: ownerOrg,
       submissionSet: submissionSet,
       submissions: submissionIds,
@@ -1494,15 +1513,14 @@ async function postWorkspaceEnc(req, res, next) {
       lastViewed: new Date(),
     });
     let ws = await workspace.save();
-
     const wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
     const folderSetInfo = { folderSetId: folderSet, folderSetObjects: null };
 
     // creates new folders for workspace
     await newFolderStructure(user, wsInfo, folderSetInfo);
-
     let rec = pruned;
     rec.createdWorkspace = ws._id;
+    rec.createdBy = user;
     const encRequest = new models.EncWorkspaceRequest(rec);
     const saved = await encRequest.save();
 
@@ -1511,6 +1529,8 @@ async function postWorkspaceEnc(req, res, next) {
     return utils.sendResponse(res,  data);
 
   } catch(err) {
+    console.error(`Error postWorkspaceEnc: ${err}`);
+    console.trace();
     return utils.sendError.InternalError(err, res);
   }
 }

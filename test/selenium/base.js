@@ -108,7 +108,7 @@ describe('Home Page', function () {
         console.log(err);
       }
       expect(url).to.equal(`${host}/`);
-      expect(greeting).to.equal(`${helpers.admin.username}`);
+      expect(greeting).to.equal(`${helpers.admin.name}`);
     });
   });
 

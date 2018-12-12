@@ -6,14 +6,28 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     let newPropName = this.propName;
     let oldPropName = this.get('currentPropName');
 
+    let selectizeControl = this.$('select')[0].selectize;
+    if (!selectizeControl) {
+      return;
+    }
+
     if (_.isUndefined(oldPropName)) {
       this.set('currentPropName', newPropName);
     } else {
       if (!_.isEqual(newPropName, oldPropName)) {
         // new id, need to clear inputs
-        this.$('select')[0].selectize.clear(true);
+        selectizeControl.clear(true);
         this.set('currentPropName', newPropName);
       }
+    }
+    const newOptions = this.get('initialOptions');
+    const currentOptions = this.get('options');
+
+    if ((newOptions && currentOptions) && !_.isEqual(newOptions, currentOptions)) {
+      console.log('diff options!');
+      selectizeControl.clearOptions();
+      selectizeControl.addOption(newOptions);
+      selectizeControl.refreshOptions(false);
     }
     this._super(...arguments);
   },
@@ -21,6 +35,23 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   didReceiveAttrs() {
     let options = this.get('initialOptions');
     let items = this.get('initialItems');
+
+    if (!options) {
+      if (this.get('model') && this.get('valueField') && this.get('labelField')) {
+        let peeked = this.get('store').peekAll(this.get('model'));
+        if (peeked) {
+          options = peeked.map((record) => {
+            let valueField = this.get('valueField');
+            let labelField = this.get('labelField');
+            return {
+              [valueField]: record.get(valueField),
+              [labelField]: record.get(labelField)
+
+            };
+          });
+        }
+      }
+    }
 
     this.set('options', options);
     this.set('items', items);
@@ -41,7 +72,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       propsToMap.addObject(this.get('valueField'));
       this.set('propsToMap', propsToMap);
     }
-
 
     this._super(...arguments);
   },
@@ -67,6 +97,9 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     let options = this.get('optionsHash');
     let id = this.get('inputId');
     this.$(`#${id}`).selectize(options);
+    if (this.get('isDisabled')) {
+      this.$('select')[0].selectize.disable();
+    }
     this._super(...arguments);
   },
 
@@ -90,7 +123,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
     if (this.onItemAdd) {
       hash.onItemAdd = function(value, $item) {
-        that.get('onItemAdd')(value, $item, propToUpdate);
+        that.get('onItemAdd')(value, $item, propToUpdate, that.get('model'));
       };
     }
 
@@ -108,6 +141,9 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
   },
 
   addItemsSelectize: function(query, callback) {
+    if (this.get('doFetch') === false) {
+      return callback();
+    }
     if (!query.length) {
       if (this.get('preload') === false) {
         return callback();
@@ -127,11 +163,21 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     let searchCriterion = this.get('searchCriterion');
     let queryParams = {};
     let topLevelQueryParams = this.get('topLevelQueryParams');
+    let secondaryFilters = this.get('secondaryFilters');
 
     if (topLevelQueryParams) {
       queryParams[topLevelQueryParams] = {
         [key]: query
       };
+      if (secondaryFilters) {
+        _.each(secondaryFilters, (val, key) => {
+          if (key === 'ids') {
+            queryParams.ids = val;
+          } else {
+            queryParams[topLevelQueryParams][key] = val;
+          }
+        });
+      }
       if (searchCriterion) {
         queryParams[topLevelQueryParams].criterion = searchCriterion;
       }

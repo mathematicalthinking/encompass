@@ -1,0 +1,237 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 720px) {
+  #workspace-new-container {
+    .results-list {
+      .results-icons {
+        i {
+          font-size: .8em;
+        }
+        .icon-message {
+          font-size: .85em;
+          &.submissions {
+            width: 120px;
+          }
+          &.selected {
+            width: 100px;
+          }
+          &.students {
+            width: 100px;
+          }
+        }
+      }
+      .side-icons {
+        font-size: .85em;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 721px) and (max-width: 10000px) {
+  #workspace-new-container {
+    .results-list {
+      .results-icons {
+        i {
+          font-size: 1.2em;
+        }
+        .icon-message {
+          font-size: 1em;
+          &.submissions {
+            width: 160px;
+          }
+          &.selected {
+            width: 140px;
+          }
+          &.students {
+            width: 140px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 500px) {
+  #workspace-new-container {
+    .sort-bar-item, .item-section {
+      &.createDate {
+        display: none;
+      }
+      &.more {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 1199px) {
+  #workspace-new-container {
+    .sort-bar-item, .item-section {
+      &.section {
+        display: none;
+      }
+    }
+  }
+}
+
+
+#submissions-filter {
+  .filter-items {
+    h2 {
+      margin-bottom: 30px;
+    }
+  }
+  .primary-filter-list {
+    padding: 0 20px;
+    margin-bottom: 60px;
+    li {
+      margin-bottom: 13px;
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      .single-text-input {
+        height: 10px;
+        font-size: .8em;
+        padding-left: 10px;
+        font-weight: $light-font-weight;
+      }
+      .selectize-comp {
+        .selectize-input {
+          height: 34px;
+        }
+        input {
+          font-size: 1em;
+          font-weight: $light-font-weight;
+        }
+      }
+    }
+  }
+}
+
+
+#submission-viewer-list {
+  .no-results-container {
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 20px;
+    .info {
+      font-size: 1.4em;
+      margin: 50px 0 40px 0;
+    }
+  }
+}
+
+#workspace-new-container {
+  .loading-message-container {
+    text-align: center;
+    margin-top: 50px;
+    .loading-message {
+      margin-top: 30px;
+      font-weight: $light-font-weight;
+      font-size: 1.2em;
+    }
+    .loading {
+      margin: 50px auto;
+    }
+  }
+  .primary-button {
+    font-weight: $main-font-weight;
+    text-align: center;
+    width: 160px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 30px;
+    &.create-ws {
+      margin-top: 20%;
+      margin-bottom: 80px;
+    }
+  }
+  .list-container {
+    .searchbar {
+      .search-bar-comp {
+        margin-right: 0px;
+        .submit {
+          @include flex-item(3, center, .02 0 auto);
+          text-align: right;
+        }
+      }
+    }
+  }
+  .results-list {
+    .results-icons {
+      i {
+        margin-right: 5px;
+      }
+      .icon-message {
+        font-weight: $light-font-weight;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+    }
+    .side-icons {
+      width: 220px;
+      .show-revisions {
+        margin-right: 20px;
+      }
+    }
+    .results-items {
+      .sort-bar-item, .item-section {
+        font-size: .8em;
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        // border: 1px solid red;
+        .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
+          font-size: .7em;
+          position: relative;
+          top: -1px;
+        }
+        &:hover {
+          cursor: pointer;
+          color: black;
+        }
+        &.toggle-all {
+          @include flex-item(1, center, .04 0 auto);
+          width: 4%;
+          text-align: center;
+        }
+        &.student {
+          @include flex-item(2, center, .08 0 auto);
+          width: 8%;
+        }
+        &.revisions {
+          @include flex-item(3, center, .08 0 auto);
+          width: 8%;
+        }
+        &.explanation {
+          @include flex-item(4, center, .53 0 auto);
+          width: 52%;
+          text-align: left;
+        }
+        &.section {
+          @include flex-item(5, center, .12 0 auto);
+          width: 12%;
+        }
+        &.createDate {
+          @include flex-item(6, center, .12 0 auto);
+          width: 12%;
+        }
+        &.more {
+          @include flex-item(7, center, .01 0 auto);
+          width: 2%;
+        }
+      }
+      .item-section {
+        font-size: 1em;
+        &:hover {
+          cursor: default;
+          color: $primary-font-color;
+        }
+      }
+    }
+  }
+}

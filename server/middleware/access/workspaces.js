@@ -161,6 +161,8 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
 
   if (apiUtils.isNonEmptyArray(ids)) {
     filter.$and.push({_id: {$in : ids } });
+  } else if (apiUtils.isValidMongoId(ids)) {
+    filter.$and.push({_id: ids });
   }
   if (apiUtils.isNonEmptyObject(filterBy)) {
     filter.$and.push(filterBy);

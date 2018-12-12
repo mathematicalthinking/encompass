@@ -1,40 +1,26 @@
 {{#if isList}}
   <div class="item-container" id="container">
-    <div class="item-section mode">
-      {{{public-private workspace.mode}}}
+    <div class="item-section toggle-all toggle-check">
+      <input type="checkbox" checked={{isChecked}} name="customIds" value={{answer.id}} onclick={{action "onSelect"}}>
+      </div>
+    <div class="item-section student">
+        {{answer.student}}
     </div>
-    <div class="item-section info-item">
-      {{#link-to 'workspace.info' workspace.id}}
-      <i class="fa fa-info-circle workspace_info" aria-hidden="true"></i>
-      {{/link-to}}
+    <div class="item-section revisions">
+      {{revisionCount}}
     </div>
-    <div class="item-section name">
-      {{#link-to 'workspace.work' workspace class="workspace-name"}}
-        <span class={{if workspace.isTrashed 'strikethrough'}}>{{{workspace.name}}}</span>
-      {{/link-to}}
+    <div class="item-section explanation">
+        {{{answer.explanation}}}
     </div>
-    <div class="item-section last-viewed">
-      {{#link-to 'workspace.work' workspace class="workspace-last-viewed"}}
-        {{format-date workspace.lastModifiedDateComp 'L'}}
-      {{/link-to}}
+    <div class="item-section section">
+      {{#if answer.section.name}}
+        {{answer.section.name}}
+      {{else}}
+        N/A
+      {{/if}}
     </div>
-    <div class="item-section submissions">
-      {{workspace.submissionsLength}}
-    </div>
-    <div class="item-section selections">
-      {{workspace.selectionsLength}}
-    </div>
-    <div class="item-section comments">
-      {{workspace.commentsLength}}
-    </div>
-    <div class="item-section responses">
-      {{workspace.responsesLength}}
-    </div>
-    <div class="item-section owner">
-      {{workspace.owner.displayName}}
-    </div>
-    <div class="item-section editors">
-      {{workspace.collaborators.length}}
+    <div class="item-section createDate">
+      <span>{{format-date answer.createDate 'L'}}</span>
     </div>
     <div class="item-section more" {{action "toggleShowMoreMenu"}}>
       <i class="fas fa-ellipsis-v more-menu"></i>
@@ -60,7 +46,7 @@
   </div>
 {{/if}}
 
-{{#if isGrid}}
+{{!-- {{#if isGrid}}
   <div class="item-card-container">
     <div class="item-card row-1">
       <div class="item-card privacy">
@@ -109,29 +95,29 @@
         <ul class="workspace-stats">
           <li>
             <p class="stat-header">Submissions</p>
-            <p class="stat-number">{{workspace.submissionsLength}}</p>
+            <p>{{workspace.submissionsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Selections</p>
-            <p class="stat-number">{{workspace.selectionsLength}}</p>
+            <p>{{workspace.selectionsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Comments</p>
-            <p class="stat-number">{{workspace.commentsLength}}</p>
+            <p>{{workspace.commentsLength}}</p>
           </li>
           <li>
             <p class="stat-header">Responses</p>
-            <p class="stat-number">{{workspace.responsesLength}}</p>
+            <p>{{workspace.responsesLength}}</p>
           </li>
           <li>
             <p class="stat-header">Collaborators</p>
-            <p class="stat-number">{{workspace.editorsLength}}</p>
+            <p>{{workspace.collaborators.length}}</p>
           </li>
         </ul>
       </div>
     </div>
   </div>
-{{/if}}
+{{/if}} --}}
 
 <script>
   $('.workspace-name').click(function (e) {
@@ -147,5 +133,3 @@
     $('.click-menu').addClass('hidden');
   });
 </script>
-
-

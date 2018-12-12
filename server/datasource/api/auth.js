@@ -101,7 +101,7 @@ const getResetToken = function(size) {
   });
 };
 
-const sendEmailSMTP = function(recipient, host, template, token=null) {
+const sendEmailSMTP = function(recipient, host, template, token=null, userObj) {
   console.log(`getEmailAuth() return: ${userAuth.getEmailAuth().username}`);
   const smtpTransport = nodemailer.createTransport({
     service: 'Gmail',
@@ -110,7 +110,7 @@ const sendEmailSMTP = function(recipient, host, template, token=null) {
       pass: userAuth.getEmailAuth().password
     }
   });
-  const msg = emails[template](recipient, host, token);
+  const msg = emails[template](recipient, host, token, userObj);
     return new Promise( (resolve, reject) => {
       smtpTransport.sendMail(msg, (err) => {
         if (err) {
@@ -172,7 +172,7 @@ const forgot = async function(req, res, next) {
 
       }
 
-      await sendEmailSMTP(email, req.headers.host, 'resetTokenEmail', token);
+      await sendEmailSMTP(email, req.headers.host, 'resetTokenEmail', token, user);
 
       return utils.sendResponse(res, {'info': `Password reset email sent to ${email}`, isSuccess: true});
   }catch(err) {
@@ -315,7 +315,7 @@ const resendConfirmationEmail = async function(req, res, next) {
     userRec.confirmEmailToken = token;
     userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
     let savedUser = await userRec.save();
-    await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token);
+    await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token, savedUser);
     return utils.sendResponse(res, {
      isSuccess: true,
      info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`

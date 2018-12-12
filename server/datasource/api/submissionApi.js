@@ -112,10 +112,7 @@ async function getSubmissions(req, res, next) {
   } else {
     criteria = await access.get.submissions(user, null);
   }
-  console.log('criteria get subs', criteria);
 
-  //console.log('req params', req.query);
-  //logger.debug('Get Submission Criteria: ' + JSON.stringify(criteria) );
   models.Submission.find(criteria)
     .exec(function(err, submissions) {
       if(err) {

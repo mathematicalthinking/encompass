@@ -15,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
 const auth = require('../../datasource/api/auth');
+const apiUtils = require('../../datasource/api/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -215,75 +216,68 @@ function postUser(req, res, next) {
   */
   async function putUser(req, res, next) {
     try {
+      const requestBody = req.body.user;
+      if (!apiUtils.isNonEmptyObject(requestBody)) {
+        return utils.sendError.InvalidContentError(null, res);
+      }
        /* These fields are uneditable */
-    delete req.body.user.username;
-    delete req.body.user.createDate;
-    delete req.body.user.key;
+    delete requestBody.username;
+    delete requestBody.createDate;
+    delete requestBody.key;
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
-    var user = userAuth.requireUser(req);
-    var modifiableUserCriteria = await access.get.users(user);
-    var modifiableUsers = await models.User.find(modifiableUserCriteria, {_id: 1}).lean().exec();
-    var userIds = modifiableUsers.map(obj => obj._id.toString());
-    var shouldSendAuthEmail = req.body.user.shouldSendAuthEmail;
+    const user = userAuth.requireUser(req);
+
+    let canModifyUser = await access.canModifyUser(user, req.params.id);
+    if (!canModifyUser) {
+      return utils.sendError.NotAuthorizedError('You do not have permissions modify this user.', res);
+    }
+
+    let shouldSendAuthEmail = requestBody.shouldSendAuthEmail;
+
+    let updateHash = {};
 
     // Should we handle a nonexisting userid separately?
     if (user.accountType === 'S') {
-      return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
-    }
-
-    if (user.accountType !== 'A') {
-      if (!_.contains(userIds, req.params.id)) {
-        return utils.sendError.NotAuthorizedError('You do not have permissions to do this', res);
+      shouldSendAuthEmail = false;
+      if (!_.isUndefined(requestBody.seenTour)) {
+        updateHash.seenTour = requestBody.seenTour;
       }
     }
-
-    if (user.actingRole === 'student') {
-      models.User.findByIdAndUpdate(
-        req.params.id,
-        /* actingRole students can only update their actingRole and seenTour */
-        { actingRole: req.body.user.actingRole,
-          seenTour : req.body.user.seenTour },
-        { new: true }
-      ).exec((err, doc) => {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
+    else if (user.actingRole === 'student') {
+      shouldSendAuthEmail = false;
+      if (!_.isUndefined(requestBody.seenTour)) {
+        updateHash.seenTour = requestBody.seenTour;
+      }
+      if (_.contains(['teacher', 'student'], requestBody.actingRole)) {
+        updateHash.actingRole = requestBody.actingRole;
+      }
+    } else {
+      // only account Types T, P, A in acting role teacher
+      // do we need to explicitly verify that account type is within T,P,A?
+      if (requestBody.accountType === 'A' || requestBody.accountType === 'P') {
+        if (user.accountType !== 'A') {
+          // only Admins can change accounts to admin or pdadmin
+          // should we send error?
+          delete requestBody.accountType;
         }
-        var data = {'user': doc};
-        return utils.sendResponse(res, data);
-      });
-    } else if (user.accountType === 'A' || user.accountType === 'T' || user.accountType === 'P') {
-      models.User.findByIdAndUpdate(
-        req.params.id,
-        req.body.user,
-        { new: true }
-      ).exec((err, doc) => {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'user': doc};
+      }
 
-        // if shouldSendAuthEmail send email to user confirming that they have been authorized
-        if (shouldSendAuthEmail) {
-          let recipient = doc.email;
-          if (recipient) {
-            return auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized').then(() => {
-              return utils.sendResponse(res, data);
-            })
-            .catch((err) => {
-              console.error('Error sending newlyAuthorized email', err);
-              console.trace();
-              return utils.sendError.InternalError(err, res);
-            });
-          }
-
-        } else {
-          return utils.sendResponse(res, data);
-        }
-      });
+      updateHash = requestBody;
     }
+    const updatedUser = await models.User.findByIdAndUpdate(req.params.id, updateHash, {new: true}).exec();
+
+    const data = {'user': updatedUser};
+    // if shouldSendAuthEmail send email to user confirming that they have been authorized
+    if (shouldSendAuthEmail) {
+      let recipient = updatedUser.email;
+      if (recipient) {
+          // send email but do not wait for success to return user response
+        auth.sendEmailSMTP(recipient, req.headers.host, 'newlyAuthorized', null, updatedUser);
+
+        }
+      }
+      return utils.sendResponse(res, data);
     }catch(err) {
       console.error(`Error userApi putUser: ${err}`);
       console.trace();

@@ -6,8 +6,8 @@ var data = [
     "_id" : "5bec409176124a776f2ff00e",
     "name" : "Test Nested Folder Set",
     "privacySetting" : "E",
-    "createdBy" : "5b9149552ecaf7c30dd4748e",
-    "lastModifiedBy" : "5b9149552ecaf7c30dd4748e",
+    "createdBy" : "5b4e4b48808c7eebc9f9e827",
+    "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "folders" : [
         {
             "name" : "Top Level 1",

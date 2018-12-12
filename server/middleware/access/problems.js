@@ -1,6 +1,7 @@
 const utils = require('./utils');
 const models = require('../../datasource/schemas');
 const _ = require('underscore');
+const apiUtils = require('../../datasource/api/utils');
 
 module.exports.get = {};
 
@@ -29,8 +30,13 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, is
 
     filter.$and.push({isTrashed: false});
 
-  if (ids) {
-    filter.$and.push({_id: {$in : ids } });
+  // if (ids) {
+  //   filter.$and.push({_id: {$in : ids } });
+  // }
+  if (apiUtils.isNonEmptyArray(ids)) {
+    filter.$and.push({ _id: { $in : ids } });
+  } else if(apiUtils.isValidMongoId(ids)) {
+    filter.$and.push({ _id: ids });
   }
   if (!_.isEmpty(filterBy)) {
     filter.$and.push(filterBy);

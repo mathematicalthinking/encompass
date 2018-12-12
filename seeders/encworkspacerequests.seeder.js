@@ -17,8 +17,8 @@ var data = [
 },
 {
   "_id" : "5bec36958c73047613e2f34f",
-  "createdBy" : "5b9149552ecaf7c30dd4748e",
-  "teacher" : "5b9149552ecaf7c30dd4748e",
+  "createdBy" : "5b4e4b48808c7eebc9f9e827",
+  "teacher" : "5b4e4b48808c7eebc9f9e827",
   "assignment" : "5b91743a3da5efca74705773",
   "createdWorkspace" : "5bec36958c73047613e2f34e",
   "lastModifiedDate" : "2018-11-14T14:30:46.558Z",

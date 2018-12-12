@@ -19,8 +19,15 @@ describe('User CRUD operations by account type', async function() {
     await describe(`User CRUD operations as ${user.details.testDescriptionTitle}` , function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
-      const { username, password, accountType, actingRole } = user.details;
+      const { username, password, accountType, actingRole, _id, createdBy, name } = user.details;
       const { modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user.users;
+      const isStudent = accountType === 'S' || actingRole === 'S';
+      const defaultSelfPutBody = {
+        user: {
+          username,
+          accountType,
+        }
+      };
 
       before(async function(){
         try {
@@ -185,8 +192,10 @@ describe('User CRUD operations by account type', async function() {
 
         describe('/PUT update user name', () => {
           let description;
+          let newName = 'test name';
           if (accountType === 'S' || actingRole === 'student') {
-            description = 'should return 403 error';
+            description = 'name should remain the same';
+            newName = name;
           } else {
             description = `should change ${modifiableUser.username}'s name from null to test name`;
           }
@@ -196,7 +205,7 @@ describe('User CRUD operations by account type', async function() {
             .put(url)
             .send({
               user: {
-                'name': 'test name',
+                'name': newName,
                 'username': modifiableUser.username,
                 'accountType': modifiableUser.accountType,
               }
@@ -205,14 +214,10 @@ describe('User CRUD operations by account type', async function() {
               if (err) {
                 console.error(err);
               }
-              if (accountType === 'S' || actingRole === 'student') {
-                expect(res).to.have.status(403);
-                done();
-                return;
-              }
+
               expect(res).to.have.status(200);
               expect(res.body.user.username).to.eql(modifiableUser.username);
-              expect(res.body.user.name).to.eql('test name');
+              expect(res.body.user.name).to.eql(newName);
               done();
             });
           });
@@ -222,7 +227,7 @@ describe('User CRUD operations by account type', async function() {
           let description;
           let newRole;
           if (accountType === 'S') {
-            description = 'should return 403 error';
+            description = 'actingRole should not change';
             newRole = 'teacher';
           } else if (actingRole === 'student') {
             description = 'should toggle actingRole back to teacher';
@@ -248,13 +253,97 @@ describe('User CRUD operations by account type', async function() {
                 console.log(err);
               }
               if (accountType === 'S') {
-                expect(res).to.have.status(403);
+                expect(res).to.have.status(200);
+                expect(res.body.user.actingRole).to.not.exist;
+
                 done();
               } else {
                 expect(res).to.have.status(200);
                 expect(res.body.user.actingRole).to.eql(newRole);
                 done();
               }
+            });
+          });
+        });
+
+        describe('Modifying your own account type', function() {
+          beforeEach(async function(){
+            try {
+              await helpers.setup(agent, username, password);
+            }catch(err) {
+              console.log(err);
+            }
+          });
+          xdescribe('Setting account type to "S"', function() {
+            let putBody = {...defaultSelfPutBody};
+            putBody.user.accountType = 'S';
+            let status = 200;
+            let res;
+            if (isStudent) {
+              status = 403;
+            }
+            it(`should return status ${status}`, async function() {
+              res = await agent.put(baseUrl + _id).send(putBody);
+              expect(res).to.have.status(status);
+            });
+
+            if (!isStudent) {
+              it('Users account type should now be "S"', function() {
+                expect(res.body.user.accountType).to.eql('S');
+              });
+            }
+
+          });
+          describe('Setting account type to "A"', function() {
+            let description = 'account type should remain the same';
+
+            it(description, async function() {
+              let putBody = {...defaultSelfPutBody};
+            putBody.user.accountType = 'A';
+
+            let res;
+            let newAccountType = accountType;
+
+              res = await agent.put(baseUrl + _id).send(putBody);
+              expect(res).to.have.status(200);
+              expect(res.body.user.accountType).to.eql(newAccountType);
+            });
+          });
+
+          describe('Setting account type to "P"', function() {
+            let description = 'it should change account type to "P"';
+
+            it(description, async function() {
+              let putBody = {...defaultSelfPutBody};
+              putBody.user.accountType = 'P';
+              let newAccountType = 'P';
+              let res;
+
+              if (accountType !== 'A' || isStudent) {
+                description = 'account type should remain the same';
+                newAccountType = accountType;
+              }
+              res = await agent.put(baseUrl + _id).send(putBody);
+              expect(res).to.have.status(200);
+              expect(res.body.user.accountType).to.eql(newAccountType);
+            });
+          });
+          describe('Setting account type to "T"', function() {
+            let description = 'it should change account type to "T"';
+
+            it(description, async function() {
+              let putBody = {...defaultSelfPutBody};
+              putBody.user.accountType = 'T';
+              let newAccountType = 'T';
+              let res;
+
+              if (isStudent) {
+                description = 'account type should remain the same';
+                newAccountType = accountType;
+              }
+              res = await agent.put(baseUrl + _id).send(putBody);
+              expect(res).to.have.status(200);
+              expect(res.body.user.accountType).to.eql(newAccountType);
             });
           });
         });

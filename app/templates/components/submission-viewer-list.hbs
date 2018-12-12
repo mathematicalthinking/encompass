@@ -1,0 +1,20 @@
+<div class="main-list">
+  {{#each answers as |answer|}}
+      {{submission-viewer-list-item
+        answer=answer
+        selectedAnswerIds=selectedAnswerIds
+        onSelect=(action "onSelect")
+        isList=isList
+        isGrid=isGrid
+        store=store
+        threads=threads
+        selectedMap=answersSelectedHash
+      }}
+      {{else}}
+      <div class="no-results-container">
+        <p class="info">No submissions found</p>
+        <img src="/images/no-results.svg" alt="No results">
+        <p class="info">Please change the filter criteria</p>
+      </div>
+    {{/each}}
+  </div>

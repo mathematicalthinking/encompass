@@ -178,6 +178,7 @@ var data = [{
   }, {
     "_id": "5b245760ac75842be3189525",
     "username": "rick",
+    "name": "Rick Sanchez",
     "email": "rick@gmail.com",
     "organization": "5b4a64a028e4b75919c28512",
     "password": "$2a$08$/c9pHIH086E5qc.Mxh04geJ62xygISgF9C7eQnMzsHoukmpZ/QcX.",
@@ -458,6 +459,7 @@ var data = [{
   "_id" : "5b914a102ecaf7c30dd47492",
   "organization" : "5b4e4d5f808c7eebc9f9e82c",
   "username" : "tracyc",
+  "name" : "Tracy Collins",
   "password" : "$2a$12$svhAmCvhB2Q0iSJlwMyH6.2q4nJKLBvnGAVfXRVqkXDJKotpWd4Wq",
   "accountType" : "S",
   "createdBy" : "5b4e4b48808c7eebc9f9e827",
