@@ -11,13 +11,26 @@
   }
   .primary-filter-list {
     padding: 0 20px;
+    margin-bottom: 30px;
     li {
-      margin-bottom: 15px;
+      margin-bottom: 13px;
       label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
+      }
+      .single-text-input {
+        height: 10px;
+        font-size: .8em;
+        padding-left: 10px;
       }
     }
+  }
+  .primary-button {
+    font-weight: $main-font-weight;
+    text-align: center;
+    width: 160px;
+    display: block;
+    margin: 0 auto;
   }
 }
 

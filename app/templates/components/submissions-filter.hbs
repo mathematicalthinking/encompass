@@ -120,7 +120,9 @@
     </li>
     <li>
       <label>Date Range</label>
-       {{input id="dateRange" name="daterange" type="text" value=dateRange}}
+      <div class="single-text-input-container">
+       {{input class="single-text-input" id="dateRange" name="daterange" type="text" value=dateRange}}
+      </div>
     </li>
 
   </ul>
@@ -131,8 +133,10 @@
   {{#if isInvalidDateRange}}
     {{error-box error=invalidDateRangeMessage showDismiss=true resetError=(action (mut isInvalidDateRange) null) }}
   {{/if}}
-  <button class="action_button search-answers" {{action "buildCriteria"}}>Search</button>
-{{#if isRequestInProgress}}
-  <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
-{{/if}}
+
+  <button class="primary-button search-answers" {{action "buildCriteria"}}>Search</button>
+
+  {{#if isRequestInProgress}}
+    <p class="info">Workspace creation is in progress... Thank you for your patience.</p>
+  {{/if}}
 
