@@ -84,32 +84,36 @@ async function getAnswers(req, res, next) {
     return utils.sendResponse(res, data);
   }
 
-  let {startDate, endDate, students } = filterBy;
-  if (startDate && endDate) {
-    let startDateObj = new Date(startDate);
-    let endDateObj = new Date(endDate);
-    if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
-      filterBy.createDate = {
-        $gte: startDateObj,
-        $lte: endDateObj
-      };
-    }
-  }
-
-  if (apiUtils.isNonEmptyArray(students)) {
-    let pruned = apiUtils.cleanObjectIdArray(students);
-    console.log('pruned', pruned);
-    if (apiUtils.isNonEmptyArray(pruned)) {
-      filterBy.createdBy = {$in: pruned};
+  if (filterBy) {
+    let {startDate, endDate, students } = filterBy;
+    if (startDate && endDate) {
+      let startDateObj = new Date(startDate);
+      let endDateObj = new Date(endDate);
+      if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
+        filterBy.createDate = {
+          $gte: startDateObj,
+          $lte: endDateObj
+        };
+      }
     }
 
-  }
-  let propsToDelete = ['startDate', 'endDate', 'students'];
-  _.each(propsToDelete, (prop) => {
-    if (filterBy[prop]) {
-      delete filterBy[prop];
+    if (apiUtils.isNonEmptyArray(students)) {
+      let pruned = apiUtils.cleanObjectIdArray(students);
+      console.log('pruned', pruned);
+      if (apiUtils.isNonEmptyArray(pruned)) {
+        filterBy.createdBy = {$in: pruned};
+      }
+
     }
-  });
+    let propsToDelete = ['startDate', 'endDate', 'students'];
+    _.each(propsToDelete, (prop) => {
+      if (filterBy[prop]) {
+        delete filterBy[prop];
+      }
+    });
+
+  }
+
 
   let searchFilter = {};
   if (searchBy) {
