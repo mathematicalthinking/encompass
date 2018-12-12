@@ -389,6 +389,16 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       this.set('workspaceToCopy', workspace);
       this.set('defaultName', `Copy of ${workspace.get('name')}`);
 
+      // need to reset config, settings, and collaborators to default if already selected
+      let propsToReset = ['newWsConfig', 'newWsMode', 'newWsOwner', 'customConfig', 'newWsPermissions', 'newWsName', 'newFolderSetOptions'];
+      _.each(propsToReset, (prop) => {
+        if (prop) {
+          this.set(prop, null);
+        }
+        if (this.get('isUsingCustomConfig')) {
+          this.set('isUsingCustomConfig', false);
+        }
+      });
       // start process of loading submissions - may need these for config step
       // for large workspaces(i.e. 1000+ submissions - this could take a long time)
       this.set('loadingSubmissions', true);
