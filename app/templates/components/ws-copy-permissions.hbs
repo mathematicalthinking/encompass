@@ -36,7 +36,7 @@
 {{/if}}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
+  {{ws-permissions-new submissionsPool=submissionsPool workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
 {{/if}}
 
 

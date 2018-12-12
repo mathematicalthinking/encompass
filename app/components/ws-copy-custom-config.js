@@ -11,10 +11,17 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
   responseOptions: Ember.computed.alias('customConfig.responseOptions'),
   folderOptions: Ember.computed.alias('customConfig.folderOptions'),
   showStudentSubmissionInput: Ember.computed.equal('submissionOptions.byStudent', true),
-  showCustomSubmissionViewer: Ember.computed.equal('submissionOptions.custom', true),
   selectedAllSubmissions: Ember.computed.equal('submissionOptions.all', true),
   selectedCustomSubmission: Ember.computed.equal('submissionOptions.custom', true),
   customSubmissionIds: [],
+
+  showCustomSubmissions: function() {
+    return this.get('submissionOptions.custom') === true && this.get('showCustomSubmissionViewer');
+  }.property('submissionOptions.custom', 'showCustomSubmissionViewer'),
+  showCustomSubmissionViewer: true,
+  closedCustomView: function() {
+    return this.get('submissionOptions.custom') === true && !this.get('showCustomSubmissionViewer');
+  }.property('showCustomSubmissionViewer', 'submissionOptions.custom'),
 
   didReceiveAttrs() {
     // console.log('did receive attra ws-copy-custom-config');

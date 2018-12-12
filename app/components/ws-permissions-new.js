@@ -4,7 +4,13 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   utils: Ember.inject.service('utility-methods'),
 
   showCustom: Ember.computed.equal('global', 'custom'),
-  showCustomSubmissions: Ember.computed.equal('submissions', 'custom'),
+  showCustomSubmissions: function() {
+    return this.get('submissions') === 'custom' && this.get('showCustomSubmissionViewer');
+  }.property('submissions', 'showCustomSubmissionViewer'),
+  showCustomSubmissionViewer: true,
+  closedCustomView: function() {
+    return this.get('submissions') === 'custom' && !this.get('showCustomSubmissionViewer');
+  }.property('showCustomSubmissionViewer', 'submissions'),
 
   global: 'viewOnly',
   submissionItems: {
@@ -166,6 +172,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   comments: 1,
   selections: 1,
   feedback: 'authReq',
+  customSubmissionIds: [],
 
   didReceiveAttrs() {
     const selectedUserId = this.get('selectedUser.id');

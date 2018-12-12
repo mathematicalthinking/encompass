@@ -2,6 +2,13 @@ Encompass.CustomSubmissionViewerListComponent = Ember.Component.extend({
   elementId: 'custom-submission-viewer-list',
   isChecked: false,
 
+  didReceiveAttributes() {
+    if (!Array.isArray(this.get('selectedSubmissionIds'))) {
+      this.set('selectedSubmissionIds', []);
+    }
+    this._super(...arguments);
+  },
+
   actions: {
     onSelect: function(submissionId) {
       this.get('onSelect')(submissionId);
