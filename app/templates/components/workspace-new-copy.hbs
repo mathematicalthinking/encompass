@@ -64,7 +64,7 @@
         {{/if}}
 
         {{#if showPermissions}}
-          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setPermissions") onBack=(action "changeStep")}}
         {{/if}}
 
         {{#if showReview}}

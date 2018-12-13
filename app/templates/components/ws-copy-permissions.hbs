@@ -6,12 +6,15 @@
 </p>
 
 <p class="sub-input-label">Select a user to configure their permissions for this workspace.</p>
+{{log 'selected collabs' selectedCollaborators}}
   {{selectize-input
     store=store
     inputId="collab-select"
     maxItems=1
     onItemAdd=(action "setCollaborator")
     onItemRemove=(action "setCollaborator")
+    initialOptions=initialCollabOptions
+    selectedItemsHash=selectedCollaborators
     labelField="username"
     valueField="id"
     searchField="username"
@@ -19,6 +22,7 @@
     queryParamsKey="usernameSearch"
     isAsync=true
     placeholder="Search for collaborators to add"
+    preload="focus"
   }}
 
 {{#if permissions}}

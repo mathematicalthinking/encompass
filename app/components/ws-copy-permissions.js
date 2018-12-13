@@ -32,6 +32,47 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     this._super(...arguments);
   },
 
+  initialCollabOptions: function() {
+    let peeked = this.get('store').peekAll('user');
+    let collabs = this.get('selectedCollaborators');
+
+    if (!_.isObject(peeked)) {
+      return [];
+    }
+    let filtered = peeked.reject((record) => {
+      return collabs[record.get('id')];
+    });
+    return filtered.map((obj) => {
+      return {
+        id: obj.get('id'),
+        username: obj.get('username')
+      };
+    });
+  }.property('selectedCollaborators'),
+
+  selectedCollaborators: function() {
+    let hash = {};
+    let newWsOwnerId = this.get('newWsOwner.id');
+
+    // no reason to set owner as a collaborator
+    if (newWsOwnerId) {
+      hash[newWsOwnerId] = true;
+    }
+    const permissions = this.get('permissions');
+
+    if (!this.get('utils').isNonEmptyArray(permissions)) {
+      return hash;
+    }
+    permissions.forEach((permission) => {
+      let user = permission.user;
+      if (_.isString(user)) {
+        hash[user] = true;
+      } else if (_.isObject(user)) {
+        hash[user.get('id')] = true;
+      }
+    });
+    return hash;
+  }.property('permissions.[]', 'newWsOwner'),
   actions: {
     setCollaborator(val, $item) {
       if (!val) {
