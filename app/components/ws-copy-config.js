@@ -14,12 +14,16 @@ Encompass.WsCopyConfigComponent = Ember.Component.extend({
   }.property('copyConfig'),
 
   didReceiveAttrs() {
-
     const newWsConfig = this.get('newWsConfig');
-    if (this.get('utils').isNullOrUndefined(newWsConfig)) {
-      this.set('selectedConfig', 'A');
-    } else {
+    const selectedConfig = this.get('selectedConfig');
+
+    const validValues = this.get('validConfigValues');
+    // if reaching via back button, set selectedConfig to previously selected value
+    // else set as A
+    if (validValues.includes(newWsConfig)) {
       this.set('selectedConfig', newWsConfig);
+    } else if (!validValues.includes(selectedConfig)) {
+      this.set('selectedConfig', 'A');
     }
 
     this._super(...arguments);
