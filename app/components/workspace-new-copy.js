@@ -327,6 +327,13 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
             propName: 'existingFolderSet',
             associatedStep: 3,
           },
+          {
+            label: 'New Folder Set',
+            displayValue: this.get('newFolderSetOptions.name'),
+            emptyValue: 'N/A',
+            propName: 'newFolderSetOptions.name',
+            associatedStep: 3,
+          },
         ],
       },
       {
@@ -338,7 +345,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         associatedStep: 4,
       },
     ];
-  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode','collabList'),
+  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode','collabList', 'existingFolderSet', 'newFolderSetOptions.name'),
 
   existingFolderSet: function() {
     let id = this.get('newFolderSetOptions.existingFolderSetToUse');

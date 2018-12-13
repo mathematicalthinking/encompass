@@ -88,9 +88,20 @@
 
     {{else}}
       <p class="sub-input-label">Your workspace will have 0 folders. Select a pre-existing folder set below or continue on without any folders</p>
-      {{my-select content=folderSets optionLabelPath='name' prompt="Please select a folder set" action=(action
-      (mut existingFolderSetToUse))}}
-  {{/if}}
+      {{selectize-input
+        store=store
+        inputId="folderset-select"
+        maxItems=1
+        initialOptions=initialFolderSetOptions
+        initialItems=initialFolderSetItem
+        onItemAdd=(action "setFolderSet")
+        onItemRemove=(action "setFolderSet")
+        labelField="name"
+        valueField="id"
+        searchField="name"
+        model="folder-set"
+        placeholder="Select a Folder Set"}}
+    {{/if}}
 </div>
 
 <div class="nav-btn-container">

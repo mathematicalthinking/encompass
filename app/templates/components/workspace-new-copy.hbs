@@ -59,7 +59,8 @@
         {{/if}}
 
         {{#if showOwnerSettings}}
-          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
+          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") existingFolderSet=existingFolderSet
+          }}
         {{/if}}
 
         {{#if showPermissions}}
