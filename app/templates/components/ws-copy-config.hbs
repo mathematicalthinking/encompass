@@ -7,7 +7,11 @@
 {{radio-group options=copyConfig selectedValue=selectedConfig}}
 
 {{#if showCustomConfig}}
-  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom") onBack=(action "back")}}
+  {{ws-copy-custom-config workspace=workspace submissionThreads=submissionThreads onProceed=(action "nextCustom") onBack=(action "back") insufficientSubmissions=insufficientSubmissions}}
+
+  {{#if insufficientSubmissions}}
+    {{error-box error="Please choose a configuration that includes at least 1 submission." showDismiss=true resetError=(action (mut insufficientSubmissions) null)}}
+  {{/if}}
   {{else}}
 
   {{#if invalidOrMissingConfig}}

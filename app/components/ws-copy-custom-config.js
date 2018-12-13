@@ -27,6 +27,11 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     // console.log('did receive attra ws-copy-custom-config');
     this._super(...arguments);
   },
+  willDestroyElement() {
+    if (this.get('insufficientSubmissions')) {
+      this.set('insufficientSubmissions', null);
+    }
+  },
 
   formattedSubmissionOptions: function() {
     let submissionOptions = {

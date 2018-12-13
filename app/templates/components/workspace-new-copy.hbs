@@ -74,14 +74,14 @@
 
 
       {{#if customConfigError}}
-        <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
+        {{error-box error="Sorry, something went wrong processing your custom configuration." showDismiss=true resetError=(action (mut customConfigError) null)}}
       {{/if}}
       {{#if copyWorkspaceError}}
-        <p class="error-message">{{copyWorkspaceError}}</p>
+        {{error-box error=copyWorkspaceError showDismiss=true resetError=(action (mut copyWorkspaceError) null)}}
       {{/if}}
 
       {{#each serverErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        {{error-box error=error showDismiss=true}}
       {{/each}}
     </div>
   </div>
