@@ -68,7 +68,10 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
 
       this.set('selectedCollaborator', null);
       this.$('select#collab-select')[0].selectize.clear();
-
+    },
+    stopEditing() {
+      this.set('selectedCollaborator', null);
+      this.$('select#collab-select')[0].selectize.clear();
     },
     next() {
       this.get('onProceed')(this.get('permissions'));

@@ -49,7 +49,8 @@
 </div>
 
 {{#if saveError}}
-  <p class="error-message">Sorry, something went wrong. Please try again.</p>
+  {{error-box error="Sorry, something went wrong. Please try again." resetError=(action (mut saveError) null) showDismiss=true}}
 {{/if}}
 
+<button class="primary-button cancel-button" {{action "stopEditing"}}>Cancel</button>
 <button class="primary-button" {{action "savePermissions"}}>Save Permissions</button>

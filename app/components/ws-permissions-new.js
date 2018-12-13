@@ -310,8 +310,10 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         //add
         customSubmissionIds.addObject(id);
       }
-
-    }
+    },
+    stopEditing() {
+      this.get('stopEditing')();
+    },
   }
 
 });
