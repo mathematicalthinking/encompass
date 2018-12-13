@@ -215,8 +215,8 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       return null;
     }
 
-    // Shallow with no folders
-    if (newWsConfig === 'B') {
+    // Submissions Only
+    if (newWsConfig === 'A') {
       return false;
     }
 
@@ -320,6 +320,13 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
             propName: 'newWsMode',
             associatedStep: 3,
           },
+          {
+            label: 'Existing Folder Set',
+            displayValue: this.get('existingFolderSet.name'),
+            emptyValue: 'N/A',
+            propName: 'existingFolderSet',
+            associatedStep: 3,
+          },
         ],
       },
       {
@@ -332,6 +339,15 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       },
     ];
   }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode','collabList'),
+
+  existingFolderSet: function() {
+    let id = this.get('newFolderSetOptions.existingFolderSetToUse');
+    if (!_.isString(id)) {
+      return null;
+    }
+    let record = this.get('store').peekRecord('folder-set', id);
+    return record || null;
+  }.property('newFolderSetOptions.existingFolderSetToUse'),
 
   selectedConfigDisplay: function() {
     if (_.isNull(this.get('newWsConfig'))) {
