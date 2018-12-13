@@ -8,7 +8,18 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
     // set already saved permissions in case user went back to previous step and then came back to permissions
     const newWsPermissions = this.get('newWsPermissions');
     if (_.isArray(newWsPermissions)) {
-      this.set('permissions', [...newWsPermissions]);
+      let copy = [...newWsPermissions];
+      // find record in store based off id in order to display username in collab list
+      copy.forEach((obj) => {
+        let user = obj.user;
+        if (_.isString(user)) {
+          let record = this.get('store').peekRecord('user', user);
+          if (record) {
+            obj.user = record;
+          }
+        }
+      });
+      this.set('permissions', copy);
     } else {
       this.set('permissions', []);
     }

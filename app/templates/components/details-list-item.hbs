@@ -7,7 +7,15 @@
     {{/if}}
   </h3>
   {{#if displayValue}}
-    <p class="display-info">{{displayValue}}</p>
+    {{#if isArray}}
+    <ul class="sub-list">
+      {{#each displayValue as |val|}}
+        <li class="sub-content">{{val}}</li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="display-info">{{displayValue}}</p>
+    {{/if}}
   {{else}}
     <p class="display-info">{{emptyValue}}</p>
   {{/if}}

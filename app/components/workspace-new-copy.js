@@ -265,12 +265,17 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     //get username from each permissions object and list them in the sumamry
     const formattedPermissionObjects = this.formatPermissionsObjects(this.get('newWsPermissions'));
     if (formattedPermissionObjects) {
-      console.log('fomrattedpermissionsObject', formattedPermissionObjects);
-      return formattedPermissionObjects.map((object) => {
-        return object.user;
+      let users = formattedPermissionObjects.map((object) => {
+        let userId = object.user;
+        let record = this.get('store').peekRecord('user', userId);
+        if (record) {
+          return record.get('username');
+        }
       });
+      // remove null or undefined
+      return users.compact();
     }
-  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
+  }.property('newWsPermissions.[]'),
 
 
   detailsItems: function() {
@@ -320,12 +325,13 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       {
         label: 'Collaborators',
         displayValue: this.get('collabList'),
+        isArray: true,
         emptyValue: 'No Collaborators',
         propName: 'collabs',
         associatedStep: 4,
       },
     ];
-  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode'),
+  }.property('workspaceToCopy', 'newWsConfig', 'newWsName', 'newWsOwner', 'newWsMode','collabList'),
 
   selectedConfigDisplay: function() {
     if (_.isNull(this.get('newWsConfig'))) {
