@@ -196,6 +196,14 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
         this.set('metaData', meta);
 
         let resultsArray = results.toArray();
+        let selectedItemsHash = this.get('selectedItemsHash');
+        let valueField = this.get('valueField');
+        // filter out already selected items
+        if (_.isObject(selectedItemsHash) && _.isString(valueField)) {
+          resultsArray = resultsArray.reject((record) => {
+            return selectedItemsHash[record.get(valueField)];
+          });
+        }
 
         // if we want the ember objects
         // was having issues with this though
@@ -207,9 +215,8 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
           let obj = {};
 
           let propsToMap = this.get('propsToMap');
-
           _.each(propsToMap, (prop) => {
-            obj[prop] = item.get(prop);
+              obj[prop] = item.get(prop);
           });
 
           return obj;
