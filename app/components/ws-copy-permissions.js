@@ -2,6 +2,7 @@
 Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
   elementId: 'ws-copy-permissions',
   utils: Ember.inject.service('utility-methods'),
+  alert: Ember.inject.service('sweet-alert'),
 
   didReceiveAttrs() {
     // set already saved permissions in case user went back to previous step and then came back to permissions
@@ -74,7 +75,25 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
       this.$('select#collab-select')[0].selectize.clear();
     },
     next() {
-      this.get('onProceed')(this.get('permissions'));
+      // check if user is in middle of editing a collab
+      const selectedCollaborator = this.get('selectedCollaborator');
+      if (!selectedCollaborator) {
+        this.get('onProceed')(this.get('permissions'));
+        return;
+      }
+      let title = 'Are you sure you want to proceed?';
+      let text = `You are currently in the process of editing permissions for ${selectedCollaborator.get('username')}. You will lose any unsaved changes if you continue.`;
+
+      return this.get('alert').showModal('warning', title, text, 'Proceed')
+        .then((result) => {
+          if (result.value) {
+            // clear values and then proceed
+            this.set('selectedCollaborator', null);
+            this.$('select#collab-select')[0].selectize.clear();
+            this.get('onProceed')(this.get('permissions'));
+            return;
+          }
+        });
     },
 
     back() {

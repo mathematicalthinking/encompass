@@ -288,6 +288,9 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
 
   actions: {
     savePermissions() {
+      if (this.get('saveError')) {
+        this.set('saveError', null);
+      }
       const permissions = this.buildPermissionsObject();
       if (this.get('utils').isNonEmptyObject(permissions)) {
         this.get('onSave')(permissions);
