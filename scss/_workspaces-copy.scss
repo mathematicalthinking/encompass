@@ -63,6 +63,16 @@
   .single-text-input-container {
     max-width: 600px;
   }
+  .show-viewer {
+    color: $accent-color;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: $light-font-weight;
+    position: relative;
+    font-size: 1em;
+    left: 20px;
+    top: 2px;
+  }
   .primary-filter-list {
     margin-bottom: 50px;
     .display-info {
@@ -270,17 +280,6 @@
       margin-top: 10px;
       margin-left: 25px;
       max-width: 500px;
-    }
-    .show-viewer {
-      color: $accent-color;
-      cursor: pointer;
-      font-size: 1em;
-      font-weight: $light-font-weight;
-      position: relative;
-      font-size: 1em;
-      left: 20px;
-      top: 2px;
-
     }
   }
   .selected-count {

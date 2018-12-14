@@ -358,9 +358,7 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
 
   selectedFolderSet: function () {
     let existingFolderSet = this.get('existingFolderSet');
-    console.log('existing folder set', existingFolderSet);
     let newFolderSet = this.get('newFolderSetOptions.name');
-    console.log('new folder set', newFolderSet);
     if (existingFolderSet) {
       return existingFolderSet.get('name');
     } else if (newFolderSet) {
