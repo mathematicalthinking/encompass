@@ -321,19 +321,19 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
             associatedStep: 3,
           },
           {
-            label: 'Existing Folder Set',
-            displayValue: this.get('existingFolderSet.name'),
+            label: 'Folder Set',
+            displayValue: this.get('selectedFolderSet'),
             emptyValue: 'N/A',
             propName: 'existingFolderSet',
             associatedStep: 3,
           },
-          {
-            label: 'New Folder Set',
-            displayValue: this.get('newFolderSetOptions.name'),
-            emptyValue: 'N/A',
-            propName: 'newFolderSetOptions.name',
-            associatedStep: 3,
-          },
+          // {
+          //   label: 'New Folder Set',
+          //   displayValue: this.get('newFolderSetOptions.name'),
+          //   emptyValue: 'N/A',
+          //   propName: 'newFolderSetOptions.name',
+          //   associatedStep: 3,
+          // },
         ],
       },
       {
@@ -355,6 +355,20 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     let record = this.get('store').peekRecord('folder-set', id);
     return record || null;
   }.property('newFolderSetOptions.existingFolderSetToUse'),
+
+  selectedFolderSet: function () {
+    let existingFolderSet = this.get('existingFolderSet');
+    console.log('existing folder set', existingFolderSet);
+    let newFolderSet = this.get('newFolderSetOptions.name');
+    console.log('new folder set', newFolderSet);
+    if (existingFolderSet) {
+      return existingFolderSet.get('name');
+    } else if (newFolderSet) {
+      return newFolderSet;
+    } else {
+      return null;
+    }
+  }.property('newFolderSetOptions', 'newFolderSetOptions.existingFolderSetToUse'),
 
   selectedConfigDisplay: function() {
     if (_.isNull(this.get('newWsConfig'))) {

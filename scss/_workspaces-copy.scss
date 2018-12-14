@@ -93,6 +93,10 @@
         margin-bottom: 20px;
         font-size: .95em;
       }
+      .sub-content-child {
+        margin-left: -10px;
+        padding-top: 10px;
+      }
     }
   }
   .results-list {
@@ -416,6 +420,9 @@
   }
   .collaborator-list {
     margin: 20px 0 30px 0;
+    li {
+      margin: 10px 10px;
+    }
   }
 }
 
