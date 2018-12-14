@@ -252,6 +252,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   getAnswers: function(page, isTrashedOnly=false, isHiddenOnly=false, didConfirmLargeRequest=false ) {
     this.set('isFetchingAnswers', true);
+    this.set('selectedAnswers', []);
 
     let queryParams = this.buildQueryParams(page, isTrashedOnly, didConfirmLargeRequest);
 

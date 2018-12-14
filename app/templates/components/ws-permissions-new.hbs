@@ -26,13 +26,16 @@
 
 <div class="submission-permissions">
 {{radio-group options=submissionItems selectedValue=submissions}}
+{{#if closedCustomView}}
+  <span class="show-viewer" {{action (mut showCustomSubmissionViewer) true}}>Show Viewer</span>
+{{/if}}
   {{#if showCustomSubmissions}}
-    {{custom-submission-viewer-list submissions=workspace.submissions.content
-      selectedSubmissionIds=workspace.submissions.content
+    {{custom-submission-viewer-list submissions=submissionsPool
+      selectedSubmissionIds=customSubmissionIds
       onSelect=(action "updateCustomSubs")
       onSelectAll=(action "selectAllSubmissions")
       onUnselectAll=(action "deselectAllSubmissions")
-      onDoneSelecting=(action 'setDoneSelecting')
+      showView=showCustomSubmissionViewer
     }}
     {{!-- <ul>
     {{#each workspace.submissions.content as |submission|}}
@@ -46,7 +49,8 @@
 </div>
 
 {{#if saveError}}
-  <p class="error-message">Sorry, something went wrong. Please try again.</p>
+  {{error-box error="Sorry, something went wrong. Please try again." resetError=(action (mut saveError) null) showDismiss=true}}
 {{/if}}
 
+<button class="primary-button cancel-button" {{action "stopEditing"}}>Cancel</button>
 <button class="primary-button" {{action "savePermissions"}}>Save Permissions</button>

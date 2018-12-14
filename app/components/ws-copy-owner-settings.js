@@ -85,7 +85,7 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       this.set('doCreateFolderSet', newFolderSetOptions.doCreateFolderSet);
       this.set('folderSetName', newFolderSetOptions.name);
       this.set('folderSetPrivacy', newFolderSetOptions.privacySetting);
-      this.set('existingFolderSetToUse', newFolderSetOptions.existingFolderSetToUse);
+      this.set('existingFolderSetToUse', this.get('existingFolderSet'));
 
     } else if (utils.isNullOrUndefined(this.get('doCreateFolderSet'))) {
       this.set('doCreateFolderSet', false);
@@ -115,6 +115,26 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
   }
     return [];
   }.property('selectedOwner'),
+  initialFolderSetItem: function() {
+    const existingFolderSet = this.get('existingFolderSet');
+    if (this.get('utils').isNonEmptyObject(existingFolderSet)) {
+      return [existingFolderSet.get('id')];
+    }
+    return [];
+  }.property('existingFolderSet'),
+
+  initialFolderSetOptions: function() {
+    const folderSets = this.get('folderSets');
+    if (folderSets) {
+      return folderSets.map((folderSet) => {
+        return {
+          id: folderSet.get('id'),
+          name: folderSet.get('name')
+        };
+      });
+    }
+    return [];
+  }.property('folderSets.[]'),
 
   actions: {
     next() {
@@ -166,6 +186,19 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       const user = this.get('store').peekRecord('user', val);
       this.set('selectedOwner', user);
     },
+    setFolderSet(val, $item) {
+      if (!val) {
+        return;
+      }
+      const isRemoval = _.isNull($item);
+      if (isRemoval) {
+        this.set('existingFolderSetToUse', null);
+        return;
+      }
+      const folderSet = this.get('store').peekRecord('folder-set', val);
+      this.set('existingFolderSetToUse', folderSet);
+    },
+
     toggleCreateFolderset(val) {
       this.set('doCreateFolderSet', val);
     },

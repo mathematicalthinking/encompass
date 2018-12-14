@@ -10,6 +10,7 @@
           emptyValue = item.emptyValue
           propName = item.propName
           children = item.children
+          isArray = item.isArray
           editValue = (action "goToStep")
           associatedStep=item.associatedStep
           currentStep=currentStep.value
@@ -18,7 +19,6 @@
       </ul>
     </div>
   </div>
-
   <div class="flex-item-full list-view">
     <div class="results-list">
       <div class="header">
@@ -59,28 +59,29 @@
         {{/if}}
 
         {{#if showOwnerSettings}}
-          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") }}
+          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") existingFolderSet=existingFolderSet
+          }}
         {{/if}}
 
         {{#if showPermissions}}
-          {{ws-copy-permissions workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setPermissions") onBack=(action "changeStep")}}
         {{/if}}
 
         {{#if showReview}}
-          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName config=newWsConfig workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep")}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}}
         {{/if}}
       </div>
 
 
       {{#if customConfigError}}
-        <p class="error-message">Sorry, something went wrong processing your custom configuration.</p>
+        {{error-box error="Sorry, something went wrong processing your custom configuration." showDismiss=true resetError=(action (mut customConfigError) null)}}
       {{/if}}
       {{#if copyWorkspaceError}}
-        <p class="error-message">{{copyWorkspaceError}}</p>
+        {{error-box error=copyWorkspaceError showDismiss=true resetError=(action (mut copyWorkspaceError) null)}}
       {{/if}}
 
       {{#each serverErrors as |error|}}
-        <p class="error-message">{{error}}</p>
+        {{error-box error=error showDismiss=true}}
       {{/each}}
     </div>
   </div>

@@ -25,16 +25,16 @@
   @include flex-container(auto, auto, row, no-wrap, center, center, center);
 }
 
-.radio-list {
-  .radio-group-label {
-    border: 1px solid red;
-    margin-bottom: 10px;
-    font-size: 1em;
-    color: $primary-font-color;
-    i {
-      margin-left: 15px;
-    }
+.radio-group-label {
+  margin-bottom: 10px;
+  font-size: 1em;
+  color: $primary-font-color;
+  i {
+    margin-left: 15px;
   }
+}
+
+.radio-list {
   .radio-group-item {
     margin: 8px 0 10px 8px;
     span {

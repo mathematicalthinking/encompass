@@ -4,7 +4,13 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   utils: Ember.inject.service('utility-methods'),
 
   showCustom: Ember.computed.equal('global', 'custom'),
-  showCustomSubmissions: Ember.computed.equal('submissions', 'custom'),
+  showCustomSubmissions: function() {
+    return this.get('submissions') === 'custom' && this.get('showCustomSubmissionViewer');
+  }.property('submissions', 'showCustomSubmissionViewer'),
+  showCustomSubmissionViewer: true,
+  closedCustomView: function() {
+    return this.get('submissions') === 'custom' && !this.get('showCustomSubmissionViewer');
+  }.property('showCustomSubmissionViewer', 'submissions'),
 
   global: 'viewOnly',
   submissionItems: {
@@ -166,6 +172,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   comments: 1,
   selections: 1,
   feedback: 'authReq',
+  customSubmissionIds: [],
 
   didReceiveAttrs() {
     const selectedUserId = this.get('selectedUser.id');
@@ -281,6 +288,9 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
 
   actions: {
     savePermissions() {
+      if (this.get('saveError')) {
+        this.set('saveError', null);
+      }
       const permissions = this.buildPermissionsObject();
       if (this.get('utils').isNonEmptyObject(permissions)) {
         this.get('onSave')(permissions);
@@ -303,8 +313,16 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         //add
         customSubmissionIds.addObject(id);
       }
-
-    }
+    },
+    stopEditing() {
+      this.get('stopEditing')();
+    },
+    selectAllSubmissions: function () {
+      this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
+    },
+    deselectAllSubmissions: function () {
+      this.set('customSubmissionIds', []);
+    },
   }
 
 });

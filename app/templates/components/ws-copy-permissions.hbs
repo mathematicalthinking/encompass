@@ -1,6 +1,6 @@
 <p class="input-label">
   Collaborators
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace, you can customize their permissions settings in detail after you add them">
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Collaborators are users that can see or participate in your workspace. You can customize their permissions settings in detail after you add them.">
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
@@ -12,6 +12,8 @@
     maxItems=1
     onItemAdd=(action "setCollaborator")
     onItemRemove=(action "setCollaborator")
+    initialOptions=initialCollabOptions
+    selectedItemsHash=selectedCollaborators
     labelField="username"
     valueField="id"
     searchField="username"
@@ -19,6 +21,7 @@
     queryParamsKey="usernameSearch"
     isAsync=true
     placeholder="Search for collaborators to add"
+    preload="focus"
   }}
 
 {{#if permissions}}
@@ -36,7 +39,7 @@
 {{/if}}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator}}
+  {{ws-permissions-new submissionsPool=submissionsPool workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator stopEditing=(action "stopEditing")}}
 {{/if}}
 
 
