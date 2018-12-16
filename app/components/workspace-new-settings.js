@@ -6,6 +6,7 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
   alert: Ember.inject.service('sweet-alert'),
   isEditingPermissions: false,
   unsavedCollaborator: null,
+  selectedMode: 'private',
 
   validModeValues: function() {
     const modeInputs = this.get('modeInputs.inputs');
