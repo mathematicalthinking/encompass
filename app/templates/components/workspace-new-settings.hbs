@@ -1,4 +1,5 @@
 <h1>Create New Workspace</h1>
+<button {{action 'back'}}>Back to Submission Viewer</button>
 <div class="create-ws-content">
   <div class="ws-new name">
     <p class="input-label">
@@ -79,7 +80,7 @@
     {{/each}}
   </div>
 
-  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users}}
+  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator}}
 
   <button class="primary-button" {{action "handleSettings"}}>Create Workspace</button>
 

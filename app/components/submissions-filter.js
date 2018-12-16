@@ -2,12 +2,6 @@
 Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'submissions-filter',
   alert: Ember.inject.service('sweet-alert'),
-  selectedFolderSet: null,
-  selectedAssignment: null,
-  selectedSection: null,
-  selectedProblem: null,
-  selectedStudents: [],
-  teacher: null,
   findRecordErrors: [],
   wsRequestErrors: [],
   utils: Ember.inject.service('utility-methods'),
@@ -26,13 +20,32 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       privacy: 'Private workspaces are only visibile by the owner and collaborators. Public workspaces are visibile to all users',
     };
     this.set('tooltips', tooltips);
+
+    const that = this;
+
     $(function () {
+      let startDate = that.get('startDate');
+      let endDate = that.get('endDate');
+
+      if (!startDate) {
+        startDate = moment().subtract(1, 'years');
+      } else if (_.isString(startDate)) {
+        startDate = moment(startDate);
+      }
+      if (!endDate) {
+        endDate = moment();
+      } else if (_.isString(endDate)) {
+        endDate = moment(endDate);
+      }
+
       $('input[name="daterange"]').daterangepicker({
-        autoUpdateInput: false,
+        autoUpdateInput: true,
         showDropdowns: true,
         locale: {
           cancelLabel: 'Clear'
-        }
+        },
+        startDate: startDate,
+        endDate: endDate
       });
       $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
         $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
@@ -56,18 +69,45 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('currentUser'),
 
   initialTeacherItem: function() {
-    if (this.get('selectedTeacher') && this.get('isTeacher')) {
+    if (this.get('isTeacher')) {
+      return [this.get('currentUser.id')];
+    }
+    if (this.get('selectedTeacher')) {
       return [this.get('selectedTeacher.id')];
     }
     return [];
   }.property('selectedTeacher', 'isTeacher'),
 
   initialStudentItem: function() {
-    if(this.get('selectedStudent') && this.get('currentUser.isStudent')) {
-        return [this.get('selectedStudent.id')];
+    if(this.get('currentUser.isStudent')) {
+        return [this.get('currentUser.id')];
+    }
+    if (_.isArray(this.get('selectedStudents'))) {
+      return this.get('selectedStudents').mapBy('id');
     }
     return [];
-  }.property('currentUser', 'selectedStudent'),
+  }.property('currentUser', 'selectedStudents.[]'),
+
+  initialAssignmentItem: function() {
+    if (this.get('selectedAssignment')) {
+      return [this.get('selectedAssignment.id')];
+    }
+    return [];
+  }.property('selectedAssignment'),
+
+  initialProblemItem: function() {
+    if (this.get('selectedProblem')) {
+      return [this.get('selectedProblem.id')];
+    }
+    return [];
+  }.property('selectedProblem'),
+
+  initialSectionItem: function() {
+    if (this.get('selectedSection')) {
+      return [this.get('selectedSection.id')];
+    }
+    return [];
+  }.property('selectedSection'),
 
   didReceiveAttrs: function() {
     if (this.get('currentUser.isStudent')) {
@@ -457,48 +497,6 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
     this._super(...arguments);
   },
 
-  // getTeacherPool: function() {
-  //   const accountType = this.get('currentUser.accountType');
-  //   if (accountType === 'T') {
-  //     return [this.get('currentUser')];
-  //   }
-
-  //   let teachers = this.get('userList').rejectBy('accountType', 'S');
-  //   let authTeachers = teachers.filterBy('isAuthorized', true);
-
-
-  //   if (accountType === 'P') {
-  //   let pdOrg = this.get('currentUser.organization');
-  //     let orgTeachers = authTeachers.filterBy('organization', pdOrg);
-  //     return orgTeachers;
-
-  //   }
-  //   if (accountType === 'A') {
-  //     return authTeachers;
-  //   }
-  // },
-
-  // isDateRangeValid: function() {
-  //   const htmlFormat = 'YYYY-MM-DD';
-  //   // empty string if no date range is picked
-  //   let dateRangeTextVal = $('#dateRange').val();
-
-  //   if (!dateRangeTextVal) {
-  //     return;
-  //   }
-  //   let start = this.get('startDate');
-  //   let end = this.get('endDate');
-  //   console.log('start', start);
-  //   console.log('end', end);
-  //   if (Ember.isEmpty(start) || Ember.isEmpty(end)) {
-  //     return false;
-  //   }
-  //   start = moment(start, htmlFormat);
-  //   end = moment(end, htmlFormat);
-
-  //   return end > start;
-  // }.property('startDate', 'endDate'),
-
   getMongoDate: function(htmlDateString) {
     const htmlFormat = 'YYYY-MM-DD';
     if (typeof htmlDateString !== 'string') {
@@ -572,8 +570,9 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
             this.set('isInvalidDateRange', true);
             return;
           }
-
         }
+        this.set('startDate', start);
+        this.set('endDate', end);
       } else {
         startDate = null;
         endDate = null;

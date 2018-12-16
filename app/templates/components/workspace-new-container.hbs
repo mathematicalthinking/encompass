@@ -7,6 +7,14 @@
         sections=model.sections
         assignments=model.assignments
         users = model.users
+        selectedFolderSet=selectedFolderSet
+        selectedAssignment=selectedAssignment
+        selectedSection=selectedSection
+        selectedProblem=selectedProblem
+        selectedStudents=selectedStudents
+        selectedTeacher=selectedTeacher
+        startDate=startDate
+        endDate=endDate
       }}
 
       {{#if selectedAnswers.length}}
@@ -52,7 +60,6 @@
               </span>
             {{/if}}
           </div>
-
           <div class="side-icons">
             <label class="show-revisions">
               <input type="checkbox" checked={{doIncludeRevisions}} onclick={{action "toggleIncludeRevisions"}}>
@@ -146,6 +153,7 @@
       users=model.users
       folderSets=model.folderSets
       onProceed=(action "createWorkspace")
+      onBack=(action "toSearchFilter")
     }}
   {{/if}}
   {{#if showSubmissionViewer}}

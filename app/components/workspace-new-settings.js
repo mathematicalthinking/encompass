@@ -3,6 +3,10 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
   elementId: 'workspace-new-settings',
   workspacePermissions: [],
   utils: Ember.inject.service('utility-methods'),
+  alert: Ember.inject.service('sweet-alert'),
+  isEditingPermissions: false,
+  unsavedCollaborator: null,
+
   validModeValues: function() {
     const modeInputs = this.get('modeInputs.inputs');
 
@@ -120,6 +124,7 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
         }
         return;
       }
+
       const settings = {
         requestedName: workspaceName,
         owner,
@@ -127,7 +132,27 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
         folderSet,
         permissionObjects: permissions
       };
-      this.get('onProceed')(settings);
+
+      if (this.get('isEditingPermissions')) {
+        // prompt user to confirm they want to proceed
+        let username = this.get('unsavedCollaborator.username');
+
+        let title = 'Are you sure you want to proceed?';
+        let text = `You are currently in the process of editing permissions for ${username}. You will lose any unsaved changes if you continue.`;
+
+        return this.get('alert').showModal('warning', title, text, 'Proceed')
+          .then((result) => {
+            if (result.value) {
+              this.get('onProceed')(settings);
+              return;
+            }
+          });
+      } else {
+        this.get('onProceed')(settings);
+      }
+    },
+    back() {
+      this.get('onBack')();
     }
   },
 
