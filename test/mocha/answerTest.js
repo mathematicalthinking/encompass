@@ -49,7 +49,7 @@ describe('Answer CRUD operations by account type', function() {
               console.error(err);
             }
             expect(res).to.have.status(200);
-            expect(res.body).to.have.all.keys('answers');
+            expect(res.body).to.have.all.keys('answers', 'meta');
             expect(res.body.answers).to.be.a('array');
             expect(res.body.answers).to.have.lengthOf(accessibleAnswerCount);
             done();

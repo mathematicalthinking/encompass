@@ -2490,8 +2490,6 @@ async function cloneWorkspace(req, res, next) {
   // set Permissions
 
   const { permissionOptions } = copyWorkspaceRequest;
-  console.log('sub map', submissionsMap);
-  console.log('permiss', permissionOptions);
 
   if (apiUtils.isNonEmptyObject(permissionOptions)) {
     if (apiUtils.isNonEmptyArray(permissionOptions.permissionObjects)) {
