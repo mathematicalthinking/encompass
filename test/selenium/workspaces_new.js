@@ -16,7 +16,7 @@ xdescribe('Workspaces New', async function() {
   async function runTests(users) {
     function _runTests(user) {
       const { accountType, actingRole, testDescriptionTitle, _id, username } = user;
-      describe(`As ${testDescriptionTitle}`, function() {
+      xdescribe(`As ${testDescriptionTitle}`, function() {
         this.timeout(helpers.timeoutTestMsStr);
 
         let driver = null;
