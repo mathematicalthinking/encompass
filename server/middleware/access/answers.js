@@ -32,6 +32,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
     } else if(apiUtils.isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
+
     if (apiUtils.isNonEmptyObject(filterBy)) {
       if (filterBy.teacher && accountType !== 'T') {
         let [assignments, sections] = await Promise.all([
@@ -131,9 +132,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
         orFilter.$or.push({ section: { $in: ownSections} });
       }
     }
-    if (filterBy.teacher) {
-      delete filterBy.teacher;
-    }
+
     filter.$and.push(orFilter);
     return filter;
   }
