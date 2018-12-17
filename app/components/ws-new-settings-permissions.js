@@ -57,6 +57,7 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
       }
       const user = this.get('store').peekRecord('user', val);
       this.set('selectedCollaborator', user);
+      this.set('isEditing', true);
     },
     removeCollab(permissionObj) {
       if (this.get('utils').isNonEmptyObject(permissionObj)) {
@@ -69,6 +70,7 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
         const user = permissionObj.user;
         if (utils.isNonEmptyObject(user)) {
           this.set('selectedCollaborator', user);
+          this.set('isEditing', true);
         }
       }
     },
@@ -95,6 +97,7 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
 
       this.set('selectedCollaborator', null);
       this.$('select#collab-select')[0].selectize.clear();
+      this.set('isEditing', false);
 
     },
   }

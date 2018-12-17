@@ -1023,9 +1023,7 @@ function filterRequestedWorkspaceData(user, results) {
       .then((populatedWs) => {
         // eslint-disable-next-line no-unused-vars
         const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
-
         const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
-        console.log('restrictedDataMap', restrictedDataMap);
         // val is array of populated Docs, but we just need Ids
         _.each(restrictedDataMap, (val, key) => {
           if (ws[key]) {
@@ -1189,7 +1187,6 @@ function filterRequestedWorkspaceData(user, results) {
       }
 
       // have to check to make sure we are only sending back the allowed data
-
       const filteredResults = await filterRequestedWorkspaceData(user, results);
       const data = {
         'workspaces': filteredResults,
@@ -2496,9 +2493,34 @@ async function cloneWorkspace(req, res, next) {
 
   if (apiUtils.isNonEmptyObject(permissionOptions)) {
     if (apiUtils.isNonEmptyArray(permissionOptions.permissionObjects)) {
-      newWs.permissions = permissionOptions.permissionObjects;
+      let subMapOnlyId = _.mapObject(submissionsMap, (oldSub, newSubId) => {
+        return oldSub._id;
+      });
+      let invertedSubMap = _.invert(subMapOnlyId);
+      // now mapping between old subId and new subId
+      let mapped = _.map(permissionOptions.permissionObjects, (obj) => {
+        // need to convert old submissionIds to new submissionIDs for custom permissions
+      let submissionOptions = obj.submissions;
+      let submissionIds;
+      if (submissionOptions) {
+        submissionIds = submissionOptions.submissionIds;
+      }
 
-      const userIdsToUpdate = permissionOptions.permissionObjects.map( obj => obj.user);
+        if (!obj.all && apiUtils.isNonEmptyArray(submissionIds)) {
+          let newSubmissionIds = _.map(submissionIds, (oldId) => {
+            return invertedSubMap[oldId];
+          });
+          // remove null or undefined values
+          let compacted = _.compact(newSubmissionIds);
+          // set new submissionIDs on the permission object
+          obj.submissions.submissionIds = compacted;
+        }
+        return obj;
+      });
+
+      newWs.permissions = mapped;
+
+      const userIdsToUpdate = mapped.map( obj => obj.user);
       await models.User.updateMany({_id: {$in: userIdsToUpdate}}, {$addToSet: {collabWorkspaces: newWs._id }});
 
       // update collabWorkspaces Array for collaborators

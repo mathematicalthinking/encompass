@@ -14,6 +14,13 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   currentStep: 1,
   showSubmissionViewer: Ember.computed.equal('currentStep', 1),
   showWorkspaceSettingsMenu: Ember.computed.equal('currentStep', 2),
+  selectedFolderSet: null,
+  selectedAssignment: null,
+  selectedSection: null,
+  selectedProblem: null,
+  selectedTeacher: null,
+  selectedStudents: [],
+  dateRange: '',
 
   searchOptions: ['all'],
   searchCriterion: 'all',
@@ -545,6 +552,10 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       }
       this.set('currentStep', 2);
     },
+    toSearchFilter() {
+      this.set('currentStep', 1);
+    },
+
     createWorkspace(settings) {
       const utils = this.get('utils');
       console.log('settings in create ws', settings);

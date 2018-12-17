@@ -30,6 +30,7 @@
             inputId="select-add-assignment"
             maxItems=1
             initialOptions=assignmentOptions
+            initialItems=initialAssignmentItem
             onItemAdd=(action "updateSelectizeSingle")
             onItemRemove=(action "updateSelectizeSingle")
             labelField="name"
@@ -59,6 +60,7 @@
         inputId="select-add-problem"
         isAsync=true
         maxItems=1
+        initialItems=initialProblemItem
         onItemAdd=(action "updateSelectizeSingle")
         onItemRemove=(action "updateSelectizeSingle")
         labelField="title"
@@ -84,6 +86,7 @@
           inputId="select-add-section"
           maxItems=1
           initialOptions=sectionPoolOptions
+          initialItems=initialSectionItem
           onItemAdd=(action "updateSelectizeSingle")
           onItemRemove=(action "updateSelectizeSingle")
           labelField="name"

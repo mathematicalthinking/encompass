@@ -590,21 +590,21 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
       };
 
       let folderSetOptions = this.get('newFolderSetOptions');
-
-      if (!folderSetOptions.doCreateFolderSet) {
-        delete folderSetOptions.name;
-        delete folderSetOptions.privacySetting;
-        if (!folderSetOptions.existingFolderSetToUse) {
-          delete folderSetOptions.existingFolderSetToUse;
+      if (folderSetOptions) {
+        if (!folderSetOptions.doCreateFolderSet) {
+          delete folderSetOptions.name;
+          delete folderSetOptions.privacySetting;
+          if (!folderSetOptions.existingFolderSetToUse) {
+            delete folderSetOptions.existingFolderSetToUse;
+          }
         }
       }
 
       let baseOptions = {
         submissionOptions : { all: true },
         folderOptions : {
-          includeStructureOnly: true,
           folderSetOptions: this.get('newFolderSetOptions'),
-          all: true
+          none: true
         },
         selectionOptions : { none: true },
         commentOptions : { none: true },
@@ -619,8 +619,9 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         requestSource = Object.assign(base, baseOptions);
 
       } else if (selectedConfig === 'B') {
-        delete baseOptions.folderOptions.all;
-        baseOptions.folderOptions.none = true;
+        delete baseOptions.folderOptions.none;
+        baseOptions.folderOptions.all = true;
+        baseOptions.folderOptions.includeStructureOnly = true;
         requestSource = Object.assign(base, baseOptions);
       } else if (selectedConfig === 'C') {
         baseOptions.folderOptions.includeStructureOnly = false;
