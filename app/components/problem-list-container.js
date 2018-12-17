@@ -9,12 +9,12 @@ Encompass.ProblemListContainerComponent = Ember.Component.extend(Encompass.Curre
   sortCriterion: { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, type: 'title' },
   sortOptions: {
     title: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: ''},
       { name: 'A-Z', sortParam: { title: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'title' },
       { name: 'Z-A', sortParam: { title: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'title' },
     ],
     createDate: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'date' },
       {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'date'}
     ]

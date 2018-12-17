@@ -27,27 +27,27 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   sortCriterion: { name: 'A-Z', sortParam: { student: 1 }, doCollate: true, type: 'student' },
   sortOptions: {
     student: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: ''},
       { name: 'A-Z', sortParam: { student: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'student' },
       { name: 'Z-A', sortParam: { student: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'student' },
     ],
     createDate: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       {id: 3, name: 'Newest', sortParam: { createDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'createDate' },
       {id: 4, name: 'Oldest', sortParam: { createDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'createDate'}
     ],
     revisions: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { revisions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'revisions' },
       { name: 'Fewest', sortParam: { revisions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'revisions'}
     ],
     explanation: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Longest', sortParam: { explanation: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'explanation' },
       { name: 'Shortest', sortParam: { explanation: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'explanation'}
     ],
     section: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: ''},
       { name: 'A-Z', sortParam: { section: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'section' },
       { name: 'Z-A', sortParam: { section: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'section' },
     ],
