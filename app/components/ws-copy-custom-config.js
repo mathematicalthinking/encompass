@@ -60,7 +60,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
     }
 
 
-  }.property('submissionOptions.all', 'submissionsFromStudents.[]'),
+  }.property('submissionOptions.all', 'submissionsFromStudents.[]', 'customSubmissionIds.[]'),
 
   formattedFolderOptions: function() {
     let folderOptions = {
