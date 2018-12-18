@@ -39,10 +39,10 @@
 {{/if}}
 
 {{#if selectedCollaborator}}
-  {{ws-permissions-new submissionsPool=submissionsPool workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator stopEditing=(action "stopEditing")}}
+  {{ws-permissions-new submissionsPool=submissionsPool workspace=workspace onSave=(action "savePermissions") permissions=permissions selectedUser=selectedCollaborator stopEditing=(action "stopEditing") isShowingSubView=doHideNavButtons}}
 {{/if}}
 
-{{#unless showCustomSubmissions}}
+{{#unless doHideNavButtons}}
   <div class="nav-btn-container">
     <button class="primary-button cancel-button" {{action "back"}}>Back</button>
     <button class="primary-button" {{action "next"}}>Next</button>

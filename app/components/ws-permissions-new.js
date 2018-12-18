@@ -2,9 +2,7 @@
 Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   elementId: 'ws-permissions-new',
   utils: Ember.inject.service('utility-methods'),
-  showCustom: Ember.computed.equal('global', 'custom'),
   showCustomSubmissions: function() {
-    console.log('showCustomSubmissions is running');
     return this.get('submissions') === 'custom' && this.get('showCustomSubmissionViewer');
   }.property('submissions', 'showCustomSubmissionViewer'),
   showCustomSubmissionViewer: true,
@@ -216,6 +214,10 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     this.set('selectedUser', null);
     this._super(...arguments);
   },
+
+  isShowingCustomSubs: function() {
+    this.set('isShowingSubView', this.get('showCustomSubmissions'));
+  }.observes('showCustomSubmissions'),
 
   buildCustomSubmissionIds(submissionsValue) {
     if (submissionsValue === 'custom') {
