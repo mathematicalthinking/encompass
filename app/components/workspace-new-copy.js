@@ -625,6 +625,8 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
         requestSource = Object.assign(base, baseOptions);
       } else if (selectedConfig === 'C') {
         baseOptions.folderOptions.includeStructureOnly = false;
+        delete baseOptions.folderOptions.none;
+        baseOptions.folderOptions.all = true;
 
         baseOptions.selectionOptions.all = true;
         delete baseOptions.selectionOptions.none;
