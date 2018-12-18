@@ -119,6 +119,7 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
       errors = window.validate({workspaceName, owner, privacySetting}, this.get('constraints'));
 
       if (this.get('utils').isNonEmptyObject(errors)) {
+        this.get('alert').showToast('error', 'Missing required info', 'bottom-end', 3000, false, null);
         for (let key of Object.keys(errors)) {
           let errorProp = `${key}Errors`;
           this.set(errorProp, errors[key]);
