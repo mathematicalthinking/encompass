@@ -2,6 +2,17 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['submission-viewer-list-item'],
   student: Ember.computed.alias('answer.student'),
 
+  didReceiveAttrs() {
+    this._super(...arguments);
+    console.log('moreMenuOptions', this.get('moreMenuOptions'));
+  },
+
+  ellipsisMenuOptions: function() {
+    let moreMenuOptions = this.get('moreMenuOptions');
+    console.log('ellipsis menu options are', moreMenuOptions);
+    return moreMenuOptions;
+  }.property('answer.id', 'answer.isTrashed'),
+
   isChecked: function() {
    let id = this.get('answer.id');
    let prop = `selectedMap.${id}`;
@@ -23,7 +34,18 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   actions: {
     onSelect: function() {
       this.get('onSelect')(this.get('answer'), this.get('isChecked'));
-    }
+    },
+    trashSubmission: function () {
+      let submission = this.get('submission');
+      //delete all revisions to?
+      console.log('clicked trashSubmission and submission is', submission);
+    },
+    toggleShowMoreMenu() {
+      console.log('clicked show more menu');
+      let isShowing = this.get('showMoreMenu');
+      this.set('showMoreMenu', !isShowing);
+    },
+
   }
 
 });
