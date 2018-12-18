@@ -226,12 +226,10 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       const sections = this.get('selectedTeacherSections');
 
       const studentsBySection = sections.mapBy('students');
-      console.log('sbs', studentsBySection);
       let results = [];
       studentsBySection.forEach((students) => {
         results.addObjects(students);
       });
-      console.log('students', results);
       return results;
 
     }
@@ -253,7 +251,6 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
     const assignment = this.get('selectedAssignment');
     if (assignment) {
       let id = assignment.belongsTo('problem').id();
-      console.log('id', id);
       results.ids = [id];
     }
     return results;
@@ -428,14 +425,12 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
       return [];
     }
     const studentSections = students.mapBy('sections');
-    console.log('sections', studentSections);
     let sectionObjects = [];
     studentSections.forEach((arr) => {
       sectionObjects.addObjects(arr);
     });
 
     let filtered = sectionObjects.filterBy('role', 'student');
-    console.log('filtered', filtered);
     let ids = filtered.mapBy('sectionId');
     return ids;
   }.property('selectedStudents.[]'),
@@ -640,7 +635,6 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
     },
 
     updateSelectizeSingle(val, $item, propToUpdate, model) {
-      console.log('uss', val, $item,propToUpdate);
       if (_.isNull($item)) {
         this.set(propToUpdate, null);
         return;

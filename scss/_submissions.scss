@@ -128,7 +128,18 @@
   }
 }
 
+
 #workspace-new-container {
+  .scroll-icon {
+    font-size: 3em;
+    display: none;
+    color: $accent-color;
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background-color: white;
+    border-radius: 50%;
+  }
   .loading-message-container {
     text-align: center;
     margin-top: 50px;
