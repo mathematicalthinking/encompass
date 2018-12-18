@@ -195,33 +195,34 @@
           color: black;
         }
         &.toggle-all {
-          @include flex-item(1, center, .04 0 auto);
+          @include flex-item(1, start, .04 0 auto);
           width: 4%;
           text-align: center;
         }
         &.student {
-          @include flex-item(2, center, .08 0 auto);
+          @include flex-item(2, start, .08 0 auto);
           width: 8%;
+          vertical-align: top;
         }
         &.revisions {
-          @include flex-item(3, center, .08 0 auto);
+          @include flex-item(3, start, .08 0 auto);
           width: 8%;
         }
         &.explanation {
-          @include flex-item(4, center, .53 0 auto);
+          @include flex-item(4, start, .53 0 auto);
           width: 52%;
           text-align: left;
         }
         &.section {
-          @include flex-item(5, center, .12 0 auto);
+          @include flex-item(5, start, .12 0 auto);
           width: 12%;
         }
         &.createDate {
-          @include flex-item(6, center, .12 0 auto);
+          @include flex-item(6, start, .12 0 auto);
           width: 12%;
         }
         &.more {
-          @include flex-item(7, center, .01 0 auto);
+          @include flex-item(7, start, .01 0 auto);
           width: 2%;
         }
       }

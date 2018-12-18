@@ -150,6 +150,9 @@ Encompass.WsCopyPermissionsComponent = Ember.Component.extend({
 
     back() {
       this.get('onBack')(-1);
+    },
+    isShowingCustom: function () {
+      console.log('is showing custom function called');
     }
   }
 });
