@@ -15,8 +15,8 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   global: 'viewOnly',
   submissionItems: {
     groupName: 'submissions',
-    groupLabel: 'Submission Permissions',
-    info: 'Submission permissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
+    groupLabel: 'Accessible Submissions',
+    info: 'Accessible submissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
     required: true,
     inputs: [
       {
