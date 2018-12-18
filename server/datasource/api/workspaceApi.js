@@ -248,8 +248,6 @@ function sendWorkspace(req, res, next) {
     }
 
     const [ canLoad, specialPermissions ] = access.get.workspace(user, ws);
-    console.log('canLoad', canLoad);
-    console.log('spec permis', specialPermissions);
     if(!canLoad) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
@@ -326,7 +324,6 @@ async function putWorkspace(req, res, next) {
         .value();
 
         let removedCollabs = _.difference(originalCollabIds, newCollabIds);
-        console.log('removedCollabs', removedCollabs);
         // remove workspace from users' collabWorkspaces if they were removed as collab
         await models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
         }
@@ -475,7 +472,6 @@ async function newFolderStructure(user, wsInfo, folderSetHash) {
         if (!folderObj) {
           return;
         }
-        // console.log(`parent for folderObj: ${folderObj.name}: ${parentId}`);
 
         let f = new models.Folder({
           owner: newWsOwner,
@@ -624,7 +620,6 @@ function handleSubmissionSet(submissionSet, user, folderSetId) {
     }
     // if it finds a workspace
     if(workspaces.length) {
-      // console.log(`${workspaces.length} workspaces found for criteria ${criteria}`);
       logger.info('there is already a workspace for this');
       //promise.resolve();
 
@@ -838,8 +833,6 @@ function prepareAndUpdateWorkspaces(user, callback) {
         callback( new Error( err.message ));
       }
       var submissionSets = _.pluck(results, 'submissionSet');
-      // console.log('We got '+ submissionSets.length + 'sets');
-      // console.log('We got '+ submissionSets.submissions + 'sets');
 
       submissionSets = _.reject(submissionSets, function (set) {
         //why would we be getting these?
@@ -1066,7 +1059,6 @@ function filterRequestedWorkspaceData(user, results) {
   //if users hiddenWorksapces is not an empty array add $nin
 
       if (filterBy) {
-        console.log('filterBy workspace API:', JSON.stringify(filterBy));
         let { all, includeFromOrg } = filterBy;
 
         if (includeFromOrg) {
@@ -1196,7 +1188,6 @@ function filterRequestedWorkspaceData(user, results) {
           currentPage
         }
       };
-      // console.log('data', data);
 
       // models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
       //   if (err) {
@@ -1406,7 +1397,7 @@ async function answersToSubmissions(answers) {
     });
     return subs;
   } catch(err) {
-    console.log('error mapping answers to subs', err);
+    console.error('error mapping answers to subs', err);
   }
 }
 
@@ -1418,7 +1409,6 @@ async function postWorkspaceEnc(req, res, next) {
 
   const workspaceCriteria = req.body.encWorkspaceRequest;
   const { requestedName, mode, folderSet, owner, answers, permissionObjects } = workspaceCriteria;
-  console.log('workspaceCriteria post enc', workspaceCriteria);
   try {
     const pruned = pruneObj(workspaceCriteria);
 
@@ -1597,7 +1587,7 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
     }
     const folders = workspace.folders;
     if (_.isEmpty(folders)) {
-      // console.log('no folders in original ws:', originalWsId);
+      // no folders in original workspace
       return results;
     }
 
@@ -1634,7 +1624,7 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
 
         })
         .catch((err) => {
-          console.log('err', err);
+          console.error('err', err);
         });
     };
 
@@ -1846,7 +1836,6 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       taggings: [],
       folderSet: null
     };
-
     // verify before destructuring
     if (!apiUtils.isNonEmptyObject(options) || !apiUtils.isNonEmptyObject(wsInfo)) {
       return results;
@@ -1900,6 +1889,10 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       */
       let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
       // newFolderStructure returns array of newly created FolderIds
+
+      if (_.propertyOf(folderSetInfo)('folderSetId')) {
+        results.folderSet = folderSetInfo.folderSetId;
+      }
       const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
 
       if (apiUtils.isNonEmptyArray(newFolderIds)) {
@@ -1909,6 +1902,18 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     } else {
       // copying contents of folders as well
+
+      let folderSetInfo = await copyAndSaveFolderStructure(user, originalWsId, folderIdsToCopy, folderSetOptions);
+
+      if (_.propertyOf(folderSetInfo)('folderSetId')) {
+        results.folderSet = folderSetInfo.folderSetId;
+      }
+// const results = {
+//       folderSetId: null,
+//       folderSetObjects: [],
+//       isInvalidWorkspace: false
+//     };
+
       taggingsKey = await buildTaggingsKey(folderIdsToCopy, selectionsKey);
       let [folderIds, taggingIds] = await deepCloneFolders(user, folderIdsToCopy, taggingsKey, wsInfo);
 
@@ -2196,9 +2201,8 @@ async function cloneWorkspace(req, res, next) {
   try {
     const user = userAuth.requireUser(req);
     // check if user has permission to copy this workspace
-    // console.log('clone request options', JSON.stringify(req.body));
     const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
-    // console.log('CWR', JSON.stringify(copyWorkspaceRequest, null, 2));
+
     if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
       return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
     }
@@ -2486,6 +2490,10 @@ async function cloneWorkspace(req, res, next) {
 
   newWs.folders = newFolders.folders;
   newWs.taggings = newFolders.taggings;
+
+  if (newFolders.folderSet) {
+    requestDoc.createdFolderSet = newFolders.folderSet;
+  }
 
   // set Permissions
 

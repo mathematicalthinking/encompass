@@ -64,7 +64,7 @@ describe(`Copy Workspace operations by account type`, function () {
       */
       // return array [ copyWorkspaceRequest, hash of expected lengths]
       function buildShallowRequest(settings, workspace, submissionIds = null, doIncludeFolders = false) {
-        let { newOwnerId, newWsName, newMode, permissions } = settings;
+        let { newOwnerId, newWsName, newMode, permissions, folderSetOptions } = settings;
         if (!Array.isArray(permissions)) {
           permissions = [];
         }
@@ -88,6 +88,15 @@ describe(`Copy Workspace operations by account type`, function () {
           foldersLength = 0;
         }
 
+        let fsOptions;
+
+        if (folderSetOptions) {
+          fsOptions = folderSetOptions;
+        } else {
+          fsOptions = {
+            doCreateFolderSet: false,
+          };
+        }
 
         let lengths = {
           submissions: subsLength,
@@ -111,9 +120,7 @@ describe(`Copy Workspace operations by account type`, function () {
               },
               folderOptions: {
                 includeStructureOnly: true,
-                folderSetOptions: {
-                  doCreateFolderSet: false,
-                },
+                folderSetOptions: fsOptions,
                 all: doIncludeFolders,
                 none: !doIncludeFolders
               },
@@ -138,7 +145,7 @@ describe(`Copy Workspace operations by account type`, function () {
       }
 
       function buildDeepCloneRequest(settings, workspace, expectedLengths, submissionIds = null, doIncludeFolders = true) {
-        let { newOwnerId, newWsName, newMode, permissions } = settings;
+        let { newOwnerId, newWsName, newMode, permissions, folderSetOptions } = settings;
         if (!Array.isArray(permissions)) {
           permissions = [];
         }
@@ -164,6 +171,16 @@ describe(`Copy Workspace operations by account type`, function () {
           foldersLength = 0;
         }
 
+        let fsOptions;
+
+        if (folderSetOptions) {
+          fsOptions = folderSetOptions;
+        } else {
+          fsOptions = {
+            doCreateFolderSet: false,
+          };
+        }
+
 
         let lengths = {
           submissions: subsLength,
@@ -187,9 +204,7 @@ describe(`Copy Workspace operations by account type`, function () {
               },
               folderOptions: {
                 includeStructureOnly: false,
-                folderSetOptions: {
-                  doCreateFolderSet: false,
-                },
+                folderSetOptions: fsOptions,
                 all: doIncludeFolders,
                 none: !doIncludeFolders
               },
@@ -267,7 +282,7 @@ describe(`Copy Workspace operations by account type`, function () {
         ];
       }
 
-      function makeCopyRequestAsync(request, expectedCollectionLengths) {
+      function makeCopyRequestAsync(request, expectedCollectionLengths, doExpectNewFolderSet) {
         try {
           let newWs;
           let res;
@@ -287,6 +302,12 @@ describe(`Copy Workspace operations by account type`, function () {
               expect(res.body).to.have.all.keys('copyWorkspaceRequest');
               expect(res.body.copyWorkspaceRequest.createdWorkspace).to.exist;
             });
+
+            if (doExpectNewFolderSet) {
+              it('should have newly created Folder Set id on response', function() {
+                expect(res.body.copyWorkspaceRequest.createdFolderSet).to.exist;
+              });
+            }
             it(`original workspace should not have been modified`, async function () {
               expect(await areRecordsEqual('Workspace', originalWs, originalWs._id)).to.be.true;
             });
@@ -388,6 +409,22 @@ describe(`Copy Workspace operations by account type`, function () {
           });
 
           describe('Including Folders', function () {
+            describe('Creating New Folder Set', function() {
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: newWsName,
+                newMode: originalWs.mode,
+                permissions: [],
+                folderSetOptions: {
+                  doCreateFolderSet: true,
+                  name: 'Test New Folder Set',
+                  privacySetting: 'M'
+                }
+              };
+              let [request, lengths] = buildShallowRequest(settings, originalWs, null, true);
+              makeCopyRequestAsync(request, lengths, true);
+            });
             describe('Current user as owner', function () {
               let settings = {
                 newOwnerId: _id,
@@ -583,6 +620,22 @@ describe(`Copy Workspace operations by account type`, function () {
               comments: originalWs.comments.length,
               responses: originalWs.responses.length
             };
+            describe('Creating New Folder Set', function() {
+              let settings = {
+                newOwnerId: _id,
+
+                newWsName: newWsName,
+                newMode: originalWs.mode,
+                permissions: [],
+                folderSetOptions: {
+                  doCreateFolderSet: true,
+                  name: 'Test New Folder Set',
+                  privacySetting: 'M'
+                }
+              };
+              let [request, lengths] = buildDeepCloneRequest(settings, originalWs, expectedLengths, null, true);
+              makeCopyRequestAsync(request, lengths, true);
+            });
             describe('Current user as owner', function () {
               let settings = {
                 newOwnerId: _id,
