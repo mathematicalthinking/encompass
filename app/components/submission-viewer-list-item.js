@@ -1,5 +1,6 @@
 Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['submission-viewer-list-item'],
+  alert: Ember.inject.service('sweet-alert'),
   student: Ember.computed.alias('answer.student'),
 
   didReceiveAttrs() {
@@ -9,7 +10,6 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
 
   ellipsisMenuOptions: function() {
     let moreMenuOptions = this.get('moreMenuOptions');
-    console.log('ellipsis menu options are', moreMenuOptions);
     return moreMenuOptions;
   }.property('answer.id', 'answer.isTrashed'),
 
@@ -35,13 +35,29 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
     onSelect: function() {
       this.get('onSelect')(this.get('answer'), this.get('isChecked'));
     },
-    trashSubmission: function () {
-      let submission = this.get('submission');
-      //delete all revisions to?
-      console.log('clicked trashSubmission and submission is', submission);
+    deleteAnswer: function () {
+      let answer = this.get('answer');
+      //need to check if the answer has a thread, if it does, ask if they want to delete all reivisions as well
+
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this submission', 'This submission will no longer be accesible to all users', 'Yes').then((result) => {
+        if (result.value) {
+          answer.set('isTrashed', true);
+          answer.save().then((answer) => {
+            this.get('alert').showToast('success', 'Submission Deleted', 'bottom-end', 4000, true, 'Undo')
+            .then((results) => {
+              if (results.value) {
+                answer.set('isTrashed', false);
+                answer.save().then(() => {
+                  this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 3000, false, null);
+                });
+              }
+            });
+          });
+        }
+      });
     },
+
     toggleShowMoreMenu() {
-      console.log('clicked show more menu');
       let isShowing = this.get('showMoreMenu');
       this.set('showMoreMenu', !isShowing);
     },

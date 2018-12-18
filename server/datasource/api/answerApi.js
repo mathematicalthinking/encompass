@@ -237,6 +237,7 @@ const getAnswer = (req, res, next) => {
 
 const putAnswer = (req, res, next) => {
   const user = userAuth.requireUser(req);
+  let isAdmin = user.accountType === 'A';
 
   if (!user) {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
@@ -250,7 +251,7 @@ const putAnswer = (req, res, next) => {
     }
     // if this has been submitted it is no longer editable
     // return an error
-    if (doc.isSubmitted) {
+    if (doc.isSubmitted && !isAdmin) {
       logger.error("answer already submitted");
       return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
     }
