@@ -6,24 +6,6 @@
   </span>
 </p>
 
-<div class="global-permissions">
-  {{radio-group options=globalItems selectedValue=global}}
-  {{#if showCustom}}
-    <div class="custom-global-permissions">
-      <p class="input-label">
-        Configure Custom Permissions
-        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide user permissions for each aspect of this worksapce">
-          <i class="fas fa-info-circle info-icon"></i>
-        </span>
-      </p>
-      {{radio-group options=selectionItems selectedValue=selections}}
-      {{radio-group options=commentItems selectedValue=comments}}
-      {{radio-group options=folderItems selectedValue=folders}}
-      {{radio-group options=feedbackItems selectedValue=feedback}}
-    </div>
-  {{/if}}
-</div>
-
 <div class="submission-permissions">
 {{radio-group options=submissionItems selectedValue=submissions}}
 {{#if closedCustomView}}
@@ -45,6 +27,24 @@
       </li>
     {{/each}}
     </ul> --}}
+  {{/if}}
+</div>
+
+<div class="global-permissions">
+  {{radio-group options=globalItems selectedValue=global}}
+  {{#if showCustom}}
+  <div class="custom-global-permissions">
+    <p class="input-label">
+      Configure Custom Permissions
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide user permissions for each aspect of this worksapce">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    {{radio-group options=selectionItems selectedValue=selections}}
+    {{radio-group options=commentItems selectedValue=comments}}
+    {{radio-group options=folderItems selectedValue=folders}}
+    {{radio-group options=feedbackItems selectedValue=feedback}}
+  </div>
   {{/if}}
 </div>
 

@@ -2,8 +2,6 @@
 Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   elementId: 'ws-permissions-new',
   utils: Ember.inject.service('utility-methods'),
-
-  showCustom: Ember.computed.equal('global', 'custom'),
   showCustomSubmissions: function() {
     return this.get('submissions') === 'custom' && this.get('showCustomSubmissionViewer');
   }.property('submissions', 'showCustomSubmissionViewer'),
@@ -15,8 +13,8 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   global: 'viewOnly',
   submissionItems: {
     groupName: 'submissions',
-    groupLabel: 'Submission Permissions',
-    info: 'Submission permissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
+    groupLabel: 'Accessible Submissions',
+    info: 'Accessible submissions dictate what submissions this user will see in the workspace. Hover over the question marks for more info',
     required: true,
     inputs: [
       {
@@ -145,8 +143,8 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
   },
   globalItems: {
     groupName: 'global',
-    groupLabel: 'Global Permissions',
-    info: 'Global permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    groupLabel: 'Workspace Permissions',
+    info: 'Workspace permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {
@@ -216,6 +214,10 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     this.set('selectedUser', null);
     this._super(...arguments);
   },
+
+  isShowingCustomSubs: function() {
+    this.set('isShowingSubView', this.get('showCustomSubmissions'));
+  }.observes('showCustomSubmissions'),
 
   buildCustomSubmissionIds(submissionsValue) {
     if (submissionsValue === 'custom') {

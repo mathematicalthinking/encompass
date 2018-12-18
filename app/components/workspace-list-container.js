@@ -16,42 +16,42 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
   sortCriterion: { name: 'Newest', sortParam: { lastModifiedDate: -1 }, doCollate: true, type: 'lastModifiedDate' },
   sortOptions: {
     name: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: ''},
       { name: 'A-Z', sortParam: { name: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'name' },
       { name: 'Z-A', sortParam: { name: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'name' },
     ],
     lastModifiedDate: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       {id: 3, name: 'Newest', sortParam: { lastModifiedDate: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'lastModifiedDate' },
       {id: 4, name: 'Oldest', sortParam: { lastModifiedDate: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'lastModifiedDate'}
     ],
     submissions: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { submissions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'submissions' },
       { name: 'Fewest', sortParam: { submissions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'submissions'}
     ],
     selections: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { selections: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'selections' },
       { name: 'Fewest', sortParam: { selections: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'selections'}
     ],
     comments: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { comments: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'comments' },
       { name: 'Fewest', sortParam: { comments: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'comments'}
     ],
     responses: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { responses: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'responses' },
       { name: 'Fewest', sortParam: { responses: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'responses'}
     ],
     owner: [
-      {sortParam: null, icon: 'fas fa-minus'},
+      {sortParam: null, icon: ''},
       { name: 'A-Z', sortParam: { owner: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'owner' },
       { owner: 'Z-A', sortParam: { owner: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'owner' },
     ],
     editors: [
-      { sortParam: null, icon: 'fas fa-minus'},
+      { sortParam: null, icon: ''},
       { name: 'Most', sortParam: { editors: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'editors' },
       { name: 'Fewest', sortParam: { editors: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'editors'}
     ]

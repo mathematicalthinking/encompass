@@ -76,10 +76,9 @@
   .primary-filter-list {
     margin-bottom: 50px;
     .display-info {
-      margin-left: 20px;
       font-weight: $light-font-weight;
-      margin-bottom: 30px;
       padding-right: 10px;
+      margin: 0 0 25px 30px;
       font-size: .95em;
     }
     .detail-header {
@@ -183,7 +182,7 @@
     .step-content {
       margin-top: 40px;
       overflow-x: hidden;
-      min-height: 275px;
+      min-height: 280px;
       .input-label {
         font-size: 1.2em;
         color: black;

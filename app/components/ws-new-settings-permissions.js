@@ -5,8 +5,8 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
 
   globalItems: {
     groupName: 'global',
-    groupLabel: 'Global Permissions',
-    info: 'Global permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    groupLabel: 'Workspace Permissions',
+    info: 'Workspace permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       { label: 'View Only', value: 'viewOnly', moreInfo: 'This user will be able to see the workspace, but not add or make any changes' },
