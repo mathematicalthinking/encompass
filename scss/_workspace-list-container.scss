@@ -248,8 +248,19 @@
     font-weight: $main-font-weight;
     width: 100%;
   }
+  .back-button {
+    background-color: $cancel-color;
+    color: $primary-font-color;
+    padding: 10px 10px 10px 5px;
+    font-size: .8em;
+    border: none;
+    border-radius: 3px;
+    i {
+      margin: 0 5px 0 10px;
+    }
+  }
   .create-ws-content {
-    margin: 40px 40px 0 40px;
+    margin: 30px 40px 0 40px;
     .input-label {
       color: $dark-font-color;
       font-size: 1.2em;
