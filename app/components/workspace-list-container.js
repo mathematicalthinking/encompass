@@ -271,6 +271,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
     if (isAdmin) {
       filter.primaryFilters.inputs.mine.isChecked = false;
+      delete filter.primaryFilters.inputs.myOrg;
       filter.primaryFilters.inputs.all = {
         label: 'All',
         value:'all',
@@ -286,15 +287,22 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               value: "org",
               selectedValues: [],
               subFilters: {
-                selectedValues: ["fromOrg"],
+                selectedValues: ["fromOrg", "orgWorkspaces"],
                 inputs: {
                     fromOrg: {
-                      label: `Created by Members`,
+                      label: `Created or Owned by Members`,
                       value: "fromOrg",
                       isChecked: true,
                       isApplied: true,
                       icon: "fas fa-users"
-                    }
+                    },
+                    orgWorkspaces: {
+                      label: `Visibile to Members`,
+                      value: "orgWorkspaces",
+                      isChecked: true,
+                      isApplied: true,
+                      icon: "fas fa-dot-circle"
+                    },
                   }
                 }
             },
@@ -417,18 +425,26 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
 
       let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+      let includeOrgWorkspaces = _.indexOf(secondaryValues, 'orgWorkspaces') !== -1;
 
       // immediately return 0 results
-      if (!includeFromOrg) {
+      if (!includeFromOrg && !includeOrgWorkspaces) {
         this.set('criteriaTooExclusive', true);
         return;
       }
       filter.all = {};
       filter.all.org = {};
 
-      //fromOrg only
+      filter.all.org.organizations = selectedValues;
+      // mode "org" and organization prop
+      if (includeOrgWorkspaces) {
+        this.set("selectedMode", ["org"]);
+      }
+      //
       if (includeFromOrg) {
-        filter.all.org.organizations = selectedValues;
+        this.set('selectedMode', ['org', 'private', 'public']);
+        filter.all.org.includeFromOrg = true;
+        //find all workspaces who's owner's org is same as yours
       }
       return filter;
     }
@@ -566,7 +582,6 @@ buildCollabFilter() {
       if (this.get("toggleTrashed")) {
         return visibileWorkspaces;
       } else if (this.get('toggleHidden')) {
-        console.log('toggleHidden in displayWorkspaces');
         // this.get('store').findRecord('workspace', hiddenWorkspaces[0]).then((workspaces) => {
         //   console.log(workspaces.id);
         // });

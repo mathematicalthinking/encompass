@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 /**
   * # Workspaces API
   * @description This is the API for workspace based requests
@@ -1054,6 +1055,7 @@ async function getWorkspaces(req, res, next) {
 
   if (filterBy) {
     let { all, includeFromOrg } = filterBy;
+
     if (includeFromOrg && user.organization) {
       let userIdsFromOrg = await accessUtils.getModelIds('User', { organization: user.organization });
       if (apiUtils.isNonEmptyArray(userIdsFromOrg)) {
@@ -1079,7 +1081,7 @@ async function getWorkspaces(req, res, next) {
       let { org } = all;
       if (org) {
         let crit = {};
-        let { organizations } = org;
+        let { organizations, includeFromOrg } = org;
 
         if (apiUtils.isNonEmptyArray(organizations)) {
           if (!crit.$or) {
@@ -1087,6 +1089,16 @@ async function getWorkspaces(req, res, next) {
           }
           crit.$or.push({ organization: { $in: organizations } });
         }
+        if (includeFromOrg && apiUtils.isNonEmptyArray(organizations)) {
+          let userIdsFromOrg = await accessUtils.getModelIds('User', { organization: {$in: organizations} });
+          if (apiUtils.isNonEmptyArray(userIdsFromOrg)) {
+            crit.$or.push({ createdBy: { $in: userIdsFromOrg } });
+            crit.$or.push({ owner: { $in: userIdsFromOrg } });
+          }
+      // want workspaces createdBy or Owned by someone from users org
+          delete filterBy.all.org.includeFromOrg;
+        }
+
 
         if (!filterBy.$and) {
           filterBy.$and = [];
