@@ -150,6 +150,34 @@
     background-color: white;
     border-radius: 50%;
   }
+  .select-bar {
+    @include flex-item(1, center, .3 0 auto);
+    margin-right: 15px;
+    #my-select {
+      width: 100%;
+      select {
+        height: 30px;
+        @include responsive-font-size(.6em, 1em, 350px, 1200px, .1em);
+        font-size: 1em;
+        border: none;
+        text-indent: 5px;
+        background: none;
+        width: 100%;
+        max-width: 100px;
+        text-align-last: left;
+        margin: 0 auto;
+        text-transform: capitalize;
+        color: black;
+        background: url(/images/caret-down.svg) no-repeat right;
+        background-size: 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
   .loading-message-container {
     text-align: center;
     margin-top: 50px;

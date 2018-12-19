@@ -10,7 +10,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   answerToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
   selectedAnswers: [],
-  doIncludeRevisions: false,
   currentStep: 1,
   showSubmissionViewer: Ember.computed.equal('currentStep', 1),
   showWorkspaceSettingsMenu: Ember.computed.equal('currentStep', 2),
@@ -21,9 +20,9 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   selectedTeacher: null,
   selectedStudents: [],
   dateRange: '',
-
-  searchOptions: ['all'],
-  searchCriterion: 'all',
+  doIncludeRevisions: Ember.computed.equal('selectedRevisionOption', 'All Revisions'),
+  revisionsSelectOptions: ['All Revisions', 'Newest Only'],
+  selectedRevisionOption: 'Newest Only',
   sortCriterion: { name: 'A-Z', sortParam: { student: 1 }, doCollate: true, type: 'student' },
   sortOptions: {
     student: [
@@ -128,6 +127,30 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     return msg;
 
   }.property('criteriaTooExclusive', 'isDisplayingSearchResults', 'answers.@each.isTrashed', 'isFetchingAnswers', 'showLoadingMessage'),
+
+  getMostRecentAnswers: function(answers) {
+    if (!_.isArray(answers)) {
+      return [];
+    }
+    const threads = Ember.Map.create();
+
+    answers
+      .sortBy('student')
+      .getEach('student')
+      .uniq()
+      .forEach((student) => {
+        if(!threads.has(student)) {
+          const answers = this.studentWork(student);
+          threads.set(student, answers);
+        }
+      });
+
+      let results = [];
+      threads.forEach((answers) => {
+        results.addObject(answers.get('lastObject'));
+      });
+      return results;
+  },
 
 
   init: function() {
@@ -516,11 +539,27 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       if (!answer) {
         return;
       }
+      let isShowingRevisions = this.get('doIncludeRevisions');
+      // if showing revisions, only add or remove selected answer
+      // otherwise add or remove all revisions
       if (isChecked === true) {
-        this.get('selectedAnswers').removeObject(answer);
+        if (isShowingRevisions) {
+          this.get('selectedAnswers').removeObject(answer);
+          return;
+        }
+        let student = answer.get('student');
+        let revisions = this.get('submissionThreads').get(student);
+        this.get('selectedAnswers').removeObjects(revisions);
       }
       if (isChecked === false) {
-        this.get('selectedAnswers').addObject(answer);
+
+        if (isShowingRevisions) {
+          this.get('selectedAnswers').addObject(answer);
+          return;
+        }
+        let student = answer.get('student');
+        let revisions = this.get('submissionThreads').get(student);
+        this.get('selectedAnswers').addObjects(revisions);
       }
     },
     toggleIncludeRevisions() {
@@ -563,7 +602,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         return;
       }
 
-      const { requestedName, owner, mode, folderSet, permissionObjects } = settings;
+      const { requestedName, owner, mode, folderSet, permissionObjects, submissionSettings } = settings;
       if (utils.isNonEmptyArray(permissionObjects)) {
         permissionObjects.forEach((obj) => {
           if (obj.user && obj.user.get('id') ) {
@@ -573,6 +612,11 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       }
       if (!utils.isNonEmptyArray(answers)) {
         return;
+      }
+
+      if (submissionSettings === 'mostRecent') {
+        // only include most recent submission
+        answers = this.getMostRecentAnswers(answers);
       }
       let criteria = {
         answers,

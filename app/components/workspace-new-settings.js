@@ -7,6 +7,7 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
   isEditingPermissions: false,
   unsavedCollaborator: null,
   selectedMode: 'private',
+  selectedSubmissionSettings: 'all',
 
   validModeValues: function() {
     const modeInputs = this.get('modeInputs.inputs');
@@ -39,6 +40,22 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
     return res;
 
   }.property('validModeValues', 'doCreateFolderSet'),
+  submissionSettingsInputs: {
+    groupName: 'submissionSettings',
+    required: true,
+    inputs: [
+      {
+        value: 'all',
+        label: 'All Submissions',
+        moreInfo: 'Workspace will include all revisions',
+      },
+      {
+        value: 'mostRecent',
+        label: 'Most Recent Only',
+        moreInfo: 'Workspace will only include submissions of record',
+      },
+    ]
+  },
   modeInputs: function() {
     let res = {
       groupName: 'mode',
@@ -115,6 +132,7 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
       const privacySetting = this.get('selectedMode');
       const folderSet = this.get('selectedFolderSet');
       const permissions = this.get('workspacePermissions');
+      const submissionSettings = this.get('selectedSubmissionSettings');
 
       errors = window.validate({workspaceName, owner, privacySetting}, this.get('constraints'));
 
@@ -132,7 +150,8 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
         owner,
         mode: privacySetting,
         folderSet,
-        permissionObjects: permissions
+        permissionObjects: permissions,
+        submissionSettings
       };
 
       if (this.get('isEditingPermissions')) {

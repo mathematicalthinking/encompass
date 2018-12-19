@@ -25,7 +25,7 @@
     <div class="flex-item-full list-view">
       <div class="list-container">
         <h1>Submissions</h1>
-        <div class="searchbar">
+        {{!-- <div class="searchbar">
           {{search-bar
             onSearch=(action "searchAnswers")
             showFilter=true
@@ -36,7 +36,7 @@
             selectedCriterion=searchCriterion
             }}
 
-        </div>
+        </div> --}}
       </div>
       <div class="results-list">
         <div class="results-info">
@@ -61,10 +61,9 @@
             {{/if}}
           </div>
           <div class="side-icons">
-            <label class="show-revisions">
-              <input type="checkbox" checked={{doIncludeRevisions}} onclick={{action "toggleIncludeRevisions"}}>
-              Show All Revisions
-            </label>
+            <div class="select-bar">
+              {{my-select content=revisionsSelectOptions cannotBeNull=true selectedValue=selectedRevisionOption action=(action (mut selectedRevisionOption))}}
+            </div>
             <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Submission list"></i>
           </div>
         </div>
