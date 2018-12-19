@@ -118,7 +118,8 @@
     <div class="half">
       {{#if isEditing}}
        <label>Add Collaborator</label>
-      {{ws-info-permissions workspace=workspace selectedCollaborator=selectedCollaborator collaborators=collaborators store=store permissions=workspace.permissions removeCollab=(action "removeCollab") savePermissions=(action "savePermissions")}}
+      {{ws-info-permissions workspace=workspace selectedCollaborator=selectedCollaborator collaborators=collaborators store=store permissions=workspace.permissions removeCollab=(action "removeCollab") savePermissions=(action "savePermissions")
+      }}
 
       {{else}} {{#if canEdit}}
       <p>
