@@ -103,8 +103,17 @@
         font-weight: $light-font-weight;
       }
       .selectize-comp {
-        .selectize-input {
-          height: 34px;
+        .selectize-control.single {
+          .selectize-input {
+            height: 34px;
+            .item {
+              padding: 2px 10px;
+              border-radius: 2px;
+              margin-top: -2px;
+              background-color: $cancel-color;
+              color: #303030;
+            }
+          }
         }
         input {
           font-size: 1em;

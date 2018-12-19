@@ -5,7 +5,6 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
 
   didReceiveAttrs() {
     this._super(...arguments);
-    console.log('moreMenuOptions', this.get('moreMenuOptions'));
   },
 
   ellipsisMenuOptions: function() {
