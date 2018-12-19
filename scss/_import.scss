@@ -191,6 +191,9 @@
         i {
           color: $primary-font-color;
         }
+        &.class {
+          margin-top: 50px;
+        }
       }
       .input-label-custom {
         color: $primary-font-color;
