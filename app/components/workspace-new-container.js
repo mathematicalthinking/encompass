@@ -129,6 +129,30 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   }.property('criteriaTooExclusive', 'isDisplayingSearchResults', 'answers.@each.isTrashed', 'isFetchingAnswers', 'showLoadingMessage'),
 
+  getMostRecentAnswers: function(answers) {
+    if (!_.isArray(answers)) {
+      return [];
+    }
+    const threads = Ember.Map.create();
+
+    answers
+      .sortBy('student')
+      .getEach('student')
+      .uniq()
+      .forEach((student) => {
+        if(!threads.has(student)) {
+          const answers = this.studentWork(student);
+          threads.set(student, answers);
+        }
+      });
+
+      let results = [];
+      threads.forEach((answers) => {
+        results.addObject(answers.get('lastObject'));
+      });
+      return results;
+  },
+
 
   init: function() {
     this.getUserOrg()
@@ -579,7 +603,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         return;
       }
 
-      const { requestedName, owner, mode, folderSet, permissionObjects } = settings;
+      const { requestedName, owner, mode, folderSet, permissionObjects, submissionSettings } = settings;
       if (utils.isNonEmptyArray(permissionObjects)) {
         permissionObjects.forEach((obj) => {
           if (obj.user && obj.user.get('id') ) {
@@ -589,6 +613,11 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       }
       if (!utils.isNonEmptyArray(answers)) {
         return;
+      }
+
+      if (submissionSettings === 'mostRecent') {
+        // only include most recent submission
+        answers = this.getMostRecentAnswers(answers);
       }
       let criteria = {
         answers,
