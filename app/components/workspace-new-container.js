@@ -516,11 +516,27 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       if (!answer) {
         return;
       }
+      let isShowingRevisions = this.get('doIncludeRevisions');
+      // if showing revisions, only add or remove selected answer
+      // otherwise add or remove all revisions
       if (isChecked === true) {
-        this.get('selectedAnswers').removeObject(answer);
+        if (isShowingRevisions) {
+          this.get('selectedAnswers').removeObject(answer);
+          return;
+        }
+        let student = answer.get('student');
+        let revisions = this.get('submissionThreads').get(student);
+        this.get('selectedAnswers').removeObjects(revisions);
       }
       if (isChecked === false) {
-        this.get('selectedAnswers').addObject(answer);
+
+        if (isShowingRevisions) {
+          this.get('selectedAnswers').addObject(answer);
+          return;
+        }
+        let student = answer.get('student');
+        let revisions = this.get('submissionThreads').get(student);
+        this.get('selectedAnswers').addObjects(revisions);
       }
     },
     toggleIncludeRevisions() {
