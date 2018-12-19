@@ -1,1 +1,32 @@
-<div>STEP 1</div>
+  <p class="input-label">
+    Select a problem
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the problem you would like to use">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  {{selectize-input
+    store=store
+    inputId="select-problem"
+    isAsync=true
+    maxItems=1
+    onItemAdd=(action "setSelectedProblem")
+    onItemRemove=(action "setSelectedProblem")
+    labelField="title"
+    searchField="title"
+    valueField="id"
+    model="problem"
+    queryParamsKey="query"
+    searchCriterion="title"
+    topLevelQueryParams="searchBy"
+    placeholder="Search for problems by title..."
+    preload="focus"
+  }}
+
+
+{{#if missingProblem}}
+  {{error-box error="Please select a problem." resetError=(action (mut missingProblem) null) showDismiss=true}}
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="primary-button" {{action "next"}}>Next</button>
+</div>
