@@ -106,7 +106,6 @@ async function getSubmissions(req, res, next) {
   var user = userAuth.getUser(req);
   try {
     var criteria;
-  //console.log('ids', req.query.ids);
   if (req.query.ids) {
     criteria = await access.get.submissions(user, req.query.ids);
   } else {
@@ -125,7 +124,7 @@ async function getSubmissions(req, res, next) {
       utils.sendResponse(res, data);
     });
   }catch(err) {
-    console.log('caught error getSubmsissions', err);
+    console.error('caught error getSubmissions', err);
     return utils.sendError.InternalError(null, res);
   }
 
@@ -274,12 +273,6 @@ function postSubmission(req, res, next) {
   var user = userAuth.getUser(req); //user isn't required
   if(user.isAuthorized || isAnonymousPost) {
     var access = utils.isValidApiKey(req.headers.secret, req.headers.time) || user.isAuthorized;
-    /*/
-    console.log("ACCESS: ", access);
-    console.log("TIME: ", req.headers.time);
-    console.log("SECRET: ", req.headers.secret);
-    console.log("MY SECRET: ", utils.generateApiSecret(req.headers.time));
-    */
 
     if (access) {
       try {

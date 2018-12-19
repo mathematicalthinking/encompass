@@ -161,7 +161,7 @@ const postImages = async function(req, res, next) {
                 return newImage;
             })
             .catch((err) => {
-              console.log('error converting', err);
+              console.error('error converting', err);
             });
           }));
         })
@@ -260,7 +260,6 @@ const deleteImage = (req, res) => {
     let createdBy = image.createdBy;
 
     if (createdBy.toString() !== user._id.toString()) {
-      console.log('user did not create this image');
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }

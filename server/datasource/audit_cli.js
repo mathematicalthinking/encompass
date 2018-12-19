@@ -167,7 +167,6 @@ if(program.h) {
 
 // Parse options
 var options = formatAuditOptions();
-//console.log(JSON.stringify(options.update));
 
 if(options.errors.length) {
   console.error(options.errors);
@@ -176,19 +175,17 @@ if(options.errors.length) {
 
 mongo.connect(options.url, function(err, db) {
   if(err) {
-    console.log(err);
+    console.error(err);
   }
 
   var collection = db.collection(options.collection);
   var noteFormat = '%s: db.%s.update(%s, %s, {multi: %s}); affected %d\n';
 
-  //console.log(options.find, options.update);
   collection.update(options.find, options.update, {multi: options.multi, w: 1}, function(err, affected) {
     if(err) {
       console.log(err);
     }
 
-    //console.log(JSON.stringify(options.find), JSON.stringify(options.update), options.multi, affected);
     var note = util.format(noteFormat, (new Date()).toDateString(), options.collection, JSON.stringify(options.find), JSON.stringify(options.update), options.multi, affected);
     if(affected > 0) {
       fs.appendFile('audit.log', note, function(err) {
@@ -196,7 +193,6 @@ mongo.connect(options.url, function(err, db) {
           console.log(err);
         }
 
-        //console.log(note);
         console.log('Audited');
       });
     } else {

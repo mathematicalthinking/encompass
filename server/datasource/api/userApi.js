@@ -124,7 +124,6 @@ async function sendUsers(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 async function sendUser(req, res, next) {
-  console.log('params.id', req.params.id);
   try {
     var user = userAuth.requireUser(req);
     if (!user) {

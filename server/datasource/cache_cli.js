@@ -74,7 +74,6 @@ var program = optimist.options({
 function formatCacheOptions() {
   // Clone arguments to this script
   var query = JSON.parse( JSON.stringify(program) );
-  console.log("Composing query params...");
 
   // Remove those that aren't relevant to the query
   delete query.$0;
@@ -121,7 +120,6 @@ function formatCacheOptions() {
       query.max_date = Date.parse(program.date[1]);
     }
     catch(err) {
-      console.log('Invalid date(s)');
       delete query.since_date;
       delete query.max_date;
     }
@@ -134,7 +132,6 @@ function formatCacheOptions() {
       query.since_date = Date.parse(query.date);
     }
     catch(err) {
-      console.log('Invalid date(s)');
       delete query.since_date;
     }
     finally {
