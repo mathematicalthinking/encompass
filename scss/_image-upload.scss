@@ -19,4 +19,13 @@
   input[type=file] {
     font-size: 1em;
   }
+  .loading-message {
+    font-weight: $light-font-weight;
+    margin: 10px 0;
+  }
+  .upload-results li {
+    font-weight: $light-font-weight;
+    margin: 10px 0;
+    color: $success-color;
+  }
 }

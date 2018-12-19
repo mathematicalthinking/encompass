@@ -182,11 +182,22 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     },
 
     setSelectedProblem() {
+      this.set('selectedProblem', this.get('selectedProblem'));
       this.set('currentStep', this.get('steps')[2]);
     },
 
     setSelectedSection() {
+      this.set('selectedSection', this.get('selectedSection'));
       this.set('currentStep', this.get('steps')[3]);
+    },
+
+    setUploadedFiles() {
+      this.set('uploadedFiles', this.get('uploadedFiles'));
+      this.set('currentStep', this.get('steps')[4]);
+    },
+
+    setMatchedStudents() {
+      this.set('currentStep', this.get('steps')[5]);
     },
 
     toggleNewProblem: function() {

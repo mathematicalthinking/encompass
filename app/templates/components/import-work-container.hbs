@@ -62,25 +62,27 @@
         {{/if}}
 
         {{#if showMatchStudents}}
-          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+          {{import-work-step4 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          "setMatchedStudents")}}
+          {{!-- {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setMatchedStudents") onBack=(action "changeStep")}} --}}
         {{/if}}
 
         {{#if showReview}}
-          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}}
+          {{import-work-step5 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          "setUploadedFiles")}}
+          {{!-- {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}} --}}
         {{/if}}
       </div>
 
-
-      {{#if customConfigError}}
-        {{error-box error="Sorry, something went wrong processing your custom configuration." showDismiss=true resetError=(action (mut customConfigError) null)}}
-      {{/if}}
-      {{#if copyWorkspaceError}}
-        {{error-box error=copyWorkspaceError showDismiss=true resetError=(action (mut copyWorkspaceError) null)}}
-      {{/if}}
-
-      {{#each serverErrors as |error|}}
-        {{error-box error=error showDismiss=true}}
-      {{/each}}
+    {{#each findRecordErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each postErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each createAnswerErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
     </div>
   </div>
 </div>
@@ -91,87 +93,6 @@
 
 
 {{!--
-{{#if isSelectingImportDetails}}
-  <div>
-    <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and class that this set of student work belongs to. If you have not already created the problem or class on Encompass, you can create it here.</p>
-    <br>
-  </div>
-{{/if}}
-<nav class="import-nav">
-  {{#unless isSelectingImportDetails}}
-    {{#unless uploadedAnswers}}
-    <div class="import-nav-back">
-      <button class="import-nav-button" {{action "backToPrevStep" prevStep}}>
-        <i class="fas fa-arrow-left"></i>
-      </button>
-        <label for="back">Back to {{prevStep}}</label>
-    </div>
-    {{/unless}}
-  {{/unless}}
-</nav>
-
-<div class="import-page">
-  {{import-details class="import-details" selectedProblem=selectedProblem selectedSection=selectedSection uploadedFiles=uploadedFiles isSelectingImportDetails=isSelectingImportDetails editImportDetail=(action "editImportDetail")}}
-
-  {{#if isSelectingImportDetails}}
-    <div class="import-prep">
-      {{#unless selectedProblem}}
-        <div class="import-prep-problem">
-          <div class="import-select">
-           <p class="info">Start typing an existing problem's title and you will see possible problems to choose from. You must select one of the existing problems to move along in the import process. If your problem does not exist yet, please {{#link-to 'problems.new'}}create{{/link-to}} one first.</p>
-                {{twitter-typeahead limit=10 minLength=0 sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
-          </div>
-        </div>
-      {{/unless}}
-      <br>
-
-    {{#if selectedProblem}}
-      {{#unless selectedSection}}
-        <div class="import-prep-section">
-          <div class="import-select">
-            {{#if model.sections.length}}
-              <p class="info">Please select a class</p>
-              <br>
-              {{my-select selectedSection = selectedSection content=model.sections optionLabelPath="name" prompt="Please select a class" action=(action (mut selectedSection))}}
-            {{else}}
-              <p class="info">It looks like you do not have any classes. Create one {{#link-to 'sections.new'}}here.{{/link-to}}</p>
-
-            {{/if}}
-
-          </div>
-
-        </div>
-      {{/unless}}
-    {{/if}}
-
-    {{#if selectedSection}}
-      {{#if isAddingMoreFiles}}
-        <div class="import-prep-files">
-            <p>Please choose additional files to upload</p>
-            {{image-upload class="form-file" filesToBeUploaded = selectedFiles uploadResults = additionalFiles acceptMultiple = true}}
-            <br>
-            <button  {{action (mut isAddingMoreFiles) null}}>Cancel</button>
-          </div>
-      {{/if}}
-      {{#unless uploadedFiles}}
-        {{#unless readyToMatchStudents}}
-          <div class="import-prep-files">
-            <p>Please choose files to upload</p>
-            {{image-upload class="form-file" filesToBeUploaded = selectedFiles uploadResults = uploadedFiles acceptMultiple = true}}
-          </div>
-        {{/unless}}
-      {{/unless}}
-    {{/if}}
-    <br>
-
-      {{#if readyToMatchStudents}}
-        <div class="proceed">
-          <p>Please click continue to proceed to student matching.</p>
-          <button {{action "loadStudentMatching"}}>Continue</button>
-        </div>
-      {{/if}}
-    </div>
-  {{/if}}
 
   {{#if isMatchingStudents}}
     {{student-matching class="import-matching" selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
@@ -187,15 +108,5 @@
         <p class="success-message">uploaded {{uploadedAnswers.length}} submissions successfully</p>
       </div>
     {{/if}}
-
-    {{#each findRecordErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-    {{/each}}
-    {{#each postErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-    {{/each}}
-    {{#each createAnswerErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-    {{/each}}
   </div> --}}
 
