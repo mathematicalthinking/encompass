@@ -50,10 +50,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'A-Z', sortParam: { owner: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'owner' },
       { owner: 'Z-A', sortParam: { owner: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'owner' },
     ],
-    editors: [
+    collabs: [
       { sortParam: null, icon: ''},
-      { name: 'Most', sortParam: { editors: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'editors' },
-      { name: 'Fewest', sortParam: { editors: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'editors'}
+      { name: 'Most', sortParam: { permissions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'collabs' },
+      { name: 'Fewest', sortParam: { permissions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'collabs'}
     ]
   },
   modeOptions: [

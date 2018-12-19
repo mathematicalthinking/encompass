@@ -1148,7 +1148,7 @@ function filterRequestedWorkspaceData(user, results) {
       let results, itemCount;
 
       let sortField = Object.keys(sortParam)[0];
-      let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'editors'];
+      let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'permissions'];
 
       if (byRelevance) {
         [results, itemCount] = await Promise.all([
