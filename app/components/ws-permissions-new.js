@@ -317,9 +317,6 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         customSubmissionIds.addObject(id);
       }
     },
-    stopEditing() {
-      this.get('stopEditing')();
-    },
     selectAllSubmissions: function () {
       this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
     },
