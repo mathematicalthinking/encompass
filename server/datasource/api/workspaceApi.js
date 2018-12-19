@@ -280,9 +280,7 @@ async function putWorkspace(req, res, next) {
   }
   if(!access.get.workspace(user, popWs)) {
     logger.info("permission denied");
-    // res.status(403).send("You don't have permission to modify this workspace");
     return utils.sendError.NotAuthorizedError("You don't have permission to modify this workspace", res);
-    // res.send(403, "You don't have permission to modify this workspace"); deprecated
   }
 
   const ws = await models.Workspace.findById(req.params.id).exec();
@@ -1048,190 +1046,158 @@ function filterRequestedWorkspaceData(user, results) {
   * @throws {RestError} Something? went wrong
   */
  // eslint-disable-next-line complexity
- async function getWorkspaces(req, res, next) {
-  var user = userAuth.requireUser(req);
-  logger.info('in getWorkspaces');
-  logger.debug('looking for workspaces for user id' + user._id);
-  let doOrgSearch;
-
+async function getWorkspaces(req, res, next) {
+  let user = userAuth.requireUser(req);
 
   let { ids, filterBy, sortBy, searchBy, page, isTrashedOnly } = req.query;
   //if users hiddenWorksapces is not an empty array add $nin
 
-      if (filterBy) {
-        let { all, includeFromOrg } = filterBy;
-
-        if (includeFromOrg) {
-          doOrgSearch = true;
-          delete filterBy.includeFromOrg;
-        }
-
-        if (all) {
-          let { org } = all;
-          if (org) {
-            let crit = {};
-            let { organizations } = org;
-
-            if (apiUtils.isNonEmptyArray(organizations)) {
-            if (!crit.$or) {
-              crit.$or = [];
-            }
-              crit.$or.push({organization: {$in: organizations}});
-            }
-
-           if (!filterBy.$and) {
-             filterBy.$and = [];
-           }
-           filterBy.$and.push(crit);
-           delete filterBy.all;
-          }
-        }
-      }
-      let searchFilter = {};
-
-      if (searchBy) {
-        let { query, criterion } = searchBy;
-      if (criterion) {
-        if (criterion === 'all') {
-          let topLevelStringProps = ['name'];
-          query = query.replace(/\s+/g, "");
-          let regex = new RegExp(query.split('').join('\\s*'), 'i');
-          searchFilter.$or = [];
-          for (let prop of topLevelStringProps) {
-            searchFilter.$or.push({[prop]: regex});
-          }
-          let [ownerIds, editorIds] = await Promise.all([
-            apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
-            apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
-          ]);
-
-
-          let combined = _.flatten(ownerIds.concat(editorIds));
-          let uniqueIds = _.uniq(combined);
-
-          if (apiUtils.isNonEmptyArray(uniqueIds)) {
-            searchFilter.$or.push({ _id: {$in: uniqueIds} });
-          }
-
-
-        } else if (criterion === 'owner') {
-          let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
-
-          if (apiUtils.isNonEmptyArray(ids)) {
-            searchFilter = {_id: {$in: ids}};
-          }
-
-        } else if (criterion === 'editors') {
-          let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
-          if (apiUtils.isNonEmptyArray(ids)) {
-            searchFilter = {_id: {$in: ids}};
-          }
-
+  if (filterBy) {
+    let { all, includeFromOrg } = filterBy;
+    if (includeFromOrg && user.organization) {
+      let userIdsFromOrg = await accessUtils.getModelIds('User', { organization: user.organization });
+      if (apiUtils.isNonEmptyArray(userIdsFromOrg)) {
+        if (_.isArray(filterBy.$or)) {
+          filterBy.$or.push({ createdBy: { $in: userIdsFromOrg } });
+          filterBy.$or.push({ owner: { $in: userIdsFromOrg } });
         } else {
-          query = query.replace(/\s+/g, "");
-          let regex = new RegExp(query.split('').join('\\s*'), 'i');
-
-          searchFilter = {[criterion]: regex};
+          let crit = {
+            $or: [
+              { createdBy: { $in: userIdsFromOrg } },
+              { owner: { $in: userIdsFromOrg } }
+            ]
+          };
+          if (!filterBy.$and) {
+            filterBy.$and = [];
+          }
+          filterBy.$and.push(crit);
         }
       }
-      }
-      let sortParam = { lastModifiedDate: -1 };
-      let doCollate, byRelevance;
+      // want workspaces createdBy or Owned by someone from users org
+      delete filterBy.includeFromOrg;
+    } else if (all) {
+      let { org } = all;
+      if (org) {
+        let crit = {};
+        let { organizations } = org;
 
-      if (sortBy) {
-        sortParam = sortBy.sortParam;
-        doCollate = sortBy.doCollate;
-        byRelevance = sortBy.byRelevance;
-      }
-
-      const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter, isTrashedOnly);
-      let results, itemCount;
-
-      let sortField = Object.keys(sortParam)[0];
-      let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'permissions'];
-
-      if (byRelevance) {
-        [results, itemCount] = await Promise.all([
-          models.Workspace.find(criteria, { score: { $meta: "textScore" }}).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Workspace.count(criteria)
-        ]);
-      } else if (sortParam && sortableFields.includes(sortField)) {
-        [ results, itemCount ] = await Promise.all([
-          apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria),
-          models.Workspace.count(criteria)
-        ]);
-      } else if (doCollate) {
-        [results, itemCount] = await Promise.all([
-          models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Workspace.count(criteria)
-        ]);
-       } else {
-        [ results, itemCount ] = await Promise.all([
-          models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
-          models.Workspace.count(criteria)
-        ]);
-       }
-
-      const pageCount = Math.ceil(itemCount / req.query.limit);
-      let currentPage = page;
-      if (!currentPage) {
-        currentPage = 1;
-      }
-
-      // have to check to make sure we are only sending back the allowed data
-      const filteredResults = await filterRequestedWorkspaceData(user, results);
-      const data = {
-        'workspaces': filteredResults,
-        'meta': {
-          'total': itemCount,
-          pageCount,
-          currentPage
+        if (apiUtils.isNonEmptyArray(organizations)) {
+          if (!crit.$or) {
+            crit.$or = [];
+          }
+          crit.$or.push({ organization: { $in: organizations } });
         }
-      };
 
-      // models.Workspace.find(userAuth.accessibleWorkspacesQuery(user)).exec(function(err, workspaces) {
-      //   if (err) {
-      //     return utils.sendError.InternalError(err, res);
-      //   }
-      //   var response = {
-      //     workspaces: workspaces,
-      //     meta: { sinceToken: new Date() }
-      //   };
-      //   if(req.body) {
-      //     if(req.body.hasOwnProperty('importRequest')) {
-      //       response = {importRequest: req.body.importRequest};
-      //     }
-      //   }
+        if (!filterBy.$and) {
+          filterBy.$and = [];
+        }
+        filterBy.$and.push(crit);
+        delete filterBy.all;
+      }
+    }
+  }
+  let searchFilter = {};
 
-        return utils.sendResponse(res, data);
+  if (searchBy) {
+    let { query, criterion } = searchBy;
+    if (criterion) {
+      if (criterion === 'all') {
+        let topLevelStringProps = ['name'];
+        query = query.replace(/\s+/g, "");
+        let regex = new RegExp(query.split('').join('\\s*'), 'i');
+        searchFilter.$or = [];
+        for (let prop of topLevelStringProps) {
+          searchFilter.$or.push({ [prop]: regex });
+        }
+        let [ownerIds, editorIds] = await Promise.all([
+          apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username'),
+          apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username')
+        ]);
 
-  // let criteria = await access.get.workspaces(user);
-  //   models.Workspace.find(criteria).exec(function(err, workspaces) {
-  //     if (err) {
-  //       return utils.sendError.InternalError(err, res);
-  //     }
-  //     workspaces.forEach((workspace) => {
-  //       if (!workspace.lastViewed) {
-  //         workspace.lastViewed = workspace.lastModifiedDate;
-  //         if (!workspace.lastModifiedDate) {
-  //           workspace.lastViewed = workspace.createDate;
-  //         }
-  //          workspace.save();
-  //       }
-  //     });
-  //     var response = {
-  //       workspaces: workspaces,
-  //       meta: { sinceToken: new Date() }
-  //     };
-  //     if(req.body) {
-  //       if(req.body.hasOwnProperty('importRequest')) {
-  //         response = {importRequest: req.body.importRequest};
-  //       }
-  //     }
 
-  //     utils.sendResponse(res, response);
-  //   });
+        let combined = _.flatten(ownerIds.concat(editorIds));
+        let uniqueIds = _.uniq(combined);
 
+        if (apiUtils.isNonEmptyArray(uniqueIds)) {
+          searchFilter.$or.push({ _id: { $in: uniqueIds } });
+        }
+
+
+      } else if (criterion === 'owner') {
+        let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
+
+        if (apiUtils.isNonEmptyArray(ids)) {
+          searchFilter = { _id: { $in: ids } };
+        }
+
+      } else if (criterion === 'editors') {
+        let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
+        if (apiUtils.isNonEmptyArray(ids)) {
+          searchFilter = { _id: { $in: ids } };
+        }
+
+      } else {
+        query = query.replace(/\s+/g, "");
+        let regex = new RegExp(query.split('').join('\\s*'), 'i');
+
+        searchFilter = { [criterion]: regex };
+      }
+    }
+  }
+  let sortParam = { lastModifiedDate: -1 };
+  let doCollate, byRelevance;
+
+  if (sortBy) {
+    sortParam = sortBy.sortParam;
+    doCollate = sortBy.doCollate;
+    byRelevance = sortBy.byRelevance;
+  }
+
+  const criteria = await access.get.workspaces(user, ids, filterBy, searchFilter, isTrashedOnly);
+  let results, itemCount;
+
+  let sortField = Object.keys(sortParam)[0];
+  let sortableFields = ['submissions', 'selections', 'comments', 'responses', 'permissions'];
+
+  if (byRelevance) {
+    [results, itemCount] = await Promise.all([
+      models.Workspace.find(criteria, { score: { $meta: "textScore" } }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Workspace.count(criteria)
+    ]);
+  } else if (sortParam && sortableFields.includes(sortField)) {
+    [results, itemCount] = await Promise.all([
+      apiUtils.sortWorkspaces('Workspace', sortParam, req, criteria),
+      models.Workspace.count(criteria)
+    ]);
+  } else if (doCollate) {
+    [results, itemCount] = await Promise.all([
+      models.Workspace.find(criteria).collation({ locale: 'en', strength: 1 }).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Workspace.count(criteria)
+    ]);
+  } else {
+    [results, itemCount] = await Promise.all([
+      models.Workspace.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).lean().exec(),
+      models.Workspace.count(criteria)
+    ]);
+  }
+
+  const pageCount = Math.ceil(itemCount / req.query.limit);
+  let currentPage = page;
+  if (!currentPage) {
+    currentPage = 1;
+  }
+
+  // have to check to make sure we are only sending back the allowed data
+  const filteredResults = await filterRequestedWorkspaceData(user, results);
+  const data = {
+    'workspaces': filteredResults,
+    'meta': {
+      'total': itemCount,
+      pageCount,
+      currentPage
+    }
+  };
+  return utils.sendResponse(res, data);
 }
 
 function pruneObj(obj) {
@@ -1541,28 +1507,7 @@ function buildSubmissionsToClone(submissions, hash) {
   });
 }
 
-function buildAnswersToClone(answers, hash) {
-  // answers is array of populated answer docs
-  if (!answers || !_.isArray(answers)) {
-    return;
-  }
-  let { all, none, answerIds } = hash;
-
-  if (all) {
-    return [...answers];
-  }
-
-  if (none || !apiUtils.isNonEmptyArray(answerIds)) {
-    return [];
-  }
-
-  return _.filter(answers, (answer) => {
-    return _.contains(answerIds, answer._id.toString());
-  });
-}
-
 async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderSetOptions) {
-
   // check if user has proper permissions
   try {
     const results = {
@@ -1635,10 +1580,7 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
     results.folderSetObjects = folderObjects;
 
     const { doCreateFolderSet, name, privacySetting } = folderSetOptions;
-
-    if (doCreateFolderSet) {
-      // verify this is a valid enum value?
-
+    if (doCreateFolderSet === true) {
       const folderSet = new models.FolderSet({
         name,
         privacySetting,
@@ -2119,51 +2061,7 @@ function copyResponses(responsesKey, newSubmission, newWsId) {
   );
 }
 
-function buildAnswerSetAndSubmissionsMap(originalWs) {
-  const copiedAnswers = originalWs.answers;
-  // submissions map is used to keep track of the relationship between an answer and its submission
-  const submissionsMap = {};
-  let answerSet;
-  let error = null;
 
-  // let results = [error, answerSet, submissionsMap];
-
-  // currently workspaces do not have answers field but could in future?
-  if (apiUtils.isNonEmptyArray(copiedAnswers)) {
-    answerSet = copiedAnswers;
-    return [null, answerSet, null];
-  } else {
-    // use the original workspace's submissions array to get the answer pool
-    const submissions = originalWs.submissions;
-
-    // return error if there are no submissions (and thus answers) to copy from original workspace
-    if (!apiUtils.isNonEmptyArray(submissions)) {
-      error = 'Workspace does not have any submissions to copy.';
-      return [error, null, null];
-    }
-    // all submissions (except currently 15 extraneous KenKen submissions) should have an associated Encompass answer record
-    const subsWithAnswers = _.reject(submissions, (sub => apiUtils.isNullOrUndefined(sub.answer)));
-    // return error if there are no answers associated with submissions
-    if (!apiUtils.isNonEmptyArray(subsWithAnswers)) {
-      error = 'This workspace does not have any answers';
-      return [error, null, null];
-    }
-
-
-    answerSet = _.map(subsWithAnswers, ((sub) => {
-      let ansId = sub.answer._id;
-      if (submissionsMap[ansId]) {
-        submissionsMap[ansId].push(sub);
-      } else {
-        submissionsMap[sub.answer._id] = [sub];
-
-      }
-      return sub.answer;
-    }));
-    return [null, answerSet, submissionsMap];
-  }
-
-}
 
 function buildSubmissionSetAndSubmissionsMap(originalWs) {
   // submissions map is used to keep track of the relationship between an submission and its submission
@@ -2307,7 +2205,6 @@ async function cloneWorkspace(req, res, next) {
     }
 
     // submissionsToClone is filtered submission docs based on request params
-    // let answersToClone = buildAnswersToClone(answerSet, answerOptions);
     let submissionsToClone = buildSubmissionsToClone(submissionSet, submissionOptions);
 
     if (!apiUtils.isNonEmptyArray(submissionsToClone)) {
@@ -2358,7 +2255,6 @@ async function cloneWorkspace(req, res, next) {
         }
       }
       let sub = new models.Submission(oldSubCopy);
-      // let ans = obj.answer.toString();
       let newId = sub._id.toString();
 
       //eslint-disable-next-line prefer-object-spread
@@ -2379,7 +2275,6 @@ async function cloneWorkspace(req, res, next) {
       newWsId: newWs._id,
       newWsOwner: newWs.owner,
     };
-
 
     /*
       selectionsKey is used to determine which selections should be copied
@@ -2470,9 +2365,8 @@ async function cloneWorkspace(req, res, next) {
       .map(sub => sub.responses)
       .flatten()
       .value();
+
     const newSubmissionSet = await importApi.buildSubmissionSet(newSubsWithSelections, user);
-
-
     const submissionIds = _.map(newSubsWithResponses, sub => sub._id);
 
     // set submissions and submissionSet on ws
