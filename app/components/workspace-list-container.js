@@ -430,20 +430,23 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       if (includeFromOrg) {
         filter.all.org.organizations = selectedValues;
       }
+      return filter;
+    }
 
     if (currentVal === 'creator') {
       if (!isEmpty) {
         filter.createdBy = { $in: selectedValues };
       }
+      return filter;
     }
 
     if (currentVal === 'owner') {
       if (!isEmpty) {
         filter.owner = { $in: selectedValues};
       }
+      return filter;
     }
     return filter;
-  }
 },
 
 buildCollabFilter() {
