@@ -1,10 +1,116 @@
-<div class="import-work-page">
-  <header>
-    <h2>Import Work</h2>
-    <div class="clear"></div>
-  </header>
-<br>
-{{!-- Show help message only if on problem/ section selection phase --}}
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <div class="filter-items">
+      <h2>Summary</h2>
+      <ul class="primary-filter-list">
+        {{#each detailsItems as |item|}}
+          {{details-list-item
+          label = item.label
+          displayValue = item.displayValue
+          emptyValue = item.emptyValue
+          propName = item.propName
+          children = item.children
+          isArray = item.isArray
+          editValue = (action "goToStep")
+          associatedStep=item.associatedStep
+          currentStep=currentStep.value
+          }}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+  <div class="flex-item-full list-view">
+    <div class="results-list">
+      <div class="header">
+        <h1>Import Work</h1>
+      </div>
+
+      <div class="step-display">
+        <div class="container">
+          <ul class="progressbar">
+            <li class="step-1 active-step">
+              <span>Select Problem</span>
+            </li>
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+              <span>Select Class</span>
+            </li>
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+              <span>Upload Files</span>
+            </li>
+            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
+              <span>Match Students</span>
+            </li>
+            <li class="step-5 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+              <span>Review</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-content">
+        {{#if showSelectProblem}}
+          {{import-work-step1}}
+          {{!-- {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}} --}}
+        {{/if}}
+
+        {{#if showSelectClass}}
+          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+        {{/if}}
+
+        {{#if showUploadFiles}}
+          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") existingFolderSet=existingFolderSet
+          }}
+        {{/if}}
+
+        {{#if showMatchStudents}}
+          {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setPermissions") onBack=(action "changeStep")}}
+        {{/if}}
+
+        {{#if showReview}}
+          {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}}
+        {{/if}}
+      </div>
+
+
+      {{#if customConfigError}}
+        {{error-box error="Sorry, something went wrong processing your custom configuration." showDismiss=true resetError=(action (mut customConfigError) null)}}
+      {{/if}}
+      {{#if copyWorkspaceError}}
+        {{error-box error=copyWorkspaceError showDismiss=true resetError=(action (mut copyWorkspaceError) null)}}
+      {{/if}}
+
+      {{#each serverErrors as |error|}}
+        {{error-box error=error showDismiss=true}}
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<div class="toggle-filter-menu">
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+</div>
+
+<script>
+  $('.list-view').click(function (e) {
+    if (!($('#filter-list-side').hasClass('collapse'))) {
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+    }
+    $('#filter-list-side').addClass('collapse');
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+{{!--
 {{#if isSelectingImportDetails}}
   <div>
     <p class="help">This is the home for uploading student work that is in the form of images or pdfs. Before you upload your files, we need to know the problem and class that this set of student work belongs to. If you have not already created the problem or class on Encompass, you can create it here.</p>
@@ -111,6 +217,5 @@
     {{#each createAnswerErrors as |error|}}
       <p class="error-message">{{error}}</p>
     {{/each}}
-  </div>
-</div>
+  </div> --}}
 

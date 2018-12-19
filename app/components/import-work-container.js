@@ -1,4 +1,5 @@
-Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
+Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
+  elementId: 'import-work-container',
   selectedProblem: null,
   selectedSection: null,
   selectedFiles: null,
@@ -21,6 +22,12 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   findRecordErrors: [],
   createAnswerErrors: [],
   postErrors: [],
+  currentStep: { value: 1 },
+  showSelectProblem: Ember.computed.equal('currentStep.value', 1),
+  showSelectClass: Ember.computed.equal('currentStep.value', 2),
+  showUploadFiles: Ember.computed.equal('currentStep.value', 3),
+  showMatchStudents: Ember.computed.equal('currentStep.value', 4),
+  showReview: Ember.computed.equal('currentStep.value', 5),
 
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', 'isAddingMoreFiles', function() {
     const problem = this.get('selectedProblem');
@@ -31,6 +38,31 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     const isReady = !Ember.isEmpty(problem) && !Ember.isEmpty(section) && !Ember.isEmpty(files) && !isAdding;
     return isReady;
   }),
+
+  detailsItems: function() {
+    return [
+      {
+        label: 'Selected Problem',
+        displayValue: this.get('selectedProblem'),
+        emptyValue: 'No Problem',
+        propName: 'problemToCopy',
+        associatedStep: 1
+      },
+      {
+        label: 'Selected Class',
+        displayValue: this.get('selectedSections'),
+        emptyValue: 'No Class',
+        propName: 'selectedClass',
+        associatedStep: 2
+      },
+      {
+        label: 'Uploaded Files',
+        displayValue: this.get('uploadedFiles.length'),
+        propName: 'uploadedFileCount',
+        associatedStep: 3,
+      },
+    ];
+  }.property('selectedProblem', 'selectedSection', 'uploadedFiles', 'isUploadingAnswer'),
 
   setIsCompDirty: function() {
     const problem = this.get('selectedProblem');
@@ -48,6 +80,7 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     this.set('isCompDirty', false);
     this.sendAction('doConfirmLeaving', false);
   }.observes('selectedProblem', 'selectedSection', 'uploadedFiles', 'isUploadingAnswer'),
+
 
   onStepOne: Ember.computed('isMatchingStudents', 'isReviewingSubmissions', 'uploadedSubmissions', function() {
     const isMatchingStudents = this.get('isMatchingStudents');
@@ -117,6 +150,30 @@ Encompass.ImportWorkComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   }.observes('additionalFiles.[]'),
 
   actions: {
+    goToStep(stepValue) {
+      if (!stepValue) {
+        return;
+      }
+      this.set('currentStep', this.get('steps')[stepValue]);
+    },
+
+    changeStep(direction) {
+      let currentStep = this.get('currentStep.value');
+      let maxStep = this.get('maxSteps');
+      if (direction === 1) {
+        if (currentStep === maxStep) {
+          return;
+        }
+        return;
+      }
+      if (direction === -1) {
+        if (currentStep === 1) {
+          return;
+        }
+        this.set('currentStep', this.get('steps')[currentStep - 1]);
+      }
+    },
+
     toggleNewProblem: function() {
       if (this.get('isCreatingNewProblem') !== true) {
         this.set('isCreatingNewProblem', true);
