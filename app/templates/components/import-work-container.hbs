@@ -53,8 +53,7 @@
         {{/if}}
 
         {{#if showSelectClass}}
-          {{import-work-step2 store=store selectedClass=selectedClasse onBack=(action "changeStep") onProceed=(action "setSelectedProblem")}}
-          {{!-- {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}} --}}
+          {{import-work-step2 store=store selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setSelectedSection")}}
         {{/if}}
 
         {{#if showUploadFiles}}

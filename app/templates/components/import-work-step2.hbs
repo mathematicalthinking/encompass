@@ -1,1 +1,33 @@
-<div>STEP 2</div>
+<p class="input-label">
+  Select a Class
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the problem you would like to use">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
+{{selectize-input
+  store=store
+  inputId="select-class"
+  isAsync=true
+  maxItems=1
+  onItemAdd=(action "setSelectedSection")
+  onItemRemove=(action "setSelectedSection")
+  labelField="name"
+  searchField="name"
+  valueField="id"
+  model="section"
+  queryParamsKey="query"
+  searchCriterion="name"
+  topLevelQueryParams="searchBy"
+  placeholder="Search for classes by name..."
+  preload="focus"
+}}
+
+
+{{#if missingSection}}
+  {{error-box error="Please select a class" resetError=(action (mut missingSection) null) showDismiss=true}}
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Next</button>
+</div>

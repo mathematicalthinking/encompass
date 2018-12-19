@@ -52,14 +52,14 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         label: 'Selected Problem',
         displayValue: this.get('selectedProblem.title'),
         emptyValue: 'No Problem',
-        propName: 'problemToCopy',
+        propName: 'selectedProblem',
         associatedStep: 1
       },
       {
         label: 'Selected Class',
-        displayValue: this.get('selectedSections'),
+        displayValue: this.get('selectedSection.name'),
         emptyValue: 'No Class',
-        propName: 'selectedClass',
+        propName: 'selectedSection',
         associatedStep: 2
       },
       {
@@ -182,9 +182,11 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     },
 
     setSelectedProblem() {
-      console.log('setSelectedProblemRan');
       this.set('currentStep', this.get('steps')[2]);
-      console.log('setSelectedProblemRan');
+    },
+
+    setSelectedSection() {
+      this.set('currentStep', this.get('steps')[3]);
     },
 
     toggleNewProblem: function() {
