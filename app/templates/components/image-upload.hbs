@@ -1,8 +1,11 @@
 <form enctype="multipart/form-data">
    <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
-   {{#unless hideSubmit}}
-   <input type="submit" value="Upload Images" {{action "uploadImages"}}/>
-   {{/unless}}
+
+  {{#unless hideSubmit}}
+    {{#if filesToBeUploaded}}
+      <input type="submit" value="Upload Files" {{action "uploadImages"}}/>
+    {{/if}}
+  {{/unless}}
 </form>
 {{#if missingFilesError}}
   <p class="error-message">Please select files to upload.</p>
