@@ -22,7 +22,7 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   dateRange: '',
   doIncludeRevisions: Ember.computed.equal('selectedRevisionOption', 'All Revisions'),
   revisionsSelectOptions: ['All Revisions', 'Newest Only'],
-  selectedRevisionOption: 'All Revisions',
+  selectedRevisionOption: 'Newest Only',
   sortCriterion: { name: 'A-Z', sortParam: { student: 1 }, doCollate: true, type: 'student' },
   sortOptions: {
     student: [
