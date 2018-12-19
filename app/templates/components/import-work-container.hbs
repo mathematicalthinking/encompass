@@ -57,8 +57,8 @@
         {{/if}}
 
         {{#if showUploadFiles}}
-          {{ws-copy-owner-settings newWsOwner=newWsOwner newWsMode=newWsMode newWsName=newWsName newFolderSetOptions=newFolderSetOptions workspace=selectedWorkspace store=store modeInputs=modeInputs onProceed=(action "setOwnerSettings") folderSetInputs=folderSetInputs folderSets=model.folderSets isCopyingFolders=isCopyingFolders onBack=(action "changeStep") existingFolderSet=existingFolderSet
-          }}
+          {{import-work-step3 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          "setUploadedFiles")}}
         {{/if}}
 
         {{#if showMatchStudents}}

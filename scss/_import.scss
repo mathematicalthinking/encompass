@@ -184,7 +184,7 @@
     .step-content {
       margin-top: 40px;
       overflow-x: hidden;
-      min-height: 280px;
+      min-height: 380px;
       .input-label {
         font-size: 1.2em;
         color: black;
@@ -202,6 +202,7 @@
       }
       .selectize-comp {
         max-width: 600px;
+        margin-top: 20px;
         .selectize-input {
           input {
             font-size: 1.2em;

@@ -4,6 +4,7 @@
     <i class="fas fa-info-circle info-icon"></i>
   </span>
 </p>
+<p class="sub-input-label">If this work was completed by members of a class, select the existing class you would like to use or you can create one {{#link-to 'sections.new' classNames='new-link'}}here{{/link-to}}.</p>
 {{selectize-input
   store=store
   inputId="select-class"
@@ -22,9 +23,14 @@
   preload="focus"
 }}
 
+<label for="noClass">
+  {{input type="checkbox" name="noClass" checked=isChecked}}
+  <span>I don't want to use a class</span>
+</label>
+
 
 {{#if missingSection}}
-  {{error-box error="Please select a class" resetError=(action (mut missingSection) null) showDismiss=true}}
+  {{error-box error="Please select a class or no class" resetError=(action (mut missingSection) null) showDismiss=true}}
 {{/if}}
 
 <div class="nav-btn-container">
