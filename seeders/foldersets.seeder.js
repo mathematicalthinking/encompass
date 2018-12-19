@@ -6,6 +6,7 @@ var data = [
     "_id" : "5bec409176124a776f2ff00e",
     "name" : "Test Nested Folder Set",
     "privacySetting" : "E",
+    "organization": "5b4e4d5f808c7eebc9f9e82c",
     "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "folders" : [
