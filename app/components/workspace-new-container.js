@@ -10,7 +10,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   answerToDelete: null,
   alert: Ember.inject.service('sweet-alert'),
   selectedAnswers: [],
-  doIncludeRevisions: false,
   currentStep: 1,
   showSubmissionViewer: Ember.computed.equal('currentStep', 1),
   showWorkspaceSettingsMenu: Ember.computed.equal('currentStep', 2),
@@ -21,9 +20,9 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
   selectedTeacher: null,
   selectedStudents: [],
   dateRange: '',
-
-  searchOptions: ['all'],
-  searchCriterion: 'all',
+  doIncludeRevisions: Ember.computed.equal('selectedRevisionOption', 'All Revisions'),
+  revisionsSelectOptions: ['All Revisions', 'Newest Only'],
+  selectedRevisionOption: 'All Revisions',
   sortCriterion: { name: 'A-Z', sortParam: { student: 1 }, doCollate: true, type: 'student' },
   sortOptions: {
     student: [
