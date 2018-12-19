@@ -123,6 +123,21 @@ const admin = {
       _id: '5b4e2e6cbe1e18425515308d'
     }
 
+  },
+  folderSets: {
+    accessibleFolderSetCount: 1,
+    accessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    },
+    validFolderSet: {
+      name: 'test Folder Set',
+      privacySetting: 'M',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    },
+    modifiableFolderSet: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
   }
 };
 const pdAdminDrexel = {
@@ -278,6 +293,21 @@ const pdAdminDrexel = {
     modifiableProblem: {
       _id: ''
     }
+  },
+  folderSets: {
+    accessibleFolderSetCount: 1,
+    accessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    },
+    validFolderSet: {
+      name: 'test Folder Set',
+      privacySetting: 'M',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    },
+    modifiableFolderSet: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
   }
 };
 
@@ -387,6 +417,21 @@ const teacherMT = {
       workspace: '5bb814d19885323f6d894974'
     },
     modifiableFolder: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
+  },
+  folderSets: {
+    accessibleFolderSetCount: 1,
+    accessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    },
+    validFolderSet: {
+      name: 'test Folder Set',
+      privacySetting: 'M',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    },
+    modifiableFolderSet: {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
     },
@@ -544,6 +589,21 @@ const studentMT = {
       name: 'Correct'
     },
   },
+  folderSets: {
+    accessibleFolderSetCount: 1,
+    accessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    },
+    validFolderSet: {
+      name: 'test Folder Set',
+      privacySetting: 'M',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    },
+    modifiableFolderSet: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
+  },
   problems: {
     accessibleProblemCount: 19,
     accessibleProblem: {
@@ -653,6 +713,21 @@ const teacherActingStudent = {
     },
     // TODO: update this when seeder data is added for collabWorkspaces for students
     modifiableFolder: {
+      _id: '5bb814d19885323f6d894975',
+      name: 'Reasonable'
+    },
+  },
+  folderSets: {
+    accessibleFolderSetCount: 1,
+    accessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    },
+    validFolderSet: {
+      name: 'test Folder Set',
+      privacySetting: 'M',
+      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+    },
+    modifiableFolderSet: {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
     },
