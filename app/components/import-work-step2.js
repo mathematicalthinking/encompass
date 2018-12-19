@@ -2,6 +2,22 @@
 Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step2',
   utils: Ember.inject.service('utility-methods'),
+  selectedValue: false,
+  selectingClass: Ember.computed.equal('selectedValue', true),
+
+  useClass: {
+    groupName: 'useClass',
+    required: true,
+    inputs: [{
+        value: true,
+        label: 'Yes',
+      },
+      {
+        value: false,
+        label: 'No',
+      },
+    ]
+  },
 
   actions: {
     setSelectedSection(val, $item) {
@@ -26,9 +42,12 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
       }
     },
     next() {
+      const selectedValue = this.get('selectedValue');
+      if (!selectedValue) {
+        this.set('selectedSection', null);
+      }
       const section = this.get('selectedSection');
-      // workspace is required to go to next step
-      if (this.get('utils').isNonEmptyObject(section) || this.get('isChecked')) {
+      if (this.get('utils').isNonEmptyObject(section) || !selectedValue) {
         this.get('onProceed')();
         return;
       }
