@@ -61,9 +61,7 @@
             {{/if}}
           </div>
           <div class="side-icons">
-            <div class="select-bar">
-              {{my-select content=revisionsSelectOptions cannotBeNull=true selectedValue=selectedRevisionOption action=(action (mut selectedRevisionOption))}}
-            </div>
+            {{my-select content=revisionsSelectOptions cannotBeNull=true selectedValue=selectedRevisionOption action=(action (mut selectedRevisionOption))}}
             <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Submission list"></i>
           </div>
         </div>
