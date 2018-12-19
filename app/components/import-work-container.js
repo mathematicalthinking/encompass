@@ -365,8 +365,11 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       }).catch((err) => {
         this.handleErrors(err, 'createAnswerErrors');
       });
-    }
-
-
+    },
+    toggleMenu: function () {
+      $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+      $('#filter-list-side').addClass('animated slideInLeft');
+    },
   }
 });

@@ -89,25 +89,6 @@
   <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 </div>
 
-<script>
-  $('.list-view').click(function (e) {
-    if (!($('#filter-list-side').hasClass('collapse'))) {
-      $('#arrow-icon').toggleClass('fa-rotate-180');
-    }
-    $('#filter-list-side').addClass('collapse');
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-
 
 {{!--
 {{#if isSelectingImportDetails}}

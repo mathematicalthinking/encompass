@@ -27,7 +27,6 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
     },
     next() {
       const section = this.get('selectedSection');
-      console.log('section is', section.get('name'));
       // workspace is required to go to next step
       if (this.get('utils').isNonEmptyObject(section)) {
         this.get('onProceed')();
@@ -35,6 +34,9 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
       }
       this.set('missingSection', true);
 
+    },
+    back() {
+      this.get('onBack')(-1);
     }
   }
 });
