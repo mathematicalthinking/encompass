@@ -49,12 +49,12 @@
 
       <div class="step-content">
         {{#if showSelectProblem}}
-          {{import-work-step1}}
-          {{!-- {{ws-copy-workspace showLoadingSubmissions=showLoadingSubmissions loadSubmissionErrors=loadSubmissionErrors store=store workspaceToCopy=workspaceToCopy selectedWorkspace=selectedWorkspace fromWorkspaceList=fromWorkspaceList onProceed=(action "setOriginalWorkspace")}} --}}
+          {{import-work-step1 store=store selectedProblem=selectedProblem onProceed=(action "setSelectedProblem")}}
         {{/if}}
 
         {{#if showSelectClass}}
-          {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}}
+          {{import-work-step2 store=store selectedClass=selectedClasse onBack=(action "changeStep") onProceed=(action "setSelectedProblem")}}
+          {{!-- {{ws-copy-config workspace=workspaceToCopy submissionThreads=submissionThreads newWsConfig=newWsConfig copyConfig=copyConfig onProceed=(action "setConfig") onBack=(action "changeStep")}} --}}
         {{/if}}
 
         {{#if showUploadFiles}}

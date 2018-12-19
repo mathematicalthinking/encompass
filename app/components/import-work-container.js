@@ -28,7 +28,14 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
   showUploadFiles: Ember.computed.equal('currentStep.value', 3),
   showMatchStudents: Ember.computed.equal('currentStep.value', 4),
   showReview: Ember.computed.equal('currentStep.value', 5),
-
+  steps: [
+    { value: 0 },
+    { value: 1 },
+    { value: 2 },
+    { value: 3 },
+    { value: 4 },
+    { value: 5 },
+  ],
   readyToMatchStudents: Ember.computed('selectedProblem', 'selectedSection', 'uploadedFiles', 'isAddingMoreFiles', function() {
     const problem = this.get('selectedProblem');
     const section = this.get('selectedSection');
@@ -43,7 +50,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     return [
       {
         label: 'Selected Problem',
-        displayValue: this.get('selectedProblem'),
+        displayValue: this.get('selectedProblem.title'),
         emptyValue: 'No Problem',
         propName: 'problemToCopy',
         associatedStep: 1
@@ -172,6 +179,12 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         }
         this.set('currentStep', this.get('steps')[currentStep - 1]);
       }
+    },
+
+    setSelectedProblem() {
+      console.log('setSelectedProblemRan');
+      this.set('currentStep', this.get('steps')[2]);
+      console.log('setSelectedProblemRan');
     },
 
     toggleNewProblem: function() {
