@@ -9,6 +9,7 @@
         store=store
         threads=threads
         selectedMap=answersSelectedHash
+        moreMenuOptions=moreMenuOptions
       }}
       {{else}}
       <div class="no-results-container">
@@ -18,3 +19,22 @@
       </div>
     {{/each}}
   </div>
+
+  <div class="scroll-icon">
+    {{#if scrollBottom}}
+      <i class="fas fa-chevron-circle-down" {{action 'superScroll'}}></i>
+    {{else}}
+      <i class="fas fa-chevron-circle-up" {{action 'superScroll'}}></i>
+    {{/if}}
+  </div>
+
+<script>
+  $(document).scroll(function () {
+    var y = $(this).scrollTop();
+    if (y > 800) {
+      $('.scroll-icon').fadeIn();
+    } else {
+      $('.scroll-icon').fadeOut();
+    }
+  });
+</script>

@@ -1,3 +1,4 @@
+@import "variables";
 /**
  * selectize.css (v0.12.6)
  * Copyright (c) 2013–2015 Brian Reavis & contributors
@@ -16,7 +17,7 @@
 
 .selectize-control.plugin-drag_drop.multi > .selectize-input > div.ui-sortable-placeholder {
   visibility: visible !important;
-  background: #f2f2f2 !important;
+  background: $cancel-color !important;
   background: rgba(0, 0, 0, 0.06) !important;
   border: 0 none !important;
   -webkit-box-shadow: inset 0 0 12px 4px #fff;
@@ -53,7 +54,7 @@
   color: #000000;
 }
 .selectize-dropdown.plugin-optgroup_columns .optgroup {
-  border-right: 1px solid #f2f2f2;
+  border-right: 1px solid $cancel-color;
   border-top: 0 none;
   float: left;
   -webkit-box-sizing: border-box;
@@ -180,7 +181,7 @@
   cursor: pointer;
   margin: 0 3px 3px 0;
   padding: 2px 6px;
-  background: #f2f2f2;
+  background: $cancel-color;
   color: #303030;
   border: 0 solid #d0d0d0;
 }

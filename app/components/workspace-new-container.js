@@ -53,11 +53,8 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
     ],
 
   },
-
   moreMenuOptions: [
-    {label: 'Copy', value: 'copy', action: 'copyAnswer', icon: 'fas fa-copy'},
-    {label: 'Assign', value: 'assign', action: 'addAnswer', icon: 'fas fa-list-ul'},
-    {label: 'Hide', value: 'hide', action: 'hideAnswer', icon: 'fas fa-archive'},
+    {label: 'Public', value: 'assign', action: 'addAnswer', icon: 'fas fa-list-ul'},
     {label: 'Delete', value: 'delete', action: 'deleteAnswer', icon: 'fas fa-trash'},
   ],
 

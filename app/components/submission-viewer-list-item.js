@@ -1,6 +1,16 @@
 Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   elementId: ['submission-viewer-list-item'],
+  alert: Ember.inject.service('sweet-alert'),
   student: Ember.computed.alias('answer.student'),
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+  },
+
+  ellipsisMenuOptions: function() {
+    let moreMenuOptions = this.get('moreMenuOptions');
+    return moreMenuOptions;
+  }.property('answer.id', 'answer.isTrashed'),
 
   isChecked: function() {
    let id = this.get('answer.id');
@@ -11,12 +21,8 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   revisionCount: function() {
     let student = this.get('student');
     let threads = this.get('threads');
-    console.log('rc student', student);
-    console.log('rc', threads);
     if (threads) {
       let work = threads.get(student);
-      console.log('work', work);
-      console.log('wl', work.get('length'));
       if (work) {
         return work.length;
       }
@@ -27,7 +33,34 @@ Encompass.SubmissionViewerListItemComponent = Ember.Component.extend({
   actions: {
     onSelect: function() {
       this.get('onSelect')(this.get('answer'), this.get('isChecked'));
-    }
+    },
+    deleteAnswer: function () {
+      let answer = this.get('answer');
+      //need to check if the answer has a thread, if it does, ask if they want to delete all reivisions as well
+
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this submission', 'This submission will no longer be accesible to all users', 'Yes').then((result) => {
+        if (result.value) {
+          answer.set('isTrashed', true);
+          answer.save().then((answer) => {
+            this.get('alert').showToast('success', 'Submission Deleted', 'bottom-end', 4000, true, 'Undo')
+            .then((results) => {
+              if (results.value) {
+                answer.set('isTrashed', false);
+                answer.save().then(() => {
+                  this.get('alert').showToast('success', 'Submission Restored', 'bottom-end', 3000, false, null);
+                });
+              }
+            });
+          });
+        }
+      });
+    },
+
+    toggleShowMoreMenu() {
+      let isShowing = this.get('showMoreMenu');
+      this.set('showMoreMenu', !isShowing);
+    },
+
   }
 
 });
