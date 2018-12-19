@@ -26,7 +26,6 @@ Encompass.ImportWorkStep1Component = Ember.Component.extend(Encompass.CurrentUse
       }
     },
     next() {
-      console.log('next function importStep 1 called');
       const problem = this.get('selectedProblem');
 
       // workspace is required to go to next step
