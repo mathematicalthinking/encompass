@@ -50,10 +50,10 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       { name: 'A-Z', sortParam: { owner: 1 }, doCollate: true, icon:"fas fa-sort-alpha-down sort-icon", type: 'owner' },
       { owner: 'Z-A', sortParam: { owner: -1 }, doCollate: true, icon:"fas fa-sort-alpha-up sort-icon", type: 'owner' },
     ],
-    editors: [
+    collabs: [
       { sortParam: null, icon: ''},
-      { name: 'Most', sortParam: { editors: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'editors' },
-      { name: 'Fewest', sortParam: { editors: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'editors'}
+      { name: 'Most', sortParam: { permissions: -1}, doCollate: false, icon: "fas fa-arrow-down sort-icon", type: 'collabs' },
+      { name: 'Fewest', sortParam: { permissions: 1}, doCollate: false, icon:"fas fa-arrow-up sort-icon", type: 'collabs'}
     ]
   },
   modeOptions: [
@@ -271,6 +271,7 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
 
     if (isAdmin) {
       filter.primaryFilters.inputs.mine.isChecked = false;
+      delete filter.primaryFilters.inputs.myOrg;
       filter.primaryFilters.inputs.all = {
         label: 'All',
         value:'all',
@@ -286,15 +287,22 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
               value: "org",
               selectedValues: [],
               subFilters: {
-                selectedValues: ["fromOrg"],
+                selectedValues: ["fromOrg", "orgWorkspaces"],
                 inputs: {
                     fromOrg: {
-                      label: `Created by Members`,
+                      label: `Created or Owned by Members`,
                       value: "fromOrg",
                       isChecked: true,
                       isApplied: true,
                       icon: "fas fa-users"
-                    }
+                    },
+                    orgWorkspaces: {
+                      label: `Visibile to Members`,
+                      value: "orgWorkspaces",
+                      isChecked: true,
+                      isApplied: true,
+                      icon: "fas fa-dot-circle"
+                    },
                   }
                 }
             },
@@ -417,33 +425,44 @@ Encompass.WorkspaceListContainerComponent = Ember.Component.extend(Encompass.Cur
       let secondaryValues = this.get('adminFilter.secondaryFilters.inputs.org.subFilters.selectedValues');
 
       let includeFromOrg = _.indexOf(secondaryValues, 'fromOrg') !== -1;
+      let includeOrgWorkspaces = _.indexOf(secondaryValues, 'orgWorkspaces') !== -1;
 
       // immediately return 0 results
-      if (!includeFromOrg) {
+      if (!includeFromOrg && !includeOrgWorkspaces) {
         this.set('criteriaTooExclusive', true);
         return;
       }
       filter.all = {};
       filter.all.org = {};
 
-      //fromOrg only
-      if (includeFromOrg) {
-        filter.all.org.organizations = selectedValues;
+      filter.all.org.organizations = selectedValues;
+      // mode "org" and organization prop
+      if (includeOrgWorkspaces) {
+        this.set("selectedMode", ["org"]);
       }
+      //
+      if (includeFromOrg) {
+        this.set('selectedMode', ['org', 'private', 'public']);
+        filter.all.org.includeFromOrg = true;
+        //find all workspaces who's owner's org is same as yours
+      }
+      return filter;
+    }
 
     if (currentVal === 'creator') {
       if (!isEmpty) {
         filter.createdBy = { $in: selectedValues };
       }
+      return filter;
     }
 
     if (currentVal === 'owner') {
       if (!isEmpty) {
         filter.owner = { $in: selectedValues};
       }
+      return filter;
     }
     return filter;
-  }
 },
 
 buildCollabFilter() {
@@ -563,7 +582,6 @@ buildCollabFilter() {
       if (this.get("toggleTrashed")) {
         return visibileWorkspaces;
       } else if (this.get('toggleHidden')) {
-        console.log('toggleHidden in displayWorkspaces');
         // this.get('store').findRecord('workspace', hiddenWorkspaces[0]).then((workspaces) => {
         //   console.log(workspaces.id);
         // });

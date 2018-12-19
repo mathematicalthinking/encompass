@@ -303,8 +303,6 @@ function cache(options) {
     report.error = new Error('Required arguments not provided');
     report.error.name = 'Missing Arguments';
 
-    //console.log(hasRequiredUrlOptions, options);
-
     result.reject(report.error);
     return result.promise;
   }

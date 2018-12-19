@@ -291,7 +291,7 @@ const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
     }
     return children;
   } catch(err) {
-    console.log('err', err);
+    console.error('Error getAllChildCategories', err);
   }
 };
 
@@ -327,10 +327,10 @@ function getRestrictedWorkspaceData(user, requestedModel) {
       .populate('createdBy')
       .lean().exec()
       .then((populatedWs) => {
+        // eslint-disable-next-line no-unused-vars
         const [canLoad, specialPermissions] = wsAuth.get.workspace(user, populatedWs);
 
         const restrictedDataMap = wsApi.getRestrictedDataMap(user, specialPermissions, populatedWs);
-        console.log('RDM', restrictedDataMap);
 
         // no restrictions
         if (!apiUtils.isNonEmptyObject(restrictedDataMap)) {

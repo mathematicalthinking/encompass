@@ -124,7 +124,6 @@ CommentSchema.post('save', function (comment) {
   if( comment.isTrashed )
   {
     var commentIdObj = mongoose.Types.ObjectId( comment._id );
-    console.log('deleting comment: ' + comment.text);
     mongoose.models.Workspace.update({'_id': comment.workspace},
       {$pull: {'comments': commentIdObj}},
       function (err, affected, result) {

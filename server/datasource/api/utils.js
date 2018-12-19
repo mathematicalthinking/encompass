@@ -18,7 +18,6 @@ async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignFie
 
   let matches = _.filter(records, (record => {
     let val = record[pathToPopulate];
-    console.log('val', val);
     return val !== null;
   }));
   return _.map(matches, match => match._id.toString());
@@ -66,7 +65,7 @@ async function findAndReturnIds(model, criteria, asStrings=true) {
     }
     return _.map(records, record => record._id);
   }catch(err) {
-    console.log(`Error findAndReturnIds: ${err}`);
+    console.error(`Error findAndReturnIds: ${err}`);
   }
 }
 
@@ -396,7 +395,7 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
    let sortObj = { "$sort" : { "length": value } };
    let limitObj = { "$limit": limit };
    let skipObj = { "$skip": skip };
-  console.log('criteria', criteria);
+
    criteria.$and.forEach((criterion) => {
     if (criterion.hasOwnProperty('createdBy')) {
       let value = criterion.createdBy;
@@ -498,7 +497,6 @@ const sortAnswersByLength = function(model, sortParam, req, criteria) {
     }
   });
   let matchObj = { "$match" : criteria };
-  console.log('match', JSON.stringify(matchObj));
   let matchNest = matchObj.$match;
   matchNest[sortField] = { $exists: true, $ne: null };
 

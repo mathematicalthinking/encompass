@@ -24,7 +24,6 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     const currentOptions = this.get('options');
 
     if ((newOptions && currentOptions) && !_.isEqual(newOptions, currentOptions)) {
-      console.log('diff options!');
       selectizeControl.clearOptions();
       selectizeControl.addOption(newOptions);
       selectizeControl.refreshOptions(false);

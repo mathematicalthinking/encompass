@@ -148,11 +148,9 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   },
 
   putSelectionInFolder: function(id, folder) {
-    // console.log("Put selection (folder-elem) in folder");
   },
 
   putFolderInFolder: function(child, parent) {
-    // console.log("Put folder " + child.id + " into " + this.model.get('name') );
     let parentName = this.model.get('name');
     var droppedFolder = false;
     var parentOfDropped = false;
@@ -248,7 +246,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     },
 
     showFolder: function() {
-      // console.log("Show folder!");
     },
 
     updateTaggings: function() {

@@ -271,7 +271,8 @@ const resetPassword = async function(req, res, next) {
     });
 
   }catch(err) {
-    console.log(err);
+    console.error(`Error resetPassword: ${err}`);
+    console.trace();
     return utils.sendError.InternalError(err, res);
   }
 };

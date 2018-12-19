@@ -107,7 +107,6 @@ async function buildPowsFilterBy(pows) {
 
       filter._id = { $in: powIds };
     }
-    console.log('filter', filter);
     return filter;
 }
 

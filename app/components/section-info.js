@@ -25,7 +25,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   init: function () {
     this._super(...arguments);
     return this.setSectionAttributes().then(() => {
-      // console.log('section info set!');
     });
 
   },

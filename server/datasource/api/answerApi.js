@@ -98,7 +98,6 @@ async function getAnswers(req, res, next) {
   }
 
     const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
-    // console.log('crit', JSON.stringify(criteria));
     if (_.isNull(criteria)) {
       const data = {
         'answers': [],
