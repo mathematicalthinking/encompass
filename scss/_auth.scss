@@ -21,9 +21,7 @@
 
 // LOGIN PAGE SYLING
 .login-page {
-  // height: 84vh;
   margin-top: 3%;
-  // z-index: -1;
 }
 
 .login-box {
@@ -31,8 +29,6 @@
   max-width: 450px;
   padding: 10px 30px 0 30px;
   background-color: white;
-  // box-shadow: $box-shadow;
-  border-radius: 3px;
   @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
   .encompass-logo {
     @include flex-item(1, center, .1 0 auto);
@@ -99,30 +95,33 @@
 }
 
 // SIGNUP PAGE SYLING
-.signup-page {
-  height: 90vh;
-  padding-top: 2vh;
-}
+// .signup-page {
+//   height: 90vh;
+// }
 
 .signup-box {
   margin: 0 auto;
-  width: 500px;
-  padding-top: 20px;
-  border-radius: 3px;
+  max-width: 450px;
+  padding: 0 30px;
   background-color: white;
-  box-shadow: $box-shadow;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
   .encompass-logo {
-    display: block;
-    margin: 0 auto;
-    width: 200px;
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
     margin-bottom: 20px;
+  }
+  .form-signup {
+    @include flex-item(2, auto, .6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
     margin-bottom: 10px;
     padding: 0;
-    width: 350px;
+    max-width: 350px;
     font-size: .9em;
+  }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
   }
   // #org-select {
   .selectize-control {
@@ -135,23 +134,15 @@
   // }
   input {
     display: block;
-    width: 350px;
+    width: 100%;
     font-size: 1em;
     padding: 8px 0;
-    margin: 0 auto;
     margin: 0 auto;
     background-color: white;
     border: none;
     color: lighten($primary-font-color, 25);
     border-bottom: 1px solid $primary-font-color;
     margin-bottom: 15px;
-    &.typeahead.tt-input {
-      border-radius: 0;
-      border: none;
-      height: 17px;
-      border-bottom: 1px solid $primary-font-color;
-
-    }
   }
   #checkbox {
     margin: 0 auto;
@@ -185,7 +176,7 @@
     font-size: .9em;
   }
   .login-link {
-    margin-top: 40px;
+    margin-top: 20px;
     padding-bottom: 30px;
     font-weight: $light-font-weight;
     text-align: center;
