@@ -125,7 +125,7 @@ const admin = {
 
   },
   folderSets: {
-    accessibleFolderSetCount: 1,
+    accessibleFolderSetCount: 3,
     accessibleFolderSet: {
       _id: '5bec409176124a776f2ff00e'
     },
@@ -135,8 +135,8 @@ const admin = {
       createdBy: '5b1e7bf9a5d2157ef4c911a6',
     },
     modifiableFolderSet: {
-      _id: '5bb814d19885323f6d894975',
-      name: 'Reasonable'
+      _id: '5c1ba70fcdc05df4b5edc60c',
+      name: 'Rick Public Set'
     },
   }
 };
@@ -295,19 +295,22 @@ const pdAdminDrexel = {
     }
   },
   folderSets: {
-    accessibleFolderSetCount: 1,
+    accessibleFolderSetCount: 2,
     accessibleFolderSet: {
-      _id: '5bec409176124a776f2ff00e'
+      _id: '5be5c5b1528e311460c0dd9e'
     },
     validFolderSet: {
       name: 'test Folder Set',
       privacySetting: 'M',
-      createdBy: '5b1e7bf9a5d2157ef4c911a6',
+      createdBy: '5b7321ee59a672806ec903d5',
     },
     modifiableFolderSet: {
-      _id: '5bb814d19885323f6d894975',
-      name: 'Reasonable'
+      _id: '5be5c5b1528e311460c0dd9e',
+      name: 'Drexel Set Renamed'
     },
+    inaccessibleFolderSet: {
+      _id: '5bec409176124a776f2ff00e'
+    }
   }
 };
 
@@ -422,7 +425,7 @@ const teacherMT = {
     },
   },
   folderSets: {
-    accessibleFolderSetCount: 1,
+    accessibleFolderSetCount: 2,
     accessibleFolderSet: {
       _id: '5bec409176124a776f2ff00e'
     },
@@ -435,9 +438,12 @@ const teacherMT = {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
     },
+    inaccessibleFolderSet: {
+      _id: '5be5c5b1528e311460c0dd9e'
+    }
   },
   sections: {
-    accessibleSectionCount: 1,
+    accessibleSectionCount: 2,
     inaccessibleSection: {
       _id: '5b913e723add43b868ae9804'
     },
@@ -557,7 +563,7 @@ const studentMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 0,
+    accessibleFolderCount: 2,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -590,7 +596,7 @@ const studentMT = {
     },
   },
   folderSets: {
-    accessibleFolderSetCount: 1,
+    accessibleFolderSetCount: 2,
     accessibleFolderSet: {
       _id: '5bec409176124a776f2ff00e'
     },
@@ -603,6 +609,9 @@ const studentMT = {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
     },
+    inaccessibleFolderSet: {
+      _id: '5be5c5b1528e311460c0dd9e'
+    }
   },
   problems: {
     accessibleProblemCount: 19,
@@ -702,7 +711,7 @@ const teacherActingStudent = {
     },
   },
   folders: {
-    accessibleFolderCount: 0,
+    accessibleFolderCount: 2,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -718,7 +727,7 @@ const teacherActingStudent = {
     },
   },
   folderSets: {
-    accessibleFolderSetCount: 1,
+    accessibleFolderSetCount: 2,
     accessibleFolderSet: {
       _id: '5bec409176124a776f2ff00e'
     },
@@ -731,6 +740,9 @@ const teacherActingStudent = {
       _id: '5bb814d19885323f6d894975',
       name: 'Reasonable'
     },
+    inaccessibleFolderSet: {
+      _id: '5be5c5b1528e311460c0dd9e'
+    }
   },
   sections: {
     accessibleSectionCount: 1,

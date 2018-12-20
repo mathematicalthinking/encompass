@@ -93,9 +93,6 @@ describe('FolderSet CRUD operations by Account Type',
       /** POST **/
       describe('/POST folderSet', () => {
         let msg = 'should post a new folderSet';
-        if (isStudent) {
-          msg = 'should return 403 error';
-        }
         it(msg, done => {
           agent
           .post(baseUrl)
@@ -104,16 +101,11 @@ describe('FolderSet CRUD operations by Account Type',
             if (err) {
               console.error(err);
             }
-            if (isStudent) {
-              expect(res).to.have.status(403);
-              done();
-            } else {
               expect(res).to.have.status(200);
               expect(res.body.folderSet).to.have.any.keys('name', 'privacySetting');
               expect(res.body.folderSet.name).to.eql(validFolderSet.name);
               done();
-            }
-          });
+            });
         });
       });
 
