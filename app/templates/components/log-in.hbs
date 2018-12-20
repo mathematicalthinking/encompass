@@ -32,13 +32,13 @@
     {{/each}}
   </form>
 
-  <p class="or">Or</p>
+  <div class="bottom-info">
+    <p class="or">Or</p>
 
-  <div class="social-signin-div">
     {{social-signin}}
+
+    <p class="signup-link"> New to EnCoMPASS? {{#link-to 'auth.signup' classNames='signup-link'}}Sign up now{{/link-to}}</p>
+    <p class="forgot-link">Forgot Password? {{#link-to 'auth.forgot' classNames='forgot-link'}}Request password reset{{/link-to}}</p>
+
   </div>
-
-  <p class="signup-link"> New to EnCoMPASS? {{#link-to 'auth.signup' classNames='signup-link'}}Sign up now{{/link-to}}</p>
-  <p class="forgot-link">Forgot Password? {{#link-to 'auth.forgot' classNames='forgot-link'}}Request password reset{{/link-to}}</p>
-
 </div>

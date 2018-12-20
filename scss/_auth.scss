@@ -2,10 +2,14 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
+@media screen and (min-width: 0) and (max-width: 376px) {
+  .login-page {
+    margin-top: 0;
+  }
+}
 // GENERAL STYLING
 .auth-page, .login-page, .signup-page, .forgot-page, .reset-page {
-  background-color: $filter-list-background-color;
+  // background-color: $filter-list-background-color;
   width: 100%;
   font-family: $primary-font;
 }
@@ -17,33 +21,37 @@
 
 // LOGIN PAGE SYLING
 .login-page {
-  height: 84vh;
-  padding-top: 8vh;
-  z-index: -1;
+  // height: 84vh;
+  margin-top: 3%;
+  // z-index: -1;
 }
 
 .login-box {
   margin: 0 auto;
-  width: 500px;
-  padding-top: 40px;
+  max-width: 450px;
+  padding: 10px 30px 0 30px;
   background-color: white;
-  box-shadow: $box-shadow;
+  // box-shadow: $box-shadow;
   border-radius: 3px;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
   .encompass-logo {
-    display: block;
-    margin: 0 auto;
-    width: 200px;
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
     margin-bottom: 30px;
+  }
+  .form-signin {
+    @include flex-item(2, auto, .6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
     margin-bottom: 40px;
     padding: 0;
-    width: 350px;
+    max-width: 350px;
+    width: 100%;
   }
   input {
     display: block;
-    width: 350px;
+    width: 100%;
     font-size: 1em;
     padding: 10px 0;
     margin: 0 auto;
@@ -59,14 +67,17 @@
     @include auth-button;
     margin-top: 40px;
   }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
+  }
   .or {
     margin-top: 20px;
     font-weight: $light-font-weight;
     text-align: center;
   }
   .signup-link  {
-    margin-top: 40px;
-    padding-bottom: 40px;
+    margin-top: 30px;
+    padding-bottom: 20px;
     font-weight: $light-font-weight;
     text-align: center;
     a {
@@ -202,10 +213,11 @@
 .social-signin {
   margin: 0 auto;
   margin-top: 20px;
+  max-width: 350px;
   button {
     display: block;
     margin: 0 auto;
-    width: 350px;
+    width: 100%;
     color: $primary-font-color;
     font-size: 1em;
     font-weight: $bold-font-weight;

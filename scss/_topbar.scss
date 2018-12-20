@@ -30,6 +30,14 @@
       text-indent: -99999px;
       background: url(images/logo-encompass.gif) 0 0 no-repeat;
     }
+    #topbar-unauth {
+      font-size: .8em;
+      width: 220px;
+      li {
+        padding: 0;
+        margin: 0;
+      }
+    }
   }
 }
 
@@ -153,7 +161,7 @@
     line-height: 50px;
     height: 40px;
     display: inline-block;
-    padding: 0 20px;
+    padding: 0 10px;
     vertical-align: middle;
     a {
       color: white;
