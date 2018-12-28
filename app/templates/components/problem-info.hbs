@@ -368,16 +368,16 @@
   {{/if}}
 
   {{#each updateProblemErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action (mut updateProblemErrors) null)}}
   {{/each}}
   {{#each imageUploadErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action (mut imageUploadErrors) null)}}
   {{/each}}
   {{#each createRecordErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action (mut createRecordErrors) null)}}
   {{/each}}
   {{#each findRecordErrors as |error|}}
-    {{error-box error=error showDismiss=true}}
+    {{error-box error=error showDismiss=true resetError=(action (mut findRecordErrors) null)}}
   {{/each}}
 
   {{#if showAssignment}}
