@@ -320,13 +320,15 @@ nav.actions>ul {
 
 // LOGOUT BUTTON
 .logout {
-  font-weight: $bolder-font-weight;
+  font-weight: $main-font-weight;
   padding: 8px 15px;
   color: white;
   background: $primary-button;
   border-radius: 3px;
+  font-size: .9em;
   &:hover {
     background-color: darken($primary-button, 10);
+    box-shadow: $button-shadow;
   }
 }
 
@@ -336,6 +338,7 @@ nav.actions>ul {
     color: white;
     &:hover {
       color: white;
+      font-weight: $main-font-weight;
     }
   }
 }
