@@ -111,12 +111,42 @@ describe('Organization CRUD operations by account type', async function() {
               done();
             } else {
               expect(res).to.have.status(422);
-              // expect(res.body.organization).to.have.any.keys('name');
-              // expect(res.body.organization.name).to.eql(name);
               done();
             }
           });
         });
+      });
+      describe('Updating org with existing name', function() {
+        let description;
+        let { _id, createdBy } = fixtures.organization.existingOrg;
+        if (accountType !== 'A') {
+          description = 'should return 403 error';
+        } else {
+          description = 'should return 422 Validation error';
+        }
+        let name = fixtures.organization.duplicateName.name;
+
+      it(description, done => {
+        agent
+        .put(baseUrl + _id)
+        .send({organization: {
+          name,
+          createdBy,
+        }})
+        .end((err, res) => {
+          if (err) {
+            console.error(err);
+            done();
+          }
+          if (accountType !== 'A') {
+            expect(res).to.have.status(403);
+            done();
+          } else {
+            expect(res).to.have.status(422);
+            done();
+          }
+        });
+      });
       });
     });
   }

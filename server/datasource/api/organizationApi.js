@@ -90,6 +90,14 @@ function canPostOrg(user) {
   const accountType = user.accountType;
   return accountType === 'A';
 }
+
+function canModifyOrg(user) {
+  if (!user) {
+    return false;
+  }
+  const accountType = user.accountType;
+  return accountType === 'A';
+}
 /**
   * @public
   * @method postOrganization
@@ -153,28 +161,66 @@ const putOrganization = (req, res, next) => {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
 
-  // what check do we want to perform if the user can edit
-  // if they created the organization?
-  models.Organization.findById(req.params.id, (err, doc) => {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+  if (!canModifyOrg(user)) {
+    return utils.sendError.NotAuthorizedError('You are not authorized to modify this organization', res);
+  }
+
+  let name = req.body.organization.name;
+  name = name.replace(/\s+/g, "");
+  let split = name.split('').join('\\s*');
+  let full = `^${split}\\Z`;
+  let regex = new RegExp(full, 'i');
+
+  return models.Organization.findOne({ name: {$regex: regex }, isTrashed: false }).lean().exec()
+  .then((org) => {
+    if (org) {
+      throw new Error('duplicateName');
     }
-    // make the updates
+    return models.Organization.findById(req.params.id).exec();
+
+  })
+  .then((doc) => {
+    //org to update
     for(let field in req.body.organization) {
       if((field !== '_id') && (field !== undefined)) {
         doc[field] = req.body.organization[field];
       }
     }
-    doc.save((err, organization) => {
-      if (err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'organization': organization};
-      utils.sendResponse(res, data);
-    });
+    return doc.save();
+  })
+  .then((updatedOrg) => {
+    return utils.sendResponse(res, {organization: updatedOrg});
+  })
+  .catch((err) => {
+    if (err.message === 'duplicateName') {
+      return utils.sendError.ValidationError('There is already an existing organization with that name.', 'name', res);
+    }
+    console.error(`Error putOrg: ${err}`);
+    return utils.sendError.InternalError(null, res);
   });
+
+  // what check do we want to perform if the user can edit
+  // if they created the organization?
+  // models.Organization.findById(req.params.id, (err, doc) => {
+  //   if(err) {
+  //     logger.error(err);
+  //     return utils.sendError.InternalError(err, res);
+  //   }
+  //   // make the updates
+  //   for(let field in req.body.organization) {
+  //     if((field !== '_id') && (field !== undefined)) {
+  //       doc[field] = req.body.organization[field];
+  //     }
+  //   }
+  //   doc.save((err, organization) => {
+  //     if (err) {
+  //       logger.error(err);
+  //       return utils.sendError.InternalError(err, res);
+  //     }
+  //     const data = {'organization': organization};
+  //     utils.sendResponse(res, data);
+  //   });
+  // });
 };
 
 module.exports.get.organizations = getOrganizations;

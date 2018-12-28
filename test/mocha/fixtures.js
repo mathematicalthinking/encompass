@@ -148,6 +148,10 @@ module.exports = {
     },
     duplicateName: {
       name: 'drexel university'
+    },
+    existingOrg: {
+      _id: '5b4e4d5f808c7eebc9f9e82c',
+      createdBy: '5b245760ac75842be3189525'
     }
   }
 };
