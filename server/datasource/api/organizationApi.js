@@ -106,18 +106,35 @@ const postOrganization = (req, res, next) => {
   if (!canPost) {
     return utils.sendError.NotAuthorizedError('You are not authorizd to create a new organization.', res);
   }
-  // do we want to check if the user is allowed to create organizations?
-  const organization = new models.Organization(req.body.organization);
-  //organization.createdBy = user;
-  organization.createDate = Date.now();
-  organization.save((err, doc) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    const data = {'organization': doc};
-    utils.sendResponse(res, data);
-  });
+
+  let name = req.body.organization.name;
+  name = name.replace(/\s+/g, "");
+  let split = name.split('').join('\\s*');
+  let full = `^${split}\\Z`;
+  let regex = new RegExp(full, 'i');
+
+  return models.Organization.find({ name: {$regex: regex }, isTrashed: false }).lean().exec()
+    .then((orgs) => {
+      if (orgs.length >= 1) {
+        throw(new Error('duplicateName'));
+      }
+      const organization = new models.Organization(req.body.organization);
+      if (!organization.createdBy) {
+        organization.createdBy = user;
+      }
+      organization.createDate = Date.now();
+      return organization.save();
+    })
+    .then((org) => {
+      return utils.sendResponse(res, {organization: org });
+    })
+    .catch((err) => {
+      if (err.message === 'duplicateName') {
+        return utils.sendError.ValidationError('There is already an existing organization with that name.', 'name', res);
+      }
+      console.error(`Error postOrg: ${err}`);
+      return utils.sendError.InternalError(null, res);
+    });
 };
 
 /**

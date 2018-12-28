@@ -145,6 +145,9 @@ module.exports = {
   organization: {
     validOrg: {
       name: 'Valid Test Organization'
+    },
+    duplicateName: {
+      name: 'drexel university'
     }
   }
 };

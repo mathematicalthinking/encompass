@@ -70,7 +70,8 @@ describe('Organization CRUD operations by account type', async function() {
           }})
           .end((err, res) => {
             if (err) {
-              console.error(err);
+              console.error('ERR', err);
+              done();
             }
             if (accountType !== 'A') {
               expect(res).to.have.status(403);
@@ -79,6 +80,39 @@ describe('Organization CRUD operations by account type', async function() {
               expect(res).to.have.status(200);
               expect(res.body.organization).to.have.any.keys('name');
               expect(res.body.organization.name).to.eql(name);
+              done();
+            }
+          });
+        });
+      });
+      describe('/POST organization with duplicate name', () => {
+        let description;
+          if (accountType !== 'A') {
+            description = 'should return 403 error';
+          } else {
+            description = 'should return 422 Validation error';
+          }
+          let name = fixtures.organization.duplicateName.name;
+
+        it(description, done => {
+          agent
+          .post(baseUrl)
+          .send({organization: {
+            name: name,
+            createdBy: user.details._id
+          }})
+          .end((err, res) => {
+            if (err) {
+              console.error(err);
+              done();
+            }
+            if (accountType !== 'A') {
+              expect(res).to.have.status(403);
+              done();
+            } else {
+              expect(res).to.have.status(422);
+              // expect(res.body.organization).to.have.any.keys('name');
+              // expect(res.body.organization.name).to.eql(name);
               done();
             }
           });
