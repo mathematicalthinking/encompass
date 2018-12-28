@@ -8,7 +8,8 @@
   display: inline-block;
   zoom: 1;
   border: 0;
-  border-radius: 3px
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .primary-button {
@@ -21,19 +22,23 @@
   font-size: .8em;
   border-radius: 3px;
   font-weight: $bold-font-weight;
+  cursor: pointer;
 }
 
 .delete-button {
   background: $error-color;
   color: white;
+  cursor: pointer;
 }
 
 .cancel-button {
   background: $cancel-color;
   color: $primary-font-color;
+  cursor: pointer;
 }
 
 .restore-button {
   background: $success-color;
   color: white;
+  cursor: pointer;
 }
