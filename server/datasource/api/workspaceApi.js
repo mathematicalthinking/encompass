@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth */
 /**
   * # Workspaces API
@@ -2214,6 +2215,7 @@ async function cloneWorkspace(req, res, next) {
       return utils.sendResponse(res, data);
      }
     }
+
     // if mode is public or internet, make sure name is unique;
     const ownerOrg = await userAuth.getUserOrg(owner);
     // use original name, mode if not provided
@@ -2233,6 +2235,22 @@ async function cloneWorkspace(req, res, next) {
     // will be used to determine which records to copy
     const { submissionOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
 
+    let folderSetOptions = _.propertyOf(folderOptions)('folderSetOptions');
+    if (folderSetOptions) {
+      if (folderSetOptions.doCreateFolderSet && folderSetOptions.privacySetting === 'E') {
+        // ensure name is unique
+        let isNameUnique = await apiUtils.isRecordUniqueByStringProp('FolderSet', folderSetOptions.name, 'name', {privacySetting: 'E'});
+
+        if (!isNameUnique) {
+          requestDoc.copyWorkspaceError = `There already exists a public Folder Set named "${folderSetOptions.name}."`;
+          let saved = await requestDoc.save();
+          const data = { copyWorkspaceRequest: saved };
+
+          return utils.sendResponse(res, data);
+
+        }
+      }
+    }
     /*
       submissionSet is array of populated submission docs
       submissionsMap is mapping between submissionId and populated submission doc
