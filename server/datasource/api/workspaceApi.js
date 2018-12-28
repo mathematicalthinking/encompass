@@ -1398,6 +1398,21 @@ async function postWorkspaceEnc(req, res, next) {
     let accessibleCriteria;
     let answersToConvert;
 
+    if (mode === 'public' || mode === 'internet') {
+      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', requestedName, 'name', {mode: {$in: ['public', 'internet']}});
+
+      if (!isNameUnique) {
+        let rec = pruned;
+        rec.createWorkspaceError = 'There already exists a public workspace with that name';
+
+        let enc = new models.EncWorkspaceRequest(rec);
+        let saved = await enc.save();
+
+        const data = { encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+      }
+    }
+
     if (apiUtils.isNonEmptyArray(answers)) {
       let records = await models.Answer.find({_id: {$in: answers}});
       if (apiUtils.isNonEmptyArray(records)) {
@@ -2181,7 +2196,7 @@ async function cloneWorkspace(req, res, next) {
     // process basic settings
     const { name, owner, mode, createdBy } = copyWorkspaceRequest;
 
-    if (mode === 'public' || mode === 'private') {
+    if (mode === 'public' || mode === 'internet') {
      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
 
      if (!isNameUnique) {
