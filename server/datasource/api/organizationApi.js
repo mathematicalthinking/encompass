@@ -133,7 +133,7 @@ const postOrganization = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'duplicateName') {
-        return utils.sendError.ValidationError('There is already an existing organization with that name.', 'name', res);
+        return utils.sendError.ValidationError(`There is already an existing organization named "${req.body.organization.name}."`, 'name', res);
       }
       console.error(`Error postOrg: ${err}`);
       return utils.sendError.InternalError(null, res);
@@ -182,7 +182,7 @@ const putOrganization = (req, res, next) => {
   })
   .catch((err) => {
     if (err.message === 'duplicateName') {
-      return utils.sendError.ValidationError('There is already an existing organization with that name.', 'name', res);
+      return utils.sendError.ValidationError(`There is already an existing organization named "${req.body.organization.name}."`, 'name', res);
     }
     console.error(`Error putOrg: ${err}`);
     return utils.sendError.InternalError(null, res);

@@ -440,7 +440,7 @@ const postProblem = async function(req, res, next) {
     let isTitleUnique = await apiUtils.isRecordUniqueByStringProp('Problem', req.body.problem.title, 'title', {privacySetting: 'E'});
 
     if (!isTitleUnique) {
-      return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
+      return utils.sendError.ValidationError(`There is already an existing public problem titled "${req.body.problem.title}."`, 'title', res);
     }
   }
   problem.createdBy = user;
@@ -481,7 +481,7 @@ const putProblem = async function(req, res, next){
       let isTitleUnique = await apiUtils.isRecordUniqueByStringProp('Problem', req.body.problem.title, 'title', {privacySetting: 'E', _id: {$ne: req.params.id} });
 
       if (!isTitleUnique) {
-        return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
+        return utils.sendError.ValidationError(`There is already an existing public problem titled "${req.body.problem.title}."`, 'title', res);
       }
     }
 
