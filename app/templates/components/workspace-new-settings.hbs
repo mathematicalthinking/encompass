@@ -91,7 +91,12 @@
   </div>
   {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator}}
 
-  <button class="primary-button" {{action "handleSettings"}}>Create Workspace</button>
+  <div class="create-ws-error">
+    {{#if createWorkspaceError}}
+      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
+    {{/if}}
+  </div>
 
+  <button class="primary-button" {{action "handleSettings"}}>Create Workspace</button>
 </div>
 

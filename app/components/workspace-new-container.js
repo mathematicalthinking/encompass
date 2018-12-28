@@ -589,14 +589,18 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       this.set('currentStep', 2);
     },
     toSearchFilter() {
+      if (this.get('createWorkspaceError')) {
+        this.set('createWorkspaceError', null);
+      }
       this.set('currentStep', 1);
     },
 
     createWorkspace(settings) {
+      if (this.get('createWorkspaceError')) {
+        this.set('createWorkspaceError', null);
+      }
       const utils = this.get('utils');
-      console.log('settings in create ws', settings);
       let answers = this.get('selectedAnswers');
-
 
       if (!utils.isNonEmptyObject(settings)) {
         return;
