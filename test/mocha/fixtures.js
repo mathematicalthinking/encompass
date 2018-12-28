@@ -61,7 +61,11 @@ module.exports = {
       puzzleId: '',
       text: '',
       categories: []
-    }
+    },
+    duplicateTitle: {
+      title: 'alphaBetical  Problem ',
+      nonPublic: `Summer's Private Problem`
+    },
   },
   assignment: {
     problemId: '5b1e7a0ba5d2157ef4c91028',
