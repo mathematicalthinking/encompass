@@ -2180,6 +2180,19 @@ async function cloneWorkspace(req, res, next) {
 
     // process basic settings
     const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+
+    if (mode === 'public' || mode === 'private') {
+     let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
+
+     if (!isNameUnique) {
+      requestDoc.copyWorkspaceError = 'There already exists a public workspace with that name';
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
+     }
+    }
+    // if mode is public or internet, make sure name is unique;
     const ownerOrg = await userAuth.getUserOrg(owner);
     // use original name, mode if not provided
     // set owner as current user if owner not provided
