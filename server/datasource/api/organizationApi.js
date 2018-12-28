@@ -10,6 +10,7 @@ const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
+const apiUtils = require('./utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -115,15 +116,9 @@ const postOrganization = (req, res, next) => {
     return utils.sendError.NotAuthorizedError('You are not authorizd to create a new organization.', res);
   }
 
-  let name = req.body.organization.name;
-  name = name.replace(/\s+/g, "");
-  let split = name.split('').join('\\s*');
-  let full = `^${split}\\Z`;
-  let regex = new RegExp(full, 'i');
-
-  return models.Organization.find({ name: {$regex: regex }, isTrashed: false }).lean().exec()
-    .then((orgs) => {
-      if (orgs.length >= 1) {
+  return apiUtils.isRecordUniqueByStringProp('Organization', req.body.organization.name, 'name', null)
+    .then((isUnique) => {
+      if (!isUnique) {
         throw(new Error('duplicateName'));
       }
       const organization = new models.Organization(req.body.organization);
@@ -165,15 +160,9 @@ const putOrganization = (req, res, next) => {
     return utils.sendError.NotAuthorizedError('You are not authorized to modify this organization', res);
   }
 
-  let name = req.body.organization.name;
-  name = name.replace(/\s+/g, "");
-  let split = name.split('').join('\\s*');
-  let full = `^${split}\\Z`;
-  let regex = new RegExp(full, 'i');
-
-  return models.Organization.findOne({ name: {$regex: regex }, isTrashed: false }).lean().exec()
-  .then((org) => {
-    if (org) {
+  return apiUtils.isRecordUniqueByStringProp('Organization', req.body.organization.name, 'name', {_id: {$ne: req.params.id}})
+  .then((isUnique) => {
+    if (!isUnique) {
       throw new Error('duplicateName');
     }
     return models.Organization.findById(req.params.id).exec();
