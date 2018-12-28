@@ -283,6 +283,13 @@ async function putWorkspace(req, res, next) {
     logger.info("permission denied");
     return utils.sendError.NotAuthorizedError("You don't have permission to modify this workspace", res);
   }
+  if (req.body.workspace.mode === 'public' || req.body.workspace.mode === 'internet') {
+    let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', req.body.workspace.name, 'name', {_id: {$ne: req.params.id}, mode: {$in: ['public', 'internet']}});
+
+    if (!isNameUnique) {
+      return utils.sendError.ValidationError(`There is already an existing public workspace named "${req.body.workspace.name}."`, 'name', res);
+    }
+  }
 
   const ws = await models.Workspace.findById(req.params.id).exec();
 
