@@ -129,6 +129,7 @@
         font-weight: $bold-font-weight;
         cursor: pointer;
         background: darken($accent-color, 10%);
+        box-shadow: $button-shadow;
       }
     }
     .search-bar {
