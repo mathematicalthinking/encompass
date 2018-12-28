@@ -138,9 +138,11 @@
       </p>
       {{/if}}
     </div>
-    {{#each updateRecordErrors as |error|}}
-      <p class="error-message">{{error}}</p>
-    {{/each}}
+    <div class="errors">
+      {{#each updateRecordErrors as |error|}}
+        {{error-box error=error showDismiss=true resetError=(action "removeErrorString" 'updateRecordErrors' error)}}
+      {{/each}}
+    </div>
   </section>
 
 </div>
