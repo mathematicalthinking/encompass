@@ -336,6 +336,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
 
     showCats: function () {
+      // clear existing errors before validating
+      if (this.get('createProblemErrors')) {
+        this.set('createProblemErrors', []);
+      }
+
       if (this.get('showAdditional')) {
         this.set('showCats', true);
         this.set('showGeneral', false);
