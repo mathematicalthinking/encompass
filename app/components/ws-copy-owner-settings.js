@@ -2,6 +2,7 @@
 Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'ws-copy-owner-settings',
   utils: Ember.inject.service('utility-methods'),
+  strSimilarity: Ember.inject.service('string-similarity'),
 
   constraints: function() {
     let res = {
@@ -136,6 +137,20 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
     return [];
   }.property('folderSets.[]'),
 
+  isPublicFolderSetNameTaken: function(name) {
+    let folderSets = this.get('folderSets');
+    if (!folderSets || typeof name !== 'string') {
+      return false;
+    }
+    if (folderSets) {
+      let existingFs = folderSets.find((fs) => {
+        return !fs.get('isTrashed') && fs.get('privacySetting') === 'E' && this.get('strSimilarity').compareTwoStrings(name, fs.get('name')) === 1;
+      });
+      return existingFs !== undefined;
+    }
+    return false;
+  },
+
   actions: {
     next() {
       const name = this.get('selectedName');
@@ -144,6 +159,10 @@ Encompass.WsCopyOwnerSettingsComponent = Ember.Component.extend(Encompass.Curren
       const folderSetName = this.get('folderSetName');
       const folderSetPrivacySetting = this.get('folderSetPrivacy');
 
+      if (folderSetPrivacySetting === 'E' && this.isPublicFolderSetNameTaken(folderSetName)) {
+        this.set('duplicateFolderSetName', true);
+        return;
+      }
       const doCreateFolderSet = this.get('doCreateFolderSet');
 
       // clear old values if the 'No' radio button is selected and next is hit
