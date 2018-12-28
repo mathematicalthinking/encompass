@@ -163,24 +163,30 @@
     }
   }
   .primary-button {
-    font-weight: $main-font-weight;
     text-align: center;
     width: 160px;
     display: block;
     margin: 0 auto;
     margin-top: 30px;
-    &.create-ws {
-      margin-top: 20%;
-      margin-bottom: 80px;
-    }
   }
   .list-container {
-    .searchbar {
-      .search-bar-comp {
-        margin-right: 0px;
-        .submit {
-          @include flex-item(3, center, .02 0 auto);
-          text-align: right;
+    .top-row {
+      width: 100%;
+      height: 42px;
+      @include flex-container(null, null, row, row, center, center, center);
+    }
+    .heading {
+      @include flex-item(1, center, 1 0 auto);
+      margin-top: 0;
+    }
+    .action {
+      @include flex-item(2, stretch, 1 0 auto);
+      max-width: 180px;
+      button {
+        width: 100%;
+        margin: 0;
+        &:focus {
+          outline: none;
         }
       }
     }
