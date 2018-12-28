@@ -21,8 +21,13 @@
   border: 0;
   font-size: .8em;
   border-radius: 3px;
-  font-weight: $bold-font-weight;
+  font-weight: $main-font-weight;
   cursor: pointer;
+  letter-spacing: .05em;
+  &:hover {
+    background: darken($accent-color, 10);
+    box-shadow: $button-shadow;
+  }
 }
 
 .delete-button {
@@ -35,6 +40,10 @@
   background: $cancel-color;
   color: $primary-font-color;
   cursor: pointer;
+  &:hover {
+    background: darken($cancel-color, 5);
+    box-shadow: $button-shadow;
+  }
 }
 
 .restore-button {
