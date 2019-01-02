@@ -1,5 +1,5 @@
 <form enctype="multipart/form-data">
-   <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
+  <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
 
   {{#unless hideSubmit}}
     {{#if filesToBeUploaded}}
@@ -7,6 +7,8 @@
     {{/if}}
   {{/unless}}
 </form>
+
+
 {{#if missingFilesError}}
   <p class="error-message">Please select files to upload.</p>
 {{/if}}
@@ -22,9 +24,13 @@
 {{/each}}
 
 {{#if uploadResults}}
-<ul class="upload-results">
-  {{#each uploadResults as |file|}}
-    <li>Uploaded <a href={{file.relativePath}} target="_blank">{{file.filename}}</a> successfully!</li>
-  {{/each}}
-</ul>
+<p class="upload-results">
+  {{uploadResults.length}}
+  {{#if (greater-equal uploadResults.length 2)}}
+    files
+  {{else}}
+    file
+  {{/if}}
+    uploaded successfully!
+</p>
 {{/if}}
