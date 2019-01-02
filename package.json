@@ -55,6 +55,7 @@
     "pdf-poppler": "^0.2.1",
     "pdf2pic": "^1.2.6",
     "q": "^1.5.1",
+    "randomcolor": "^0.5.3",
     "request": "^2.85.0",
     "underscore": "^1.9.0",
     "uuid": "^3.2.1"
