@@ -83,18 +83,12 @@
             </span>
           </li>
           {{/unless}}
-          {{#if currentUser.isStudent}}
-            <li id="current-username">
-              <span class="underline">{{user.displayName}}</span>
-            </li>
-          {{else}}
-            <li id="current-username">
-              {{#link-to 'user' currentUser.username}}<span class="underline">{{user.displayName}}</span>{{/link-to}}
-            </li>
-          {{/if}}
+          <li id="current-username">
+            {{#link-to 'user' currentUser.username}}<img src={{currentUser.avatar}} alt={{currentUser.username}}>{{/link-to}}
+          </li>
           <li id="user-image">
             {{input type="checkbox" id="menu-button" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
-            <img src="./images/profile.png" alt="profile">
+            <img src={{user.avatar}} alt="">
           </li>
         </ul>
       </div>
