@@ -5,13 +5,14 @@
 @media screen and (min-width: 0) and (max-width: 349px) {
   #al_header {
     #al_nav {
-      font-size: .8em;
+      font-size: 1em;
       overflow: auto;
       #menu-items {
         display: none;
       }
       #current-username {
-        margin: 0 5px;
+        // margin: 0 5px;
+        display: none;
       }
       #user-image {
         margin: 0 10px 0 0;
@@ -41,15 +42,15 @@
   }
 }
 
-@media screen and (min-width: 350px) and (max-width: 955px) {
+@media screen and (min-width: 350px) and (max-width: 974px) {
   #al_header {
     #al_nav {
-      font-size: .8em;
+      font-size: 1em;
       #menu-items {
         display: none;
       }
       #current-username {
-        margin: 0 8px;
+        display: none;
       }
       #user-image {
         margin: 0 20px 0 5px;
@@ -71,11 +72,11 @@
   }
 }
 
-@media screen and (min-width: 955px) and (max-width: 1399px) {
+@media screen and (min-width: 975px) and (max-width: 1299px) {
   #al_header {
     #menu-toggle {
       // background-color: blue;
-      font-size: .8em;
+      font-size: .9em;
       li {
         padding: 0 10px;
       }
@@ -113,7 +114,7 @@
   }
 }
 
-@media screen and (min-width: 1400px) and (max-width: 10000px) {
+@media screen and (min-width: 1300px) and (max-width: 10000px) {
   #al_header {
     #menu-toggle {
       // background-color: yellow;
@@ -272,6 +273,10 @@
   cursor: pointer;
 }
 
+#role-toggle {
+  // border: 1px solid red;
+}
+
 .hide-menu {
   display: none;
 }
@@ -384,13 +389,23 @@ nav.actions>ul {
 #current-username {
   color: $accent-color;
   font-weight: $bolder-font-weight;
-  margin-right:10px;
+  margin-right: 10px;
+  // border: 1px solid green;
+  padding: 0;
+  img {
+    height: 48px;
+    position: relative;
+    top: -5px;
+  }
   a {
     color: $accent-color;
     font-weight: $bolder-font-weight;
-    margin-right:10px;
+    &.active {
+      background: none;
+    }
   }
 }
+
 
 .underline {
   border-bottom: 2px solid $accent-yellow;
@@ -398,8 +413,9 @@ nav.actions>ul {
 
 #user-image {
   img {
-    max-width: 40px;
-    padding-bottom: 8px;
+    height: 48px;
+    margin-left: 15px;
+    margin-top: -5px;
   }
   input {
     display: block;
@@ -430,7 +446,9 @@ nav.actions>ul {
   padding-top: 10px;
   background: $background-body;
   overflow: auto;
-  box-shadow: $box-shadow;
+  // box-shadow: $box-shadow;
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.23);
+
   ul {
     margin-bottom: 100px;
   }
