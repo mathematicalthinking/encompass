@@ -443,7 +443,7 @@ const teacherMT = {
     }
   },
   sections: {
-    accessibleSectionCount: 2,
+    accessibleSectionCount: 1,
     inaccessibleSection: {
       _id: '5b913e723add43b868ae9804'
     },
