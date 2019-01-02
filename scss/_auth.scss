@@ -8,6 +8,8 @@
   }
   .login-box, .signup-box {
     box-shadow: none;
+    position: relative;
+    top: 0;
   }
 }
 
@@ -17,7 +19,13 @@
   }
   .login-box, .signup-box {
     box-shadow: $button-shadow;
-;
+    position: relative;
+  }
+  .login-box {
+    top: 8%;
+  }
+  .signup-box {
+    top: 5%;
   }
 }
 
@@ -42,8 +50,6 @@
 }
 
 .login-box {
-  position: relative;
-  top: 8%;
   margin: 0 auto;
   max-width: 450px;
   padding: 30px 30px 0 30px;
@@ -130,8 +136,6 @@
 
 
 .signup-box {
-  position: relative;
-  top: 5%;
   margin: 0 auto;
   max-width: 450px;
   padding: 20px 30px 0 30px;
