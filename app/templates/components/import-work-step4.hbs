@@ -1,4 +1,19 @@
-<div>STEP 4 - MATCH STUDENTS</div>
+<h3>Match Students</h3>
+
+{{#if selectedSection}}
+  <div class="student-list">
+    <h4>{{selectedSection.name}}</h4>
+    {{#each selectedSection.students as |student|}}
+      <p>{{student.username}}</p>
+    {{/each}}
+  </div>
+{{/if}}
+
+<div class="matching-container">
+  {{#each answers as |answer|}}
+    {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
+  {{/each}}
+</div>
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
