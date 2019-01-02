@@ -11,6 +11,8 @@
 const cookie = require('cookie');
 const logger = require('log4js').getLogger('auth');
 const _ = require('underscore');
+const randomColor = require('randomcolor');
+// const axios = require('axios');
 
 //REQUIRE FILES
 const path = require('./path');
@@ -278,6 +280,39 @@ function getUserOrg(userId) {
   });
 }
 
+function generateRandomColor(luminosity, hue, format, count, alpha) {
+  return randomColor({
+    luminosity,
+    count,
+    hue,
+    format,
+    alpha,
+  });
+}
+
+function splitName(name) {
+  return name.split(" ").join("+");
+}
+
+async function createUserAvatar(name) {
+  //if name is first and last seperate by plus sign
+  //else just pass whatever name in
+  const bgColor = generateRandomColor('light', null, null, null, null);
+  const bgString = bgColor.substring(1);
+  const formattedName = splitName(name);
+  const baseUrl = `https://ui-avatars.com/api/?round=true&color=ffffff&background=${bgString}&name=${formattedName}`;
+  console.log('baseUrl is', baseUrl);
+  // await axios.get(baseUrl)
+  //   .then(res => {
+  //     console.log('response is', res.data);
+  //     return res.data;
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
+
+}
+
 module.exports.processToken = processToken;
 module.exports.fetchUser = fetchUser;
 module.exports.protect = protect;
@@ -288,3 +323,6 @@ module.exports.loadAccessibleWorkspaces = loadAccessibleWorkspaces;
 module.exports.accessibleWorkspacesQuery = accessibleWorkspacesQuery;
 module.exports.getEmailAuth = getEmailAuth;
 module.exports.getUserOrg = getUserOrg;
+module.exports.createUserAvatar = createUserAvatar;
+module.exports.generateRandomColor = generateRandomColor;
+module.exports.splitName = splitName;

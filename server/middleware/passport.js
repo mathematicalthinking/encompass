@@ -65,6 +65,42 @@ module.exports = (passport) => {
         });
       }
 
+      if (!user.avatar) {
+        console.log('user does not have an avatar');
+        const bgColor = userAuth.generateRandomColor('light', '#3997EE', null, null, null);
+        const bgString = bgColor.substring(1);
+        const formattedName = userAuth.splitName(user.name);
+        const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
+        User.findOne({'username': user.username}, (err, user) => {
+        if (err) {
+          console.log('error is', err);
+        }
+        if (user) {
+          user.avatar = baseUrl;
+          user.save();
+        }
+        });
+        // axios.get(baseUrl)
+        //   .then(res => {
+        //     console.log('res is', res);
+        //     let avatar = res.data;
+        //     User.findOne({'username': user.username}, (err, user) => {
+        //       if (err) {
+        //         console.log('error is', err);
+        //       }
+        //       if (user) {
+        //         console.log('user is', user);
+        //         user.avatar = avatar;
+        //         user.save();
+        //       }
+        //     });
+
+        //   })
+        //   .catch(error => {
+        //     console.log(error);
+        //   });
+      }
+
       return next(null, user);
     });
   }));
