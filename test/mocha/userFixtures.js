@@ -563,7 +563,7 @@ const studentMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 2,
+    accessibleFolderCount: 0,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -711,7 +711,7 @@ const teacherActingStudent = {
     },
   },
   folders: {
-    accessibleFolderCount: 2,
+    accessibleFolderCount: 0,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
