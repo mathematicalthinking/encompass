@@ -193,7 +193,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
 
     setUploadedFiles() {
       this.set('uploadedFiles', this.get('uploadedFiles'));
-      this.set('currentStep', this.get('steps')[4]);
+      this.send('loadStudentMatching');
     },
 
     setMatchedStudents() {
@@ -246,26 +246,27 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       }
     },
 
-    loadStudentMatching: function() {
-      this.set('isSelectingImportDetails', false);
-      this.set('isMatchingStudents', true);
+    loadStudentMatching: function () {
       let images = this.get('uploadedFiles');
       let answers = [];
 
-      // should this be using Promise.all/map since findRecord is async?
-      images.forEach((image) => {
+      return Promise.all(images.map((image) => {
         let ans = {};
         let imageId = image._id;
-        this.store.findRecord('image', imageId).then((image) => {
-          ans.explanationImage = image;
-          ans.problem = this.get('selectedProblem');
-          ans.section = this.get('selectedSection');
-          ans.isSubmitted = true;
-          answers.push(ans);
-          this.set('answers', answers);
-        }).catch((err) => {
-          this.handleErrors(err, 'findRecordErrors');
-        });
+        // TODO: Determine how to handle groups
+        this.store.findRecord('image', imageId)
+          .then((image) => {
+            ans.explanationImage = image;
+            ans.problem = this.get('selectedProblem');
+            ans.section = this.get('selectedSection');
+            ans.isSubmitted = true;
+            answers.push(ans);
+            this.set('answers', answers);
+          }).catch((err) => {
+            console.log('error is', err);
+          });
+      })).then(() => {
+        this.set('currentStep', this.get('steps')[4]);
       });
     },
 

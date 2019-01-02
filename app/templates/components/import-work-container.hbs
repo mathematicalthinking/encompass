@@ -57,12 +57,12 @@
         {{/if}}
 
         {{#if showUploadFiles}}
-          {{import-work-step3 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          {{import-work-step3 store=store uploadedFiles=uploadedFiles selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
           "setUploadedFiles")}}
         {{/if}}
 
         {{#if showMatchStudents}}
-          {{import-work-step4 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          {{import-work-step4 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
           "setMatchedStudents")}}
           {{!-- {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setMatchedStudents") onBack=(action "changeStep")}} --}}
         {{/if}}
