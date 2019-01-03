@@ -1,4 +1,5 @@
 Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
+  elementId: 'student-matching-answer',
   assignedStudent: null,
   section: null,
   submission: null,

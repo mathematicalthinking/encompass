@@ -1,12 +1,17 @@
-<div class="student-matching-answer">
-  {{#each studentLoadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
-  <div class="answer-img">
+<div class="card-container">
+  <div class="card-title">
     <p>{{image.originalname}}</p>
-    <img src="{{{image.imageData}}}" alt="">
   </div>
+  <div class="card-image" style="background-image: url({{image.imageData}}) no-repeat center center fixed">
+  </div>
+  <div class="card-end">
+    {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username"
+    placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}}
+  </div>
+</div>
 
+
+{{!--
   <div class="assigned-students">
     <label>Assigned Students</label>
     <ul>
@@ -17,9 +22,8 @@
     {{/each}}
     </ul>
   </div>
-</div>
 
-{{#if students}}
-  {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username" placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}}
-{{/if}}
 
+  {{#each studentLoadErrors as |error|}}
+  <p class="error-message">{{error}}</p>
+  {{/each}} --}}

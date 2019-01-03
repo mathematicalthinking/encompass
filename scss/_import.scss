@@ -49,6 +49,30 @@
   }
 }
 
+@media screen and (min-width: $screen-xs-min) and (max-width: 900px) {
+  #import-work-step4 {
+    .student-list {
+      width: 25%;
+    }
+    .matching-container {
+      border: 1px solid blue;
+      width: 60%;
+    }
+  }
+}
+
+@media screen and (min-width: 901px) and (max-width: 10000px) {
+  #import-work-step4 {
+    .student-list {
+      width: 15%;
+    }
+    .matching-container {
+      border: 1px solid blue;
+      width: 80%;
+    }
+  }
+}
+
 #import-work-container {
   .single-text-input-container {
     max-width: 600px;
@@ -108,7 +132,7 @@
       }
     }
     .step-content {
-      margin-top: 40px;
+      margin-top: 20px;
       overflow-x: hidden;
       min-height: 440px;
       .input-label {
@@ -148,3 +172,38 @@
     max-width: 538px;
   }
 }
+
+#import-work-step4 {
+  .header {
+    font-size: 2em;
+  }
+  .flex-container {
+    @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
+    width: 100%;
+    border: 1px solid purple;
+  }
+  .student-list {
+    border: 1px solid red;
+    @include flex-item(1, flex-start, .15 0 auto);
+    .section-name {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    .student-name {
+      margin: 15px 0;
+    }
+  }
+  .matching-container {
+    border: 1px solid blue;
+    @include flex-item(2, center, .80 0 auto);
+    @include flex-container(100%, null, row, wrap, flex-start, center, center);
+    #student-matching-answer {
+      @include flex-item(1, flex-start, 1 1 auto);
+      margin: 5px;
+      img {
+        max-width: 300px;
+      }
+    }
+  }
+}
+

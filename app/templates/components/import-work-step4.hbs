@@ -1,18 +1,23 @@
-<h3>Match Students</h3>
+<h3 class="input-label">Match Students</h3>
 
-{{#if selectedSection}}
+<div class="flex-container">
   <div class="student-list">
-    <h4>{{selectedSection.name}}</h4>
-    {{#each selectedSection.students as |student|}}
-      <p>{{student.username}}</p>
+    {{#if selectedSection}}
+      <h4 class="section-name">{{selectedSection.name}}</h4>
+      {{#each selectedSection.students as |student|}}
+        <p class="student-name">{{student.username}}</p>
+      {{/each}}
+    {{else}}
+      <p>No students to match</p>
+    {{/if}}
+  </div>
+
+
+  <div class="matching-container">
+    {{#each answers as |answer|}}
+      {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
     {{/each}}
   </div>
-{{/if}}
-
-<div class="matching-container">
-  {{#each answers as |answer|}}
-    {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
-  {{/each}}
 </div>
 
 <div class="nav-btn-container">
