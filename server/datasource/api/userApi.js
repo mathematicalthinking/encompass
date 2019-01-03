@@ -61,12 +61,14 @@ async function sendUsers(req, res, next) {
 
   if (req.query.usernameSearch) {
     var username = req.query.usernameSearch;
+    let filterBy = req.query.filterBy;
     var regex;
     // we currently allow emails as usernames so had to fix this to just replace whitespace
     username = username.replace(/\s+/g, "");
     regex = new RegExp(username, 'i');
 
-    criteria = await access.get.users(user, null, null, regex);
+
+    criteria = await access.get.users(user, null, null, regex, filterBy);
     const requestedUsers = await models.User.find(criteria).lean().exec();
     // either empty array or array of one user
     //const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
