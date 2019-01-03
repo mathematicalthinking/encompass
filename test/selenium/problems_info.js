@@ -280,8 +280,9 @@ describe('Problems Info', async function () {
                   expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled')).to.be.true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
+                  await driver.sleep(5000);
                   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
-                  await driver.sleep(500);
+                  await driver.sleep(5000);
                   expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line')).to.be.true;
                 });
               }
@@ -589,9 +590,8 @@ describe('Problems Info', async function () {
               await helpers.waitForAndClickElement(driver, css.problemEdit.saveButton);
               await driver.sleep(800);
               await helpers.waitForSelector(driver, css.problemEdit.errorBox);
-              expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('There is already an existing public problem with that title.');
+              expect(await helpers.findAndGetText(driver, css.problemEdit.errorBoxText)).to.contain('There is already an existing public problem titled "Alphabetical Problem."');
               await helpers.waitForAndClickElement(driver, css.problemEdit.errorBoxDismiss);
-
             });
 
             it('should show error when saving a problem without a name', async function () {
