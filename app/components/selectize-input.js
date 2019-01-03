@@ -144,7 +144,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       return callback();
     }
     if (!query.length) {
-      if (this.get('preload') === false) {
+      if (this.get('preload') !== true) {
         return callback();
       }
       // to preload results
@@ -163,8 +163,16 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     let queryParams = {};
     let topLevelQueryParams = this.get('topLevelQueryParams');
     let secondaryFilters = this.get('secondaryFilters');
+    let customQueryParams = this.get('customQueryParams');
 
-    if (topLevelQueryParams) {
+    if (customQueryParams) {
+      // use custom params object passed in
+      let base = {
+        [key]: query
+      };
+
+      queryParams = Object.assign(base, customQueryParams);
+    } else if (topLevelQueryParams) {
       queryParams[topLevelQueryParams] = {
         [key]: query
       };

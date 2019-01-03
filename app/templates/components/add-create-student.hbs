@@ -1,6 +1,18 @@
     <div class="student-search">
      <h3>Add Existing User<i title="Start typing an existing username to see suggestions" class="fas fa-info-circle fa-sm"></i></h3>
-      {{twitter-typeahead selectedItems=students sourceFunction=addStudentTypeahead placeholder="username" selectedValue=studentToAdd isAsync=true optionLabelPath="username" allowMultiple=true}}
+      {{selectize-input
+      store=store
+      inputId="select-add-student"
+      maxItems=1
+      initialOptions=initialStudentOptions
+      onItemAdd=(action "updateStudents")
+      model="user"
+      isAsync=true
+      labelField="username"
+      searchField="username"
+      valueField="id"
+      queryParamsKey="usernameSearch"
+      }}
     </div>
 
     <div class="student-create">
@@ -110,8 +122,6 @@
         {{#each updateSectionErrors as |error|}}
           <p class="error-message">{{error}}</p>
         {{/each}}
-
-
       </form>
     </div>
 

@@ -68,6 +68,38 @@ describe('Sections', async function () {
             expect(await helpers.isTextInDom(driver, sectionDetails.name)).to.be.true;
             // expect(await helpers.isTextInDom(driver, sectionDetails.teachers)).to.be.true;
           });
+          if (!isStudent) {
+            describe('adding a student to class', function() {
+              let hash = {
+                ssmith: ['teachertaylor','5b914a802ecaf7c30dd47493', 'teachertaylor'],
+                rick: ['p','5b7321ee59a672806ec903d5', 'pdadmin'],
+                pdadmin: ['d','5b1e7bf9a5d2157ef4c911a6', 'drex']
+              };
+              let usernameLinkSelector = `a[href="#/users/${hash[username][2]}"]`;
+              let userToAddSelector = `[data-value="${hash[username][1]}"]`;
+              it('clicking on edit students should bring up menus', async function() {
+
+                await helpers.findAndClickElement(driver, css.sectionInfo.editButtons.students);
+
+                await helpers.findInputAndType(driver, 'input#select-add-student-selectized', hash[username][0]);
+                await helpers.waitForSelector(driver, userToAddSelector);
+
+                await helpers.waitForAndClickElement(driver, userToAddSelector);
+                await helpers.waitForSelector(driver, usernameLinkSelector);
+
+                expect(await helpers.isElementVisible(driver, usernameLinkSelector));
+              });
+
+              it('new student should persist after page refresh', async function() {
+                await helpers.findAndClickElement(driver, 'a.menu.workspaces');
+                await driver.get(`${host}/#/sections/${sectionDetails._id}`);
+                await driver.sleep(2000);
+                await helpers.waitForSelector(driver, usernameLinkSelector);
+                expect(await helpers.isElementVisible(driver, usernameLinkSelector));
+              });
+            });
+          }
+
         });
 
         describe('Create section', function () {
