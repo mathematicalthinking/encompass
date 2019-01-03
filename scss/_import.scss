@@ -17,6 +17,7 @@
         margin-right: 10px;
       }
       .nav-btn-container {
+        z-index: 3;
         position: fixed;
         margin-top: 20px;
         right: 5%;
@@ -38,6 +39,7 @@
       margin-right: 30px;
     }
     .nav-btn-container {
+      z-index: 3;
       position: fixed;
       margin-top: 20px;
       right: 5%;
@@ -197,7 +199,7 @@
     @include flex-container(100%, null, row, wrap, center, center, stretch);
     #student-matching-answer {
       @include flex-item(1, stretch, 1 1 auto);
-      margin: 5px;
+      margin: 0 5px 8px 5px;
     }
   }
 }
