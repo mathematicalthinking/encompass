@@ -102,7 +102,7 @@ describe('Sections', async function () {
 
         });
 
-        xdescribe('Create section', function () {
+        describe('Create section', function () {
           const url = `${host}/#/sections/new`;
           const verifyForm = function () {
             const inputs = css.newSection.inputs;
