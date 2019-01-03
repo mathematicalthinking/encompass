@@ -212,6 +212,13 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });
 
+    },
+
+    removeErrorString: function(arrayPropName, errorString) {
+      let errors = this.get(arrayPropName);
+      if (Array.isArray(errors)) {
+        errors.removeObject(errorString);
+      }
     }
   }
 

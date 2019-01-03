@@ -21,7 +21,8 @@ var FolderSetSchema = new Schema({
 
 name: { type: String },
 privacySetting: {type: String, enum: ['M', 'O', 'E'] },
-folders: [{type: folderObjectSchema }]
+folders: [{type: folderObjectSchema }],
+organization: { type: ObjectId, ref: 'Organization'},
 }, {versionKey: false});
 
 

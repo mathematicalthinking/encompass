@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth */
 /**
   * # Workspaces API
@@ -282,6 +283,13 @@ async function putWorkspace(req, res, next) {
   if(!access.get.workspace(user, popWs)) {
     logger.info("permission denied");
     return utils.sendError.NotAuthorizedError("You don't have permission to modify this workspace", res);
+  }
+  if (req.body.workspace.mode === 'public' || req.body.workspace.mode === 'internet') {
+    let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', req.body.workspace.name, 'name', {_id: {$ne: req.params.id}, mode: {$in: ['public', 'internet']}});
+
+    if (!isNameUnique) {
+      return utils.sendError.ValidationError(`There is already an existing public workspace named "${req.body.workspace.name}."`, 'name', res);
+    }
   }
 
   const ws = await models.Workspace.findById(req.params.id).exec();
@@ -1398,6 +1406,21 @@ async function postWorkspaceEnc(req, res, next) {
     let accessibleCriteria;
     let answersToConvert;
 
+    if (mode === 'public' || mode === 'internet') {
+      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', requestedName, 'name', {mode: {$in: ['public', 'internet']}});
+
+      if (!isNameUnique) {
+        let rec = pruned;
+        rec.createWorkspaceError = 'There already exists a public workspace with that name';
+
+        let enc = new models.EncWorkspaceRequest(rec);
+        let saved = await enc.save();
+
+        const data = { encWorkspaceRequest: saved };
+        return utils.sendResponse(res, data);
+      }
+    }
+
     if (apiUtils.isNonEmptyArray(answers)) {
       let records = await models.Answer.find({_id: {$in: answers}});
       if (apiUtils.isNonEmptyArray(records)) {
@@ -2180,6 +2203,20 @@ async function cloneWorkspace(req, res, next) {
 
     // process basic settings
     const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+
+    if (mode === 'public' || mode === 'internet') {
+     let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
+
+     if (!isNameUnique) {
+      requestDoc.copyWorkspaceError = 'There already exists a public workspace with that name';
+      let saved = await requestDoc.save();
+      const data = { copyWorkspaceRequest: saved };
+
+      return utils.sendResponse(res, data);
+     }
+    }
+
+    // if mode is public or internet, make sure name is unique;
     const ownerOrg = await userAuth.getUserOrg(owner);
     // use original name, mode if not provided
     // set owner as current user if owner not provided
@@ -2198,6 +2235,22 @@ async function cloneWorkspace(req, res, next) {
     // will be used to determine which records to copy
     const { submissionOptions, selectionOptions, folderOptions, commentOptions, responseOptions } = copyWorkspaceRequest;
 
+    let folderSetOptions = _.propertyOf(folderOptions)('folderSetOptions');
+    if (folderSetOptions) {
+      if (folderSetOptions.doCreateFolderSet && folderSetOptions.privacySetting === 'E') {
+        // ensure name is unique
+        let isNameUnique = await apiUtils.isRecordUniqueByStringProp('FolderSet', folderSetOptions.name, 'name', {privacySetting: 'E'});
+
+        if (!isNameUnique) {
+          requestDoc.copyWorkspaceError = `There already exists a public Folder Set named "${folderSetOptions.name}."`;
+          let saved = await requestDoc.save();
+          const data = { copyWorkspaceRequest: saved };
+
+          return utils.sendResponse(res, data);
+
+        }
+      }
+    }
     /*
       submissionSet is array of populated submission docs
       submissionsMap is mapping between submissionId and populated submission doc

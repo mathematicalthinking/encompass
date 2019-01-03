@@ -117,6 +117,72 @@ describe('Problem CRUD operations by account type', function() {
           });
         });
       });
+      describe('/POST problem with duplicate title', () => {
+        let description;
+          if (isStudent) {
+            description = 'should return 403 error';
+          } else {
+            description = 'should return 422 Validation error';
+          }
+          let title = fixtures.problem.duplicateTitle.title;
+
+        it(description, done => {
+          agent
+          .post(baseUrl)
+          .send({problem: {
+            title: title,
+            createdBy: user.details._id,
+            privacySetting: 'E'
+          }})
+          .end((err, res) => {
+            if (err) {
+              console.error(err);
+              done();
+            }
+            if (isStudent) {
+              expect(res).to.have.status(403);
+              done();
+            } else {
+              expect(res).to.have.status(422);
+              done();
+            }
+          });
+        });
+      });
+      describe('/POST public problem with title matching a non-public problem', () => {
+        let description;
+          if (isStudent) {
+            description = 'should return 403 error';
+          } else {
+            description = 'should post successfully';
+          }
+          let title = fixtures.problem.duplicateTitle.nonPublic;
+
+        it(description, done => {
+          agent
+          .post(baseUrl)
+          .send({problem: {
+            title: title,
+            createdBy: user.details._id,
+            privacySetting: 'E'
+          }})
+          .end((err, res) => {
+            if (err) {
+              console.error(err);
+              done();
+            }
+            if (isStudent) {
+              expect(res).to.have.status(403);
+              done();
+            } else {
+              expect(res).to.have.status(200);
+              expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'categories');
+              expect(res.body.problem.title).to.eql(title);
+              done();
+            }
+          });
+        });
+      });
 
       /** PUT name**/
       if (accountType === 'A' || isStudent) {

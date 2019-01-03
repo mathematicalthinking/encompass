@@ -61,7 +61,11 @@ module.exports = {
       puzzleId: '',
       text: '',
       categories: []
-    }
+    },
+    duplicateTitle: {
+      title: 'alphaBetical  Problem ',
+      nonPublic: `Summer's Private Problem`
+    },
   },
   assignment: {
     problemId: '5b1e7a0ba5d2157ef4c91028',
@@ -145,6 +149,13 @@ module.exports = {
   organization: {
     validOrg: {
       name: 'Valid Test Organization'
+    },
+    duplicateName: {
+      name: 'drexel university'
+    },
+    existingOrg: {
+      _id: '5b4e4d5f808c7eebc9f9e82c',
+      createdBy: '5b245760ac75842be3189525'
     }
   }
 };

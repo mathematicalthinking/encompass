@@ -15,6 +15,8 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
+const fsAccess = require('../../middleware/access/foldersets');
+const apiUtils = require('../api/utils');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -75,20 +77,22 @@ function getFolderSets(req, res, next) {
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-  // let { accountType, actingRole } = user;
-  // if (accountType === 'S' || actingRole === 'student') {
-  //   return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  // }
-return models.FolderSet.find({}).lean().exec()
-  .then((folderSets => {
-    const data = { folderSets };
-    return utils.sendResponse(res, data);
-  }))
-  .catch((err) => {
-    console.error(`Error getFolderSets: ${err}`);
-    console.trace();
-    return utils.sendError.InternalError(null, res);
-  });
+
+  let criteria = fsAccess.get.folderSets(user, req.query.ids);
+  if (apiUtils.isNullOrUndefined(criteria)) {
+    return utils.sendError.NotAuthorizedError(null, res);
+  }
+
+  return models.FolderSet.find(criteria).lean().exec()
+    .then((folderSets => {
+      const data = { folderSets };
+      return utils.sendResponse(res, data);
+    }))
+    .catch((err) => {
+      console.error(`Error getFolderSets: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(null, res);
+    });
 }
 
 /**
@@ -228,8 +232,13 @@ function getFolderSet(req, res, next) {
   if (!id) {
     return utils.sendError.InvalidContentError(null, res);
   }
-
-  return models.FolderSet.findById(id).lean().exec()
+  return fsAccess.get.folderSet(user, id)
+    .then((canLoadFolderSet) => {
+      if (!canLoadFolderSet) {
+        return utils.sendError.NotAuthorizedError(null, res);
+      }
+      return models.FolderSet.findById(id).lean().exec();
+    })
     .then((folderSet) => {
       const data = { folderSet };
       return utils.sendResponse(res, data);

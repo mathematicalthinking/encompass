@@ -178,8 +178,8 @@ server.get({ path: '/api/workspaces/:id', version: '0.0.1' }, path.validateId(),
 server.get('/api/workspaces/:id', path.validateId(), api.get.workspace);
 server.get('/api/folders', api.get.folders);
 server.get('/api/folders/:id', path.validateId(), api.get.folder);
-server.get('/api/folderSets', api.get.folderSets);
-server.get('/api/folderSets/:id', path.validateId(), api.get.folderSet);
+server.get('/api/foldersets', api.get.folderSets);
+server.get('/api/foldersets/:id', path.validateId(), api.get.folderSet);
 server.get('/api/pdSets', api.get.pdSets); // For some reason Ember prefers pDSets to pdSets and PDSets
 server.get('/api/submissions', api.get.submissions);
 server.get('/api/submissions/:id', path.validateId(), api.get.submission);

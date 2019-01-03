@@ -27,7 +27,7 @@ describe('Answer CRUD operations by account type', function() {
       const { accessibleAnswerCount, accessibleAnswer, inaccessibleAnswer } = user.answers;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
-
+      let isAdmin = accountType === 'A' && !isStudent;
       before(async function(){
         try {
           await helpers.setup(agent, username, password);
@@ -77,7 +77,12 @@ describe('Answer CRUD operations by account type', function() {
 
       /** PUT name**/
       describe('/PUT update answer explanation for already submitted', () => {
-        it('should return an error,', done => {
+
+        let desc = 'it should return an error';
+        if (isAdmin) {
+          desc = 'should allow admin to update already submitted answer';
+        }
+        it(desc, done => {
           let url = baseUrl + fixtures.answer._id;
           agent
           .put(url)
@@ -86,8 +91,15 @@ describe('Answer CRUD operations by account type', function() {
             if (err) {
               console.error(err);
             }
-            expect(res).to.have.status(403);
-            done();
+            if (isAdmin) {
+              expect(res).to.have.status(200);
+              expect(res.body.answer).to.have.any.keys('problem', 'answer');
+              expect(res.body.answer.explanation).to.eql(fixtures.answer.updated.explanation);
+              done();
+            } else {
+              expect(res).to.have.status(403);
+              done();
+            }
           });
         });
       });

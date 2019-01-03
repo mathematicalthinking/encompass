@@ -84,6 +84,9 @@
 
     {{#if doCreateFolderSet}}
       {{new-folderset-form nameErrors=folderSetNameErrors privacyErrors=folderSetPrivacySettingErrors name=folderSetName privacySetting=folderSetPrivacy}}
+      {{#if duplicateFolderSetName}}
+        {{error-box error="There already exists a public Folder Set with that name. Please choose a different name." showDismiss=true resetError=(action (mut duplicateFolderSetName) null)}}
+      {{/if}}
     {{/if}}
 
     {{else}}

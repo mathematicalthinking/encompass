@@ -559,6 +559,41 @@ function mapObjectsToIds(objects, asStrings=false) {
 
 }
 
+// used to ensure there is not already an existing record with
+
+function getUniqueStrRegex(str) {
+  if (!_.isString(str)) {
+    return;
+  }
+  let copy = str.slice();
+  copy = copy.replace(/\s+/g, "");
+  let split = copy.split('').join('\\s*');
+  let full = `^${split}\\Z`;
+  return new RegExp(full, 'i');
+}
+function isRecordUniqueByStringProp(model, requestedValue, uniqueProp, optionsHash) {
+  let regex = getUniqueStrRegex(requestedValue);
+  if (!regex || !_.isString(model)) {
+    return;
+  }
+  let baseOptions = {
+    [uniqueProp]: { $regex: regex },
+    isTrashed: false
+  };
+  let options;
+
+  if (_.isObject(optionsHash)) {
+    options = Object.assign(baseOptions, optionsHash);
+  } else {
+    options = baseOptions;
+  }
+  // if no record found, means no record exists with property
+  // equal to requested value
+  return models[model].findOne(options).lean().exec()
+  .then((record) => {
+    return record === null || record === undefined;
+  });
+}
 
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
@@ -577,3 +612,4 @@ module.exports.mapObjectsToIds = mapObjectsToIds;
 module.exports.isValidMongoId = isValidMongoId;
 module.exports.cleanObjectIdArray = cleanObjectIdArray;
 module.exports.sortAnswersByLength = sortAnswersByLength;
+module.exports.isRecordUniqueByStringProp = isRecordUniqueByStringProp;

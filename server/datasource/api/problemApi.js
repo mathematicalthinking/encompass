@@ -27,16 +27,10 @@ async function getOrgRecommendedProblems(user, orgIds, isIdOnly=true) {
     if (!orgs) {
       return [];
     }
-    // let problems = _.chain(orgs)
-    //   .map(orgs, org => org.recommendedProblems)
-    //   .without(undefined, null)
-    //   .flatten()
-    //   .value();
 
     let problems = _.map(orgs, org => org.recommendedProblems);
     let filtered = _.filter(problems, problem => problem !== undefined && problem !== null);
     let flattened = _.flatten(filtered);
-
 
     if (isIdOnly) {
       return flattened;
@@ -370,7 +364,7 @@ const getProblems = async function(req, res, next) {
   }catch(err) {
     console.error(`Error getProblems: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    return utils.sendError.InternalError(null, res);
   }
 };
 
@@ -441,16 +435,12 @@ const postProblem = async function(req, res, next) {
 
   // Add permission checks here
   const problem = new models.Problem(req.body.problem);
-  if (req.body.problem.privacySetting === "E") {
-    let title = req.body.problem.title;
-    title = title.replace(/\s+/g, "");
-    let split = title.split('').join('\\s*');
-    let full = `^${split}\\Z`;
-    let regex = new RegExp(full, 'i');
-    const exists = await models.Problem.find({ title: {$regex: regex }, isTrashed: false }).lean().exec();
 
-    if (exists.length >= 1) {
-      return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
+  if (req.body.problem.privacySetting === "E") {
+    let isTitleUnique = await apiUtils.isRecordUniqueByStringProp('Problem', req.body.problem.title, 'title', {privacySetting: 'E'});
+
+    if (!isTitleUnique) {
+      return utils.sendError.ValidationError(`There is already an existing public problem titled "${req.body.problem.title}."`, 'title', res);
     }
   }
   problem.createdBy = user;
@@ -459,7 +449,7 @@ const postProblem = async function(req, res, next) {
     if (err) {
       console.error(`Error post problem: ${err}`);
       console.trace();
-      return utils.sendError.InternalError(err, res);
+      return utils.sendError.InternalError(null, res);
     }
     const data = {'problem': doc};
     utils.sendResponse(res, data);
@@ -488,20 +478,17 @@ const putProblem = async function(req, res, next){
     }
 
     if (req.body.problem.privacySetting === "E") {
-      let title = req.body.problem.title;
-      let split = title.split('').join('\\s*');
-      let full = `^${split}\\Z`;
-      let regex = new RegExp(full, 'i');
-      const exists = await models.Problem.find({ title: {$regex: regex }, _id: {$ne: req.params.id}, isTrashed: false }).lean().exec();
-      if (exists.length >= 1) {
-        return utils.sendError.ValidationError('There is already an existing public problem with that title.', 'title', res);
+      let isTitleUnique = await apiUtils.isRecordUniqueByStringProp('Problem', req.body.problem.title, 'title', {privacySetting: 'E', _id: {$ne: req.params.id} });
+
+      if (!isTitleUnique) {
+        return utils.sendError.ValidationError(`There is already an existing public problem titled "${req.body.problem.title}."`, 'title', res);
       }
     }
 
     models.Problem.findById(req.params.id, (err, doc) => {
       if(err) {
         logger.error(err);
-        return utils.sendError.InternalError(err, res);
+        return utils.sendError.InternalError(null, res);
       }
       // make the updates, but don't update categories or _id
       for(let field in req.body.problem) {
@@ -512,7 +499,7 @@ const putProblem = async function(req, res, next){
       doc.save((err, problem) => {
         if (err) {
           logger.error(err);
-          return utils.sendError.InternalError(err, res);
+          return utils.sendError.InternalError(null, res);
         }
         const data = {'problem': problem};
         utils.sendResponse(res, data);
@@ -521,7 +508,7 @@ const putProblem = async function(req, res, next){
   }catch(err) {
     console.error(`Error putProblem: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    return utils.sendError.InternalError(null, res);
   }
 };
 
@@ -545,11 +532,11 @@ const addCategory = (req, res, next) => {
   models.Problem.findById(req.params.id, (err, doc) => {
     if(err) {
       logger.error(err);
-      return utils.sendError.InternalError(err, res);
+      return utils.sendError.InternalError(null, res);
     }
     // only add a category if it's new
     if (doc.categories.indexOf(req.body.categoryId) === -1){
-      // doing a simple arr.push(id) was throwing an error because it was
+      // doing a simple arr.push(id) was throwing anullor because it was
       // invoking mongoose's deprectated $pushAll method. Using the
       // concat() method below uses $set and thus works.
       doc.categories = doc.categories.concat([req.body.categoryId]);
@@ -557,7 +544,7 @@ const addCategory = (req, res, next) => {
     doc.save((err, problem) => {
       if (err) {
         logger.error(err);
-        return utils.sendError.InternalError(err, res);
+        return utils.sendError.InternalError(null, res);
       }
       const data = {'problem': problem};
       utils.sendResponse(res, data);
@@ -585,7 +572,7 @@ const removeCategory = (req, res, next) => {
   models.Problem.findById(req.params.id, (err, doc) => {
     if (err) {
       logger.error(err);
-      return utils.sendError.InternalError(err, res);
+      return utils.sendError.InternalError(null, res);
     }
     // only attempt to remove if the category exists
     if (doc.categories.indexOf(req.body.categoryId) !== -1) {
