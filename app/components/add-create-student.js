@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   elementId: 'add-create-student',
   isUsingDefaultPassword: false,
@@ -22,24 +23,23 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     }
   },
 
-  addStudent: function () {
-    let student = this.get('studentToAdd');
-    if (!student) {
-      return;
+  initialStudentOptions: function() {
+    let peeked = this.get('store').peekAll('user').toArray();
+    let currentStudents = this.get('students').toArray();
+    let filtered = [];
+
+    if (peeked && currentStudents) {
+      filtered = peeked.removeObjects(currentStudents);
+      return filtered.map((obj) => {
+        return {
+          id: obj.get('id'),
+          username: obj.get('username')
+        };
+      });
     }
+    return filtered;
 
-    let students = this.get('students');
-
-    if (students.includes(student)) {
-      this.set('userAlreadyInSection', true);
-      this.set('studentToAdd', null);
-      return;
-    }
-
-    students.pushObject(student);
-    this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
-    this.set('studentToAdd', null);
-  }.observes('studentToAdd'),
+  }.property('students.[]'),
 
   createStudent: function (info) {
     const that = this;
@@ -110,6 +110,17 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       });
   },
 
+  clearSelectizeInput(id) {
+    if (!id) {
+      return;
+    }
+    let selectize = this.$(`#${id}`)[0].selectize;
+    if (!selectize) {
+      return;
+    }
+    selectize.clear();
+  },
+
   actions: {
     showPassword: function () {
       let isShowingPassword = this.get('showingPassword');
@@ -132,6 +143,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
         this.removeMessags('findUserErrors');
         if (!students.includes(user)) {
           students.pushObject(user);
+
           this.clearAddExistingUser();
           this.clearCreateInputs();
         } else {
@@ -227,6 +239,35 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
           this.handleErrors(err, 'updateSectionErrors');
         });
       }
+    },
+    updateStudents: function(val, $item) {
+      if (!val) {
+        return;
+      }
+      let user = this.get('store').peekRecord('user', val);
+      if (!user) {
+        return;
+      }
+
+      let students = this.get('students');
+
+      // adding
+      if (students.includes(user)) {
+        this.set('userAlreadyInSection', true);
+        this.clearSelectizeInput('select-add-student');
+        return;
+      }
+      students.addObject(user);
+
+      this.get('section').save()
+        .then(() => {
+          this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
+          // clear selectize
+          this.clearSelectizeInput('select-add-student');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors');
+        });
     }
   }
 });

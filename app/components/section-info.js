@@ -67,11 +67,6 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
   },
 
-  didInsertElement: function () {
-    this.set('addTeacherTypeahead', this.getAddableUsers.call(this, true));
-    this.set('addStudentTypeahead', this.getAddableUsers.call(this, false));
-  },
-
   cantEdit: Ember.computed('section.id', function () {
     let currentUser = this.get('currentUser');
     let isStudent = currentUser.get('isStudent');
@@ -80,40 +75,16 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return cantEdit;
   }),
 
-  addTeacher: function () {
-    let teacher = this.get('teacherToAdd');
-
-    if (!teacher) {
+  clearSelectizeInput(id) {
+    if (!id) {
       return;
     }
-    let section = this.get('currentSection');
-
-    let sectionObj = {
-      sectionId: section.id,
-      role: 'teacher'
-    };
-
-    let teachers = this.get('teacherList');
-
-    if (!teachers.includes(teacher)) {
-      teachers.pushObject(teacher);
-
-      section.save().then(() => {
-        if (!teacher.get('sections')) {
-          teacher.set('sections', []);
-        }
-        teacher.get('sections').pushObject(sectionObj);
-        teacher.save().then(() => {
-          this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
-          this.set('teacherToAdd', null);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateTeacherErrors', teacher);
-        });
-      }).catch((err) => {
-        this.handleErrors(err, 'updateSectionErrors', section);
-      });
+    let selectize = this.$(`#${id}`)[0].selectize;
+    if (!selectize) {
+      return;
     }
-  }.observes('teacherToAdd'),
+    selectize.clear();
+  },
 
   scrollIfEditingStudents: function () {
     if (this.get('isEditingStudents')) {
@@ -125,38 +96,32 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   }.observes('isEditingStudents'),
 
-  getAddableUsers: function (doGetTeachers) {
-    const store = this.get('store');
-
-    let ret = function (query, syncCb, asyncCb) {
-      let selectedUsers;
-
-      if (doGetTeachers) {
-        selectedUsers = this.get('teacherList');
-      } else {
-        selectedUsers = this.get('studentList');
+  addTeacherQueryParams: {
+    filterBy: {
+      accountType: {
+        $ne: 'S'
       }
-      let text = query.replace(/\W+/g, "");
-      return store.query('user', {
-          usernameSearch: text,
-        }).then((users) => {
-          if (!users) {
-            return [];
-          }
-          if (doGetTeachers) {
-            users = users.rejectBy('accountType', 'S');
-          }
-          let filtered = users.filter((user) => {
-            return !selectedUsers.includes(user);
-          });
-          return asyncCb(filtered.toArray());
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'queryErrors');
-        });
-    };
-    return ret.bind(this);
+    }
   },
+
+  initialTeacherOptions: function() {
+    let peeked = this.get('store').peekAll('user').toArray();
+    let currentTeachers = this.get('teacherList').toArray();
+    let filtered = [];
+
+    if (peeked && currentTeachers) {
+      let teachersOnly = peeked.rejectBy('accountType', 'S');
+      filtered = teachersOnly.removeObjects(currentTeachers);
+      return filtered.map((obj) => {
+        return {
+          id: obj.get('id'),
+          username: obj.get('username')
+        };
+      });
+    }
+    return filtered;
+  }.property('teacherList.[]'),
+
 
   actions: {
     removeStudent: function (user) {
@@ -290,6 +255,44 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       if (section.get('hasDirtyAttributes')) {
         this.get('currentSection').save().then(() => {
           this.get('alert').showToast('success', 'Class Name Updated', 'bottom-end', 3000, false, null);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateSectionErrors', section);
+        });
+      }
+    },
+    addTeacher: function (val, $item) {
+      if (!val) {
+        return;
+      }
+      let teacher = this.get('store').peekRecord('user', val);
+
+      if (!teacher) {
+        return;
+      }
+
+      let section = this.get('currentSection');
+
+      let sectionObj = {
+        sectionId: section.id,
+        role: 'teacher'
+      };
+
+      let teachers = this.get('teacherList');
+
+      if (!teachers.includes(teacher)) {
+        teachers.addObject(teacher);
+
+        section.save().then(() => {
+          if (!teacher.get('sections')) {
+            teacher.set('sections', []);
+          }
+          teacher.get('sections').addObject(sectionObj);
+          teacher.save().then(() => {
+            this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
+            this.clearSelectizeInput('select-add-teacher');
+          }).catch((err) => {
+            this.handleErrors(err, 'updateTeacherErrors', teacher);
+          });
         }).catch((err) => {
           this.handleErrors(err, 'updateSectionErrors', section);
         });
