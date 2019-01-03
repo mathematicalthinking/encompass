@@ -1,15 +1,25 @@
 <div class="card-container">
   <div class="card-title">
-    <p>{{image.originalname}}</p>
+    <p class="card-heading">{{image.originalname}}</p>
   </div>
-  <div class="card-image" style="background-image: url({{image.imageData}}) no-repeat center center fixed">
+  <div class="card-image" style="background: url({{image.imageData}}) no-repeat scroll center">
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
   </div>
   <div class="card-end">
-    {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username"
-    placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}}
+    <input type="text">
+    {{!-- {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username"
+    placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}} --}}
   </div>
 </div>
 
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src="{{{image.imageData}}}" alt="">
+  </div>
+{{/if}}
 
 {{!--
   <div class="assigned-students">

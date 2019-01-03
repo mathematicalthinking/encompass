@@ -6,6 +6,7 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
   assignedStudents: [],
   defaultStudentList: null,
   loadStudentsErrors: [],
+  isExpanded: false,
 
   init: function() {
     this._super(...arguments);
@@ -63,6 +64,10 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
       }
 
       creators.removeObject(student);
-    }
+    },
+
+    expandImage: function () {
+      this.set('isExpanded', !this.get('isExpanded'));
+    },
   }
 });
