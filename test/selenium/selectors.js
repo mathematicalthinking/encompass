@@ -148,7 +148,10 @@ module.exports = {
       teachers: "div.section-info-detail.teachers ul",
       students: "div.section-info-detail.students ul"
     },
-    newSectionButton: "#new-section-link"
+    newSectionButton: "#new-section-link",
+    editButtons: {
+      students: 'div.section-info-detail.students i.far.fa-edit'
+    }
   },
 
   sectionHome: "div#section-home",
