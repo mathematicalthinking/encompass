@@ -74,6 +74,7 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
       creators.removeObject(student);
     },
     updateSelectizeSingle(val, $item, propToUpdate, model) {
+      console.log('updateSelectizeSingle ran');
       if (_.isNull($item)) {
         this.set(propToUpdate, null);
         return;
@@ -83,6 +84,7 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
         return;
       }
       this.set(propToUpdate, record);
+      console.log('property to update', this.get('propToUpdate'));
     },
     expandImage: function () {
       this.set('isExpanded', !this.get('isExpanded'));
