@@ -68,7 +68,7 @@
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step5 store=store uploadedFiles=uploadedFiles onBack=(action "changeStep") onProceed=(action
+          {{import-work-step5 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
           "setUploadedFiles")}}
           {{!-- {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}} --}}
         {{/if}}

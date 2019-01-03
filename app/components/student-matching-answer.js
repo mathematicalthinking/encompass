@@ -8,33 +8,43 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
   defaultStudentList: null,
   loadStudentsErrors: [],
   isExpanded: false,
-
-  init: function() {
-    this._super(...arguments);
-    this.set('notFoundTemplate', `<p class="tt-notfound">No matches found.</p>`);
-  },
+  selectedStudents: [],
 
   didReceiveAttrs: function() {
     const section = this.get('selectedSection');
     const answer = this.get('answer');
+    console.log('answer is', answer);
     const image = answer.explanationImage;
     this.set('image', image);
 
     this.set('section', section);
     this.set('submission', answer);
 
-    Promise.resolve(section.get('students')).then((students) => {
-      let toArray = students.toArray();
-      let mapped = _.map(toArray, (user) => {
-        return {
-          id: user.id,
-          username: user.get('username')
-        };
+    if (section) {
+      Promise.resolve(section.get('students')).then((students) => {
+        let toArray = students.toArray();
+        let mapped = _.map(toArray, (user) => {
+          return {
+            id: user.id,
+            username: user.get('username')
+          };
+        });
+        this.set('students', mapped);
+      }).catch((err) => {
+        this.handleErrors(err, 'loadStudentsErrors');
       });
-      this.set('students', mapped);
-    }).catch((err) => {
-      this.handleErrors(err, 'loadStudentsErrors');
-    });
+    } else {
+      this.get('store').findAll('user').then((users) => {
+        let mapped = _.map(users, (user) => {
+          return {
+            id: user.id,
+            username: user.get('username')
+          };
+        });
+        this.set('students', mapped);
+      });
+    }
+
   },
 
   addStudent: function() {
@@ -73,18 +83,26 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
 
       creators.removeObject(student);
     },
-    updateSelectizeSingle(val, $item, propToUpdate, model) {
-      console.log('updateSelectizeSingle ran');
+    updateSelectedStudents(val, $item) {
+      if (!val) {
+        return;
+      }
+      let selectedStudents = this.get('selectedStudents');
       if (_.isNull($item)) {
-        this.set(propToUpdate, null);
-        return;
+        let studentToRemove = selectedStudents.findBy('id', val);
+        if (studentToRemove) {
+          selectedStudents.removeObject(studentToRemove);
+          return;
+        }
       }
-      let record = this.get('store').peekRecord(model, val);
-      if (!record) {
-        return;
+      let record = this.get('store').peekRecord('user', val);
+      if (record) {
+        selectedStudents.addObject(record);
       }
-      this.set(propToUpdate, record);
-      console.log('property to update', this.get('propToUpdate'));
+
+      let ans = this.get('submission');
+      ans.students = this.get('selectedStudents');
+      this.get('checkStatus')();
     },
     expandImage: function () {
       this.set('isExpanded', !this.get('isExpanded'));

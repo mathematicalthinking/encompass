@@ -12,14 +12,13 @@
       store=store
       inputId="select-add-student"
       maxItems=10
-      initialItems=students
       initialOptions=students
-      onItemAdd=(action "updateSelectizeSingle")
-      onItemRemove=(action "updateSelectizeSingle")
+      onItemAdd=(action "updateSelectedStudents")
+      onItemRemove=(action "updateSelectedStudents")
       labelField="username"
       searchField="username"
       valueField="id"
-      propToUpdate="studentToAdd"
+      propToUpdate="selectedStudents"
       model="user"
       placeholder="Search students by username"
     }}
