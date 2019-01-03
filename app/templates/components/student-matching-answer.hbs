@@ -8,7 +8,21 @@
     </div>
   </div>
   <div class="card-end">
-    <input type="text">
+    {{selectize-input
+      store=store
+      inputId="select-add-student"
+      maxItems=10
+      initialItems=students
+      initialOptions=students
+      onItemAdd=(action "updateSelectizeSingle")
+      onItemRemove=(action "updateSelectizeSingle")
+      labelField="username"
+      searchField="username"
+      valueField="id"
+      propToUpdate="studentToAdd"
+      model="user"
+      placeholder="Search students by username"
+    }}
     {{!-- {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username"
     placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}} --}}
   </div>

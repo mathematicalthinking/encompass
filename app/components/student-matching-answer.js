@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
   elementId: 'student-matching-answer',
   assignedStudent: null,
@@ -23,7 +24,14 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
     this.set('submission', answer);
 
     Promise.resolve(section.get('students')).then((students) => {
-      this.set('students', students);
+      let toArray = students.toArray();
+      let mapped = _.map(toArray, (user) => {
+        return {
+          id: user.id,
+          username: user.get('username')
+        };
+      });
+      this.set('students', mapped);
     }).catch((err) => {
       this.handleErrors(err, 'loadStudentsErrors');
     });
@@ -65,7 +73,17 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
 
       creators.removeObject(student);
     },
-
+    updateSelectizeSingle(val, $item, propToUpdate, model) {
+      if (_.isNull($item)) {
+        this.set(propToUpdate, null);
+        return;
+      }
+      let record = this.get('store').peekRecord(model, val);
+      if (!record) {
+        return;
+      }
+      this.set(propToUpdate, record);
+    },
     expandImage: function () {
       this.set('isExpanded', !this.get('isExpanded'));
     },

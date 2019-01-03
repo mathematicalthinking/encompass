@@ -15,7 +15,7 @@
 
   <div class="matching-container">
     {{#each answers as |answer|}}
-      {{student-matching-answer answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
+      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
     {{/each}}
   </div>
 </div>
