@@ -231,7 +231,7 @@ module.exports = {
     inputSelectizeType: '#problem-new .side-info-menu .info-content .info-content-block .selectize-comp  .selectize-control .selectize-input input',
     errorMsgGeneral: 'Please provide all required fields',
     errorMsgLegal: 'Please verify that you have permission to post this problem',
-    errorMsgTitle: 'There is already an existing public problem with that title',
+    errorMsgTitle: 'There is already an existing public problem titled "Alphabetical Problem."',
     errorBoxDismiss: '.error-box p button i.fa-times',
     primaryButton: 'section.info-actions .buttons-container .right-buttons button.primary-button',
     cancelButton: 'section.info-actions .buttons-container .right-buttons button.cancel-button',
