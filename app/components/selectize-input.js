@@ -22,7 +22,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
     }
     const newOptions = this.get('initialOptions');
     const currentOptions = this.get('options');
-
+    console.log(newOptions, currentOptions);
     if ((newOptions && currentOptions) && !_.isEqual(newOptions, currentOptions)) {
       selectizeControl.clearOptions();
       selectizeControl.addOption(newOptions);
@@ -122,6 +122,7 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
 
     if (this.onItemAdd) {
       hash.onItemAdd = function(value, $item) {
+        console.log('item added', that.get('inputId'));
         that.get('onItemAdd')(value, $item, propToUpdate, that.get('model'));
       };
     }

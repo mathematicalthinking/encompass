@@ -156,6 +156,13 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     this.set('isAddingMoreFiles', false);
   }.observes('additionalFiles.[]'),
 
+  getSectionStudents(section) {
+    if (!section) {
+      return Promise.resolve(this.get('store').findAll('user'));
+    }
+    return Promise.resolve(section.get('students'));
+  },
+
   actions: {
     goToStep(stepValue) {
       if (!stepValue) {
@@ -187,8 +194,22 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     },
 
     setSelectedSection() {
-      this.set('selectedSection', this.get('selectedSection'));
-      this.set('currentStep', this.get('steps')[3]);
+      let section = this.get('selectedSection');
+
+      // get section info needed for matching
+      this.set('isFetchingSectionStudents', true);
+      Promise.resolve(this.getSectionStudents(section))
+      .then((students) => {
+        this.set('isFetchingSectionStudents', false);
+
+        let asArray = students.toArray();
+        let hash = {};
+        asArray.forEach((user) => {
+          hash[user.get('id')] = user;
+        });
+        this.set('studentMap', hash);
+        this.set('currentStep', this.get('steps')[3]);
+      });
     },
 
     setUploadedFiles() {

@@ -10,15 +10,14 @@
   <div class="card-end">
     {{selectize-input
       store=store
-      inputId="select-add-student"
+      inputId=selectizeInputId
       maxItems=10
-      initialOptions=students
-      onItemAdd=(action "updateSelectedStudents")
-      onItemRemove=(action "updateSelectedStudents")
+      initialOptions=studentOptions
+      onItemAdd=(action "updateSelectedIds")
+      onItemRemove=(action "updateSelectedIds")
       labelField="username"
       searchField="username"
       valueField="id"
-      propToUpdate="selectedStudents"
       model="user"
       placeholder="Search students by username"
     }}

@@ -4,7 +4,7 @@
   <div class="student-list">
     {{#if selectedSection}}
       <h4 class="section-name">{{selectedSection.name}}</h4>
-      {{#each selectedSection.students as |student|}}
+      {{#each displayList as |student|}}
         <p class="student-name">{{student.username}}</p>
       {{/each}}
     {{else}}
@@ -12,13 +12,17 @@
     {{/if}}
   </div>
 
-
+{{log 'studentMap' studentMap}}
   <div class="matching-container">
     {{#each answers as |answer|}}
-      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus")}}
+      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus") studentMap=studentMap}}
     {{/each}}
   </div>
 </div>
+{{#if isMatchingIncompleteError}}
+  {{error-box error="Please assign each submission at least one student" showDismiss=true resetError=(action (mut isMatchingIncompleteError) null)}}
+{{/if}}
+
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>

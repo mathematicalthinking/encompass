@@ -1,6 +1,6 @@
 /*global _:false */
 Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, {
-  elementId: 'student-matching-answer',
+  classNames: ['student-matching-answer'],
   assignedStudent: null,
   section: null,
   submission: null,
@@ -9,6 +9,12 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
   loadStudentsErrors: [],
   isExpanded: false,
   selectedStudents: [],
+  selectedIds: [],
+
+  selectizeInputId: function() {
+    let id = this.get('answer.explanationImage.id') || '';
+    return `select-add-student${id}`;
+  }.property('answer.id'),
 
   didReceiveAttrs: function() {
     const section = this.get('selectedSection');
@@ -20,57 +26,61 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
     this.set('section', section);
     this.set('submission', answer);
 
-    if (section) {
-      Promise.resolve(section.get('students')).then((students) => {
-        let toArray = students.toArray();
-        let mapped = _.map(toArray, (user) => {
-          return {
-            id: user.id,
-            username: user.get('username')
-          };
-        });
-        this.set('students', mapped);
-      }).catch((err) => {
-        this.handleErrors(err, 'loadStudentsErrors');
-      });
-    } else {
-      this.get('store').findAll('user').then((users) => {
-        let mapped = _.map(users, (user) => {
-          return {
-            id: user.id,
-            username: user.get('username')
-          };
-        });
-        this.set('students', mapped);
-      });
-    }
-
   },
+  studentOptions: function() {
+    if (!this.get('studentMap')) {
+      return [];
+    }
+    let options = [];
+    let selectedIds = this.get('selectedIds') || [];
 
-  addStudent: function() {
-    let s = this.get('studentToAdd');
-    if (!s) {
+    _.each(this.get('studentMap'), (val, key) => {
+      if (!selectedIds.includes(val)) {
+        options.addObject({
+          id: val.get('id'),
+          username: val.get('username')
+        });
+      }
+    });
+    return options;
+  }.property('selectedIds.[]', 'studentMap'),
+
+  updateAnswer(userId, doRemove) {
+    if (!userId) {
       return;
     }
-    let ans = this.get('submission');
-    if (!this.get('creators')) {
-      this.set('creators', []);
+    if (!Array.isArray(this.get('submission.students'))) {
+      this.set('submission.students', []);
     }
-
-  if (this.get('creators').includes(s)) {
-    this.set('studentToAdd', null);
-    return;
-  }
-
-    this.get('creators').pushObject(s);
-
-    ans.students = this.get('creators');
-    this.set('studentToAdd', null);
+    let creators = this.get('submission.students');
+    let userObj = creators.findBy('id', userId);
+    if (doRemove) {
+      creators.removeObject(userObj);
+    } else {
+      creators.addObject(this.get('studentMap')[userId]);
+    }
     this.get('checkStatus')();
-  }.observes('studentToAdd'),
+  },
+
 
 
   actions: {
+    updateSelectedIds: function(val, $item) {
+      if (!val) {
+        return;
+      }
+      let doRemove;
+
+      if (_.isNull($item)) {
+        this.get('selectedIds').removeObject(val);
+        doRemove = true;
+      } else {
+        this.get('selectedIds').addObject(val);
+        doRemove = false;
+      }
+      this.updateAnswer(val, doRemove);
+
+    },
     removeStudent: function(student) {
       if (!student) {
         return;
@@ -82,27 +92,6 @@ Encompass.StudentMatchingAnswerComponent = Ember.Component.extend(Encompass.Erro
       }
 
       creators.removeObject(student);
-    },
-    updateSelectedStudents(val, $item) {
-      if (!val) {
-        return;
-      }
-      let selectedStudents = this.get('selectedStudents');
-      if (_.isNull($item)) {
-        let studentToRemove = selectedStudents.findBy('id', val);
-        if (studentToRemove) {
-          selectedStudents.removeObject(studentToRemove);
-          return;
-        }
-      }
-      let record = this.get('store').peekRecord('user', val);
-      if (record) {
-        selectedStudents.addObject(record);
-      }
-
-      let ans = this.get('submission');
-      ans.students = this.get('selectedStudents');
-      this.get('checkStatus')();
     },
     expandImage: function () {
       this.set('isExpanded', !this.get('isExpanded'));
