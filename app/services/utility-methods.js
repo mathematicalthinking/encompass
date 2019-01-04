@@ -14,6 +14,10 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
   // not array or function
   isNonEmptyObject(val) {
   return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
+},
+isValidMongoId(val) {
+  let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+  return checkForHexRegExp.test(val);
 }
 
 });
