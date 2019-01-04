@@ -13,6 +13,7 @@
       inputId=selectizeInputId
       maxItems=10
       initialOptions=studentOptions
+      initialItems=initialStudentItems
       onItemAdd=(action "updateSelectedIds")
       onItemRemove=(action "updateSelectedIds")
       labelField="username"
@@ -20,9 +21,9 @@
       valueField="id"
       model="user"
       placeholder="Search students by username"
+      create=(action "addStudentName")
+      createFilter=newNameFilter
     }}
-    {{!-- {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username"
-    placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}} --}}
   </div>
 </div>
 
@@ -32,20 +33,3 @@
     <img src="{{{image.imageData}}}" alt="">
   </div>
 {{/if}}
-
-{{!--
-  <div class="assigned-students">
-    <label>Assigned Students</label>
-    <ul>
-      {{#each creators as |student|}}
-      <li>{{student.username}} <i class="far fa-times-circle" {{action "removeStudent" student}}></i></li>
-    {{else}}
-    <li class="empty-assignment">No students assigned yet.</li>
-    {{/each}}
-    </ul>
-  </div>
-
-
-  {{#each studentLoadErrors as |error|}}
-  <p class="error-message">{{error}}</p>
-  {{/each}} --}}

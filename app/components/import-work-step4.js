@@ -1,15 +1,33 @@
 /*global _:false */
 Encompass.ImportWorkStep4Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step4',
+  utils: Ember.inject.service('utility-methods'),
+
+  addedStudentNames: [],
+
+  init() {
+    this._super(...arguments);
+    this.set('newNameFilter', this.addStudentNameFilter.bind(this));
+  },
 
   displayList: function() {
     if (!this.get('studentMap')) {
-      return;
+      return [];
     }
     return _.map(this.get('studentMap'), (val, key) => {
       return val;
     });
   }.property('studentMap'),
+
+
+  addStudentNameFilter: function(name) {
+    if (typeof name !== 'string') {
+      return;
+    }
+    let trimmed = name.trim();
+    let names = this.get('addedStudentNames');
+    return trimmed.length > 1 && !names.includes(trimmed);
+  },
 
   actions: {
     checkStatus: function() {
@@ -20,9 +38,9 @@ Encompass.ImportWorkStep4Component = Ember.Component.extend(Encompass.CurrentUse
       console.log('checkstatus ran and answers are', answers);
 
       answers.forEach((ans) => {
-        let students = ans.students;
-        console.log('students are', students);
-        if (!students || Ember.isEmpty(students)) {
+        let isValid = this.get('utils').isNonEmptyArray(ans.students) || this.get('utils').isNonEmptyArray(ans.studentNames);
+
+        if (!isValid) {
           this.set('isReadyToReviewAnswers', false);
           return;
         }

@@ -8,14 +8,16 @@
         <p class="student-name">{{student.username}}</p>
       {{/each}}
     {{else}}
-      <p>No students to match</p>
+      <p>Not using class for matching.</p>
     {{/if}}
   </div>
 
 {{log 'studentMap' studentMap}}
   <div class="matching-container">
     {{#each answers as |answer|}}
-      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus") studentMap=studentMap}}
+      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus") studentMap=studentMap addedStudentNames=addedStudentNames
+      newNameFilter=newNameFilter
+      }}
     {{/each}}
   </div>
 </div>
