@@ -197,7 +197,7 @@
   .matching-container {
     @include flex-item(2, center, .80 0 auto);
     @include flex-container(100%, null, row, wrap, center, center, stretch);
-    #student-matching-answer {
+    .student-matching-answer {
       @include flex-item(1, stretch, 1 1 auto);
       margin: 0 5px 8px 5px;
     }
