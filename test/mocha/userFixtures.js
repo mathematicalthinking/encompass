@@ -99,7 +99,16 @@ const admin = {
     },
     modifiableSection: {
       _id: '5b9149a32ecaf7c30dd4748f',
-      name: `Summer's Algebra 2 1st Period`
+      name: `Summer's Algebra 2 1st Period`,
+      teacherToAdd: '5b7321ee59a672806ec903d5',
+      newTeachers: ['5b7321ee59a672806ec903d5', '5b4e4b48808c7eebc9f9e827',
+      '5b914a802ecaf7c30dd47493'],
+      newStudents: [ '5b9149c22ecaf7c30dd47490',
+      '5b9149f52ecaf7c30dd47491',
+      '5b914a102ecaf7c30dd47492',
+      '5b99146e25b620610ceead75',
+    '5b72273c5b50ea3fe3d01a0b'],
+      studentToAdd:'5b72273c5b50ea3fe3d01a0b'
     },
   },
   problems: {
@@ -267,7 +276,13 @@ const pdAdminDrexel = {
     },
     modifiableSection: {
       _id: '5b913e723add43b868ae9804',
-      name: `Morty's Math 101`
+      name: `Morty's Math 101`,
+      teacherToAdd: '5b1e7bf9a5d2157ef4c911a6',
+      newTeachers: ['5b1e7bf9a5d2157ef4c911a6', '5b245841ac75842be3189526'],
+      newStudents: ['5b913ea33add43b868ae9805',
+      '5b913eaf3add43b868ae9806',
+      '5b913ebe3add43b868ae9807','5b72273c5b50ea3fe3d01a0b'],
+      studentToAdd: '5b72273c5b50ea3fe3d01a0b'
     },
   },
   problems: {
@@ -459,7 +474,15 @@ const teacherMT = {
     },
     modifiableSection: {
       _id: '5b9149a32ecaf7c30dd4748f',
-      name: `Summer's Algebra 2 1st Period`
+      name: `Summer's Algebra 2 1st Period`,
+      teacherToAdd: '5b245760ac75842be3189525',
+      newTeachers: ['5b4e4b48808c7eebc9f9e827',
+      '5b914a802ecaf7c30dd47493','5b245760ac75842be3189525'],
+      newStudents: ['5b9149c22ecaf7c30dd47490',
+      '5b9149f52ecaf7c30dd47491',
+      '5b914a102ecaf7c30dd47492',
+      '5b99146e25b620610ceead75','5b914a802ecaf7c30dd47493'],
+      studentToAdd:'5b914a802ecaf7c30dd47493'
     },
   },
   problems: {

@@ -51,7 +51,6 @@ var data = [{
   "teachers" : [
       "5b4e4b48808c7eebc9f9e827",
       "5b914a802ecaf7c30dd47493",
-      '5b4e4b48808c7eebc9f9e827'
   ],
   "lastModifiedDate" : null,
   "isTrashed" : false,

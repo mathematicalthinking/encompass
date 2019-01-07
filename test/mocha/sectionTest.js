@@ -5,11 +5,15 @@
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const mongoose = require('mongoose');
+const _ = require('underscore');
 
 // REQUIRE FILES
 const fixtures = require('./fixtures');
 const helpers = require('./helpers');
 const testUsers = require('./userFixtures').users;
+const models = require('../../server/datasource/schemas');
+
 
 const expect = chai.expect;
 const host = helpers.host;
@@ -30,12 +34,14 @@ describe('Section CRUD operations by account type', function() {
       before(async function(){
         try {
           await helpers.setup(agent, username, password);
+          mongoose.connect('mongodb://localhost:27017/encompass_seed');
         }catch(err) {
           console.log(err);
         }
       });
 
       after(() => {
+        mongoose.connection.close();
         agent.close();
       });
 
@@ -149,25 +155,79 @@ describe('Section CRUD operations by account type', function() {
       });
     });
   });
-
-  /** Add teachers **/
-  xdescribe('add teacher to section', () => {
+if (!isStudent) {
+  describe('add teacher to section', () => {
     it('should add one teacher to the section', done => {
-      let url = baseUrl + 'addTeacher/' + fixtures.section._id;
+      let url = baseUrl + modifiableSection._id;
       agent
       .put(url)
-      .send({teacherId: '52964659e4bad7087700014c'})
+      .send({section: {teachers: modifiableSection.newTeachers}})
       .end((err, res) => {
         if (err) {
           console.error(err);
         }
         expect(res).to.have.status(200);
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
-        expect(res.body.section.teachers).to.contain('52964659e4bad7087700014c');
+        expect(res.body.section.teachers).to.have.members(modifiableSection.newTeachers);
+        expect(res.body.section.teachers).to.contain(modifiableSection.teacherToAdd);
+        console.log('ending first test');
         done();
       });
     });
+
+    it('should add section object to new teacher\'s sections array', function(done) {
+      console.log('starting 2nd test');
+      models.User.findById(modifiableSection.teacherToAdd, (err, res) => {
+        if (err) {
+          done(err);
+        }
+        console.log('res', res.sections);
+        expect(_.find(res.sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'teacher')).to.exist;
+        expect(_.find(res.sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'student')).to.not.exist;
+        done();
+      });
+
+    });
+
+
+
   });
+  describe('add student to section', () => {
+    it('should add one student to the section', done => {
+      let url = baseUrl + modifiableSection._id;
+      agent
+      .put(url)
+      .send({section: {students: modifiableSection.newStudents}})
+      .end((err, res) => {
+        if (err) {
+          console.error(err);
+        }
+        expect(res).to.have.status(200);
+        expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'students');
+        expect(res.body.section.students).to.have.members(modifiableSection.newStudents);
+        expect(res.body.section.students).to.contain(modifiableSection.studentToAdd);
+        console.log('ending first test');
+        done();
+      });
+    });
+
+    it('should add section object to new student\'s sections array', function(done) {
+      console.log('starting 2nd test');
+      models.User.findById(modifiableSection.studentToAdd, (err, res) => {
+        if (err) {
+          done(err);
+        }
+        console.log('res', res.sections);
+        expect(_.find(res.sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'student')).to.exist;
+        expect(_.find(res.sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'teacher')).to.not.exist;
+        done();
+      });
+
+    });
+
+
+  });
+
 
   /** Remove teachers **/
   xdescribe('remove teacher from section', () => {
@@ -187,24 +247,11 @@ describe('Section CRUD operations by account type', function() {
       });
     });
   });
+}
+  /** Add teachers **/
 
-  xdescribe('addStudent to section', () => {
-    it('should add one student to the section', done => {
-      let url = baseUrl + 'addStudent/' + fixtures.section._id;
-      agent
-      .put(url)
-      .send({studentId: fixtures.student._id})
-      .end((err, res) => {
-        if (err) {
-          console.error(err);
-        }
-        expect(res).to.have.status(200);
-        expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
-        expect(res.body.section.students).to.contain(fixtures.student._id);
-        done();
-      });
-    });
-  });
+
+
 
   /** Remove teachers **/
   xdescribe('remove student from section', () => {
