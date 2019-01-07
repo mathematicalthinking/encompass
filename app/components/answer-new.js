@@ -165,15 +165,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
             });
           });
         }
-
-        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
         return rec.save();
       }))
       .then((answers) => {
         const userId = that.get('currentUser.id');
         let yourAnswer = answers.filter((answer) => {
         return answer.get('createdBy.id') === userId;}).objectAt(0);
-        return that.get('handleCreatedAnswer')(yourAnswer);
+
+        that.get('handleCreatedAnswer')(yourAnswer);
+        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
       })
         .catch((err) => {
           // do we need to roll back all recs that were created?
