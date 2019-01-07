@@ -134,7 +134,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
     return this.handleImage().then((image) => {
       let imageData;
-      let newImage;
+      let newImage = '';
       if (image) {
         imageData = image.get('imageData');
         newImage = `<img src='${imageData}'>`;
