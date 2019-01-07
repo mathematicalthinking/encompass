@@ -1,6 +1,16 @@
-<div>STEP 5 - REVIEW</div>
+<p class="input-label">
+  Would you like to create a new workspace?
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Do you want to use a class of encompass users? If not you can match by just username or enter a plain text name">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
+{{radio-group options=createWs selectedValue=selectedValue}}
+
+{{#if creatingWs}}
+  CREATE WS FORM HERE
+{{/if}}
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Next</button>
+  <button class="primary-button" {{action "next"}}>Import</button>
 </div>
