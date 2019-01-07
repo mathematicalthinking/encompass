@@ -56,9 +56,9 @@
     </div>
   {{else}}
     {{#if filteredList.length}}
-      <button class="action_button" {{action 'reviseAssignmentResponse'}}>Revise</button>
+      <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
     {{else}}
-      <button class="action_button" {{action 'beginAssignmentResponse'}}>Respond</button>
+      <button class="primary-button respond" {{action 'beginAssignmentResponse'}}>Respond</button>
     {{/if}}
     <div class="info-msg-container">
       {{#if sortedList.length}}

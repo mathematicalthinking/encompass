@@ -6,15 +6,15 @@
   <section class="third submissions">
     <form id='newanswerform' class='properForm'>
       <fieldset>
-        <div class="new-answer-input">
+        <div class="new-answer-input brief-summary">
           <label for="answer">Brief Summary <span class="required-star">*</span></label>
-          {{textarea cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
+          {{textarea name="brief-summary" cols="80" value=answer rows="3" placeholder="Brief Summary..."}}
           {{input id="answer" required="true" type="hidden" value=answer}}
         </div>
         {{#each briefSummaryErrors as |error|}}
           {{error-box error=error resetError=(action (mut briefSummaryErrors) null) showDismiss=true}}
         {{/each}}
-        <div class="new-answer-input">
+        <div class="new-answer-input explanation">
           <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
           <div class="quill-container">
             <section id="editor"></section>
@@ -23,7 +23,7 @@
         {{#each explanationErrors as |error|}}
           {{error-box error=error resetError=(action (mut explanationErrors) null) showDismiss=true}}
         {{/each}}
-        <div class="new-answer-input">
+        <div class="new-answer-input uploaded-file">
           <label for="uploadedFile">Upload PDF</label>
             {{#if imageData}}
               <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
@@ -35,7 +35,7 @@
               {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
             {{/if}}
           </div>
-          <div class="new-answer-input">
+          <div class="new-answer-input contributors">
             <label for="students">Contributing Students</label>
             <div class="student-list">
               <ul>
@@ -66,7 +66,7 @@
   <div style="clear: left"></div>
   <section class="submit">
     <span>
-      <button class="action_button" {{action 'validate'}}>Create Answer</button>
+      <button class="primary-button create" {{action 'validate'}}>Create Answer</button>
     </span>
     <span class="cancelResponse">
       <button class="action_button cancel-button" {{action 'cancelResponse'}}>Cancel</button>
