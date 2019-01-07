@@ -313,7 +313,38 @@ module.exports = {
         name: `Summer's Algebra 2 1st Period`,
         teachers: ['ssmith', 'teachertaylor']
       }
-     }
+     },
+     assignments: {
+      own: {
+        count: 1
+       },
+       answers: {
+         count: 1,
+       },
+       testExample: {
+        _id: '5b91743a3da5efca74705773',
+        name: `Summer's Org Problem / Sep 6th 2018`,
+        problemName: `Summer's Private Problem`,
+        assignedDate: 'Sep 6th 2018',
+        dueDate: 'Nov 30th 2018',
+        className: `Summer's Algebra 2 1st Period`,
+        problemStatement: `This is Summer's private problem`
+
+      },
+      submitting: {
+        isRevision: true,
+        oldAnswer: {
+          explanation: 'This is my explanation.',
+          briefSummary: 'This is a brief summary of my thoughts.',
+          contributors: ['tracyc']
+        },
+        newAnswer: {
+          explanation: 'This is my second explanation.',
+          briefSummary: 'This is a brief summary of my thoughts.',
+          contributors: ['tracyc'],
+        }
+      },
+    }
   },
 
   teacherActingStudent: {
@@ -339,6 +370,32 @@ module.exports = {
       name: `Summer's Algebra 2 1st Period`,
       teachers: ['ssmith', 'teachertaylor']
     }
+    },
+    assignments: {
+      own: {
+        count: 1
+       },
+       answers: {
+        count: 0
+       },
+       testExample: {
+        _id: '5b91743a3da5efca74705773',
+        name: `Summer's Org Problem / Sep 6th 2018`,
+        problemName: `Summer's Private Problem`,
+        assignedDate: 'Sep 6th 2018',
+        dueDate: 'Nov 30th 2018',
+        className: `Summer's Algebra 2 1st Period`,
+        problemStatement: `This is Summer's private problem`
+      },
+      submitting: {
+        isRevision: false,
+        oldAnswer: null,
+        newAnswer: {
+          explanation: 'This is my first explanation.',
+          briefSummary: 'This is a brief summary.',
+          contributors: ['actingstudent'],
+        }
+      }
     }
   }
 

@@ -17,7 +17,8 @@ module.exports = {
     problemsNew: "a.menu.problems-new",
     sections: "#sections-home",
     sectionsNew: "a.menu.sections-new",
-    usersNew: "a.menu.users-new"
+    usersNew: "a.menu.users-new",
+    assignments: "a.menu.assignments",
   },
   login: {
     username: "input[name=username]",
@@ -304,4 +305,33 @@ module.exports = {
 
 
   longString: "Pellentesque suscipit efficitur turpis, ut auctor nisl gravida vitae. Aliquam venenatis, lacus id tristique placerat, est diam vehicula magna, nec ultricies nunc massa sit amet tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec dignissim, ipsum a congue pulvinar, arcu tellus aliquam velit, sit amet dictum dui elit at ligula. Morbi sed felis et diam tincidunt efficitur. Pellentesque vehicula vehicula iaculis. Ut aliquam urna metus. Vestibulum metus purus, dignissim in vestibulum.",
+  assignmentsStudent: {
+    ownList: 'ul.your-assignments',
+    infoPage: {
+      container: 'section.assignment-info-student',
+      submitBtn: 'button.primary-button',
+      pastSubsHeader: '#past-submissions-header',
+      subList: 'ol.submission-list'
+    },
+    newAnswerForm: {
+      container: 'form#newanswerform',
+      inputs: {
+        briefSummary: 'textarea[name="brief-summary"]',
+        explanation: 'div.new-answer-input.explanation div.ql-editor',
+        studentList: 'div.student-list ul',
+        contributors: 'div.new-answer-input.contributors input'
+      },
+      createBtn: 'button.primary-button.create',
+     errors: {
+
+     }
+    },
+    answerInfo: {
+      container: '#answer-info',
+      briefSummary: 'div.info-detail.brief-summary p',
+      explanation: 'div.info-detail.explanation',
+      studentList: 'div.info-detail.students ul'
+
+    }
+  }
 };
