@@ -56,9 +56,11 @@ var SectionSchema = new Schema({
 //   * After saving we must ensure (synchonously) that:
 //   */
 SectionSchema.post('save', function (Section) {
-  var update = { $addToSet: { 'sections': { sectionId: Section, role: 'teacher'} } };
+  let SectionIdObj = mongoose.Types.ObjectId(Section._id);
+
+  let update = { $addToSet: { 'sections': { sectionId: SectionIdObj, role: 'teacher'} } };
+
   if (Section.isTrashed) {
-    var SectionIdObj = mongoose.Types.ObjectId(Section._id);
     /* + If deleted, all references are also deleted */
     update = { $pull: { 'sections': {sectionId: SectionIdObj, role: 'teacher'} } };
   }
@@ -74,7 +76,7 @@ SectionSchema.post('save', function (Section) {
   // }
 
   if (Section.teachers) {
-    mongoose.models.User.update({ '_id': {$in: Section.teachers }},
+    mongoose.models.User.updateMany({ '_id': {$in: Section.teachers }},
       update,
       function (err, affected, result) {
         if (err) {
@@ -82,7 +84,23 @@ SectionSchema.post('save', function (Section) {
         }
       });
   }
+  if (Section.students) {
 
+    let studentUpdate = { $addToSet: { 'sections': { sectionId: SectionIdObj, role: 'student'} } };
+
+  if (Section.isTrashed) {
+    /* + If deleted, all references are also deleted */
+    studentUpdate = { $pull: { 'sections': {sectionId: SectionIdObj, role: 'student'} } };
+  }
+
+    mongoose.models.User.updateMany({ '_id': {$in: Section.students }},
+      studentUpdate,
+      function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+      });
+  }
 });
 
 module.exports.Section = mongoose.model('Section', SectionSchema);

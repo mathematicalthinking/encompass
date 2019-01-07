@@ -199,7 +199,10 @@ var data = [{
     "password": "$2a$08$Puko.4Ukg3fUVSfQsyhlauvEJ84/ymUidiL7xablVfic59zzC4gFi",
     "isAuthorized": true,
     "assignments": [],
-    "sections": [],
+    "sections": [{
+      "sectionId" : "5b913e723add43b868ae9804",
+      "role" : "teacher"
+  }],
     "isTrashed": false,
     "isEmailConfirmed": true,
     "createDate": "2018-08-17T10:20:51.382Z",
