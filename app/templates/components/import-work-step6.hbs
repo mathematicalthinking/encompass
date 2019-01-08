@@ -1,8 +1,22 @@
 <div class="import-review summary">
-  <p class="input-label">Import Summary</p>
-  <p class="info"><b>{{answers.length}} files</b> will be imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
-  <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
+  {{#if isUploadingAnswer}}
+    <p>Please wait, creating submissions</p>
+  {{else}}
+    <p class="input-label">Import Summary</p>
+    {{#if uploadedAnswers}}
+      <p class="success-info"><b>{{answers.length}} files</b> have successfully been imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
+      <p class="info">You can create a workspace from these submissions {{#link-to workspaces.new}}here{{/link-to}}</p>
+    {{else}}
+      <p class="info"><b>{{answers.length}} files</b> will be imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
+      <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
+    {{/if}}
+  {{/if}}
 </div>
+
+
+{{#if isCreatingWorkspace}}
+<p>Please wait, creating workspace</p>
+{{/if}}
 
 {{#if workspaceName}}
   <div class="import-review workspace">
@@ -61,6 +75,10 @@
 {{/if}}
 
 
+{{#if savingAssignment}}
+<p>Please wait, creating assignment</p>
+{{/if}}
+
 {{#if assignmentName}}
   <div class="import-review assignment">
     <p class="input-label">Assignment to be created</p>
@@ -78,7 +96,9 @@
   </div>
 {{/if}}
 
-<div class="nav-btn-container">
-  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Create</button>
-</div>
+{{#unless shouldHideButtons}}
+  <div class="nav-btn-container">
+    <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+    <button class="primary-button" {{action "next"}}>Create</button>
+  </div>
+{{/unless}}
