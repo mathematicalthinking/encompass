@@ -5,6 +5,7 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
     return Ember.RSVP.hash({
       sections: this.get('store').findAll('section'),
       folderSets: this.get('store').findAll('folderSet'),
+      users: this.get('store').findAll('user'),
       problems: this.get('store').findAll('problem')
     });
   },
@@ -19,5 +20,3 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
     this.render('import/import');
   },
 });
-
-
