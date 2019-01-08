@@ -2,7 +2,15 @@
 Encompass.ImportWorkStep5Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step5',
   creatingWs: Ember.computed.equal('selectedValue', true),
+  creatingAssignment: Ember.computed.equal('createAssignmentValue', true),
   selectedMode: 'private',
+  selectedValue: false,
+  createAssignmentValue: false,
+  workspaceName: null,
+  workspaceOwner: null,
+  workspaceMode: null,
+  folderSet: null,
+  assignmentName: null,
   createWs: {
     groupName: 'createWs',
     required: true,
@@ -87,14 +95,26 @@ Encompass.ImportWorkStep5Component = Ember.Component.extend(Encompass.CurrentUse
       }
       this.set(propToUpdate, record);
     },
-    next() {
-      const uploadedFiles = this.get('uploadedFiles');
-      if (uploadedFiles.length >= 1) {
+    createWorkspace() {
+      this.set('workspaceName', this.get('workspaceName'));
+      this.set('workspaceOwner', this.get('selectedOwner'));
+      this.set('workspaceMode', this.get('selectedMode'));
+      this.set('folderSet', this.get('selectedFolderSet'));
+      if (!this.get('workspaceName') || !this.get('selectedOwner') || !this.get('selectedMode')) {
+        this.set('createWorkspaceError', 'Please provide required information');
+      } else {
+        this.set('createWorkspaceError', null);
         this.get('onProceed')();
-        return;
       }
-      this.set('missingFiles', true);
-
+    },
+    next() {
+      this.set('assignmentName', this.get('assignmentName'));
+      if (this.get('selectedValue')) {
+        this.send('createWorkspace');
+      } else {
+        this.get('onProceed')();
+      }
+      //check for assignment and set assignmentName
     },
     back() {
       this.get('onBack')(-1);
