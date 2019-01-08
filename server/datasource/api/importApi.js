@@ -147,15 +147,11 @@ const postImport = async function(req, res, next) {
   const user = userAuth.requireUser(req);
   // Add permission checks here
   const subData = JSON.parse(req.body.subs);
-  const doCreateWorkspace = JSON.parse(req.body.doCreateWorkspace);
-  const isPrivate = JSON.parse(req.body.isPrivate);
-  const folderSetName = JSON.parse(req.body.folderSet);
+  const doCreateWorkspace = req.body.doCreateWorkspace;
+  const workspaceMode = JSON.parse(req.body.workspaceMode);
+  const workspaceOwner = JSON.parse(req.body.workspaceOwner);
+  const folderSetId = JSON.parse(req.body.folderSet);
   const requestedName = JSON.parse(req.body.requestedName);
-
-  let workspaceMode;
-  if (doCreateWorkspace) {
-    workspaceMode = isPrivate ? 'private' : 'public';
-  }
 
   let submissions;
 
@@ -191,20 +187,20 @@ if (requestedName) {
   name = workspaceApi.nameWorkspace(submissionSet, user, false);
 }
 
-const ownerOrg = await userAuth.getUserOrg(user.id);
+const ownerOrg = await userAuth.getUserOrg(workspaceOwner);
 
 let workspace = new models.Workspace({
-  mode: workspaceMode || 'private',
+  mode: workspaceMode,
   name: name,
-  owner: user,
+  owner: workspaceOwner,
   submissionSet: submissionSet,
   submissions: submissionIds,
   createdBy: user,
   lastModifiedBy: user,
-  organization: ownerOrg
+  organization: ownerOrg,
 });
 let ws = await workspace.save();
-let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetName); // eslint-disable-line no-unused-vars
+let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetId); // eslint-disable-line no-unused-vars
 //sending back workspace and submissionID for redirect
 const data = {
               'workspaceId': ws._id,
