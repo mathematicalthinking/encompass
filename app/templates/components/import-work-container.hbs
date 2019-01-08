@@ -73,8 +73,21 @@
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "uploadAnswers")}}
+          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "importWork")}}
         {{/if}}
+
+        {{#if savingAssignment}}
+          <p>Please wait, creating assignment</p>
+        {{/if}}
+
+        {{#if isUploadingAnswer}}
+          <p>Please wait, creating submissions</p>
+        {{/if}}
+
+        {{#if isCreatingWorkspace}}
+          <p>Please wait, creating workspace</p>
+        {{/if}}
+
       </div>
 
     {{#each findRecordErrors as |error|}}
