@@ -7,10 +7,106 @@
 {{radio-group options=createWs selectedValue=selectedValue}}
 
 {{#if creatingWs}}
-  CREATE WS FORM HERE
+<div class="create-ws-content">
+  <div class="ws-new name">
+    <p class="input-label">
+      Workspace Name
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this workspace">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    <div class="single-text-input-container">
+      {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
+    </div>
+  {{#each workspaceNameErrors as |error|}}
+    {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
+  {{/each}}
+  </div>
+
+  <div class="ws-new owner">
+    <p class="input-label">
+      Workspace Owner
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="The owner of the workspace has the ability to edit every aspect of this workspace. You can make it yourself">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    {{selectize-input
+      store=store
+      inputId="owner-select"
+      initialOptions=ownerOptions
+      maxItems=1
+      onItemAdd=(action "updateSelectizeSingle")
+      onItemRemove=(action "updateSelectizeSingle")
+      labelField="username"
+      valueField="id"
+      searchField="username"
+      model="user"
+      propToUpdate="selectedOwner"
+      placeholder="Search by username to choose as owner"}}
+    {{#each ownerErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
+    {{/each}}
+  </div>
+
+  <div class="ws-new mode">
+    <p class="input-label">
+      Privacy Setting
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Decide who can see this workspace, hover over the question mark icons for more info">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    {{radio-group options=modeInputs selectedValue=selectedMode}}
+    {{#each privacySettingErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
+    {{/each}}
+  </div>
+
+  <div class="ws-new folderset">
+    <p class="input-label">
+      Folder Set
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="You can choose one of your saved folder sets or a provided set">
+        <i class="fas fa-info-circle info-icon"></i>
+      </span>
+    </p>
+    {{selectize-input
+      store=store
+      inputId="folderset-select"
+      initialOptions=folderSetOptions
+      maxItems=1
+      onItemAdd=(action "updateSelectizeSingle")
+      onItemRemove=(action "updateSelectizeSingle")
+      labelField="name"
+      valueField="id"
+      searchField="name"
+      model="folder-set"
+      propToUpdate="selectedFolderSet"
+      placeholder="Select a Folder Set"
+    }}
+    {{#each folderSetErrors as |error|}}
+      {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
+    {{/each}}
+  </div>
+  <p>You can add collaborators and change these settings after creating the workspace</p>
+  <p>Would you like to save this imported work as an assignment</p>
+
+  <div class="create-ws-error">
+    {{#if createWorkspaceError}}
+      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
+    {{/if}}
+  </div>
+
+</div>
+
+
+
+
 {{/if}}
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
-  <button class="primary-button" {{action "next"}}>Import</button>
+  {{#if creatingWs}}
+    <button class="primary-button" {{action "next"}}>Create</button>
+  {{else}}
+    <button class="primary-button" {{action "next"}}>Import</button>
+  {{/if}}
 </div>
