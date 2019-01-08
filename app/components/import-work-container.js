@@ -7,6 +7,9 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     uploadedFiles: null,
     answers: null,
     uploadedAnswers: null,
+    savingAssignment: null,
+    isUploadingAnswer: null,
+    isCreatingWorkspace: null,
     uploadedSubmissions: null,
     createdWorkspace: null,
     workspaceName: null,
@@ -299,6 +302,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         )
         .then(res => {
           this.set("isUploadingAnswer", false);
+          this.set("uploadedAnswers", true);
           this.get("alert").showToast("success", `${res.length} Submissions Created`, "bottom-end", 5000, false, null);
           // if doCreateWorkspace, convert to submissions and create workspace
           // else just display details about # of answers uploaded
@@ -308,7 +312,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
             this.set("isCompDirty", false);
             this.sendAction("doConfirmLeaving", false);
             subs = res.map(ans => {
-              //const teachers = {};
               const clazz = {};
               const publication = {
                 publicationId: null,
@@ -326,7 +329,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
               publication.puzzle.problemId = problem.get("problemId");
 
               if (studentNames) {
-                console.log('using string names', studentNames);
                 creator.username = studentNames;
               } else {
                 creator.studentId = student.get("userId");
