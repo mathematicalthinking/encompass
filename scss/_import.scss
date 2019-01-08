@@ -266,10 +266,33 @@
 
 #import-work-step6 {
   .import-review {
-    margin-bottom: 40px;
+    margin-bottom: 60px;
   }
   .info {
     font-weight: $light-font-weight;
+    margin-bottom: 15px;
+  }
+  .content-box {
+    box-shadow: $box-shadow;
+    border-radius: 5px;
+    padding: 10px 30px;
+    max-width: 350px;
+    .content-line {
+      @include flex-container(auto, null, row, wrap, flex-start, center, center);
+      margin: 25px 0;
+    }
+    .content-label {
+      font-weight: $main-font-weight;
+      color: black;
+      @include flex-item(1, auto, .20 1 auto);
+      max-width: 80px;
+      width: 20%;
+    }
+    .content-value {
+      font-weight: $light-font-weight;
+      @include flex-item(2, auto, .7 0 auto);
+      width: 70%;
+    }
   }
   .workspace-import-card {
     @include flex-item(1, auto, 1 1 auto);

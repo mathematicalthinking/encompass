@@ -4,13 +4,7 @@ Encompass.ImportWorkStep6Component = Ember.Component.extend(Encompass.CurrentUse
 
   actions: {
     next() {
-      const uploadedFiles = this.get('uploadedFiles');
-      if (uploadedFiles.length >= 1) {
-        this.get('onProceed')();
-        return;
-      }
-      this.set('missingFiles', true);
-
+      this.get('onProceed')();
     },
     back() {
       this.get('onBack')(-1);

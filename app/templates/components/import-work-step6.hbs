@@ -1,7 +1,7 @@
 <div class="import-review summary">
   <p class="input-label">Import Summary</p>
-  <p class="info">{{answers.length}} files will be imported to EnCoMPASS as submissions to {{selectedProblem.title}}</p>
-  <p class="info">Please review summary info on left hand side</p>
+  <p class="info"><b>{{answers.length}} files</b> will be imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
+  <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
 </div>
 
 {{#if workspaceName}}
@@ -64,7 +64,17 @@
 {{#if assignmentName}}
   <div class="import-review assignment">
     <p class="input-label">Assignment to be created</p>
-    <p>{{assignmentName}} for {{selectedSection.name}} to {{selectedProblem.title}}</p>
+    <div class="content-box">
+      <p class="content-line">
+        <span class="content-label">Name</span><span class="content-value">{{assignmentName}}</span>
+      </p>
+      <p class="content-line">
+        <span class="content-label">Problem</span><span class="content-value">{{selectedProblem.title}}</span>
+      </p>
+      <p class="content-line">
+        <span class="content-label">Class</span><span class="content-value">{{selectedSection.name}}</span>
+      </p>
+    </div>
   </div>
 {{/if}}
 
