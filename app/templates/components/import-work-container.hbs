@@ -73,8 +73,7 @@
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "importWork")}}
-          {{!-- {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}} --}}
+          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "uploadAnswers")}}
         {{/if}}
       </div>
 
@@ -94,12 +93,4 @@
 <div class="toggle-filter-menu">
   <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
 </div>
-
-
-{{!--
-  {{#if isReviewingSubmissions}}
-    {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doNotCreateWorkspace=doNotCreateWorkspace isPrivate=isPrivate mode=mode
-    folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
-  {{/if}}
-  </div> --}}
 

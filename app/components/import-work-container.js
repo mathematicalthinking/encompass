@@ -209,14 +209,9 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       prepareReview() {
-        console.log('prepare review ran');
-        console.log('ws name is', this.get('workspaceName'));
-        console.log('ws owner is', this.get('workspaceOwner'));
-        console.log('ws mode is', this.get('workspaceMode'));
-        console.log('ws folderset is', this.get('folderSet'));
-        console.log('assignemnt name is', this.get('assignmentName'));
         this.set("currentStep", this.get("steps")[6]);
       },
+
 
       toggleNewProblem: function() {
         if (this.get("isCreatingNewProblem") !== true) {
@@ -291,7 +286,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           answers.map(answer => {
             // TODO: Determine how to handle groups
             answer.createdBy = answer.students[0];
-            answer.answer = "See image.";
+            answer.answer = "See image";
 
             let ans = that.store.createRecord("answer", answer);
             ans.set("section", that.get("selectedSection"));
@@ -304,7 +299,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
             // else just display details about # of answers uploaded
             const uploadedAnswers = res;
 
-            if (that.get("doCreateWorkspace")) {
+            if (that.get("workspaceName")) {
               this.set("isCompDirty", false);
               this.sendAction("doConfirmLeaving", false);
               subs = res.map(ans => {
@@ -394,6 +389,17 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
             this.handleErrors(err, "createAnswerErrors");
           });
       },
+
+      importWork: function () {
+        //first thing to do is to import the answers
+        if (this.get('assignmentName')) {
+          console.log('create assignment');
+        }
+        if (this.get('workspaceName')) {
+          console.log('create workspace');
+        }
+      },
+
       toggleMenu: function() {
         $("#filter-list-side").toggleClass("collapse");
         $("#arrow-icon").toggleClass("fa-rotate-180");
