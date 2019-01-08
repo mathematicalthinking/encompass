@@ -6,14 +6,15 @@
 </p>
 {{radio-group options=createWs selectedValue=selectedValue}}
 
-<p class="input-label">
-  Would you like to save this work as an assignment?
-  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Saving this is an assignment will make it easier to find and also add updated responses to">
-    <i class="fas fa-info-circle info-icon"></i>
-  </span>
-</p>
-{{radio-group options=createWs selectedValue=selectedValue}}
-
+{{!-- {{#unless creatingWs}}
+  <p class="input-label">
+    Would you like to save this work as an assignment?
+    <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Saving this is an assignment will make it easier to find and also add updated responses to">
+      <i class="fas fa-info-circle info-icon"></i>
+    </span>
+  </p>
+  {{radio-group options=createAssignment selectedValue=selectedValue}}
+{{/unless}} --}}
 
 {{#if creatingWs}}
 <div class="create-ws-content">
