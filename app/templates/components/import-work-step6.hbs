@@ -5,14 +5,13 @@
     <p class="input-label">Import Summary</p>
     {{#if uploadedAnswers}}
       <p class="success-info"><b>{{answers.length}} files</b> have successfully been imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
-      <p class="info">You can create a workspace from these submissions {{#link-to workspaces.new}}here{{/link-to}}</p>
+      <p class="info">You can create a workspace from these submissions {{#link-to 'workspaces.new'}}here{{/link-to}}</p>
     {{else}}
       <p class="info"><b>{{answers.length}} files</b> will be imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
       <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
     {{/if}}
   {{/if}}
 </div>
-
 
 {{#if isCreatingWorkspace}}
 <p>Please wait, creating workspace</p>
