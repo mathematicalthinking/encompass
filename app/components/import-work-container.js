@@ -302,8 +302,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           this.get("alert").showToast("success", `${res.length} Submissions Created`, "bottom-end", 5000, false, null);
           // if doCreateWorkspace, convert to submissions and create workspace
           // else just display details about # of answers uploaded
-          const uploadedAnswers = res;
-
           if (that.get("workspaceName")) {
             this.set("isCreatingWorkspace", true);
 
@@ -322,20 +320,28 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
               const student = ans.get("createdBy");
               const section = ans.get("section");
               const problem = ans.get("problem");
+              const studentNames = ans.get('studentNames');
 
               publication.puzzle.title = problem.get("title");
               publication.puzzle.problemId = problem.get("problemId");
 
-              creator.studentId = student.get("userId");
-              creator.username = student.get("username");
+              if (studentNames) {
+                console.log('using string names', studentNames);
+                creator.username = studentNames;
+              } else {
+                creator.studentId = student.get("userId");
+                creator.username = student.get("username");
+              }
 
-              clazz.sectionId = section.get("sectionId");
-              clazz.name = section.get("name");
 
-              const teachers = section.get("teachers");
-              const primaryTeacher = teachers.get("firstObject");
+              if (this.get('utils').isNonEmptyObject(section.get('content'))) {
+                clazz.sectionId = section.get("sectionId");
+                clazz.name = section.get("name");
+                const teachers = section.get("teachers");
+                const primaryTeacher = teachers.get("firstObject");
+                teacher.id = primaryTeacher.get("userId");
+              }
 
-              teacher.id = primaryTeacher.get("userId");
               let sub = {
                 // longAnswer: ans.get('explanation'),
                 answer: ans.id,
@@ -372,14 +378,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
                 if (res.workspaceId) {
                   that.set("createdWorkspace", res);
                   that.sendAction("toWorkspaces", res);
-                  this.get("alert").showToast(
-                    "success",
-                    "Workspace Created",
-                    "bottom-end",
-                    4000,
-                    false,
-                    null
-                  );
+                  this.get("alert").showToast("success", "Workspace Created", "bottom-end", 4000, false, null);
                 }
               })
               .catch(err => {
@@ -387,8 +386,8 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
               });
           } else {
             // don't create workspace
-            that.set("isReviewingSubmissions", false);
-            that.set("uploadedAnswers", uploadedAnswers);
+            this.set("isCompDirty", false);
+            this.sendAction("doConfirmLeaving", false);
           }
         })
         .catch(err => {
