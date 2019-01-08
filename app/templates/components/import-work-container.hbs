@@ -41,6 +41,9 @@
               <span>Match Students</span>
             </li>
             <li class="step-5 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+              <span>Create Workspace</span>
+            </li>
+            <li class="step-6 {{if (greater-equal currentStep.value 6) 'active-step'}}">
               <span>Review</span>
             </li>
           </ul>
@@ -62,14 +65,15 @@
         {{/if}}
 
         {{#if showMatchStudents}}
-          {{import-work-step4  store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem studentMap=studentMap selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
-          "setMatchedStudents")}}
-          {{!-- {{ws-copy-permissions submissionsPool=submissionsPool workspace=workspaceToCopy newWsPermissions=newWsPermissions store=store newWsOwner=newWsOwner onProceed=(action "setMatchedStudents") onBack=(action "changeStep")}} --}}
+          {{import-work-step4  store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem studentMap=studentMap selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setMatchedStudents")}}
+        {{/if}}
+
+        {{#if showCreateWs}}
+          {{import-work-step5 users=users folderSets=folderSets store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "prepareReview")}}
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step5 users=users store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
-          "setUploadedFiles")}}
+          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName onBack=(action "changeStep") onProceed=(action "importWork")}}
           {{!-- {{ws-copy-review showLoadingMessage=showRequestLoading mode=newWsMode owner=newWsOwner name=newWsName workspace=workspaceToCopy onProceed=(action "createCopyRequest") onBack=(action "changeStep") recordCounts=recordCounts}} --}}
         {{/if}}
       </div>
@@ -93,20 +97,9 @@
 
 
 {{!--
-
-  {{#if isMatchingStudents}}
-    {{student-matching class="import-matching" selectedSection=selectedSection answers=answers updateAnswer=updateAnswer reviewSubmissions=(action "reviewSubmissions")}}
+  {{#if isReviewingSubmissions}}
+    {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doNotCreateWorkspace=doNotCreateWorkspace isPrivate=isPrivate mode=mode
+    folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
   {{/if}}
-
-    {{#if isReviewingSubmissions}}
-      {{import-review-answers class="import-review" answers=answers uploadAnswers=(action "uploadAnswers") doNotCreateWorkspace=doNotCreateWorkspace isPrivate=isPrivate mode=mode
-      folderSets=model.folderSets selectedFolderSet=selectedFolderSet requestedName=requestedName}}
-    {{/if}}
-
-    {{#if uploadedAnswers}}
-      <div class="upload-results">
-        <p class="success-message">uploaded {{uploadedAnswers.length}} submissions successfully</p>
-      </div>
-    {{/if}}
   </div> --}}
 

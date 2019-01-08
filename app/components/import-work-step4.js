@@ -35,7 +35,6 @@ Encompass.ImportWorkStep4Component = Ember.Component.extend(Encompass.CurrentUse
         this.set('isMatchingIncompleteError', null);
       }
       let answers = this.get('answers');
-      console.log('checkstatus ran and answers are', answers);
 
       answers.forEach((ans) => {
         let isValid = this.get('utils').isNonEmptyArray(ans.students) || this.get('utils').isNonEmptyArray(ans.studentNames);
