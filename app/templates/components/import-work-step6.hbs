@@ -1,0 +1,74 @@
+<div class="import-review summary">
+  <p class="input-label">Import Summary</p>
+  <p class="info">{{answers.length}} files will be imported to EnCoMPASS as submissions to {{selectedProblem.title}}</p>
+  <p class="info">Please review summary info on left hand side</p>
+</div>
+
+{{#if workspaceName}}
+  <div class="import-review workspace">
+    <p class="input-label">Workspace to be created</p>
+    <div class="workspace-import-card">
+      <div class="item-card-container">
+        <div class="item-card row-1">
+          <div class="item-card privacy">
+            <span class="privacy-icon">
+              <span class="info-text-tip simptip-position-right simptip-smooth" data-tooltip={{workspaceMode}}>
+                {{{public-private workspaceMode}}}
+              </span>
+            </span>
+            <span class="date">{{format-date createDate 'L'}}</span>
+          </div>
+        </div>
+        <div class="item-card row-2">
+          <div class="item-card name">
+            <span>{{workspaceName}}</span>
+          </div>
+        </div>
+        <div class="item-card row-3">
+          <div class="item-card description">
+            {{workspaceOwner.username}}
+          </div>
+        </div>
+        <div class="item-card row-4">
+          <div class="item-card status">
+            <ul class="workspace-stats">
+              <li>
+                <p class="stat-header">Submissions</p>
+                <p class="stat-number">{{answers.length}}</p>
+              </li>
+              <li>
+                <p class="stat-header">Selections</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Comments</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Responses</p>
+                <p class="stat-number">0</p>
+              </li>
+              <li>
+                <p class="stat-header">Folders</p>
+                <p class="stat-number">{{folderSet.folders.length}}</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+
+{{#if assignmentName}}
+  <div class="import-review assignment">
+    <p class="input-label">Assignment to be created</p>
+    <p>{{assignmentName}} for {{selectedSection.name}} to {{selectedProblem.title}}</p>
+  </div>
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Create</button>
+</div>
