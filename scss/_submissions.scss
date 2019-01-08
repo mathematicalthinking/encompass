@@ -164,10 +164,13 @@
   }
   .primary-button {
     text-align: center;
-    width: 160px;
+    width: 180px;
     display: block;
     margin: 0 auto;
     margin-top: 30px;
+    &.create-ws {
+      margin-bottom: 50px;
+    }
   }
   .list-container {
     .top-row {
