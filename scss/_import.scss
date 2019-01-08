@@ -272,6 +272,11 @@
     font-weight: $light-font-weight;
     margin-bottom: 15px;
   }
+  .success-info {
+    font-weight: $light-font-weight;
+    margin-bottom: 15px;
+    color: $success-color;
+  }
   .content-box {
     box-shadow: $box-shadow;
     border-radius: 5px;
