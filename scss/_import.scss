@@ -74,6 +74,20 @@
 }
 
 #import-work-container {
+  .progressbar li {
+    list-style-type: none;
+    width: 16.66%;
+    float: left;
+    font-size: .9em;
+    position: relative;
+    text-align: center;
+    text-transform: capitalize;
+    color: $input-border;
+    font-weight: $main-font-weight;
+  }
+  .progressbar li.active-step {
+    color: $accent-color;
+  }
   .single-text-input-container {
     max-width: 600px;
   }
@@ -237,6 +251,106 @@
 
 #import-work-step5 {
   .create-ws-content {
-    margin: 30px 0;
+    margin: 30px 0 30px 20px;
+  }
+  .info {
+    font-weight: $light-font-weight;
+    margin-bottom: 40px;
+  }
+  .ws-new {
+    &.assignment {
+      margin: 30px 0;
+    }
+  }
+}
+
+#import-work-step6 {
+  .import-review {
+    margin-bottom: 40px;
+  }
+  .info {
+    font-weight: $light-font-weight;
+  }
+  .workspace-import-card {
+    @include flex-item(1, auto, 1 1 auto);
+    max-width: 700px;
+    .item-card-container {
+      margin: 5px;
+      box-shadow: $box-shadow;
+      border-radius: 5px;
+      padding: 10px;
+      display: block;
+      @include flex-container(auto, hidden, column, wrap, space-between, stretch, stretch);
+      &:hover {
+        background-color: $list-hover-color;
+      }
+      .item-card {
+        &.row-1 {
+          @include flex-item(1, auto, 1 0 auto);
+          padding: 15px 10px;
+          .privacy {
+            text-align: left;
+            float: left;
+            .privacy-icon {
+              margin-right: 5px;
+              font-size: 1.2em;
+            }
+            .date {
+              margin-left: 10px;
+              position: relative;
+              top: -3px;
+            }
+          }
+          .more {
+            float: right;
+            font-size: 1em;
+            margin-top: 5px;
+            cursor: pointer;
+          }
+        }
+        &.row-2 {
+          @include flex-item(2, auto, 1 0 auto);
+          padding: 20px 15px 15px 15px;
+            color: black;
+          a {
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+          text-transform: capitalize;
+          overflow-y: hidden;
+        }
+        &.row-3 {
+          @include flex-item(3, auto, 1 0 auto);
+          padding: 0px 15px 15px 15px;
+          a {
+            &.active {
+              font-weight: $bolder-font-weight;
+              background-color: $background-body !important;
+            }
+          }
+        }
+        &.row-4 {
+          @include flex-item(4, auto, 1 0 auto);
+          padding: 15px 10px 20px 10px;
+          .workspace-stats {
+            text-align: center;
+            @include flex-container(auto, auto, row, wrap, space-between, stretch, stretch);
+            li {
+              @include flex-item(1, auto, 1 0 auto);
+              line-height: 2em;
+              min-width: 100px;
+              .stat-header {
+                color: black;
+              }
+              .stat-number {
+                font-weight: $light-font-weight;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
