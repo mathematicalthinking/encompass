@@ -12,7 +12,7 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
 
   actions: {
     toWorkspaces: function(workspace) {
-      window.location.href = `#/workspaces/${workspace.workspaceId}/submissions/${workspace.submissionId}`;
+      window.location.href = `#/workspaces/${workspace._id}/submissions/${workspace.submissions[0]}`;
     }
   },
 
