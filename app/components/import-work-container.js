@@ -210,6 +210,15 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       setMatchedStudents() {
+        //calculate how many submissions
+        let submissionCount = 0;
+        this.get('answers').map(answer => {
+          let studentsLength = answer.students.length;
+          let studentNamesLength = answer.studentNames.length;
+          submissionCount += studentsLength + studentNamesLength;
+        });
+        //for each answer count how many students or students names
+        this.set('submissionCount', submissionCount);
         this.set("currentStep", this.get("steps")[5]);
       },
 
@@ -286,7 +295,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         }
         return Ember.RSVP.all(answers.map(answer => {
           if (that.get('utils').isNonEmptyArray(answer.students)) {
-            console.log('answer students are', answer.students);
             return Ember.RSVP.all(answer.students.map((student) => {
               let ans = that.store.createRecord("answer", answer);
               ans.set('answer', "See Image");
@@ -296,9 +304,9 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
               ans.set('createdBy', student);
               return ans.save();
             }));
-          } else {
+          }
+          if (that.get('utils').isNonEmptyArray(answer.studentNames)) {
             return Ember.RSVP.all(answer.studentNames.map((student) => {
-              console.log('student inside studentName is', student);
               let ans = that.store.createRecord("answer", answer);
               ans.set('answer', "See Image");
               ans.set("section", that.get("selectedSection"));
@@ -311,10 +319,9 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           }
         }))
         .then(answers => {
-          console.log('ANSWERSSS', answers);
           answers = _.flatten(answers, true);
           this.get('alert').showToast('success', `${answers.length} Submissions Created`, 'bottom-end', 3000, false, null);
-          console.log('answers are', answers);
+          this.set('uploadAnswers', true);
           if (this.get('workspaceName')) {
             this.set("isUploadingAnswer", false);
             this.set("isCreatingWorkspace", true);
@@ -331,7 +338,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       createSubmissions: function (answers) {
-        console.log('create subs ran and ans is', answers);
         let subs;
         subs = answers.map(ans => {
           const clazz = {};
@@ -341,7 +347,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           };
           const creator = {};
           const teacher = {};
-          console.log('ans content inside subs is', ans);
           const student = ans.get("createdBy");
           const section = ans.get("section");
           const problem = ans.get("problem");
@@ -379,7 +384,6 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       createWorkspace: function (subs) {
-        console.log('createWorkspace ran and subs are', subs);
         this.set("isCreatingWorkspace", true);
         this.set("isCompDirty", false);
         this.sendAction("doConfirmLeaving", false);
