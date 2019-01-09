@@ -286,6 +286,13 @@
     font-weight: $light-font-weight;
     margin-bottom: 15px;
     color: $success-color;
+    a {
+      color: $accent-color;
+      font-weight: $main-font-weight;
+      &:hover {
+        font-weight: $bold-font-weight;
+      }
+    }
   }
   .content-box {
     box-shadow: $box-shadow;
