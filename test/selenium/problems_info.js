@@ -280,9 +280,9 @@ describe('Problems Info', async function () {
                   expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-filled')).to.be.true;
                 });
                 it('should remove fill for star icon when removed from recommended', async function () {
-                  await driver.sleep(5000);
+                  await driver.sleep(500);
                   await helpers.waitForAndClickElement(driver, css.problemInfo.recommendButton);
-                  await driver.sleep(5000);
+                  await driver.sleep(500);
                   expect(await helpers.isElementVisible(driver, css.problemInfo.recommendButton + ' i.star-line')).to.be.true;
                 });
               }
