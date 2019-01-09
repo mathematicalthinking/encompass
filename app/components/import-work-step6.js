@@ -1,4 +1,3 @@
-/*global _:false */
 Encompass.ImportWorkStep6Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step6',
 

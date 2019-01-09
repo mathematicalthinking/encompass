@@ -74,7 +74,13 @@
               </li>
               <li>
                 <p class="stat-header">Folders</p>
-                <p class="stat-number">{{folderSet.folders.length}}</p>
+                <p class="stat-number">
+                  {{#if folderSet}}
+                    {{folderSet.folders.length}}
+                  {{else}}
+                    0
+                  {{/if}}
+                </p>
               </li>
             </ul>
           </div>
