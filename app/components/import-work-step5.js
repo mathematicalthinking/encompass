@@ -108,10 +108,18 @@ Encompass.ImportWorkStep5Component = Ember.Component.extend(Encompass.CurrentUse
       }
     },
     next() {
-      this.set('assignmentName', this.get('assignmentName'));
+      if (this.get('createAssignmentValue')) {
+        this.set('assignmentName', this.get('assignmentName'));
+      } else {
+        this.set('assignmentName', null);
+      }
       if (this.get('selectedValue')) {
         this.send('createWorkspace');
       } else {
+        this.set('workspaceName', null);
+        this.set('workspaceOwner', null);
+        this.set('workspaceMode', null);
+        this.set('folderSet', null);
         this.get('onProceed')();
       }
       //check for assignment and set assignmentName
