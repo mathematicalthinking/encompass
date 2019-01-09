@@ -284,46 +284,47 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         } else {
           assignment = null;
         }
-
-          return Ember.RSVP.all(answers.map(answer => {
-            if (that.get('utils').isNonEmptyArray(answer.students)) {
-              console.log('answer students are', answer.students);
-              return Ember.RSVP.all(answer.students.map((student) => {
-                let ans = that.store.createRecord("answer", answer);
-                ans.set('answer', "See Image");
-                ans.set("section", that.get("selectedSection"));
-                ans.set("problem", that.get("selectedProblem"));
-                ans.set('assignment', assignment);
-                ans.set('createdBy', student);
-                return ans.save();
-              }));
-            } else {
-              return Ember.RSVP.all(answer.studentNames.map((student) => {
-                let ans = that.store.createRecord("answer", answer);
-                ans.set('answer', "See Image");
-                ans.set("section", that.get("selectedSection"));
-                ans.set("problem", that.get("selectedProblem"));
-                ans.set('assignment', assignment);
-                ans.set('createdBy', that.get('currentUser'));
-                return ans.save();
-              }));
-            }
-          }))
-          .then(answers => {
-            console.log('ANSWERSSS', answers);
-            answers = _.flatten(answers, true);
-            this.get('alert').showToast('success', `${answers.length} Submissions Created`, 'bottom-end', 3000, false, null);
-            console.log('answers are', answers);
-            if (this.get('workspaceName')) {
-              this.set("isUploadingAnswer", false);
-              this.set("isCreatingWorkspace", true);
-              this.set("uploadedAnswers", true);
-              this.send('createSubmissions', answers);
-            } else {
-              this.set('isCompDirty', false);
-              this.sendAction("doConfirmLeaving", false);
-            }
+        return Ember.RSVP.all(answers.map(answer => {
+          if (that.get('utils').isNonEmptyArray(answer.students)) {
+            console.log('answer students are', answer.students);
+            return Ember.RSVP.all(answer.students.map((student) => {
+              let ans = that.store.createRecord("answer", answer);
+              ans.set('answer', "See Image");
+              ans.set("section", that.get("selectedSection"));
+              ans.set("problem", that.get("selectedProblem"));
+              ans.set('assignment', assignment);
+              ans.set('createdBy', student);
+              return ans.save();
+            }));
+          } else {
+            return Ember.RSVP.all(answer.studentNames.map((student) => {
+              console.log('student inside studentName is', student);
+              let ans = that.store.createRecord("answer", answer);
+              ans.set('answer', "See Image");
+              ans.set("section", that.get("selectedSection"));
+              ans.set("problem", that.get("selectedProblem"));
+              ans.set('assignment', assignment);
+              ans.set('createdBy', that.get('currentUser'));
+              ans.set('studentNames', student);
+              return ans.save();
+            }));
           }
+        }))
+        .then(answers => {
+          console.log('ANSWERSSS', answers);
+          answers = _.flatten(answers, true);
+          this.get('alert').showToast('success', `${answers.length} Submissions Created`, 'bottom-end', 3000, false, null);
+          console.log('answers are', answers);
+          if (this.get('workspaceName')) {
+            this.set("isUploadingAnswer", false);
+            this.set("isCreatingWorkspace", true);
+            this.set("uploadedAnswers", true);
+            this.send('createSubmissions', answers);
+          } else {
+            this.set('isCompDirty', false);
+            this.sendAction("doConfirmLeaving", false);
+          }
+        }
         ).catch(err => {
           this.handleErrors(err, "createAnswerErrors");
         });
