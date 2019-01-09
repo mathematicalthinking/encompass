@@ -1,15 +1,15 @@
 <div class="import-review summary">
   {{#if isUploadingAnswer}}
     {{#if showLoadingMessage}}
-      <p>Please wait, creating submissions</p>
+      <p>Please wait, creating {{submissionCount}} submissions</p>
     {{/if}}
   {{else}}
     <p class="input-label">Import Summary</p>
     {{#if uploadedAnswers}}
-      <p class="success-info animated fadeIn"><b>{{answers.length}} files</b> have successfully been imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
+      <p class="success-info animated fadeIn"><b>{{submissionCount}} submissions</b> have successfully been created as answers for <b>{{selectedProblem.title}}</b></p>
       <p class="info  animated fadeIn">You can create a workspace from these submissions {{#link-to 'workspaces.new'}}here{{/link-to}}</p>
     {{else}}
-      <p class="info"><b>{{answers.length}} files</b> will be imported to EnCoMPASS as submissions to <b>{{selectedProblem.title}}</b></p>
+      <p class="info"><b>{{submissionCount}} submissions</b> will be created in EnCoMPASS as answers for <b>{{selectedProblem.title}}</b></p>
       <p class="info">Please review Summary info on the left to make sure everything is accurate</p>
     {{/if}}
   {{/if}}
@@ -58,7 +58,7 @@
             <ul class="workspace-stats">
               <li>
                 <p class="stat-header">Submissions</p>
-                <p class="stat-number">{{answers.length}}</p>
+                <p class="stat-number">{{submissionCount}}</p>
               </li>
               <li>
                 <p class="stat-header">Selections</p>
