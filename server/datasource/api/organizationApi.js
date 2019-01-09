@@ -92,12 +92,18 @@ function canPostOrg(user) {
   return accountType === 'A';
 }
 
-function canModifyOrg(user) {
+function canModifyOrg(user, orgId) {
   if (!user) {
     return false;
   }
   const accountType = user.accountType;
-  return accountType === 'A';
+  const userOrg = user.organization;
+
+  if (accountType === 'A') {
+    return true;
+  } else if (accountType === 'P' && JSON.stringify(userOrg) === JSON.stringify(orgId)) {
+    return true;
+  }
 }
 /**
   * @public
@@ -156,7 +162,7 @@ const putOrganization = (req, res, next) => {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
 
-  if (!canModifyOrg(user)) {
+  if (!canModifyOrg(user, req.params.id)) {
     return utils.sendError.NotAuthorizedError('You are not authorized to modify this organization', res);
   }
 
