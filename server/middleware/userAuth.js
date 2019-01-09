@@ -294,23 +294,13 @@ function splitName(name) {
   return name.split(" ").join("+");
 }
 
-async function createUserAvatar(name) {
-  //if name is first and last seperate by plus sign
-  //else just pass whatever name in
+function createUserAvatar(name) {
   const bgColor = generateRandomColor('light', null, null, null, null);
   const bgString = bgColor.substring(1);
   const formattedName = splitName(name);
-  const baseUrl = `https://ui-avatars.com/api/?round=true&color=ffffff&background=${bgString}&name=${formattedName}`;
+  const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
   console.log('baseUrl is', baseUrl);
-  // await axios.get(baseUrl)
-  //   .then(res => {
-  //     console.log('response is', res.data);
-  //     return res.data;
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //   });
-
+  return baseUrl;
 }
 
 module.exports.processToken = processToken;

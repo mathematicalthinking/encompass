@@ -67,16 +67,13 @@ module.exports = (passport) => {
 
       if (!user.avatar) {
         console.log('user does not have an avatar');
-        const bgColor = userAuth.generateRandomColor('light', '#3997EE', null, null, null);
-        const bgString = bgColor.substring(1);
-        const formattedName = userAuth.splitName(user.name);
-        const baseUrl = `https://ui-avatars.com/api/?rounded=true&color=ffffff&background=${bgString}&name=${formattedName}`;
+        const avatar = userAuth.createUserAvatar(user.name);
         User.findOne({'username': user.username}, (err, user) => {
         if (err) {
           console.log('error is', err);
         }
         if (user) {
-          user.avatar = baseUrl;
+          user.avatar = avatar;
           user.save();
         }
         });
@@ -197,6 +194,7 @@ module.exports = (passport) => {
                     isEmailConfirmed,
                   } = req.body;
 
+                  const avatar =  userAuth.createUserAvatar(name);
                   const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
 
                   const newUser = new User({
@@ -214,7 +212,8 @@ module.exports = (passport) => {
                     createdBy,
                     authorizedBy,
                     isEmailConfirmed,
-                    actingRole: 'teacher'
+                    actingRole: 'teacher',
+                    avatar,
                   });
 
                   // generate confirmEmailToken && confirmEmailExpires
