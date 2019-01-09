@@ -67,7 +67,13 @@ module.exports = (passport) => {
 
       if (!user.avatar) {
         console.log('user does not have an avatar');
-        const avatar = userAuth.createUserAvatar(user.name);
+        let name;
+        if (user.name) {
+          name = user.name;
+        } else {
+          name = user.username;
+        }
+        const avatar = userAuth.createUserAvatar(name);
         User.findOne({'username': user.username}, (err, user) => {
         if (err) {
           console.log('error is', err);
@@ -194,7 +200,13 @@ module.exports = (passport) => {
                     isEmailConfirmed,
                   } = req.body;
 
-                  const avatar =  userAuth.createUserAvatar(name);
+                  let avatarName;
+                  if (name) {
+                    avatarName = name;
+                  } else {
+                    avatarName = username;
+                  }
+                  const avatar = userAuth.createUserAvatar(avatarName);
                   const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
 
                   const newUser = new User({
