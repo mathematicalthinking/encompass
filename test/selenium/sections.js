@@ -91,7 +91,8 @@ describe('Sections', async function () {
               });
 
               it('new student should persist after page refresh', async function() {
-                await helpers.findAndClickElement(driver, 'a.menu.workspaces');
+                await driver.get(`${host}/#/assignments/home`);
+                await driver.sleep(2000);
                 await driver.get(`${host}/#/sections/${sectionDetails._id}`);
                 await driver.sleep(2000);
                 await helpers.waitForSelector(driver, usernameLinkSelector);
