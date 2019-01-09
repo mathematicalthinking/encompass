@@ -14,12 +14,19 @@
 </div>
 
 {{#if isCreatingWorkspace}}
-<p>Please wait, creating workspace</p>
+  <p>Please wait, creating workspace</p>
 {{/if}}
 
 {{#if workspaceName}}
   <div class="import-review workspace">
-    <p class="input-label">Workspace to be created</p>
+    {{#if createdWorkspace}}
+      <p class="input-label">Created Workspace</p>
+      <p class="success-info"><b>{{workspaceName}}</b> was successfully created.
+        View it {{#link-to 'workspace.work' createdWorkspace}}here{{/link-to}}
+      </p>
+    {{else}}
+      <p class="input-label">Workspace to be created</p>
+    {{/if}}
     <div class="workspace-import-card">
       <div class="item-card-container">
         <div class="item-card row-1">
@@ -75,12 +82,19 @@
 
 
 {{#if savingAssignment}}
-<p>Please wait, creating assignment</p>
+  <p>Please wait, creating assignment</p>
 {{/if}}
 
 {{#if assignmentName}}
   <div class="import-review assignment">
-    <p class="input-label">Assignment to be created</p>
+    {{#if createdAssignment}}
+      <p class="input-label">Created Assignment</p>
+      <p class="success-info"><b>{{createdAssignment.name}}</b> was successfully created.
+        View it {{#link-to 'assignment' createdAssignment}}here{{/link-to}}
+      </p>
+    {{else}}
+      <p class="input-label">Assignment to be created</p>
+    {{/if}}
     <div class="content-box">
       <p class="content-line">
         <span class="content-label">Name</span><span class="content-value">{{assignmentName}}</span>
