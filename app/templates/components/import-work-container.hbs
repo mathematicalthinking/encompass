@@ -73,7 +73,7 @@
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName savingAssignment=savingAssignment isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers onBack=(action "changeStep") onProceed=(action "importWork")}}
+          {{import-work-step6 store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem selectedSection=selectedSection workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet assignmentName=assignmentName savingAssignment=savingAssignment isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace createdAssignment=createdAssignment onBack=(action "changeStep") onProceed=(action "importWork")}}
         {{/if}}
       </div>
 

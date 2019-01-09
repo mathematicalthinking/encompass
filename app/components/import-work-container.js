@@ -328,7 +328,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
               publication.puzzle.title = problem.get("title");
               publication.puzzle.problemId = problem.get("problemId");
 
-              if (studentNames) {
+              if (this.get('utils').isNonEmptyArray(studentNames)) {
                 creator.username = studentNames;
               } else {
                 creator.studentId = student.get("userId");
@@ -377,9 +377,12 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
             })
               .then(res => {
                 that.set("isCreatingWorkspace", false);
-                if (res.workspaceId) {
-                  that.set("createdWorkspace", res);
-                  that.sendAction("toWorkspaces", res);
+                if (res.workspace) {
+                  that.set("createdWorkspace", res.workspace);
+                  let hasCreatedAssignment = that.get('createdAssignment');
+                  if (!that.get('utils').isNonEmptyObject(hasCreatedAssignment)) {
+                    that.sendAction("toWorkspaces", res);
+                  }
                   this.get("alert").showToast("success", "Workspace Created", "bottom-end", 4000, false, null);
                 }
               })
