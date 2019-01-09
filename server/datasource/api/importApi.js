@@ -202,18 +202,14 @@ let workspace = new models.Workspace({
 let ws = await workspace.save();
 let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetId); // eslint-disable-line no-unused-vars
 //sending back workspace and submissionID for redirect
-const data = {
-              'workspaceId': ws._id,
-              'submissionId': ws.submissions[0]
-             };
+const data = { 'workspace': ws };
 return utils.sendResponse(res, data);
 
-}catch(err) {
+} catch(err) {
     logger.error(err);
     return utils.sendError.InternalError(err, res);
   }
 };
-
 
 module.exports.post.import = postImport;
 module.exports.buildSubmissionSet = buildSubmissionSet;
