@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
     elementId: "import-work-container",
     selectedProblem: null,
@@ -273,130 +274,147 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       uploadAnswers: function() {
+        //need to post all answers, once they are done, pass them to createSubmissions
         let that = this;
         this.set("isUploadingAnswer", true);
         let answers = this.get("answers");
-        let subs;
         let assignment;
         if (this.get('createdAssignment')) {
           assignment = this.get('createdAssignment');
         } else {
           assignment = null;
         }
-        return Promise.all(
-          answers.map(answer => {
-            // TODO: Determine how to handle groups
-            if (this.get('utils').isNonEmptyArray(answer.students)) {
-              answer.createdBy = answer.students[0];
+
+          return Ember.RSVP.all(answers.map(answer => {
+            if (that.get('utils').isNonEmptyArray(answer.students)) {
+              console.log('answer students are', answer.students);
+              return Ember.RSVP.all(answer.students.map((student) => {
+                let ans = that.store.createRecord("answer", answer);
+                ans.set('answer', "See Image");
+                ans.set("section", that.get("selectedSection"));
+                ans.set("problem", that.get("selectedProblem"));
+                ans.set('assignment', assignment);
+                ans.set('createdBy', student);
+                return ans.save();
+              }));
             } else {
-              answer.createdBy = this.get('currentUser');
+              return Ember.RSVP.all(answer.studentNames.map((student) => {
+                let ans = that.store.createRecord("answer", answer);
+                ans.set('answer', "See Image");
+                ans.set("section", that.get("selectedSection"));
+                ans.set("problem", that.get("selectedProblem"));
+                ans.set('assignment', assignment);
+                ans.set('createdBy', that.get('currentUser'));
+                return ans.save();
+              }));
             }
-            answer.answer = "See image";
-
-            let ans = that.store.createRecord("answer", answer);
-            ans.set("section", that.get("selectedSection"));
-            ans.set("problem", that.get("selectedProblem"));
-            ans.set('assignment', assignment);
-            return ans.save();
-          })
-        )
-        .then(res => {
-          this.set("isUploadingAnswer", false);
-          this.set("uploadedAnswers", true);
-          this.get("alert").showToast("success", `${res.length} Submissions Created`, "bottom-end", 5000, false, null);
-          // if doCreateWorkspace, convert to submissions and create workspace
-          // else just display details about # of answers uploaded
-          if (that.get("workspaceName")) {
-            this.set("isCreatingWorkspace", true);
-
-            this.set("isCompDirty", false);
-            this.sendAction("doConfirmLeaving", false);
-            subs = res.map(ans => {
-              const clazz = {};
-              const publication = {
-                publicationId: null,
-                puzzle: {}
-              };
-              const creator = {};
-              const teacher = {};
-
-              const student = ans.get("createdBy");
-              const section = ans.get("section");
-              const problem = ans.get("problem");
-              const studentNames = ans.get('studentNames');
-
-              publication.puzzle.title = problem.get("title");
-              publication.puzzle.problemId = problem.get("problemId");
-
-              if (this.get('utils').isNonEmptyArray(studentNames)) {
-                creator.username = studentNames;
-              } else {
-                creator.studentId = student.get("userId");
-                creator.username = student.get("username");
-              }
-
-
-              if (this.get('utils').isNonEmptyObject(section.get('content'))) {
-                clazz.sectionId = section.get("sectionId");
-                clazz.name = section.get("name");
-                const teachers = section.get("teachers");
-                const primaryTeacher = teachers.get("firstObject");
-                teacher.id = primaryTeacher.get("userId");
-              }
-
-              let sub = {
-                // longAnswer: ans.get('explanation'),
-                answer: ans.id,
-                clazz: clazz,
-                creator: creator,
-                teacher: teacher,
-                publication: publication
-              };
-              return sub;
-            });
-            let folderSetId;
-            let folderSet = this.get("folderSet");
-            if (folderSet) {
-              folderSetId = folderSet.get("id");
+          }))
+          .then(answers => {
+            console.log('ANSWERSSS', answers);
+            answers = _.flatten(answers, true);
+            this.get('alert').showToast('success', `${answers.length} Submissions Created`, 'bottom-end', 3000, false, null);
+            console.log('answers are', answers);
+            if (this.get('workspaceName')) {
+              this.set("isUploadingAnswer", false);
+              this.set("isCreatingWorkspace", true);
+              this.set("uploadedAnswers", true);
+              this.send('createSubmissions', answers);
             } else {
-              folderSetId = "";
+              this.set('isCompDirty', false);
+              this.sendAction("doConfirmLeaving", false);
             }
+          }
+        ).catch(err => {
+          this.handleErrors(err, "createAnswerErrors");
+        });
+      },
 
+      createSubmissions: function (answers) {
+        console.log('create subs ran and ans is', answers);
+        let subs;
+        subs = answers.map(ans => {
+          const clazz = {};
+          const publication = {
+            publicationId: null,
+            puzzle: {}
+          };
+          const creator = {};
+          const teacher = {};
+          console.log('ans content inside subs is', ans);
+          const student = ans.get("createdBy");
+          const section = ans.get("section");
+          const problem = ans.get("problem");
+          const studentNames = ans.get('studentNames');
 
-            let postData = {
-              subs: JSON.stringify(subs),
-              doCreateWorkspace: true,
-              workspaceOwner: JSON.stringify(this.get('workspaceOwner.id')),
-              requestedName: JSON.stringify(this.get("workspaceName")),
-              workspaceMode: JSON.stringify(this.get('workspaceMode')),
-              folderSet: JSON.stringify(folderSetId),
-            };
-            Ember.$.post({
-              url: "api/import",
-              data: postData
-            })
-              .then(res => {
-                that.set("isCreatingWorkspace", false);
-                if (res.workspace) {
-                  that.set("createdWorkspace", res.workspace);
-                  let hasCreatedAssignment = that.get('createdAssignment');
-                  if (!that.get('utils').isNonEmptyObject(hasCreatedAssignment)) {
-                    that.sendAction("toWorkspaces", res);
-                  }
-                  this.get("alert").showToast("success", "Workspace Created", "bottom-end", 4000, false, null);
-                }
-              })
-              .catch(err => {
-                this.handleErrors(err, "postErrors");
-              });
+          publication.puzzle.title = this.get('selectedProblem').get("title");
+          publication.puzzle.problemId = problem.get("problemId");
+
+          if (this.get('utils').isNonEmptyArray(studentNames)) {
+            creator.username = studentNames;
           } else {
-            // don't create workspace
-            this.set("isCompDirty", false);
-            this.sendAction("doConfirmLeaving", false);
+            creator.studentId = student.get("userId");
+            creator.username = student.get("username");
+          }
+
+          if (this.get('utils').isNonEmptyObject(section.get('content'))) {
+            clazz.sectionId = section.get("sectionId");
+            clazz.name = section.get("name");
+            const teachers = section.get("teachers");
+            const primaryTeacher = teachers.get("firstObject");
+            teacher.id = primaryTeacher.get("userId");
+          }
+
+          let sub = {
+            // longAnswer: ans.get('explanation'),
+            answer: ans.id,
+            clazz: clazz,
+            creator: creator,
+            teacher: teacher,
+            publication: publication
+          };
+          return sub;
+        });
+        this.send('createWorkspace', subs);
+      },
+
+      createWorkspace: function (subs) {
+        console.log('createWorkspace ran and subs are', subs);
+        this.set("isCreatingWorkspace", true);
+        this.set("isCompDirty", false);
+        this.sendAction("doConfirmLeaving", false);
+        let folderSetId;
+        let folderSet = this.get("folderSet");
+        if (folderSet) {
+          folderSetId = folderSet.get("id");
+        } else {
+          folderSetId = "";
+        }
+
+        let postData = {
+          subs: JSON.stringify(subs),
+          doCreateWorkspace: true,
+          workspaceOwner: JSON.stringify(this.get('workspaceOwner.id')),
+          requestedName: JSON.stringify(this.get("workspaceName")),
+          workspaceMode: JSON.stringify(this.get('workspaceMode')),
+          folderSet: JSON.stringify(folderSetId),
+        };
+        Ember.$.post({
+          url: "api/import",
+          data: postData
+        })
+        .then(res => {
+          this.set("isCreatingWorkspace", false);
+          if (res.workspace) {
+            this.set("createdWorkspace", res.workspace);
+            let hasCreatedAssignment = this.get('createdAssignment');
+            if (!this.get('utils').isNonEmptyObject(hasCreatedAssignment)) {
+              this.sendAction("toWorkspaces", res.workspace);
+            }
+            this.get("alert").showToast("success", "Workspace Created", "bottom-end", 4000, false, null);
           }
         })
         .catch(err => {
-          this.handleErrors(err, "createAnswerErrors");
+          this.handleErrors(err, "postErrors");
         });
       },
 
@@ -428,15 +446,15 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           });
 
           createAssignmentData.save()
-            .then((assignment) => {
-              this.set('savingAssignment', false);
-              this.set('createdAssignment', assignment);
-              this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
-              this.send('uploadAnswers');
-            })
-            .catch((err) => {
-              that.handleErrors(err, 'createRecordErrors', createAssignmentData);
-            });
+          .then((assignment) => {
+            this.set('savingAssignment', false);
+            this.set('createdAssignment', assignment);
+            this.get('alert').showToast('success', 'Assignment Created', 'bottom-end', 3000, false, null);
+            this.send('uploadAnswers');
+          })
+          .catch((err) => {
+            that.handleErrors(err, 'createRecordErrors', createAssignmentData);
+          });
         }
       },
 
