@@ -5,13 +5,14 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
     return Ember.RSVP.hash({
       sections: this.get('store').findAll('section'),
       folderSets: this.get('store').findAll('folderSet'),
+      users: this.get('store').findAll('user'),
       problems: this.get('store').findAll('problem')
     });
   },
 
   actions: {
     toWorkspaces: function(workspace) {
-      window.location.href = `#/workspaces/${workspace.workspaceId}/submissions/${workspace.submissionId}`;
+      window.location.href = `#/workspaces/${workspace._id}/submissions/${workspace.submissions[0]}`;
     }
   },
 
@@ -19,5 +20,3 @@ Encompass.ImportRoute = Encompass.AuthenticatedRoute.extend(Encompass.ConfirmLea
     this.render('import/import');
   },
 });
-
-

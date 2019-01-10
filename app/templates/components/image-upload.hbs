@@ -1,25 +1,36 @@
 <form enctype="multipart/form-data">
-   <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
-   {{#unless hideSubmit}}
-   <input type="submit" value="Upload Images" {{action "uploadImages"}}/>
-   {{/unless}}
+  <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
+
+  {{#unless hideSubmit}}
+    {{#if filesToBeUploaded}}
+      <input type="submit" value="Upload Files" {{action "uploadImages"}}/>
+    {{/if}}
+  {{/unless}}
 </form>
+
+
 {{#if missingFilesError}}
   <p class="error-message">Please select files to upload.</p>
 {{/if}}
 
-{{#if showLoadingMessage}}
-<p class="loading-message">Uploading images... Thank you for your patience.</p>
-{{/if}}
+{{#unless uploadResults}}
+  {{#if showLoadingMessage}}
+    <p class="loading-message">Uploading images... Thank you for your patience.</p>
+  {{/if}}
+{{/unless}}
 
 {{#each uploadErrors as |error|}}
     <p class="error-message">{{error}}</p>
 {{/each}}
 
 {{#if uploadResults}}
-<ul>
-  {{#each uploadResults as |file|}}
-    <li>Uploaded <a href={{file.relativePath}} target="_blank">{{file.filename}}</a> successfully!</li>
-  {{/each}}
-</ul>
+<p class="upload-results">
+  {{uploadResults.length}}
+  {{#if (greater-equal uploadResults.length 2)}}
+    files
+  {{else}}
+    file
+  {{/if}}
+    uploaded successfully!
+</p>
 {{/if}}

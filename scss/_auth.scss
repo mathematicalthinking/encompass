@@ -2,10 +2,36 @@
 @import "mixins";
 @import "responsive-font-size";
 
+@media screen and (min-width: 0) and (max-width: 530px) {
+  .login-page, .signup-page {
+    background-color: white;
+  }
+  .login-box, .signup-box {
+    box-shadow: none;
+    position: relative;
+    top: 0;
+  }
+}
+
+@media screen and (min-width: 531px) and (max-width: 100000px) {
+  .login-page, .signup-page {
+    background-color: $filter-list-background-color;
+  }
+  .login-box, .signup-box {
+    box-shadow: $button-shadow;
+    position: relative;
+  }
+  .login-box {
+    top: 8%;
+  }
+  .signup-box {
+    top: 5%;
+  }
+}
 
 // GENERAL STYLING
 .auth-page, .login-page, .signup-page, .forgot-page, .reset-page {
-  background-color: $filter-list-background-color;
+  // background-color: $filter-list-background-color;
   width: 100%;
   font-family: $primary-font;
 }
@@ -17,33 +43,37 @@
 
 // LOGIN PAGE SYLING
 .login-page {
-  height: 84vh;
-  padding-top: 8vh;
-  z-index: -1;
+  // padding-top: 3%;
+  height: calc(100vh - 75px);
+  position: absolute;
+  top: 0;
 }
 
 .login-box {
   margin: 0 auto;
-  width: 500px;
-  padding-top: 40px;
+  max-width: 450px;
+  padding: 30px 30px 0 30px;
+  border-radius: 5px;
   background-color: white;
-  box-shadow: $box-shadow;
-  border-radius: 3px;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
   .encompass-logo {
-    display: block;
-    margin: 0 auto;
-    width: 200px;
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
     margin-bottom: 30px;
+  }
+  .form-signin {
+    @include flex-item(2, auto, .6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
     margin-bottom: 40px;
     padding: 0;
-    width: 350px;
+    max-width: 350px;
+    width: 100%;
   }
   input {
     display: block;
-    width: 350px;
+    width: 100%;
     font-size: 1em;
     padding: 10px 0;
     margin: 0 auto;
@@ -54,10 +84,20 @@
     &:required {
       box-shadow: none;
     }
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid black;
+    }
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
+    }
   }
   .auth-button {
     @include auth-button;
     margin-top: 40px;
+  }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
   }
   .or {
     margin-top: 20px;
@@ -65,8 +105,8 @@
     text-align: center;
   }
   .signup-link  {
-    margin-top: 40px;
-    padding-bottom: 40px;
+    margin-top: 30px;
+    padding-bottom: 20px;
     font-weight: $light-font-weight;
     text-align: center;
     a {
@@ -89,29 +129,36 @@
 
 // SIGNUP PAGE SYLING
 .signup-page {
-  height: 90vh;
-  padding-top: 2vh;
+  height: calc(100vh - 75px);
+  position: absolute;
+  top: 0;
 }
+
 
 .signup-box {
   margin: 0 auto;
-  width: 500px;
-  padding-top: 20px;
-  border-radius: 3px;
+  max-width: 450px;
+  padding: 20px 30px 0 30px;
+  border-radius: 5px;
   background-color: white;
-  box-shadow: $box-shadow;
+  @include flex-container(auto, null, column, wrap, space-between, stretch, stretch);
   .encompass-logo {
-    display: block;
-    margin: 0 auto;
-    width: 200px;
+    @include flex-item(1, center, .1 0 auto);
+    max-width: 200px;
     margin-bottom: 20px;
+  }
+  .form-signup {
+    @include flex-item(2, auto, .6 0 auto);
   }
   .auth-form-input {
     margin: 0 auto;
     margin-bottom: 10px;
     padding: 0;
-    width: 350px;
+    max-width: 350px;
     font-size: .9em;
+  }
+  .bottom-info {
+    @include flex-item(3, auto, .3 0 auto);
   }
   // #org-select {
   .selectize-control {
@@ -124,22 +171,24 @@
   // }
   input {
     display: block;
-    width: 350px;
+    width: 100%;
     font-size: 1em;
     padding: 8px 0;
-    margin: 0 auto;
     margin: 0 auto;
     background-color: white;
     border: none;
     color: lighten($primary-font-color, 25);
     border-bottom: 1px solid $primary-font-color;
     margin-bottom: 15px;
-    &.typeahead.tt-input {
-      border-radius: 0;
-      border: none;
-      height: 17px;
-      border-bottom: 1px solid $primary-font-color;
-
+    &:required {
+      box-shadow: none;
+    }
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid black;
+    }
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
     }
   }
   #checkbox {
@@ -174,7 +223,7 @@
     font-size: .9em;
   }
   .login-link {
-    margin-top: 40px;
+    margin-top: 20px;
     padding-bottom: 30px;
     font-weight: $light-font-weight;
     text-align: center;
@@ -202,10 +251,11 @@
 .social-signin {
   margin: 0 auto;
   margin-top: 20px;
+  max-width: 350px;
   button {
     display: block;
     margin: 0 auto;
-    width: 350px;
+    width: 100%;
     color: $primary-font-color;
     font-size: 1em;
     font-weight: $bold-font-weight;

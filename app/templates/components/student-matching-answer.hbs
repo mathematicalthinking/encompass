@@ -1,25 +1,35 @@
-<div class="student-matching-answer">
-  {{#each studentLoadErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
-  <div class="answer-img">
-    <p>{{image.originalname}}</p>
-    <img src="{{{image.imageData}}}" alt="">
+<div class="card-container">
+  <div class="card-title">
+    <p class="card-heading">{{image.originalname}}</p>
   </div>
-
-  <div class="assigned-students">
-    <label>Assigned Students</label>
-    <ul>
-      {{#each creators as |student|}}
-      <li>{{student.username}} <i class="far fa-times-circle" {{action "removeStudent" student}}></i></li>
-    {{else}}
-    <li class="empty-assignment">No students assigned yet.</li>
-    {{/each}}
-    </ul>
+  <div class="card-image" style="background: url({{image.imageData}}) no-repeat scroll center">
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
+  </div>
+  <div class="card-end">
+    {{selectize-input
+      store=store
+      inputId=selectizeInputId
+      maxItems=10
+      initialOptions=studentOptions
+      initialItems=initialStudentItems
+      onItemAdd=(action "updateSelectedIds")
+      onItemRemove=(action "updateSelectedIds")
+      labelField="username"
+      searchField="username"
+      valueField="id"
+      model="user"
+      placeholder="Search students by username"
+      create=(action "addStudentName")
+      createFilter=newNameFilter
+    }}
   </div>
 </div>
 
-{{#if students}}
-  {{twitter-typeahead notFound=notFoundTemplate dataList=students selectedItems=creators optionLabelPath="username" placeholder="Add student(s)" listName="studentPool" selectedValue=studentToAdd allowMultiple=true}}
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src="{{{image.imageData}}}" alt="">
+  </div>
 {{/if}}
-

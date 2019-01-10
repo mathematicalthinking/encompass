@@ -1,0 +1,31 @@
+<p class="input-label">Match Students</p>
+
+<div class="flex-container">
+  <div class="student-list">
+    {{#if selectedSection}}
+      <h4 class="section-name">{{selectedSection.name}}</h4>
+      {{#each displayList as |student|}}
+        <p class="student-name">{{student.username}}</p>
+      {{/each}}
+    {{else}}
+      <p>Not using class for matching.</p>
+    {{/if}}
+  </div>
+
+  <div class="matching-container">
+    {{#each answers as |answer|}}
+      {{student-matching-answer store=store answer=answer selectedSection=selectedSection checkStatus=(action "checkStatus") studentMap=studentMap addedStudentNames=addedStudentNames
+      newNameFilter=newNameFilter
+      }}
+    {{/each}}
+  </div>
+</div>
+{{#if isMatchingIncompleteError}}
+  {{error-box error="Please assign each submission at least one student" showDismiss=true resetError=(action (mut isMatchingIncompleteError) null)}}
+{{/if}}
+
+
+<div class="nav-btn-container">
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Next</button>
+</div>

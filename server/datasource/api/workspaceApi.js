@@ -450,6 +450,7 @@ function updateWorkspaces(workspaces, submissionSet){
   * @param {Workspace} ws       The workspace this folder structure will be in
   * @return {Promise}  Resolves when all the folders are created
  */
+
 async function newFolderStructure(user, wsInfo, folderSetHash) {
   try {
     let folders = [];

@@ -172,15 +172,6 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
     return res;
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
-  activeStep: function() {
-    console.log('activeStep function running');
-    if (this.get('currentStep.value') >= 1) {
-      console.log('yes');
-    }
-  }.property('currentStep.value'),
-
-  //add class active-step if step-# is less than or equal to currentStep.value
-
   showSelectWorkspace: Ember.computed.equal('currentStep.value', 1),
   // showSelectWorkspace: false,
   showSelectConfig: Ember.computed.equal('currentStep.value', 2),
@@ -382,41 +373,13 @@ Encompass.WorkspaceNewCopyComponent = Ember.Component.extend(Encompass.CurrentUs
   }.property('newWsConfig'),
 
   steps: [
-    {value: 0, display: ''},
-    {
-      value: 1,
-      display: 'Choose Workspace to Copy',
-    },
-     {
-      value: 2,
-      display: 'Choose Preset or Custom Configuration',
-    },
-   {
-      value: 3,
-      display: 'Choose Owner Settings',
-    },
-   {
-      value: 4,
-      display: 'Customize Permissions',
-    },
-    {value: 5, display: 'Review', }
+    { value: 0 },
+    { value: 1 },
+    { value: 2 },
+    { value: 3 },
+    { value: 4 },
+    { value: 5 },
   ],
-
-  // currentStepDisplay: function() {
-  //   let currentStep = this.get('currentStep');
-
-
-  //   // const hash = {
-  //   //   1: 'Choose Workspace to Copy',
-  //   //   2: 'Choose Preset or Custom Configuration',
-  //   //   3: 'Give New Workspace a Name',
-  //   //   4: 'Choose Owner',
-  //   //   5: 'Choose Privacy Setting'
-
-  //   // };
-  //   return this.get('stepHash')[currentStep];
-
-  // }.property('currentStep'),
 
   modeDisplay: function() {
     const hash = {

@@ -27,6 +27,7 @@ require('dependencies/jq.keys');
 require('dependencies/typeahead.bundle');
 require('dependencies/validate.min.js');
 require('dependencies/selectize.js');
+require('dependencies/dropzone');
 
 /*
  * Since we're precompiling our templates, we only need the

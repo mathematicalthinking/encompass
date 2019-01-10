@@ -1,5 +1,12 @@
-<h1>Create New Workspace</h1>
-<button class="back-button"{{action 'back'}}> <i class="fas fa-arrow-left"></i> Submission Viewer</button>
+<p class="input-label">
+  Would you like to create a new workspace?
+  <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Do you want to use a class of encompass users? If not you can match by just username or enter a plain text name">
+    <i class="fas fa-info-circle info-icon"></i>
+  </span>
+</p>
+{{radio-group options=createWs selectedValue=selectedValue}}
+
+{{#if creatingWs}}
 <div class="create-ws-content">
   <div class="ws-new name">
     <p class="input-label">
@@ -11,9 +18,6 @@
     <div class="single-text-input-container">
       {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
     </div>
-  {{#each workspaceNameErrors as |error|}}
-    {{error-box error=error showDismiss=true resetError=(action (mut workspaceNameErrors) null)}}
-  {{/each}}
   </div>
 
   <div class="ws-new owner">
@@ -36,9 +40,6 @@
       model="user"
       propToUpdate="selectedOwner"
       placeholder="Search by username to choose as owner"}}
-    {{#each ownerErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut ownerErrors) null)}}
-    {{/each}}
   </div>
 
   <div class="ws-new mode">
@@ -49,9 +50,6 @@
       </span>
     </p>
     {{radio-group options=modeInputs selectedValue=selectedMode}}
-    {{#each privacySettingErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut privacySettingErrors) null)}}
-    {{/each}}
   </div>
 
   <div class="ws-new folderset">
@@ -75,21 +73,38 @@
       propToUpdate="selectedFolderSet"
       placeholder="Select a Folder Set"
     }}
-    {{#each folderSetErrors as |error|}}
-      {{error-box error=error showDismiss=true resetError=(action (mut folderSetErrors) null)}}
-    {{/each}}
   </div>
+    <p class="info">You can add collaborators and change workspace settings after creating the workspace</p>
+  </div>
+  {{/if}}
 
-  <div class="ws-new submission-settings">
+  {{#if selectedSection}}
+  <div class="ws-new assignment">
     <p class="input-label">
-      Submission Settings
-      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Choose whether to include all revisions or just submissions of record">
+      Would you like to save this work as an assignment?
+      <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Saving this as an assignment will make it easier to find uploaded work and add additional revisions">
         <i class="fas fa-info-circle info-icon"></i>
       </span>
     </p>
-    {{radio-group options=submissionSettingsInputs selectedValue=selectedSubmissionSettings}}
+    {{radio-group options=createAssignment selectedValue=createAssignmentValue}}
   </div>
-  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator}}
+  {{/if}}
+
+  {{#if creatingAssignment}}
+  <div class="create-ws-content">
+    <div class="ws-new name">
+      <p class="input-label">
+        Assignment Name
+        <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Provide an easily identifiable name for this assignment">
+          <i class="fas fa-info-circle info-icon"></i>
+        </span>
+      </p>
+      <div class="single-text-input-container">
+        {{input id="assignment-name" class="single-text-input" type="text" value=assignmentName placeholder="Provide a name for your assignment"}}
+      </div>
+    </div>
+  </div>
+  {{/if}}
 
   <div class="create-ws-error">
     {{#if createWorkspaceError}}
@@ -97,6 +112,7 @@
     {{/if}}
   </div>
 
-  <button class="primary-button create-ws" {{action "handleSettings"}}>Create Workspace</button>
+<div class="nav-btn-container">
+  <button class="primary-button cancel-button" {{action "back"}}>Back</button>
+  <button class="primary-button" {{action "next"}}>Next</button>
 </div>
-

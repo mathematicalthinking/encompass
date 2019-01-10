@@ -97,15 +97,15 @@
 
     <button class="auth-button" type="submit" {{action 'signup'}}>Sign Up</button>
   </form>
-  {{#each postErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
 
-  <div class="social-signin-div">
-    {{social-signin}}
-  </div>
+    {{#each postErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
 
-  <p class="login-link"> Already have an account? {{#link-to 'auth.login' classNames='login-link'}}Log in here{{/link-to}}</p>
+    <div class="bottom-info">
+      {{social-signin}}
+      <p class="login-link"> Already have an account? {{#link-to 'auth.login' classNames='login-link'}}Log in here{{/link-to}}</p>
+    </div>
 
 </div>
 

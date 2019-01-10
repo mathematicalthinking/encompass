@@ -65,6 +65,45 @@ module.exports = (passport) => {
         });
       }
 
+      if (!user.avatar) {
+        console.log('user does not have an avatar');
+        let name;
+        if (user.name) {
+          name = user.name;
+        } else {
+          name = user.username;
+        }
+        const avatar = userAuth.createUserAvatar(name);
+        User.findOne({'username': user.username}, (err, user) => {
+        if (err) {
+          console.log('error is', err);
+        }
+        if (user) {
+          user.avatar = avatar;
+          user.save();
+        }
+        });
+        // axios.get(baseUrl)
+        //   .then(res => {
+        //     console.log('res is', res);
+        //     let avatar = res.data;
+        //     User.findOne({'username': user.username}, (err, user) => {
+        //       if (err) {
+        //         console.log('error is', err);
+        //       }
+        //       if (user) {
+        //         console.log('user is', user);
+        //         user.avatar = avatar;
+        //         user.save();
+        //       }
+        //     });
+
+        //   })
+        //   .catch(error => {
+        //     console.log(error);
+        //   });
+      }
+
       return next(null, user);
     });
   }));
@@ -161,6 +200,13 @@ module.exports = (passport) => {
                     isEmailConfirmed,
                   } = req.body;
 
+                  let avatarName;
+                  if (name) {
+                    avatarName = name;
+                  } else {
+                    avatarName = username;
+                  }
+                  const avatar = userAuth.createUserAvatar(avatarName);
                   const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
 
                   const newUser = new User({
@@ -178,7 +224,8 @@ module.exports = (passport) => {
                     createdBy,
                     authorizedBy,
                     isEmailConfirmed,
-                    actingRole: 'teacher'
+                    actingRole: 'teacher',
+                    avatar,
                   });
 
                   // generate confirmEmailToken && confirmEmailExpires

@@ -260,39 +260,39 @@
       margin: 0 5px 0 10px;
     }
   }
-  .create-ws-content {
-    margin: 30px 40px 0 40px;
-    .input-label {
-      color: $dark-font-color;
-      font-size: 1.2em;
-      i {
-        color: $primary-font-color;
-        font-size: .9em;
-      }
+}
+.create-ws-content {
+  margin: 30px 40px 0 40px;
+  .input-label {
+    color: $dark-font-color;
+    font-size: 1.2em;
+    i {
+      color: $primary-font-color;
+      font-size: .9em;
     }
-    .ws-new {
-      margin-bottom: 30px;
-    }
-    .primary-button {
-      float: left;
-      margin-bottom: 40px;
-    }
-    .single-text-input-container {
-      max-width: 600px;
-    }
-    .selectize-comp {
-      max-width: 600px;
-    }
-    .error-box {
-      margin-top: 0px;
-      max-width: 538px;
-    }
+  }
+  .ws-new {
+    margin-bottom: 30px;
+  }
+  .primary-button {
+    float: left;
+    margin-bottom: 40px;
+  }
+  .single-text-input-container {
+    max-width: 600px;
+  }
+  .selectize-comp {
+    max-width: 600px;
+  }
+  .error-box {
+    margin-top: 0px;
+    max-width: 538px;
+  }
 
-    .create-ws-error {
-      .error-box {
-        margin-top: 15px;
-        max-width: 538px;
-      }
+  .create-ws-error {
+    .error-box {
+      margin-top: 15px;
+      max-width: 538px;
     }
   }
 }

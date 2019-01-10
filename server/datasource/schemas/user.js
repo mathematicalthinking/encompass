@@ -58,6 +58,7 @@ var UserSchema = new Schema({
   actingRole: { type: String, enum: ['teacher', 'student'] },
   name: { type: String },
   email: { type: String, trim: true },
+  avatar: { type: String },
   googleId: { type: String },
   // key: { type: String },
   password: { type: String, trim: true },

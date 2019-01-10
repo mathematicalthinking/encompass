@@ -247,7 +247,8 @@
   margin: 0 auto;
   background-color: $accent-color;
   border: none;
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
   padding: 12px 0;
   color: white;
   &:hover {
