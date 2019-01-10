@@ -200,7 +200,9 @@ let workspace = new models.Workspace({
   organization: ownerOrg,
 });
 let ws = await workspace.save();
-let newFolderSet = await workspaceApi.newFolderStructure(user, ws, folderSetId); // eslint-disable-line no-unused-vars
+let folderHash = { folderSetId: folderSetId };
+let wsInfo = { newWsId: ws._id, newWsOwner: ws._owner };
+let newFolderSet = await workspaceApi.newFolderStructure(user, wsInfo, folderHash); // eslint-disable-line no-unused-vars
 //sending back workspace and submissionID for redirect
 const data = { 'workspace': ws };
 return utils.sendResponse(res, data);

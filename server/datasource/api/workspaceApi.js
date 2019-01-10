@@ -450,22 +450,26 @@ function updateWorkspaces(workspaces, submissionSet){
   * @param {Workspace} ws       The workspace this folder structure will be in
   * @return {Promise}  Resolves when all the folders are created
  */
-async function newFolderStructure(user, wsInfo, folderSetId) {
+
+async function newFolderStructure(user, wsInfo, folderSetHash) {
   try {
     let folders = [];
     const folderIds = [];
-    let folderSetObjects;
 
-    if (!apiUtils.isNonEmptyObject(wsInfo) || !folderSetId) {
+    if (!apiUtils.isNonEmptyObject(wsInfo) || !apiUtils.isNonEmptyObject(folderSetHash)) {
       return;
     }
 
-    const wsId = wsInfo._id;
-    const wsOwner = wsInfo.owner;
+    let { folderSetId, folderSetObjects } = folderSetHash;
+    const { newWsId, newWsOwner } = wsInfo;
 
-    if(!folderSetId) {
+    if(!folderSetId && !folderSetObjects) {
       return folders;
-    } else {
+    }
+
+    if (apiUtils.isNonEmptyArray(folderSetObjects)) {
+      folders = folderSetObjects;
+    } else if (folderSetId) {
       // lookup folderSet in db
       const folderSet = await models.FolderSet.findById(folderSetId).lean().exec();
       folderSetObjects = folderSet.folders;
@@ -478,13 +482,13 @@ async function newFolderStructure(user, wsInfo, folderSetId) {
         }
 
         let f = new models.Folder({
-          owner: wsOwner,
+          owner: newWsOwner,
           name: folderObj.name,
           weight: folderObj.weight ? folderObj.weight : 0,
           createdBy: user._id,
           lastModifiedBy: user._id,
           children: [],
-          workspace: wsId
+          workspace: newWsId
         });
 
         if (parentId) {
