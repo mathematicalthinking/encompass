@@ -1,26 +1,24 @@
-<div class="flex-container-full">
-  <div class="flex-item-full">
+<div class="response-flex-container ">
+  <div class="response-flex-item submission{{if showApproverReply ' third'}}">
     {{response-submission-view
   store=store
-  submission=submission
+  submission=response.submission
   workspace=response.workspace
   }}
   </div>
-  <div class="flex-item-full">
+  <div class="response-flex-item mentor {{if showApproverReply 'third'}}">
  {{response-mentor-reply
   isCreating=isCreatingNewMentorReply
   response=response
-  submission=submission
-  subResponses=subResponses
-  selections=selections
-  comments=comments
-  responses=responses
+  submission=response.submission
 }}
   </div>
-  <div class="flex-item-full">
+  {{#if showApproverReply}}
+  <div class="response-flex-item approver third">
  {{response-approver-reply response=response }}
 
   </div>
+  {{/if}}
 </div>
 
 

@@ -2,6 +2,52 @@
 @import "mixins";
 @import "responsive-font-size";
 
-#response-container {
+div.response-flex-container {
+  border: 1px solid purple;
+  @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
+  width: 100%;
+  div.response-flex-item.submission{
+    min-width: 350px;
+    @include flex-item(1, flex-start, 1 1 50%);
+    &.third {
+      @include flex-item(1, flex-start, 33%);
 
+    }
+  }
+  div.response-flex-item.mentor {
+    min-width: 350px;
+
+    @include flex-item(2, flex-start, 1 1 50%);
+    &.third {
+      @include flex-item(2, flex-start, 1 1 auto);
+    }
+  }
+  div.response-flex-item.approver.third {
+    min-width: 350px;
+
+    @include flex-item(3, flex-start, 1 1 33%);
+  }
+  #response-submission-view {
+    margin-left: 20px;
+    border: red solid 1px;
+    div#uploadedImg {
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+  #response-mentor-reply {
+    border: blue solid 1px;
+    margin-left: 20px;
+    section.response {
+    }
+    section.response-details {
+      float: none;
+    }
+  }
+  #response-approver-reply {
+    border: green solid 1px;
+    margin-left: 20px;
+
+  }
 }
