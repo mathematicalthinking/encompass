@@ -34,6 +34,7 @@
         {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
           Respond
         {{/link-to}}
+        <button {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>RESPOND</button>
         {{#if currentSubmission.responses.length}}
           <span class="meta response-count existing" title="existing response count">
             ({{currentSubmission.responses.length}})
@@ -130,7 +131,7 @@
             {{draggable-selection selection=selection canDeleteSelections=canDeleteSelection deleteSelection=(action "deleteSelection") }}
           {{else}}
 
-          <span class="selection_text selectionLink {{id}}">{{selection.text}}</span>
+          <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
           {{/if}}
         {{/unless}}
       </li>

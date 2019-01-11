@@ -163,6 +163,9 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     deleteSelection: function( selection ){
       this.sendAction( 'deleteSelection', selection );
     },
+    toNewResponse(subId, wsId) {
+      this.get('toNewResponse')(subId, wsId);
+    }
   }
 });
 

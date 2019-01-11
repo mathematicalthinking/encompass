@@ -125,6 +125,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
       window.open(`${baseUrl}#/problems/${problemId}`, 'newwindow', 'width=1200, height=700');
     },
+    toNewResponse: function(subId, wsId) {
+      this.get('toNewResponse')(subId, wsId);
+    }
 
   }
 });
