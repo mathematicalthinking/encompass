@@ -31,18 +31,6 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
       return [];
   }.property('selectedSection'),
 
-  initialSectionOptions: function () {
-    const selectedSection = this.get('selectedSection');
-
-    if (this.get('utils').isNonEmptyObject(selectedSection)) {
-      return [{
-        id: selectedSection.id,
-        name: selectedSection.get('name')
-      }];
-    }
-    return [];
-  }.property('selectedSection'),
-
   actions: {
     setSelectedSection(val, $item) {
       if (!val) {

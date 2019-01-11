@@ -11,18 +11,6 @@ Encompass.ImportWorkStep1Component = Ember.Component.extend(Encompass.CurrentUse
     return [];
   }.property('selectedProblem'),
 
-  initialProblemOptions: function () {
-    const selectedProblem = this.get('selectedProblem');
-
-    if (this.get('utils').isNonEmptyObject(selectedProblem)) {
-      return [{
-        id: selectedProblem.id,
-        title: selectedProblem.get('title')
-      }];
-    }
-    return [];
-  }.property('selectedProblem'),
-
   actions: {
     setSelectedProblem(val, $item) {
       if (!val) {
