@@ -20,10 +20,6 @@
     {{/each}}
   </div>
 </div>
-{{#if isMatchingIncompleteError}}
-  {{error-box error="Please assign each submission at least one student" showDismiss=true resetError=(action (mut isMatchingIncompleteError) null)}}
-{{/if}}
-
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>

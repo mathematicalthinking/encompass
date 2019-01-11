@@ -24,15 +24,16 @@
     placeholder="Search for workspaces by name..."
     preload="focus"
   }}
+  {{#if missingWorkspace}}
+    {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
+  {{/if}}
 {{/unless}}
 
 {{#if selectedWorkspace}}
   {{workspace-info-summary workspace=selectedWorkspace}}
 {{/if}}
 
-{{#if missingWorkspace}}
-  {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
-{{/if}}
+
 {{#if tooFewSubmissions}}
   {{error-box error="Please select a workspace with at least 1 submission." resetError=(action (mut tooFewSubmissions) null) showDismiss=true }}
 {{/if}}
