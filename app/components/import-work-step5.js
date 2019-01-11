@@ -129,22 +129,24 @@ Encompass.ImportWorkStep5Component = Ember.Component.extend(Encompass.CurrentUse
         this.set("workspaceOwner", this.get("selectedOwner"));
         this.set("workspaceMode", this.get("selectedMode"));
         this.set("folderSet", this.get("selectedFolderSet"));
-        if (
-          !this.get("workspaceName") ||
-          !this.get("selectedOwner") ||
-          !this.get("selectedMode")
-        ) {
-          this.set(
-            "createWorkspaceError",
-            "Please provide required information"
-          );
+        if (!this.get("workspaceName") || !this.get("selectedOwner")) {
+          if (!this.get("workspaceName")) {
+            this.set("missingNameError", "Please provide a name for your workspace");
+          }
+          if (!this.get("selectedOwner")) {
+            this.set("missingOwnerError", "Please provide an owner for your workspace");
+          }
         } else {
           this.set("createWorkspaceError", null);
           this.get("onProceed")();
         }
       },
+
       next() {
         if (this.get("createAssignmentValue")) {
+          if (!this.get("assignmentName")) {
+            this.set("missingAssignmentError", "Please provide a name for your assignment");
+          }
           this.set("assignmentName", this.get("assignmentName"));
         } else {
           this.set("assignmentName", null);

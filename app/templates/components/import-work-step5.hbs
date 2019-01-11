@@ -18,7 +18,13 @@
     <div class="single-text-input-container">
       {{input id="ws-new-name" class="single-text-input" type="text" value=workspaceName placeholder="Provide a name for your workspace"}}
     </div>
+    {{#if missingNameError}}
+    <div class="create-ws-error">
+      {{error-box error=missingNameError showDismiss=true resetError=(action (mut missingNameError) null)}}
+    </div>
+    {{/if}}
   </div>
+
 
   <div class="ws-new owner">
     <p class="input-label">
@@ -41,6 +47,11 @@
       model="user"
       propToUpdate="selectedOwner"
       placeholder="Search by username to choose as owner"}}
+    {{#if missingOwnerError}}
+    <div class="create-ws-error">
+      {{error-box error=missingOwnerError showDismiss=true resetError=(action (mut missingOwnerError) null)}}
+    </div>
+    {{/if}}
   </div>
 
   <div class="ws-new mode">
@@ -52,6 +63,7 @@
     </p>
     {{radio-group options=modeInputs selectedValue=selectedMode}}
   </div>
+
 
   <div class="ws-new folderset">
     <p class="input-label">
@@ -104,15 +116,16 @@
       <div class="single-text-input-container">
         {{input id="assignment-name" class="single-text-input" type="text" value=assignmentName placeholder="Provide a name for your assignment"}}
       </div>
+      {{#if missingAssignmentError}}
+      <div class="create-ws-error">
+        {{error-box error=missingAssignmentError showDismiss=true resetError=(action (mut missingAssignmentError) null)}}
+      </div>
+      {{/if}}
     </div>
   </div>
   {{/if}}
 
-  <div class="create-ws-error">
-    {{#if createWorkspaceError}}
-      {{error-box error=createWorkspaceError showDismiss=true resetError=(action (mut createWorkspaceError) null)}}
-    {{/if}}
-  </div>
+
 
 <div class="nav-btn-container">
   <button class="primary-button cancel-button" {{action "back"}}>Back</button>
