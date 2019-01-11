@@ -3,6 +3,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     elementId: "import-work-container",
     selectedProblem: null,
     selectedSection: null,
+    selectedOwner: null,
     selectedFiles: null,
     sections: null,
     selectedValue: false,
