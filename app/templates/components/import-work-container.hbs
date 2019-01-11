@@ -56,7 +56,7 @@
         {{/if}}
 
         {{#if showSelectClass}}
-          {{import-work-step2 store=store selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setSelectedSection")}}
+          {{import-work-step2 store=store selectedSection=selectedSection selectedValue=selectedValue onBack=(action "changeStep") onProceed=(action "setSelectedSection")}}
         {{/if}}
 
         {{#if showUploadFiles}}

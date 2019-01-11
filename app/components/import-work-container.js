@@ -5,6 +5,7 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     selectedSection: null,
     selectedFiles: null,
     sections: null,
+    selectedValue: false,
     uploadedFiles: null,
     answers: null,
     uploadedAnswers: null,
