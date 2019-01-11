@@ -23,7 +23,9 @@ var ResponseSchema = new Schema({
     selections: [{type: ObjectId, ref:'Selections'}],
     comments: [{type: ObjectId, ref:'Comments'}],
     workspace: {type:ObjectId, ref:'Workspace'},
-    submission: {type:ObjectId, ref:'Submission'}
+    submission: {type:ObjectId, ref:'Submission'},
+    responseType: {type: String, enum: ['mentor', 'approver', 'student']},
+    note: {type: String }
   }, {versionKey: false});
 
 /**

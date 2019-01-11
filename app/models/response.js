@@ -14,5 +14,13 @@ Encompass.Response = DS.Model.extend(Encompass.Auditable, {
   comments:   DS.hasMany('comment', {async: true}),
   student:    Ember.computed.alias('submission.student'),
   powId:      Ember.computed.alias('submission.powId'),
-  isStatic:   Ember.computed.alias('submission.isStatic')
+  isStatic:   Ember.computed.alias('submission.isStatic'),
+  shortText: function() {
+    if (typeof this.get('text') !== 'string') {
+      return '';
+    }
+    return this.get('text').slice(0, 100);
+  }.property('text'),
+  responseType: DS.attr('string'),
+  note: DS.attr('string'),
 });
