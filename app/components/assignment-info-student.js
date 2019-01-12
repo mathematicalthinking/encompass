@@ -1,4 +1,4 @@
-Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   formattedDueDate: null,
   formattedAssignedDate: null,
   isResponding: false,
@@ -14,25 +14,24 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     return this.getAnswers().then((answers) => {
       this.set('answerList', answers);
       this.set('isLoadingAnswers', false);
-    });
-  },
-
-  getAnswers: function() {
-    const student = this.get('currentUser');
-    return student.get('answers')
+    })
     .catch((err) => {
       this.set('isLoadingAnswers', false);
       this.handleErrors(err, 'loadAnswerErrors');
     });
   },
 
+  getAnswers: function() {
+    const student = this.get('currentUser');
+    return student.get('answers');
+  },
+
   filteredList: function() {
     const answers = this.get('answerList');
-    if (this.get('isLoadingAnswers') || !Ember.isEmpty(this.get('loadAnswerErrors'))) {
-      return [];
-    } else {
-      return answers.filterBy('assignment.id', this.assignment.id);
+    if (answers) {
+      return answers.filterBy('assignment.id', this.get('assignment.id'));
     }
+    return [];
   }.property('answerList.[]', 'assignment.id'),
 
   sortedList: function() {
