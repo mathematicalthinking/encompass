@@ -495,6 +495,7 @@ module.exports = function (grunt) {
           {cwd: 'build', expand: true, src: ['license.html'], dest: 'dist'},
           // copy all png files in build root (bg.png). is this needed ???
           {cwd: 'build', expand: true, src: ['*.png'], dest: 'dist'},
+          {cwd: 'build/image_uploads', expand: true, src: ['**'], dest: 'dist/image_uploads', flatten: true}
         ],
       },
     },
