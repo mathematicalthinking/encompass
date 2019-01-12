@@ -64,6 +64,9 @@
     </form>
   </section>
   <div style="clear: left"></div>
+  {{#if showLoadingMessage}}
+    <p class="loading-message">Creating Answer... Thank you for your patience.</p>
+  {{/if}}
   <section class="submit">
     <span>
       <button class="primary-button create" {{action 'validate'}}>Create Answer</button>

@@ -10,6 +10,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   createRecordErrors: [],
   elementId: 'answer-new',
   contributors: [],
+  isCreatingAnswer: false,
+  showLoadingMessage: false,
+
   constraints: {
     briefSummary: {
       presence: { allowEmpty: false },
@@ -123,8 +126,23 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     let isMissing = this.get('validator').isMissingRequiredFields(id);
     this.set('isMissingRequiredFields', isMissing);
   },
+  handleLoadingMessage: function() {
+    const that = this;
+    if (!this.get('isCreatingAnswer')) {
+      this.set('showLoadingMessage', false);
+      return;
+    }
+    Ember.run.later(function() {
+      if (that.isDestroyed || that.isDestroying) {
+        return;
+      }
+      that.set('showLoadingMessage', true);
+    }, 500);
+
+  }.observes('isCreatingAnswer'),
 
   createAnswer: function() {
+    this.set('isCreatingAnswer', true);
     const that = this;
     const answer = that.get('answer');
     const quillContent = this.$('.ql-editor').html();
@@ -169,15 +187,16 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return rec.save();
       }))
       .then((answers) => {
+        that.set('isCreatingAnswer', false);
         const userId = that.get('currentUser.id');
         let yourAnswer = answers.filter((answer) => {
         return answer.get('createdBy.id') === userId;}).objectAt(0);
-
+        that.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
         that.get('handleCreatedAnswer')(yourAnswer);
-        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
       })
         .catch((err) => {
           // do we need to roll back all recs that were created?
+          that.set('isCreatingAnswer', false);
           that.handleErrors(err, 'createRecordErrors');
         });
     });
