@@ -32,132 +32,138 @@ module.exports.put = {};
 
 // eslint-disable-next-line complexity
 async function getAnswers(req, res, next) {
-  var user = userAuth.requireUser(req);
+  try {
+    let user = userAuth.requireUser(req);
 
-  let { ids, problem, filterBy, searchBy, isTrashedOnly, didConfirmLargeRequest } = req.query;
-  if (problem) {
-    let criteria = req.query;
-    const requestedAnswers = await models.Answer.findOne(criteria).exec();
-    let data = {
-      'answers': requestedAnswers
-    };
-    return utils.sendResponse(res, data);
-  }
-
-  if (filterBy) {
-    let {startDate, endDate, students } = filterBy;
-
-    if (startDate && endDate) {
-      let startDateObj = new Date(startDate);
-      let endDateObj = new Date(endDate);
-
-      if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
-        filterBy.createDate = {
-          $gte: startDateObj,
-          $lte: endDateObj
-        };
-      }
-    }
-
-    if (apiUtils.isNonEmptyArray(students)) {
-      let pruned = apiUtils.cleanObjectIdArray(students);
-
-      if (apiUtils.isNonEmptyArray(pruned)) {
-        filterBy.createdBy = {$in: pruned};
-      }
-    }
-
-    let propsToDelete = ['startDate', 'endDate', 'students'];
-    _.each(propsToDelete, (prop) => {
-      if (filterBy[prop]) {
-        delete filterBy[prop];
-      }
-    });
-  }
-
-  let searchFilter = {};
-
-  if (searchBy) {
-    let { query, criterion } = searchBy;
-    if (criterion) {
-      if (criterion === 'all') {
-        let topLevelStringProps = ['name'];
-        query = query.replace(/\s+/g, "");
-        let regex = new RegExp(query.split('').join('\\s*'), 'i');
-        searchFilter.$or = [];
-        for (let prop of topLevelStringProps) {
-          searchFilter.$or.push({[prop]: regex});
-        }
-      } else {
-        query = query.replace(/\s+/g, "");
-        let regex = new RegExp(query.split('').join('\\s*'), 'i');
-
-        searchFilter = {[criterion]: regex};
-      }
-    }
-  }
-
-    const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
-    if (_.isNull(criteria)) {
-      const data = {
-        'answers': [],
-        'meta': {
-          'total': 0,
-        }
+    let { ids, problem, filterBy, searchBy, isTrashedOnly, didConfirmLargeRequest } = req.query;
+    if (problem) {
+      let criteria = req.query;
+      const requestedAnswers = await models.Answer.findOne(criteria).exec();
+      let data = {
+        'answers': requestedAnswers
       };
       return utils.sendResponse(res, data);
     }
-    let results, itemCount;
 
-    itemCount = await models.Answer.count(criteria);
+    if (filterBy) {
+      let {startDate, endDate, students } = filterBy;
 
-    if (itemCount > 1000) {
-      if (user.accountType !== 'A') {
-        const data = {
-          answers: [],
-          meta: {
-            total: itemCount,
-            areTooManyAnswers: true
+      if (startDate && endDate) {
+        let startDateObj = new Date(startDate);
+        let endDateObj = new Date(endDate);
+
+        if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
+          filterBy.createDate = {
+            $gte: startDateObj,
+            $lte: endDateObj
+          };
+        }
+      }
+
+      if (apiUtils.isNonEmptyArray(students)) {
+        let pruned = apiUtils.cleanObjectIdArray(students);
+
+        if (apiUtils.isNonEmptyArray(pruned)) {
+          filterBy.createdBy = {$in: pruned};
+        }
+      }
+
+      let propsToDelete = ['startDate', 'endDate', 'students'];
+      _.each(propsToDelete, (prop) => {
+        if (filterBy[prop]) {
+          delete filterBy[prop];
+        }
+      });
+    }
+
+    let searchFilter = {};
+
+    if (searchBy) {
+      let { query, criterion } = searchBy;
+      if (criterion) {
+        if (criterion === 'all') {
+          let topLevelStringProps = ['name'];
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
+          searchFilter.$or = [];
+          for (let prop of topLevelStringProps) {
+            searchFilter.$or.push({[prop]: regex});
           }
-        };
+        } else {
+          query = query.replace(/\s+/g, "");
+          let regex = new RegExp(query.split('').join('\\s*'), 'i');
 
-        return utils.sendResponse(res, data);
-
-      } else if (didConfirmLargeRequest !== 'true') {
-        const data = {
-          answers: [],
-          meta: {
-            total: itemCount,
-            doConfirmCriteria: true
+          searchFilter = {[criterion]: regex};
         }
-      };
-      return utils.sendResponse(res, data);
+      }
     }
-
-    } else if (itemCount > 500) {
-      // return and ask for confirmation
-      if (didConfirmLargeRequest !== 'true') {
+      const criteria = await access.get.answers(user, ids, filterBy, searchFilter, isTrashedOnly);
+      if (_.isNull(criteria)) {
         const data = {
           'answers': [],
           'meta': {
-            'total': itemCount,
-            'doConfirmCriteria': true
-        }
-      };
-      return utils.sendResponse(res, data);
+            'total': 0,
+          }
+        };
+        return utils.sendResponse(res, data);
+      }
+      let results, itemCount;
+
+      itemCount = await models.Answer.count(criteria);
+
+      if (itemCount > 1000) {
+        if (user.accountType !== 'A') {
+          const data = {
+            answers: [],
+            meta: {
+              total: itemCount,
+              areTooManyAnswers: true
+            }
+          };
+
+          return utils.sendResponse(res, data);
+
+        } else if (didConfirmLargeRequest !== 'true') {
+          const data = {
+            answers: [],
+            meta: {
+              total: itemCount,
+              doConfirmCriteria: true
+          }
+        };
+        return utils.sendResponse(res, data);
+      }
+
+      } else if (itemCount > 500) {
+        // return and ask for confirmation
+        if (didConfirmLargeRequest !== 'true') {
+          const data = {
+            'answers': [],
+            'meta': {
+              'total': itemCount,
+              'doConfirmCriteria': true
+          }
+        };
+        return utils.sendResponse(res, data);
+      }
     }
+
+    // request has been confirmed or does not exceed size limit
+    results = await models.Answer.find(criteria).lean().exec();
+    const data = {
+      'answers': results,
+      'meta': {
+        'total': itemCount,
+      }
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getAnswers: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
 
-  // request has been confirmed or does not exceed size limit
-  results = await models.Answer.find(criteria).lean().exec();
-  const data = {
-    'answers': results,
-    'meta': {
-      'total': itemCount,
-    }
-  };
-
-  return utils.sendResponse(res, data);
 
 }
 
