@@ -3,51 +3,19 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   formattedAssignedDate: null,
   isResponding: false,
   displayedAnswer: null,
-  answerList: [],
-  isLoadingAnswers: null,
   loadAnswerErrors: [],
   elementId: 'assignment-info-student',
 
-  init: function() {
+  init() {
     this._super(...arguments);
-    this.set('isLoadingAnswers', true);
-    return this.getAnswers().then((answers) => {
-      this.set('answerList', answers);
-      this.set('isLoadingAnswers', false);
-    })
-    .catch((err) => {
-      this.set('isLoadingAnswers', false);
-      this.handleErrors(err, 'loadAnswerErrors');
-    });
   },
 
-  getAnswers: function() {
-    const student = this.get('currentUser');
-    return student.get('answers');
-  },
-
-  filteredList: function() {
-    const answers = this.get('answerList');
-    if (answers) {
-      return answers.filterBy('assignment.id', this.get('assignment.id'));
-    }
-    return [];
-  }.property('answerList.[]', 'assignment.id'),
-
-  sortedList: function() {
-    const filtered = this.get('filteredList');
-    return filtered.sortBy('createDate').reverse();
-  }.property('filteredList.[]'),
-
-  priorAnswer: function() {
-    return this.get('sortedList').get('firstObject');
-  }.property('sortedList.[]'),
-
-  didReceiveAttrs: function() {
-    if (this.assignment) {
+  didReceiveAttrs() {
+    if (this.get('assignment')) {
       if (this.get('displayedAnswer')) {
           this.set('displayedAnswer', null);
-        }
+      }
+
       this.toggleResponse();
       let dateTime = 'YYYY-MM-DD';
       let dueDate = this.assignment.get('dueDate');
@@ -55,7 +23,20 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
       this.set('formattedDueDate', moment(dueDate).format(dateTime));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateTime));
     }
+
+    this._super(...arguments);
   },
+
+  sortedList: function() {
+    if (!this.get('answerList')) {
+      return [];
+    }
+    return this.get('answerList').sortBy('createDate').reverse();
+  }.property('answerList.[]'),
+
+  priorAnswer: function() {
+    return this.get('sortedList').get('firstObject');
+  }.property('sortedList.[]'),
 
   toggleResponse: function() {
     if (this.get('isResponding')) {
@@ -103,7 +84,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     handleCreatedAnswer: function(answer) {
       this.set('answerCreated', true);
       this.toggleResponse();
-      this.get('answerList').pushObject(answer);
+      this.get('answerList').addObject(answer);
     },
 
     cancelResponse: function() {

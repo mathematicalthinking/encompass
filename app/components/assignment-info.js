@@ -1,17 +1,48 @@
 Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
 
-  didReceiveAttrs: function() {
-    const assignment = this.assignment;
+  currentAssignment: null,
 
-    if (assignment) {
-      return assignment.get('section')
-      .then((section) => {
-        this.set('section', section);
-        return assignment.get('problem');
-      })
-      .then((problem) => {
-        this.set('problem', problem);
-        return;
+  didReceiveAttrs: function() {
+    if (this.get('assignment.id') !== this.get('currentAssignment.id')) {
+      this.set('currentAssignment', this.get('assignment'));
+
+      let promiseHash = {
+        section: this.get('assignment.section'),
+        problem: this.get('assignment.problem')
+      };
+
+      if (this.get('currentUser.isStudent')) {
+        promiseHash.studentAnswers = this.get('store').query('answer', {
+          filterBy: {
+            createdBy: this.get('currentUser.id'),
+            assignment: this.get('assignment.id')
+          }
+        });
+      } else {
+        promiseHash.assignmentAnswers = this.get('store').query('answer', {
+          filterBy: {
+            assignment: this.get('assignment.id')
+          }
+        });
+        promiseHash.assignmentStudents = this.get('assignment.students');
+      }
+
+      return Ember.RSVP.hash(promiseHash)
+      .then((hash) => {
+        this.set('problem', hash.problem);
+        this.set('section', hash.section);
+
+        if (hash.studentAnswers) {
+          this.set('studentAnswers', hash.studentAnswers.toArray());
+        }
+
+        if (hash.assignmentAnswers) {
+          this.set('assignmentAnswers', hash.assignmentAnswers.toArray());
+        }
+
+        if (hash.assignmentStudents) {
+          this.set('assignmentStudents', hash.assignmentStudents);
+        }
       })
       .catch((err) => {
         this.handleErrors(err, 'initialLoadErrors');
