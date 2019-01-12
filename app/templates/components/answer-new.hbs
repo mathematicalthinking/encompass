@@ -24,7 +24,7 @@
           {{error-box error=error resetError=(action (mut explanationErrors) null) showDismiss=true}}
         {{/each}}
         <div class="new-answer-input uploaded-file">
-          <label for="uploadedFile">Upload PDF</label>
+          <label for="uploadedFile">Upload PDF<i title="Only first page of mult-page PDF will be used for submission" class="fas fa-info-circle"></i></label>
             {{#if imageData}}
               <a {{action 'toggleImageSize'}} class="image {{if isWide " wide "}}">
                 <img src="{{imageData}}" alt="{{format-date answer.createDate 'MMM Do YYYY hh:mm A'}}">
