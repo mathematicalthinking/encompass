@@ -26,17 +26,18 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   didReceiveAttrs: function() {
-    let currentAssignment= this.get('currentAssignment');
-    const assignment = this.assignment;
+    const assignment = this.get('assignment');
 
-    if (!Ember.isEqual(currentAssignment, this.assignment)) {
+    if (this.get('currentAssignment.id') !== this.get('assignment.id')) {
+      this.set('currentAssignment', assignment);
+
       this.set('isEditing', false);
       this.setAddProblemFunction('addProblemTypeahead');
 
       if (this.get('showReport')) {
         this.set('showReport', false);
       }
-      this.set('currentAssignment', this.assignment);
+
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
@@ -47,41 +48,36 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('formattedDueDate', moment(dueDate).format(dateFormat));
       this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
-      return assignment.get('students')
-        .then((students) => {
-          this.set('studentList', students);
-          return this.assignment.get('answers');
-        })
-        .then((answers) => {
-          const sorted = answers.sortBy('createdBy.username');
-          this.set('assignmentAnswers', sorted);
+    }
 
-          let studentList = this.get('studentList');
-
-          return studentList.map((student) => {
-            let filtered = sorted.filterBy('createdBy.username', student.get('username'));
-            let sortedByDate = filtered.sortBy('createDate').reverse();
-            student.set('filteredAnswers', sortedByDate);
-            this.set('showReport', true);
-            return student;
-          });
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'findRecordErrors');
-        });
+    if (this.get('studentList') && this.get('assignmentAnswers')) {
+      this.prepReport();
     }
   },
 
+  prepReport() {
+    if (!this.get('studentList') || !this.get('assignmentAnswers')) {
+      return;
+    }
+    let sortedAnswers = this.get('assignmentAnswers').sortBy('createdBy.username');
+    this.set('sortedAnswers', sortedAnswers);
+
+    this.get('studentList').forEach((student) => {
+      let ownFiltered = sortedAnswers.filterBy('createdBy.username', student.get('username'));
+      let sortedByDate = ownFiltered.sortBy('createDate').reverse();
+      student.set('filteredAnswers', sortedByDate);
+    });
+    this.set('showReport', true);
+  },
+
   isYourOwn: function() {
-    const currentUserId = this.get('currentUser.id');
-    const creatorId = this.assignment.get('createdBy.id');
-    return currentUserId === creatorId;
-  }.property('assignment.id'),
+   return this.get('currentUser.id') === this.get('assignment.createdBy.id');
+  }.property('assignment.id', 'currentUser'),
 
   isDirty: function() {
-    const answers = this.get('assignmentAnswers');
+    const answers = this.get('sortedAnswers');
     return !Ember.isEmpty(answers);
-  }.property('assignmentAnswers.[]'),
+  }.property('sortedAnswers.[]'),
 
   isClean: Ember.computed.not('isDirty'),
 
