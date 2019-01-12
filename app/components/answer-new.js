@@ -160,7 +160,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         let uploadedImages = this.get('uploadResults');
         if (uploadedImages) {
           uploadedImages.forEach((image) => {
-            this.get('store').findRecord('image', image._id).then((image) => {
+            //backgroundReload: false so store doesn't try to update a record that is already deleted
+            this.get('store').findRecord('image', image._id, { backgroundReload: false }).then((image) => {
               image.destroyRecord();
             });
           });
