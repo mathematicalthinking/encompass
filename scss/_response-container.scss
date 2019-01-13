@@ -8,9 +8,10 @@ div.response-flex-container {
   width: 100%;
   div.response-flex-item.submission{
     min-width: 350px;
+
     @include flex-item(1, flex-start, 1 1 50%);
     &.third {
-      @include flex-item(1, flex-start, 33%);
+      @include flex-item(1, flex-start, 1 33%);
 
     }
   }
@@ -19,17 +20,22 @@ div.response-flex-container {
 
     @include flex-item(2, flex-start, 1 1 50%);
     &.third {
-      @include flex-item(2, flex-start, 1 1 auto);
+      @include flex-item(2, flex-start, 1 1 33%);
     }
+
+
   }
   div.response-flex-item.approver.third {
     min-width: 350px;
-
     @include flex-item(3, flex-start, 1 1 33%);
   }
   #response-submission-view {
     margin-left: 20px;
     border: red solid 1px;
+
+    #al_submission {
+      height: auto;
+    }
     div#uploadedImg {
       img {
         max-width: 100%;
@@ -40,6 +46,10 @@ div.response-flex-container {
     border: blue solid 1px;
     margin-left: 20px;
     section.response {
+      width: 85%;
+      pre.message {
+        white-space: pre-wrap;
+      }
     }
     section.response-details {
       float: none;
