@@ -13,6 +13,7 @@ const utils    = require('../../middleware/requestHandler');
 const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
+const access = require('../../middleware/access/responses');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -25,20 +26,29 @@ module.exports.put = {};
   * @returns {Object} A 'named' response object
   * @throws {InternalError} Data retrieval failed
   */
-function getResponse(req, res, next) {
-  models.Response.findById(req.params.id)
-    .exec(function(err, doc){
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      if (!doc || doc.isTrashed) {
-        return utils.sendResponse(res, null);
-      }
+ function getResponse(req, res, next) {
+  let user = userAuth.requireUser(req);
 
-      var data = {'response': doc};
-      utils.sendResponse(res, data);
-    });
+  return access.get.response(user, req.params.id)
+    .then((canGet) => {
+      if (!canGet) {
+        return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
+      }
+    return models.Response.findById(req.params.id).lean().exec()
+      .then((response) => {
+        if (!response || response.isTrashed) {
+          return utils.sendResponse(res, null);
+        }
+        // if (Array.isArray(response.children)) {
+        //   response.children =
+        // }
+        return utils.sendResponse(res, {response});
+      });
+  })
+  .catch((err) => {
+    console.error(`Error getResponse: ${err}`);
+    return utils.sendError.InternalError(null, res);
+  });
 }
 
 /**
@@ -65,20 +75,42 @@ function accessibleResponses(user) {
 
 function getResponses(req, res, next) {
   var user = userAuth.requireUser(req);
-  var criteria = accessibleResponses(user);
 
-  criteria.$or.push({ workspace: { $in: req.mf.auth.workspaces } });
+  let { ids, workspace, filterBy } = req.query;
 
-  models.Response.find(criteria).exec(function(err, docs) {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
+  return access.get.responses(user, ids, workspace, filterBy)
+  .then((criteria) => {
+    models.Response.find(criteria).lean().exec()
+      .then((responses) => {
+        let idMap = {};
+        responses.forEach((response) => {
+          if (!idMap[response._id]) {
+            idMap[response._id] = true;
+          }
+        });
+        let filtered = responses.map((response) => {
+          if (Array.isArray(response.children)) {
+            response.children = response.children.filter((child) => {
+              return idMap[child];
+            });
+            if (!idMap[response.parent]) {
+              response.parent = null;
+            }
+          }
+          return response;
+        });
 
-    var data = {'response': docs};
-    utils.sendResponse(res, data);
-    next();
+        let data = {'response': filtered};
+
+        return utils.sendResponse(res, data );
+      });
+  })
+  .catch((err) => {
+    console.error(`Error get Responses: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   });
+
 }
 
 /**
