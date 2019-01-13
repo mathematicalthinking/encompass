@@ -15,6 +15,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   showHelp: false,
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
 
+  alert: Ember.inject.service('sweet-alert'),
+
   didReceiveAttrs() {
     if (this.get('isCreating') && !this.get('isEditing')) {
       this.set('isEditing', true);
@@ -26,6 +28,21 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this._super(...arguments);
   },
 
+  showNoteField: function() {
+    return this.get('newReplyType') === 'mentor' && this.get('newReplyStatus') !== 'approved';
+  }.property('newReplyStatus', 'newReplyType'),
+
+  showEdit: function() {
+    return !this.get('isEditing') && this.get('newReplyStatus') !== 'approved';
+  }.property('newReplyStatus', 'isEditing'),
+
+  canRevise: function() {
+    return this.get('creator.id') === this.get('currentUser.id') && this.get('model.persisted');
+  }.property('creator', 'model.persisted', 'currentUser'),
+  showRevise: function() {
+    return this.get('canRevise') && !this.get('isRevising');
+  }.property('canRevise', 'isRevising'),
+
   resizeDisplay: function () {
     Ember.run.next(this, Ember.verticalSizing);
   }.observes('showDetails', 'isEditing'),
@@ -35,7 +52,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return response.get('id') !== this.get('model.id') && !response.get('isTrashed');
     })
     .then((responses) => {
-      console.log('filteredResponses', responses);
       this.set('existingResponses', responses);
     });
   },
@@ -171,6 +187,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
             });
             this.set('model.text', text);
+            this.set('originalText', text);
         });
       }
     });
@@ -188,14 +205,39 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   _persistThen: function (callback) {
     this.set('isEditing', false);
     var response = this.get('model');
-    var currentUser = this.get('currentUser');
-    response.set('original', this.get('response'));
-    response.set('recipient', this.get('currentUser'));
-    response.set('createdBy', currentUser);
+    response.set('original', this.get('originalText'));
+    response.set('createdBy', this.get('currentUser'));
+    response.set('status', this.get('newReplyStatus'));
+    response.set('responseType', this.get('newReplyType'));
     response.save().then(function (saved) {
       if (callback instanceof Function) {
         callback(saved);
       }
+    });
+  },
+
+  createRevision() {
+    let record = this.get('store').createRecord('response', {
+      recipient: this.get('recipient'),
+      createdBy: this.get('currentUser'),
+      submission: this.get('submission.content'),
+      workspace: this.get('workspace'),
+      selections: this.get('model.selections.content'),
+      comments: this.get('model.comments.content'),
+      status: this.get('newReplyStatus') ,
+      responseType: this.get('newReplyType'),
+      source: 'submission',
+    });
+
+    this.set('model.status', 'superceded');
+    return Ember.RSVP.hash({
+      revision: record.save(),
+      original: this.get('model').save()
+    })
+    .then((hash) => {
+      this.set('isRevising', false);
+      // handle success
+      this.get('alert').showToast('success', 'Revision Created', 'bottom-end', 3000, false, null);
     });
   },
 
@@ -205,9 +247,14 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
     save: function () {
       var controller = this;
-      this._persistThen(function (saved) {
-        controller.transitionToRoute('response', saved);
-      });
+      if (this.get('isEditing')) {
+        this._persistThen(function (saved) {
+          controller.get('alert').showToast('success', 'Response Sent', 'bottom-end', 3000, false, null);
+          controller.get('onSaveSuccess')(saved);
+        });
+      } else {
+       controller.createRevision();
+      }
     },
   }
 });

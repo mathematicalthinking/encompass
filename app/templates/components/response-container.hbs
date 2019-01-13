@@ -1,21 +1,37 @@
 <div class="response-flex-container ">
   <div class="response-flex-item submission{{if showApproverReply ' third'}}">
     {{response-submission-view
-  store=store
-  submission=response.submission
-  workspace=response.workspace
-  }}
+    store=store
+    submission=submission
+    workspace=workspace
+    }}
   </div>
+
   <div class="response-flex-item mentor {{if showApproverReply 'third'}}">
  {{response-mentor-reply
+  store=store
   isCreating=isCreatingNewMentorReply
   response=response
-  submission=response.submission
+  submission=submission
+  workspace=workspace
+  mentorReplies=mentorReplies
+  responseToApprove=responseToApprove
+  displayResponse=mentorReplyDisplayResponse
+  canDirectSend=canDirectSend
+  canApprove=canApprove
+  onSaveSuccess=(action "onSaveSuccess")
 }}
   </div>
   {{#if showApproverReply}}
   <div class="response-flex-item approver third">
- {{response-approver-reply response=response }}
+ {{response-approver-reply
+    store=store
+    approverReplies=approverReplies
+    responseToApprove=responseToApprove
+    menteeResponse=menteeResponse
+    workspace=workspace
+    submission=submission
+ }}
 
   </div>
   {{/if}}

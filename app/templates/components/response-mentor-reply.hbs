@@ -1,10 +1,42 @@
 <h5>Mentor Reply</h5>
 
+{{log 'responseToApprove' responseToApprove}}
+{{log 'recip username' displayResponse.recipient.username}}
+{{log 'isCreating rmr' isCreating}}
 
-  {{response-new model=response isCreating=isCreating
-  submission=submission
-  subResponses=responses
-  selections=selections
-  comments=comments
-  model=response
+
+{{#if isCreating}}
+{{log 'model.recipient.' response.recipient.username}}
+{{log 'recip' recipient.username}}
+  {{response-new model=response
+    isCreating=isCreating
+    store=store
+    submission=submission
+    model=response
+    recipient=recipient
+    newReplyStatus=newReplyStatus
+    newReplyType="mentor"
+    onSaveSuccess=(action "onSaveSuccess")
   }}
+{{else}}
+<div class="response-info">
+  {{#if displayResponse}}
+    <p>From: {{displayResponse.createdBy.username}}</p>
+    <p>To: {{displayResponse.recipient.username}}</p>
+    <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
+
+    {{#if canApprove}}
+      <p>Status: {{displayResponse.status}}</p>
+    {{/if}}
+
+    <p>Message: {{displayResponse.text}}</p>
+
+    {{else}}
+    <p>No response to display.</p>
+
+  {{/if}}
+  </div>
+{{/if}}
+
+
+

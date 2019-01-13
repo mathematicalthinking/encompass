@@ -1,5 +1,79 @@
 <div class="al_wtf">
-  <section class="origin meta al_vertical_stretch">
+
+
+  <section class="response">
+    <h1>
+    {{#if isEditing}}
+      Editing
+    {{/if}}
+    {{#if model.persisted}}
+      Saved
+    {{else}}
+      New
+    {{/if}}
+    Response
+    </h1>
+    <p>
+      To: <span id="responding-to">{{model.student}}</span>
+    </p>
+    {{#if explainEmptiness}}
+      <p class="notice">
+      Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
+      {{#if whyEmpty}}
+      Normally you'd see an auto-generated response here
+      based on the selections and comments you have created but there are none for this submission.
+      {{#if model.submission}}
+        You can go back to the
+          {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}}
+        and create some selections and comments.
+      {{/if}}
+      {{/if}}
+      </p>
+    {{/if}}
+
+    {{#if isEditing}}
+    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text autofocus="autofocus"}}
+
+    {{#if showNoteField}}
+      <div class="approve-note">
+        <label>Note for Approver</label>
+        {{textarea id="response-note" value=model.note}}
+      </div>
+    {{/if}}
+    {{else}}
+      {{#if model.text}}
+      <pre class="message">{{model.text}}</pre>
+      {{/if}}
+    {{/if}}
+    <div class="submit-buttons">
+
+    {{#if showEdit}}
+      <button class="edit" {{action toggleProperty 'isEditing'}} >Edit</button>
+    {{/if}}
+    {{#if showRevise}}
+      <button class="primary_button" {{action toggleProperty 'isRevising'}}>Revise</button>
+    {{/if}}
+    {{#if isEditing}}
+      <button class="primary_button" {{action 'save'}} disabled={{notDirty}}>Save</button>
+      <button class="cancel" {{action toggleProperty 'isEditing'}}>Cancel</button>
+    {{/if}}
+    </div>
+    {{!-- <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button> --}}
+    {{#unless canRespond}}
+      <a {{action toggleProperty 'showHelp'}}>?</a>
+      {{#if showHelp}}
+      <p class="notice">
+      You can't send this to the PoW because:
+      <ul>
+        {{#if model.isStatic}}
+          <li>it is static. (probably imported from a PD set)</li>
+        {{/if}}
+      </ul>
+      </p>
+      {{/if}}
+    {{/unless}}
+  </section>
+  <section class="response-details origin meta al_vertical_stretch">
     {{#if existingResponses.length}}
       <p>
       There
@@ -13,7 +87,7 @@
         <ul>
         {{#each existingResponses as |response|}}
           <li>
-            {{#link-to 'response' response}}{{response.shortText}}{{/link-to}} from {{response.created}}
+            {{#link-to 'response' response.id}}{{response.shortText}}{{/link-to}} from {{response.created}}
           </li>
         {{/each}}
         </ul>
@@ -72,64 +146,6 @@
         There weren't any selections/comments for this submission.
       {{/if}}
     {{/if}}
-  </section>
-
-  <section class="response">
-    <h1>
-    {{#if isEditing}}
-      Editing
-    {{/if}}
-    {{#if model.persisted}}
-      Saved
-    {{else}}
-      New
-    {{/if}}
-    Response
-    </h1>
-    <p>
-      To: <span id="responding-to">{{model.student}}</span>
-    </p>
-  {{response}}
-    {{#if explainEmptiness}}
-      <p class="notice">
-      Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
-      {{#if whyEmpty}}
-      Normally you'd see an auto-generated response here
-      based on the selections and comments you have created but there are none for this submission.
-      {{#if model.submission}}
-        You can go back to the
-          {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}}
-        and create some selections and comments.
-      {{/if}}
-      {{/if}}
-      </p>
-    {{/if}}
-
-    {{#if isEditing}}
-    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text autofocus="autofocus"}}
-    {{else}}
-      {{#if model.text}}
-      <pre class="message">{{model.text}}</pre>
-      {{/if}}
-    {{/if}}
-
-    <button class="edit" {{action toggleProperty 'isEditing'}} disabled={{isEditing}}>Edit</button>
-    <button class="save" {{action 'save'}} disabled={{notDirty}}>Save</button>
-    <br/>
-    {{!-- <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button> --}}
-    {{#unless canRespond}}
-      <a {{action toggleProperty 'showHelp'}}>?</a>
-      {{#if showHelp}}
-      <p class="notice">
-      You can't send this to the PoW because:
-      <ul>
-        {{#if model.isStatic}}
-          <li>it is static. (probably imported from a PD set)</li>
-        {{/if}}
-      </ul>
-      </p>
-      {{/if}}
-    {{/unless}}
   </section>
 
 </div>

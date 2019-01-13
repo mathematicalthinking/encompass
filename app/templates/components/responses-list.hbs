@@ -11,7 +11,11 @@
       <thead>
         <tr class="top-row">
           <th align="left" style="padding-left: 55px;">Text</th>
+          <th align="left">Type</th>
+          <th align="left">Status</th>
+
           <th align="left">Source</th>
+          <th align="left">Status</th>
           <th align="left">Created</th>
           <th align="left">By</th>
         </tr>
@@ -20,11 +24,13 @@
         {{#each responsesStudent as |response|}}
         <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
           <td style="padding-left: 55px;">
-            {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+            {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
           </td>
+          <td>{{response.responseType}}</td>
+          <td>{{response.status}}</td>
           <td>{{response.source}}</td>
           <td>
-            {{#link-to 'response' response}}
+            {{#link-to 'response' response.id}}
             <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
             {{/link-to}}
           </td>
@@ -56,6 +62,9 @@
     <thead>
       <tr class="top-row">
         <th align="left" style="padding-left: 55px;">Text</th>
+          <th align="left">Type</th>
+          <th align="left">Status</th>
+
         <th align="left">Recipient</th>
         <th align="left">Source</th>
         <th align="left">Created</th>
@@ -67,8 +76,11 @@
       {{#each allResponses as |response|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
         <td style="padding-left: 55px;">
-          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+          {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
         </td>
+          <td>{{response.responseType}}</td>
+          <td>{{response.status}}</td>
+
         {{#if response.recipient}}
           <td>{{response.recipient.username}}</td>
         {{else}}
@@ -76,7 +88,7 @@
         {{/if}}
         <td>{{response.source}}</td>
         <td>
-          {{#link-to 'response' response}}
+          {{#link-to 'response' response.id}}
           <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
           {{/link-to}}
         </td>
@@ -90,8 +102,12 @@
       {{#each yourResponses as |response|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
         <td style="padding-left: 55px;">
-          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+          {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
         </td>
+          <td>{{response.responseType}}</td>
+          <td>{{response.status}}</td>
+
+
         {{#if response.recipient}}
         <td>{{response.recipient.username}}</td>
         {{else}}
@@ -99,7 +115,7 @@
         {{/if}}
         <td>{{response.source}}</td>
         <td>
-          {{#link-to 'response' response}}
+          {{#link-to 'response' response.id}}
           <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
           {{/link-to}}
         </td>
