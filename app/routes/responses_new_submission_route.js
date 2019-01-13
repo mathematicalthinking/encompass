@@ -29,9 +29,7 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
     // since to get here you have to click respond from that user's submission
     let encUserId = submission.get('creator.studentId');
     if (this.get('utils').isValidMongoId(encUserId)) {
-      let peeked = this.get('store').peekRecord('user', encUserId);
-      console.log('peeked recipient', peeked);
-      return Ember.RSVP.resolve(peeked);
+      return this.get('store').findRecord('user', encUserId);
     }
     // if creator of submission is not enc user (i.e. old PoWs user)
     // set recipient as either the first feedbackAuthorizer or the owner of workspace
@@ -80,5 +78,10 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
       });
 
   },
+  actions: {
+    toResponse(responseId) {
+      this.transitionTo('response', responseId);
+    }
+  }
 
 });
