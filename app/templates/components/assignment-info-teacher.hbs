@@ -95,6 +95,8 @@
 
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
+  {{else}}
+    <p class="loading-message">Loading Assignment Report... Thank you for your patience.</p>
   {{/if}}
 
 {{#if isEditing}}
