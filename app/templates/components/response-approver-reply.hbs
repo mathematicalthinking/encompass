@@ -1,1 +1,34 @@
 <h5>Approver Reply</h5>
+
+<p>Mentor Reply Status: {{responseToApprove.status}}</p>
+
+
+<div class="approver-actions">
+
+  {{#if showNoActionsMessage}}
+    <p class="info">{{noActionToTakeMessage}}</p>
+  {{else}}
+    <h7>Actions</h7>
+    {{#if showApprove}}
+      <button class="primary_button" {{action "confirmApproval"}}>Approve</button>
+    {{/if}}
+    {{#if showCompose}}
+      <button class="primary_button" {{action "composeReply"}}>Reply</button>
+    {{/if}}
+    {{#if showEdit}}
+      <button class="primary_button" {{action "editMentorReply"}}>Edit</button>
+    {{/if}}
+  {{/if}}
+
+</div>
+
+{{#if isComposingReply}}
+  <div class="compose-approver-reply">
+    {{textarea cols=10 rows=20 name="approver-reply" value=replyText}}
+
+    <div class="submit-buttons">
+        <button {{action "cancelReply"}} class="primary_button">Cancel</button>
+        <button {{action "saveReply"}} class="primary_button">Send</button>
+    </div>
+  </div>
+{{/if}}
