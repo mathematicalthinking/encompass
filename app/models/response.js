@@ -15,12 +15,15 @@ Encompass.Response = DS.Model.extend(Encompass.Auditable, {
   student:    Ember.computed.alias('submission.student'),
   powId:      Ember.computed.alias('submission.powId'),
   isStatic:   Ember.computed.alias('submission.isStatic'),
+  responseType: DS.attr('string'),
+  note: DS.attr('string'),
+  status: DS.attr('string'),
+  priorRevision: DS.attr(), // objectId of mentor reply that was revised in response to approve reply
+  reviewedResponse: DS.attr(), // objectId of the mentor response that was source of approver reply
   shortText: function() {
     if (typeof this.get('text') !== 'string') {
       return '';
     }
     return this.get('text').slice(0, 100);
   }.property('text'),
-  responseType: DS.attr('string'),
-  note: DS.attr('string'),
 });
