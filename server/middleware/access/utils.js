@@ -9,7 +9,7 @@ const wsApi = require('../../datasource/api/workspaceApi');
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
   try {
-    const records = await models[model].find(filter, {_id: 1});
+    const records = await models[model].find(filter, {_id: 1}).lean().exec();
     return records.map(rec => rec._id);
   }catch(err) {
     console.error(`Error getModelIds: ${err}`);
