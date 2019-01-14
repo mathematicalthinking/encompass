@@ -1,0 +1,46 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+
+#workspace-info {
+  .link {
+    font-size: .9em;
+    margin-left: 10px;
+    a {
+      color: $accent-color;
+    }
+  }
+}
+
+.workspace-info-container {
+  @include flex-container(auto, auto, row, wrap, space-between, center, space-between);
+  padding: 20px 15px;
+}
+
+#workspace-info-settings {
+  @include flex-item(1, flex-start, 1 1 auto);
+  margin: 10px 15px;
+}
+
+#workspace-info-collaborators {
+  @include flex-item(2, flex-start, 1 1 auto);
+  margin: 10px 15px;
+}
+
+#workspace-info-stats {
+  @include flex-item(3, flex-start, 1 1 auto);
+  margin: 10px 15px;
+}
+
+.info-card {
+  box-shadow: $box-shadow;
+  height: 200px;
+  .heading {
+    color: black;
+    font-size: 1.1em;
+    background-color: $cancel-color;
+    padding: 20px 20px 15px 20px;
+    border-bottom: .5px solid $input-border;
+  }
+}
