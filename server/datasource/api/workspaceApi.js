@@ -309,7 +309,7 @@ async function putWorkspace(req, res, next) {
     ws.name = req.body.workspace.name;
     ws.owner = req.body.workspace.owner;
     ws.lastViewed = new Date();
-    ws.lastModifiedDate = req.body.workspace.lastModifiedDate;
+    ws.lastModifiedDate = new Date();
     ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
     ws.permissions = req.body.workspace.permissions;
     ws.organization = req.body.workspace.organization;

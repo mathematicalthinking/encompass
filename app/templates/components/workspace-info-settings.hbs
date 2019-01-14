@@ -27,7 +27,26 @@
         Owner
       </div>
       <div class="row-value">
-        {{#link-to 'user' workspace.owner.username}}{{workspace.owner.username}}{{/link-to}}
+        {{#if isEditing}}
+          {{selectize-input
+          store=store
+          inputId="owner-select"
+          maxItems=1
+          initialItems=initialOwnerItem
+          onItemAdd=(action "setOwner")
+          onItemRemove=(action "setOwner")
+          labelField="username"
+          valueField="id"
+          searchField="username"
+          model="user"
+          queryParamsKey="usernameSearch"
+          isAsync=true
+          placeholder="Search by username"
+          preload="focus"
+          }}
+        {{else}}
+          {{#link-to 'user' workspace.owner.username}}{{workspace.owner.username}}{{/link-to}}
+        {{/if}}
       </div>
     </div>
     <div class="card-row">
@@ -36,18 +55,6 @@
       </div>
       <div class="row-value">
         {{workspace.mode}}
-      </div>
-    </div>
-    <div class="card-row">
-      <div class="row-label">
-        Folder Set
-      </div>
-      <div class="row-value">
-        {{#if workspace.folderSet}}
-          {{workspace.folderSet}}
-        {{else}}
-          None selected
-        {{/if}}
       </div>
     </div>
     {{#if isEditing}}

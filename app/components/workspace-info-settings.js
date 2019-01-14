@@ -6,11 +6,59 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
   selectedMode: null,
   workspacePermissions: Ember.computed.alias('workspace.permissions'),
 
+  initialOwnerItem: function () {
+    const owner = this.get('workspace.owner');
+    console.log('owner is', owner);
+    if (this.get('utils').isNonEmptyObject(owner)) {
+      return [owner.get('id')];
+    }
+    return [];
+  }.property('workspace.owner'),
+
   actions: {
     editWorkspaceInfo () {
       this.set('isEditing', true);
       let workspace = this.get('workspace');
       this.set('selectedMode', workspace.get('mode'));
+    },
+
+    setOwner(val, $item) {
+      const workspace = this.get('workspace');
+
+      if (!val) {
+        return;
+      }
+
+      const user = this.get('store').peekRecord('user', val);
+      if (this.get('utils').isNonEmptyObject(user)) {
+        workspace.set('owner', user);
+        let ownerOrg = user.get('organization');
+        let ownerOrgName = ownerOrg.get('name');
+        let ownerOrgId = ownerOrg.get('id');
+        let workspaceOrg = workspace.get('organization');
+        let workspaceOrgName = workspaceOrg.get('name');
+        let workspaceOrgId = workspaceOrg.get('id');
+
+        if (workspaceOrgId) {
+          if (workspaceOrgId !== ownerOrgId) {
+            this.get('alert').showModal('question', `Do you want to change this workspace's organization`, `This owner belongs to ${ownerOrgName} but this workspace belongs to ${workspaceOrgName}`, 'Yes, change it', 'No, keep it').then((results) => {
+              if (results.value) {
+                workspace.set('organization', ownerOrg);
+                this.send('saveOwner', user);
+              } else {
+                workspace.set('organization', workspaceOrg);
+                this.send('saveOwner', user);
+              }
+            });
+          } else {
+            workspace.set('organization', ownerOrg);
+            this.send('saveOwner', user);
+          }
+        } else {
+          workspace.set('organization', ownerOrg);
+          this.send('saveOwner', user);
+        }
+      }
     },
 
     checkWorkspace: function () {
