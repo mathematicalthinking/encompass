@@ -1,4 +1,5 @@
 {{#unless fromWorkspaceList}}
+<div class="select-workspace-container">
   <p class="input-label">
     Choose a workspace to copy
     <span class="info-text-tip simptip-position-right simptip-multiline simptip-smooth" data-tooltip="Start typing or use the drop down to select the name of the workspace you would like to copy">
@@ -27,6 +28,7 @@
   {{#if missingWorkspace}}
     {{error-box error="Please select a workspace." resetError=(action (mut missingWorkspace) null) showDismiss=true}}
   {{/if}}
+</div>
 {{/unless}}
 
 {{#if selectedWorkspace}}
