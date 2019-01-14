@@ -20,42 +20,36 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       ]
     };
 
+    if (apiUtils.isNonEmptyArray(ids)) {
+      filter.$and.push({ _id: { $in : ids } });
+    } else if(apiUtils.isValidMongoId(ids)) {
+      filter.$and.push({ _id: ids });
+    }
 
-      if (apiUtils.isNonEmptyArray(ids)) {
-        filter.$and.push({ _id: { $in : ids } });
-      } else if(apiUtils.isValidMongoId(ids)) {
-        filter.$and.push({ _id: ids });
-      }
+    if (apiUtils.isNonEmptyObject(filterBy)) {
+      let allowedKeyHash = {
+        workspace: true,
+        submission: true,
+        createdBy: true,
+        recipient: true,
+        responseType: true,
+        status: true
+      };
+      _.each(filterBy, (val, key) => {
+        if (allowedKeyHash[key]) {
+          filter.$and.push({[key]: val});
+        }
+      });
+    }
 
-      if (apiUtils.isNonEmptyObject(filterBy)) {
-        let allowedKeyHash = {
-          workspace: true,
-          submission: true,
-          createdBy: true,
-          recipient: true,
-          responseType: true,
-          status: true
-        };
-        _.each(filterBy, (val, key) => {
-          if (allowedKeyHash[key]) {
-            filter.$and.push({[key]: val});
-          }
-        });
-      }
+    if (apiUtils.isValidMongoId(workspace)) {
+      filter.$and.push({workspace});
+    }
 
-      if (apiUtils.isValidMongoId(workspace)) {
-        filter.$and.push({workspace});
-      }
+    if (accountType === 'A' && !isStudent) {
+      return filter;
+    }
 
-      if (accountType === 'A' && !isStudent) {
-        return filter;
-      }
-    // const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
-
-    //
-
-
-    // everyone should have access to all responses that belong to a workspace that they have access to
     const orFilter = { $or: [] };
 
     // can access direct feedback addressed to user only if status is approved
@@ -63,15 +57,18 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
         recipient: user._id,
         $or: [
           { status: 'approved' },
-          { type: 'approver' }
+          { type: 'approver', status: { $ne: 'superceded' } }
         ]
       });
-    // can access any feedback of type 'comment' if addressed to user
 
-    // can access any feedback where user is one of the feedback authorizers
-    orFilter.$or.push({
-      approvers: user._id
-    });
+    // can access any feedback from workspace where user has approve permissions
+
+    let approverWorkspaceIds = await utils.getApproverWorkspaceIds(user);
+    if (apiUtils.isNonEmptyArray(approverWorkspaceIds)) {
+      orFilter.$or.push({
+        workspace: {$in: approverWorkspaceIds}
+      });
+    }
 
     // can access any feedback you created
 
@@ -103,7 +100,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       const userIds = await utils.getModelIds('User', {organization: userOrg});
       userIds.push(user._id);
 
-      orFilter.$or.push({createdBy : {$in : userIds}, recipient: {$in: userIds}, approvers: { $elemMatch: { $in: userIds} }});
+      orFilter.$or.push({createdBy : {$in : userIds}, recipient: {$in: userIds}});
       filter.$and.push(orFilter);
 
       return filter;
