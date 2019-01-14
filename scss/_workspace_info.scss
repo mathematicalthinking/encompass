@@ -37,6 +37,24 @@
         text-align: left;
       }
     }
+    .card-row {
+      &.button-row {
+        margin: 10px 0 10px 0;
+        justify-content: flex-end;
+        text-align: right;
+        button {
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+  .text-input {
+    width: 95%;
+    padding: 10px;
+    border-radius: 3px;
+    font-size: .9em;
+    background: none;
+    border: 1px solid $input-border;
   }
 }
 
@@ -78,6 +96,9 @@
         }
       }
     }
+  }
+  .no-collab {
+    margin: 15px 0;
   }
 }
 
