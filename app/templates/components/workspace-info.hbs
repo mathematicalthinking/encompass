@@ -5,9 +5,9 @@
 </header>
 
 <div class="workspace-info-container">
-  {{workspace-info-settings workspace=workspace isEditing=isEditing users=users}}
+  {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users}}
 
-  {{workspace-info-collaborators workspace=workspace originalCollaborators=originalCollaborators isEditing=isEditing}}
+  {{workspace-info-collaborators workspace=workspace canEdit=canEdit originalCollaborators=originalCollaborators isEditing=isEditing}}
 
   {{workspace-info-stats workspace=workspace}}
 </div>

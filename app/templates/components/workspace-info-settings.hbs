@@ -1,11 +1,13 @@
 <div class="info-card">
   <div class="heading">
     Workspace Settings
+    {{#if canEdit}}
     {{#unless isEditing}}
       <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
         <i class="fas fa-edit"></i>
       </span>
     {{/unless}}
+    {{/if}}
   </div>
   <div class="card-content">
     <div class="card-row">
@@ -14,7 +16,7 @@
       </div>
       <div class="row-value">
         {{#if isEditing}}
-          {{input type="text" id="edit-name-input" value=workspace.name}}
+          {{input type="text" class="text-input" id="edit-name-input" value=workspace.name}}
         {{else}}
           {{workspace.name}}
         {{/if}}
@@ -48,10 +50,13 @@
         {{/if}}
       </div>
     </div>
-    <div class="card-row">
-      <button class="primary-button cancel-button">Cancel</button>
-      <button class="primary-button">Save</button>
-    </div>
+    {{#if isEditing}}
+      <div class="card-row button-row">
+        <button class="primary-button cancel-button" {{action (mut isEditing null)}}>Cancel</button>
+        <button class="primary-button" {{action 'checkWorkspace'}}>Save</button>
+      </div>
+    {{/if}}
   </div>
 </div>
+
 

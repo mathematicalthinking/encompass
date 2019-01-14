@@ -1,9 +1,11 @@
  <div class="info-card">
   <div class="heading">
     Collaborators
+    {{#if canEdit}}
     <span class="heading-icon" {{action 'addCollaborator'}}>
       <i class="fas fa-plus"></i>
     </span>
+    {{/if}}
   </div>
   <div class="card-content">
     {{#if originalCollaborators}}
@@ -11,10 +13,12 @@
         <div class="collab-container">
           <div class="collab-name">
             {{#link-to 'user' collaborator.username}}{{collaborator.username}}{{/link-to}}
+            {{#if canEdit}}
             <span class="collab-actions">
               <i class="fas fa-minus-circle"></i>
               <i class="fas fa-edit"></i>
             </span>
+            {{/if}}
           </div>
           <div class="collab-settings">
             <div class="card-row">
@@ -61,7 +65,7 @@
         </div>
       {{/each}}
     {{else}}
-      No Collaborators
+      <div class="no-collab">No Collaborators</div>
     {{/if}}
   </div>
 </div>
