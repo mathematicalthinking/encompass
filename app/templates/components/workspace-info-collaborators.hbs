@@ -1,3 +1,68 @@
  <div class="info-card">
-  <div class="heading">Collaborators</div>
+  <div class="heading">
+    Collaborators
+    <span class="heading-icon" {{action 'addCollaborator'}}>
+      <i class="fas fa-plus"></i>
+    </span>
+  </div>
+  <div class="card-content">
+    {{#if originalCollaborators}}
+      {{#each originalCollaborators as |collaborator|}}
+        <div class="collab-container">
+          <div class="collab-name">
+            {{#link-to 'user' collaborator.username}}{{collaborator.username}}{{/link-to}}
+            <span class="collab-actions">
+              <i class="fas fa-minus-circle"></i>
+              <i class="fas fa-edit"></i>
+            </span>
+          </div>
+          <div class="collab-settings">
+            <div class="card-row">
+              <div class="row-label">
+                Submissions
+              </div>
+              <div class="row-value">
+                {{workspace.submissionsLength}}
+              </div>
+            </div>
+            <div class="card-row">
+              <div class="row-label">
+                Selections
+              </div>
+              <div class="row-value">
+                {{workspace.selectionsLength}}
+              </div>
+            </div>
+            <div class="card-row">
+              <div class="row-label">
+                Comments
+              </div>
+              <div class="row-value">
+                {{workspace.foldersLength}}
+              </div>
+            </div>
+            <div class="card-row">
+              <div class="row-label">
+                Folders
+              </div>
+              <div class="row-value">
+                {{workspace.commentsLength}}
+              </div>
+            </div>
+            <div class="card-row">
+              <div class="row-label">
+                Feedback
+              </div>
+              <div class="row-value">
+                {{workspace.commentsLength}}
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      No Collaborators
+    {{/if}}
+  </div>
 </div>
+
