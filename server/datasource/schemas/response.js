@@ -28,7 +28,8 @@ var ResponseSchema = new Schema({
     status: { type: String, enum: ['approved', 'pendingApproval', 'needsRevisions', 'superceded'] },
     priorRevision : {type: ObjectId, ref: 'Response'}, // previous mentor reply if responding to an approver reply
     reviewedResponse: {type: ObjectId, ref: 'Response'}, // mentor reply that was source of approver reply
-    note: {type: String }
+    note: {type: String },
+    approvedBy: { type: ObjectId, ref: 'User' },
   }, {versionKey: false});
 
 /**
