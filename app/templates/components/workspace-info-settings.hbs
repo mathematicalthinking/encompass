@@ -1,3 +1,57 @@
 <div class="info-card">
-  <div class="heading">Workspace Settings</div>
+  <div class="heading">
+    Workspace Settings
+    {{#unless isEditing}}
+      <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
+        <i class="fas fa-edit"></i>
+      </span>
+    {{/unless}}
+  </div>
+  <div class="card-content">
+    <div class="card-row">
+      <div class="row-label">
+        Name
+      </div>
+      <div class="row-value">
+        {{#if isEditing}}
+          {{input type="text" id="edit-name-input" value=workspace.name}}
+        {{else}}
+          {{workspace.name}}
+        {{/if}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Owner
+      </div>
+      <div class="row-value">
+        {{#link-to 'user' workspace.owner.username}}{{workspace.owner.username}}{{/link-to}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Privacy Setting
+      </div>
+      <div class="row-value">
+        {{workspace.mode}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Folder Set
+      </div>
+      <div class="row-value">
+        {{#if workspace.folderSet}}
+          {{workspace.folderSet}}
+        {{else}}
+          None selected
+        {{/if}}
+      </div>
+    </div>
+    <div class="card-row">
+      <button class="primary-button cancel-button">Cancel</button>
+      <button class="primary-button">Save</button>
+    </div>
+  </div>
 </div>
+

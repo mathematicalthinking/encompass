@@ -5,9 +5,9 @@
 </header>
 
 <div class="workspace-info-container">
-  {{workspace-info-settings workspace=workspace}}
+  {{workspace-info-settings workspace=workspace isEditing=isEditing users=users}}
 
-  {{workspace-info-collaborators workspace=workspace}}
+  {{workspace-info-collaborators workspace=workspace originalCollaborators=originalCollaborators isEditing=isEditing}}
 
   {{workspace-info-stats workspace=workspace}}
 </div>
@@ -51,7 +51,6 @@
                   queryParamsKey="usernameSearch"
                   isAsync=true
                   placeholder="Search for user"}}
-
               {{/if}}
             {{else}}
               <span class="owner username">{{workspace.owner.username}}</span>

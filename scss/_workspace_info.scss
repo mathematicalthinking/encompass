@@ -4,6 +4,9 @@
 
 
 #workspace-info {
+  header {
+    background: $background-color;
+  }
   .link {
     font-size: .9em;
     margin-left: 10px;
@@ -21,26 +24,117 @@
 #workspace-info-settings {
   @include flex-item(1, flex-start, 1 1 auto);
   margin: 10px 15px;
+  max-width: 650px;
+  .info-card {
+    .card-row {
+      .row-label {
+        @include flex-item(1, center, 1 1 auto);
+        width: 30%;
+      }
+      .row-value {
+        @include flex-item(2, center, 1 1 auto);
+        width: 70%;
+        text-align: left;
+      }
+    }
+  }
 }
 
 #workspace-info-collaborators {
   @include flex-item(2, flex-start, 1 1 auto);
   margin: 10px 15px;
+  max-width: 650px;
+  .info-card {
+    .collab-container {
+      margin: 15px 0 40px 0;
+      .collab-name {
+        font-size: 1.1em;
+        border-bottom: .5px solid $input-border;
+        padding-bottom: 15px;
+        a {
+          color: $accent-color;
+          margin-left: 10px;
+        }
+        .collab-actions {
+          float: right;
+          margin-right: 10px;
+          i {
+            margin-left: 15px;
+          }
+        }
+      }
+      .collab-settings {
+        padding-left: 25px;
+        .card-row {
+          .row-label {
+            @include flex-item(1, center, 1 1 auto);
+            width: 30%;
+          }
+          .row-value {
+            @include flex-item(2, center, 1 1 auto);
+            width: 70%;
+            text-align: left;
+          }
+        }
+      }
+    }
+  }
 }
 
 #workspace-info-stats {
   @include flex-item(3, flex-start, 1 1 auto);
   margin: 10px 15px;
+  max-width: 300px;
+  .info-card {
+    .card-row {
+      .row-label {
+        @include flex-item(1, center, 1 1 auto);
+        width: 90%;
+      }
+      .row-value {
+        @include flex-item(2, center, 1 1 auto);
+        width: 10%;
+        text-align: right;
+      }
+    }
+  }
 }
 
 .info-card {
   box-shadow: $box-shadow;
-  height: 200px;
   .heading {
     color: black;
     font-size: 1.1em;
     background-color: $cancel-color;
     padding: 20px 20px 15px 20px;
     border-bottom: .5px solid $input-border;
+    .heading-icon {
+      color: $primary-font-color;
+      float: right;
+      &:hover {
+        color: black;
+      }
+    }
+  }
+  .card-content {
+    padding: 10px 30px;
+  }
+  .card-row {
+    margin: 23px 0;
+    @include flex-container(auto, null, row, nowrap, center, center, center);
+    .row-label {
+      color: black;
+    }
+    .row-value {
+      color: $primary-font-color;
+      font-weight: $light-font-weight;
+      a {
+        color: $accent-color;
+        font-weight: $main-font-weight;
+        &:hover {
+          font-weight: $bold-font-weight;
+        }
+      }
+    }
   }
 }
