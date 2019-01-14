@@ -9,10 +9,10 @@
   </div>
   <div class="card-content">
     {{#if originalCollaborators}}
-      {{#each originalCollaborators as |collaborator|}}
+      {{#each workspace.permissions as |collaborator|}}
         <div class="collab-container">
           <div class="collab-name">
-            {{#link-to 'user' collaborator.username}}{{collaborator.username}}{{/link-to}}
+            {{#link-to 'user' collaborator.user.username}}{{collaborator.username}}{{/link-to}}
             {{#if canEdit}}
             <span class="collab-actions">
               <i class="fas fa-minus-circle"></i>
@@ -26,7 +26,7 @@
                 Submissions
               </div>
               <div class="row-value">
-                {{workspace.submissionsLength}}
+                {{collaborator.submissions}}
               </div>
             </div>
             <div class="card-row">
@@ -34,7 +34,7 @@
                 Selections
               </div>
               <div class="row-value">
-                {{workspace.selectionsLength}}
+                {{collaborator.selections}}
               </div>
             </div>
             <div class="card-row">
@@ -42,7 +42,7 @@
                 Comments
               </div>
               <div class="row-value">
-                {{workspace.foldersLength}}
+                {{collaborator.comments}}
               </div>
             </div>
             <div class="card-row">
@@ -50,7 +50,7 @@
                 Folders
               </div>
               <div class="row-value">
-                {{workspace.commentsLength}}
+                {{collaborator.folders}}
               </div>
             </div>
             <div class="card-row">
@@ -58,7 +58,7 @@
                 Feedback
               </div>
               <div class="row-value">
-                {{workspace.commentsLength}}
+                {{collaborator.feedback}}
               </div>
             </div>
           </div>
