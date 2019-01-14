@@ -16,57 +16,10 @@
 {{!--
 <div class="sanity">
   <section class="attributes half">
-    <h2>Attributes
-      {{#if canEdit}}
-        {{#if isEditing}}
-          <button class="action_button" {{action 'checkWorkspace'}}>Save</button>
-          <button class="action_button" {{action (mut isEditing) null}}>Cancel</button>
-        {{else}}
-          <button class="action_button" {{action 'editWorkspace'}}>Edit</button>
-        {{/if}}
-      {{/if}}
-    </h2>
+    <h2>Attributes</h2>
 
     <div class="half">
       <table class="values rows">
-        <tr>
-          <th>Owner</th>
-          <td>
-            {{#if isEditing}}
-              {{#unless isChangingOwner}}
-                {{workspace.owner.username}}
-                <button {{action 'editOwner' workspace.owner}}> Change owner</button>
-              {{/unless}}
-              {{#if isChangingOwner}}
-                {{selectize-input
-                  store=store
-                  inputId="owner-select"
-                  maxItems=1
-                  onItemAdd=(action "setOwner")
-                  onItemRemove=(action "setOwner")
-                  labelField="username"
-                  valueField="id"
-                  searchField="username"
-                  model="user"
-                  queryParamsKey="usernameSearch"
-                  isAsync=true
-                  placeholder="Search for user"}}
-              {{/if}}
-            {{else}}
-              <span class="owner username">{{workspace.owner.username}}</span>
-            {{/if}}
-          </td>
-        </tr>
-        <tr>
-          <th>Name</th>
-          <td>
-            {{#if isEditing}}
-              {{input type="text" id="edit-name-input" value=workspace.name}}
-            {{else}}
-              {{workspace.name}}
-            {{/if}}
-          </td>
-        </tr>
         <tr>
           <th>Mode</th>
           <td>

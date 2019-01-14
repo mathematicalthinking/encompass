@@ -54,7 +54,11 @@
         Privacy Setting
       </div>
       <div class="row-value">
-        {{workspace.mode}}
+        {{#if isEditing}}
+          {{my-select cannotBeNull=true selectedValue=selectedMode content=modes action=(action (mut selectedMode))}}
+        {{else}}
+          {{workspace.mode}}
+        {{/if}}
       </div>
     </div>
     {{#if isEditing}}

@@ -56,6 +56,16 @@
     background: none;
     border: 1px solid $input-border;
   }
+  #my-select {
+    width: 100%;
+    select {
+      border: 1px solid input-border;
+      width: 100%;
+      font-size: .9em;
+      background: none;
+      height: 34px;
+    }
+  }
 }
 
 #workspace-info-collaborators {

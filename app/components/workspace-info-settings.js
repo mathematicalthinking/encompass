@@ -8,12 +8,22 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
 
   initialOwnerItem: function () {
     const owner = this.get('workspace.owner');
-    console.log('owner is', owner);
     if (this.get('utils').isNonEmptyObject(owner)) {
       return [owner.get('id')];
     }
     return [];
   }.property('workspace.owner'),
+
+  modes: function () {
+    const basic = ['private', 'org', 'public'];
+
+    if (this.get('currentUser.isStudent') || !this.get('currentUser.isAdmin')) {
+      return basic;
+    }
+
+    return ['private', 'org', 'public', 'internet'];
+
+  }.property('currentUser.isAdmin', 'currentUser.isStudent'),
 
   actions: {
     editWorkspaceInfo () {
