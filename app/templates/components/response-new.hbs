@@ -51,10 +51,10 @@
       <button class="edit" {{action toggleProperty 'isEditing'}} >Edit</button>
     {{/if}}
     {{#if showRevise}}
-      <button class="primary_button" {{action toggleProperty 'isRevising'}}>Revise</button>
+      <button class="primary-button" {{action toggleProperty 'isRevising'}}>Revise</button>
     {{/if}}
     {{#if isEditing}}
-      <button class="primary_button" {{action 'save'}} disabled={{notDirty}}>Save</button>
+      <button class="primary-button" {{action 'save'}} disabled={{notDirty}}>Save</button>
       <button class="cancel" {{action toggleProperty 'isEditing'}}>Cancel</button>
     {{/if}}
     </div>
