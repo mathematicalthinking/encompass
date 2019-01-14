@@ -29,22 +29,44 @@ div.response-flex-container {
     min-width: 350px;
     @include flex-item(3, flex-start, 1 1 33%);
   }
+
+  .cancel-button {
+    padding: 10px 22px;
+  }
+
   #response-submission-view {
     margin-left: 20px;
-    border: red solid 1px;
 
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
+    border: red solid 1px;
+    img {
+      max-width: 100%;
+    }
+    .problem-link-container {
+      margin-left: 15px;
+      margin-bottom: 10px;
+    }
     #al_submission {
       height: auto;
-    }
-    div#uploadedImg {
-      img {
-        max-width: 100%;
+      margin-left: 15px;
+      .submission.short {
+        margin-bottom: 10px;
+      }
+      p {
+        margin-bottom: 10px;
       }
     }
   }
   #response-mentor-reply {
     border: blue solid 1px;
     margin-left: 20px;
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
     section.response {
       width: 85%;
       pre.message {
@@ -54,10 +76,54 @@ div.response-flex-container {
     section.response-details {
       float: none;
     }
+    div.response-info {
+      margin-left: 15px;
+      p {
+        margin-bottom: 10px;
+      }
+    }
   }
   #response-approver-reply {
     border: green solid 1px;
     margin-left: 20px;
-
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
+    div.approver-actions {
+      margin-left: 15px;
+      margin-bottom: 15px;
+    }
+    div.approver-replies {
+      margin-left: 15px;
+      h5 {
+        margin-left: 0;
+        margin-bottom: 15px;
+      }
+      .display-approver-reply {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        p {
+          padding: 5px;
+        }
+      }
+    }
+    div.compose-approver-reply {
+      margin-left: 15px;
+      margin-bottom: 10px;
+      textarea {
+        width: 85%;
+      }
+    }
+    div.display-reply-actions {
+      button {
+        margin: 5px;
+      }
+    }
+    div.submit-buttons {
+      button {
+        margin: 5px;
+      }
+    }
   }
 }
