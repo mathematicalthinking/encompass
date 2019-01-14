@@ -54,19 +54,19 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
             this.get('alert').showModal('question', `Do you want to change this workspace's organization`, `This owner belongs to ${ownerOrgName} but this workspace belongs to ${workspaceOrgName}`, 'Yes, change it', 'No, keep it').then((results) => {
               if (results.value) {
                 workspace.set('organization', ownerOrg);
-                this.send('saveOwner', user);
+                this.set('saveOwner', user);
               } else {
                 workspace.set('organization', workspaceOrg);
-                this.send('saveOwner', user);
+                this.set('saveOwner', user);
               }
             });
           } else {
             workspace.set('organization', ownerOrg);
-            this.send('saveOwner', user);
+            this.set('saveOwner', user);
           }
         } else {
           workspace.set('organization', ownerOrg);
-          this.send('saveOwner', user);
+          this.set('saveOwner', user);
         }
       }
     },
@@ -92,13 +92,20 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveWorkspace: function () {
+      //only make put request if there were changes - works but not for owner
       let workspace = this.get('workspace');
-      workspace.save().then((res) => {
-        this.get('alert').showToast('success', 'Workspace Updated', 'bottom-end', 3000, null, false);
+      if (workspace.get('hasDirtyAttributes') || this.get('saveOwner')) {
+        let workspace = this.get('workspace');
+        workspace.save().then((res) => {
+          this.get('alert').showToast('success', 'Workspace Updated', 'bottom-end', 3000, null, false);
+          this.set('isEditing', false);
+          this.set('saveOwner', null);
+        }).catch((err) => {
+          this.handleErrors(err, 'updateRecordErrors', workspace);
+        });
+      } else {
         this.set('isEditing', false);
-      }).catch((err) => {
-        this.handleErrors(err, 'updateRecordErrors', workspace);
-      });
+      }
     },
   }
 });
