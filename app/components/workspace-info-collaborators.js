@@ -14,7 +14,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     //start with array of object and return array of objects
     if (this.get('utils').isNonEmptyArray(collabs)) {
       return permissions.map((permission) => {
-        permission.user = this.get('store').peekRecord('user', permission.user);
+        permission.userObj = this.get('store').peekRecord('user', permission.user);
         return permission;
       });
     }
@@ -24,18 +24,16 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
 
   actions: {
     removeCollab(user) {
-      console.log('removeCollab clicked and user is', user);
+      console.log('removeCollab clicked', user);
       let workspace = this.get('workspace');
       const utils = this.get('utils');
       if (!utils.isNonEmptyObject(user)) {
         return;
       }
       const permissions = this.get('workspace.permissions');
-      console.log('permissions are', permissions);
 
       if (utils.isNonEmptyArray(permissions)) {
-        const objToRemove = permissions.findBy('user', user);
-        console.log('Obj to remove is', objToRemove);
+        const objToRemove = permissions.findBy('user', user.get('id'));
         if (objToRemove) {
           this.get('alert').showModal('warning', `Are you sure you want to remove ${user.get('username')} as a collaborator?`, `This may affect their ability to access ${this.get('workspace.name')} `, 'Yes, remove')
         .then((result) => {

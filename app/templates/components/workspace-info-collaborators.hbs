@@ -12,10 +12,10 @@
       {{#each workspacePermissions as |collaborator|}}
         <div class="collab-container">
           <div class="collab-name">
-            {{#link-to 'user' collaborator.user.username}}{{collaborator.user.username}}{{/link-to}}
+            {{#link-to 'user' collaborator.userObj.username}}{{collaborator.userObj.username}}{{/link-to}}
             {{#if canEdit}}
             <span class="collab-actions">
-              <i class="fas fa-minus-circle" {{action 'removeCollab' collaborator.user}}></i>
+              <i class="fas fa-minus-circle" {{action 'removeCollab' collaborator.userObj}}></i>
               <i class="fas fa-edit"></i>
             </span>
             {{/if}}

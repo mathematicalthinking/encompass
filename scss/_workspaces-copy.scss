@@ -427,8 +427,9 @@
         &.row-2 {
           @include flex-item(2, auto, 1 0 auto);
           padding: 20px 15px 15px 15px;
-            color: black;
           a {
+            color: black;
+            font-size: 1em;
             &.active {
               font-weight: $bolder-font-weight;
               background-color: $background-body !important;
