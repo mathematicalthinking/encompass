@@ -1,4 +1,4 @@
-Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'response-container',
   wsPermissions: Ember.inject.service('workspace-permissions'),
   submission: null,
@@ -10,39 +10,35 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   didReceiveAttrs() {
     if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
+      return;
     } else if (this.get('primaryResponseType') === 'approver') {
-      this.set('reviewedResponse', this.get('response.reviewedResponse'));
-        if (this.get('isPrimaryRecipient')) {
-          // load other mentor replies
-          this.loadPreviousMentorReplies()
-          .then((responses) => {
+      let reviewedResponse;
+      this.get('response.reviewedResponse')
+        .then((response) => {
+          reviewedResponse = response;
+          Ember.RSVP.hash({
+            mentorReplies: this.loadPreviousMentorReplies(reviewedResponse.get('createdBy.id')),
+            approverReplies: this.loadPreviousApproverReplies(reviewedResponse.get('id'))
+          })
+          .then((hash) => {
             if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-              this.set('mentorReplies', responses.toArray());
+              this.set('reviewedResponse', reviewedResponse);
+              this.set('mentorReplies', hash.mentorReplies.toArray());
+              this.set('approverReplies', hash.approverReplies.toArray());
             }
           });
-        } else if (this.get('canApprove')) {
-          this.loadPreviousApproverReplies()
-          .then((responses) => {
-            if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-              this.set('approverReplies', responses.toArray());
-            }
-          });
-        }
+        });
       } else if (this.get('primaryResponseType') === 'mentor') {
-        if (this.get('canApprove') || this.get('isOwnMentorReply')) {
-          this.loadPreviousApproverReplies()
-          .then((responses) => {
-            if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-              this.set('approverReplies', responses.toArray());
-            }
-          });
-        }
-        this.loadPreviousMentorReplies()
-          .then((responses) => {
-            if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-              this.set('mentorReplies', responses.toArray());
-            }
-          });
+        Ember.RSVP.hash({
+          mentorReplies: this.loadPreviousMentorReplies(this.get('response.createdBy.id')),
+          approverReplies: this.loadPreviousApproverReplies(this.get('response.id'))
+        })
+        .then((hash) => {
+          if (!this.get('isDestroying') || !this.get('isDestroyed')) {
+            this.set('mentorReplies', hash.mentorReplies.toArray());
+            this.set('approverReplies', hash.approverReplies.toArray());
+          }
+        });
       }
 
     this._super(...arguments);
@@ -100,7 +96,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       return this.get('reviewedResponse');
     }
     return null;
-  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResonse'),
+  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse'),
 
   canApprove: function() {
     return this.get('wsPermissions').canApproveFeedback(this.get('workspace'));
@@ -129,7 +125,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     return this.get('store').query('response', params);
   },
 
-  loadPreviousApproverReplies() {
+  loadPreviousApproverReplies(mentorReply) {
     return this.queryResponses({
       filterBy: {
         submission: this.get('submission.id'),
@@ -138,7 +134,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       }
     });
   },
-  loadPreviousMentorReplies() {
+  loadPreviousMentorReplies(creator) {
     return this.queryResponses({
       filterBy: {
         createdBy: this.get('currentUser.id'),
@@ -149,7 +145,30 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   },
   actions: {
     onSaveSuccess(response) {
+      console.log('oss rc', response);
       this.sendAction('toResponse', response.get('id'));
     },
+    onMentorReplySwitch(response) {
+      console.log('omrs', response);
+      if (this.get('primaryResponseType') === 'mentor') {
+        // this.queryResponses({
+        //   filterBy: {
+        //     submission: this.get('submission.id'),
+        //     responseType: 'approver',
+        //     reviewedResponse: response.get('id'),
+        //   }
+        // })
+        // .then((responses) => {
+        //   this.set('approverReplies', responses.toArray());
+        //   this.set()
+        // })
+        // .catch((err) => {
+        //   this.handleErrors(err, 'dataFetchErrors');
+        // });
+        this.sendAction('toResponseInfo',response);
+      } else {
+        this.set('reviewedResponse', response);
+      }
+    }
   }
 });

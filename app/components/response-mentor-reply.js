@@ -42,6 +42,27 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     }
     return this.get('displayResponse');
   }.property('isCreating', 'response', 'displayResponse'),
+  replyHeadingText: function() {
+    if (this.get('isEditing')) {
+      return 'Editing Mentor Reply';
+    }
+    if (this.get('isRevising')) {
+      return 'New Revision';
+    }
+  }.property('isEditing', 'isRevising'),
+  showApproverNoteInput: function() {
+    return this.get('newReplyStatus') !== 'approved';
+  }.property('newReplyStatus'),
+  sortedMentorReplies: function() {
+    if (!this.get('mentorReplies')) {
+      return [];
+    }
+    return this.get('mentorReplies')
+      .rejectBy('isTrashed')
+      .sortBy('createDate')
+      .reverse();
+
+  }.property('mentorReplies.@each.isTrashed'),
 
   actions: {
     onSaveSuccess(response) {
@@ -49,24 +70,38 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     },
     startEditing() {
       this.set('editRevisionText', this.get('displayResponse.text'));
+      this.set('editRevisionNote', this.get('displayResponse.note'));
       this.set('isEditing', true);
     },
     stopEditing() {
-      this.set('editRevisionText', '');
       this.set('isEditing', false);
+      this.set('editRevisionText', '');
+      this.set('editRevisionNote', '');
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
     },
     startRevising() {
       this.set('editRevisionText', this.get('displayResponse.text'));
+      this.set('editRevisionNote', this.get('displayResponse.note'));
+
       this.set('isRevising', true);
     },
     stopRevising() {
-      this.set('editRevisionText', '');
       this.set('isRevising', false);
+      this.set('editRevisionText', '');
+      this.set('editRevisionNote', '');
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
     },
     saveEdit() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
       let oldText = this.get('displayResponse.text');
       let newText = this.get('editRevisionText');
-      if (oldText === newText) {
+
+      let oldNote = this.get('displayResponse.note');
+      let newNote = this.get('editRevisionNote');
+
+      if (oldText === newText && oldNote === newNote) {
         this.set('isEditing', false);
         return;
       }
@@ -75,6 +110,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
         return;
       }
       this.get('displayResponse').set('text', newText);
+      this.get('displayResponse').set('note', newNote);
 
       this.get('displayResponse').save()
         .then((saved) => {
@@ -88,9 +124,15 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     },
 
     saveRevision() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
       let oldText = this.get('displayResponse.text');
       let newText = this.get('editRevisionText');
-      if (oldText === newText) {
+
+      let oldNote = this.get('displayResponse.note');
+      let newNote = this.get('editRevisionNote');
+
+      if (oldText === newText && oldNote === newNote) {
         this.set('isRevising', false);
         return;
       }
@@ -100,20 +142,22 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       }
 
       let copy = this.get('displayResponse').toJSON({includeId: false});
-      console.log('copy', copy);
       delete copy.approvedBy;
       delete copy.lastModifiedDate;
       delete copy.lastModifiedBy;
 
       copy.text = newText;
+      copy.note = newNote;
+
       copy.createDate = new Date();
       let revision = this.get('store').createRecord('response', copy);
       revision.set('createdBy', this.get('currentUser'));
       revision.set('submission', this.get('displayResponse.submission'));
       revision.set('workspace', this.get('displayResponse.workspace'));
       revision.set('priorRevision', this.get('displayResponse'));
+      revision.set('recipient', this.get('displayResponse.recipient.content'));
 
-      console.log('revis', revision);
+
       revision.save()
         .then((saved) => {
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
@@ -126,6 +170,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
         });
 
 
+    },
+    setDisplayMentorReply(response) {
+      this.get('onMentorReplySwitch')(response);
     }
   }
 });

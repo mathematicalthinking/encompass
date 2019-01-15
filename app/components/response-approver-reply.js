@@ -24,6 +24,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
     return null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
+
   sortedApproverReplies: function() {
     if (!this.get('approverReplies')) {
       return [];
@@ -33,7 +34,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       .sortBy('createDate')
       .reverse();
 
-  }.property('approverReplies.@each.isTrashed'),
+  }.property('approverReplies.[]'),
 
   showApproverActions: function() {
     return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
@@ -93,6 +94,10 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     composeReply() {
       this.set('isComposingReply', true);
     },
+    stopComposing() {
+      this.set('isComposingReply', false);
+      this.set('editRevisionText', '');
+    },
     cancelReply() {
       let props = ['isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'];
       props.forEach((prop) => {
@@ -100,15 +105,15 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.set(prop, false);
         }
       });
-      this.set('replyText', '');
+      this.set('editRevisionText', '');
     },
     editApproverReply() {
       this.set('isEditingApproverReply', true);
-      this.set('replyText', this.get('displayReply.text'));
+      this.set('editRevisionText', this.get('displayReply.text'));
     },
     reviseApproverReply() {
       this.set('isRevisingApproverReply', true);
-      this.set('replyText', this.get('displayReply.text'));
+      this.set('editRevisionText', this.get('displayReply.text'));
     },
     confirmApproval() {
       this.get('alert').showModal('question', 'Are you sure you want to approve this feedback?', 'Once approved the intended recipient will be able to view the reply.', 'Approve')
@@ -125,25 +130,22 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           }
         })
         .catch((err) => {
-          this.handleErrors(err, 'approvalErrors');
+          this.handleErrors(err, 'approvalErrors', this.get('responseToApprove'));
         });
-
-    },
-    editMentorReply() {
 
     },
 
     saveReply() {
       let record = this.get('store').createRecord('response', {
-        recipient: this.get('responseToApprove.createdBy'),
+        recipient: this.get('responseToApprove.createdBy.content'),
         createdBy: this.get('currentUser'),
         submission: this.get('submission'),
         workspace: this.get('workspace'),
         status: 'approved',
         responseType: 'approver',
         source: 'submission',
-        reviewedResponse: this.get('responseToApprove'),
-        text: this.get('replyText')
+        reviewedResponse: this.get('responseToApprove') || this.get('reviewedResponse'),
+        text: this.get('editRevisionText')
       });
       this.get('responseToApprove').set('status', 'needsRevisions');
       Ember.RSVP.hash({
@@ -158,8 +160,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.get('alert').showToast('success', 'Reply Sent', 'bottom-end', 3000, false, null);
         })
         .catch((err) => {
-          this.send('cancelReply');
-          this.set('recordCreateErr', err);
+          this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('repsonseToApprove')]);
         });
     },
     setReplyToView(response) {
@@ -167,6 +168,112 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         return;
       }
       this.set('replyToView', response);
+    },
+    startEditing() {
+      this.set('editRevisionText', this.get('displayReply.text'));
+      this.set('editRevisionNote', this.get('displayReply.note'));
+      this.set('isEditingApproverReply', true);
+    },
+    stopEditing() {
+      this.set('isEditingApproverReply', false);
+      this.set('editRevisionText', '');
+      this.set('editRevisionNote', '');
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+    },
+    startRevising() {
+      this.set('editRevisionText', this.get('displayReply.text'));
+      this.set('editRevisionNote', this.get('displayReply.note'));
+
+      this.set('isRevisingApproverReply', true);
+    },
+    stopRevising() {
+      this.set('isRevisingApproverReply', false);
+      this.set('editRevisionText', '');
+      this.set('editRevisionNote', '');
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+    },
+    saveEdit() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+      let oldText = this.get('displayReply.text');
+      let newText = this.get('editRevisionText');
+
+      let oldNote = this.get('displayReply.note');
+      let newNote = this.get('editRevisionNote');
+      console.log('oldNote: ', oldNote, ' newNote: ', newNote);
+
+      if (oldText === newText && oldNote === newNote) {
+        this.set('isEditingApproverReply', false);
+        return;
+      }
+      if (!newText || newText.length === 0) {
+        this.set('emptyReplyError', true);
+        return;
+      }
+      this.get('displayReply').set('text', newText);
+      this.get('displayReply').set('note', newNote);
+
+      this.get('displayReply').save()
+        .then((saved) => {
+          this.get('alert').showToast('success', 'Response Updated', 'bottom-end', 3000, false, null);
+          this.set('isEditingApproverReply', false);
+          this.set('editRevisionText', '');
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
+        });
+    },
+
+    saveRevision() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+      let oldText = this.get('displayReply.text');
+      let newText = this.get('editRevisionText');
+
+      let oldNote = this.get('displayReply.note');
+      let newNote = this.get('editRevisionNote');
+
+      if (oldText === newText && oldNote === newNote) {
+        this.set('isRevisingApproverReply', false);
+        return;
+      }
+      if (!newText || newText.length === 0) {
+        this.set('emptyReplyError', true);
+        return;
+      }
+
+      let copy = this.get('displayReply').toJSON({includeId: false});
+      console.log('copy', copy);
+      delete copy.approvedBy;
+      delete copy.lastModifiedDate;
+      delete copy.lastModifiedBy;
+
+      copy.text = newText;
+      copy.note = newNote;
+
+      copy.createDate = new Date();
+      let revision = this.get('store').createRecord('response', copy);
+      revision.set('createdBy', this.get('currentUser'));
+      revision.set('submission', this.get('displayReply.submission'));
+      revision.set('workspace', this.get('displayReply.workspace'));
+      revision.set('priorRevision', this.get('displayReply'));
+      revision.set('recipient', this.get('displayReply.recipient.content'));
+      revision.set('reviewedResponse', this.get('reviewedResponses') || this.get('responseToApprove'));
+
+      console.log('revis', revision);
+      revision.save()
+        .then((saved) => {
+          this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
+          this.set('isRevisingApproverReply', false);
+          this.set('editRevisionText', '');
+          this.get('approverReplies').addObject(saved);
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'saveRecordErrors', revision);
+        });
+
+
     }
   }
 

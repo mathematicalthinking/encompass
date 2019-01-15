@@ -12,6 +12,45 @@
     onSaveSuccess=(action "onSaveSuccess")
   }}
 {{else}}
+<div class="mentor-replies">
+<div class="breadcrumbs"> <!-- TODO breadcrumb component -->
+      {{#unless manyRevisions}}
+      <ul class="breadcrumbs">
+        {{#each sortedMentorReplies as |reply index|}}
+        <li {{action "setDisplayMentorReply" reply}}>
+          <abbr title="{{unbound reply.shortText}}">
+          {{add-to index 1}}
+          </abbr>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <ul class="breadcrumbs">
+        {{#with this.sortedMentorReplies.firstObject as |firstReply|}}
+        <li>
+          <abbr title="{{unbound reply.shortText}}">
+            1
+          </abbr>
+        </li>
+        {{/with}}
+        <abbr title="Show All Replies">
+          <div {{action 'showAllReplies'}} class="truncate">
+            ...
+          </div>
+        </abbr>
+        {{#with sortedMentorReplies.lastObject as |lastReply|}}
+        <li>
+          <abbr title="{{unbound lastReply.shortText}}">
+
+            {{sortedMentorReplies.length - 1}}
+
+          </abbr>
+        </li>
+        {{/with}}
+      </ul>
+      {{/unless}}
+  </div>
+</div>
 <div class="response-info">
   {{#if displayResponse}}
     <p>From: {{displayResponse.createdBy.username}}</p>
@@ -22,14 +61,16 @@
       <p>Status: {{displayResponse.status}}</p>
     {{/if}}
 
-    <p>Message: {{displayResponse.text}}</p>
-
+    <div>Message:<pre>{{displayResponse.text}}</pre></div>
+    {{#if displayResponse.note}}
+      <p>Note: {{displayResponse.note}}</p>
+    {{/if}}
     {{else}}
     <p>No response to display.</p>
 
   {{/if}}
   </div>
-  <div class="mentor-reply-actions">
+  <div class="mentor-reply-actions button-row">
     {{#if showEdit}}
       <button {{action 'startEditing'}} class="primary-button">Edit</button>
     {{/if}}
@@ -40,9 +81,19 @@
 
   {{#if isComposing}}
   <div class="compose-mentor-reply">
+    <h3 class="compose-heading">{{replyHeadingText}}</h3>
+    <h5>Message Body</h5>
     {{textarea cols=10 rows=20 name="mentor-reply" value=editRevisionText}}
 
-    <div class="submit-buttons">
+    {{#if showApproverNoteInput}}
+      <h5>Note for Approver</h5>
+      {{textarea class="note" cols=5 rows=20 name="mentor-approver-note" value=editRevisionNote}}
+    {{/if}}
+
+    {{#if emptyReplyError}}
+      {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+    {{/if}}
+    <div class="submit-buttons button-row">
       {{#if isEditing}}
         <button {{action "stopEditing"}} class="cancel-button">Cancel</button>
         <button {{action "saveEdit"}} class="primary-button">Save</button>
