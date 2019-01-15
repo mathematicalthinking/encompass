@@ -1,7 +1,6 @@
 Encompass.CollabPermissionsHelper = Ember.Helper.helper(function(val) {
   let text;
   val = val[0];
-  console.log('val is', val);
   switch (val) {
     case 0:
       text = 'Hidden';
