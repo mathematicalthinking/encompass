@@ -82,6 +82,17 @@ div.response-flex-container {
         margin-bottom: 10px;
       }
     }
+    div.compose-mentor-reply {
+      margin-left: 15px;
+      textarea {
+        width: 85%;
+        margin-bottom: 15px;
+      }
+    }
+    div.mentor-reply-actions {
+      margin-left: 15px;
+
+    }
   }
   #response-approver-reply {
     border: green solid 1px;
