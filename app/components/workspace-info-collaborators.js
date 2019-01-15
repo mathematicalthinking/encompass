@@ -140,7 +140,6 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
   },
 
   createSubmissionValueObject(subObj) {
-    console.log('subObject is', subObj);
     let obj = {
       id: null,
       display: null,
@@ -179,15 +178,17 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
 
     savePermissions(permissionsObject) {
+      console.log('save permissions ran and obj is', permissionsObject);
       if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
         return;
       }
-      const permissions = this.get('workspacePermissions');
+      const permissions = this.get('workspace.permissions');
 
       // array of user records for display purposes
       const collaborators = this.get('originalCollaborators');
       // check if user already is in array
-      let existingObj = permissions.findBy('user', permissionsObject.user.id);
+      let existingObj = permissions.findBy('user', permissionsObject.user);
+      console.log('existingObj is', existingObj);
 
       // remove existing permissions obj and add modified one
       if (existingObj) {
