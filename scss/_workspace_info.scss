@@ -94,14 +94,16 @@
       .collab-settings {
         padding-left: 25px;
         .card-row {
+          @include flex-container(auto, null, row, wrap, flex-start, center, center);
           .row-label {
-            @include flex-item(1, center, 1 1 auto);
-            width: 30%;
+            @include flex-item(1, flex-start, 0 1 auto);
+            width: 150px;
           }
           .row-value {
-            @include flex-item(2, center, 1 1 auto);
+            @include flex-item(2, flex-start, 1 1 auto);
             width: 70%;
             text-align: left;
+            max-width: 155px;
           }
         }
       }
