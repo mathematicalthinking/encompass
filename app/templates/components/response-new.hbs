@@ -1,21 +1,10 @@
 <div class="al_wtf">
-
-
   <section class="response">
-    <h1>
-    {{#if isEditing}}
-      Editing
-    {{/if}}
-    {{#if model.persisted}}
-      Saved
-    {{else}}
-      New
-    {{/if}}
-    Response
-    </h1>
+    <h1>{{headingText}}</h1>
     <p>
       To: <span id="responding-to">{{model.student}}</span>
     </p>
+
     {{#if explainEmptiness}}
       <p class="notice">
       Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
@@ -31,8 +20,8 @@
       </p>
     {{/if}}
 
-    {{#if isEditing}}
-    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text autofocus="autofocus"}}
+    {{#if isCreating}}
+      {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" disabled=notEditing value=model.text autofocus="autofocus"}}
 
     {{#if showNoteField}}
       <div class="approve-note">
@@ -58,20 +47,6 @@
       <button class="cancel" {{action toggleProperty 'isEditing'}}>Cancel</button>
     {{/if}}
     </div>
-    {{!-- <button class="send" {{action 'sendToPoW'}} disabled={{cantRespond}}>Send a copy to the PoW ({{model.student}})</button> --}}
-    {{#unless canRespond}}
-      <a {{action toggleProperty 'showHelp'}}>?</a>
-      {{#if showHelp}}
-      <p class="notice">
-      You can't send this to the PoW because:
-      <ul>
-        {{#if model.isStatic}}
-          <li>it is static. (probably imported from a PD set)</li>
-        {{/if}}
-      </ul>
-      </p>
-      {{/if}}
-    {{/unless}}
   </section>
   <section class="response-details origin meta al_vertical_stretch">
     {{#if existingResponses.length}}
@@ -94,7 +69,6 @@
         <br/>
       {{/if}}
     {{/if}}
-  {{log 'workspace owner 'model.workspace.owner.username}}
     <p>
     This response was generated from
       {{model.workspace.owner.displayName}}'s workspace {{#link-to 'workspace.work' model.workspace classNames="workspace"}}{{model.workspace.name}}{{/link-to}}.

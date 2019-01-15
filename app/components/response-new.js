@@ -2,6 +2,7 @@
 Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'response-new',
   isEditing: false,
+  isCreating: false,
   anonymous: false,
   showExisting: false,
   subResponses: [],
@@ -17,9 +18,10 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   alert: Ember.inject.service('sweet-alert'),
 
+
   didReceiveAttrs() {
     if (this.get('isCreating') && !this.get('isEditing')) {
-      this.set('isEditing', true);
+      // this.set('isEditing', true);
       // preformat text and set on model;
       this.preFormatText();
       this.getExistingResponses();
@@ -27,6 +29,18 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     this._super(...arguments);
   },
+
+  headingText: function() {
+    if (this.get('isEditing')) {
+      return 'Editing Response';
+    }
+    if (this.get('isCreating')) {
+      return 'Creating New Response';
+    }
+    if (this.get('isRevising')) {
+      'New Revised Response';
+    }
+  }.property('isEditing', 'isCreating', 'isRevising'),
 
   showNoteField: function() {
     return this.get('newReplyType') === 'mentor' && this.get('newReplyStatus') !== 'approved';
@@ -72,8 +86,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('isStatic'),
 
   explainEmptiness: function () {
-    return (this.get('model.selections.length') === 0 && !this.get('isEditing') && !this.get('model.text'));
-  }.property('isEditing', 'model.selections', 'model.text'),
+    return (this.get('model.selections.length') === 0 && !this.get('isEditing') && !this.get('isRevising') && !this.get('model.text'));
+  }.property('isEditing', 'model.selections.[]', 'model.text', 'isRevising'),
 
   modelChanged: function () {
     if (!this.get('persisted') && !this.get('model.text')) {
