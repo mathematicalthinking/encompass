@@ -1,12 +1,11 @@
 <h5>Mentor Reply</h5>
 
 {{#if isCreating}}
-
-  {{response-new model=response
-    isCreating=isCreating
+  {{response-new
     store=store
+    isCreating=isCreating
     submission=submission
-    model=response
+    model=responseNewModel
     recipient=recipient
     newReplyStatus=newReplyStatus
     newReplyType="mentor"
@@ -30,6 +29,31 @@
 
   {{/if}}
   </div>
+  <div class="mentor-reply-actions">
+    {{#if showEdit}}
+      <button {{action 'startEditing'}} class="primary-button">Edit</button>
+    {{/if}}
+    {{#if showRevise}}
+      <button {{action 'startRevising'}} class="primary-button">Revise</button>
+    {{/if}}
+  </div>
+
+  {{#if isComposing}}
+  <div class="compose-mentor-reply">
+    {{textarea cols=10 rows=20 name="mentor-reply" value=editRevisionText}}
+
+    <div class="submit-buttons">
+      {{#if isEditing}}
+        <button {{action "stopEditing"}} class="cancel-button">Cancel</button>
+        <button {{action "saveEdit"}} class="primary-button">Save</button>
+      {{/if}}
+      {{#if isRevising}}
+        <button {{action "stopRevising"}} class="cancel-button">Cancel</button>
+        <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
+        {{/if}}
+    </div>
+  </div>
+{{/if}}
 {{/if}}
 
 
