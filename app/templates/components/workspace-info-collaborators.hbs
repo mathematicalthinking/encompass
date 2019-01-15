@@ -15,7 +15,7 @@
             {{#link-to 'user' collaborator.user.username}}{{collaborator.user.username}}{{/link-to}}
             {{#if canEdit}}
             <span class="collab-actions">
-              <i class="fas fa-minus-circle"></i>
+              <i class="fas fa-minus-circle" {{action 'removeCollab' collaborator.user}}></i>
               <i class="fas fa-edit"></i>
             </span>
             {{/if}}
@@ -28,8 +28,9 @@
               <div class="row-value">
                 {{#if collaborator.submissions.all}}
                   View All
+                {{else}}
+                  Custom
                 {{/if}}
-                {{log 'submission object' collaborator.submissions}}
               </div>
             </div>
             <div class="card-row">
