@@ -37,6 +37,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
             }
           });
         }
+        this.loadPreviousMentorReplies()
+          .then((responses) => {
+            if (!this.get('isDestroying') || !this.get('isDestroyed')) {
+              this.set('mentorReplies', responses.toArray());
+            }
+          });
       }
 
     this._super(...arguments);
