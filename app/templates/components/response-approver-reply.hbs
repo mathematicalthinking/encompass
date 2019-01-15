@@ -69,19 +69,22 @@
     <p>Date: {{format-date displayReply.createDate "MMM Do YYYY h:mm A"}}</p>
     <p>Message: {{displayReply.text}}</p>
   </div>
-  <div class="display-reply-actions">
-    {{#if showApproverEdit}}
-      <button class="primary-button" {{action "editApproverReply"}}>Edit</button>
-    {{/if}}
-    {{#if showApproverRevise}}
-      <button class="primary-button" {{action "reviseApproverReply"}}>Revise</button>
-    {{/if}}
-  </div>
+  {{#if showDisplayReplyActions}}
+    <div class="display-reply-actions">
+      {{#if showApproverEdit}}
+        <button class="primary-button" {{action "editApproverReply"}}>Edit</button>
+      {{/if}}
+      {{#if showApproverRevise}}
+        <button class="primary-button" {{action "reviseApproverReply"}}>Revise</button>
+      {{/if}}
+    </div>
+  {{/if}}
 {{/if}}
 </div>
 
 
 {{#if showReplyInput}}
+  <h5>{{replyHeadingText}}</h5>
   <div class="compose-approver-reply">
     {{textarea cols=10 rows=20 name="approver-reply" value=replyText}}
 

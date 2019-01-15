@@ -36,8 +36,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('approverReplies.@each.isTrashed'),
 
   showApproverActions: function() {
-    return this.get('canApprove') && !this.get('isOwnMentorReply');
-  }.property('isOwnMentorReply', 'canApprove'),
+    return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
+  }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
 
   showApprove: function() {
     return this.get('responseToApprove.status') !== 'approved';
@@ -71,6 +71,22 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
   showReplyInput: function() {
     return this.get('isEditingApproverReply') || this.get('isRevisingApproverReply') || this.get('isComposingReply');
+  }.property('isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'),
+
+  showDisplayReplyActions: function () {
+    return !this.get('showReplyInput');
+  }.property('showReplyInput'),
+
+  replyHeadingText: function() {
+    if (this.get('isEditingApproverReply')) {
+      return 'Editing Reply';
+    }
+    if (this.get('isRevisingApproverReply')) {
+      return 'New Revision';
+    }
+    if (this.get('isComposingReply')) {
+      return 'New Reply';
+    }
   }.property('isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'),
 
   actions: {
