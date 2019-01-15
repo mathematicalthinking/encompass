@@ -200,7 +200,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
               text += this.quote(c.get('text'), opts);
 
             });
-            this.set('model.text', text);
+            this.set('replyText', text);
             this.set('originalText', text);
         });
       }
@@ -217,12 +217,13 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('model.text'),
 
   _persistThen: function (callback) {
-    this.set('isEditing', false);
-    var response = this.get('model');
+    let response = this.get('model');
     response.set('original', this.get('originalText'));
     response.set('createdBy', this.get('currentUser'));
     response.set('status', this.get('newReplyStatus'));
     response.set('responseType', this.get('newReplyType'));
+    response.set('text', this.get('replyText'));
+    response.set('note', this.get('replyNote'));
     response.save().then(function (saved) {
       if (callback instanceof Function) {
         callback(saved);
@@ -254,6 +255,12 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.get('alert').showToast('success', 'Revision Created', 'bottom-end', 3000, false, null);
     });
   },
+  moreDetailsLinkText: function() {
+    if (this.get('showDetails')) {
+      return 'Hide Details';
+    }
+    return 'More Details';
+  }.property('showDetails'),
 
   actions: {
     toggleProperty: function (p) {
@@ -261,14 +268,10 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
     save: function () {
       var controller = this;
-      if (this.get('isEditing')) {
         this._persistThen(function (saved) {
           controller.get('alert').showToast('success', 'Response Sent', 'bottom-end', 3000, false, null);
           controller.get('onSaveSuccess')(saved);
         });
-      } else {
-       controller.createRevision();
-      }
     },
   }
 });
