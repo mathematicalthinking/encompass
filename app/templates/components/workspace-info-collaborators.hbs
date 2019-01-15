@@ -30,10 +30,14 @@
                 Submissions
               </div>
               <div class="row-value">
-                {{#if collaborator.submissions.all}}
-                  View All
+                {{#if (is-equal collaborator.userObj selectedCollaborator)}}
+                  {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
                 {{else}}
-                  Custom
+                  {{#if collaborator.submissions.all}}
+                    View All
+                  {{else}}
+                    Custom
+                  {{/if}}
                 {{/if}}
               </div>
             </div>

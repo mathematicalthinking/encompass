@@ -133,33 +133,40 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         obj.display = 'Pre-Authorized';
         obj.id = 3;
         break;
-      case 'all':
-        obj.display = 'All';
-        obj.id = 1;
-        break;
-      case 'userOnly':
-        obj.display = 'Own Only';
-        obj.id = 2;
-        break;
-      case 'custom':
-        obj.display = 'Custom';
-        obj.id = 3;
-        break;
       default:
         break;
     }
     return obj;
   },
 
+  createSubmissionValueObject(subObj) {
+    console.log('subObject is', subObj);
+    let obj = {
+      id: null,
+      display: null,
+      value: null,
+    };
+    if (subObj.all) {
+      obj.id = 1;
+      obj.value = 'all';
+      obj.display = 'All';
+    } else {
+      obj.id = 3;
+      obj.value = 'custom';
+      obj.display = 'Custom';
+      this.set('customSubIds', subObj.submissionIds);
+    }
+    return obj;
+  },
+
   actions: {
     editCollab: function (collaborator) {
-      console.log('editCollab cliked and object is', collaborator);
       this.set('isEditing', true);
       if (!this.get('utils').isNonEmptyObject(collaborator)) {
         return;
       }
       this.set('selectedCollaborator', collaborator.userObj);
-      let submissions = this.createValueObject(collaborator.submissions);
+      let submissions = this.createSubmissionValueObject(collaborator.submissions);
       let selections = this.createValueObject(collaborator.selections);
       let comments = this.createValueObject(collaborator.comments);
       let folders = this.createValueObject(collaborator.folders);
@@ -170,42 +177,6 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       this.set('folders', folders);
       this.set('feedback', feedback);
     },
-
-    // createValueObject(val) {
-    //   let obj = { display : null, value: null, id: null };
-    //   console.log('val sent is', val);
-    //   switch (val) {
-    //     case 0:
-    //       obj.display = 'Hidden';
-    //       obj.value = 0;
-    //       obj.id = 1;
-    //       break;
-    //     case 1:
-    //       obj.display = 'View Only';
-    //       obj.value = 1;
-    //       obj.id = 2;
-    //       break;
-    //     case 2:
-    //       obj.display = 'Create';
-    //       obj.value = 2;
-    //       obj.id = 3;
-    //       break;
-    //     case 3:
-    //       obj.display = 'Add';
-    //       obj.value = 3;
-    //       obj.id = 4;
-    //       break;
-    //     case 4:
-    //       obj.display = 'Delete';
-    //       obj.value = 4;
-    //       obj.id = 5;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    //   console.log('obj is', obj);
-    //   return obj;
-    // },
 
     savePermissions(permissionsObject) {
       if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
