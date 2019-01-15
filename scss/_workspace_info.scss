@@ -14,6 +14,18 @@
       color: $accent-color;
     }
   }
+  #my-select {
+    width: 100%;
+    position: relative;
+    top: -6px;
+    select {
+      border: 1px solid input-border;
+      width: 100%;
+      font-size: .9em;
+      background: none;
+      height: 25px;
+    }
+  }
 }
 
 .workspace-info-container {
@@ -35,16 +47,6 @@
         @include flex-item(2, center, 1 1 auto);
         width: 70%;
         text-align: left;
-      }
-    }
-    .card-row {
-      &.button-row {
-        margin: 10px 0 10px 0;
-        justify-content: flex-end;
-        text-align: right;
-        button {
-          margin-left: 15px;
-        }
       }
     }
   }
@@ -109,6 +111,13 @@
       }
     }
   }
+  .button-row {
+    @include flex-container(auto, null, row, nowrap, flex-end, center, center);
+    margin-bottom: -20px;
+    button {
+      margin-left: 15px;
+    }
+  }
   .no-collab {
     margin: 15px 0;
   }
@@ -155,6 +164,14 @@
   .card-row {
     margin: 23px 0;
     @include flex-container(auto, null, row, nowrap, center, center, center);
+    &.button-row {
+      margin: 10px 0 10px 0;
+      justify-content: flex-end;
+      text-align: right;
+      button {
+        margin-left: 15px;
+      }
+    }
     .row-label {
       color: black;
     }
