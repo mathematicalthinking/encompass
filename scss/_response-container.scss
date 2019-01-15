@@ -84,19 +84,44 @@ div.response-flex-container {
     }
     div.compose-mentor-reply {
       margin-left: 15px;
+      h5 {
+        margin-left: 0;
+      }
+      h3.compose-heading {
+        text-align: center;
+      }
       textarea {
         width: 85%;
         margin-bottom: 15px;
+        max-width: 95%;
+        &.note {
+          height: 100px;
+        }
       }
     }
     div.mentor-reply-actions {
       margin-left: 15px;
 
     }
+    #response-new {
+      textarea {
+        width: 85%;
+        max-width: 95%;
+        &.approver-note {
+          height: 100px;
+        }
+        margin-bottom: 15px;
+      }
+      section.response-more-details {
+        width: 85%;
+        max-width: 95%;
+      }
+    }
   }
   #response-approver-reply {
     border: green solid 1px;
     margin-left: 20px;
+    margin-right: 20px;
     h3, h5 {
       margin-bottom: 15px;
       margin-left: 15px;
@@ -104,6 +129,13 @@ div.response-flex-container {
     div.approver-actions {
       margin-left: 15px;
       margin-bottom: 15px;
+
+        button:nth-child(1) {
+          margin-right: 5px;
+        }
+        :nth-child(2) {
+          margin-left: 5px;
+        }
     }
     div.approver-replies {
       margin-left: 15px;
