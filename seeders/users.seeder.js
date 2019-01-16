@@ -456,7 +456,8 @@ var data = [{
   "isAuthorized" : true,
   "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
   "isTrashed" : false,
-  "createDate" : "2018-09-06T15:30:21.278Z"
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "collabWorkspaces": ["5bec36958c73047613e2f34e",]
 },
 {
   "_id" : "5b914a102ecaf7c30dd47492",
@@ -575,7 +576,8 @@ var data = [{
   "authorizedBy" : null,
   "createdBy" : null,
   "lastModifiedBy" : "5b245760ac75842be3189525",
-  "seenTour" : "2018-11-14T10:20:51.382Z"
+  "seenTour" : "2018-11-14T10:20:51.382Z",
+  "collabWorkspaces": ["5bec36958c73047613e2f34e"]
 },
 {
   "_id" : "52a695c2cc319831440007d0",
