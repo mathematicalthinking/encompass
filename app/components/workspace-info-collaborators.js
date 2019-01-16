@@ -159,6 +159,28 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     return obj;
   },
 
+  buildCustomSubmissionIds(submissionsValue) {
+    if (submissionsValue === 'custom') {
+      let ids = this.get('customSubmissionIds');
+      if (this.get('utils').isNonEmptyArray(ids)) {
+        return ids;
+      }
+      return [];
+    } else if (submissionsValue === 'userOnly') {
+      // filter for only submissions that have selectedUser as student
+      const subs = this.get('workspace.submissions.content');
+      const selectedUsername = this.get('selectedUser.username');
+      const selectedUserId = this.get('selectedUser.id');
+      if (subs) {
+        const filtered = subs.filter((sub) => {
+          return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
+        });
+        return filtered.mapBy('id');
+      }
+    }
+    return [];
+  },
+
   actions: {
     editCollab: function (collaborator) {
       this.set('isEditing', true);
@@ -186,14 +208,23 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       const permissions = this.get('workspace.permissions');
       let existingObj = permissions.findBy('user', permissionsObject.user);
 
+      this.set('selectedUser', permissionsObject.userObj);
+
       if (existingObj) {
         permissions.removeObject(existingObj);
       }
 
+      let subValue = this.get('submissions.value');
       let viewAllSubs;
-      let submissionIds = existingObj.submissions.submissionIds;
-      if (this.get('submissions.value') === 'all' ) {
+      let submissionIds;
+      if (subValue === 'all') {
         viewAllSubs = true;
+        submissionIds = existingObj.submissions.submissionIds;
+      } else if (subValue === 'userOnly') {
+        viewAllSubs = false;
+        submissionIds = this.buildCustomSubmissionIds('userOnly');
+      } else if (subValue === 'custom'){
+        viewAllSubs = false;
       } else {
         viewAllSubs = false;
       }
@@ -212,6 +243,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       ws.save().then(() => {
         this.get('alert').showToast('success', `Permissions set for ${permissionsObject.userObj.get('username')}`, 'bottom-end', 3000, null, false);
         this.set('selectedCollaborator', null);
+        this.set('selectedUser', null);
       });
     },
 
