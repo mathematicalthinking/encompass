@@ -2,6 +2,13 @@
 @import "mixins";
 @import "responsive-font-size";
 
+#response-container {
+  p.feedback-mode {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+}
+
 div.response-flex-container {
   border: 1px solid purple;
   @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
@@ -22,7 +29,6 @@ div.response-flex-container {
     &.third {
       @include flex-item(2, flex-start, 1 1 33%);
     }
-
 
   }
   div.response-flex-item.approver.third {
@@ -70,6 +76,10 @@ div.response-flex-container {
       margin-bottom: 15px;
       margin-left: 15px;
     }
+    div.bread-crumbs-comp {
+      margin-left: 15px;
+    }
+
     section.response {
       width: 85%;
       pre.message {
@@ -81,6 +91,7 @@ div.response-flex-container {
     }
     div.response-info {
       margin-left: 15px;
+      margin-top: 10px;
       p {
         margin-bottom: 10px;
       }
@@ -93,6 +104,7 @@ div.response-flex-container {
       h3.compose-heading {
         text-align: center;
       }
+
       textarea {
         width: 85%;
         margin-bottom: 15px;

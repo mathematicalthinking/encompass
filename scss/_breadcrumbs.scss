@@ -1,0 +1,15 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+.bread-crumbs-comp {
+  ul.breadcrumbs {
+    display: flex;
+    li {
+      &.active-crumb {
+        font-weight: bolder;
+      }
+      cursor: pointer;
+    }
+  }
+}
