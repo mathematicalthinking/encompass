@@ -18,43 +18,9 @@
 
 <div class="approver-replies">
   <h5>Existing Approver Replies</h5>
-  <div class="breadcrumbs"> <!-- TODO breadcrumb component -->
-      {{#unless manyRevisions}}
-      <ul class="breadcrumbs">
-        {{#each sortedApproverReplies as |reply index|}}
-        <li {{action "setReplyToView" reply}}>
-          <abbr title="{{unbound reply.shortText}}">
-          {{add-to index 1}}
-          </abbr>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-      <ul class="breadcrumbs">
-        {{#with this.sortedApproverReplies.firstObject as |firstReply|}}
-        <li>
-          <abbr title="{{unbound reply.shortText}}">
-            1
-          </abbr>
-        </li>
-        {{/with}}
-        <abbr title="Show All Replies">
-          <div {{action 'showAllReplies'}} class="truncate">
-            ...
-          </div>
-        </abbr>
-        {{#with sortedApproverReplies.lastObject as |lastReply|}}
-        <li>
-          <abbr title="{{unbound lastReply.shortText}}">
-
-            {{sortedApproverReplies.length - 1}}
-
-          </abbr>
-        </li>
-        {{/with}}
-      </ul>
-      {{/unless}}
-  </div>
+  {{#if sortedApproverReplies}}
+    {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText" selectedItem=displayReply}}
+  {{/if}}
   {{#if showNoPreviousRepliesMsg}}
   <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
 {{/if}}
@@ -75,7 +41,7 @@
         <button class="primary-button" {{action "startRevising"}}>Revise</button>
       {{/if}}
       {{#if showTrash}}
-        <button class="cancel-button" {{action "confirmTrash" displayReply}}>Delete</button>
+        <button class="primary-button cancel-button" {{action "confirmTrash" displayReply}}>Delete</button>
       {{/if}}
     </div>
   {{/if}}
@@ -96,15 +62,15 @@
     {{/each}}
     <div class="submit-buttons button-row">
       {{#if isEditingApproverReply}}
-        <button {{action "stopEditing"}} class="cancel-button">Cancel</button>
+        <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
         <button {{action "saveEdit"}} class="primary-button">Save</button>
       {{/if}}
       {{#if isRevisingApproverReply}}
-        <button {{action "stopRevising"}} class="cancel-button">Cancel</button>
+        <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
         <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
         {{/if}}
       {{#if isComposingReply}}
-        <button class="cancel-button" {{action "stopComposing"}}>Cancel</button>
+        <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
         <button {{action "saveReply"}} class="primary-button">Send Reply</button>
       {{/if}}
     </div>
