@@ -182,6 +182,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       let permissions = ws.get('permissions');
 
       let subValue = this.get('submissions.value');
+      console.log('subValue is', subValue);
       let viewAllSubs;
       let submissionIds = [];
       if (subValue === 'all') {
@@ -192,7 +193,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       } else if (subValue === 'custom') {
         viewAllSubs = false;
       } else {
-        viewAllSubs = false;
+        viewAllSubs = true;
       }
 
       let newObj = {
@@ -201,10 +202,10 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
           all: viewAllSubs,
           submissionIds: submissionIds
         },
-        selections: this.get('selections.value'),
-        folders: this.get('folders.value'),
-        comments: this.get('comments.value'),
-        feedback: this.get('feedback.value'),
+        selections: this.get('selections.value') || 0,
+        folders: this.get('folders.value') || 0,
+        comments: this.get('comments.value') || 0,
+        feedback: this.get('feedback.value') || 'none',
       };
 
       console.log('newObj is', newObj);

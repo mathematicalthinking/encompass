@@ -215,6 +215,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       }
 
       let subValue = this.get('submissions.value');
+      console.log('subValue is', subValue);
       let viewAllSubs;
       let submissionIds;
       if (subValue === 'all') {
