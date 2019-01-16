@@ -7,10 +7,72 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   isShowAll: true,
   isShowMine: false,
 
-  allResponses: Ember.computed(function () {
-    let responses = this.get('responses');
-    return responses.sortBy('createDate').reverse();
-  }),
+  currentFilter: 'toUser',
+  sortParam: 'newest',
+
+  statusMap: {
+    'approved': 'APPROVED',
+    'pendingApproval': 'PENDING APPROVAL',
+    'needsRevisions': 'NEEDS REVISIONS',
+    'superceded': 'SUPERCEDED',
+  },
+
+  didReceiveAttrs() {
+    this.set('filteredResponses', this.get('toUserResponses'));
+    this.set('currentFilter', 'own');
+
+    this._super(...arguments);
+  },
+
+  displayResponses: function() {
+    return this.sortResponses(this.get('filteredResponses'), this.get('sortParam'));
+  }.property('filteredResponses.[]', 'sortParam'),
+
+  sortResponses(responses, sortParam) {
+    if (!responses) {
+      return [];
+    }
+    if (sortParam === 'newest' || !sortParam) {
+      return responses.sortBy('createDate').reverse();
+    }
+
+    return responses.sortBy('createDate');
+  },
+  nonTrashedResponses: function() {
+    return this.get('responses').rejectBy('isTrashed');
+  }.property('responses.@each.isTrashed'),
+
+
+
+  filterByStatus(status, responses) {
+    if (!this.get(`statusMap.${status}`)) {
+      return responses;
+    }
+    if (!responses) {
+      return [];
+    }
+    return responses.filterBy('status', status);
+  },
+
+  toUserResponses: function () {
+   return this.filterByRecipient(this.get('currentUser.id'), this.get('nonTrashedResponses'));
+  }.property('currentUser', 'nonTrashedResponses.[]'),
+
+  filterByRecipient(recipientId, responses) {
+    if (!recipientId) {
+      return responses;
+    }
+
+    if (!responses) {
+      return [];
+    }
+
+    return responses.filter((response) => {
+      let recipId = response.belongsTo('recipient').id();
+      return recipId === recipientId;
+    });
+
+  },
 
   yourResponses: Ember.computed(function () {
     let currentUser = this.get('currentUser');
@@ -28,17 +90,11 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   actions: {
     showMyResponses: function () {
-      this.set('showingOnlyMine', true);
-      this.set('showingAllResponses', false);
-      this.set('isShowAll', false);
-      this.set('isShowMine', true);
+      this.set('filteredResponses', this.get('toUserResponses'));
     },
 
     showAllResponses: function () {
-      this.set('showingOnlyMine', false);
-      this.set('showingAllResponses', true);
-      this.set('isShowAll', true);
-      this.set('isShowMine', false);
+      this.set('filteredResponses', this.get('nonTrashedResponses'));
       }
     },
 
