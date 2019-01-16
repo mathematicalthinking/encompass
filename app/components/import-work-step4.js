@@ -2,6 +2,7 @@
 Encompass.ImportWorkStep4Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step4',
   utils: Ember.inject.service('utility-methods'),
+  alert: Ember.inject.service('sweet-alert'),
 
   addedStudentNames: [],
 
@@ -51,6 +52,7 @@ Encompass.ImportWorkStep4Component = Ember.Component.extend(Encompass.CurrentUse
         this.get('onProceed')();
       } else {
         this.set('isMatchingIncompleteError', true);
+        this.get('alert').showToast('error', `Unmatched submission(s)`, 'bottom-end', 3000, false, null);
       }
     },
     back() {

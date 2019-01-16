@@ -3,6 +3,14 @@ Encompass.ImportWorkStep1Component = Ember.Component.extend(Encompass.CurrentUse
   elementId: 'import-work-step1',
   utils: Ember.inject.service('utility-methods'),
 
+  initialProblemItem: function () {
+    const selectedProblem = this.get('selectedProblem');
+    if (this.get('utils').isNonEmptyObject(selectedProblem)) {
+      return [selectedProblem.id];
+    }
+    return [];
+  }.property('selectedProblem'),
+
   actions: {
     setSelectedProblem(val, $item) {
       if (!val) {

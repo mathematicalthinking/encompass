@@ -2,7 +2,6 @@
 Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'import-work-step2',
   utils: Ember.inject.service('utility-methods'),
-  selectedValue: false,
   selectingClass: Ember.computed.equal('selectedValue', true),
 
   useClass: {
@@ -18,6 +17,19 @@ Encompass.ImportWorkStep2Component = Ember.Component.extend(Encompass.CurrentUse
       },
     ]
   },
+
+
+  willDestroyElement: function () {
+    this.set('selectedValue', this.get('selectedValue'));
+  },
+
+  initialSectionItem: function () {
+      const selectedSection = this.get('selectedSection');
+      if (this.get('utils').isNonEmptyObject(selectedSection)) {
+        return [selectedSection.id];
+      }
+      return [];
+  }.property('selectedSection'),
 
   actions: {
     setSelectedSection(val, $item) {

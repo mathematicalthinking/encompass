@@ -138,18 +138,19 @@
   }
 
   .error-box {
-    max-width: 500px;
+    max-width: 538px;
   }
 }
 
 
 // ws-copy-workspace component
 #ws-copy-workspace {
-  .selectize-comp {
-    margin-bottom: 60px;
-  }
+  margin-bottom: 60px;
 }
 
+.select-workspace-container {
+  margin-bottom: 50px;
+}
 // ws-copy-owner-settings component
 #ws-copy-owner-settings {
   .ws-copy-input {
@@ -426,8 +427,9 @@
         &.row-2 {
           @include flex-item(2, auto, 1 0 auto);
           padding: 20px 15px 15px 15px;
-            color: black;
           a {
+            color: black;
+            font-size: 1em;
             &.active {
               font-weight: $bolder-font-weight;
               background-color: $background-body !important;

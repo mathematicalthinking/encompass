@@ -1,0 +1,73 @@
+<div class="info-card">
+  <div class="heading">
+    Workspace Settings
+    {{#if canEdit}}
+    {{#unless isEditing}}
+      <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
+        <i class="fas fa-edit"></i>
+      </span>
+    {{/unless}}
+    {{/if}}
+  </div>
+  <div class="card-content">
+    <div class="card-row">
+      <div class="row-label">
+        Name
+      </div>
+      <div class="row-value">
+        {{#if isEditing}}
+          {{input type="text" class="text-input" id="edit-name-input" value=workspace.name}}
+        {{else}}
+          {{workspace.name}}
+        {{/if}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Owner
+      </div>
+      <div class="row-value">
+        {{#if isEditing}}
+          {{selectize-input
+          store=store
+          inputId="owner-select"
+          maxItems=1
+          initialItems=initialOwnerItem
+          onItemAdd=(action "setOwner")
+          onItemRemove=(action "setOwner")
+          labelField="username"
+          valueField="id"
+          searchField="username"
+          model="user"
+          queryParamsKey="usernameSearch"
+          isAsync=true
+          placeholder="Search by username"
+          preload="focus"
+          }}
+        {{else}}
+          {{#link-to 'user' workspace.owner.username}}{{workspace.owner.username}}{{/link-to}}
+        {{/if}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Privacy Setting
+      </div>
+      <div class="row-value">
+        {{#if isEditing}}
+          {{my-select cannotBeNull=true selectedValue=selectedMode content=modes action=(action (mut selectedMode))}}
+        {{else}}
+          {{workspace.mode}}
+        {{/if}}
+      </div>
+    </div>
+    {{#if isEditing}}
+      <div class="card-row button-row">
+        <button class="primary-button cancel-button" {{action (mut isEditing null)}}>Cancel</button>
+        <button class="primary-button" {{action 'checkWorkspace'}}>Save</button>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+

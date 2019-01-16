@@ -7,7 +7,8 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   isEditing: false,
   selectedMode: null,
   updateRecordErrors: [],
-  workspacePermissions: Ember.computed.alias('workspace.permissions'),
+  isShowingCustomViewer: false,
+  customSubmissionIds: [],
 
   didReceiveAttrs() {
     this._super(...arguments);
@@ -128,55 +129,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       this.set('isChangingOwner', true);
     },
 
-    setOwner(val, $item) {
-      const workspace = this.get('workspace');
-
-      if (!val) {
-        return;
-      }
-
-      const user = this.get('store').peekRecord('user', val);
-      if (this.get('utils').isNonEmptyObject(user)) {
-        workspace.set('owner', user);
-        let ownerOrg = user.get('organization');
-        let ownerOrgName = ownerOrg.get('name');
-        let ownerOrgId = ownerOrg.get('id');
-        let workspaceOrg = workspace.get('organization');
-        let workspaceOrgName = workspaceOrg.get('name');
-        let workspaceOrgId = workspaceOrg.get('id');
-
-        if (workspaceOrgId) {
-          if (workspaceOrgId !== ownerOrgId) {
-            this.get('alert').showModal('question', `Do you want to change this workspace's organization`, `This owner belongs to ${ownerOrgName} but this workspace belongs to ${workspaceOrgName}`, 'Yes, change it', 'No, keep it').then((results) => {
-              if (results.value) {
-                workspace.set('organization', ownerOrg);
-                this.send('saveOwner', user);
-              } else {
-                workspace.set('organization', workspaceOrg);
-                this.send('saveOwner', user);
-              }
-            });
-          } else {
-            workspace.set('organization', ownerOrg);
-            this.send('saveOwner', user);
-          }
-        } else {
-          workspace.set('organization', ownerOrg);
-          this.send('saveOwner', user);
-        }
-      }
-    },
-
-    saveOwner: function (user) {
-      const workspace = this.get('workspace');
-      workspace.save().then((res) => {
-        this.set('isChangingOwner', false);
-        this.get('alert').showToast('success', `Owner is now ${user.get('username')}`, 'bottom-end', 3000, null, false);
-      }).catch((err) => {
-        this.handleErrors(err, 'updateRecordErrors', workspace);
-      });
-    },
-
     editWorkspace: function () {
       this.set('isEditing', true);
       let workspace = this.get('workspace');
@@ -211,7 +163,6 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       }).catch((err) => {
         this.handleErrors(err, 'updateRecordErrors', workspace);
       });
-
     },
 
     removeErrorString: function(arrayPropName, errorString) {
@@ -219,7 +170,26 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       if (Array.isArray(errors)) {
         errors.removeObject(errorString);
       }
-    }
+    },
+    updateCustomSubs(id) {
+      if (!this.get('utils').isNonEmptyArray(this.get('customSubmissionIds'))) {
+        this.set('customSubmissionIds', []);
+      }
+      const customSubmissionIds = this.get('customSubmissionIds');
+
+      const isIn = customSubmissionIds.includes(id);
+      if (isIn) {
+        customSubmissionIds.removeObject(id);
+      } else {
+        customSubmissionIds.addObject(id);
+      }
+    },
+    selectAllSubmissions: function () {
+      this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
+    },
+    deselectAllSubmissions: function () {
+      this.set('customSubmissionIds', []);
+    },
   }
 
 });
