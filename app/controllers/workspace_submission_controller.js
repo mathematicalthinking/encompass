@@ -62,6 +62,10 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     return this.get('currentUser.username') === this.get('currentWorkspace.owner.username');
   }.property('currentUser.username', 'currentWorkspace.owner.username'),
 
+  canRespond: function() {
+    return this.get('permissions').canEdit(this.get('currentWorkspace'), 'feedback', 1);
+  }.property('currentWorkspace.permissions.@each.feedback'),
+
   actions: {
     startTour: function () {
       this.get('guider').createGuider(
