@@ -12,37 +12,60 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       this.set('isCreatingNewMentorReply', true);
       return;
     } else if (this.get('primaryResponseType') === 'approver') {
-      let reviewedResponse;
       this.get('response.reviewedResponse')
         .then((response) => {
-          reviewedResponse = response;
-          Ember.RSVP.hash({
-            mentorReplies: this.loadPreviousMentorReplies(reviewedResponse.get('createdBy.id')),
-            approverReplies: this.loadPreviousApproverReplies(reviewedResponse.get('id'))
-          })
-          .then((hash) => {
-            if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-              this.set('reviewedResponse', reviewedResponse);
-              this.set('mentorReplies', hash.mentorReplies.toArray());
-              this.set('approverReplies', hash.approverReplies.toArray());
-            }
-          });
-        });
-      } else if (this.get('primaryResponseType') === 'mentor') {
-        Ember.RSVP.hash({
-          mentorReplies: this.loadPreviousMentorReplies(this.get('response.createdBy.id')),
-          approverReplies: this.loadPreviousApproverReplies(this.get('response.id'))
-        })
-        .then((hash) => {
-          if (!this.get('isDestroying') || !this.get('isDestroyed')) {
-            this.set('mentorReplies', hash.mentorReplies.toArray());
-            this.set('approverReplies', hash.approverReplies.toArray());
+          if (!this.get('isDestroying') && !this.get('isDestroyed')) {
+            this.set('reviewedResponse', response);
           }
         });
       }
 
     this._super(...arguments);
   },
+
+  nonTrashedResponses: function() {
+    return this.get('responses')
+      .rejectBy('isTrashed')
+      .filter((response) => {
+        let subId = response.belongsTo('submission').id();
+        return this.get('submission.id') === subId;
+      });
+  }.property('responses.@each.isTrashed', 'submission.id'),
+
+  approverReplies: function() {
+    let reviewedResponseId;
+
+    if (this.get('primaryApproverReply')) {
+      reviewedResponseId = this.get('primaryApproverReply').belongsTo('reviewedResponse').id();
+    } else {
+      if (this.get('mentorReplyDisplayResponse')) {
+        reviewedResponseId = this.get('mentorReplyDisplayResponse.id');
+      }
+    }
+
+    if (!reviewedResponseId) {
+      return [];
+    }
+    return this.get('nonTrashedResponses').filter((response) => {
+      let id = response.belongsTo('reviewedResponse').id();
+      return response.get('responseType') === 'approver' && reviewedResponseId === id;
+    });
+
+  }.property('primaryApproverReply', 'mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
+
+  mentorReplies: function() {
+    if (!this.get('mentorReplyDisplayResponse')) {
+      return [];
+    }
+    let mentorId = this.get('mentorReplyDisplayResponse').belongsTo('createdBy').id();
+
+    return this.get('nonTrashedResponses').filter((response) => {
+      let id = response.belongsTo('createdBy').id();
+          return response.get('responseType') === 'mentor' && mentorId === id;
+        });
+
+  }.property('mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
+
   responseToApprove: function() {
     if (this.get('primaryResponseType') === 'mentor' && this.get('canApprove') && !this.get('isCreatingNewMentorReply')) {
       return this.get('response');
@@ -73,6 +96,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (this.get('primaryResponseType') === 'approver') {
       return this.get('response');
     }
+    return null;
   }.property('primaryResponseType'),
 
   menteeResponse: function() {
@@ -121,50 +145,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     return this.get('workspace.feedbackAuthorizers');
   }.property('workspace.feedbackAuthorizers.[]'),
 
-  queryResponses(params) {
-    return this.get('store').query('response', params);
-  },
-
-  loadPreviousApproverReplies(mentorReply) {
-    return this.queryResponses({
-      filterBy: {
-        submission: this.get('submission.id'),
-        responseType: 'approver',
-        reviewedResponse: this.get('response.id')
-      }
-    });
-  },
-  loadPreviousMentorReplies(creator) {
-    return this.queryResponses({
-      filterBy: {
-        createdBy: this.get('currentUser.id'),
-        submission: this.get('submission.id'),
-        responseType: 'mentor'
-      }
-    });
-  },
   actions: {
     onSaveSuccess(response) {
-      console.log('oss rc', response);
       this.sendAction('toResponse', response.get('id'));
     },
     onMentorReplySwitch(response) {
-      console.log('omrs', response);
       if (this.get('primaryResponseType') === 'mentor') {
-        // this.queryResponses({
-        //   filterBy: {
-        //     submission: this.get('submission.id'),
-        //     responseType: 'approver',
-        //     reviewedResponse: response.get('id'),
-        //   }
-        // })
-        // .then((responses) => {
-        //   this.set('approverReplies', responses.toArray());
-        //   this.set()
-        // })
-        // .catch((err) => {
-        //   this.handleErrors(err, 'dataFetchErrors');
-        // });
         this.sendAction('toResponseInfo',response);
       } else {
         this.set('reviewedResponse', response);

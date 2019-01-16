@@ -141,10 +141,15 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
         return;
       }
 
+      let oldStatus = this.get('displayResponse.status');
+      let doSetSuperceded = oldStatus === 'pendingApproval' || oldStatus === 'needsRevisions';
+
       let copy = this.get('displayResponse').toJSON({includeId: false});
       delete copy.approvedBy;
       delete copy.lastModifiedDate;
       delete copy.lastModifiedBy;
+      delete copy.comments;
+      delete copy.selections;
 
       copy.text = newText;
       copy.note = newNote;
@@ -152,24 +157,37 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       copy.createDate = new Date();
       let revision = this.get('store').createRecord('response', copy);
       revision.set('createdBy', this.get('currentUser'));
-      revision.set('submission', this.get('displayResponse.submission'));
-      revision.set('workspace', this.get('displayResponse.workspace'));
+      revision.set('submission', this.get('submission'));
+      revision.set('workspace', this.get('workspace'));
       revision.set('priorRevision', this.get('displayResponse'));
       revision.set('recipient', this.get('displayResponse.recipient.content'));
+      revision.set('status', this.get('newReplyStatus'));
 
+      let hash;
 
-      revision.save()
-        .then((saved) => {
+      if (doSetSuperceded) {
+        this.get('displayResponse').set('status', 'superceded');
+
+        hash = {
+          revision: revision.save(),
+          original: this.get('displayResponse').save()
+        };
+      } else {
+          hash = {
+            revision: revision.save()
+          };
+        }
+
+      Ember.RSVP.hash(hash)
+        .then((hash) => {
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
           this.set('isRevising', false);
           this.set('editRevisionText', '');
-          this.get('mentorReplies').addObject(saved);
+          this.send('setDisplayMentorReply', hash.revision);
         })
         .catch((err) => {
-          this.handleErrors(err, 'saveRecordErrors');
+          this.handleErrors(err, 'saveRecordErrors', null, [revision, this.get('displayResponse')]);
         });
-
-
     },
     setDisplayMentorReply(response) {
       this.get('onMentorReplySwitch')(response);
