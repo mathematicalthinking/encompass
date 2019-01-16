@@ -1,3 +1,13 @@
+<p class="feedback-mode">
+  {{#if isOwnMentorReply}}
+  Viewing your own mentoring feedback
+  {{else}}
+  Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}}
+  {{/if}}
+  for {{submission.student}}'s {{#link-to 'workspace.submission' workspace submission}}submission{{/link-to}}
+  in {{#link-to 'workspace.work' workspace classNames="workspace"}}{{workspace.name}}{{/link-to}}
+</p>
+
 <div class="response-flex-container ">
   <div class="response-flex-item submission{{if showApproverReply ' third'}}">
     {{response-submission-view
