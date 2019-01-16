@@ -28,6 +28,9 @@ Encompass.ResponseRoute = Ember.Route.extend(Encompass.ConfirmLeavingRoute, {
   actions: {
     toResponseInfo(response) {
       this.transitionTo('response', response.get('id'));
+    },
+    toResponses() {
+      this.transitionTo('responses');
     }
   }
 });
