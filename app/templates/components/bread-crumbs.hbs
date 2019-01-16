@@ -1,5 +1,5 @@
 <div class="breadcrumbs">
-  {{#if doTruncate}}
+  {{#if showTruncatedView}}
     <ul class="breadcrumbs truncated">
         {{#with this.itemsList.firstObject as |firstItem|}}
           {{bread-crumbs-item item=firstItem displayValue=1 onSelect=(action "onItemSelect") selectedItem=selectedItem}}

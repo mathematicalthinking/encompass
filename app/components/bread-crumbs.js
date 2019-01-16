@@ -8,7 +8,7 @@ Encompass.BreadCrumbsComponent = Ember.Component.extend({
   },
 
   lastItemValue: function() {
-    return this.get('itemsList.length') - 1;
+    return this.get('itemsList.length') - 1 || 1;
   }.property('itemsList.length'),
 
   itemsList: function() {
