@@ -5,11 +5,21 @@
 </header>
 
 <div class="workspace-info-container">
-  {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users}}
+  {{#unless isShowingCustomViewer}}
+    {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users}}
+  {{/unless}}
 
-  {{workspace-info-collaborators store=store workspace=workspace canEdit=canEdit originalCollaborators=originalCollaborators}}
+  {{workspace-info-collaborators store=store workspace=workspace canEdit=canEdit originalCollaborators=originalCollaborators isShowingCustomViewer=isShowingCustomViewer}}
 
-  {{workspace-info-stats workspace=workspace}}
+  {{#unless isShowingCustomViewer}}
+    {{workspace-info-stats workspace=workspace}}
+  {{/unless}}
+
+  {{#if isShowingCustomViewer}}
+    <div>
+      SHOWING CUSTOM VIEWER
+    </div>
+  {{/if}}
 </div>
 
 

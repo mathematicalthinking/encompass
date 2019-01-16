@@ -211,5 +211,8 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         this.set('createNewCollaborator', false);
       });
     },
+    toggleSubmissionView: function () {
+      this.set('isShowingCustomViewer', !this.get('isShowingCustomViewer'));
+    }
   }
 });

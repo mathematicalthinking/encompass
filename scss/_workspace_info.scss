@@ -26,6 +26,11 @@
       height: 25px;
     }
   }
+  .viewer-toggle {
+    color: $accent-color;
+    font-size: .9em;
+    cursor: pointer;
+  }
 }
 
 .workspace-info-container {
@@ -105,7 +110,7 @@
             @include flex-item(2, flex-start, 1 1 auto);
             width: 70%;
             text-align: left;
-            max-width: 155px;
+            max-width: 175px;
           }
         }
       }

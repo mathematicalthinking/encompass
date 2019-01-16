@@ -9,7 +9,7 @@
   </div>
   <div class="card-content">
     {{#if createNewCollaborator}}
-      {{workspace-info-collaborators-new store=store workspace=workspace createNewCollaborator=createNewCollaborator}}
+      {{workspace-info-collaborators-new store=store workspace=workspace createNewCollaborator=createNewCollaborator isShowingCustomViewer=isShowingCustomViewer}}
     {{/if}}
     {{#if originalCollaborators}}
       {{#each workspacePermissions as |collaborator|}}
@@ -35,6 +35,13 @@
               <div class="row-value">
                 {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                   {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
+                  {{#if (is-equal submissions.value 'custom')}}
+                    {{#if isShowingCustomViewer}}
+                      <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
+                    {{else}}
+                      <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
+                    {{/if}}
+                  {{/if}}
                 {{else}}
                   {{#if collaborator.submissions.all}}
                     View All

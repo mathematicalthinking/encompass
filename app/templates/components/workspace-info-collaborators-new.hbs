@@ -23,6 +23,13 @@
       </div>
       <div class="row-value">
         {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
+        {{#if (is-equal submissions.value 'custom')}}
+          {{#if isShowingCustomViewer}}
+            <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
+          {{else}}
+            <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
+          {{/if}}
+        {{/if}}
       </div>
     </div>
     <div class="card-row">
