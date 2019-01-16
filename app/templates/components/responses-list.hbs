@@ -1,12 +1,12 @@
 {{#if currentUser.isStudent}}
-  <header class="list-header">
+  <header class="list-header {{if areNoResponses 'no-responses'}}">
     <h2>Responses from your teachers</h2>
     <aside>
     </aside>
     <div class="clear"></div>
   </header>
 
-  {{#if displayResponses.length}}
+  {{#if areDisplayResponses}}
     <table border="1" width="100%">
       <thead>
         <tr class="top-row">
@@ -38,17 +38,20 @@
   {{/if}}
 
 {{else}}
-  <header>
+  <header class= "{{if areNoResponses 'no-responses'}}">
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
         <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Mine</button>
+        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">To Me</button>
+        <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent</button>
+        <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval</button>
+        <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions</button>
     </div>
 
     <div class="clear"></div>
   </header>
 
-  {{#if displayResponses.length}}
+  {{#if areDisplayResponses}}
 
   <table border="1" width="100%">
     <thead>
@@ -86,9 +89,9 @@
     </tbody>
   </table>
   {{else}}
-  <p class="notice">
-    Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
-  </p>
+  <div class="empty-message">
+    <p class="notice">{{noResponsesMessage}}</p>
+  </div>
   {{/if}}
 
 {{/if}}
