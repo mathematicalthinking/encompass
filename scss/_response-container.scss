@@ -13,7 +13,7 @@
 }
 
 div.response-flex-container {
-  border: 1px solid purple;
+  // border: 1px solid purple;
   @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
   width: 100%;
   div.response-flex-item.submission{
@@ -53,7 +53,7 @@ div.response-flex-container {
       margin-bottom: 15px;
       margin-left: 15px;
     }
-    border: red solid 1px;
+    // border: red solid 1px;
     img {
       max-width: 100%;
     }
@@ -73,7 +73,7 @@ div.response-flex-container {
     }
   }
   #response-mentor-reply {
-    border: blue solid 1px;
+    // border: blue solid 1px;
     margin-left: 20px;
     h3, h5 {
       margin-bottom: 15px;
@@ -137,7 +137,7 @@ div.response-flex-container {
     }
   }
   #response-approver-reply {
-    border: green solid 1px;
+    // border: green solid 1px;
     margin-left: 20px;
     margin-right: 20px;
     h3, h5 {

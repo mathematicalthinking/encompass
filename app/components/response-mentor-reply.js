@@ -64,8 +64,12 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
 
   }.property('mentorReplies.@each.isTrashed'),
   showNote: function() {
-    return this.get('isOwnMentorReply') || this.get('canApprove');
-  }.property('isOwnMentorReply', 'canApprove'),
+    if (!this.get('isOwnMentorReply') && !this.get('canApprove')) {
+      return false;
+    }
+    let note = this.get('displayResponse.note');
+    return typeof note === 'string' && note.length > 0;
+  }.property('isOwnMentorReply', 'canApprove', 'displayResponse.note'),
 
   canTrash: function() {
     return this.get('displayResponse.status') === 'pendingApproval' && (this.get('isOwnMentorReply') || this.get('canApprove'));

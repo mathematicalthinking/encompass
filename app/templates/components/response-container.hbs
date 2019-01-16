@@ -1,14 +1,16 @@
-<p class="feedback-mode">
-  {{#if isOwnSubmission}}
-    Viewing feedback for
-  {{else if isOwnMentorReply}}
-  Viewing your own mentoring feedback for
-  {{else}}
-  Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}} for
-  {{/if}}
-  {{studentDescriptor}} {{#link-to 'workspace.submission' workspace submission classNames="link"}}submission{{/link-to}}
-  in {{#link-to 'workspace.work' workspace classNames="link"}}{{workspace.name}}{{/link-to}}
-</p>
+{{#unless isCreatingNewMentorReply}}
+  <p class="feedback-mode">
+    {{#if isOwnSubmission}}
+      Viewing feedback for
+    {{else if isOwnMentorReply}}
+    Viewing your own mentoring feedback for
+    {{else}}
+    Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}} for
+    {{/if}}
+    {{studentDescriptor}} {{#link-to 'workspace.submission' workspace submission classNames="link"}}submission{{/link-to}}
+    in {{#link-to 'workspace.work' workspace classNames="link"}}{{workspace.name}}{{/link-to}}
+  </p>
+{{/unless}}
 
 <div class="response-flex-container ">
   <div class="response-flex-item submission{{if showApproverReply ' third'}}">
