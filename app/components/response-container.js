@@ -23,14 +23,15 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     this._super(...arguments);
   },
   studentDescriptor: function() {
-    if (this.get('isMentorRecipient')) {
+    if (this.get('isOwnSubmission')) {
       return 'your';
     }
-    if (this.get('isOwnMentorReply')) {
-      return this.get('submission.student');
-    }
     return `${this.get('submission.student')}'s`;
-  }.property('isMentorRecipient', 'submission.student'),
+  }.property('isOwnSubmission', 'submission.student'),
+
+  isOwnSubmission: function() {
+    return this.get('submission.creator.studentId') === this.get('currentUser.id');
+  }.property('submission.creator.studentId', 'currentUser.id'),
 
   nonTrashedResponses: function() {
     return this.get('responses')
