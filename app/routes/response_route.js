@@ -9,12 +9,14 @@ Encompass.ResponseRoute = Ember.Route.extend(Encompass.ConfirmLeavingRoute, {
           comments: response.get('comments'),
           selections: response.get('selections'),
           response,
+          responses: this.get('store').peekAll('response'),
         })
         .then((hash) => {
           return {
             response: hash.response,
             submission: hash.submission,
-            workspace: hash.workspace
+            workspace: hash.workspace,
+            responses: hash.responses,
           };
         });
       });
