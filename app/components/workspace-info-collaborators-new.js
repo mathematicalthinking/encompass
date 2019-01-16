@@ -20,7 +20,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
     },
     {
       id: 4,
-      display: 'Add',
+      display: 'Edit',
       value: 3,
     },
     {
@@ -164,7 +164,14 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       if (!val) {
         return;
       }
+      let existingCollab = this.get('workspace.collaborators');
       const user = this.get('store').peekRecord('user', val);
+      let alreadyCollab = _.contains(existingCollab, user.get('id'));
+
+      if (alreadyCollab) {
+        this.set('existingUserError', true);
+        return;
+      }
       if (this.get('utils').isNonEmptyObject(user)) {
         this.set('collabUser', user);
       }
@@ -188,6 +195,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         submissionIds = this.buildCustomSubmissionIds('userOnly');
       } else if (subValue === 'custom') {
         viewAllSubs = false;
+        submissionIds = this.get('customSubmissionIds');
       } else {
         viewAllSubs = true;
       }
@@ -209,6 +217,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       ws.save().then(() => {
         this.get('alert').showToast('success', `${this.get('collabUser').get('username')} added as collaborator`, 'bottom-end', 3000, null, false);
         this.set('createNewCollaborator', false);
+        this.set('isShowingCustomViewer', false);
       });
     },
     toggleSubmissionView: function () {
