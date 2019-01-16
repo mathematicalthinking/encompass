@@ -21,7 +21,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
     {
       id: 4,
-      display: 'Add',
+      display: 'Edit',
       value: 3,
     },
     {

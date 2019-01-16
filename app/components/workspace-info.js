@@ -170,7 +170,26 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
       if (Array.isArray(errors)) {
         errors.removeObject(errorString);
       }
-    }
+    },
+    updateCustomSubs(id) {
+      if (!this.get('utils').isNonEmptyArray(this.get('customSubmissionIds'))) {
+        this.set('customSubmissionIds', []);
+      }
+      const customSubmissionIds = this.get('customSubmissionIds');
+
+      const isIn = customSubmissionIds.includes(id);
+      if (isIn) {
+        customSubmissionIds.removeObject(id);
+      } else {
+        customSubmissionIds.addObject(id);
+      }
+    },
+    selectAllSubmissions: function () {
+      this.set('customSubmissionIds', this.get('workspace.submissions').mapBy('id'));
+    },
+    deselectAllSubmissions: function () {
+      this.set('customSubmissionIds', []);
+    },
   }
 
 });

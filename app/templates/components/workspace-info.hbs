@@ -9,7 +9,7 @@
     {{workspace-info-settings store=store workspace=workspace canEdit=canEdit isEditing=isEditing users=users}}
   {{/unless}}
 
-  {{workspace-info-collaborators store=store workspace=workspace canEdit=canEdit originalCollaborators=originalCollaborators isShowingCustomViewer=isShowingCustomViewer}}
+  {{workspace-info-collaborators store=store workspace=workspace canEdit=canEdit originalCollaborators=originalCollaborators isShowingCustomViewer=isShowingCustomViewer customSubmissionIds=customSubmissionIds}}
 
   {{#unless isShowingCustomViewer}}
     {{workspace-info-stats workspace=workspace}}
