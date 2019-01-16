@@ -90,6 +90,13 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
   }.property('isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'),
 
+  canTrash: function() {
+    return this.get('canApprove');
+  }.property('canApprove'),
+  showTrash: function() {
+    return this.get('canApprove') && !this.get('showReplyInput');
+  }.property('showReplyInput', 'canApprove'),
+
   actions: {
     composeReply() {
       this.set('isComposingReply', true);
@@ -272,7 +279,29 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         .catch((err) => {
           this.handleErrors(err, 'saveRecordErrors', revision);
         });
+    },
+    confirmTrash(response) {
+      if (!response) {
+        return;
+      }
 
+      return this.get('alert').showModal('warning', 'Are you sure you want to delete this response?', '', 'Delete')
+        .then((result) => {
+          if (result.value) {
+            response.set('isTrashed', true);
+            return response.save();
+          }
+        })
+        .then((saved) => {
+          if(saved) {
+            this.get('alert').showToast('success', 'Response Deleted', 'bottom-end', 3000, false, null);
+             this.get('toResponses')();
+          }
+          // just go to responses page for now?
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'recordSaveErrors', response);
+        });
 
     }
   }

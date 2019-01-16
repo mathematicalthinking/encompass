@@ -155,6 +155,9 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       } else {
         this.set('reviewedResponse', response);
       }
-    }
+    },
+    toResponses() {
+      this.sendAction('toResponses');
+    },
   }
 });

@@ -74,6 +74,9 @@
       {{#if showApproverRevise}}
         <button class="primary-button" {{action "startRevising"}}>Revise</button>
       {{/if}}
+      {{#if showTrash}}
+        <button class="cancel-button" {{action "confirmTrash" displayReply}}>Delete</button>
+      {{/if}}
     </div>
   {{/if}}
 {{/if}}

@@ -67,6 +67,13 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     return this.get('isOwnMentorReply') || this.get('canApprove');
   }.property('isOwnMentorReply', 'canApprove'),
 
+  canTrash: function() {
+    return this.get('displayResponse.status') === 'pendingApproval' && (this.get('isOwnMentorReply') || this.get('canApprove'));
+  }.property('isOwnMentorReply', 'canApprove', 'displayResponse.status'),
+  showTrash: function() {
+    return this.get('canTrash') && !this.get('isComposing');
+  }.property('canTrash', 'isComposing'),
+
   actions: {
     onSaveSuccess(response) {
       this.get('onSaveSuccess')(response);
@@ -193,7 +200,37 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
         });
     },
     setDisplayMentorReply(response) {
+      if (!response) {
+        return;
+      }
+
       this.get('onMentorReplySwitch')(response);
+    },
+
+    confirmTrash(response) {
+      if (!response) {
+        return;
+      }
+      console.log('mentorReplies', this.get('mentorReplies'));
+
+      return this.get('alert').showModal('warning', 'Are you sure you want to delete this response?', '', 'Delete')
+        .then((result) => {
+          if (result.value) {
+            response.set('isTrashed', true);
+            return response.save();
+          }
+        })
+        .then((saved) => {
+          if(saved) {
+            this.get('alert').showToast('success', 'Response Deleted', 'bottom-end', 3000, false, null);
+             this.get('toResponses')();
+          }
+          // just go to responses page for now?
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'recordSaveErrors', response);
+        });
+
     }
-  }
+ }
 });
