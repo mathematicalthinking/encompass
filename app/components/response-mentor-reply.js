@@ -63,6 +63,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       .reverse();
 
   }.property('mentorReplies.@each.isTrashed'),
+  showNote: function() {
+    return this.get('isOwnMentorReply') || this.get('canApprove');
+  }.property('isOwnMentorReply', 'canApprove'),
 
   actions: {
     onSaveSuccess(response) {

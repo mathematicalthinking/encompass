@@ -42,6 +42,12 @@ module.exports.put = {};
         // if (Array.isArray(response.children)) {
         //   response.children =
         // }
+
+        // only approvers should see the note field
+        // for now just dont send back to students
+        if (user.accountType === 'S' || user.actingRole === 'student') {
+          delete response.note;
+        }
         return utils.sendResponse(res, {response});
       });
   })
@@ -62,19 +68,8 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
-function accessibleResponses(user) {
-  return {
-    $or: [
-      { createdBy: user },
-      { recipient: user },
-    ],
-    isTrashed: false
-  };
-}
-
-
 function getResponses(req, res, next) {
-  var user = userAuth.requireUser(req);
+  let user = userAuth.requireUser(req);
 
   let { ids, workspace, filterBy } = req.query;
 
@@ -82,25 +77,25 @@ function getResponses(req, res, next) {
   .then((criteria) => {
     models.Response.find(criteria).lean().exec()
       .then((responses) => {
-        let idMap = {};
-        responses.forEach((response) => {
-          if (!idMap[response._id]) {
-            idMap[response._id] = true;
-          }
-        });
-        let filtered = responses.map((response) => {
-          if (Array.isArray(response.children)) {
-            response.children = response.children.filter((child) => {
-              return idMap[child];
-            });
-            if (!idMap[response.parent]) {
-              response.parent = null;
-            }
-          }
-          return response;
-        });
+        //let idMap = {};
+        // responses.forEach((response) => {
+        //   if (!idMap[response._id]) {
+        //     idMap[response._id] = true;
+        //   }
+        // });
+        // let filtered = responses.map((response) => {
+        //   if (Array.isArray(response.children)) {
+        //     response.children = response.children.filter((child) => {
+        //       return idMap[child];
+        //     });
+        //     if (!idMap[response.parent]) {
+        //       response.parent = null;
+        //     }
+        //   }
+        //   return response;
+        // });
 
-        let data = {'response': filtered};
+        let data = {'response': responses};
 
         return utils.sendResponse(res, data );
       });
