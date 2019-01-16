@@ -24,6 +24,7 @@
       <div class="row-value">
         {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
         {{#if (is-equal submissions.value 'custom')}}
+          <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
           {{#if isShowingCustomViewer}}
             <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Hide Submission Viewer</span>
           {{else}}
