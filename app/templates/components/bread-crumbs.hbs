@@ -1,0 +1,31 @@
+<div class="breadcrumbs">
+  {{#if doTruncate}}
+    <ul class="breadcrumbs truncated">
+        {{#with this.itemsList.firstObject as |firstItem|}}
+          {{bread-crumbs-item item=firstItem displayValue=1 onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+
+        {{/with}}
+        <abbr title="expand">
+          <span {{action "showAllItems"}} class="truncate">
+            ...
+          </span>
+        </abbr>
+        {{#with itemsList.lastObject as |lastItem|}}
+          {{bread-crumbs-item item=lastItem displayValue=lastItemValue onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+
+        {{/with}}
+    </ul>
+  {{else}}
+    <ul class="breadcrumbs">
+        {{#each itemsList as |item index|}}
+          {{bread-crumbs-item item=item displayValue=(add-to index 1) onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+        {{/each}}
+        {{#if areManyItems}}
+
+     <li {{action "collapse"}} title="collapse"><i class="fas fa-minus-square"></i>
+     </li>
+      {{/if}}
+    </ul>
+
+  {{/if}}
+</div>
