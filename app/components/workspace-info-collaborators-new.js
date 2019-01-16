@@ -161,19 +161,16 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
 
   actions: {
     setCollab(val, $item) {
-      console.log('set collab ran');
       if (!val) {
         return;
       }
       const user = this.get('store').peekRecord('user', val);
       if (this.get('utils').isNonEmptyObject(user)) {
         this.set('collabUser', user);
-        console.log('collabUser is', this.get('collabUser'));
       }
     },
 
     saveCollab() {
-      console.log('saved collab clicked');
       if (!this.get('collabUser')) {
         this.set('missingUserError', true);
         return;
@@ -182,7 +179,6 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       let permissions = ws.get('permissions');
 
       let subValue = this.get('submissions.value');
-      console.log('subValue is', subValue);
       let viewAllSubs;
       let submissionIds = [];
       if (subValue === 'all') {
@@ -207,8 +203,6 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         comments: this.get('comments.value') || 0,
         feedback: this.get('feedback.value') || 'none',
       };
-
-      console.log('newObj is', newObj);
 
       permissions.addObject(newObj);
 
