@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: ['workspace-info-collaborators'],
   utils: Ember.inject.service('utility-methods'),
@@ -178,38 +179,40 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
 
     savePermissions(permissionsObject) {
-      console.log('save permissions ran and obj is', permissionsObject);
+      const ws = this.get('workspace');
       if (!this.get('utils').isNonEmptyObject(permissionsObject)) {
         return;
       }
       const permissions = this.get('workspace.permissions');
-
-      // array of user records for display purposes
-      const collaborators = this.get('originalCollaborators');
-      // check if user already is in array
       let existingObj = permissions.findBy('user', permissionsObject.user);
-      console.log('existingObj is', existingObj);
 
-      // remove existing permissions obj and add modified one
       if (existingObj) {
         permissions.removeObject(existingObj);
       }
-      collaborators.addObject(permissionsObject.user);
 
-      // eslint-disable-next-line prefer-object-spread
-      let copy = Object.assign({}, permissionsObject);
+      let viewAllSubs;
+      let submissionIds = existingObj.submissions.submissionIds;
+      if (this.get('submissions.value') === 'all' ) {
+        viewAllSubs = true;
+      } else {
+        viewAllSubs = false;
+      }
 
-      copy.user = copy.user.id;
-      permissions.addObject(copy);
+      let newObj = {
+        user: existingObj.user,
+        submissions: { all: viewAllSubs, submissionIds: submissionIds },
+        selections: this.get('selections.value'),
+        folders: this.get('folders.value'),
+        comments: this.get('comments.value'),
+        feedback: this.get('feedback.value'),
+      };
 
-      // clear selectedCollaborator
-      // clear selectize input
+      permissions.addObject(newObj);
 
-      this.set('selectedCollaborator', null);
-      this.$('select#collab-select')[0].selectize.clear();
-
-      this.get('alert').showToast('success', `Permissions set for ${permissionsObject.user.get('username')}`, 'bottom-end', 3000, null, false);
-      this.set('isEditing', false);
+      ws.save().then(() => {
+        this.get('alert').showToast('success', `Permissions set for ${permissionsObject.userObj.get('username')}`, 'bottom-end', 3000, null, false);
+        this.set('selectedCollaborator', null);
+      });
     },
 
     removeCollab(user) {

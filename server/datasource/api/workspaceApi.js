@@ -314,6 +314,11 @@ async function putWorkspace(req, res, next) {
     ws.permissions = req.body.workspace.permissions;
     ws.organization = req.body.workspace.organization;
 
+    if (ws.permissions) {
+      ws.permissions.forEach((permission) => {
+        delete permission.userObj;
+      });
+    }
     // only admins or ws owner should be able to trash ws
     // this check should be done for mode, name, owner, organization, and permissions(?)
     if (user.accountType === 'A' || user.id === ws.owner.toString()) {
