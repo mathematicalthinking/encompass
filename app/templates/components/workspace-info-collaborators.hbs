@@ -8,6 +8,9 @@
     {{/if}}
   </div>
   <div class="card-content">
+    {{#if createNewCollaborator}}
+      {{workspace-info-collaborators-new store=store workspace=workspace createNewCollaborator=createNewCollaborator}}
+    {{/if}}
     {{#if originalCollaborators}}
       {{#each workspacePermissions as |collaborator|}}
         <div class="collab-container">

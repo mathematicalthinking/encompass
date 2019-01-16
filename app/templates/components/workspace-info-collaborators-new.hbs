@@ -1,0 +1,74 @@
+<div class="collab-container">
+  <div class="collab-name">
+    {{selectize-input
+      store=store
+      inputId="collab-select"
+      maxItems=1
+      onItemAdd=(action "setCollab")
+      onItemRemove=(action "setCollab")
+      labelField="username"
+      valueField="id"
+      searchField="username"
+      model="user"
+      queryParamsKey="usernameSearch"
+      isAsync=true
+      placeholder="Search by username"
+      preload="focus"
+    }}
+  </div>
+  <div class="collab-settings">
+    <div class="card-row">
+      <div class="row-label">
+        Submissions
+      </div>
+      <div class="row-value">
+          {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Selections
+      </div>
+      <div class="row-value">
+        {{my-select cannotBeNull=true selectedValue=selections content=mainPermissions optionLabelPath="display"
+        action=(action (mut selections))}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Comments
+      </div>
+      <div class="row-value">
+        {{my-select cannotBeNull=true selectedValue=comments content=mainPermissions optionLabelPath="display"
+        action=(action (mut comments))}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Folders
+      </div>
+      <div class="row-value">
+        {{my-select cannotBeNull=true selectedValue=folders content=mainPermissions optionLabelPath="display"
+        action=(action (mut folders))}}
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">
+        Feedback
+      </div>
+      <div class="row-value">
+        {{my-select cannotBeNull=true selectedValue=feedback content=feedbackPermissions optionLabelPath="display"
+        action=(action (mut feedback))}}
+      </div>
+    </div>
+    {{#if missingUserError}}
+      <div class="card-row">
+        {{error-box error="Please select a user" resetError=(action (mut missingUserError) null) showDismiss=true}}
+      </div>
+    {{/if}}
+    <div class="button-row">
+      <button class="primary-button cancel-button" {{action (mut createNewCollaborator null)}}>Cancel</button>
+      <button class="primary-button" {{action 'saveCollab'}}>Save</button>
+    </div>
+  </div>
+</div>
