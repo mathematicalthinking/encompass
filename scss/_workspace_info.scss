@@ -31,6 +31,14 @@
     font-size: .9em;
     cursor: pointer;
   }
+  #custom-submission-viewer-list {
+    @include flex-item(1, center, 1 0 100px);
+    #custom-submission-viewer-list-item {
+      .item-section.explanation {
+        overflow: hidden;
+      }
+    }
+  }
 }
 
 .workspace-info-container {

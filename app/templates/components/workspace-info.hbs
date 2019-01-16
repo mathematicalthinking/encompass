@@ -16,9 +16,14 @@
   {{/unless}}
 
   {{#if isShowingCustomViewer}}
-    <div>
-      SHOWING CUSTOM VIEWER
-    </div>
+    {{custom-submission-viewer-list
+    submissions=workspace.submissions.content
+    selectedSubmissionIds=customSubmissionIds
+    onSelect=(action "updateCustomSubs")
+    onSelectAll=(action "selectAllSubmissions")
+    onUnselectAll=(action "deselectAllSubmissions")
+    showView=showCustomSubmissionViewer
+    }}
   {{/if}}
 </div>
 

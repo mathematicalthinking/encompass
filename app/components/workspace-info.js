@@ -8,6 +8,7 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
   selectedMode: null,
   updateRecordErrors: [],
   isShowingCustomViewer: false,
+  customSubmissionIds: [],
 
   didReceiveAttrs() {
     this._super(...arguments);
