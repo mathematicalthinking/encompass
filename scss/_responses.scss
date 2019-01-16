@@ -9,6 +9,9 @@
     position: fixed;
     width: 100%;
     z-index: 1;
+    &.no-responses {
+      position: relative;
+    }
     h2 {
       margin-left: 20px;
       display: inline-block;
