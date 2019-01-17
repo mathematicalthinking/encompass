@@ -56,7 +56,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
           workspace,
           recipient: this.resolveRecipient(submission, workspace),
           selections: submission.get('selections'),
-          comments: submission.get('comments')
+          comments: submission.get('comments'),
+          responses: this.get('store').peekAll('response'),
         });
       })
       .then((hash) => {
@@ -73,7 +74,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         return {
           response,
           submission: hash.submission,
-          workspace: hash.workspace
+          workspace: hash.workspace,
+          responses: hash.responses
         };
       });
 
