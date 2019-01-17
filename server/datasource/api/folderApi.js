@@ -235,11 +235,14 @@ function getFolderSet(req, res, next) {
   return fsAccess.get.folderSet(user, id)
     .then((canLoadFolderSet) => {
       if (!canLoadFolderSet) {
-        return utils.sendError.NotAuthorizedError(null, res);
+        return;
       }
       return models.FolderSet.findById(id).lean().exec();
     })
     .then((folderSet) => {
+      if (_.isUndefined(folderSet)) {
+        return utils.sendError.NotAuthorizedError(null, res);
+      }
       const data = { folderSet };
       return utils.sendResponse(res, data);
     })
