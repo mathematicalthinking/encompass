@@ -9,8 +9,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   replyToView: null,
 
   didReceiveAttrs() {
-    if (this.get('primaryApproverReply')) {
-      this.set('replyToView', this.get('primaryApproverReply'));
+    if (this.get('primaryReply')) {
+      this.set('replyToView', this.get('primaryReply'));
+    }
+    if (!this.get('approverReplies.length') > 0 ) {
+      this.set('replyToView', null);
     }
     this._super(...arguments);
   },
@@ -208,7 +211,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
       let oldNote = this.get('displayReply.note');
       let newNote = this.get('editRevisionNote');
-      console.log('oldNote: ', oldNote, ' newNote: ', newNote);
 
       if (oldText === newText && oldNote === newNote) {
         this.set('isEditingApproverReply', false);
@@ -251,7 +253,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       }
 
       let copy = this.get('displayReply').toJSON({includeId: false});
-      console.log('copy', copy);
       delete copy.approvedBy;
       delete copy.lastModifiedDate;
       delete copy.lastModifiedBy;
@@ -268,7 +269,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       revision.set('recipient', this.get('displayReply.recipient.content'));
       revision.set('reviewedResponse', this.get('reviewedResponses') || this.get('responseToApprove'));
 
-      console.log('revis', revision);
       revision.save()
         .then((saved) => {
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
