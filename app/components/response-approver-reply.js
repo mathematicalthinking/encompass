@@ -100,6 +100,13 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     return this.get('canApprove') && !this.get('showReplyInput');
   }.property('showReplyInput', 'canApprove'),
 
+  statusOptions: {
+    'needsRevisions': 'Needs Revisions',
+    'approved': 'Approved',
+    'pendingApproval': 'Pending Approval',
+    'superceded': 'Superceded'
+  },
+
   actions: {
     composeReply() {
       this.set('isComposingReply', true);
@@ -146,6 +153,17 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveReply() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+      let text = this.get('editRevisionText');
+
+      if (typeof text !== 'string' || text.trim().length === 0) {
+        this.set('emptyReplyError', true);
+        return;
+      }
+
+      let trimmed = text.trim();
+
       let record = this.get('store').createRecord('response', {
         recipient: this.get('responseToApprove.createdBy.content'),
         createdBy: this.get('currentUser'),
@@ -155,14 +173,33 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         responseType: 'approver',
         source: 'submission',
         reviewedResponse: this.get('responseToApprove') || this.get('reviewedResponse'),
-        text: this.get('editRevisionText')
+        text: trimmed
       });
-      this.get('responseToApprove').set('status', 'needsRevisions');
-      Ember.RSVP.hash({
-        newReply: record.save(),
-        updatedReply: this.get('responseToApprove').save()
-      })
+
+      let oldMentorStatus = this.get('responseToApprove.status');
+
+      let promptText = 'What should now be the status of the Mentor Feedback you are replying to?';
+
+      return this.get('alert').showPromptSelect(promptText, this.get('statusOptions'), 'Select a status', null, 'Send')
+        .then((result) => {
+          if (!result.value) {
+            return;
+          }
+
+          let hash = {
+            newReply: record.save(),
+          };
+
+          if (oldMentorStatus !== result.value) {
+            this.get('responseToApprove').set('status', result.value);
+            hash.updatedReply = this.get('responseToApprove').save();
+          }
+          return Ember.RSVP.hash(hash);
+        })
         .then((hash) => {
+          if (!hash) {
+            return;
+          }
           this.send('cancelReply');
 
           this.get('approverReplies').addObject(hash.newReply);
