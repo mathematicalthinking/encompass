@@ -160,11 +160,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       this.sendAction('toResponse', response.get('id'));
     },
     onMentorReplySwitch(response) {
-      if (this.get('primaryResponseType') === 'mentor') {
-        this.sendAction('toResponseInfo',response);
-      } else {
-        this.set('reviewedResponse', response);
-      }
+      this.sendAction('toResponseInfo',response);
     },
     toResponses() {
       this.sendAction('toResponses');
