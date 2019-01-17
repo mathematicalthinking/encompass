@@ -39,7 +39,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
 
   showApprove: function() {
-    return this.get('responseToApprove.status') !== 'approved';
+    return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
   showCompose: function() {
     return this.get('responseToApprove.status') !== 'approved';
