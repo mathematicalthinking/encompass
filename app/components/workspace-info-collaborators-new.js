@@ -104,7 +104,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         obj.display = 'None';
         obj.id = 1;
         break;
-      case 'authRea':
+      case 'authReq':
         obj.display = 'Authorization Required';
         obj.id = 2;
         break;
@@ -211,6 +211,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         comments: this.get('comments.value') || 0,
         feedback: this.get('feedback.value') || 'none',
       };
+      this.get('originalCollaborators').addObject(this.get('collabUser'));
 
       permissions.addObject(newObj);
 
