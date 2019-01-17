@@ -59,9 +59,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     }
     return this.get('mentorReplies')
       .rejectBy('isTrashed')
-      .sortBy('createDate')
-      .reverse();
-
+      .sortBy('createDate');
   }.property('mentorReplies.@each.isTrashed'),
   showNote: function() {
     if (!this.get('isOwnMentorReply') && !this.get('canApprove')) {

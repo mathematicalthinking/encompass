@@ -9,12 +9,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   replyToView: null,
 
   didReceiveAttrs() {
-    if (this.get('primaryReply')) {
-      this.set('replyToView', this.get('primaryReply'));
-    }
     if (!this.get('approverReplies.length') > 0 ) {
       this.set('replyToView', null);
     }
+    this.set('replyToView', this.get('primaryReply') || null);
+
     this._super(...arguments);
   },
 
@@ -22,10 +21,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     if (this.get('replyToView')) {
       return this.get('replyToView');
     }
-    if (this.get('sortedApproverReplies')) {
-      return this.get('sortedApproverReplies.firstObject');
-    }
-    return null;
+
+    return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
 
   sortedApproverReplies: function() {
@@ -34,9 +31,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
     return this.get('approverReplies')
       .rejectBy('isTrashed')
-      .sortBy('createDate')
-      .reverse();
-
+      .sortBy('createDate');
   }.property('approverReplies.[]'),
 
   showApproverActions: function() {
@@ -44,7 +39,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
 
   showApprove: function() {
-    return this.get('responseToApprove.status') !== 'approved';
+    return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
   showCompose: function() {
     return this.get('responseToApprove.status') !== 'approved';
@@ -100,6 +95,13 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     return this.get('canApprove') && !this.get('showReplyInput');
   }.property('showReplyInput', 'canApprove'),
 
+  statusOptions: {
+    'needsRevisions': 'Needs Revisions',
+    'approved': 'Approved',
+    'pendingApproval': 'Pending Approval',
+    'superceded': 'Superceded'
+  },
+
   actions: {
     composeReply() {
       this.set('isComposingReply', true);
@@ -146,6 +148,17 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveReply() {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+      let text = this.get('editRevisionText');
+
+      if (typeof text !== 'string' || text.trim().length === 0) {
+        this.set('emptyReplyError', true);
+        return;
+      }
+
+      let trimmed = text.trim();
+
       let record = this.get('store').createRecord('response', {
         recipient: this.get('responseToApprove.createdBy.content'),
         createdBy: this.get('currentUser'),
@@ -155,14 +168,33 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         responseType: 'approver',
         source: 'submission',
         reviewedResponse: this.get('responseToApprove') || this.get('reviewedResponse'),
-        text: this.get('editRevisionText')
+        text: trimmed
       });
-      this.get('responseToApprove').set('status', 'needsRevisions');
-      Ember.RSVP.hash({
-        newReply: record.save(),
-        updatedReply: this.get('responseToApprove').save()
-      })
+
+      let oldMentorStatus = this.get('responseToApprove.status');
+
+      let promptText = 'What should now be the status of the Mentor Feedback you are replying to?';
+
+      return this.get('alert').showPromptSelect(promptText, this.get('statusOptions'), 'Select a status', null, 'Send')
+        .then((result) => {
+          if (!result.value) {
+            return;
+          }
+
+          let hash = {
+            newReply: record.save(),
+          };
+
+          if (oldMentorStatus !== result.value) {
+            this.get('responseToApprove').set('status', result.value);
+            hash.updatedReply = this.get('responseToApprove').save();
+          }
+          return Ember.RSVP.hash(hash);
+        })
         .then((hash) => {
+          if (!hash) {
+            return;
+          }
           this.send('cancelReply');
 
           this.get('approverReplies').addObject(hash.newReply);

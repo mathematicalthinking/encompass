@@ -8,6 +8,7 @@
     newReplyStatus=newReplyStatus
     newReplyType="mentor"
     onSaveSuccess=(action "onSaveSuccess")
+    canDirectSend=canDirectSend
   }}
 {{else}}
 <div class="mentor-replies">
@@ -22,7 +23,7 @@
     <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
 
     {{#if showStatus}}
-      <p>Status: {{displayResponse.status}}</p>
+      <p>Status: {{response-status displayResponse.status}}</p>
     {{/if}}
 
     <div>Message:<pre>{{displayResponse.text}}</pre></div>

@@ -9,12 +9,15 @@ Encompass.BreadCrumbsItemComponent = Ember.Component.extend({
     if (_.isString(this.get('itemTitleText'))) {
       return this.get('itemTitleText');
     }
+    if (this.get('item.createDate')) {
+      return moment(this.get('item.createDate')).format('MMM Do YYYY h:mm A');
+    }
     if (_.isString(this.get('titleTextPath')) && _.isObject(this.get('item'))) {
       let path = `item.${this.get('titleTextPath')}`;
       return this.get(path);
     }
     return '';
-  }.property('itemTitleText', 'titleTextPath', 'item'),
+  }.property('itemTitleText', 'titleTextPath', 'item', 'item.createDate'),
 
   actions: {
     onSelect(item) {

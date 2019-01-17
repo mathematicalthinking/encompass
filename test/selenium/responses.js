@@ -41,16 +41,16 @@ describe('Responses', function() {
   describe('Visiting a submission response url', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, 'button.new-response');
-      await helpers.waitForSelector(driver, '#moreDetails');
+      await helpers.waitForSelector(driver, 'div.response-title');
     });
 
     it('should advertise being a new response', async function() {
-      expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.eql('Creating New Response');
+      expect(await helpers.findAndGetText(driver, 'div.response-title')).to.eql('Craft Response');
       //expect(text).to.match(/New\W+Response/);
     });
 
     it('should be addressed to the student', async function() {
-      expect(await helpers.findAndGetText(driver, '#responding-to')).to.equal('Andrew S.');
+      expect(await helpers.findAndGetText(driver, 'span.response-value.recipient')).to.equal('Andrew S.');
       //expect(text).to.equal('Andrew S.');
     });
 
@@ -69,7 +69,7 @@ describe('Responses', function() {
 
     describe('should display a summary and a more details link', function() {
       function validateLinks() {
-        const links = ['a.workspace', 'a.submission', 'a#moreDetails'];
+        const links = ['a.submission'];
         for (let link of links) {
           let name = link.slice(2);
           // eslint-disable-next-line no-loop-func
@@ -79,8 +79,8 @@ describe('Responses', function() {
         }
       }
       validateLinks();
-      it('should display summary', async function() {
-        expect(await helpers.isTextInDom(driver, 'This response was generated from')).to.eql(true);
+      xit('should display summary', async function() {
+        expect(await helpers.isTextInDom(driver, 'Selections')).to.eql(true);
         expect(await helpers.isTextInDom(driver, 'These selections and comments were available')).to.eql(false);
     });
       xit('should display details after clicking more details', async function() {
@@ -113,7 +113,7 @@ describe('Responses', function() {
         }catch(err) {
           console.log(err);
         }
-        expect(await helpers.findAndGetText(driver, 'h5.mentor-replies')).to.eql('Mentor Replies');
+        expect(await helpers.isElementVisible(driver, 'div.response-info')).to.eql(true);
       });
 
       //TODO: There is a bug when clicking responses after saving a response
