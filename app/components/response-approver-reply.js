@@ -9,12 +9,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   replyToView: null,
 
   didReceiveAttrs() {
-    if (this.get('primaryReply')) {
-      this.set('replyToView', this.get('primaryReply'));
-    }
     if (!this.get('approverReplies.length') > 0 ) {
       this.set('replyToView', null);
     }
+    this.set('replyToView', this.get('primaryReply') || null);
+
     this._super(...arguments);
   },
 
@@ -22,10 +21,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     if (this.get('replyToView')) {
       return this.get('replyToView');
     }
-    if (this.get('sortedApproverReplies')) {
-      return this.get('sortedApproverReplies.firstObject');
-    }
-    return null;
+
+    return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
 
   sortedApproverReplies: function() {
@@ -34,9 +31,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
     return this.get('approverReplies')
       .rejectBy('isTrashed')
-      .sortBy('createDate')
-      .reverse();
-
+      .sortBy('createDate');
   }.property('approverReplies.[]'),
 
   showApproverActions: function() {
