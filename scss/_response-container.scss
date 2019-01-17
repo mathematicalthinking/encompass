@@ -18,7 +18,7 @@
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 20px;
-  padding: 30px 40px;
+  padding: 30px 45px;
   height: calc(100vh - 175px);
   overflow-y: auto;
 }
@@ -132,9 +132,7 @@ div.response-flex-container {
       }
 
       textarea {
-        width: 85%;
         margin-bottom: 15px;
-        max-width: 95%;
         &.note {
           height: 100px;
         }
@@ -145,11 +143,24 @@ div.response-flex-container {
 
     }
     #response-new {
+      .top-row {
+        margin-bottom: 15px;
+        @include flex-container(null, null, row, wrap, center, center, center);
+      }
       .response-date {
+        @include flex-item(1, flex-start, 1 1 auto);
         font-weight: $light-font-weight;
         font-size: 1.1em;
         color: $filter-list-border-color;
-        margin-bottom: 15px;
+        text-align: let;
+      }
+      .response-link {
+        @include flex-item(2, flex-end, 1 1 auto);
+        text-align: right;
+        font-weight: $light-font-weight;
+        i {
+          color: $accent-color;
+        }
       }
       .response-title {
         color: black;
@@ -173,8 +184,10 @@ div.response-flex-container {
       }
       .response-content {
         .response-info {
-          font-weight: $light-font-weight;
+          font-weight: $main-font-weight;
           line-height: 25px;
+          margin-top: 30px;
+          font-size: .9em;
           a {
             color: $accent-color;
             &:hover {
@@ -182,20 +195,46 @@ div.response-flex-container {
             }
           }
         }
-        .response-compose {
-          margin-top: 40px;
-          textarea {
-            width: 100%;
+        .response-header {
+          margin: 15px 0;
+          color: black;
+          font-size: 1.1em;
+          font-weight: $light-font-weight;
+          i {
+          float: right;
+          color: $filter-list-border-color;
           }
         }
-      }
-      textarea {
-        width: 85%;
-        max-width: 95%;
-        &.approver-note {
-          height: 100px;
+        .selections, .comments {
+          margin-bottom: 40px;
         }
-        margin-bottom: 15px;
+        .selections-list {
+          .selections-list-item {
+            margin: 10px 15px;
+            a {
+              background-color: $pale-accent;
+              font-size: .8em;
+            }
+          }
+        }
+        .comments-list {
+          .comments-list-item {
+            margin: 10px 15px;
+            a {
+              font-size: .9em;
+              font-weight: $light-font-weight;
+            }
+          }
+        }
+        .response-compose {
+          textarea {
+            width: 100%;
+            border: 1px solid $input-border;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            resize: none;
+          }
+        }
       }
     }
   }
@@ -235,9 +274,6 @@ div.response-flex-container {
     div.compose-approver-reply {
       margin-left: 15px;
       margin-bottom: 10px;
-      textarea {
-        width: 85%;
-      }
     }
     div.display-reply-actions {
       button {
