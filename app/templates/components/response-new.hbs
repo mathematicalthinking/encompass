@@ -15,7 +15,7 @@
   <div class="response-users">
     <p>
       <span class="response-label">To:</span>
-      <span class="response-value">{{model.student}}</span>
+      <span class="response-value recipient">{{model.student}}</span>
     </p>
     <p>
       <span class="response-label">From:</span>
@@ -96,28 +96,13 @@
       {{/if}}
     </div>
     <div class="submit-buttons button-row">
-      <button class="primary-button save-response" {{action 'save'}}>Send</button>
+      <button class="primary-button save-response" {{action 'save'}}>{{submitButtonText}}</button>
     </div>
   </section>
   {{!-- {{#unless canDirectSend}}
     <div class="approval-info">
       <p class="info">You do not have direct send permissions for this workspace. Once submitted your feedback will be reviewed by an approver. The approver will either approve the feedback (making it available to the intended recipient) or reply with suggested revisions.</p>
     </div>
-  {{/unless}}
-  <div class="response-display">
-    <p>To: <span id="responding-to">{{model.student}}</span></p>
-    <h5>Message Body</h5>
-    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" value=replyText autofocus="autofocus"}}
-    {{#if showNoteField}}
-      <div class="approve-note">
-        <h5>Note for Approver</h5>
-        {{textarea class="approver-note" id="response-note" value=replyNote}}
-      </div>
-    {{/if}}
-  </div>
-  <div class="submit-buttons button-row">
-    <button class="primary-button save-response" {{action 'save'}} >{{submitButtonText}}</button>
-  </div>
 </section> --}}
 
 
