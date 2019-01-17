@@ -9,7 +9,9 @@
   </div>
   <div class="card-content">
     {{#if createNewCollaborator}}
-      {{workspace-info-collaborators-new store=store workspace=workspace createNewCollaborator=createNewCollaborator isShowingCustomViewer=isShowingCustomViewer customSubmissionIds=customSubmissionIds}}
+      {{workspace-info-collaborators-new store=store workspace=workspace createNewCollaborator=createNewCollaborator isShowingCustomViewer=isShowingCustomViewer customSubmissionIds=customSubmissionIds
+      originalCollaborators=originalCollaborators
+      }}
     {{/if}}
     {{#if originalCollaborators}}
       {{#each workspacePermissions as |collaborator|}}
