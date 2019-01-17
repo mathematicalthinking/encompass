@@ -3,6 +3,8 @@
 @import "responsive-font-size";
 
 #response-container {
+  background-color: $filter-list-background-color;
+  height: calc(100vh - 75px);
   p.feedback-mode {
     text-align: center;
     margin-bottom: 25px;
@@ -11,32 +13,38 @@
     color: $accent-color;
   }
 }
+.response-flex-item {
+  background-color: white;
+  box-shadow: $box-shadow;
+  border-radius: 3px;
+  margin: 20px;
+  padding: 30px;
+  height: calc(100vh - 175px);
+}
 
 div.response-flex-container {
   // border: 1px solid purple;
-  @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
+  @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
   width: 100%;
   div.response-flex-item.submission{
     min-width: 350px;
-
-    @include flex-item(1, flex-start, 1 1 50%);
+    @include flex-item(1, flex-start, 1 1 43%);
     &.third {
-      @include flex-item(1, flex-start, 1 33%);
+      @include flex-item(1, flex-start, 1 31%);
 
     }
   }
   div.response-flex-item.mentor {
     min-width: 350px;
-
-    @include flex-item(2, flex-start, 1 1 50%);
+    @include flex-item(2, flex-start, 1 1 43%);
     &.third {
-      @include flex-item(2, flex-start, 1 1 33%);
+      @include flex-item(2, flex-start, 1 1 31%);
     }
 
   }
   div.response-flex-item.approver.third {
     min-width: 350px;
-    @include flex-item(3, flex-start, 1 1 33%);
+    @include flex-item(3, flex-start, 1 1 31%);
   }
 
   .cancel-button {
@@ -47,34 +55,55 @@ div.response-flex-container {
   }
 
   #response-submission-view {
-    margin-left: 20px;
-
-    h3, h5 {
+    .problem-link-container {
       margin-bottom: 15px;
-      margin-left: 15px;
+      a {
+        color: $accent-color;
+        font-weight: $light-font-weight;
+      &:hover {
+          font-weight: $main-font-weight;
+        }
+      }
     }
-    // border: red solid 1px;
+    .workspace-name {
+      color: black;
+      font-weight: $light-font-weight;
+      font-size: 1.5em;
+      margin-bottom: 25px;
+    }
+    .submission-student {
+      color: $accent-color;
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      i {
+        margin-right: 10px;
+      }
+    }
+    .submission-content-container {
+      border: 1px solid blue;
+      margin-bottom: 40px;
+      .submission-header {
+        padding: 10px 0;
+        border: 1px solid red;
+        margin-bottom: 15px;
+        font-size: 1em;
+        color: black;
+        i {
+          float: right;
+          color: $filter-list-border-color;
+        }
+      }
+      .submission-content {
+        border: 1px solid green;
+      }
+    }
     img {
       max-width: 100%;
     }
-    .problem-link-container {
-      margin-left: 15px;
-      margin-bottom: 10px;
-    }
-    #al_submission {
-      height: auto;
-      margin-left: 15px;
-      .submission.short {
-        margin-bottom: 10px;
-      }
-      p {
-        margin-bottom: 10px;
-      }
-    }
   }
+
   #response-mentor-reply {
-    // border: blue solid 1px;
-    margin-left: 20px;
+    border: blue solid 1px;
     h3, h5 {
       margin-bottom: 15px;
       margin-left: 15px;
