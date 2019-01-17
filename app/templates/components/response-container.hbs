@@ -7,8 +7,9 @@
     {{else}}
     Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}} for
     {{/if}}
-    {{studentDescriptor}} {{#link-to 'workspace.submission' workspace submission classNames="link"}}submission{{/link-to}}
-    in {{#link-to 'workspace.work' workspace classNames="link"}}{{workspace.name}}{{/link-to}}
+    {{studentDescriptor}}
+    <a {{action 'openSubmission' workspace.id submission.id}} class="link">submission</a>
+    in {{workspace.name}}
   </p>
 {{/unless}}
 

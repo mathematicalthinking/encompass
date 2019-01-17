@@ -175,5 +175,15 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     toResponses() {
       this.sendAction('toResponses');
     },
+    openSubmission(workspaceId, submissionId) {
+      if (!workspaceId || !submissionId) {
+        return;
+      }
+
+      let getUrl = window.location;
+      let baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+
+      window.open(`${baseUrl}#/workspaces/${workspaceId}/submissions/${submissionId}`, 'newwindow', 'width=1200, height=700');
+    }
   }
 });
