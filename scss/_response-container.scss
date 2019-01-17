@@ -18,26 +18,25 @@
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 20px;
-  padding: 30px 35px;
+  padding: 30px 40px;
   height: calc(100vh - 175px);
   overflow-y: auto;
 }
 
 div.response-flex-container {
-  // border: 1px solid purple;
   @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
   width: 100%;
   div.response-flex-item.submission{
-    min-width: 350px;
-    @include flex-item(1, flex-start, 1 1 43%);
+    @include flex-item(1, flex-start, 1 1 auto);
+    width: 40%;
     &.third {
-      @include flex-item(1, flex-start, 1 31%);
+      @include flex-item(1, flex-start, 1 1 31%);
 
     }
   }
   div.response-flex-item.mentor {
-    min-width: 350px;
-    @include flex-item(2, flex-start, 1 1 43%);
+    @include flex-item(2, flex-start, 1 1 auto);
+    width: 40%;
     &.third {
       @include flex-item(2, flex-start, 1 1 31%);
     }
@@ -71,18 +70,18 @@ div.response-flex-container {
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     .submission-student {
       color: $accent-color;
       font-size: 1.1em;
-      margin-bottom: 50px;
+      margin-bottom: 40px;
       i {
         margin-right: 10px;
       }
     }
     .submission-content-container {
-      margin-bottom: 40px;
+      margin-bottom: 35px;
       .submission-header {
         padding: 10px 0;
         font-size: 1em;
@@ -102,17 +101,14 @@ div.response-flex-container {
   }
 
   #response-mentor-reply {
-    border: blue solid 1px;
     h3, h5 {
       margin-bottom: 15px;
-      margin-left: 15px;
     }
     div.bread-crumbs-comp {
-      margin-left: 15px;
+      border: 1px solid;
     }
 
     section.response {
-      width: 85%;
       pre.message {
         white-space: pre-wrap;
       }
@@ -121,7 +117,6 @@ div.response-flex-container {
       float: none;
     }
     div.response-info {
-      margin-left: 15px;
       margin-top: 10px;
       p {
         margin-bottom: 10px;
@@ -150,7 +145,50 @@ div.response-flex-container {
 
     }
     #response-new {
-      border: 1px solid red;
+      .response-date {
+        font-weight: $light-font-weight;
+        font-size: 1.1em;
+        color: $filter-list-border-color;
+        margin-bottom: 15px;
+      }
+      .response-title {
+        color: black;
+        font-weight: $light-font-weight;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+      .response-users {
+        margin-bottom: 30px;
+        p {
+         line-height: 25px;
+        }
+        .response-label {
+          width: 50px;
+          display: inline-block;
+        }
+        .response-value {
+          color: $accent-color;
+          font-weight: $light-font-weight;
+        }
+      }
+      .response-content {
+        .response-info {
+          font-weight: $light-font-weight;
+          line-height: 25px;
+          a {
+            color: $accent-color;
+            &:hover {
+              font-weight: $main-font-weight;
+            }
+          }
+        }
+        .response-compose {
+          margin-top: 40px;
+          textarea {
+            width: 100%;
+          }
+        }
+      }
       textarea {
         width: 85%;
         max-width: 95%;
@@ -158,10 +196,6 @@ div.response-flex-container {
           height: 100px;
         }
         margin-bottom: 15px;
-      }
-      section.response-more-details {
-        width: 85%;
-        max-width: 95%;
       }
     }
   }

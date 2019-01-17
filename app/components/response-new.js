@@ -15,8 +15,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   cantRespond: Ember.computed.not('canRespond'),
   showHelp: false,
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
-
   alert: Ember.inject.service('sweet-alert'),
+  todaysDate: new Date(),
 
 
   didReceiveAttrs() {
