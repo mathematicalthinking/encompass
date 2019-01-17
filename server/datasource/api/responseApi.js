@@ -29,19 +29,17 @@ module.exports.put = {};
  function getResponse(req, res, next) {
   let user = userAuth.requireUser(req);
 
-  return access.get.response(user, req.params.id)
-    .then((canGet) => {
-      if (!canGet) {
-        return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
-      }
     return models.Response.findById(req.params.id).lean().exec()
       .then((response) => {
         if (!response || response.isTrashed) {
           return utils.sendResponse(res, null);
         }
-        // if (Array.isArray(response.children)) {
-        //   response.children =
-        // }
+
+        return access.get.response(user, req.params.id)
+          .then((canGet) => {
+            if (!canGet) {
+              return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
+            }
 
         // only approvers should see the note field
         // for now just dont send back to students
