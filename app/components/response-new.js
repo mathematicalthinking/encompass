@@ -32,6 +32,13 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     this._super(...arguments);
   },
 
+  submitButtonText: function() {
+    if (this.get('canDirectSend')) {
+      return 'Send';
+    }
+    return 'Submit for Approval';
+  }.property('canDirectSend'),
+
   headingText: function() {
     if (this.get('isEditing')) {
       return 'Editing Response';
