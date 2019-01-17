@@ -21,58 +21,66 @@
       <i class="fas fa-user"></i><span>{{submission.student}}</span>
     </div>
     <div class="submission-content-container short">
-      <div class="submission-header">
+      <div class="submission-header" {{action 'toggleProperty' 'isShortExpanded'}}>
         <span>Short Answer</span>
-        <i class="fas fa-chevron-down"></i>
+        <i class="fas {{if isShortExpanded 'fa-chevron-down'}} {{unless isShortExpanded 'fa-chevron-left'}}"></i>
       </div>
-      <div class="submission-content short">
-        {{#if submission.answer.answer}}
-          {{{submission.answer.answer}}}
-        {{else}}
-          {{{submission.shortAnswer}}}
-        {{/if}}
-      </div>
+      {{#if isShortExpanded}}
+        <div class="submission-content short">
+          {{#if submission.answer.answer}}
+            {{{submission.answer.answer}}}
+          {{else}}
+            {{{submission.shortAnswer}}}
+          {{/if}}
+        </div>
+      {{/if}}
     </div>
     <div class="submission-content-container long">
-      <div class="submission-header">
+      <div class="submission-header" {{action 'toggleProperty' 'isLongExpanded'}}>
         <span>Long Answer</span>
-        <i class="fas fa-chevron-down"></i>
+        <i class="fas {{if isLongExpanded 'fa-chevron-down'}} {{unless isLongExpanded 'fa-chevron-left'}}"></i>
       </div>
-      <div class="submission-content long">
-        {{#if submission.answer.explanation}}
-          {{{submission.answer.explanation}}}
-        {{/if}}
-        {{#if submission.longAnswer}}
-          {{{submission.longAnswer}}}
-        {{/if}}
-      </div>
+      {{#if isLongExpanded}}
+        <div class="submission-content long">
+          {{#if submission.answer.explanation}}
+            {{{submission.answer.explanation}}}
+          {{/if}}
+          {{#if submission.longAnswer}}
+            {{{submission.longAnswer}}}
+          {{/if}}
+        </div>
+      {{/if}}
     </div>
 
     {{#if submission.answer.explanationImage}}
     <div class="submission-content-container images">
-      <div class="submission-header">
+      <div class="submission-header" {{action 'toggleProperty' 'isImageExpanded'}}>
         <span>Addtional Image</span>
-        <i class="fas fa-chevron-down"></i>
+        <i class="fas {{if isImageExpanded 'fa-chevron-down'}} {{unless isImageExpanded 'fa-chevron-left'}}"></i>
       </div>
-      <div class="submission-content images">
-        <img src="{{submission.answer.explanationImage.imageData}}" alt="">
-      </div>
+      {{#if isImageExpanded}}
+        <div class="submission-content images">
+          <img src="{{submission.answer.explanationImage.imageData}}" alt="">
+        </div>
+      {{/if}}
     </div>
     {{/if}}
 
     {{#if submission.uploadedFile.savedFileName}}
     <div class="submission-content-container images">
-      <div class="submission-header">
+      <div class="submission-header" {{action 'toggleProperty' 'isUploadExpanded'}}>
         <span>Uploaded Image</span>
-        <i class="fas fa-chevron-down"></i>
+        <i class="fas {{if isUploadExpanded 'fa-chevron-down'}} {{unless isUploadExpanded 'fa-chevron-left'}}"></i>
       </div>
-      <div class="submission-content images">
-        <div id="submission_images">
-          <a target="_blank" href="{{unbound submission.imageUrl}}">
-            <img src="{{submission.imageUrl}}" alt="Login to the PoWs to see image" />
-          </a>
+      {{#if isUploadExpanded}}
+        <div class="submission-content images">
+          <div id="submission_images">
+            <a target="_blank" href="{{unbound submission.imageUrl}}">
+              <img src="{{submission.imageUrl}}" alt="Login to the PoWs to see image" />
+            </a>
+          </div>
         </div>
-      </div>
+      {{/if}}
     </div>
     {{/if}}
   </div>

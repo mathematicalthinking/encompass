@@ -56,7 +56,7 @@ div.response-flex-container {
 
   #response-submission-view {
     .problem-link-container {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       a {
         color: $accent-color;
         font-weight: $light-font-weight;
@@ -80,12 +80,9 @@ div.response-flex-container {
       }
     }
     .submission-content-container {
-      border: 1px solid blue;
       margin-bottom: 40px;
       .submission-header {
         padding: 10px 0;
-        border: 1px solid red;
-        margin-bottom: 15px;
         font-size: 1em;
         color: black;
         i {
@@ -94,7 +91,7 @@ div.response-flex-container {
         }
       }
       .submission-content {
-        border: 1px solid green;
+        margin-top: 15px;
       }
     }
     img {
