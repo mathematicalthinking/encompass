@@ -18,8 +18,9 @@
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 20px;
-  padding: 30px;
+  padding: 30px 35px;
   height: calc(100vh - 175px);
+  overflow-y: auto;
 }
 
 div.response-flex-container {
@@ -57,6 +58,7 @@ div.response-flex-container {
   #response-submission-view {
     .problem-link-container {
       margin-bottom: 20px;
+      margin-top: 10px;
       a {
         color: $accent-color;
         font-weight: $light-font-weight;
@@ -69,12 +71,12 @@ div.response-flex-container {
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 25px;
+      margin-bottom: 40px;
     }
     .submission-student {
       color: $accent-color;
       font-size: 1.1em;
-      margin-bottom: 30px;
+      margin-bottom: 50px;
       i {
         margin-right: 10px;
       }
@@ -148,6 +150,7 @@ div.response-flex-container {
 
     }
     #response-new {
+      border: 1px solid red;
       textarea {
         width: 85%;
         max-width: 95%;
