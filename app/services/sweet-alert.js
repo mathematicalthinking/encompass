@@ -67,7 +67,7 @@ Encompass.SweetAlertService = Ember.Service.extend({
     });
   },
 
-  showPromptSelect: function(title, inputOptions, inputPlaceholder, text=null) {
+  showPromptSelect: function(title, inputOptions, inputPlaceholder, text=null, confirmButtonText='OK') {
     return window.swal({
       input: 'select',
       title,
@@ -77,7 +77,8 @@ Encompass.SweetAlertService = Ember.Service.extend({
       inputValidator: (value) => {
         return !value && 'Please choose an option.';
       },
-      text
+      text,
+      confirmButtonText
     });
   },
 
