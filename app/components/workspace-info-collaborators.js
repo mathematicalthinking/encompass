@@ -126,7 +126,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         obj.display = 'None';
         obj.id = 1;
         break;
-      case 'authRea':
+      case 'authReq':
         obj.display = 'Authorization Required';
         obj.id = 2;
         break;
