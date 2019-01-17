@@ -9,14 +9,16 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   selections: [],
   comments: [],
   submission: null,
+  showSelections: true,
+  showComments: true,
   notEditing: Ember.computed.not('isEditing'),
   notPersisted: Ember.computed.not('persisted'),
   notDirty: Ember.computed.not('dirty'),
   cantRespond: Ember.computed.not('canRespond'),
   showHelp: false,
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
-
   alert: Ember.inject.service('sweet-alert'),
+  todaysDate: new Date(),
 
 
   didReceiveAttrs() {

@@ -1,106 +1,104 @@
-<div class="al_wtf">
-  <section class="response">
-    <h1>{{headingText}}</h1>
-  <div class="about-info">
-    {{#if explainEmptiness}}
-      <p class="notice">
-        Click 'edit' below to start your reply from scratch.  <a {{action toggleProperty 'whyEmpty'}}>Why?</a>
-
-        {{#if whyEmpty}}
-          Normally you'd see an auto-generated response here
-          based on the selections and comments you have created but there are none for this submission.
-
-          {{#if model.submission}}
-            You can go back to the
-              {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}}
-            and create some selections and comments.
-          {{/if}}
-
-        {{/if}}
-      </p>
-    {{else}}
-      <p>
-        This response was generated from
-          {{model.workspace.owner.displayName}}'s workspace {{#link-to 'workspace.work' model.workspace classNames="workspace"}}{{model.workspace.name}}{{/link-to}}.
-
-        {{#if model.submission}}
-          In particular, it came from
-            {{model.submission.student}}'s
-            {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
-            submission
-            {{/link-to}}
-        {{/if}}
-
-          (<a id="moreDetails" {{action toggleProperty 'showDetails'}}>{{moreDetailsLinkText}}</a>)
-
-       </p>
-    {{/if}}
+<div class="new-response-container">
+  <div class="top-row">
+    <p class="response-date">{{format-date todaysDate 'Do MMM YYYY'}}</p>
+    <p class="response-link">
+      {{#link-to 'workspace.submission' model.workspace model.submission classNames="submission"}}
+        <span class="simptip-position-left simptip-smooth" data-tooltip="View Submission in Workspace">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      {{/link-to}}
+    </p>
   </div>
-  <section class="response-more-details">
-    {{#if existingResponses.length}}
-      <p>
-      There
-        {{pluralize existingResponses.length 'is' 'are'}}
-        {{#unless model.persisted}}already{{/unless}}
-      <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other
-        {{pluralize existingResponses.length 'response' 'responses'}}
-      </a> for this {{model.source}}.
-      </p>
-      {{#if showExisting}}
-        <ul>
-        {{#each existingResponses as |response|}}
-          <li>
-            {{#link-to 'response' response.id}}{{response.shortText}}{{/link-to}} from {{response.created}}
-          </li>
-        {{/each}}
-        </ul>
-        <br/>
+  <div class="response-title">
+    Craft Response
+  </div>
+  <div class="response-users">
+    <p>
+      <span class="response-label">To:</span>
+      <span class="response-value">{{model.student}}</span>
+    </p>
+    <p>
+      <span class="response-label">From:</span>
+      <span class="response-value">{{currentUser.username}}</span>
+    </p>
+  </div>
+  <section class="response-content">
+    <section class="response-more-details">
+      {{#if existingResponses.length}}
+        <p>
+        There
+          {{pluralize existingResponses.length 'is' 'are'}}
+          {{#unless model.persisted}}already{{/unless}}
+        <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other
+          {{pluralize existingResponses.length 'response' 'responses'}}
+        </a> for this {{model.source}}.
+        </p>
+        {{#if showExisting}}
+          <ul>
+          {{#each existingResponses as |response|}}
+            <li>
+              {{#link-to 'response' response.id}}{{response.shortText}}{{/link-to}} from {{response.created}}
+            </li>
+          {{/each}}
+          </ul>
+          <br/>
+        {{/if}}
       {{/if}}
-    {{/if}}
-    {{#if showDetails}}
       {{#if model.selections.length}}
-        <p>These selections and comments were available at the time this response was created.</p>
         <section class="selections">
-          <h2>Selections</h2>
-          <ul>
-          {{#each model.selections as |selection|}}
-            <li>
-              {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
-            </li>
-          {{/each}}
-          </ul>
+          <p class="response-header" {{action 'toggleProperty' 'showSelections'}}>
+            Selections
+            <i class="fas {{if showSelections 'fa-chevron-down'}} {{unless showSelections 'fa-chevron-left'}}"></i>
+          </p>
+          {{#if showSelections}}
+            <ul class="selections-list">
+            {{#each model.selections as |selection|}}
+              <li class="selections-list-item">
+                {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
+              </li>
+            {{/each}}
+            </ul>
+          {{/if}}
         </section>
-
         <section class="comments">
-          <h2>Comments</h2>
-          <ul>
-          {{#each model.comments as |comment|}}
-            <li>
-              {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}{{comment.text}}{{/link-to}}
-            </li>
-          {{/each}}
-          </ul>
+          <p class="response-header" {{action 'toggleProperty' 'showComments'}}>
+            Comments
+            <i class="fas {{if showComments 'fa-chevron-down'}} {{unless showComments 'fa-chevron-left'}}"></i>
+          </p>
+          {{#if showComments}}
+            <ul class="comments-list">
+            {{#each model.comments as |comment|}}
+              <li class="comments-list-item">
+                {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}
+                "{{comment.text}}"{{/link-to}}
+              </li>
+            {{/each}}
+            </ul>
+          {{/if}}
         </section>
-      {{else}}
-        There weren't any selections/comments for this submission.
       {{/if}}
-    {{/if}}
+    </section>
+    <div class="response-info">
+      {{#if explainEmptiness}}
+        <p class="response-prefill">
+          It looks like you haven't made any selections or comments for this submission. You should go back to the {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}} and create some selections and comments.
+        </p>
+      {{/if}}
+    </div>
+    <div class="response-compose">
+      <p class="response-header">Message</p>
+      {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" value=replyText}}
+      {{#if showNoteField}}
+        <div class="approve-note">
+          <h5>Note for Approver</h5>
+          {{textarea class="approver-note" id="response-note" value=replyNote}}
+        </div>
+      {{/if}}
+    </div>
+    <div class="submit-buttons button-row">
+      <button class="primary-button save-response" {{action 'save'}}>Send</button>
+    </div>
   </section>
-  <div class="response-display">
-    <p>To: <span id="responding-to">{{model.student}}</span></p>
-    <h5>Message Body</h5>
-    {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" value=replyText autofocus="autofocus"}}
-    {{#if showNoteField}}
-      <div class="approve-note">
-        <h5>Note for Approver</h5>
-        {{textarea class="approver-note" id="response-note" value=replyNote}}
-      </div>
-    {{/if}}
-  </div>
-  <div class="submit-buttons button-row">
-    <button class="primary-button save-response" {{action 'save'}} >Save</button>
-  </div>
-</section>
 
 
 </div>

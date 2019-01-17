@@ -3,6 +3,8 @@
 @import "responsive-font-size";
 
 #response-container {
+  background-color: $filter-list-background-color;
+  height: calc(100vh - 75px);
   p.feedback-mode {
     text-align: center;
     margin-bottom: 25px;
@@ -11,32 +13,38 @@
     color: $accent-color;
   }
 }
+.response-flex-item {
+  background-color: white;
+  box-shadow: $box-shadow;
+  border-radius: 3px;
+  margin: 20px;
+  padding: 30px 45px;
+  height: calc(100vh - 175px);
+  overflow-y: auto;
+}
 
 div.response-flex-container {
-  // border: 1px solid purple;
-  @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
+  @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
   width: 100%;
   div.response-flex-item.submission{
-    min-width: 350px;
-
-    @include flex-item(1, flex-start, 1 1 50%);
+    @include flex-item(1, flex-start, 1 1 auto);
+    width: 40%;
     &.third {
-      @include flex-item(1, flex-start, 1 33%);
+      @include flex-item(1, flex-start, 1 1 31%);
 
     }
   }
   div.response-flex-item.mentor {
-    min-width: 350px;
-
-    @include flex-item(2, flex-start, 1 1 50%);
+    @include flex-item(2, flex-start, 1 1 auto);
+    width: 40%;
     &.third {
-      @include flex-item(2, flex-start, 1 1 33%);
+      @include flex-item(2, flex-start, 1 1 31%);
     }
 
   }
   div.response-flex-item.approver.third {
     min-width: 350px;
-    @include flex-item(3, flex-start, 1 1 33%);
+    @include flex-item(3, flex-start, 1 1 31%);
   }
 
   .cancel-button {
@@ -47,44 +55,60 @@ div.response-flex-container {
   }
 
   #response-submission-view {
-    margin-left: 20px;
-
-    h3, h5 {
-      margin-bottom: 15px;
-      margin-left: 15px;
+    .problem-link-container {
+      margin-bottom: 20px;
+      margin-top: 10px;
+      a {
+        color: $accent-color;
+        font-weight: $light-font-weight;
+      &:hover {
+          font-weight: $main-font-weight;
+        }
+      }
     }
-    // border: red solid 1px;
+    .workspace-name {
+      color: black;
+      font-weight: $light-font-weight;
+      font-size: 1.5em;
+      margin-bottom: 30px;
+    }
+    .submission-student {
+      color: $accent-color;
+      font-size: 1.1em;
+      margin-bottom: 40px;
+      i {
+        margin-right: 10px;
+      }
+    }
+    .submission-content-container {
+      margin-bottom: 35px;
+      .submission-header {
+        padding: 10px 0;
+        font-size: 1em;
+        color: black;
+        i {
+          float: right;
+          color: $filter-list-border-color;
+        }
+      }
+      .submission-content {
+        margin-top: 15px;
+      }
+    }
     img {
       max-width: 100%;
     }
-    .problem-link-container {
-      margin-left: 15px;
-      margin-bottom: 10px;
-    }
-    #al_submission {
-      height: auto;
-      margin-left: 15px;
-      .submission.short {
-        margin-bottom: 10px;
-      }
-      p {
-        margin-bottom: 10px;
-      }
-    }
   }
+
   #response-mentor-reply {
-    // border: blue solid 1px;
-    margin-left: 20px;
     h3, h5 {
       margin-bottom: 15px;
-      margin-left: 15px;
     }
     div.bread-crumbs-comp {
-      margin-left: 15px;
+      border: 1px solid;
     }
 
     section.response {
-      width: 85%;
       pre.message {
         white-space: pre-wrap;
       }
@@ -93,7 +117,6 @@ div.response-flex-container {
       float: none;
     }
     div.response-info {
-      margin-left: 15px;
       margin-top: 10px;
       p {
         margin-bottom: 10px;
@@ -109,9 +132,7 @@ div.response-flex-container {
       }
 
       textarea {
-        width: 85%;
         margin-bottom: 15px;
-        max-width: 95%;
         &.note {
           height: 100px;
         }
@@ -122,17 +143,98 @@ div.response-flex-container {
 
     }
     #response-new {
-      textarea {
-        width: 85%;
-        max-width: 95%;
-        &.approver-note {
-          height: 100px;
+      .top-row {
+        margin-bottom: 15px;
+        @include flex-container(null, null, row, wrap, center, center, center);
+      }
+      .response-date {
+        @include flex-item(1, flex-start, 1 1 auto);
+        font-weight: $light-font-weight;
+        font-size: 1.1em;
+        color: $filter-list-border-color;
+        text-align: let;
+      }
+      .response-link {
+        @include flex-item(2, flex-end, 1 1 auto);
+        text-align: right;
+        font-weight: $light-font-weight;
+        i {
+          color: $accent-color;
         }
+      }
+      .response-title {
+        color: black;
+        font-weight: $light-font-weight;
+        font-size: 1.5em;
         margin-bottom: 15px;
       }
-      section.response-more-details {
-        width: 85%;
-        max-width: 95%;
+      .response-users {
+        margin-bottom: 30px;
+        p {
+         line-height: 25px;
+        }
+        .response-label {
+          width: 50px;
+          display: inline-block;
+        }
+        .response-value {
+          color: $accent-color;
+          font-weight: $light-font-weight;
+        }
+      }
+      .response-content {
+        .response-info {
+          font-weight: $main-font-weight;
+          line-height: 25px;
+          margin-top: 30px;
+          font-size: .9em;
+          a {
+            color: $accent-color;
+            &:hover {
+              font-weight: $main-font-weight;
+            }
+          }
+        }
+        .response-header {
+          margin: 15px 0;
+          color: black;
+          font-size: 1.1em;
+          font-weight: $light-font-weight;
+          i {
+          float: right;
+          color: $filter-list-border-color;
+          }
+        }
+        .selections, .comments {
+          margin-bottom: 40px;
+        }
+        .selections-list {
+          .selections-list-item {
+            margin: 10px 15px;
+            a {
+              background-color: $pale-accent;
+              font-size: .8em;
+            }
+          }
+        }
+        .comments-list {
+          .comments-list-item {
+            margin: 10px 15px;
+            a {
+              font-size: .9em;
+              font-weight: $light-font-weight;
+            }
+          }
+        }
+        .response-compose {
+          textarea {
+            width: 100%;
+            border: 1px solid $input-border;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            resize: none;
+          }
+        }
       }
     }
   }
@@ -172,9 +274,6 @@ div.response-flex-container {
     div.compose-approver-reply {
       margin-left: 15px;
       margin-bottom: 10px;
-      textarea {
-        width: 85%;
-      }
     }
     div.display-reply-actions {
       button {

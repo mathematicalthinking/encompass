@@ -1,45 +1,86 @@
-<h5>Response Submission</h5>
+{{!-- <h5>Response Submission</h5> --}}
 {{#if submission}}
   <div class="problem-link-container">
   {{#if submission.answer}}
-    Problem: <a {{action 'openProblem'}} class="problem-link">
+    <a {{action 'openProblem'}} class="problem-link">
       {{submission.puzzle.title}}
       <i class="fas fa-external-link-alt"></i>
     </a>
   {{else}}
-    Problem: <a class='puzzle' target="_blank" href="{{submission.puzzleUrl}}">
+    <a class='puzzle' target="_blank" href="{{submission.puzzleUrl}}">
       {{submission.puzzle.title}}
       <i class="fas fa-external-link-alt"></i>
     </a>
   {{/if}}
   </div>
-  <div id="al_submission" class="al_vertical_stretch">
-    <div class="submission student">
-      <p>Student: {{submission.student}}</p>
+  <div class="submission-container">
+    <div class="workspace-name">
+      {{workspace.name}}
     </div>
-    <div class="submission short">
-      {{#if submission.answer.answer}}
-        Brief Summary: {{{submission.answer.answer}}}
-      {{else}}
-      Brief Summary: {{{submission.shortAnswer}}}
+    <div class="submission-student">
+      <i class="fas fa-user"></i><span>{{submission.student}}</span>
+    </div>
+    <div class="submission-content-container short">
+      <div class="submission-header" {{action 'toggleProperty' 'isShortExpanded'}}>
+        <span>Short Answer</span>
+        <i class="fas {{if isShortExpanded 'fa-chevron-down'}} {{unless isShortExpanded 'fa-chevron-left'}}"></i>
+      </div>
+      {{#if isShortExpanded}}
+        <div class="submission-content short">
+          {{#if submission.answer.answer}}
+            {{{submission.answer.answer}}}
+          {{else}}
+            {{{submission.shortAnswer}}}
+          {{/if}}
+        </div>
       {{/if}}
     </div>
-    <div class="submission long">
-      {{#if submission.answer.explanation}}
-        Explanation: {{{submission.answer.explanation}}}
-      {{/if}}
-      {{#if submission.answer.explanationImage}}
-      Additional Image: <img src="{{submission.answer.explanationImage.imageData}}" alt="">
-      {{/if}}
-      {{#if submission.longAnswer}}
-        Explanation: {{{submission.longAnswer}}}
+    <div class="submission-content-container long">
+      <div class="submission-header" {{action 'toggleProperty' 'isLongExpanded'}}>
+        <span>Long Answer</span>
+        <i class="fas {{if isLongExpanded 'fa-chevron-down'}} {{unless isLongExpanded 'fa-chevron-left'}}"></i>
+      </div>
+      {{#if isLongExpanded}}
+        <div class="submission-content long">
+          {{#if submission.answer.explanation}}
+            {{{submission.answer.explanation}}}
+          {{/if}}
+          {{#if submission.longAnswer}}
+            {{{submission.longAnswer}}}
+          {{/if}}
+        </div>
       {{/if}}
     </div>
+
+    {{#if submission.answer.explanationImage}}
+    <div class="submission-content-container images">
+      <div class="submission-header" {{action 'toggleProperty' 'isImageExpanded'}}>
+        <span>Addtional Image</span>
+        <i class="fas {{if isImageExpanded 'fa-chevron-down'}} {{unless isImageExpanded 'fa-chevron-left'}}"></i>
+      </div>
+      {{#if isImageExpanded}}
+        <div class="submission-content images">
+          <img src="{{submission.answer.explanationImage.imageData}}" alt="">
+        </div>
+      {{/if}}
+    </div>
+    {{/if}}
+
     {{#if submission.uploadedFile.savedFileName}}
-    <div id="submission_images">
-      <a target="_blank" href="{{unbound submission.imageUrl}}">
-        <img src="{{submission.imageUrl}}" alt="Login to the PoWs to see image"/>
-      </a>
+    <div class="submission-content-container images">
+      <div class="submission-header" {{action 'toggleProperty' 'isUploadExpanded'}}>
+        <span>Uploaded Image</span>
+        <i class="fas {{if isUploadExpanded 'fa-chevron-down'}} {{unless isUploadExpanded 'fa-chevron-left'}}"></i>
+      </div>
+      {{#if isUploadExpanded}}
+        <div class="submission-content images">
+          <div id="submission_images">
+            <a target="_blank" href="{{unbound submission.imageUrl}}">
+              <img src="{{submission.imageUrl}}" alt="Login to the PoWs to see image" />
+            </a>
+          </div>
+        </div>
+      {{/if}}
     </div>
     {{/if}}
   </div>

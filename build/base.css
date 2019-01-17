@@ -592,7 +592,7 @@ label.makingSelection>input {
   padding: 2em;
 }
 
-textarea#responseTextarea { height:300px; font-size:13px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; }
+textarea#responseTextarea { height: 200px; font-size:13px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; }
 
 /* #devTool { float: left; padding-left: 20px; } */
 
