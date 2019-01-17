@@ -110,7 +110,9 @@
         </div>
       {{/each}}
     {{else}}
-      <div class="no-collab">No Collaborators</div>
+      {{#unless createNewCollaborator}}
+        <div class="no-collab">No Collaborators</div>
+      {{/unless}}
     {{/if}}
   </div>
 </div>
