@@ -137,8 +137,18 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('workspace', 'currentUser', 'workspace.feedbackAuthorizers.[]'),
 
   showApproverReply: function() {
-    return !this.get('isCreatingNewMentorReply') && (this.get('primaryResponseType') === 'approver' || this.get('canApprove') || this.get('isOwnMentorReply'));
-  }.property('primaryResponseType', 'canApprove', 'isCreatingNewMentorReply', 'isOwnMentorReply'),
+    if (this.get('isCreatingNewMentorReply')) {
+      return false;
+    }
+    if (this.get('primaryResponseType') === 'approver') {
+      return true;
+    }
+    // if you have direct send, do not show approver panel if you are viewing your own reply
+    if (this.get('isOwnMentorReply')) {
+      return !this.get('canDirectSend');
+    }
+    return this.get('canApprove');
+  }.property('primaryResponseType', 'canApprove', 'isCreatingNewMentorReply', 'isOwnMentorReply', 'canDirectSend'),
 
   canDirectSend: function() {
     return this.get('wsPermissions').canEdit(this.get('workspace'), 'feedback', 2);
