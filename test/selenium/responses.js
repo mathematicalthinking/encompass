@@ -34,18 +34,18 @@ describe('Responses', function() {
     });
 
     it('should have a respond link', async function() {
-      expect(await helpers.isElementVisible(driver, 'a.respond')).to.be.true;
+      expect(await helpers.isElementVisible(driver, 'button.new-response')).to.be.true;
     });
   });
 
   describe('Visiting a submission response url', function() {
     before(async function() {
-      await helpers.findAndClickElement(driver, 'a.respond');
+      await helpers.findAndClickElement(driver, 'button.new-response');
       await helpers.waitForSelector(driver, '#moreDetails');
     });
 
     it('should advertise being a new response', async function() {
-      expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.match(/New\W+Response/);
+      expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.eql('Creating New Response');
       //expect(text).to.match(/New\W+Response/);
     });
 
@@ -62,17 +62,9 @@ describe('Responses', function() {
     // });
 
     describe('should have buttons', function() {
-      function validateButtons() {
-        const selectors = ['button.edit:enabled', 'button.save:disabled'];
-        for (let selector of selectors) {
-          let name = selector.slice(7,11);
-          // eslint-disable-next-line no-loop-func
-          it(`${name} button should be visible`, async function() {
-            expect(await helpers.isElementVisible(driver, selector)).to.eql(true);
-          });
-        }
-      }
-      validateButtons();
+      it('Save button should be visible', async function() {
+        expect(await helpers.isElementVisible(driver, 'button.save-response')).to.eql(true);
+      });
     });
 
     describe('should display a summary and a more details link', function() {
@@ -103,25 +95,25 @@ describe('Responses', function() {
     });
 
     describe('Saving this response', function() {
-      it('should be able to edit the text', async function() {
+      xit('should be able to edit the text', async function() {
         try {
-          await driver.findElement(By.css('button.edit')).click();
+          // await driver.findElement(By.css('button.edit')).click();
           await driver.findElement(By.css('textarea#responseTextarea')).sendKeys(`${helpers.admin} edited`);
 
-        expect(await helpers.isElementVisible(driver, 'button.save:enabled')).to.eql(true);
+        expect(await helpers.isElementVisible(driver, 'button.save-response')).to.eql(true);
         }catch(err) {
           console.log(err);
         }
       });
 
-      xit('should let us save and take us to a new URL', async function() {
+      it('should let us save and take us to a new URL', async function() {
         try {
-          await driver.findElement(By.css('button.save:enabled')).click();
-          await driver.wait(until.urlMatches(/#\/responses\/[0-9a-f]{24}$/),3000);
+          await driver.findElement(By.css('button.save-response')).click();
+          await driver.wait(until.urlMatches(/#\/responses\/[0-9a-f]{24}$/), 5000);
         }catch(err) {
           console.log(err);
         }
-        expect(await helpers.findAndGetText(driver, 'section.response>h1')).to.match(/Saved\W+Response/);
+        expect(await helpers.findAndGetText(driver, 'h5.mentor-replies')).to.eql('Mentor Replies');
       });
 
       //TODO: There is a bug when clicking responses after saving a response
