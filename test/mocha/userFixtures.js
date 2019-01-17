@@ -716,7 +716,7 @@ const teacherActingStudent = {
     },
   },
   answers: {
-    accessibleAnswerCount: 4,
+    accessibleAnswerCount: 2,
   },
   selections: {
     accessibleSelectionCount: 4,
