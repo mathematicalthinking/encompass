@@ -694,13 +694,13 @@ const teacherActingStudent = {
     },
   },
   submissions: {
-    accessibleSubmissionCount: 0,
+    accessibleSubmissionCount: 2,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4db"
     },
   },
   comments: {
-    accessibleCommentCount: 0,
+    accessibleCommentCount: 4,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -716,10 +716,10 @@ const teacherActingStudent = {
     },
   },
   answers: {
-    accessibleAnswerCount: 0,
+    accessibleAnswerCount: 4,
   },
   selections: {
-    accessibleSelectionCount: 0,
+    accessibleSelectionCount: 4,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
