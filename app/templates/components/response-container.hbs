@@ -1,0 +1,65 @@
+{{#unless isCreatingNewMentorReply}}
+  <p class="feedback-mode">
+    {{#if isOwnSubmission}}
+      Viewing feedback for
+    {{else if isOwnMentorReply}}
+    Viewing your own mentoring feedback for
+    {{else}}
+    Viewing feedback authored by {{mentorReplyDisplayResponse.createdBy.username}} for
+    {{/if}}
+    {{studentDescriptor}} {{#link-to 'workspace.submission' workspace submission classNames="link"}}submission{{/link-to}}
+    in {{#link-to 'workspace.work' workspace classNames="link"}}{{workspace.name}}{{/link-to}}
+  </p>
+{{/unless}}
+
+<div class="response-flex-container ">
+  <div class="response-flex-item submission{{if showApproverReply ' third'}}">
+    {{response-submission-view
+    store=store
+    submission=submission
+    workspace=workspace
+    }}
+  </div>
+
+  <div class="response-flex-item mentor {{if showApproverReply 'third'}}">
+ {{response-mentor-reply
+  store=store
+  isCreating=isCreatingNewMentorReply
+  response=response
+  submission=submission
+  workspace=workspace
+  mentorReplies=mentorReplies
+  responseToApprove=responseToApprove
+  displayResponse=mentorReplyDisplayResponse
+  canDirectSend=canDirectSend
+  canApprove=canApprove
+  isOwnMentorReply=isOwnMentorReply
+  onSaveSuccess=(action "onSaveSuccess")
+  isOwnMentorReply=isOwnMentorReply
+  onMentorReplySwitch=(action "onMentorReplySwitch")
+  toResponses=(action "toResponses")
+}}
+  </div>
+  {{#if showApproverReply}}
+  <div class="response-flex-item approver third">
+ {{response-approver-reply
+    store=store
+    approverReplies=approverReplies
+    responseToApprove=responseToApprove
+    menteeResponse=menteeResponse
+    workspace=workspace
+    submission=submission
+    canApprove=canApprove
+    isOwnMentorReply=isOwnMentorReply
+    primaryReply=primaryApproverReply
+    isOwnApproverReply=isOwnApproverReply
+    reviewedResponse=reviewedResponse
+    toResponses=(action "toResponses")
+ }}
+
+  </div>
+  {{/if}}
+</div>
+
+
+

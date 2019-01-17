@@ -98,7 +98,36 @@ var data = [
     "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "lastViewed" : "2018-11-14T15:00:52.991Z",
     "feedbackAuthorizers" : [],
-    "permissions" : [],
+    "permissions" : [
+        {
+            "user" : "5b99146e25b620610ceead75",
+            "global" : "custom",
+            "folders" : 0,
+            "selections" : 2,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "_id" : "5c3f3dd017bd196ef1073b19",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5b9149c22ecaf7c30dd47490",
+            "global" : "viewOnly",
+            "folders" : 1,
+            "selections" : 1,
+            "comments" : 1,
+            "feedback" : "none",
+            "_id" : "5c3f3f4891241a7971aaddee",
+            "submissions" : {
+                "all" : false,
+                "submissionIds" : [
+                    "5bec36958c73047613e2f34d"
+                ]
+            }
+        }
+    ],
     "taggings" : ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368","5bec38338c73047613e2f36b","5bec386a8c73047613e2f36d"],
     "comments" : [
         "5bec375d8c73047613e2f35e",

@@ -30,16 +30,19 @@
           </a>
         {{/if}}
       </td>
+      {{#if canRespond}}
       <td>
-        {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
+        {{!-- {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
           Respond
-        {{/link-to}}
+        {{/link-to}} --}}
+        <button class="new-response" {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>Respond</button>
         {{#if currentSubmission.responses.length}}
           <span class="meta response-count existing" title="existing response count">
             ({{currentSubmission.responses.length}})
           </span>
         {{/if}}
       </td>
+      {{/if}}
     </tr>
   </table>
 </aside>
@@ -130,7 +133,7 @@
             {{draggable-selection selection=selection canDeleteSelections=canDeleteSelection deleteSelection=(action "deleteSelection") }}
           {{else}}
 
-          <span class="selection_text selectionLink {{id}}">{{selection.text}}</span>
+          <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
           {{/if}}
         {{/unless}}
       </li>

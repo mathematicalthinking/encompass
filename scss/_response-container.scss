@@ -1,0 +1,190 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#response-container {
+  p.feedback-mode {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  a.link {
+    color: $accent-color;
+  }
+}
+
+div.response-flex-container {
+  // border: 1px solid purple;
+  @include flex-container(100%, null, row, wrap, center, flex-start, flex-start);
+  width: 100%;
+  div.response-flex-item.submission{
+    min-width: 350px;
+
+    @include flex-item(1, flex-start, 1 1 50%);
+    &.third {
+      @include flex-item(1, flex-start, 1 33%);
+
+    }
+  }
+  div.response-flex-item.mentor {
+    min-width: 350px;
+
+    @include flex-item(2, flex-start, 1 1 50%);
+    &.third {
+      @include flex-item(2, flex-start, 1 1 33%);
+    }
+
+  }
+  div.response-flex-item.approver.third {
+    min-width: 350px;
+    @include flex-item(3, flex-start, 1 1 33%);
+  }
+
+  .cancel-button {
+    padding: 10px 22px;
+  }
+  pre {
+    word-wrap: break-word;
+  }
+
+  #response-submission-view {
+    margin-left: 20px;
+
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
+    // border: red solid 1px;
+    img {
+      max-width: 100%;
+    }
+    .problem-link-container {
+      margin-left: 15px;
+      margin-bottom: 10px;
+    }
+    #al_submission {
+      height: auto;
+      margin-left: 15px;
+      .submission.short {
+        margin-bottom: 10px;
+      }
+      p {
+        margin-bottom: 10px;
+      }
+    }
+  }
+  #response-mentor-reply {
+    // border: blue solid 1px;
+    margin-left: 20px;
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
+    div.bread-crumbs-comp {
+      margin-left: 15px;
+    }
+
+    section.response {
+      width: 85%;
+      pre.message {
+        white-space: pre-wrap;
+      }
+    }
+    section.response-details {
+      float: none;
+    }
+    div.response-info {
+      margin-left: 15px;
+      margin-top: 10px;
+      p {
+        margin-bottom: 10px;
+      }
+    }
+    div.compose-mentor-reply {
+      margin-left: 15px;
+      h5 {
+        margin-left: 0;
+      }
+      h3.compose-heading {
+        text-align: center;
+      }
+
+      textarea {
+        width: 85%;
+        margin-bottom: 15px;
+        max-width: 95%;
+        &.note {
+          height: 100px;
+        }
+      }
+    }
+    div.mentor-reply-actions {
+      margin-left: 15px;
+
+    }
+    #response-new {
+      textarea {
+        width: 85%;
+        max-width: 95%;
+        &.approver-note {
+          height: 100px;
+        }
+        margin-bottom: 15px;
+      }
+      section.response-more-details {
+        width: 85%;
+        max-width: 95%;
+      }
+    }
+  }
+  #response-approver-reply {
+    // border: green solid 1px;
+    margin-left: 20px;
+    margin-right: 20px;
+    h3, h5 {
+      margin-bottom: 15px;
+      margin-left: 15px;
+    }
+    div.approver-actions {
+      margin-left: 15px;
+      margin-bottom: 15px;
+
+        button:nth-child(1) {
+          margin-right: 5px;
+        }
+        :nth-child(2) {
+          margin-left: 5px;
+        }
+    }
+    div.approver-replies {
+      margin-left: 15px;
+      h5 {
+        margin-left: 0;
+        margin-bottom: 15px;
+      }
+      .display-approver-reply {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        p {
+          padding: 5px;
+        }
+      }
+    }
+    div.compose-approver-reply {
+      margin-left: 15px;
+      margin-bottom: 10px;
+      textarea {
+        width: 85%;
+      }
+    }
+    div.display-reply-actions {
+      button {
+        margin: 5px;
+      }
+    }
+    div.submit-buttons {
+      button {
+        margin: 5px;
+      }
+    }
+  }
+}

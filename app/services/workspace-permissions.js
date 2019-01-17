@@ -74,6 +74,21 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
   },
+  isFeedbackApprover: function(ws) {
+    if (!ws) {
+      return false;
+    }
+
+   let approvers = ws.get('feedbackAuthorizers') || [];
+   return approvers.includes(this.get('currentUser.id'));
+  },
+
+  canApproveFeedback: function(ws) {
+    if (!ws) {
+      return false;
+    }
+    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
+  },
 
   canEdit: function (ws, recordType, requiredPermissionLevel) {
     const utils = this.get('utils');
@@ -110,7 +125,14 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
 
     const permissionLevel = userPermissions[recordType];
     if (recordType === 'feedback') {
-      return permissionLevel !== 'none';
+      // to determine if user can respond at all
+      if (requiredPermissionLevel === 1) {
+        return permissionLevel !== 'none';
+      }
+      // to determine if user has direct send privileges
+      if (requiredPermissionLevel === 2) {
+        return permissionLevel === 'preAuth';
+      }
     }
 
     return permissionLevel >= requiredPermissionLevel;

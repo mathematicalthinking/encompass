@@ -1,0 +1,80 @@
+<h5 class="mentor-replies">Mentor Replies</h5>
+
+{{#if isCreating}}
+  {{response-new
+    store=store
+    isCreating=isCreating
+    submission=submission
+    model=responseNewModel
+    recipient=recipient
+    newReplyStatus=newReplyStatus
+    newReplyType="mentor"
+    onSaveSuccess=(action "onSaveSuccess")
+  }}
+{{else}}
+<div class="mentor-replies">
+  {{#if sortedMentorReplies}}
+    {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+  {{/if}}
+</div>
+<div class="response-info">
+  {{#if displayResponse}}
+    <p>From: {{displayResponse.createdBy.username}}</p>
+    <p>To: {{displayResponse.recipient.username}}</p>
+    <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
+
+    {{#if showStatus}}
+      <p>Status: {{displayResponse.status}}</p>
+    {{/if}}
+
+    <div>Message:<pre>{{displayResponse.text}}</pre></div>
+    {{#if showNote}}
+      <p>Note for Approver: {{displayResponse.note}}</p>
+    {{/if}}
+    {{else}}
+    <p>No response to display.</p>
+
+  {{/if}}
+  </div>
+  <div class="mentor-reply-actions button-row">
+    {{#if showEdit}}
+      <button {{action 'startEditing'}} class="primary-button">Edit</button>
+    {{/if}}
+    {{#if showRevise}}
+      <button {{action 'startRevising'}} class="primary-button">Revise</button>
+    {{/if}}
+    {{#if showTrash}}
+      <button {{action 'confirmTrash' displayResponse}} class="primary-button cancel-button">Delete</button>
+    {{/if}}
+  </div>
+
+  {{#if isComposing}}
+  <div class="compose-mentor-reply">
+    <h3 class="compose-heading">{{replyHeadingText}}</h3>
+    <h5>Message Body</h5>
+    {{textarea cols=10 rows=20 name="mentor-reply" value=editRevisionText}}
+
+    {{#if showApproverNoteInput}}
+      <h5>Note for Approver</h5>
+      {{textarea class="note" cols=5 rows=20 name="mentor-approver-note" value=editRevisionNote}}
+    {{/if}}
+
+    {{#if emptyReplyError}}
+      {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+    {{/if}}
+    <div class="submit-buttons button-row">
+      {{#if isEditing}}
+        <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "saveEdit"}} class="primary-button">Save</button>
+      {{/if}}
+      {{#if isRevising}}
+        <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
+        {{/if}}
+    </div>
+  </div>
+{{/if}}
+{{/if}}
+
+
+

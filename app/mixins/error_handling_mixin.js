@@ -27,13 +27,20 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
     this.set(propName, details);
   },
 
-  handleErrors: function(err, propName, record=null) {
+  handleErrors: function(err, propName, record=null, records=[]) {
     this.setErrorMessages(err, propName);
 
     if (record) {
       if (this.isRecordInvalid(record)) {
         record.rollbackAttributes();
       }
+    }
+    if (records) {
+      records.forEach((record) => {
+        if (this.isRecordInvalid(record)) {
+          record.rollbackAttributes();
+        }
+      });
     }
   },
 

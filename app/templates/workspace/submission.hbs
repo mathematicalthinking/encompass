@@ -21,7 +21,8 @@
 <!--section class="submissions"-->
 <div id="al_center" class="{{if makingSelection 'al_makeselect'}}">
   {{!outlet submissions}}
-  {{submission-group submissions=currentWorkspace.submissions submission=model addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") store=store currentUser=currentUser currentWorkspace=currentWorkspace}}
+  {{submission-group canRespond=canRespond submissions=currentWorkspace.submissions submission=model addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") store=store currentUser=currentUser currentWorkspace=currentWorkspace toNewResponse=(action "toNewResponse")
+  }}
 </div>
 <!--/section-->
 

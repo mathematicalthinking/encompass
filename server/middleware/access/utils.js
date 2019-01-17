@@ -9,7 +9,7 @@ const wsApi = require('../../datasource/api/workspaceApi');
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
   try {
-    const records = await models[model].find(filter, {_id: 1});
+    const records = await models[model].find(filter, {_id: 1}).lean().exec();
     return records.map(rec => rec._id);
   }catch(err) {
     console.error(`Error getModelIds: ${err}`);
@@ -385,6 +385,31 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   .then(_.flatten);
 }
 
+// any
+function getApproverWorkspaceIds(user) {
+  if (!apiUtils.isNonEmptyObject(user)) {
+    return [];
+  }
+
+  let { accountType, actingRole } = user;
+  let criteria = { isTrashed: false };
+  let isAdmin = accountType === 'A' && actingRole !== 'student';
+
+  if (!isAdmin) {
+    criteria.$or = [];
+    criteria.$or.push({createdBy: user._id});
+    criteria.$or.push({owner: user._id});
+    criteria.$or.push({feedbackAuthorizers: user._id});
+
+    if (accountType === 'P' && actingRole !== 'student') {
+      if (apiUtils.isValidMongoId(user.organization)) {
+        criteria.$or.push({organization: user.organization});
+      }
+    }
+  }
+  return getModelIds('Workspace', criteria);
+}
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -402,3 +427,4 @@ module.exports.getCreatorIds = getCreatorIds;
 module.exports.getProblemsByCategory = getProblemsByCategory;
 module.exports.getAllChildCategories = getAllChildCategories;
 module.exports.getRestrictedWorkspaceData = getRestrictedWorkspaceData;
+module.exports.getApproverWorkspaceIds = getApproverWorkspaceIds;

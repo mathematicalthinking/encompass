@@ -1,34 +1,32 @@
 {{#if currentUser.isStudent}}
-  <header class="list-header">
+  <header class="list-header {{if areNoResponses 'no-responses'}}">
     <h2>Responses from your teachers</h2>
     <aside>
     </aside>
     <div class="clear"></div>
   </header>
 
-  {{#if responsesStudent.length}}
+  {{#if areDisplayResponses}}
     <table border="1" width="100%">
       <thead>
         <tr class="top-row">
           <th align="left" style="padding-left: 55px;">Text</th>
-          <th align="left">Source</th>
-          <th align="left">Created</th>
-          <th align="left">By</th>
+          <th align="left">From</th>
+          <th align="left">Date</th>
         </tr>
       </thead>
       <tbody>
-        {{#each responsesStudent as |response|}}
+        {{#each displayResponses as |response|}}
         <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
           <td style="padding-left: 55px;">
-            {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+            {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
           </td>
-          <td>{{response.source}}</td>
+          <td>{{response.createdBy.displayName}}</td>
           <td>
-            {{#link-to 'response' response}}
+            {{#link-to 'response' response.id}}
             <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
             {{/link-to}}
           </td>
-          <td>{{response.createdBy.displayName}}</td>
         </tr>
         {{/each}}
       </tbody>
@@ -40,79 +38,60 @@
   {{/if}}
 
 {{else}}
-  <header>
+  <header class= "{{if areNoResponses 'no-responses'}}">
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
         <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Mine</button>
+        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">To Me</button>
+        <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent</button>
+        <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval</button>
+        <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions</button>
     </div>
 
     <div class="clear"></div>
   </header>
 
-  {{#if allResponses.length}}
+  {{#if areDisplayResponses}}
 
   <table border="1" width="100%">
     <thead>
       <tr class="top-row">
         <th align="left" style="padding-left: 55px;">Text</th>
+        <th align="left">From</th>
         <th align="left">Recipient</th>
-        <th align="left">Source</th>
-        <th align="left">Created</th>
-        <th align="left">By</th>
+        <th align="left">Date</th>
+        <th align="left">Status</th>
+
       </tr>
     </thead>
-  {{#if showingAllResponses}}
+
     <tbody>
-      {{#each allResponses as |response|}}
+      {{#each displayResponses as |response|}}
       <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
         <td style="padding-left: 55px;">
-          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
+          {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
         </td>
+        <td>{{response.createdBy.displayName}}</td>
         {{#if response.recipient}}
           <td>{{response.recipient.username}}</td>
         {{else}}
           <td>PoW User</td>
         {{/if}}
-        <td>{{response.source}}</td>
         <td>
-          {{#link-to 'response' response}}
+          {{#link-to 'response' response.id}}
           <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
           {{/link-to}}
         </td>
-        <td>{{response.createdBy.displayName}}</td>
+        <td>{{response-status response.status}}</td>
+
       </tr>
       {{/each}}
     </tbody>
-  {{/if}}
-  {{#if showingOnlyMine}}
-    <tbody>
-      {{#each yourResponses as |response|}}
-      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
-        <td style="padding-left: 55px;">
-          {{#link-to 'response' response}} {{short-text response.text}} {{/link-to}}
-        </td>
-        {{#if response.recipient}}
-        <td>{{response.recipient.username}}</td>
-        {{else}}
-        <td>PoW User</td>
-        {{/if}}
-        <td>{{response.source}}</td>
-        <td>
-          {{#link-to 'response' response}}
-          <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
-          {{/link-to}}
-        </td>
-        <td>{{response.createdBy.displayName}}</td>
-      </tr>
-      {{/each}}
-    </tbody>
-  {{/if}}
   </table>
   {{else}}
-  <p class="notice">
-    Looks like there aren't any responses. You can create one by clicking the "respond" button from a workspace.
-  </p>
+  <div class="empty-message">
+    <p class="notice">{{noResponsesMessage}}</p>
+  </div>
   {{/if}}
 
 {{/if}}
