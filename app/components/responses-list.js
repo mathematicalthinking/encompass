@@ -177,7 +177,10 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   sentResponses: function() {
     return this.get('nonTrashedResponses').filter((response) => {
       // pdAdmins and admins need a way of seeing approved feedback that their students/teachers have sent
-      return response.get('status') === 'approved' && (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly'));
+      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+      let isToMe = recipientId === this.get('currentUser.id');
+
+      return response.get('status') === 'approved' && !isToMe && (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly'));
     });
   }.property('currentUser', 'nonTrashedResponses.[]'),
 
