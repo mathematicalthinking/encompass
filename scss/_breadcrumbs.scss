@@ -6,10 +6,16 @@
   ul.breadcrumbs {
     display: flex;
     li {
-      &.active-crumb {
-        font-weight: bolder;
-      }
       cursor: pointer;
+      font-size: 1.2em;
+      font-weight: $light-font-weight;
+      abbr {
+        text-decoration: none;
+      }
+      &.active-crumb {
+        font-weight: $bold-font-weight;
+        color: $accent-color;
+      }
     }
   }
 }

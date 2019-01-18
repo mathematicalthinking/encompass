@@ -30,28 +30,29 @@
   overflow-y: auto;
 }
 
-div.response-flex-container {
+.response-flex-container {
   @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
   width: 100%;
-  div.response-flex-item.submission{
+  .response-flex-item.submission{
     @include flex-item(1, flex-start, 1 1 auto);
     width: 40%;
     &.third {
-      @include flex-item(1, flex-start, 1 1 31%);
-
+      @include flex-item(1, flex-start, 1 1 auto);
+      width: 20%;
     }
   }
-  div.response-flex-item.mentor {
+  .response-flex-item.mentor {
     @include flex-item(2, flex-start, 1 1 auto);
     width: 40%;
     &.third {
-      @include flex-item(2, flex-start, 1 1 31%);
+      @include flex-item(2, flex-start, 1 1 auto);
+      width: 20%;
     }
 
   }
-  div.response-flex-item.approver.third {
-    min-width: 350px;
-    @include flex-item(3, flex-start, 1 1 31%);
+  .response-flex-item.approver.third {
+    @include flex-item(3, flex-start, 1 1 auto);
+    width: 20%;
   }
 
   .cancel-button {
@@ -59,6 +60,7 @@ div.response-flex-container {
   }
   pre {
     word-wrap: break-word;
+    font-family: $primary-font;
   }
 
   #response-submission-view {
@@ -88,18 +90,23 @@ div.response-flex-container {
       }
     }
     .submission-content-container {
-      margin-bottom: 35px;
+      margin-bottom: 25px;
       .submission-header {
         padding: 10px 0;
-        font-size: 1em;
+        font-size: 1.15em;
         color: black;
+        // border-bottom: 1px solid $input-border;
         i {
           float: right;
           color: $filter-list-border-color;
         }
       }
       .submission-content {
-        margin-top: 15px;
+        margin-top: 10px;
+        background-color: $filter-list-background-color;
+        border: .5px solid $input-border;
+        padding: 20px;
+        border-radius: 3px;
       }
     }
     img {
@@ -111,8 +118,8 @@ div.response-flex-container {
     h3, h5 {
       margin-bottom: 15px;
     }
-    div.bread-crumbs-comp {
-      border: 1px solid;
+    .bread-crumbs-comp {
+      float: right;
     }
 
     section.response {
@@ -123,7 +130,7 @@ div.response-flex-container {
     section.response-details {
       float: none;
     }
-    div.response-info {
+    .response-info {
       margin-top: 10px;
       p {
         margin-bottom: 10px;
@@ -148,132 +155,152 @@ div.response-flex-container {
     div.mentor-reply-actions {
       margin-top: 15px;
     }
-    #response-new {
-      .top-row {
-        margin-bottom: 15px;
-        @include flex-container(null, null, row, wrap, center, center, center);
+    .top-row {
+      margin-bottom: 15px;
+      @include flex-container(null, null, row, wrap, center, center, center);
+    }
+    .response-date {
+      @include flex-item(1, flex-start, 1 1 auto);
+      font-weight: $light-font-weight;
+      font-size: 1.1em;
+      color: $filter-list-border-color;
+      text-align: left;
+    }
+    .response-time {
+      font-size: .8em;
+      color: black;
+      margin-left: 10px;
+    }
+    .response-link {
+      @include flex-item(2, flex-end, 1 1 auto);
+      text-align: right;
+      font-weight: $light-font-weight;
+      i {
+        color: $accent-color;
       }
-      .response-date {
-        @include flex-item(1, flex-start, 1 1 auto);
+    }
+    .response-title {
+      color: black;
+      font-weight: $light-font-weight;
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+    .response-users {
+      margin-bottom: 30px;
+      p {
+        line-height: 25px;
+      }
+      .response-label {
+        width: 50px;
+        display: inline-block;
+      }
+      .response-value {
+        color: $accent-color;
         font-weight: $light-font-weight;
-        font-size: 1.1em;
-        color: $filter-list-border-color;
-        text-align: let;
       }
-      .response-link {
-        @include flex-item(2, flex-end, 1 1 auto);
-        text-align: right;
-        font-weight: $light-font-weight;
-        i {
-          color: $accent-color;
-        }
-      }
-      .response-title {
-        color: black;
-        font-weight: $light-font-weight;
-        font-size: 1.5em;
-        margin-bottom: 15px;
-      }
-      .response-users {
+    }
+    .response-text {
+      margin: 20px 0;
+      background-color: $filter-list-background-color;
+      border: .5px solid $input-border;
+      border-radius: 3px;
+      padding: 20px;
+    }
+    .response-content {
+      .response-existing-container {
         margin-bottom: 30px;
-        p {
-         line-height: 25px;
-        }
-        .response-label {
-          width: 50px;
-          display: inline-block;
-        }
-        .response-value {
-          color: $accent-color;
-          font-weight: $light-font-weight;
-        }
-      }
-      .response-content {
-        .response-existing-container {
-          margin-bottom: 30px;
-          .response-existing {
-            .response-link {
-              color: $accent-color;
-              cursor: pointer;
-              &:hover {
-                font-weight: $main-font-weight;
-              }
-            }
-          }
-          .response-listing {
-            margin: 15px 0 0 20px;
-            font-size: .9em;
-            font-weight: $light-font-weight;
-            .create-date {
-              font-weight: $main-font-weight;
-              margin-right: 10px;
-            }
-            li {
-              margin: 15px 0;
-              a {
-                color: $accent-color;
-                margin-left: 10px;
-              }
-            }
-          }
-        }
-        .response-info {
-          font-weight: $main-font-weight;
-          line-height: 25px;
-          margin-top: 30px;
-          font-size: .9em;
-          a {
+        .response-existing {
+          .response-link {
             color: $accent-color;
+            cursor: pointer;
             &:hover {
               font-weight: $main-font-weight;
             }
           }
         }
-        .response-header {
-          margin: 15px 0;
-          color: black;
-          font-size: 1.1em;
+        .response-listing {
+          margin: 15px 0 0 20px;
+          font-size: .9em;
           font-weight: $light-font-weight;
-          i {
+          .create-date {
+            font-weight: $main-font-weight;
+            margin-right: 10px;
+          }
+          li {
+            margin: 15px 0;
+            a {
+              color: $accent-color;
+              margin-left: 10px;
+            }
+          }
+        }
+      }
+      .response-info {
+        font-weight: $main-font-weight;
+        line-height: 25px;
+        margin-top: 30px;
+        font-size: .9em;
+        a {
+          color: $accent-color;
+          &:hover {
+            font-weight: $main-font-weight;
+          }
+        }
+        .response-prefill {
+          font-weight: $light-font-weight;
+          margin-bottom: 30px;
+        }
+      }
+      .response-header {
+        margin: 15px 0;
+        color: black;
+        font-size: 1.1em;
+        font-weight: $light-font-weight;
+        i {
           float: right;
           color: $filter-list-border-color;
+        }
+      }
+      .response-header-alt {
+        margin: 15px 0;
+        color: black;
+        font-size: 1.1em;
+        font-weight: $main-font-weight;
+      }
+      .selections, .comments {
+        margin-bottom: 40px;
+      }
+      .selections-list {
+        .selections-list-item {
+          margin: 10px 15px;
+          a {
+            background-color: $pale-accent;
+            font-size: .8em;
           }
         }
-        .selections, .comments {
-          margin-bottom: 40px;
-        }
-        .selections-list {
-          .selections-list-item {
-            margin: 10px 15px;
-            a {
-              background-color: $pale-accent;
-              font-size: .8em;
-            }
+      }
+      .comments-list {
+        .comments-list-item {
+          margin: 10px 15px;
+          a {
+            font-size: .9em;
+            font-weight: $light-font-weight;
           }
         }
-        .comments-list {
-          .comments-list-item {
-            margin: 10px 15px;
-            a {
-              font-size: .9em;
-              font-weight: $light-font-weight;
-            }
-          }
+      }
+      .response-compose {
+        textarea {
+          width: 100%;
+          border: 1px solid $input-border;
+          border-radius: 3px;
+          margin-bottom: 15px;
+          resize: none;
         }
-        .response-compose {
+        .approve-note {
+          border: 1px  red;
+          margin-top: 30px;
           textarea {
-            width: 100%;
-            border: 1px solid $input-border;
-            border-radius: 3px;
-            margin-bottom: 15px;
-            resize: none;
-          }
-          .approve-note {
-            border: 1px  red;
-            margin-top: 30px;
-            textarea {
-              height: 80px;;
-            }
+            height: 80px;;
           }
         }
       }
