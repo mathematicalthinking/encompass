@@ -115,25 +115,12 @@
   }
 
   #response-mentor-reply {
-    h3, h5 {
-      margin-bottom: 15px;
-    }
     .bread-crumbs-comp {
       float: right;
     }
-
     section.response {
       pre.message {
         white-space: pre-wrap;
-      }
-    }
-    section.response-details {
-      float: none;
-    }
-    .response-info {
-      margin-top: 10px;
-      p {
-        margin-bottom: 10px;
       }
     }
     div.compose-mentor-reply {
@@ -152,11 +139,19 @@
         resize: none;
       }
     }
-    div.mentor-reply-actions {
+    .mentor-reply-actions {
       margin-top: 15px;
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 6px;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
     }
     .top-row {
-      margin-bottom: 15px;
       @include flex-container(null, null, row, wrap, center, center, center);
     }
     .response-date {
@@ -169,7 +164,7 @@
     .response-time {
       font-size: .8em;
       color: black;
-      margin-left: 10px;
+      margin-left: 5px;
     }
     .response-link {
       @include flex-item(2, flex-end, 1 1 auto);
@@ -183,12 +178,14 @@
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      margin-top: 15px;
     }
     .response-users {
       margin-bottom: 30px;
       p {
-        line-height: 25px;
+        line-height: 20px;
+        font-size: .9em;
       }
       .response-label {
         width: 50px;
@@ -199,12 +196,30 @@
         font-weight: $light-font-weight;
       }
     }
-    .response-text {
+    .response-status {
+      color: black;
+      margin: 10px 0;
+    }
+    .response-text, .response-note {
       margin: 20px 0;
       background-color: $filter-list-background-color;
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+    }
+    .edit-response {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 300px;
+      border-radius: 3px;
+    }
+    .edit-note {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 60px;
+      border-radius: 3px;
     }
     .response-content {
       .response-existing-container {
@@ -259,6 +274,9 @@
         i {
           float: right;
           color: $filter-list-border-color;
+          &:hover {
+            color: $primary-font-color;
+          }
         }
       }
       .response-header-alt {
@@ -297,7 +315,6 @@
           resize: none;
         }
         .approve-note {
-          border: 1px  red;
           margin-top: 30px;
           textarea {
             height: 80px;;

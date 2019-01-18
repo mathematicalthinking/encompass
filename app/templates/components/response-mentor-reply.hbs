@@ -33,50 +33,65 @@
             <span class="response-label">From:</span>
             <span class="response-value">{{displayResponse.createdBy.username}}</span>
           </p>
+          {{#if showStatus}}
+          <p class="response-status">
+            <svg height="20" width="20">
+              <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+            </svg>
+            <span class="status-text">
+              {{response-status displayResponse.status}}
+            </span>
+          </p>
+          {{/if}}
         </div>
-        {{#if showStatus}}
-          <p>Status: {{response-status displayResponse.status}}</p>
-        {{/if}}
         <div class="response-content">
-          <p class="response-header">Message</p>
-          <div class="response-text">
-            <pre>{{displayResponse.text}}</pre>
+          <p class="response-header">
+            Message
+            {{#if showEdit}}
+              <i {{action 'startEditing'}} class="far fa-edit"></i>
+            {{/if}}
+          </p>
+          <div class="response-text-container">
+            {{#if isComposing}}
+              {{textarea class="edit-response" name="mentor-reply" value=editRevisionText}}
+            {{else}}
+              <div class="response-text">
+                <pre>{{displayResponse.text}}</pre>
+              </div>
+            {{/if}}
           </div>
-        </div>
-        {{#if showNote}}
-          <p>Note for Approver: {{displayResponse.note}}</p>
+          {{#if showNote}}
+            <div class="response-note-container">
+              <p class="response-header">Note for Approver</p>
+                {{#if isComposing}}
+                  {{#if showApproverNoteInput}}
+                    {{textarea class="edit-note" name="mentor-approver-note" value=editRevisionNote}}
+                  {{/if}}
+                {{else}}
+                  <div class="response-note">
+                    {{displayResponse.note}}
+                  </div>
+                {{/if}}
+            </div>
         {{/if}}
+        </div>
       {{else}}
         <p>No response to display</p>
       {{/if}}
     </div>
-
+  {{#if emptyReplyError}}
+    {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+  {{/if}}
   <div class="mentor-reply-actions button-row">
-    {{#if showEdit}}
-      <button {{action 'startEditing'}} class="primary-button">Edit</button>
-    {{/if}}
     {{#if showRevise}}
       <button {{action 'startRevising'}} class="primary-button">Revise</button>
     {{/if}}
     {{#if showTrash}}
-      <button {{action 'confirmTrash' displayResponse}} class="primary-button cancel-button">Delete</button>
+      <i {{action 'confirmTrash' displayResponse}} class="fas fa-trash"></i>
     {{/if}}
   </div>
 
   {{#if isComposing}}
-  <div class="compose-mentor-reply">
-    <h3 class="compose-heading">{{replyHeadingText}}</h3>
-    <h5>Message Body</h5>
-    {{textarea cols=10 rows=20 name="mentor-reply" value=editRevisionText}}
-
-    {{#if showApproverNoteInput}}
-      <h5>Note for Approver</h5>
-      {{textarea class="note" cols=5 rows=20 name="mentor-approver-note" value=editRevisionNote}}
-    {{/if}}
-
-    {{#if emptyReplyError}}
-      {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
-    {{/if}}
     <div class="submit-buttons button-row">
       {{#if isEditing}}
         <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
@@ -87,8 +102,7 @@
         <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
         {{/if}}
     </div>
-  </div>
-{{/if}}
+  {{/if}}
 {{/if}}
 
 
