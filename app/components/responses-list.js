@@ -205,7 +205,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
     showNeedsRevisionResponses() {
       this.set('currentFilter', 'needsRevisions');
-      this.set('filteredResponses', this.filterByStatus('needsRevisions', this.get('nonTrashedResponses')));
+      this.set('filteredResponses', this.get('needsRevisionsResponses'));
     },
   },
 
