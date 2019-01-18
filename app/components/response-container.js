@@ -19,8 +19,23 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           }
         });
       }
+      this.handleResponseViewAudit();
 
     this._super(...arguments);
+  },
+
+  handleResponseViewAudit() {
+    if (this.get('isPrimaryRecipient')) {
+      if (!this.get('response.wasReadByRecipient')) {
+        this.get('response').set('wasReadByRecipient', true);
+        this.get('response').save();
+      }
+    } else if (this.get('response.status') === 'pendingApproval' && this.get('canApprove')) {
+      if (!this.get('response.wasReadByApprover')) {
+        this.get('response').set('wasReadByApprover', true);
+        this.get('response').save();
+      }
+    }
   },
   studentDescriptor: function() {
     if (this.get('isOwnSubmission')) {
