@@ -1,19 +1,21 @@
 <h1 class="heading">Approver Panel</h1>
 
 {{#if showApproverActions}}
-<h2 class="sub-heading">Manage Mentor Reply</h2>
+<div class="action-container">
+  <h2 class="sub-heading">Manage Mentor Reply</h2>
   <div class="approver-actions button-row">
     {{#if showNoActionsMessage}}
       <p class="info">{{noActionToTakeMessage}}</p>
     {{else}}
-    {{#if showApprove}}
-      <button class="primary-button" {{action "confirmApproval"}}>Approve</button>
+      {{#if showApprove}}
+        <button class="primary-button" {{action "confirmApproval"}}>Approve</button>
+      {{/if}}
+      {{#if showCompose}}
+        <button class="primary-button" {{action "composeReply"}}>Reply</button>
+      {{/if}}
     {{/if}}
-    {{#if showCompose}}
-      <button class="primary-button" {{action "composeReply"}}>Reply</button>
-    {{/if}}
-  {{/if}}
   </div>
+</div>
 {{/if}}
 
 <div class="approver-replies">
@@ -22,9 +24,9 @@
     {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText" selectedItem=displayReply}}
   {{/if}}
   {{#if showNoPreviousRepliesMsg}}
-  <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
-  <img src="/images/no-message.svg" alt="No Replies">
-{{/if}}
+    <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
+    <img src="/images/no-message.svg" alt="No Replies">
+  {{/if}}
 
 {{#if displayReply}}
   <div class="display-approver-reply">

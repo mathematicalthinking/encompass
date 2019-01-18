@@ -331,19 +331,21 @@
     }
     .sub-heading {
       font-size: 1.1em;
-      font-size: $main-font-weight;
+      font-weight: $main-font-weight;
       margin-bottom: 15px;
     }
     .info {
       position: static;
     }
+    .action-container {
+      margin-bottom: 40px;
+    }
     .approver-replies {
       img {
         display: block;
-        max-width: 350px;
+        max-width: 250px;
         width: 100%;
         height: auto;
-        margin: 0 auto;
         margin-top: 40px;
       }
     }
