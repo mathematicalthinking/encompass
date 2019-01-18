@@ -1,21 +1,20 @@
-{{!-- <h5>Response Submission</h5> --}}
 {{#if submission}}
-  <div class="problem-link-container">
-  {{#if submission.answer}}
-    <a {{action 'openProblem'}} class="problem-link">
-      {{submission.puzzle.title}}
-      <i class="fas fa-external-link-alt"></i>
-    </a>
-  {{else}}
-    <a class='puzzle' target="_blank" href="{{submission.puzzleUrl}}">
-      {{submission.puzzle.title}}
-      <i class="fas fa-external-link-alt"></i>
-    </a>
-  {{/if}}
-  </div>
   <div class="submission-container">
     <div class="workspace-name">
       {{workspace.name}}
+    </div>
+    <div class="problem-link-container">
+      {{#if submission.answer}}
+      <a {{action 'openProblem'}} class="problem-link">
+        {{submission.puzzle.title}}
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+      {{else}}
+      <a class='puzzle' target="_blank" href="{{submission.puzzleUrl}}">
+        {{submission.puzzle.title}}
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+      {{/if}}
     </div>
     <div class="submission-student">
       <i class="fas fa-user"></i><span>{{submission.student}}</span>

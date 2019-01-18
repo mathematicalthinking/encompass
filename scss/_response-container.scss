@@ -25,7 +25,7 @@
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 20px;
-  padding: 30px 45px;
+  padding: 30px 35px;
   height: calc(100vh - 215px);
   overflow-y: auto;
 }
@@ -66,8 +66,8 @@
   #response-submission-view {
     .problem-link-container {
       margin-bottom: 20px;
-      margin-top: 10px;
       a {
+        font-size: .9em;
         color: $accent-color;
         font-weight: $light-font-weight;
       &:hover {
@@ -79,23 +79,23 @@
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     .submission-student {
-      color: $accent-color;
-      font-size: 1.1em;
+      color: $primary-font-color;
+      font-size: 1em;
       margin-bottom: 40px;
       i {
         margin-right: 10px;
       }
     }
     .submission-content-container {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       .submission-header {
-        padding: 10px 0;
-        font-size: 1.15em;
+        padding: 5px 0;
+        font-size: 1.1em;
         color: black;
-        // border-bottom: 1px solid $input-border;
+        font-weight: $light-font-weight;
         i {
           float: right;
           color: $filter-list-border-color;
@@ -107,6 +107,7 @@
         border: .5px solid $input-border;
         padding: 20px;
         border-radius: 3px;
+        font-size: .9em;
       }
     }
     img {
@@ -160,6 +161,7 @@
       font-size: 1.1em;
       color: $filter-list-border-color;
       text-align: left;
+      margin-bottom: 15px;
     }
     .response-time {
       font-size: .8em;
@@ -179,7 +181,6 @@
       font-weight: $light-font-weight;
       font-size: 1.5em;
       margin-bottom: 20px;
-      margin-top: 15px;
     }
     .response-users {
       margin-bottom: 30px;
@@ -206,6 +207,10 @@
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+      pre {
+        word-wrap: break-word;
+        overflow-x: auto;
+      }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -324,26 +329,119 @@
     }
   }
   #response-approver-reply {
-    // border: green solid 1px;
-    margin-left: 20px;
-    margin-right: 20px;
-    h3, h5 {
-      margin-bottom: 15px;
-      margin-left: 15px;
+    .heading {
+      font-size: 1.5em;
+      color: black;
+      font-weight: $light-font-weight;
+      margin-bottom: 30px;
     }
-    div.approver-actions {
-      margin-left: 15px;
+    .sub-heading {
+      font-size: 1.1em;
+      font-weight: $main-font-weight;
       margin-bottom: 15px;
-
-        button:nth-child(1) {
-          margin-right: 5px;
-        }
-        :nth-child(2) {
+    }
+    .info {
+      position: static;
+    }
+    .action-container {
+      margin-bottom: 40px;
+    }
+    .display-approver-reply {
+      .top-row {
+        @include flex-container(null, null, row, wrap, center, center, center);
+      }
+      .reply-date {
+        @include flex-item(1, flex-start, 1 1 auto);
+        font-weight: $light-font-weight;
+        font-size: 1.1em;
+        color: $filter-list-border-color;
+        text-align: left;
+        .reply-time {
+          font-size: .8em;
+          color: black;
           margin-left: 5px;
         }
+      }
+      .bread-crumbs-comp {
+        @include flex-item(2, flex-end, 1 1 auto);
+      }
+      .reply-users {
+        margin-bottom: 30px;
+        p {
+          font-size: .9em;
+        }
+        .reply-label {
+          width: 50px;
+          display: inline-block;
+        }
+        .reply-value {
+          color: $accent-color;
+          font-weight: $light-font-weight;
+        }
+      }
     }
-    div.approver-replies {
-      margin-left: 15px;
+    .reply-header {
+      margin: 15px 0;
+      color: black;
+      font-size: 1.1em;
+      font-weight: $light-font-weight;
+      i {
+        float: right;
+        color: $filter-list-border-color;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
+    }
+    .reply-content {
+      margin: 20px 0;
+      background-color: $filter-list-background-color;
+      border: .5px solid $input-border;
+      border-radius: 3px;
+      padding: 20px;
+    }
+    .reply-revise {
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin: 15px 0;
+        resize: none;
+        height: 60px;
+      }
+    }
+    .approver-replies {
+      img {
+        display: block;
+        max-width: 250px;
+        width: 100%;
+        height: auto;
+        margin-top: 40px;
+      }
+    }
+    .compose-reply-container {
+      margin-bottom: 50px;
+      .compose-approver-reply {
+        textarea {
+          width: 100%;
+          border: 1px solid $input-border;
+          border-radius: 3px;
+          margin: 15px 0;
+          resize: none;
+          height: 60px;
+        }
+      }
+    }
+    .approver-actions {
+      margin-bottom: 15px;
+      button:nth-child(1) {
+        margin-right: 5px;
+      }
+      :nth-child(2) {
+        margin-left: 5px;
+      }
+    }
+    .approver-replies {
       h5 {
         margin-left: 0;
         margin-bottom: 15px;
@@ -356,24 +454,21 @@
         }
       }
     }
-    div.compose-approver-reply {
-      margin-left: 15px;
-      margin-bottom: 10px;
-
-      textarea {
-        width: 100%;
-        border: 1px solid $input-border;
-        border-radius: 3px;
-        margin-bottom: 15px;
-        resize: none;
-      }
-    }
-    div.display-reply-actions {
+    .display-reply-actions {
       button {
         margin: 5px;
       }
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 10px;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
     }
-    div.submit-buttons {
+    .submit-buttons {
       button {
         margin: 5px;
       }

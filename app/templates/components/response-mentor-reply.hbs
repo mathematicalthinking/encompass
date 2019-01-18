@@ -20,10 +20,10 @@
 
     <div class="response-info">
       {{#if displayResponse}}
+        <p class="response-title">Mentor Response</p>
         <p class="response-date">{{format-date displayResponse.createDate 'Do MMM YYYY'}}
           <span class="response-time">{{format-date displayResponse.createDate 'h:mm a'}}</span>
         </p>
-        <p class="response-title">Mentor Response</p>
         <div class="response-users">
           <p>
             <span class="response-label">To:</span>

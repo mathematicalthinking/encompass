@@ -35,7 +35,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('approverReplies.[]'),
 
   showApproverActions: function() {
-    return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
+    if (this.get('canApprove') && !this.get('isOwnMentorReply') && this.get('isEditingApproverReply')) {
+      return true;
+    } else {
+      return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
+    }
   }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
 
   showApprove: function() {
