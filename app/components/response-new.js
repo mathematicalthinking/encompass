@@ -19,6 +19,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
   alert: Ember.inject.service('sweet-alert'),
   todaysDate: new Date(),
+  utils: Ember.inject.service('utils'),
 
 
   didReceiveAttrs() {
@@ -29,6 +30,13 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       this.getExistingResponses();
     }
 
+    this._super(...arguments);
+  },
+
+  willDestroyElement() {
+    if (!this.get('model.persisted')) {
+      this.get('model').unloadRecord();
+    }
     this._super(...arguments);
   },
 
@@ -71,12 +79,10 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.observes('showDetails', 'isEditing'),
 
   getExistingResponses: function () {
-    return Ember.RSVP.filter(this.get('model.submission.responses').toArray(), (response) => {
-      return response.get('id') !== this.get('model.id') && !response.get('isTrashed');
-    })
-    .then((responses) => {
-      this.set('existingResponses', responses);
+    let filtered = this.get('submissionResponses').filter((response) => {
+      return this.get('model.id') !== response.get('id') && response.get('responseType') === 'mentor';
     });
+    this.set('existingResponses', filtered);
   },
 
   dirty: function () {
