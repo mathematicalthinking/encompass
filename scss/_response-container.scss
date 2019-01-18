@@ -139,8 +139,17 @@
         resize: none;
       }
     }
-    div.mentor-reply-actions {
+    .mentor-reply-actions {
       margin-top: 15px;
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 6px;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
     }
     .top-row {
       @include flex-container(null, null, row, wrap, center, center, center);
@@ -198,6 +207,20 @@
       border-radius: 3px;
       padding: 20px;
     }
+    .edit-response {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 300px;
+      border-radius: 3px;
+    }
+    .edit-note {
+      border: 1px solid $input-border;
+      resize: none;
+      width: 100%;
+      height: 60px;
+      border-radius: 3px;
+    }
     .response-content {
       .response-existing-container {
         margin-bottom: 30px;
@@ -251,6 +274,9 @@
         i {
           float: right;
           color: $filter-list-border-color;
+          &:hover {
+            color: $primary-font-color;
+          }
         }
       }
       .response-header-alt {
