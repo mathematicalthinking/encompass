@@ -11,30 +11,31 @@
     canDirectSend=canDirectSend
   }}
 {{else}}
-<div class="mentor-replies">
   {{#if sortedMentorReplies}}
+    <div class="mentor-replies">
     {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+    </div>
   {{/if}}
-</div>
-<div class="response-info">
+
   {{#if displayResponse}}
-    <p>From: {{displayResponse.createdBy.username}}</p>
-    <p>To: {{displayResponse.recipient.username}}</p>
-    <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
+    <div class="response-info">
+      <p>From: {{displayResponse.createdBy.username}}</p>
+      <p>To: {{displayResponse.recipient.username}}</p>
+      <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
 
-    {{#if showStatus}}
-      <p>Status: {{response-status displayResponse.status}}</p>
-    {{/if}}
+      {{#if showStatus}}
+        <p>Status: {{response-status displayResponse.status}}</p>
+      {{/if}}
 
-    <div>Message:<pre>{{displayResponse.text}}</pre></div>
-    {{#if showNote}}
-      <p>Note for Approver: {{displayResponse.note}}</p>
-    {{/if}}
-    {{else}}
-    <p>No response to display.</p>
-
+      <div>Message:<pre>{{displayResponse.text}}</pre></div>
+      {{#if showNote}}
+        <p>Note for Approver: {{displayResponse.note}}</p>
+      {{/if}}
+      {{else}}
+      <p>No response to display.</p>
+    </div>
   {{/if}}
-  </div>
+
   <div class="mentor-reply-actions button-row">
     {{#if showEdit}}
       <button {{action 'startEditing'}} class="primary-button">Edit</button>
