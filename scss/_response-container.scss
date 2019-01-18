@@ -65,8 +65,9 @@
 
   #response-submission-view {
     .problem-link-container {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       a {
+        font-size: .9em;
         color: $accent-color;
         font-weight: $light-font-weight;
       &:hover {
@@ -82,19 +83,19 @@
     }
     .submission-student {
       color: $primary-font-color;
-      font-size: 1.1em;
+      font-size: 1em;
       margin-bottom: 40px;
       i {
         margin-right: 10px;
       }
     }
     .submission-content-container {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       .submission-header {
-        padding: 10px 0;
-        font-size: 1.15em;
+        padding: 5px 0;
+        font-size: 1.1em;
         color: black;
-        // border-bottom: 1px solid $input-border;
+        font-weight: $light-font-weight;
         i {
           float: right;
           color: $filter-list-border-color;
@@ -106,6 +107,7 @@
         border: .5px solid $input-border;
         padding: 20px;
         border-radius: 3px;
+        font-size: .9em;
       }
     }
     img {
@@ -178,7 +180,7 @@
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .response-users {
       margin-bottom: 30px;
@@ -205,6 +207,10 @@
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+      pre {
+        word-wrap: break-word;
+        overflow-x: auto;
+      }
     }
     .edit-response {
       border: 1px solid $input-border;
