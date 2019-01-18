@@ -66,7 +66,6 @@
   #response-submission-view {
     .problem-link-container {
       margin-bottom: 20px;
-      margin-top: 10px;
       a {
         color: $accent-color;
         font-weight: $light-font-weight;
@@ -324,26 +323,40 @@
     }
   }
   #response-approver-reply {
-    // border: green solid 1px;
-    margin-left: 20px;
-    margin-right: 20px;
-    h3, h5 {
-      margin-bottom: 15px;
-      margin-left: 15px;
+    .heading {
+      font-size: 1.5em;
+      color: black;
+      font-weight: $light-font-weight;
+      margin-bottom: 30px;
     }
-    div.approver-actions {
-      margin-left: 15px;
+    .sub-heading {
+      font-size: 1.1em;
+      font-size: $main-font-weight;
       margin-bottom: 15px;
-
-        button:nth-child(1) {
-          margin-right: 5px;
-        }
-        :nth-child(2) {
-          margin-left: 5px;
-        }
     }
-    div.approver-replies {
-      margin-left: 15px;
+    .info {
+      position: static;
+    }
+    .approver-replies {
+      img {
+        display: block;
+        max-width: 350px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        margin-top: 40px;
+      }
+    }
+    .approver-actions {
+      margin-bottom: 15px;
+      button:nth-child(1) {
+        margin-right: 5px;
+      }
+      :nth-child(2) {
+        margin-left: 5px;
+      }
+    }
+    .approver-replies {
       h5 {
         margin-left: 0;
         margin-bottom: 15px;
@@ -356,10 +369,9 @@
         }
       }
     }
-    div.compose-approver-reply {
+    .compose-approver-reply {
       margin-left: 15px;
       margin-bottom: 10px;
-
       textarea {
         width: 100%;
         border: 1px solid $input-border;
@@ -368,12 +380,12 @@
         resize: none;
       }
     }
-    div.display-reply-actions {
+    .display-reply-actions {
       button {
         margin: 5px;
       }
     }
-    div.submit-buttons {
+    .submit-buttons {
       button {
         margin: 5px;
       }

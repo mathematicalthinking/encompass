@@ -1,7 +1,7 @@
-<h3>Approver Panel</h3>
+<h1 class="heading">Approver Panel</h1>
 
 {{#if showApproverActions}}
-<h5>Manage Mentor Reply</h5>
+<h2 class="sub-heading">Manage Mentor Reply</h2>
   <div class="approver-actions button-row">
     {{#if showNoActionsMessage}}
       <p class="info">{{noActionToTakeMessage}}</p>
@@ -17,12 +17,13 @@
 {{/if}}
 
 <div class="approver-replies">
-  <h5>Existing Approver Replies</h5>
+  <h2 class="sub-heading">Existing Approver Replies</h2>
   {{#if sortedApproverReplies}}
     {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText" selectedItem=displayReply}}
   {{/if}}
   {{#if showNoPreviousRepliesMsg}}
   <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
+  <img src="/images/no-message.svg" alt="No Replies">
 {{/if}}
 
 {{#if displayReply}}
