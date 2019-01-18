@@ -23,22 +23,40 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didReceiveAttrs() {
+    let pendingCount = this.get('pendingResponses.length');
+    let revisionsCount = this.get('needsRevisionsResponses.length');
+
+    let propToSet = 'toUserMentorCommentMessages';
+    let filterToSet = 'toUser';
+
+    // if student, prioritize needsRevisions over pendingApproval
     if (this.get('currentUser.isStudent')) {
-      this.set('filteredResponses', this.get('toUserMentorCommentMessages'));
-      this.set('currentFilter', 'toUser');
+      if (revisionsCount > 0) {
+        propToSet = 'needsRevisionsResponses';
+        filterToSet = 'needsRevisions';
+      } else if (pendingCount > 0) {
+        propToSet = 'pendingResponses';
+        filterToSet = 'pendingApproval';
+      }
+      this.set('filteredResponses', this.get(propToSet));
+      this.set('currentFilter', filterToSet);
 
       return;
     }
+    // if nonStudent, prioritize pendingApproval over needsRevisions
 
-    if (this.get('currentUser.isAdmin') || this.get('currentUser.isPdAdmin')) {
-      this.set('filteredResponses', this.get('pendingResponses'));
-      this.set('currentFilter', 'pendingApproval');
+    // maybe could check if user has any workspaces where they could be an approver?
 
-      return;
+    if (pendingCount > 0) {
+      propToSet = 'pendingResponses';
+      filterToSet = 'pendingApproval';
+    } else if (revisionsCount > 0 ) {
+      propToSet = 'needsRevisionsResponses';
+      filterToSet = 'needsRevisions';
     }
 
-    this.set('filteredResponses', this.get('needsRevisionsResponses'));
-    this.set('currentFilter', 'needsRevisions');
+    this.set('filteredResponses', this.get(propToSet));
+    this.set('currentFilter', filterToSet);
 
     this._super(...arguments);
   },
@@ -54,6 +72,14 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
     return '';
   }.property('unreadNotes.[]'),
+
+  notesCounter: function() {
+    let count = this.get('toUserMentorCommentMessages.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('toUserMentorCommentMessages.[]'),
 
   pendingApprovalCounter: function() {
     let count = this.get('pendingResponses.length');
@@ -150,8 +176,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
   sentResponses: function() {
     return this.get('nonTrashedResponses').filter((response) => {
-      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-      return creatorId === this.get('currentUser.id') && response.get('status') === 'approved' && response.get('responseType') !== 'approver';
+      // pdAdmins and admins need a way of seeing approved feedback that their students/teachers have sent
+      return response.get('status') === 'approved' && (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly'));
     });
   }.property('currentUser', 'nonTrashedResponses.[]'),
 
@@ -166,7 +192,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   toUserMentorCommentMessages: function() {
     return this.get('nonTrashedResponses').filter((response) => {
       let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-      return recipientId === this.get('currentUser.id') && response.get('status') === 'approved' && response.get('responseType') !== 'approver';
+      return recipientId === this.get('currentUser.id') && response.get('status') === 'approved' &&
+      (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly') === true);
     });
   }.property('nonTrashedResponses.[]', 'currentUser'),
 

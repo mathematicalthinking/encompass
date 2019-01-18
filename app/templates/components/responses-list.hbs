@@ -4,7 +4,7 @@
     {{#if showAllFilter}}
       <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
     {{/if}}
-      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes {{unreadNotesCounter}}</button>
+      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes {{notesCounter}}</button>
       <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent {{sentCounter}}</button>
       <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval {{pendingApprovalCounter}}</button>
       <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions {{needsRevisionsCounter}}</button>

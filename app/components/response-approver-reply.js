@@ -180,18 +180,21 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           if (!result.value) {
             return;
           }
-
-          let hash = {
-            newReply: record.save(),
-          };
+          let hash = {};
 
           if (oldMentorStatus !== result.value) {
             this.get('responseToApprove').set('status', result.value);
             if (result.value === 'approved') {
               this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+
+              // should be distinction between when approver sends a reply with revisions and when approver sends reply and approves
+              record.set('isApproverNoteOnly', true);
             }
             hash.updatedReply = this.get('responseToApprove').save();
           }
+
+            hash.newReply = record.save();
+
           return Ember.RSVP.hash(hash);
         })
         .then((hash) => {

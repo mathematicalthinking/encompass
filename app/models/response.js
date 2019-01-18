@@ -23,6 +23,7 @@ Encompass.Response = DS.Model.extend(Encompass.Auditable, {
   approvedBy: DS.belongsTo('user', {inverse: null}),
   wasReadByRecipient: DS.attr('boolean', { default: false }),
   wasReadByApprover: DS.attr('boolean', { default: false }),
+  isApproverNoteOnly: DS.attr('boolean', { default: false}),
   shortText: function() {
     if (typeof this.get('text') !== 'string') {
       return '';
