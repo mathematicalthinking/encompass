@@ -32,6 +32,7 @@ var ResponseSchema = new Schema({
     approvedBy: { type: ObjectId, ref: 'User' },
     wasReadByRecipient: { type: Boolean, default: false },
     wasReadByApprover: { type: Boolean, default: false },
+    isApproverNoteOnly: { type: Boolean, default: false }
   }, {versionKey: false});
 
 /**
