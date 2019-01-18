@@ -187,6 +187,9 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
           if (oldMentorStatus !== result.value) {
             this.get('responseToApprove').set('status', result.value);
+            if (result.value === 'approved') {
+              this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+            }
             hash.updatedReply = this.get('responseToApprove').save();
           }
           return Ember.RSVP.hash(hash);

@@ -1,58 +1,18 @@
-{{#if currentUser.isStudent}}
-  <header class="list-header {{if areNoResponses 'no-responses'}}">
-    <h2>Responses from your teachers</h2>
-    <aside>
-    </aside>
-    <div class="clear"></div>
-  </header>
+<header class= "{{if areNoResponses 'no-responses'}}">
+  <h2 class="list-header">Select a response</h2>
+  <div class="toggle-btn">
+    {{#if showAllFilter}}
+      <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
+    {{/if}}
+      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes {{unreadNotesCounter}}</button>
+      <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent {{sentCounter}}</button>
+      <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval {{pendingApprovalCounter}}</button>
+      <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions {{needsRevisionsCounter}}</button>
+  </div>
+  <div class="clear"></div>
+</header>
 
-  {{#if areDisplayResponses}}
-    <table border="1" width="100%">
-      <thead>
-        <tr class="top-row">
-          <th align="left" style="padding-left: 55px;">Text</th>
-          <th align="left">From</th>
-          <th align="left">Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each displayResponses as |response|}}
-        <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
-          <td style="padding-left: 55px;">
-            {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
-          </td>
-          <td>{{response.createdBy.displayName}}</td>
-          <td>
-            {{#link-to 'response' response.id}}
-            <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
-            {{/link-to}}
-          </td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{else}}
-    <p class="notice">
-      Looks like none of your teachers have sent any responses yet.
-    </p>
-  {{/if}}
-
-{{else}}
-  <header class= "{{if areNoResponses 'no-responses'}}">
-    <h2 class="list-header">Select a response</h2>
-    <div class="toggle-btn">
-        <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">To Me</button>
-        <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent</button>
-        <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval</button>
-        <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions</button>
-    </div>
-
-    <div class="clear"></div>
-  </header>
-
-  {{#if areDisplayResponses}}
-
+{{#if areDisplayResponses}}
   <table border="1" width="100%">
     <thead>
       <tr class="top-row">
@@ -60,14 +20,15 @@
         <th align="left">From</th>
         <th align="left">Recipient</th>
         <th align="left">Date</th>
-        <th align="left">Status</th>
-
+        {{#if showStatusColumn }}
+          <th align="left">Status</th>
+        {{/if}}
       </tr>
     </thead>
 
     <tbody>
       {{#each displayResponses as |response|}}
-      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
+      <tr  style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
         <td style="padding-left: 55px;">
           {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
         </td>
@@ -82,8 +43,9 @@
           <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
           {{/link-to}}
         </td>
-        <td>{{response-status response.status}}</td>
-
+        {{#if showStatusColumn}}
+          <td>{{response-status response.status}}</td>
+        {{/if}}
       </tr>
       {{/each}}
     </tbody>
@@ -92,6 +54,4 @@
   <div class="empty-message">
     <p class="notice">{{noResponsesMessage}}</p>
   </div>
-  {{/if}}
-
 {{/if}}

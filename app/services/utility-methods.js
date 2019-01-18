@@ -18,6 +18,15 @@ Encompass.UtilityMethodsService = Ember.Service.extend({
 isValidMongoId(val) {
   let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
   return checkForHexRegExp.test(val);
+},
+getBelongsToId(record, relationshipName) {
+  if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
+    return;
+  }
+  let ref = record.belongsTo(relationshipName);
+  if (ref) {
+    return ref.id();
+  }
+  return;
 }
-
 });

@@ -21,6 +21,8 @@ Encompass.Response = DS.Model.extend(Encompass.Auditable, {
   priorRevision: DS.belongsTo('response', { inverse: null }), // objectId of mentor reply that was revised in response to approve reply
   reviewedResponse: DS.belongsTo('response', { inverse: null }), // objectId of the mentor response that was source of approver reply
   approvedBy: DS.belongsTo('user', {inverse: null}),
+  wasReadByRecipient: DS.attr('boolean', { default: false }),
+  wasReadByApprover: DS.attr('boolean', { default: false }),
   shortText: function() {
     if (typeof this.get('text') !== 'string') {
       return '';

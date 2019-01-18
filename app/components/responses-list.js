@@ -1,9 +1,8 @@
 Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'responses-list',
-  sortProperties: ['createDate'],
-  sortAscending: false,
-  showingAllResponses: true,
-  showingOnlyMine: false,
+
+  utils: Ember.inject.service('utility-methods'),
+
   isShowAll: Ember.computed.equal('currentFilter', 'all'),
   isShowMine: Ember.computed.equal('currentFilter', 'toUser'),
   isShowSent: Ember.computed.equal('currentFilter', 'sent'),
@@ -12,6 +11,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   currentFilter: 'toUser',
   sortParam: 'newest',
+
   areDisplayResponses: Ember.computed.gt('displayResponses.length', 0),
   areNoResponses: Ember.computed.not('areDisplayResponses'),
 
@@ -23,11 +23,68 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didReceiveAttrs() {
-    this.set('filteredResponses', this.get('toUserResponses'));
-    this.set('currentFilter', 'toUser');
+    if (this.get('currentUser.isStudent')) {
+      this.set('filteredResponses', this.get('toUserMentorCommentMessages'));
+      this.set('currentFilter', 'toUser');
+
+      return;
+    }
+
+    if (this.get('currentUser.isAdmin') || this.get('currentUser.isPdAdmin')) {
+      this.set('filteredResponses', this.get('pendingResponses'));
+      this.set('currentFilter', 'pendingApproval');
+
+      return;
+    }
+
+    this.set('filteredResponses', this.get('needsRevisionsResponses'));
+    this.set('currentFilter', 'needsRevisions');
 
     this._super(...arguments);
   },
+
+  unreadNotes: function() {
+    return this.get('toUserMentorCommentMessages').rejectBy('wasReadByRecipient');
+  }.property('toUserMentorCommentMessages.@each.wasReadByRecipient'),
+
+  unreadNotesCounter: function() {
+    let count = this.get('unreadNotes.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('unreadNotes.[]'),
+
+  pendingApprovalCounter: function() {
+    let count = this.get('pendingResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('pendingResponses.[]'),
+  needsRevisionsCounter: function() {
+    let count = this.get('needsRevisionsResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('needsRevisionsResponses.[]'),
+  sentCounter: function() {
+    let count = this.get('sentResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('sentResponses.[]'),
+
+
+  showAllFilter: function() {
+    return !this.get('currentUser.isStudent') && this.get('currentUser.isAdmin');
+  }.property('currentUser.isStudent', 'currentUser.isAdmin'),
+
+  showStatusColumn: function() {
+    return this.get('currentFilter') === 'pendingApproval' || this.get('currentFilter') === 'needsRevisions' || this.get('currentFilter') === 'all';
+  }.property('currentFilter'),
 
   noResponsesMessage: function() {
     let val = this.get('currentFilter');
@@ -66,8 +123,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     return this.get('responses').rejectBy('isTrashed');
   }.property('responses.@each.isTrashed'),
 
-
-
   filterByStatus(status, responses) {
     if (!this.get(`statusMap.${status}`)) {
       return responses;
@@ -77,10 +132,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
     return responses.filterBy('status', status);
   },
-
-  toUserResponses: function () {
-   return this.filterByRecipient(this.get('currentUser.id'), this.get('nonTrashedResponses'));
-  }.property('currentUser', 'nonTrashedResponses.[]'),
 
   filterByRecipient(recipientId, responses) {
     if (!recipientId) {
@@ -97,6 +148,28 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
 
   },
+  sentResponses: function() {
+    return this.get('nonTrashedResponses').filter((response) => {
+      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
+      return creatorId === this.get('currentUser.id') && response.get('status') === 'approved' && response.get('responseType') !== 'approver';
+    });
+  }.property('currentUser', 'nonTrashedResponses.[]'),
+
+  pendingResponses: function() {
+    return this.filterByStatus('pendingApproval', this.get('nonTrashedResponses'));
+  }.property('nonTrashedResponses.[]'),
+
+  needsRevisionsResponses: function() {
+    return this.filterByStatus('needsRevisions', this.get('nonTrashedResponses'));
+  }.property('nonTrashedResponses.[]'),
+
+  toUserMentorCommentMessages: function() {
+    return this.get('nonTrashedResponses').filter((response) => {
+      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+      return recipientId === this.get('currentUser.id') && response.get('status') === 'approved' && response.get('responseType') !== 'approver';
+    });
+  }.property('nonTrashedResponses.[]', 'currentUser'),
+
   filterByCreatedBy(creatorId, responses ) {
     if (!creatorId) {
       return responses;
@@ -112,43 +185,28 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
   },
 
-  yourResponses: Ember.computed(function () {
-    let currentUser = this.get('currentUser');
-    let responses = this.get('responses');
-    let yourResponses = responses.filterBy('createdBy.content', currentUser);
-    return yourResponses.sortBy('createDate').reverse();
-  }),
-
-  responsesStudent: Ember.computed(function () {
-    let currentUser = this.get('currentUser');
-    let responses = this.get('responses');
-    let responsesStudent = responses.filterBy('recipient.content', currentUser);
-    return responsesStudent.sortBy('createDate').reverse();
-  }),
-
   actions: {
     showMyResponses: function () {
       this.set('currentFilter', 'toUser');
-      this.set('filteredResponses', this.get('toUserResponses'));
+      this.set('filteredResponses', this.get('toUserMentorCommentMessages'));
     },
 
     showAllResponses: function () {
       this.set('currentFilter', 'all');
       this.set('filteredResponses', this.get('nonTrashedResponses'));
     },
-      showSentResponses() {
-        this.set('currentFilter', 'sent');
-        this.set('filteredResponses', this.filterByCreatedBy(this.get('currentUser.id'), this.get('nonTrashedResponses')));
-      },
-      showPendingResponses() {
-        this.set('currentFilter', 'pendingApproval');
-        this.set('filteredResponses', this.filterByStatus('pendingApproval', this.get('nonTrashedResponses')));
-      },
-      showNeedsRevisionResponses() {
-        this.set('currentFilter', 'needsRevisions');
-        this.set('filteredResponses', this.filterByStatus('needsRevisions', this.get('nonTrashedResponses')));
-      },
-
+    showSentResponses() {
+      this.set('currentFilter', 'sent');
+      this.set('filteredResponses', this.get('sentResponses'));
     },
+    showPendingResponses() {
+      this.set('currentFilter', 'pendingApproval');
+      this.set('filteredResponses', this.get('pendingResponses'));
+    },
+    showNeedsRevisionResponses() {
+      this.set('currentFilter', 'needsRevisions');
+      this.set('filteredResponses', this.get('needsRevisionsResponses'));
+    },
+  },
 
 });
