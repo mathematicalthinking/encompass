@@ -3,14 +3,22 @@
 @import "responsive-font-size";
 
 .bread-crumbs-comp {
+  .breadcrumbs {
+    @include flex-container(null, null, row, wrap, flex-end, center, center);
+    .revisions {
+      font-weight: $light-font-weight;
+      margin-right: 15px;
+      color: $primary-font-color;
+    }
+  }
   ul.breadcrumbs {
-    display: flex;
     li {
       cursor: pointer;
-      font-size: 1.2em;
+      font-size: 1.1em;
       font-weight: $light-font-weight;
       abbr {
         text-decoration: none;
+        margin-right: 0;
       }
       &.active-crumb {
         font-weight: $bold-font-weight;

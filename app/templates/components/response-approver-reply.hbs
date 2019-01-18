@@ -49,9 +49,6 @@
 
 <div class="approver-replies">
   <h2 class="sub-heading">Existing Approver Replies</h2>
-  {{#if sortedApproverReplies}}
-    {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText" selectedItem=displayReply}}
-  {{/if}}
   {{#if showNoPreviousRepliesMsg}}
     <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
     <img src="/images/no-message.svg" alt="No Replies">
@@ -59,9 +56,15 @@
 
 {{#if displayReply}}
   <div class="display-approver-reply">
-    <p class="reply-date">{{format-date displayReply.createDate 'Do MMM YYYY'}}
-      <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
-    </p>
+    <div class="top-row">
+      <p class="reply-date">{{format-date displayReply.createDate 'Do MMM YYYY'}}
+        <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
+      </p>
+      {{#if sortedApproverReplies}}
+        {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText"
+      selectedItem=displayReply}}
+      {{/if}}
+    </div>
     <div class="reply-users">
       <p>
         <span class="reply-label">From:</span>

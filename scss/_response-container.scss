@@ -341,7 +341,11 @@
       margin-bottom: 40px;
     }
     .display-approver-reply {
+      .top-row {
+        @include flex-container(null, null, row, wrap, center, center, center);
+      }
       .reply-date {
+        @include flex-item(1, flex-start, 1 1 auto);
         font-weight: $light-font-weight;
         font-size: 1.1em;
         color: $filter-list-border-color;
@@ -351,6 +355,9 @@
           color: black;
           margin-left: 5px;
         }
+      }
+      .bread-crumbs-comp {
+        @include flex-item(2, flex-end, 1 1 auto);
       }
       .reply-users {
         margin-bottom: 30px;
