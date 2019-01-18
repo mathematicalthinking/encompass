@@ -1,10 +1,21 @@
 Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'response-mentor-reply',
   alert: Ember.inject.service('sweet-alert'),
+  iconFillOptions: {
+    approved: '#35A853',
+    pendingApproval: '#FFD204',
+    needsRevisions: '#EB5757',
+    superceded: '#9b59b6',
+  },
 
   didReceiveAttrs() {
     this._super(...arguments);
   },
+  statusIconFill: function () {
+    let status = this.get('displayResponse.status');
+    console.log('status is', status);
+    return this.get('iconFillOptions')[status];
+  }.property('displayResponse.status'),
 
   showStatus: function() {
     return this.get('canApprove') || this.get('isOwnMentorReply');
