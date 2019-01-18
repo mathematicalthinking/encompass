@@ -222,7 +222,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (typeof this.get('model.text') !== 'string') {
       return '';
     }
-    return this.get('model.text').slice(0, 100);
+    return this.get('model.text').slice(0, 150);
   }.property('model.text'),
 
   _persistThen: function (callback) {

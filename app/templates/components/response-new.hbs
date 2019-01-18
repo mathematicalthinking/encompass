@@ -25,24 +25,29 @@
   <section class="response-content">
     <section class="response-more-details">
       {{#if existingResponses.length}}
-        <p>
-        There
-          {{pluralize existingResponses.length 'is' 'are'}}
-          {{#unless model.persisted}}already{{/unless}}
-        <a class='other response' {{action toggleProperty 'showExisting'}}>{{existingResponses.length}} other
-          {{pluralize existingResponses.length 'response' 'responses'}}
-        </a> for this {{model.source}}.
+      <div class="response-existing-container">
+        <p class="response-existing"> There
+          {{pluralize existingResponses.length 'is' 'are'}} {{#unless model.persisted}}already{{/unless}}
+          {{existingResponses.length}} other
+          {{pluralize existingResponses.length 'response' 'responses'}} for this {{model.source}}.
+          <span class='response-link' {{action toggleProperty 'showExisting'}}>
+            {{#if showExisting}}
+              Hide
+            {{else}}
+              Show
+            {{/if}}
+          </span>
         </p>
         {{#if showExisting}}
-          <ul>
+          <ul class="response-listing">
           {{#each existingResponses as |response|}}
             <li>
-              {{#link-to 'response' response.id}}{{response.shortText}}{{/link-to}} from {{response.created}}
+              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{response.shortText}}... {{#link-to 'response' response.id}} View{{/link-to}}
             </li>
           {{/each}}
           </ul>
-          <br/>
         {{/if}}
+      </div>
       {{/if}}
       {{#if model.selections.length}}
         <section class="selections">
@@ -90,7 +95,7 @@
       {{textarea tabindex=1 id="responseTextarea" classBinding="hasText" value=replyText}}
       {{#if showNoteField}}
         <div class="approve-note">
-          <h5>Note for Approver</h5>
+          <p class="response-header">Note to Approver</p>
           {{textarea class="approver-note" id="response-note" value=replyNote}}
         </div>
       {{/if}}

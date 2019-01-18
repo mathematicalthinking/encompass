@@ -11,30 +11,45 @@
     canDirectSend=canDirectSend
   }}
 {{else}}
-<div class="mentor-replies">
   {{#if sortedMentorReplies}}
-    {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+    <div class="mentor-replies">
+      {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+    </div>
   {{/if}}
-</div>
-<div class="response-info">
-  {{#if displayResponse}}
-    <p>From: {{displayResponse.createdBy.username}}</p>
-    <p>To: {{displayResponse.recipient.username}}</p>
-    <p>Date: {{format-date displayResponse.createDate "MMM Do YYYY h:mm A"}}</p>
 
-    {{#if showStatus}}
-      <p>Status: {{response-status displayResponse.status}}</p>
-    {{/if}}
+    <div class="response-info">
+      {{#if displayResponse}}
+        <p class="response-date">{{format-date displayResponse.createDate 'Do MMM YYYY'}}
+          <span class="response-time">{{format-date displayResponse.createDate 'h:mm a'}}</span>
+        </p>
+        <p class="response-title">Mentor Response</p>
+        <div class="response-users">
+          <p>
+            <span class="response-label">To:</span>
+            <span class="response-value recipient">{{displayResponse.recipient.username}}</span>
+          </p>
+          <p>
+            <span class="response-label">From:</span>
+            <span class="response-value">{{displayResponse.createdBy.username}}</span>
+          </p>
+        </div>
+        {{#if showStatus}}
+          <p>Status: {{response-status displayResponse.status}}</p>
+        {{/if}}
+        <div class="response-content">
+          <p class="response-header">Message</p>
+          <div class="response-text">
+            <pre>{{displayResponse.text}}</pre>
+          </div>
+        </div>
+        {{#if showNote}}
+          <p>Note for Approver: {{displayResponse.note}}</p>
+        {{/if}}
+      {{else}}
+        <p>No response to display</p>
+      {{/if}}
+    </div>
 
-    <div>Message:<pre>{{displayResponse.text}}</pre></div>
-    {{#if showNote}}
-      <p>Note for Approver: {{displayResponse.note}}</p>
-    {{/if}}
-    {{else}}
-    <p>No response to display.</p>
-
-  {{/if}}
-  </div>
   <div class="mentor-reply-actions button-row">
     {{#if showEdit}}
       <button {{action 'startEditing'}} class="primary-button">Edit</button>
