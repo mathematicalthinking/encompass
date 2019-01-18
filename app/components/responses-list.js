@@ -47,6 +47,10 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     return !this.get('currentUser.isStudent') && this.get('currentUser.isAdmin');
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
+  showStatusColumn: function() {
+    return this.get('currentFilter') === 'pendingApproval' || this.get('currentFilter') === 'needsRevisions' || this.get('currentFilter') === 'all';
+  }.property('currentFilter'),
+
   noResponsesMessage: function() {
     let val = this.get('currentFilter');
     if (val === 'sent') {
