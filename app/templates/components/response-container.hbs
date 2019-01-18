@@ -1,4 +1,9 @@
-{{#unless isCreatingNewMentorReply}}
+{{#if isCreatingNewMentorReply}}
+  <p class="feedback-mode">
+    Crafting feedback for <a {{action 'openSubmission' workspace.id submission.id}} class="link">submission</a>
+    in {{workspace.name}}
+  </p>
+{{else}}
   <p class="feedback-mode">
     {{#if isOwnSubmission}}
       Viewing feedback for
@@ -11,7 +16,7 @@
     <a {{action 'openSubmission' workspace.id submission.id}} class="link">submission</a>
     in {{workspace.name}}
   </p>
-{{/unless}}
+{{/if}}
 
 <div class="response-flex-container ">
   <div class="response-flex-item submission{{if showApproverReply ' third'}}">
