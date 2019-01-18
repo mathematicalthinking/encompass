@@ -41,8 +41,10 @@
   <header class= "{{if areNoResponses 'no-responses'}}">
     <h2 class="list-header">Select a response</h2>
     <div class="toggle-btn">
+      {{#if showAllFilter}}
         <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
-        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">To Me</button>
+      {{/if}}
+        <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes</button>
         <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent</button>
         <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval</button>
         <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions</button>
