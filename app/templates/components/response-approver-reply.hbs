@@ -19,6 +19,7 @@
 {{/if}}
 
 {{#if showReplyInput}}
+  {{#unless isEditingApproverReply}}
   <div class="compose-reply-container">
     <p class="info">{{replyHeadingText}}</p>
     <div class="compose-approver-reply">
@@ -30,10 +31,6 @@
         {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
       {{/each}}
       <div class="submit-buttons button-row">
-        {{#if isEditingApproverReply}}
-          <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
-          <button {{action "saveEdit"}} class="primary-button">Save</button>
-        {{/if}}
         {{#if isRevisingApproverReply}}
           <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
           <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
@@ -45,6 +42,7 @@
       </div>
     </div>
   </div>
+  {{/unless}}
 {{/if}}
 
 <div class="approver-replies">
@@ -81,9 +79,15 @@
         <i {{action 'startEditing'}} class="far fa-edit"></i>
       {{/if}}
     </p>
-    <div class="reply-content">
-      {{displayReply.text}}
-    </div>
+    {{#if isEditingApproverReply}}
+      <div class="reply-revise">
+        {{textarea name="approver-reply" value=editRevisionText}}
+      </div>
+    {{else}}
+      <div class="reply-content">
+        {{displayReply.text}}
+      </div>
+    {{/if}}
   </div>
   {{#if showDisplayReplyActions}}
     <div class="display-reply-actions">
@@ -93,6 +97,12 @@
       {{#if showTrash}}
         <i {{action 'confirmTrash' displayReply}} class="fas fa-trash"></i>
       {{/if}}
+    </div>
+  {{/if}}
+  {{#if isEditingApproverReply}}
+    <div class="submit-buttons button-row">
+      <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
+      <button {{action "saveEdit"}} class="primary-button">Save</button>
     </div>
   {{/if}}
 {{/if}}

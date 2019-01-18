@@ -25,7 +25,7 @@
   box-shadow: $box-shadow;
   border-radius: 3px;
   margin: 20px;
-  padding: 30px 45px;
+  padding: 30px 35px;
   height: calc(100vh - 215px);
   overflow-y: auto;
 }
@@ -65,7 +65,7 @@
 
   #response-submission-view {
     .problem-link-container {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       a {
         color: $accent-color;
         font-weight: $light-font-weight;
@@ -78,10 +78,10 @@
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     .submission-student {
-      color: $accent-color;
+      color: $primary-font-color;
       font-size: 1.1em;
       margin-bottom: 40px;
       i {
@@ -159,6 +159,7 @@
       font-size: 1.1em;
       color: $filter-list-border-color;
       text-align: left;
+      margin-bottom: 15px;
     }
     .response-time {
       font-size: .8em;
@@ -177,8 +178,7 @@
       color: black;
       font-weight: $light-font-weight;
       font-size: 1.5em;
-      margin-bottom: 20px;
-      margin-top: 15px;
+      margin-bottom: 15px;
     }
     .response-users {
       margin-bottom: 30px;
@@ -362,7 +362,6 @@
       .reply-users {
         margin-bottom: 30px;
         p {
-          line-height: 20px;
           font-size: .9em;
         }
         .reply-label {
@@ -394,6 +393,16 @@
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+    }
+    .reply-revise {
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin: 15px 0;
+        resize: none;
+        height: 60px;
+      }
     }
     .approver-replies {
       img {
