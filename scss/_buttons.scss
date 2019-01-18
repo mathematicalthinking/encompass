@@ -30,6 +30,20 @@
   }
 }
 
+.approve-button {
+  background-color: $success-color;
+  color: white;
+  padding: 10px 22px;
+  display: inline-block;
+  text-align: center;
+  border: 0;
+  font-size: .8em;
+  border-radius: 3px;
+  font-weight: $main-font-weight;
+  cursor: pointer;
+  letter-spacing: .05em;
+}
+
 .delete-button {
   background: $error-color;
   color: white;

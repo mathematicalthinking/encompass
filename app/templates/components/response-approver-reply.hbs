@@ -8,14 +8,43 @@
       <p class="info">{{noActionToTakeMessage}}</p>
     {{else}}
       {{#if showApprove}}
-        <button class="primary-button" {{action "confirmApproval"}}>Approve</button>
+        <button class="approve-button" {{action "confirmApproval"}}>Approve <i class="fas fa-check"></i></button>
       {{/if}}
       {{#if showCompose}}
-        <button class="primary-button" {{action "composeReply"}}>Reply</button>
+        <button class="primary-button" {{action "composeReply"}}>Reply <i class="fas fa-reply"></i></button>
       {{/if}}
     {{/if}}
   </div>
 </div>
+{{/if}}
+
+{{#if showReplyInput}}
+  <div class="compose-reply-container">
+    <p class="info">{{replyHeadingText}}</p>
+    <div class="compose-approver-reply">
+      {{textarea cols=10 rows=20 name="approver-reply" value=editRevisionText}}
+      {{#if emptyReplyError}}
+        {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+      {{/if}}
+      {{#each saveRecordErrors as |err|}}
+        {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
+      {{/each}}
+      <div class="submit-buttons button-row">
+        {{#if isEditingApproverReply}}
+          <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
+          <button {{action "saveEdit"}} class="primary-button">Save</button>
+        {{/if}}
+        {{#if isRevisingApproverReply}}
+          <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
+          <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
+          {{/if}}
+        {{#if isComposingReply}}
+          <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
+          <button {{action "saveReply"}} class="primary-button">Send Reply</button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
 {{/if}}
 
 <div class="approver-replies">
@@ -30,10 +59,23 @@
 
 {{#if displayReply}}
   <div class="display-approver-reply">
-    <p>From: {{displayReply.createdBy.username}}</p>
-    <p>To: {{displayReply.recipient.username}}</p>
-    <p>Date: {{format-date displayReply.createDate "MMM Do YYYY h:mm A"}}</p>
-    <p>Message: {{displayReply.text}}</p>
+    <p class="reply-date">{{format-date displayReply.createDate 'Do MMM YYYY'}}
+      <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
+    </p>
+    <div class="reply-users">
+      <p>
+        <span class="reply-label">From:</span>
+        <span class="reply-value">{{displayReply.createdBy.username}}</span>
+      </p>
+      <p>
+        <span class="reply-label">To:</span>
+        <span class="reply-value recipient">{{displayReply.recipient.username}}</span>
+      </p>
+    </div>
+    <p class="reply-header">Message</p>
+    <div class="reply-content">
+      {{displayReply.text}}
+    </div>
   </div>
   {{#if showDisplayReplyActions}}
     <div class="display-reply-actions">
@@ -50,32 +92,3 @@
   {{/if}}
 {{/if}}
 </div>
-
-
-{{#if showReplyInput}}
-  <h5>{{replyHeadingText}}</h5>
-  <div class="compose-approver-reply">
-    {{textarea cols=10 rows=20 name="approver-reply" value=editRevisionText}}
-
-    {{#if emptyReplyError}}
-      {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
-    {{/if}}
-    {{#each saveRecordErrors as |err|}}
-      {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
-    {{/each}}
-    <div class="submit-buttons button-row">
-      {{#if isEditingApproverReply}}
-        <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
-        <button {{action "saveEdit"}} class="primary-button">Save</button>
-      {{/if}}
-      {{#if isRevisingApproverReply}}
-        <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
-        <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
-        {{/if}}
-      {{#if isComposingReply}}
-        <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
-        <button {{action "saveReply"}} class="primary-button">Send Reply</button>
-      {{/if}}
-    </div>
-  </div>
-{{/if}}

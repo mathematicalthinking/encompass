@@ -340,6 +340,47 @@
     .action-container {
       margin-bottom: 40px;
     }
+    .display-approver-reply {
+      .reply-date {
+        font-weight: $light-font-weight;
+        font-size: 1.1em;
+        color: $filter-list-border-color;
+        text-align: left;
+        .reply-time {
+          font-size: .8em;
+          color: black;
+          margin-left: 5px;
+        }
+      }
+      .reply-users {
+        margin-bottom: 30px;
+        p {
+          line-height: 20px;
+          font-size: .9em;
+        }
+        .reply-label {
+          width: 50px;
+          display: inline-block;
+        }
+        .reply-value {
+          color: $accent-color;
+          font-weight: $light-font-weight;
+        }
+      }
+    }
+    .reply-header {
+      margin: 15px 0;
+      color: black;
+      font-size: 1.1em;
+      font-weight: $light-font-weight;
+    }
+    .reply-content {
+      margin: 20px 0;
+      background-color: $filter-list-background-color;
+      border: .5px solid $input-border;
+      border-radius: 3px;
+      padding: 20px;
+    }
     .approver-replies {
       img {
         display: block;
@@ -347,6 +388,18 @@
         width: 100%;
         height: auto;
         margin-top: 40px;
+      }
+    }
+    .compose-reply-container {
+      margin-bottom: 50px;
+      .compose-approver-reply {
+        textarea {
+          width: 100%;
+          border: 1px solid $input-border;
+          border-radius: 3px;
+          margin: 15px 0;
+          resize: none;
+        }
       }
     }
     .approver-actions {
@@ -369,17 +422,6 @@
         p {
           padding: 5px;
         }
-      }
-    }
-    .compose-approver-reply {
-      margin-left: 15px;
-      margin-bottom: 10px;
-      textarea {
-        width: 100%;
-        border: 1px solid $input-border;
-        border-radius: 3px;
-        margin-bottom: 15px;
-        resize: none;
       }
     }
     .display-reply-actions {
