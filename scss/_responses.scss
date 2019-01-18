@@ -51,5 +51,10 @@
       border-bottom: 1px solid #d3d3d3;
       line-height: 50px;
     }
+    tr.unread {
+      td {
+        font-weight: $bolder-font-weight
+      }
+    }
   }
 }

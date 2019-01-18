@@ -4,10 +4,10 @@
     {{#if showAllFilter}}
       <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
     {{/if}}
-      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes</button>
-      <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent</button>
-      <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval</button>
-      <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions</button>
+      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes {{unreadNotesCounter}}</button>
+      <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent {{sentCounter}}</button>
+      <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval {{pendingApprovalCounter}}</button>
+      <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions {{needsRevisionsCounter}}</button>
   </div>
   <div class="clear"></div>
 </header>
@@ -28,7 +28,7 @@
 
     <tbody>
       {{#each displayResponses as |response|}}
-      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response">
+      <tr  style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
         <td style="padding-left: 55px;">
           {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
         </td>

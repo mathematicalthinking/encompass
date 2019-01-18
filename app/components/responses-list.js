@@ -43,6 +43,41 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
   },
 
+  unreadNotes: function() {
+    return this.get('toUserMentorCommentMessages').rejectBy('wasReadByRecipient');
+  }.property('toUserMentorCommentMessages.@each.wasReadByRecipient'),
+
+  unreadNotesCounter: function() {
+    let count = this.get('unreadNotes.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('unreadNotes.[]'),
+
+  pendingApprovalCounter: function() {
+    let count = this.get('pendingResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('pendingResponses.[]'),
+  needsRevisionsCounter: function() {
+    let count = this.get('needsRevisionsResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('needsRevisionsResponses.[]'),
+  sentCounter: function() {
+    let count = this.get('sentResponses.length');
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('sentResponses.[]'),
+
+
   showAllFilter: function() {
     return !this.get('currentUser.isStudent') && this.get('currentUser.isAdmin');
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
