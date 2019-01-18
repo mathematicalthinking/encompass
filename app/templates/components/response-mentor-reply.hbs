@@ -45,23 +45,30 @@
           {{/if}}
         </div>
         <div class="response-content">
-          <p class="response-header">Message</p>
+          <p class="response-header">
+            Message
+            {{#if showEdit}}
+              <i {{action 'startEditing'}} class="far fa-edit"></i>
+            {{/if}}
+          </p>
           <div class="response-text">
             <pre>{{displayResponse.text}}</pre>
           </div>
+          {{#if showNote}}
+            <div class="response-note-container">
+              <p class="response-header">Note for Approver</p>
+              <div class="response-note">
+                {{displayResponse.note}}
+              </div>
+            </div>
+          {{/if}}
         </div>
-        {{#if showNote}}
-          <p>Note for Approver: {{displayResponse.note}}</p>
-        {{/if}}
       {{else}}
         <p>No response to display</p>
       {{/if}}
     </div>
 
   <div class="mentor-reply-actions button-row">
-    {{#if showEdit}}
-      <button {{action 'startEditing'}} class="primary-button">Edit</button>
-    {{/if}}
     {{#if showRevise}}
       <button {{action 'startRevising'}} class="primary-button">Revise</button>
     {{/if}}

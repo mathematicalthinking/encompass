@@ -155,7 +155,7 @@
     .response-time {
       font-size: .8em;
       color: black;
-      margin-left: 10px;
+      margin-left: 5px;
     }
     .response-link {
       @include flex-item(2, flex-end, 1 1 auto);
@@ -191,7 +191,7 @@
       color: black;
       margin: 10px 0;
     }
-    .response-text {
+    .response-text, .response-note {
       margin: 20px 0;
       background-color: $filter-list-background-color;
       border: .5px solid $input-border;
@@ -289,7 +289,6 @@
           resize: none;
         }
         .approve-note {
-          border: 1px  red;
           margin-top: 30px;
           textarea {
             height: 80px;;
