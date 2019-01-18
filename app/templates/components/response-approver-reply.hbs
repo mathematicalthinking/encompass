@@ -22,7 +22,7 @@
   <div class="compose-reply-container">
     <p class="info">{{replyHeadingText}}</p>
     <div class="compose-approver-reply">
-      {{textarea cols=10 rows=20 name="approver-reply" value=editRevisionText}}
+      {{textarea name="approver-reply" value=editRevisionText}}
       {{#if emptyReplyError}}
         {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
       {{/if}}
@@ -75,21 +75,23 @@
         <span class="reply-value recipient">{{displayReply.recipient.username}}</span>
       </p>
     </div>
-    <p class="reply-header">Message</p>
+    <p class="reply-header">
+      Message
+      {{#if showApproverEdit}}
+        <i {{action 'startEditing'}} class="far fa-edit"></i>
+      {{/if}}
+    </p>
     <div class="reply-content">
       {{displayReply.text}}
     </div>
   </div>
   {{#if showDisplayReplyActions}}
     <div class="display-reply-actions">
-      {{#if showApproverEdit}}
-        <button class="primary-button" {{action "startEditing"}}>Edit</button>
-      {{/if}}
       {{#if showApproverRevise}}
         <button class="primary-button" {{action "startRevising"}}>Revise</button>
       {{/if}}
       {{#if showTrash}}
-        <button class="primary-button cancel-button" {{action "confirmTrash" displayReply}}>Delete</button>
+        <i {{action 'confirmTrash' displayReply}} class="fas fa-trash"></i>
       {{/if}}
     </div>
   {{/if}}

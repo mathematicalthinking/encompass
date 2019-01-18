@@ -380,6 +380,13 @@
       color: black;
       font-size: 1.1em;
       font-weight: $light-font-weight;
+      i {
+        float: right;
+        color: $filter-list-border-color;
+        &:hover {
+          color: $primary-font-color;
+        }
+      }
     }
     .reply-content {
       margin: 20px 0;
@@ -406,6 +413,7 @@
           border-radius: 3px;
           margin: 15px 0;
           resize: none;
+          height: 60px;
         }
       }
     }
@@ -434,6 +442,15 @@
     .display-reply-actions {
       button {
         margin: 5px;
+      }
+      .fa-trash {
+        font-size: 1.3em;
+        color: $filter-list-border-color;
+        float: right;
+        margin-top: 10px;
+        &:hover {
+          color: $primary-font-color;
+        }
       }
     }
     .submit-buttons {
