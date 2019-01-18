@@ -32,13 +32,10 @@
       </td>
       {{#if canRespond}}
       <td>
-        {{!-- {{#link-to 'responses.new.submission' currentSubmission.id classNames="respond"}}
-          Respond
-        {{/link-to}} --}}
-        <button class="new-response" {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>Respond</button>
-        {{#if currentSubmission.responses.length}}
+        <button class="action_button new-response" {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>Respond</button>
+        {{#if submissionResponses.length}}
           <span class="meta response-count existing" title="existing response count">
-            ({{currentSubmission.responses.length}})
+            ({{submissionResponses.length}})
           </span>
         {{/if}}
       </td>

@@ -37,6 +37,32 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
+  didReceiveAttrs() {
+    if (this.get('currentSubmission.id')) {
+      this.fetchSubmissionResponses();
+    }
+    this._super(...arguments);
+  },
+
+  fetchSubmissionResponses() {
+    if (!this.get('currentSubmission')) {
+      return;
+    }
+    this.get('store').query('response', {
+      filterBy: {
+        submission: this.get('currentSubmission.id')
+      }
+    })
+    .then((responses) => {
+      if (!this.get('isDestroying') && !this.get('isDestroyed')) {
+        this.set('submissionResponses', responses.toArray());
+      }
+    })
+    .catch((err) => {
+      this.handleErrors(err, 'dataFetchErr');
+    });
+  },
+
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
 
