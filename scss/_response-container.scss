@@ -131,17 +131,16 @@ div.response-flex-container {
       h3.compose-heading {
         text-align: center;
       }
-
       textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
         margin-bottom: 15px;
-        &.note {
-          height: 100px;
-        }
+        resize: none;
       }
     }
     div.mentor-reply-actions {
-      margin-left: 15px;
-
+      margin-top: 15px;
     }
     #response-new {
       .top-row {
@@ -275,6 +274,14 @@ div.response-flex-container {
     div.compose-approver-reply {
       margin-left: 15px;
       margin-bottom: 10px;
+
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
     }
     div.display-reply-actions {
       button {
