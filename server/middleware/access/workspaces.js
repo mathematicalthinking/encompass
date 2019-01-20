@@ -153,6 +153,8 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   }
   const { accountType, actingRole, collabWorkspaces } = user;
 
+  let isStudent = accountType === 'S' || actingRole === 'student';
+
   let filter = {
     $and: []
   };
@@ -172,45 +174,51 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
     filter.$and.push(searchBy);
   }
 
+  if (accountType === 'A' && !isStudent) {
+    return filter;
+  }
+
   let accessCrit = {$or: []};
 
-  // should be stopped earlier in the middleware chain
-  if (actingRole === 'student' || accountType === 'S') {
-    accessCrit.$or.push({ createdBy : user.id });
-    accessCrit.$or.push({ owner: user.id});
+  // all users can access any workspace theyve created, own, or are collab in
+
+  accessCrit.$or.push({ createdBy : user._id });
+  accessCrit.$or.push({ owner: user._id});
+
+  if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
+    accessCrit.$or.push({_id: {$in: collabWorkspaces}});
+  }
+
+  if (isStudent) {
     accessCrit.$or.push({ mode: 'internet' });
 
-    if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
-      accessCrit.$or.push({_id: {$in: collabWorkspaces}});
-    }
-
     filter.$and.push(accessCrit);
-
     return filter;
   }
 
-  if (accountType === 'A') {
-    return filter;
-  }
+  // assignments of type workspace with ws reference?
+
+
 
   accessCrit.$or.push({ mode: { $in: ['public', 'internet'] } });
-  accessCrit.$or.push({ owner: user._id });
-  accessCrit.$or.push({ createdBy : user.id });
 
-
- if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
-  accessCrit.$or.push({_id: {$in: collabWorkspaces}});
-}
 // will only reach here if admins/pdadmins are in actingRole teacher
 // Teachers and PdAdmins
 
   if (accountType === 'P') {
     const userOrg = user.organization;
-    const userIds = await utils.getModelIds('User', { organization: userOrg });
 
-    accessCrit.$or.push({owner: {$in : userIds}});
-    accessCrit.$or.push({createdBy: {$in : userIds}});
-    accessCrit.$or.push({organization: user.organization});
+    if (apiUtils.isValidMongoId(userOrg)) {
+      accessCrit.$or.push({organization: user.organization});
+
+      const userIds = await utils.getModelIds('User', { organization: userOrg });
+      if (apiUtils.isNonEmptyArray(userIds)) {
+        accessCrit.$or.push({
+          createdBy: { $in: userIds },
+          owner: {$in: userIds }
+        });
+      }
+    }
 
     filter.$and.push(accessCrit);
 
@@ -220,6 +228,7 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   if (accountType === 'T') {
     // Workspaces where a teacher is the primary teacher or in the teachers array
 
+    // assignment workspaces?
     accessCrit.$or.push({'teacher.id': user.id});
     accessCrit.$or.push({'teachers': user.id});
 

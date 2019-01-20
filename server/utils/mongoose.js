@@ -11,7 +11,7 @@ const isValidMongoId = (val) => {
  * (either as ObjectId or HexString) else false
  * @param {any} a - 1st value to compare
  * @param {any} b - 2nd value to compare
- * @returns { boolean }
+ * @returns {boolean}
  */
 const areObjectIdsEqual = (a, b) => {
   if (!isValidMongoId(a) || !isValidMongoId(b)) {

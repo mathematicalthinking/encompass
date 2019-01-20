@@ -1,6 +1,8 @@
+/* eslint-disable complexity */
 const _ = require('underscore');
 
 const utils = require('./utils');
+const mongooseUtils = require('../../utils/mongoose');
 const models = require('../../datasource/schemas');
 const problemsAccess = require('./problems');
 const apiUtils = require('../../datasource/api/utils');
@@ -18,12 +20,13 @@ module.exports.put = {};
   *
   */
 const accessibleUsersQuery = async function(user, ids, usernames, regex, filterBy) {
-  if (!user) {
+  if (!apiUtils.isNonEmptyObject(user)) {
     return;
   }
   try {
-    const accountType = user.accountType;
-    const actingRole = user.actingRole;
+    const { accountType, actingRole } = user;
+
+    let isStudent = accountType === 'S' || actingRole === 'student';
 
     let filter = {
       isTrashed: false
@@ -37,63 +40,99 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
       filter._id = ids;
     }
   }
-
   if (usernames) {
-    filter.username = { $in: usernames };
+    if (apiUtils.isNonEmptyArray(usernames)) {
+      filter.username = { $in: usernames };
+    } else if (_.isString(usernames)) {
+      filter.username = usernames;
+    }
   }
 
   if (regex) {
     filter.username = regex;
   }
 
-  if (filterBy) {
+  if (apiUtils.isNonEmptyObject(filterBy)) {
     let { accountType } = filterBy;
-    filter.accountType = accountType;
-  }
-
-  // students can only retrieve their own user record or
-  // students from a section // or teachers?
-  if (actingRole === 'student' || accountType === 'S') {
-
-    const users = await utils.getStudentUsers(user);
-
-    if (!filter.$or) {
-      filter.$or = [];
+    if (_.contains(['S', 'T', 'P', 'A'], accountType)) {
+      filter.accountType = accountType;
     }
-    filter.$or.push({ _id: user.createdBy });
-    filter.$or.push({ _id: {$in: users } });
-
+  }
+  // Admins not in acting student role can access all users
+  if (accountType === 'A' && !isStudent) {
     return filter;
   }
-
-  // will only reach here if admins/pdadmins are in actingRole teacher
-  if (accountType === 'A') {
-    return filter;
-  }
-
-  const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
-
-  const usersFromWs = await utils.getUsersFromWorkspaces(accessibleWorkspaceIds);
 
   if (!filter.$or) {
     filter.$or = [];
   }
+  // all users can access themselves, users they created, and the user who created them(?)
 
-  filter.$or.push({ _id: {$in: usersFromWs } });
-  filter.$or.push({ _id: user.createdBy });
+  filter.$or.push({ _id: user._id });
+  filter.$or.push({ createdBy: user._id });
+
+  if (apiUtils.isValidMongoId(user.createdBy)) {
+    filter.$or.push({ _id: user.createdBy });
+  }
+
+  // all users need to be able to access users from any workspace they have access to
+
+  if (isStudent) {
+    let [ workspaceUsers, studentUsers, responseUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getStudentUsers(user), utils.getResponseUsers(user)
+    ]);
+
+    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+      filter.$or.push({ _id: {$in: workspaceUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(studentUsers)) {
+      filter.$or.push({ _id: {$in: studentUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(responseUsers)) {
+      filter.$or.push({ _id: {$in: responseUsers } });
+    }
+
+    return filter;
+  }
 
   if (accountType === 'P') {
-    const users = await utils.getPdAdminUsers(user);
-    if (!_.isEmpty(users)) {
-      filter.$or.push({ _id: {$in: users } });
+    let [ workspaceUsers, pdUsers, responseUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getPdAdminUsers(user), utils.getResponseUsers(user)
+    ]);
+
+    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+      filter.$or.push({ _id: {$in: workspaceUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(pdUsers)) {
+      filter.$or.push({ _id: {$in: pdUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(responseUsers)) {
+      filter.$or.push({ _id: {$in: responseUsers } });
     }
 
     return filter;
   }
 
   if (accountType === 'T') {
-    const users = await utils.getTeacherUsers(user);
-    filter.$or.push({ _id: {$in: users } });
+    let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getTeacherUsers(user), utils.getResponseUsers(user)
+    ]);
+    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+      filter.$or.push({ _id: {$in: workspaceUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(teacherUsers)) {
+      filter.$or.push({ _id: {$in: teacherUsers } });
+    }
+
+    if (apiUtils.isNonEmptyArray(responseUsers)) {
+      filter.$or.push({ _id: {$in: responseUsers } });
+    }
+
     return filter;
   }
   }catch(err) {
@@ -104,13 +143,24 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 };
 
 const canGetUser = async function(user, id, username) {
-  if (!id && !username) {
+  let isValidId = apiUtils.isValidMongoId(id);
+  let isValidUserName = apiUtils.isNonEmptyString(username);
+
+  if (!isValidId && !isValidUserName) {
     return;
   }
 
+  if (!apiUtils.isNonEmptyObject(user)) {
+    return;
+  }
+
+  let { accountType, actingRole } = user;
+
+  let isStudent = accountType === 'S' || actingRole === 'student';
+
+
   let criteria;
   let requestedUser;
-  let accessibleUserIds;
 
   if (id) {
     requestedUser = await models.User.findById(id).lean().exec();
@@ -125,46 +175,87 @@ const canGetUser = async function(user, id, username) {
     };
   }
 
-
-  if (id) {
-    criteria = await accessibleUsersQuery(user, [id], null);
-  } else {
-    criteria = await accessibleUsersQuery(user, null, [username]);
-  }
-  accessibleUserIds = await utils.getModelIds('User', criteria);
-
-  if (!_.isEmpty(accessibleUserIds)) {
-    accessibleUserIds = accessibleUserIds.map(obj => obj.toString());
-  }
-  let isAccessibleCreator;
-  let userCreators = [];
-  let problemCreators = [];
-
-  if (id && _.isEmpty(accessibleUserIds)) {
-    // check if requested user is creator
-    let crit = await accessibleUsersQuery(user);
-
-    userCreators = await utils.getCreatorIds('User', crit);
-    isAccessibleCreator = _.contains(userCreators, id);
-
-    if (!isAccessibleCreator) {
-      //check if requsted user is creator of an accessible problem
-      let problemCrit = await problemsAccess.get.problems(user);
-      problemCreators = await utils.getCreatorIds('Problem', problemCrit);
-      isAccessibleCreator = _.contains(problemCreators, id);
-    }
-  }
-
-
-  let hasPermission = _.contains(accessibleUserIds, requestedUser._id.toString()) || isAccessibleCreator;
-
-  if (hasPermission) {
-    return({
+  if (accountType === 'A' && !isStudent) {
+    return {
       doesExist: true,
       hasPermission: true,
-      requestedUser: requestedUser
-    });
+      requestedUser
+    };
   }
+
+  let isAdmin = accountType === 'A' && !isStudent;
+  let isPdAdmin = accountType === 'P' && !isStudent;
+  let isTeacher = accountType === 'T' && !isStudent;
+
+  let isOrgUser = (isPdAdmin || isTeacher) && mongooseUtils.areObjectIdsEqual(requestedUser.organization, user.organization);
+  let isOwnSelf = mongooseUtils.areObjectIdsEqual(requestedUser._id, user._id);
+  let isOwnCreator = mongooseUtils.areObjectIdsEqual(requestedUser.createdBy, user._id);
+
+  if (isAdmin || isOrgUser || isOwnSelf || isOwnCreator) {
+    return {
+      doesExist: true,
+      hasPermission: true,
+      requestedUser
+    };
+  }
+
+  if (id) {
+    criteria = await accessibleUsersQuery(user, id, null);
+  } else {
+    criteria = await accessibleUsersQuery(user, null, username);
+  }
+
+  if ( await models.User.findOne(criteria) !== null) {
+    return {
+      doesExist: true,
+      hasPermission: true,
+      requestedUser
+    };
+  }
+
+  let isAccessibleCreator;
+  let userCreatorIds = [];
+  let problemCreatorIds = [];
+
+
+  // should this be necessary?
+
+  // check if requested user is creator of an accessible user
+
+  let userCrit = await accessibleUsersQuery(user);
+
+  userCreatorIds = await utils.getCreatorIds('User', userCrit);
+
+  isAccessibleCreator = _.find(userCreatorIds, (creatorId) => {
+    return mongooseUtils.areObjectIdsEqual(creatorId, requestedUser._id);
+  }) !== undefined;
+
+  if (isAccessibleCreator) {
+    return {
+      doesExist: true,
+      hasPermission: true,
+      requestedUser
+    };
+  }
+
+  //check if requsted user is creator of an accessibile problem
+
+  let problemCrit = await problemsAccess.get.problems(user);
+  problemCreatorIds = await utils.getCreatorIds('Problem', problemCrit);
+
+  isAccessibleCreator = _.find(problemCreatorIds, (creatorId) => {
+    return mongooseUtils.areObjectIdsEqual(creatorId, requestedUser._id);
+  }) !== undefined;
+
+  if (isAccessibleCreator) {
+    return {
+      doesExist: true,
+      hasPermission: true,
+      requestedUser
+    };
+  }
+
+  // exhausted checks, cannot access;
   return {
     doesExist: true,
     hasPermission: false,
