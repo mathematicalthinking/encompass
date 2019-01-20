@@ -22,6 +22,10 @@ const admin = {
       username: 'tracyc',
       accountType: 'S'
     },
+    outsideCollab: {
+      _id: '5b4e4b48808c7eebc9f9e827',
+      username: 'ssmith',
+    },
     accessibleUserCount: 37,
   },
   submissions: {
@@ -179,10 +183,14 @@ const pdAdminDrexel = {
       username: 'sam3',
       accountType: 'S'
     },
-    accessibleUserCount: 25,
+    outsideCollab: {
+      _id: "5b99146e25b620610ceead75",
+      username: "actingstudent",
+    },
+    accessibleUserCount: 29,
   },
   submissions: {
-    accessibleSubmissionCount: 53,
+    accessibleSubmissionCount: 55,
     unaccessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
@@ -191,7 +199,7 @@ const pdAdminDrexel = {
     },
   },
   comments: {
-    accessibleCommentCount: 4,
+    accessibleCommentCount: 8,
     accessibleComment: {
       _id: "53e12264b48b12793f000b84"
     },
@@ -221,10 +229,10 @@ const pdAdminDrexel = {
     },
   },
   answers: {
-    accessibleAnswerCount: 2,
+    accessibleAnswerCount: 4,
   },
   selections: {
-    accessibleSelectionCount: 72,
+    accessibleSelectionCount: 76,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -242,7 +250,7 @@ const pdAdminDrexel = {
     },
   },
   folders: {
-    accessibleFolderCount: 32,
+    accessibleFolderCount: 41,
     inaccessibleFolder: {
       _id: '5bb814d19885323f6d894975'
     },
@@ -361,7 +369,11 @@ const teacherMT = {
       username: 'tracyc',
       accountType: 'S'
     },
-    accessibleUserCount: 19,
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    },
+    accessibleUserCount: 21,
   },
   submissions: {
     accessibleSubmissionCount: 20,
@@ -538,21 +550,25 @@ const studentMT = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 6,
+    accessibleUserCount: 8,
     modifiableUser: {
       _id: '5b914a102ecaf7c30dd47492',
       username: 'tracyc',
       accountType: 'S'
     },
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    }
   },
   submissions: {
-    accessibleSubmissionCount: 0,
+    accessibleSubmissionCount: 2,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4df"
     },
   },
   comments: {
-    accessibleCommentCount: 0,
+    accessibleCommentCount: 4,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -568,10 +584,10 @@ const studentMT = {
     },
   },
   answers: {
-    accessibleAnswerCount: 1,
+    accessibleAnswerCount: 2,
   },
   selections: {
-    accessibleSelectionCount: 0,
+    accessibleSelectionCount: 4,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -686,12 +702,16 @@ const teacherActingStudent = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 6,
+    accessibleUserCount: 8,
     modifiableUser: {
       _id: '5b99146e25b620610ceead75',
       username: 'actingstudent',
       accountType: 'T'
     },
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    }
   },
   submissions: {
     accessibleSubmissionCount: 2,

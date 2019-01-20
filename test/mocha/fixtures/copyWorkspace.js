@@ -36,6 +36,42 @@ module.exports = {
                     "5bec36958c73047613e2f34d"
                 ]
             }
+        },
+        {
+            "user" : "5b1e7bf9a5d2157ef4c911a6",
+            "selections" : 2,
+            "folders" : 2,
+            "comments" : 2,
+            "feedback" : "preAuth",
+            "_id" : "5c448d70cda8d917d3958e41",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5b7321ee59a672806ec903d5",
+            "selections" : 2,
+            "folders" : 2,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "_id" : "5c4490d6cda8d917d3958e42",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5b914a102ecaf7c30dd47492",
+            "selections" : 2,
+            "folders" : 0,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "_id" : "5c44caaf8d3c3e235a4719ba",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
         }
     ],
     "taggings" : ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368","5bec38338c73047613e2f36b","5bec386a8c73047613e2f36d"],
