@@ -1,5 +1,12 @@
 const _ = require('underscore');
+const mongoose = require('mongoose');
 
+const { isNonEmptyArray } = require('../utils/objects');
+/**
+ * Returns true if passed in value matches format for mongoose objectId else false
+ * @param {any} val
+ * @returns {boolean}
+ */
 const isValidMongoId = (val) => {
   let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
   return checkForHexRegExp.test(val);
@@ -48,5 +55,27 @@ const areObjectIdsEqual = (a, b) => {
   return a2 === b2;
 };
 
+/**
+ * Takes an array and filters out any values that do not match the proper format for a mongoose
+ objectId (hex string or objectId instance). If 2nd argument is passed in as true, will convert  each value to an ObjectId instance.
+ * @param {array} arr- array to clean
+ * @param {boolean} [doConvert=false] - whether or not to convert to ObjectIds
+ * @returns {array}
+ */
+function cleanObjectIdArray(arr, doConvert=false) {
+  if (!isNonEmptyArray(arr)) {
+    return [];
+  }
+
+  const filtered = _.filter(arr, isValidMongoId);
+
+  if (!doConvert) {
+    return filtered;
+  }
+
+  return _.map(filtered, val => mongoose.Types.ObjectId(val));
+}
+
   module.exports.isValidMongoId = isValidMongoId;
   module.exports.areObjectIdsEqual = areObjectIdsEqual;
+  module.exports.cleanObjectIdArray = cleanObjectIdArray;

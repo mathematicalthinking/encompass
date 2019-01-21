@@ -1,7 +1,10 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
+const mongooseUtils = require('../../utils/mongoose');
 
 const _ = require('underscore');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
@@ -16,9 +19,9 @@ async function accessibleAssignmentsQuery(user, ids) {
   };
   // ids will either be an array of ids or a single id or null
   if (ids) {
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else if (apiUtils.isValidMongoId(ids)) {
+    } else if (mongooseUtils.isValidMongoId(ids)) {
       filter._id = ids;
     }
   }
@@ -34,7 +37,7 @@ async function accessibleAssignmentsQuery(user, ids) {
     filter.$or = [
       { createdBy: user },
     ];
-    if (apiUtils.isNonEmptyArray(sections)) {
+    if (isNonEmptyArray(sections)) {
       filter.$or.push({
         section: { $in: sections }
       });

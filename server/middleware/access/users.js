@@ -5,11 +5,12 @@ const utils = require('./utils');
 const mongooseUtils = require('../../utils/mongoose');
 const models = require('../../datasource/schemas');
 const problemsAccess = require('./problems');
-const apiUtils = require('../../datasource/api/utils');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
 
 module.exports.get = {};
 module.exports.put = {};
-
 
 /**
   * @private
@@ -20,7 +21,7 @@ module.exports.put = {};
   *
   */
 const accessibleUsersQuery = async function(user, ids, usernames, regex, filterBy) {
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return;
   }
   try {
@@ -34,14 +35,14 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
   // ids will either be an array of ids or a single id or null
   if (ids) {
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else if (apiUtils.isValidMongoId(ids)) {
+    } else if (mongooseUtils.isValidMongoId(ids)) {
       filter._id = ids;
     }
   }
   if (usernames) {
-    if (apiUtils.isNonEmptyArray(usernames)) {
+    if (isNonEmptyArray(usernames)) {
       filter.username = { $in: usernames };
     } else if (_.isString(usernames)) {
       filter.username = usernames;
@@ -52,7 +53,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
     filter.username = regex;
   }
 
-  if (apiUtils.isNonEmptyObject(filterBy)) {
+  if (isNonEmptyObject(filterBy)) {
     let { accountType } = filterBy;
     if (_.contains(['S', 'T', 'P', 'A'], accountType)) {
       filter.accountType = accountType;
@@ -71,7 +72,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
   filter.$or.push({ _id: user._id });
   filter.$or.push({ createdBy: user._id });
 
-  if (apiUtils.isValidMongoId(user.createdBy)) {
+  if (mongooseUtils.isValidMongoId(user.createdBy)) {
     filter.$or.push({ _id: user.createdBy });
   }
 
@@ -82,15 +83,15 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
       utils.getUsersFromWorkspaces(user), utils.getStudentUsers(user), utils.getResponseUsers(user)
     ]);
 
-    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+    if (isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(studentUsers)) {
+    if (isNonEmptyArray(studentUsers)) {
       filter.$or.push({ _id: {$in: studentUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(responseUsers)) {
+    if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
     }
 
@@ -99,7 +100,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
   // all non-students can access any member from org
 
-  if (apiUtils.isValidMongoId(user.organization)) {
+  if (mongooseUtils.isValidMongoId(user.organization)) {
     filter.$or.push({ organization: user.organization });
   }
 
@@ -112,15 +113,15 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
       utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
     ]);
 
-    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+    if (isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(teacherUsers)) {
+    if (isNonEmptyArray(teacherUsers)) {
       filter.$or.push({ _id: {$in: teacherUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(responseUsers)) {
+    if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
     }
 
@@ -131,15 +132,15 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
     let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
       utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
     ]);
-    if (apiUtils.isNonEmptyArray(workspaceUsers)) {
+    if (isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(teacherUsers)) {
+    if (isNonEmptyArray(teacherUsers)) {
       filter.$or.push({ _id: {$in: teacherUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(responseUsers)) {
+    if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
     }
 
@@ -153,14 +154,14 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 };
 
 const canGetUser = async function(user, id, username) {
-  let isValidId = apiUtils.isValidMongoId(id);
-  let isValidUserName = apiUtils.isNonEmptyString(username);
+  let isValidId = mongooseUtils.isValidMongoId(id);
+  let isValidUserName = isNonEmptyString(username);
 
   if (!isValidId && !isValidUserName) {
     return;
   }
 
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return;
   }
 
@@ -314,7 +315,7 @@ const modifiableUserCriteria = function(user) {
 };
 
 const canModifyUser = async function(user, userIdToModify) {
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return false;
   }
   const { id, accountType, actingRole } = user;
@@ -367,11 +368,11 @@ const canModifyUser = async function(user, userIdToModify) {
 //   };
 
 
-//   if (!apiUtils.isNonEmptyObject(user)) {
+//   if (!isNonEmptyObject(user)) {
 //     results.errors.push('Invalid user');
 //     return results;
 //   }
-//   if (!apiUtils.isNonEmptyObject(body)) {
+//   if (!isNonEmptyObject(body)) {
 //     results.errors.push('Invalid Put Request body');
 //     return results;
 //   }

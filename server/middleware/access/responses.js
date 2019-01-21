@@ -1,13 +1,18 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
 const _ = require('underscore');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+
+const { isValidMongoId } = mongooseUtils;
+const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
 const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
-      return {};
+    if (!isNonEmptyObject(user)) {
+      return;
     }
 
     const { accountType, actingRole } = user;
@@ -20,13 +25,13 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       ]
     };
 
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
-    } else if(apiUtils.isValidMongoId(ids)) {
+    } else if(isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 
-    if (apiUtils.isNonEmptyObject(filterBy)) {
+    if (isNonEmptyObject(filterBy)) {
       let allowedKeyHash = {
         workspace: true,
         submission: true,
@@ -42,7 +47,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       });
     }
 
-    if (apiUtils.isValidMongoId(workspace)) {
+    if (isValidMongoId(workspace)) {
       filter.$and.push({workspace});
     }
 
@@ -64,7 +69,8 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     // can access any feedback from workspace where user has approve permissions
 
     let approverWorkspaceIds = await utils.getApproverWorkspaceIds(user);
-    if (apiUtils.isNonEmptyArray(approverWorkspaceIds)) {
+
+    if (isNonEmptyArray(approverWorkspaceIds)) {
       orFilter.$or.push({
         workspace: {$in: approverWorkspaceIds}
       });
@@ -80,7 +86,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     // const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
     // console.log('restrictedResponseIds', restrictedRecords);
 
-    // if (apiUtils.isNonEmptyArray(restrictedRecords)) {
+    // if (isNonEmptyArray(restrictedRecords)) {
     //   filter.$and.push({ _id: { $nin: restrictedRecords } });
     // }
 

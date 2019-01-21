@@ -1,5 +1,10 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyArray, } = objectUtils;
+
+
 module.exports.get = {};
 
 const accessibleSectionsQuery = function(user, ids) {
@@ -16,9 +21,9 @@ const accessibleSectionsQuery = function(user, ids) {
 
   // ids will either be an array of ids or a single id or null
   if (ids) {
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else if (apiUtils.isValidMongoId(ids)) {
+    } else if (mongooseUtils.isValidMongoId(ids)) {
       filter._id = ids;
     }
   }

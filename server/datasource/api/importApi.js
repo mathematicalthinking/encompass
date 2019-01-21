@@ -11,7 +11,10 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const workspaceApi = require('./workspaceApi');
-const apiUtils = require('../api/utils');
+
+const objectUtils = require('../../utils/objects');
+const { isNil, isNonEmptyArray, } = objectUtils;
+
 
 module.exports.get = {};
 module.exports.post = {};
@@ -29,7 +32,7 @@ module.exports.put = {};
 /* jshint ignore:start */
 const buildSubmissionSet = async function (submissions, user) {
   let submissionSet;
-  if (!apiUtils.isNonEmptyArray(submissions)) {
+  if (!isNonEmptyArray(submissions)) {
     return;
   }
   const submissionIds = submissions.map((sub) => {
@@ -61,7 +64,7 @@ const buildSubmissionSet = async function (submissions, user) {
 
   let teacher = submissions[0].teacher;
   let teacherId;
-  if (!apiUtils.isNullOrUndefined(teacher)) {
+  if (!isNil(teacher)) {
     teacherId = teacher.id;
     matchBy["teacher.id"] = teacherId;
   }
@@ -135,7 +138,7 @@ const buildSubmissionSet = async function (submissions, user) {
   } catch (err) {
     console.error(`Error buildSubmissionSet: ${err}`);
   }
-  if (apiUtils.isNonEmptyArray(submissionSet)) {
+  if (isNonEmptyArray(submissionSet)) {
     return submissionSet[0].submissionSet;
   }
   return null;

@@ -3,9 +3,12 @@ const _ = require('underscore');
 
 const wsAuth =require('./workspaces');
 const assignmentAuth = require('./assignments');
-const apiUtils = require('../../datasource/api/utils');
 const wsApi = require('../../datasource/api/workspaceApi');
 const responsesAuth = require('./responses');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+const { isNil, isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
 
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
@@ -18,7 +21,6 @@ const getModelIds = async function(model, filter={}) {
   }
 
 };
-
 
 async function getOrgSections(user) {
   try {
@@ -89,7 +91,7 @@ const getStudentSections = function(user) {
  */
 const getResponseUsers = async function (user) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user)) {
       return [];
     }
 
@@ -123,7 +125,7 @@ async function getStudentUsers(user) {
 
     let userMap = {};
 
-    if (apiUtils.isNonEmptyArray(sectionIds)) {
+    if (isNonEmptyArray(sectionIds)) {
       const sections = await models.Section.find({_id: {$in: sectionIds}}, {students: 1, teachers: 1}).lean().exec();
 
       sections.forEach((section) => {
@@ -158,7 +160,7 @@ async function getUsersFromTeacherSections(user) {
 
     let userMap = {};
 
-    if (apiUtils.isNonEmptyArray(sectionIds)) {
+    if (isNonEmptyArray(sectionIds)) {
       const sections = await models.Section.find({_id: {$in: sectionIds}}, {students: 1, teachers: 1, createdBy: 1}).lean().exec();
 
       sections.forEach((section) => {
@@ -193,7 +195,7 @@ async function getUsersFromTeacherSections(user) {
 function getPdAdminUsers(user) {
   try {
     let userOrg = _.propertyOf(user)('organization');
-    if (!apiUtils.isValidMongoId(userOrg)) {
+    if (!mongooseUtils.isValidMongoId(userOrg)) {
       return [];
     }
 
@@ -213,7 +215,7 @@ function getPdAdminUsers(user) {
 function getTeacherUsers(user) {
   try {
     let userOrg = _.propertyOf(user)('organization');
-    if (!apiUtils.isValidMongoId(userOrg)) {
+    if (!mongooseUtils.isValidMongoId(userOrg)) {
       return [];
     }
 
@@ -247,19 +249,19 @@ async function getAccessibleWorkspaceIds(user) {
 // takes a user object and returns an array of userIds associated with workspaces that the input user has access to
 async function getUsersFromWorkspaces(user) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user)) {
       return [];
     }
 
     let wsCriteria = await wsAuth.get.workspaces(user);
 
-    if (!apiUtils.isNonEmptyObject(wsCriteria)) {
+    if (!isNonEmptyObject(wsCriteria)) {
       return [];
     }
 
     let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, feedbackAuthorizers: 1}).lean().exec();
 
-    if (!apiUtils.isNonEmptyArray(accessibleWorkspaces)) {
+    if (!isNonEmptyArray(accessibleWorkspaces)) {
       return [];
     }
 
@@ -365,7 +367,7 @@ const getAllChildCategories = async function(categoryId, isIdOnly, asStrings) {
 };
 
 function getRestrictedWorkspaceData(user, requestedModel) {
-  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyString(requestedModel)) {
+  if (!isNonEmptyObject(user) || !isNonEmptyString(requestedModel)) {
     return [];
   }
 
@@ -380,7 +382,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   // if collabWorkspaces is empty, user has not been added as a collab on any workspaces
   // and thus does not have any accessible workspaces with restricted access
 
-  if (!apiUtils.isNonEmptyArray(collabWorkspaces)) {
+  if (!isNonEmptyArray(collabWorkspaces)) {
     return [];
   }
 
@@ -402,13 +404,13 @@ function getRestrictedWorkspaceData(user, requestedModel) {
         const restrictedDataMap = wsApi.getRestrictedDataMap(user, specialPermissions, populatedWs);
 
         // no restrictions
-        if (!apiUtils.isNonEmptyObject(restrictedDataMap)) {
+        if (!isNonEmptyObject(restrictedDataMap)) {
           return [];
         }
 
         // if the workspace does not have records of requested type, there is nothing to restrict
         const allRecords = populatedWs[requestedModel];
-        if (!apiUtils.isNonEmptyArray(allRecords)) {
+        if (!isNonEmptyArray(allRecords)) {
           return [];
         }
 
@@ -420,7 +422,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
         }
         let allowedIds;
 
-        if (!apiUtils.isNullOrUndefined(allowedValues)) {
+        if (!isNil(allowedValues)) {
           if (Array.isArray(allowedValues)) {
             allowedIds = _.map(allowedValues, (val) => {
              if (val._id) {
@@ -456,7 +458,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
 
 // any
 function getApproverWorkspaceIds(user) {
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return [];
   }
 
@@ -471,7 +473,7 @@ function getApproverWorkspaceIds(user) {
     criteria.$or.push({feedbackAuthorizers: user._id});
 
     if (accountType === 'P' && actingRole !== 'student') {
-      if (apiUtils.isValidMongoId(user.organization)) {
+      if (mongooseUtils.isValidMongoId(user.organization)) {
         criteria.$or.push({organization: user.organization});
       }
     }

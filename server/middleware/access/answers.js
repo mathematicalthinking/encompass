@@ -1,14 +1,21 @@
 /* eslint-disable complexity */
-const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
-const submissionsAccess = require('./submissions');
 const _ = require('underscore');
+
 const models = require('../../datasource/schemas');
+
+const utils = require('./utils');
+const mongooseUtils = require('../../utils/mongoose');
+
+const submissionsAccess = require('./submissions');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+
 module.exports.get = {};
 
 const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user)) {
       return {};
     }
     const { accountType, actingRole } = user;
@@ -27,13 +34,13 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
         { isTrashed: false }
       ]
     };
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
-    } else if(apiUtils.isValidMongoId(ids)) {
+    } else if(mongooseUtils.isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 
-    if (apiUtils.isNonEmptyObject(filterBy)) {
+    if (isNonEmptyObject(filterBy)) {
       if (filterBy.teacher && accountType !== 'T') {
         let [assignments, sections] = await Promise.all([
           utils.getTeacherAssignments(filterBy.teacher),
@@ -42,11 +49,11 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
         let assignmentFilter;
         let sectionFilter;
 
-        if (apiUtils.isNonEmptyArray(assignments)) {
+        if (isNonEmptyArray(assignments)) {
           assignmentFilter = {assignment: {$in: assignments}};
 
         }
-        if (apiUtils.isNonEmptyArray(sections)) {
+        if (isNonEmptyArray(sections)) {
           sectionFilter = {section: {$in: sections}};
         }
         let orFilter;
@@ -74,7 +81,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       }
       filter.$and.push(filterBy);
     }
-    if (apiUtils.isNonEmptyObject(searchBy)) {
+    if (isNonEmptyObject(searchBy)) {
       filter.$and.push(searchBy);
     }
     if (accountType === 'A' && !isStudent) {
@@ -90,7 +97,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
     // removes falsy values
     const compacted = _.compact(answerIds);
 
-    if (apiUtils.isNonEmptyArray(compacted)) {
+    if (isNonEmptyArray(compacted)) {
       orFilter.$or.push({_id: {$in: compacted}});
     }
 

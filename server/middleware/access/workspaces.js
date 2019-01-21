@@ -1,21 +1,25 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
-const _     = require('underscore');
+const mongooseUtils = require('../../utils/mongoose');
+
+const _ = require('underscore');
+
+const objectUtils = require('../../utils/objects');
+const { isNil, isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
 function getUserWsPermissions(user, ws) {
-  if (!apiUtils.isNonEmptyObject(ws) || !apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(ws) || !isNonEmptyObject(user)) {
     return;
   }
 
   const userId = user._id;
-  if (apiUtils.isNullOrUndefined(userId)) {
+  if (isNil(userId)) {
     return;
   }
 
   const permissionObjects = ws.permissions;
-  if (!apiUtils.isNonEmptyArray(permissionObjects)) {
+  if (!isNonEmptyArray(permissionObjects)) {
     return;
   }
 
@@ -29,14 +33,14 @@ function getUserWsPermissions(user, ws) {
 // only return customPermissions if restricted else null
 // eslint-disable-next-line complexity
 const canLoadWorkspace = function(user, ws) {
-  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyObject(ws)) {
+  if (!isNonEmptyObject(user) || !isNonEmptyObject(ws)) {
     return [false, null];
   }
   const userId = _.propertyOf(user)('_id');
   const ownerId = _.propertyOf(ws)(['owner','_id']);
   const creatorId = _.propertyOf(ws)(['createdBy', '_id']);
 
-  if (apiUtils.isNullOrUndefined(userId) || apiUtils.isNullOrUndefined(ownerId) || apiUtils.isNullOrUndefined(creatorId)) {
+  if (isNil(userId) || isNil(ownerId) || isNil(creatorId)) {
     return [false, null];
   }
 
@@ -145,7 +149,7 @@ const canLoadWorkspace = function(user, ws) {
 
 const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
 
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return {};
   }
   if (isTrashedOnly) {
@@ -161,16 +165,16 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
 
   filter.$and.push({ isTrashed: false });
 
-  if (apiUtils.isNonEmptyArray(ids)) {
+  if (isNonEmptyArray(ids)) {
     filter.$and.push({_id: {$in : ids } });
-  } else if (apiUtils.isValidMongoId(ids)) {
+  } else if (mongooseUtils.isValidMongoId(ids)) {
     filter.$and.push({_id: ids });
   }
-  if (apiUtils.isNonEmptyObject(filterBy)) {
+  if (isNonEmptyObject(filterBy)) {
     filter.$and.push(filterBy);
   }
 
-  if (apiUtils.isNonEmptyObject(searchBy)) {
+  if (isNonEmptyObject(searchBy)) {
     filter.$and.push(searchBy);
   }
 
@@ -185,7 +189,7 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   accessCrit.$or.push({ createdBy : user._id });
   accessCrit.$or.push({ owner: user._id});
 
-  if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
+  if (isNonEmptyArray(collabWorkspaces)) {
     accessCrit.$or.push({_id: {$in: collabWorkspaces}});
   }
 
@@ -208,11 +212,11 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   if (accountType === 'P') {
     const userOrg = user.organization;
 
-    if (apiUtils.isValidMongoId(userOrg)) {
+    if (mongooseUtils.isValidMongoId(userOrg)) {
       accessCrit.$or.push({organization: user.organization});
 
       const userIds = await utils.getModelIds('User', { organization: userOrg });
-      if (apiUtils.isNonEmptyArray(userIds)) {
+      if (isNonEmptyArray(userIds)) {
         accessCrit.$or.push({
           createdBy: { $in: userIds },
           owner: {$in: userIds }
@@ -244,11 +248,11 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
     return false;
   }
 
-  if (!apiUtils.isNonEmptyObject(ws.owner) || !apiUtils.isNonEmptyObject(ws.createdBy)) {
+  if (!isNonEmptyObject(ws.owner) || !isNonEmptyObject(ws.createdBy)) {
     return false;
   }
 
-  if (apiUtils.isNullOrUndefined(ws.owner._id) || apiUtils.isNullOrUndefined(ws.createdBy._id)) {
+  if (isNil(ws.owner._id) || isNil(ws.createdBy._id)) {
     return false;
   }
 

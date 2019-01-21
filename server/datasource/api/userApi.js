@@ -15,7 +15,10 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const access   = require('../../middleware/access/users');
 const auth = require('../../datasource/api/auth');
-const apiUtils = require('../../datasource/api/utils');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyObject, } = objectUtils;
+
 
 module.exports.get = {};
 module.exports.post = {};
@@ -218,7 +221,7 @@ function postUser(req, res, next) {
   async function putUser(req, res, next) {
     try {
       const requestBody = req.body.user;
-      if (!apiUtils.isNonEmptyObject(requestBody)) {
+      if (!isNonEmptyObject(requestBody)) {
         return utils.sendError.InvalidContentError(null, res);
       }
        /* These fields are uneditable */

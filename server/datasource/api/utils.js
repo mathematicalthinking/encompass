@@ -2,6 +2,16 @@ const _ = require('underscore');
 const models = require('../schemas');
 const mongoose = require('mongoose');
 
+const mongooseUtils = require('../../utils/mongoose');
+const objectUtils = require('../../utils/objects');
+const stringUtils = require('../../utils/strings');
+
+const { isNonEmptyArray, isNonEmptyString } = objectUtils;
+
+const { isValidMongoId, cleanObjectIdArray } = mongooseUtils;
+
+const { getFirstCharOfStr, removeExtraSpacesFromStr, getNthWordOfStr, capitalizeString } = stringUtils;
+
 async function filterByForeignRef(model, searchQuery, pathToPopulate, foreignField, filterCriteria,) {
   try {
     let query = searchQuery.replace(/\s+/g, "");
@@ -88,124 +98,6 @@ async function getUniqueIdsFromQueries(model, criteria) {
   }
 }
 
-function isNullOrUndefined(val) {
-  return _.isNull(val) || _.isUndefined(val);
-}
-
-function isNonEmptyArray(val) {
-  return _.isArray(val) && !_.isEmpty(val);
-}
-
-function isNonEmptyString(val) {
-  return _.isString(val) && val.length > 0;
-}
-
-// not array or function
-function isNonEmptyObject(val) {
-  return _.isObject(val) && !_.isArray(val) && !_.isFunction(val) && !_.isEmpty(val);
-}
-
-function getFirstCharOfStr(str) {
-  if (!_.isString(str)) {
-    return;
-  }
-  if (str.length === 0) {
-    return '';
-  }
-  return str.charAt(0);
-}
-
-// trim leading and trailing whitespaces and also remove excess whitespaces between words
-// e.g. 'alex    williams ' -> 'alex williams'
-function removeExtraSpacesFromStr(str) {
-  if (!_.isString(str)) {
-    return;
-  }
-  if (str.length === 0) {
-    return '';
-  }
-
-  let copy = str.slice();
-  let trimmed = copy.trim();
-  let words = trimmed.split(' ');
-
-  return _.chain(words)
-    .without('')
-    .join(' ')
-    .value();
-}
-
-function getNthWordOfStr(str, n, doRemoveExtraSpaces) {
-  if (!_.isString(str) || !_.isNumber(n)) {
-    return;
-  }
-  if (str.length === 0) {
-    return '';
-  }
-  let copy = str.slice();
-
-  if (doRemoveExtraSpaces) {
-    copy = removeExtraSpacesFromStr(copy);
-  }
-
-  let words = copy.split(' ');
-  let numWords = words.length;
-  let wordIndex = n;
-
-  // if desired word index is greater than num of words, return last word
-  if (wordIndex > numWords) {
-    wordIndex = numWords;
-  }
-  return words[wordIndex];
-}
-
-// return input string with first letter capitalized
-function capitalizeWord(str) {
-  if (!_.isString(str)) {
-    // throw Error?
-    return;
-  }
-  if (str.length === 0) {
-    return '';
-  }
-  let copy = str.slice();
-  let trimmed = copy.trim();
-
-  let firstLetterCap = trimmed.charAt(0).toUpperCase();
-
-  if (trimmed.length === 1) {
-    return firstLetterCap;
-  }
-
-  let slicedFrom1 = trimmed.slice(1);
-  return firstLetterCap + slicedFrom1;
-}
-
-// expects a space delimited string
-// returns new string with first letter of each word capitalized
-function capitalizeString(str, doRemoveExtraSpaces) {
-  if (!_.isString(str)) {
-    // throw error?
-    return;
-  }
-  if (str.length === 0) {
-    return '';
-  }
-  let copy = str.slice();
-
-  if (doRemoveExtraSpaces) {
-    copy = removeExtraSpacesFromStr(copy);
-  }
-
-
-  let words = copy.split(' ');
-
-  return _.chain(words)
-    .map(capitalizeWord)
-    .join(' ')
-    .value();
-}
-
 // expects space separated string, e.g. alice Williams
 // returns Alice W.
 function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
@@ -239,27 +131,6 @@ function getSafeName(str, doRemoveExtraSpaces, doCapitalize) {
     return `${firstName} ${lastInitial}.`;
   }
   return firstName;
-}
-
-function isValidMongoId(val) {
-  var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
-  return checkForHexRegExp.test(val);
-}
-
-// takes an array and filters out any non-valid mongo objectIds
-// if doConvert is passed in as true, will return new array where
-// any string values are converted to objectIds
-function cleanObjectIdArray(arr, doConvert=false) {
-  if (!isNonEmptyArray(arr)) {
-    return [];
-  }
-
-  const filtered = _.filter(arr, val => isValidMongoId(val));
-  if (!doConvert) {
-    return filtered;
-  }
-
-  return _.map(filtered, val => mongoose.Types.ObjectId(val));
 }
 
 const sortWorkspaces = function(model, sortParam, req, criteria) {
@@ -599,17 +470,9 @@ module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
 module.exports.findAndReturnIds = findAndReturnIds;
 module.exports.getUniqueIdsFromQueries = getUniqueIdsFromQueries;
-module.exports.isNullOrUndefined = isNullOrUndefined;
-module.exports.isNonEmptyArray = isNonEmptyArray;
-module.exports.capitalizeString = capitalizeString;
-module.exports.capitalizeWord = capitalizeWord;
 module.exports.getSafeName = getSafeName;
-module.exports.isNonEmptyString = isNonEmptyString;
 module.exports.sortWorkspaces = sortWorkspaces;
 module.exports.cloneDocuments = cloneDocuments;
-module.exports.isNonEmptyObject = isNonEmptyObject;
 module.exports.mapObjectsToIds = mapObjectsToIds;
-module.exports.isValidMongoId = isValidMongoId;
-module.exports.cleanObjectIdArray = cleanObjectIdArray;
 module.exports.sortAnswersByLength = sortAnswersByLength;
 module.exports.isRecordUniqueByStringProp = isRecordUniqueByStringProp;
