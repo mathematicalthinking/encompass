@@ -97,17 +97,27 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
     return filter;
   }
 
+  // all non-students can access any member from org
+
+  if (apiUtils.isValidMongoId(user.organization)) {
+    filter.$or.push({ organization: user.organization });
+  }
+
+  // all nonStudents can access any user associated with one of their sections
+  // currently pdadmins and teachers have the same permisisons for getting users
+  // pdadmins can do a lot more in terms of modifying / creating / deleting
+
   if (accountType === 'P') {
-    let [ workspaceUsers, pdUsers, responseUsers ] = await Promise.all([
-      utils.getUsersFromWorkspaces(user), utils.getPdAdminUsers(user), utils.getResponseUsers(user)
+    let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
     ]);
 
     if (apiUtils.isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });
     }
 
-    if (apiUtils.isNonEmptyArray(pdUsers)) {
-      filter.$or.push({ _id: {$in: pdUsers } });
+    if (apiUtils.isNonEmptyArray(teacherUsers)) {
+      filter.$or.push({ _id: {$in: teacherUsers } });
     }
 
     if (apiUtils.isNonEmptyArray(responseUsers)) {
@@ -119,7 +129,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
   if (accountType === 'T') {
     let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
-      utils.getUsersFromWorkspaces(user), utils.getTeacherUsers(user), utils.getResponseUsers(user)
+      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
     ]);
     if (apiUtils.isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });

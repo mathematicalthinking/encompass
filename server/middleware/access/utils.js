@@ -57,19 +57,11 @@ async function getTeacherAssignments(userId) {
 }
 
 function getTeacherSections(user) {
-  if (!user) {
+  if (!user || !Array.isArray(user.sections)) {
     return [];
   }
-  let sections = user.sections;
-
-  if (!Array.isArray(sections)) {
-    return [];
-  }
-
-  return sections.map((section) => {
-    if (section.role === 'teacher') {
-      return section.sectionId;
-    }
+  return user.sections.filter((section) => {
+    return section.role === 'teacher';
   });
 }
 
@@ -158,6 +150,44 @@ async function getStudentUsers(user) {
     console.error(`Error getStudentUsers: ${err}`);
     console.trace();
   }
+}
+
+async function getUsersFromTeacherSections(user) {
+  try {
+    const sectionIds = _.pluck(getTeacherSections(user), 'sectionId');
+
+    let userMap = {};
+
+    if (apiUtils.isNonEmptyArray(sectionIds)) {
+      const sections = await models.Section.find({_id: {$in: sectionIds}}, {students: 1, teachers: 1, createdBy: 1}).lean().exec();
+
+      sections.forEach((section) => {
+        if (section.createdBy && !userMap[section.createdBy]) {
+          userMap[section.createdBy] = true;
+        }
+
+        if (Array.isArray(section.students)) {
+          section.students.forEach((id) => {
+            if (!userMap[id]) {
+              userMap[id] = true;
+            }
+          });
+        }
+        if (Array.isArray(section.teachers)) {
+          section.teachers.forEach((id) => {
+            if (!userMap[id]) {
+              userMap[id] = true;
+            }
+          });
+        }
+      });
+    }
+
+    return _.keys(userMap);
+  } catch(err) {
+    console.error(`Error getUsersFromTeacherSections: ${err}`);
+  }
+
 }
 
 function getPdAdminUsers(user) {
@@ -468,3 +498,4 @@ module.exports.getAllChildCategories = getAllChildCategories;
 module.exports.getRestrictedWorkspaceData = getRestrictedWorkspaceData;
 module.exports.getApproverWorkspaceIds = getApproverWorkspaceIds;
 module.exports.getResponseUsers = getResponseUsers;
+module.exports.getUsersFromTeacherSections = getUsersFromTeacherSections;
