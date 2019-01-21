@@ -13,7 +13,9 @@ var data = [
     "comments": [],
     "selections": [],
     "isTrashed": false,
-    "createDate": "2018-06-08T21:04:58.683Z"
+    "createDate": "2018-06-08T21:04:58.683Z",
+    "status": 'approved',
+    "responseType": "mentor",
   },
   {
     "_id" : "5bbe0224ecd6e597fd8eea13",
@@ -40,6 +42,8 @@ var data = [
         "5bec37838c73047613e2f361",
         "5bec37a78c73047613e2f365"
     ],
+    "status": 'approved',
+    "responseType": "mentor",
     "lastModifiedDate" : null,
     "isTrashed" : false,
     "createDate" : "2018-11-14T18:08:23.341Z"
@@ -62,6 +66,8 @@ var data = [
         "5bec373d8c73047613e2f35c",
         "5bec37408c73047613e2f35d"
     ],
+    "status": 'approved',
+    "responseType": "mentor",
     "lastModifiedDate" : null,
     "isTrashed" : false,
     "createDate" : "2018-11-14T18:09:59.610Z"

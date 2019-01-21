@@ -4,6 +4,7 @@ module.exports = {
     "mode" : "private",
     "name" : "Summer's Test Workspace 1",
     "owner" : "5b4e4b48808c7eebc9f9e827",
+    "organization": "5b4e4d5f808c7eebc9f9e82c",
     "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "lastViewed" : "2018-11-14T15:00:52.991Z",
@@ -69,8 +70,8 @@ module.exports = {
             "feedback" : "authReq",
             "_id" : "5c44caaf8d3c3e235a4719ba",
             "submissions" : {
-                "all" : true,
-                "submissionIds" : []
+                "all" : false,
+                "submissionIds" : ["5bec36958c73047613e2f34c"]
             }
         }
     ],
