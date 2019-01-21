@@ -278,7 +278,12 @@ var data = [{
     "isAuthorized": true,
     "assignments": [],
     "answers": [],
-    "sections": [],
+    "sections": [
+      {
+        "role" : "student",
+        "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      },
+    ],
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "5b245760ac75842be3189525"

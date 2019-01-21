@@ -373,7 +373,11 @@ const teacherMT = {
       _id: "5b1e7bf9a5d2157ef4c911a6",
       username: "drex",
     },
-    accessibleUserCount: 21,
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
+    },
+    accessibleUserCount: 22,
   },
   submissions: {
     accessibleSubmissionCount: 20,
@@ -550,7 +554,7 @@ const studentMT = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 8,
+    accessibleUserCount: 9,
     modifiableUser: {
       _id: '5b914a102ecaf7c30dd47492',
       username: 'tracyc',
@@ -559,7 +563,11 @@ const studentMT = {
     outsideCollab: {
       _id: "5b1e7bf9a5d2157ef4c911a6",
       username: "drex",
-    }
+    },
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
+    },
   },
   submissions: {
     accessibleSubmissionCount: 2,
@@ -702,7 +710,7 @@ const teacherActingStudent = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 8,
+    accessibleUserCount: 9,
     modifiableUser: {
       _id: '5b99146e25b620610ceead75',
       username: 'actingstudent',
@@ -711,7 +719,11 @@ const teacherActingStudent = {
     outsideCollab: {
       _id: "5b1e7bf9a5d2157ef4c911a6",
       username: "drex",
-    }
+    },
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
+    },
   },
   submissions: {
     accessibleSubmissionCount: 2,
