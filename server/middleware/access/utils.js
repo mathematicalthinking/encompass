@@ -481,6 +481,16 @@ function getApproverWorkspaceIds(user) {
   return getModelIds('Workspace', criteria);
 }
 
+function doesRecordExist(model, criteria) {
+  if (!isNonEmptyString(model) || !isNonEmptyObject(criteria)) {
+    return false;
+  }
+  return models[model].findOne(criteria).lean().exec()
+    .then((record) => {
+      return !isNil(record);
+    });
+}
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -501,3 +511,4 @@ module.exports.getRestrictedWorkspaceData = getRestrictedWorkspaceData;
 module.exports.getApproverWorkspaceIds = getApproverWorkspaceIds;
 module.exports.getResponseUsers = getResponseUsers;
 module.exports.getUsersFromTeacherSections = getUsersFromTeacherSections;
+module.exports.doesRecordExist = doesRecordExist;
