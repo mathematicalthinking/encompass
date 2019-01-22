@@ -2256,7 +2256,7 @@ async function cloneWorkspace(req, res, next) {
     }
 
     // process basic settings
-    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+    const { name, owner, mode, createdBy, feedbackAuthorizers } = copyWorkspaceRequest;
 
     if (mode === 'public' || mode === 'internet') {
      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
@@ -2549,6 +2549,12 @@ async function cloneWorkspace(req, res, next) {
     }
   }
   newWs.sourceWorkspace = originalWsId;
+
+  if (isNonEmptyArray(feedbackAuthorizers)) {
+    newWs.feedbackAuthorizers = feedbackAuthorizers;
+  } else {
+    newWs.feedbackAuthorizers = [newWs.owner];
+  }
 
   const savedWs = await newWs.save();
 

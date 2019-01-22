@@ -12,4 +12,5 @@ Encompass.CopyWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
   copyWorkspaceError: DS.attr('string'),
   createdWorkspace: DS.belongsTo('workspace'),
   createdFolderSet: DS.belongsTo('folder-set'),
+  feedbackAuthorizers: DS.attr(),
 });
