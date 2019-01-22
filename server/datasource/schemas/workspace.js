@@ -52,7 +52,10 @@ var WorkspaceSchema = new Schema({
   // 0: none, 1: view only, 2: create, 3: edit, 4: delete
   permissions: [ {
     user: { type: ObjectId, ref: 'User'},
-    global: {type: String, enum: ['viewOnly', 'editor', 'custom'] },
+    section: { type: ObjectId, ref: 'Section' },
+    organization: { type: ObjectId, ref: 'Organization' },
+    canApproveFeedback: { type: Boolean, default: false },
+    global: {type: String, enum: ['viewOnly', 'editor', 'editorWithFeedback', 'custom'] },
     submissions: {
       all: { type: Boolean },
       submissionIds: [ {type: ObjectId, ref: 'Submission'} ],
@@ -64,7 +67,6 @@ var WorkspaceSchema = new Schema({
     feedback: { type: String, enum: ['none', 'authReq', 'preAuth'] }
 
   }],
-  feedbackAuthorizers: [ {type: ObjectId, ref: 'User'}],
   sourceWorkspace: { type: ObjectId, ref: 'Workspace'}
 }, {versionKey: false});
 

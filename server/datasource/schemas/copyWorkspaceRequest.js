@@ -69,7 +69,6 @@ var CopyWorkspaceRequestSchema = new Schema({
   createdWorkspace: { type: ObjectId, ref: 'Workspace' },
   createdFolderSet: { type: ObjectId, ref: 'FolderSet' },
   copyWorkspaceError: { type: String },
-  feedbackAuthorizers: [{type: ObjectId, ref: 'User'}],
 }, { versionKey: false });
 
 /**
