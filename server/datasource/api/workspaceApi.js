@@ -24,13 +24,17 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
-const objectUtils = require('../../utils/objects');
+const responseAccess = require('../../middleware/access/responses');
 
+const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
+const mongooseUtils = require('../../utils/mongoose');
 
 const { isNil, isNonEmptyArray, isNonEmptyObject, } = objectUtils;
 
 const { capitalizeString, } = stringUtils;
+
+const { areObjectIdsEqual } = mongooseUtils;
 
 module.exports.get = {};
 module.exports.post = {};
@@ -45,7 +49,7 @@ function getRestrictedDataMap(user, permissions, ws) {
   }
 
   const dataMap = {};
-  const { submissions, folders, selections, comments } = permissions;
+  const { submissions, folders, selections, comments, feedback } = permissions;
 
   // filter submissions to requestedIds
   if (_.propertyOf(submissions)('all') !== true) {
@@ -89,6 +93,16 @@ function getRestrictedDataMap(user, permissions, ws) {
           .value();
            dataMap.comments = selComments;
         }
+        if (feedback === 'none') {
+          dataMap.responses = [];
+        } else {
+          const subIds = _.map(filteredSubs, sub => sub._id.toString());
+          const subResponses = _.chain(ws.responses)
+            .filter(res => res.submission && subIds.includes(res.submission.toString()))
+            .flatten()
+            .value();
+          dataMap.responses = subResponses;
+        }
       }
     }
   } else {
@@ -107,6 +121,11 @@ function getRestrictedDataMap(user, permissions, ws) {
     dataMap.folders = [];
     dataMap.taggings = [];
   }
+
+  if (feedback === 'none') {
+    dataMap.responses = [];
+  }
+
   return dataMap;
 }
 /**
@@ -119,12 +138,13 @@ function getRestrictedDataMap(user, permissions, ws) {
   * @throws {MongoError} Data retrieval failed
   * @todo This should really accept a node-style callback
   */
-function getWorkspace(id, user, specialPermissions, callback) {
+function getWorkspace(id, user, specialPermissions, callback, doCheckAllowedResponses) {
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
     .populate('folders')
     .populate('taggings')
+    .populate('responses')
     .exec(function(err, ws){
     if(err) {
       throw err;
@@ -148,14 +168,16 @@ function getWorkspace(id, user, specialPermissions, callback) {
       'selections':  'selection',
       'submissions': 'submission',
       'folders':     'folder',
-      'taggings':     'tagging'
+      'taggings':     'tagging',
+      'responses': 'response',
     };
 
     var relatedData = {
       'selections':  [],
       'submissions': [],
       'folders':     [],
-      'taggings':    []
+      'taggings':    [],
+      'responses': [],
 //      'workspace': {},
 //      'createdBy': {}
     };
@@ -183,7 +205,7 @@ function getWorkspace(id, user, specialPermissions, callback) {
       }
       data[modelName] = _.values(relatedData[key]);
     });
-    callback(data);
+            callback(data);
   });
 }
 
@@ -235,6 +257,79 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
       });
 }
 
+function filterRequestedWorkspaceData(user, results) {
+  if (!isNonEmptyObject(user) || !isNonEmptyArray(results)) {
+    return Promise.resolve([]);
+  }
+
+  const { accountType, actingRole } = user;
+
+  const isStudent = accountType === 'S' || actingRole === 'student';
+
+  if (accountType === 'A' && !isStudent) {
+    return Promise.resolve(results);
+  }
+
+  return Promise.all(
+    _.map(results, (ws) => {
+      // check if user has a special permission object
+
+      // if no permisisons object, just return ws;
+      if (!isNonEmptyArray(ws.permissions)) {
+        return Promise.resolve(ws);
+      }
+
+      // if there is no permisisonObject for user, just return ws
+      const permissionObject = _.find(ws.permissions, obj => areObjectIdsEqual(user._id, obj.user));
+      if (isNil(permissionObject)) {
+        return Promise.resolve(ws);
+      }
+
+      return models.Workspace.findById(ws._id)
+      .populate('selections')
+      .populate('submissions')
+      .populate('folders')
+      .populate('taggings')
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .populate('responses')
+      .lean().exec()
+      .then((populatedWs) => {
+        // eslint-disable-next-line no-unused-vars
+        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
+        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
+        // val is array of populated Docs, but we just need Ids
+        _.each(restrictedDataMap, (val, key) => {
+          if (ws[key]) {
+            if (Array.isArray(val)) {
+              ws[key] = _.map(val, (val) => {
+                if (val._id) {
+                  return val._id;
+                }
+                return val;
+              });
+            } else {
+              ws[key] = val;
+            }
+          }
+        });
+        console.log('ws.responses all', ws.responses);
+        // make sure only returning responses that have been approved
+        return responseAccess.get.responses(user, ws.responses)
+        .then((criteria) => {
+          return models.Response.find(criteria).lean().exec()
+          .then((responses) => {
+            console.log('allowed responses', responses);
+            ws.responses = responses.map(r => r._id);
+            return ws;
+          });
+        });
+      });
+    })
+  );
+}
+
 
 /**
   * @public
@@ -261,12 +356,22 @@ function sendWorkspace(req, res, next) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
-
+      // return filterRequestedWorkspaceData(user, [ws])
+      // .then((results) => {
+      //   console.log('results', results);
+      //   if (results) {
+      //     utils.sendResponse(res, results[0]);
+      //   }
+      // });
       //need to check that the user's permissions aren't limited for this workspace
       getWorkspace(req.params.id, user, specialPermissions, function(data) {
+        console.log('data sending back workspace: ', JSON.stringify(data.responses, null, 2));
+
+      //   // responses need to be filtered so only ones user should have access to are sent back
+      //   // ideally this would be done already but for now do here
         utils.sendResponse(res, data);
-      });
-    }
+       });
+      }
   });
 }
 
@@ -995,70 +1100,6 @@ function newWorkspaceRequest(req, res, next) {
     });
   });
 }
-
-function filterRequestedWorkspaceData(user, results) {
-  if (!isNonEmptyObject(user) || !isNonEmptyArray(results)) {
-    return [];
-  }
-
-  const { accountType, actingRole } = user;
-
-  const isStudent = accountType === 'S' || actingRole === 'student';
-
-  if (accountType === 'A' && !isStudent) {
-    return results;
-  }
-
-  return Promise.all(
-    _.map(results, (ws) => {
-      // check if user has a special permission object
-
-      // if no permisisons object, just return ws;
-      if (!isNonEmptyArray(ws.permissions)) {
-        return ws;
-      }
-
-      // if there is no permisisonObject for user, just return ws
-      const permissionObject = _.find(ws.permissions, obj => _.isEqual(user._id, obj.user));
-      if (isNil(permissionObject)) {
-        return ws;
-      }
-
-      return models.Workspace.findById(ws._id)
-      .populate('selections')
-      .populate('submissions')
-      .populate('folders')
-      .populate('taggings')
-      .populate('owner')
-      .populate('editors')
-      .populate('createdBy')
-      .lean().exec()
-      .then((populatedWs) => {
-        // eslint-disable-next-line no-unused-vars
-        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
-        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
-        // val is array of populated Docs, but we just need Ids
-        _.each(restrictedDataMap, (val, key) => {
-          if (ws[key]) {
-            if (Array.isArray(val)) {
-              ws[key] = _.map(val, (val) => {
-                if (val._id) {
-                  return val._id;
-                }
-                return val;
-              });
-            } else {
-              ws[key] = val;
-            }
-          }
-        });
-
-        return ws;
-      });
-    })
-  );
-  }
-
 
 /**
   * @public
