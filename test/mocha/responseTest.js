@@ -53,7 +53,9 @@ describe('Response CRUD operations by account type', async function() {
       });
     });
 
-    if (accountType !== 'A') {
+
+    // TODO add unaccessible response for pdadmin
+    if (accountType !== 'A' && accountType !=='P') {
       /** GET **/
       describe('/GET unaccessible response by id', () => {
         it('should return 403 error', done => {

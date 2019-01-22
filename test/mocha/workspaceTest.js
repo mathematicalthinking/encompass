@@ -101,7 +101,7 @@ describe('Workspace CRUD operations by account type', async function() {
             console.log(err);
           }
           expect(res).to.have.status(200);
-          expect(res.body).to.have.all.keys('workspace', 'folder', 'selection', 'submission', 'tagging');
+          expect(res.body).to.have.all.keys('workspace', 'folder', 'selection', 'submission', 'tagging', 'response');
           expect(res.body.workspace).to.be.a('object');
 
           let arraysToCheck = ['submissions', 'comments', 'responses', 'taggings', 'selections', 'folders'];
