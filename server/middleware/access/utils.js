@@ -389,6 +389,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
       .populate('owner')
       .populate('editors')
       .populate('createdBy')
+      .populate('responses')
       .lean().exec()
       .then((populatedWs) => {
         // eslint-disable-next-line no-unused-vars
