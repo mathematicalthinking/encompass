@@ -22,11 +22,11 @@ var data = [
     permissions: [
         {
             "user" : "53a43f7c729e9ef59ba7ebf2",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc599e",
             "submissions" : {
                 "all" : true,
@@ -35,11 +35,11 @@ var data = [
         },
         {
             "user" : "529518daba1cd3d8c4013344",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc599d",
             "submissions" : {
                 "all" : true,
@@ -48,11 +48,11 @@ var data = [
         },
         {
             "user" : "5b245760ac75842be3189525",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc599c",
             "submissions" : {
                 "all" : true,
@@ -78,11 +78,11 @@ var data = [
     "permissions": [
         {
             "user" : "52964714e4bad7087700014e",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc599b",
             "submissions" : {
                 "all" : true,
@@ -91,11 +91,11 @@ var data = [
         },
         {
             "user" : "52b05fae729e9ef59ba7eb4d",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc599a",
             "submissions" : {
                 "all" : true,
@@ -104,11 +104,11 @@ var data = [
         },
         {
             "user" : "53d274a032f2863240001a71",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5999",
             "submissions" : {
                 "all" : true,
@@ -117,11 +117,11 @@ var data = [
         },
         {
             "user" : "52964653e4bad7087700014b",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5998",
             "submissions" : {
                 "all" : true,
@@ -130,11 +130,11 @@ var data = [
         },
         {
             "user" : "52a88def729e9ef59ba7eb4c",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5997",
             "submissions" : {
                 "all" : true,
@@ -143,11 +143,11 @@ var data = [
         },
         {
             "user" : "5370dc9c8f3e3d1f21000022",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5996",
             "submissions" : {
                 "all" : true,
@@ -156,11 +156,11 @@ var data = [
         },
         {
             "user" : "52a88ae2729e9ef59ba7eb4b",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5995",
             "submissions" : {
                 "all" : true,
@@ -169,11 +169,11 @@ var data = [
         },
         {
             "user" : "529646eae4bad7087700014d",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5994",
             "submissions" : {
                 "all" : true,
@@ -182,11 +182,11 @@ var data = [
         },
         {
             "user" : "53a355a932f2863240000026",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5993",
             "submissions" : {
                 "all" : true,
@@ -195,11 +195,11 @@ var data = [
         },
         {
             "user" : "5b245760ac75842be3189525",
-            "global" : "editor",
-            "folders" : 4,
+            "global" : "approver",
+            "folders" : 3,
             "comments" : 4,
             "selections" : 4,
-            "feedback" : "preAuth",
+            "feedback" : "approver",
             "_id" : "5c44c3543c213522e9cc5992",
             "submissions" : {
                 "all" : true,
@@ -290,7 +290,7 @@ var data = [
         },
         {
             "user" : "5b9149c22ecaf7c30dd47490",
-            "global" : "viewOnly",
+            "global" : "custom",
             "folders" : 1,
             "selections" : 1,
             "comments" : 1,
@@ -298,13 +298,12 @@ var data = [
             "_id" : "5c3f3f4891241a7971aaddee",
             "submissions" : {
                 "all" : false,
-                "submissionIds" : [
-                    "5bec36958c73047613e2f34d"
-                ]
+                "userOnly": true,
             }
         },
         {
             "user" : "5b1e7bf9a5d2157ef4c911a6",
+            "global": "directMentor",
             "selections" : 2,
             "folders" : 2,
             "comments" : 2,
@@ -317,6 +316,7 @@ var data = [
         },
         {
             "user" : "5b7321ee59a672806ec903d5",
+            "global": "indirectMentor",
             "selections" : 2,
             "folders" : 2,
             "comments" : 2,
@@ -329,6 +329,7 @@ var data = [
         },
         {
             "user" : "5b914a102ecaf7c30dd47492",
+            "global": "custom",
             "selections" : 2,
             "folders" : 0,
             "comments" : 2,
@@ -336,7 +337,7 @@ var data = [
             "_id" : "5c44caaf8d3c3e235a4719ba",
             "submissions" : {
                 "all" : false,
-                "submissionIds" : ["5bec36958c73047613e2f34c"]
+                "userOnly": true,
             }
         }
     ],
