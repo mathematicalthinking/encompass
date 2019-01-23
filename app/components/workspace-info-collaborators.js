@@ -3,6 +3,8 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
   elementId: ['workspace-info-collaborators'],
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
+  globalPermissionValue: null,
+  showCustom: Ember.computed.equal('globalPermissionValue', 'custom'),
   mainPermissions: [
     {
       id: 1,
@@ -38,13 +40,18 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
     {
       id: 2,
-      display: 'Authorization Required',
+      display: 'Approval Required',
       value: 'authReq',
     },
     {
       id: 3,
-      display: 'Pre-Authorized',
+      display: 'Pre-Approved',
       value: 'preAuth',
+    },
+    {
+      id: 4,
+      display: 'Approver',
+      value: 'approver',
     },
   ],
   submissionPermissions: [
@@ -127,12 +134,16 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         obj.id = 1;
         break;
       case 'authReq':
-        obj.display = 'Authorization Required';
+        obj.display = 'Approval Required';
         obj.id = 2;
         break;
       case 'preAuth':
-        obj.display = 'Pre-Authorized';
+        obj.display = 'Pre-Approved';
         obj.id = 3;
+        break;
+      case 'approver':
+        obj.display = 'Approver';
+        obj.id = 4;
         break;
       default:
         break;
@@ -188,6 +199,8 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         return;
       }
       this.set('selectedCollaborator', collaborator.userObj);
+      this.set('globalPermissionValue', collaborator.global);
+
       let submissions = this.createSubmissionValueObject(collaborator.submissions);
       let selections = this.createValueObject(collaborator.selections);
       let comments = this.createValueObject(collaborator.comments);
@@ -235,15 +248,58 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       let newObj = {
         user: existingObj.user,
         submissions: { all: viewAllSubs, submissionIds: submissionIds },
-        selections: this.get('selections.value'),
-        folders: this.get('folders.value'),
-        comments: this.get('comments.value'),
-        feedback: this.get('feedback.value'),
+        global: this.get('globalPermissionValue'),
       };
+      let globalSetting = this.get('globalPermissionValue');
+        if (globalSetting === 'viewOnly') {
+          newObj.folders = 1;
+          newObj.selections = 1;
+          newObj.comments = 1;
+          newObj.feedback = 'none';
 
+        }
+
+        if (globalSetting === 'editor') {
+          newObj.folders = 3;
+          newObj.selections = 4;
+          newObj.comments = 4;
+          newObj.feedback = 'none';
+
+        }
+
+        if (globalSetting === 'indirectMentor') {
+          newObj.folders = 2;
+          newObj.selections = 2;
+          newObj.comments = 2;
+          newObj.feedback = 'authReq';
+
+        }
+
+        if (globalSetting === 'directMentor') {
+          newObj.folders = 2;
+          newObj.selections = 2;
+          newObj.comments = 2;
+          newObj.feedback = 'preAuth';
+
+        }
+
+        if (globalSetting === 'approver') {
+          newObj.folders = 3;
+          newObj.selections = 4;
+          newObj.comments = 4;
+          newObj.feedback = 'approver';
+
+        }
+        if (globalSetting === 'custom') {
+          newObj.selections = this.get('selections.value');
+          newObj.folders = this.get('folders.value');
+          newObj.comments = this.get('comments.value');
+          newObj.feedback = this.get('feedback.value');
+        }
       permissions.addObject(newObj);
 
       ws.save().then(() => {
+        this.set('globalPermissionValue', null);
         this.get('alert').showToast('success', `Permissions set for ${permissionsObject.userObj.get('username')}`, 'bottom-end', 3000, null, false);
         this.set('selectedCollaborator', null);
         this.set('selectedUser', null);

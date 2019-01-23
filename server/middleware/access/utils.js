@@ -259,7 +259,7 @@ async function getUsersFromWorkspaces(user) {
       return [];
     }
 
-    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, feedbackAuthorizers: 1}).lean().exec();
+    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, }).lean().exec();
 
     if (!isNonEmptyArray(accessibleWorkspaces)) {
       return [];
@@ -278,13 +278,6 @@ async function getUsersFromWorkspaces(user) {
         workspace.permissions.forEach((obj) => {
           if (!userMap[obj.user]) {
             userMap[obj.user] = true;
-          }
-        });
-      }
-      if (Array.isArray(workspace.feedbackAuthorizers)) {
-        workspace.feedbackAuthorizers.forEach((id) => {
-          if (!userMap[id]) {
-            userMap[id] = true;
           }
         });
       }
@@ -456,7 +449,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   .then(_.flatten);
 }
 
-// any
+// TODO update with new permissions structure
 function getApproverWorkspaceIds(user) {
   if (!isNonEmptyObject(user)) {
     return [];
@@ -470,7 +463,6 @@ function getApproverWorkspaceIds(user) {
     criteria.$or = [];
     criteria.$or.push({createdBy: user._id});
     criteria.$or.push({owner: user._id});
-    criteria.$or.push({feedbackAuthorizers: user._id});
 
     if (accountType === 'P' && actingRole !== 'student') {
       if (mongooseUtils.isValidMongoId(user.organization)) {

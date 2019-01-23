@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const utils = require('./utils');
 const mongooseUtils = require('../../utils/mongoose');
 
@@ -5,6 +6,7 @@ const _ = require('underscore');
 
 const objectUtils = require('../../utils/objects');
 const { isNil, isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { areObjectIdsEqual } = mongooseUtils;
 
 module.exports.get = {};
 
@@ -55,6 +57,7 @@ const canLoadWorkspace = function(user, ws) {
 
   const isPublic = ws.mode === 'public';
   const isInternet = ws.mode === 'internet';
+  const isOrgPrivacy = ws.mode === 'org';
 
   // Students can access workspaces they've created and workspaces they've been added as collabs
   // (in their collabWorkspaces array)
@@ -66,20 +69,28 @@ const canLoadWorkspace = function(user, ws) {
       if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
         return [true, userPermissions];
       }
-      if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
+      let globalPermissions = userPermissions.global;
+
+      // no access restrictions
+      if (globalPermissions === 'directMentor' || globalPermissions === 'indirectMentor' || globalPermissions === 'approver') {
         return [true, null];
       }
-        // make sure no restrictions
-        const { folders, selections, comments } = userPermissions;
 
-        if (folders === 0 || selections === 0 || comments === 0) {
-          return [true, userPermissions];
-        }
-
-        // student has permission with no view restrictions
-        return [true, null];
-
+      // responses restricted
+      if (globalPermissions === 'viewOnly' || globalPermissions === 'editor') {
+        return [true, userPermissions];
       }
+
+      // make sure no restrictions
+      const { folders, selections, comments, feedback } = userPermissions;
+
+      if (folders === 0 || selections === 0 || comments === 0 || feedback === 'none') {
+        return [true, userPermissions];
+      }
+
+      // student has permission with no view restrictions
+      return [true, null];
+    }
       // student does not have permission
       return [false, null];
   }
@@ -89,56 +100,52 @@ const canLoadWorkspace = function(user, ws) {
     return [true, null];
   }
 
-  let ownerOrg;
-  let userOrg;
-  let creatorOrg;
+  // if ws mode is org and the org is the same as the user's
+  let isOrgWs = isOrgPrivacy && areObjectIdsEqual(user.organization, ws.organization);
 
-  if (ws.owner.organization) {
-    ownerOrg = ws.owner.organization.toString();
-  } else {
-    ownerOrg === null;
-  }
-  if (user.organization) {
-    userOrg = user.organization.toString();
-  } else {
-    userOrg === null;
+  // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
+  if (isOwner || isCreator || isOrgWs || isPublic || isInternet) {
+    return [true, null];
   }
 
-  if (ws.createdBy.organization) {
-    creatorOrg = ws.createdBy.organization.toString();
-  } else {
-    creatorOrg = null;
-  }
+  let ownerOrg = _.propertyOf(ws)(['owner', 'organization']);
+  let userOrg = user.organization;
+  let creatorOrg = _.propertyOf(ws)(['createdBy', 'organization']);
+
+  let isInPdOrg = areObjectIdsEqual(ownerOrg, userOrg) || areObjectIdsEqual(creatorOrg, userOrg);
 
 
   // PdAdmins can get any workspace that is owned by a member of their org
   if (accountType === 'P') {
-    if (ownerOrg === userOrg || creatorOrg === userOrg) {
+    if (isInPdOrg) {
       return [true, null];
     }
-  }
-
-  // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
-  if (isOwner || isCreator || isPublic || isInternet) {
-    return [true, null];
   }
 
   if (isCollaborator) {
     if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
       return [true, userPermissions];
     }
-    if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
-      return [true, null];
-    }
-      // make sure no restrictions
-      const { folders, selections, comments } = userPermissions;
+    let globalPermissions = userPermissions.global;
 
+      // no access restrictions
+      if (globalPermissions === 'directMentor' || globalPermissions === 'indirectMentor' || globalPermissions === 'approver') {
+        return [true, null];
+      }
 
-      if (folders === 0 || selections === 0 || comments === 0) {
+      // responses restricted
+      if (globalPermissions === 'viewOnly' || globalPermissions === 'editor') {
         return [true, userPermissions];
       }
 
-      // user has permission with no view restrictions
+      // make sure no restrictions
+      const { folders, selections, comments, feedback } = userPermissions;
+
+      if (folders === 0 || selections === 0 || comments === 0 || feedback === 'none') {
+        return [true, userPermissions];
+      }
+
+      // no feedback restrictions
       return [true, null];
 
     }
@@ -258,8 +265,8 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
 
   const actingRole = user.actingRole;
 
-  const isOwner = user.id === ws.owner._id.toString();
-  const isCreator = user.id === ws.createdBy._id.toString();
+  const isOwner = areObjectIdsEqual(user._id, ws.owner._id);
+  const isCreator = areObjectIdsEqual(user._id, ws.createdBy._id);
 
   if (isOwner || isCreator) {
     return true;
@@ -279,7 +286,7 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
     let ownerOrg = ws.owner.organization;
     let creatorOrg = ws.createdBy.organization;
 
-    if (_.isEqual(pdOrg, ownerOrg) || _.isEqual(pdOrg, creatorOrg)) {
+    if (areObjectIdsEqual(pdOrg, ownerOrg) || areObjectIdsEqual(pdOrg, creatorOrg)) {
       return true;
     }
   }
@@ -291,10 +298,11 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
   }
 
   const globalPermissions = userPermissions.global;
-  if (globalPermissions === 'editor') {
+
+  if (globalPermissions === 'approver') {
     return true;
   }
-  if (globalPermissions === 'readOnly') {
+  if (globalPermissions === 'viewOnly') {
     return false;
   }
   // else custom permissions

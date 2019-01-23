@@ -114,11 +114,11 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
 
     if (Array.isArray(permissions)) {
       return permissions
-        .filterBy('canApproveFeedback')
+        .filterBy('feedback', 'approver')
         .mapBy('user');
     }
     return [];
-  }.property('permissions.@each.canApproveFeedback'),
+  }.property('permissions.@each.feedback'),
   sourceWorkspace: DS.attr(),
 
 //  comments: function() {

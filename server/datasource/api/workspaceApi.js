@@ -314,13 +314,11 @@ function filterRequestedWorkspaceData(user, results) {
             }
           }
         });
-        console.log('ws.responses all', ws.responses);
         // make sure only returning responses that have been approved
         return responseAccess.get.responses(user, ws.responses)
         .then((criteria) => {
           return models.Response.find(criteria).lean().exec()
           .then((responses) => {
-            console.log('allowed responses', responses);
             ws.responses = responses.map(r => r._id);
             return ws;
           });
@@ -449,6 +447,7 @@ async function putWorkspace(req, res, next) {
 
         let removedCollabs = _.difference(originalCollabIds, newCollabIds);
         // remove workspace from users' collabWorkspaces if they were removed as collab
+        // do we need to wait for this?
         await models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
         }
       return utils.sendResponse(res, {workspace: savedWorkspace});
@@ -2256,7 +2255,7 @@ async function cloneWorkspace(req, res, next) {
     }
 
     // process basic settings
-    const { name, owner, mode, createdBy, feedbackAuthorizers } = copyWorkspaceRequest;
+    const { name, owner, mode, createdBy, } = copyWorkspaceRequest;
 
     if (mode === 'public' || mode === 'internet') {
      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
@@ -2550,11 +2549,6 @@ async function cloneWorkspace(req, res, next) {
   }
   newWs.sourceWorkspace = originalWsId;
 
-  if (isNonEmptyArray(feedbackAuthorizers)) {
-    newWs.feedbackAuthorizers = feedbackAuthorizers;
-  } else {
-    newWs.feedbackAuthorizers = [newWs.owner];
-  }
 
   const savedWs = await newWs.save();
 

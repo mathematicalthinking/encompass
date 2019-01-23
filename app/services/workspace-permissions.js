@@ -117,13 +117,18 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
     if (globalSetting === 'viewOnly') {
       return false;
     }
-    if (globalSetting === 'editor') {
+    if (globalSetting === 'approver') {
+      return true;
+    }
+
+    if (recordType !== 'feedback' && globalSetting === 'editor') {
       return true;
     }
 
     // else custom
 
     const permissionLevel = userPermissions[recordType];
+
     if (recordType === 'feedback') {
       // to determine if user can respond at all
       if (requiredPermissionLevel === 1) {
@@ -131,7 +136,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       }
       // to determine if user has direct send privileges
       if (requiredPermissionLevel === 2) {
-        return permissionLevel === 'preAuth';
+        return permissionLevel === 'preAuth' || permissionLevel === 'approver';
       }
     }
 

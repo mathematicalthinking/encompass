@@ -113,6 +113,48 @@ Encompass.WorkspaceNewSettingsComponent = Ember.Component.extend(Encompass.Curre
     }
     return [];
   }.property('folderSets.[]'),
+
+  initialCollabOptions: function() {
+    let peeked = this.get('store').peekAll('user');
+    let collabs = this.get('selectedCollaborators');
+
+    if (!_.isObject(peeked)) {
+      return [];
+    }
+    let filtered = peeked.reject((record) => {
+      return collabs[record.get('id')];
+    });
+    return filtered.map((obj) => {
+      return {
+        id: obj.get('id'),
+        username: obj.get('username')
+      };
+    });
+  }.property('selectedCollaborators'),
+
+  selectedCollaborators: function() {
+    let hash = {};
+    // let wsOwnerId = this.get('workspace.owner.id');
+
+    // no reason to set owner as a collaborator
+    // if (wsOwnerId) {
+    //   hash[wsOwnerId] = true;
+    // }
+    const workspacePermissions = this.get('workspacePermissions');
+
+    if (!this.get('utils').isNonEmptyArray(workspacePermissions)) {
+      return hash;
+    }
+    workspacePermissions.forEach((obj) => {
+      let user = obj.user;
+      if (_.isString(user)) {
+        hash[user] = true;
+      } else if (_.isObject(user)) {
+        hash[user.get('id')] = true;
+      }
+    });
+    return hash;
+  }.property('workspacePermissions.[]',),
   actions: {
     updateSelectizeSingle(val, $item, propToUpdate, model) {
       if (_.isNull($item)) {

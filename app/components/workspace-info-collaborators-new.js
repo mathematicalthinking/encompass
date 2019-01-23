@@ -3,6 +3,8 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
   elementId: ['workspace-info-collaborators-new'],
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
+  globalPermissionValue: 'viewOnly',
+  showCustom: Ember.computed.equal('globalPermissionValue', 'custom'),
   mainPermissions: [{
       id: 1,
       display: 'Hidden',
@@ -36,14 +38,19 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
     },
     {
       id: 2,
-      display: 'Authorization Required',
+      display: 'Approval Required',
       value: 'authReq',
     },
     {
       id: 3,
-      display: 'Pre-Authorized',
+      display: 'Pre-Approved',
       value: 'preAuth',
     },
+    {
+      id: 4,
+      display: 'Approver',
+      value: 'approver',
+    }
   ],
   submissionPermissions: [{
       id: 1,
@@ -105,12 +112,16 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         obj.id = 1;
         break;
       case 'authReq':
-        obj.display = 'Authorization Required';
+        obj.display = 'Approval Required';
         obj.id = 2;
         break;
       case 'preAuth':
-        obj.display = 'Pre-Authorized';
+        obj.display = 'Pre-Approved';
         obj.id = 3;
+        break;
+      case 'approver':
+        obj.display = 'Approver';
+        obj.id = 4;
         break;
       default:
         break;
@@ -201,16 +212,61 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       }
 
       let newObj = {
-        user: this.get('collabUser').get('id'),
+        user: this.get('collabUser.id'),
         submissions: {
           all: viewAllSubs,
           submissionIds: submissionIds
         },
-        selections: this.get('selections.value') || 0,
-        folders: this.get('folders.value') || 0,
-        comments: this.get('comments.value') || 0,
-        feedback: this.get('feedback.value') || 'none',
+        global: this.get('globalPermissionValue'),
       };
+
+      let globalSetting = this.get('globalPermissionValue');
+
+      if (globalSetting === 'viewOnly') {
+        newObj.folders = 1;
+        newObj.selections = 1;
+        newObj.comments = 1;
+        newObj.feedback = 'none';
+
+      }
+
+      if (globalSetting === 'editor') {
+        newObj.folders = 3;
+        newObj.selections = 4;
+        newObj.comments = 4;
+        newObj.feedback = 'none';
+
+      }
+
+      if (globalSetting === 'indirectMentor') {
+        newObj.folders = 2;
+        newObj.selections = 2;
+        newObj.comments = 2;
+        newObj.feedback = 'authReq';
+
+      }
+
+      if (globalSetting === 'directMentor') {
+        newObj.folders = 2;
+        newObj.selections = 2;
+        newObj.comments = 2;
+        newObj.feedback = 'preAuth';
+
+      }
+
+      if (globalSetting === 'approver') {
+        newObj.folders = 3;
+        newObj.selections = 4;
+        newObj.comments = 4;
+        newObj.feedback = 'approver';
+
+      }
+      if (globalSetting === 'custom') {
+        newObj.selections = this.get('selections.value') || 0;
+        newObj.folders = this.get('folders.value') || 0;
+        newObj.comments = this.get('comments.value') || 0;
+        newObj.feedback = this.get('feedback.value') || 'none';
+      }
       this.get('originalCollaborators').addObject(this.get('collabUser'));
 
       permissions.addObject(newObj);

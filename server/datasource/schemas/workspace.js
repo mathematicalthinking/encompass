@@ -3,6 +3,23 @@ const _ = require('underscore');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+
+var WorkspacePermissionObjectSchema = new Schema({
+  user: { type: ObjectId, ref: 'User'},
+  section: { type: ObjectId, ref: 'Section' },
+  organization: { type: ObjectId, ref: 'Organization' },
+  global: {type: String, enum: ['viewOnly', 'editor', 'indirectMentor', 'directMentor', 'approver', 'custom'] },
+  submissions: {
+    all: { type: Boolean },
+    submissionIds: [ {type: ObjectId, ref: 'Submission'} ],
+    userOnly: { type: Boolean }
+  },
+  folders: { type: Number, enum: [0, 1, 2, 3] }, // none, see, add new, modify existing folder structure
+  comments: { type: Number, enum: [0, 1, 2, 3, 4] },
+  selections: { type: Number, enum: [0, 1, 2, 3, 4] }, // if can delete other selections, can delete other taggings
+  feedback: { type: String, enum: ['none', 'authReq', 'preAuth', 'approver'] }
+}, {versionKey: false, _id: false});
+
 /**
   * @public
   * @class Workspace
@@ -50,24 +67,8 @@ var WorkspaceSchema = new Schema({
   taggings: [{type: ObjectId, ref: 'Tagging'}],
 
   // 0: none, 1: view only, 2: create, 3: edit, 4: delete
-  permissions: [ {
-    user: { type: ObjectId, ref: 'User'},
-    section: { type: ObjectId, ref: 'Section' },
-    organization: { type: ObjectId, ref: 'Organization' },
-    canApproveFeedback: { type: Boolean, default: false },
-    global: {type: String, enum: ['viewOnly', 'editor', 'editorWithFeedback', 'custom'] },
-    submissions: {
-      all: { type: Boolean },
-      submissionIds: [ {type: ObjectId, ref: 'Submission'} ],
-      userOnly: { type: Boolean }
-    },
-    folders: { type: Number, enum: [0, 1, 2, 3, 4] },
-    comments: { type: Number, enum: [0, 1, 2, 3, 4] },
-    selections: { type: Number, enum: [0, 1, 2, 3, 4] },
-    feedback: { type: String, enum: ['none', 'authReq', 'preAuth'] }
-
-  }],
-  sourceWorkspace: { type: ObjectId, ref: 'Workspace'}
+  permissions: [ WorkspacePermissionObjectSchema ],
+  sourceWorkspace: { type: ObjectId, ref: 'Workspace', _id: false}
 }, {versionKey: false});
 
 /**
@@ -122,4 +123,5 @@ WorkspaceSchema.post('save', function (workspace) {
 });
 
 module.exports.Workspace = mongoose.model('Workspace', WorkspaceSchema);
+module.exports.WorkspacePermissionObject = WorkspacePermissionObjectSchema;
 
