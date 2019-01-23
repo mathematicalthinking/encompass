@@ -27,7 +27,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc599e",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -40,7 +39,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc599d",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -53,7 +51,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc599c",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -83,7 +80,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc599b",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -96,7 +92,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc599a",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -109,7 +104,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5999",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -122,7 +116,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5998",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -135,7 +128,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5997",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -148,7 +140,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5996",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -161,7 +152,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5995",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -174,7 +164,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5994",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -187,7 +176,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5993",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -200,7 +188,6 @@ var data = [
             "comments" : 4,
             "selections" : 4,
             "feedback" : "approver",
-            "_id" : "5c44c3543c213522e9cc5992",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -273,7 +260,6 @@ var data = [
     "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "lastViewed" : "2018-11-14T15:00:52.991Z",
-    "feedbackAuthorizers" : [],
     "permissions" : [
         {
             "user" : "5b99146e25b620610ceead75",
@@ -282,7 +268,6 @@ var data = [
             "selections" : 2,
             "comments" : 2,
             "feedback" : "authReq",
-            "_id" : "5c3f3dd017bd196ef1073b19",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -295,10 +280,10 @@ var data = [
             "selections" : 1,
             "comments" : 1,
             "feedback" : "none",
-            "_id" : "5c3f3f4891241a7971aaddee",
             "submissions" : {
                 "all" : false,
                 "userOnly": true,
+                "submissionIds": [],
             }
         },
         {
@@ -308,7 +293,6 @@ var data = [
             "folders" : 2,
             "comments" : 2,
             "feedback" : "preAuth",
-            "_id" : "5c448d70cda8d917d3958e41",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -321,7 +305,6 @@ var data = [
             "folders" : 2,
             "comments" : 2,
             "feedback" : "authReq",
-            "_id" : "5c4490d6cda8d917d3958e42",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -334,10 +317,10 @@ var data = [
             "folders" : 0,
             "comments" : 2,
             "feedback" : "authReq",
-            "_id" : "5c44caaf8d3c3e235a4719ba",
             "submissions" : {
                 "all" : false,
                 "userOnly": true,
+                "submissionIds": [],
             }
         }
     ],
