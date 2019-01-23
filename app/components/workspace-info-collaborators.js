@@ -336,6 +336,12 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
     toggleSubmissionView: function () {
       this.set('isShowingCustomViewer', !this.get('isShowingCustomViewer'));
-    }
+    },
+    cancelEditCollab: function() {
+      this.set('selectedCollaborator', null);
+      if (this.get('isShowingCustomViewer')) {
+        this.set('isShowingCustomViewer', false);
+      }
+    },
   }
 });

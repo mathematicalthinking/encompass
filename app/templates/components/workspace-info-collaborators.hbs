@@ -205,7 +205,7 @@
 
             {{#if (is-equal collaborator.userObj selectedCollaborator)}}
             <div class="button-row">
-              <button class="primary-button cancel-button" {{action (mut selectedCollaborator null)}}>Cancel</button>
+              <button class="primary-button cancel-button" {{action "cancelEditCollab"}}>Cancel</button>
               <button class="primary-button" {{action 'savePermissions' collaborator}}>Save</button>
             </div>
             {{/if}}
