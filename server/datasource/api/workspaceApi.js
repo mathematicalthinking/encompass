@@ -53,12 +53,38 @@ function getRestrictedDataMap(user, permissions, ws) {
 
   // filter submissions to requestedIds
   if (_.propertyOf(submissions)('all') !== true) {
-    const submissionIds = _.propertyOf(submissions)('submissionIds');
-    const wsSubs = ws.submissions;
-    if (isNonEmptyArray(wsSubs) && _.isArray(submissionIds)) {
-      let filteredSubs = _.filter(wsSubs, (sub) => {
-        return _.contains(_.map(submissionIds, id => id.toString()), sub._id.toString());
+    let submissionIds = _.propertyOf(submissions)('submissionIds') || [];
+    let wsSubs = ws.submissions || [];
+
+    let filteredSubs;
+
+
+    if (_.propertyOf(submissions)('userOnly') === true ) {
+      // filter for subs created by currentUser
+      // i.e. creator.studentId property equals current userId
+      filteredSubs = wsSubs.filter((sub) => {
+        let userId = _.propertyOf(sub)(['creator', 'studentId']);
+        console.log('userId gdm', userId);
+        return areObjectIdsEqual(userId, user.id);
       });
+
+      // if (Array.isArray(ws.submissions)) {
+      //   submissionIds = ws.submissions.filter((sub) => {
+      //     let userId = _.propertyOf(sub)(['creator', 'studentId']);
+      //     console.log('userId gdm', userId);
+      //     return areObjectIdsEqual(userId, user.id);
+      //   });
+      // } else {
+      //   submissionIds = [];
+      // }
+    } else {
+      filteredSubs = wsSubs.filter((sub) => {
+        console.log('pop sub gdm', sub.creator);
+        return _.contains(submissionIds, sub._id.toString());
+      });
+
+    }
+
       dataMap.submissions = filteredSubs;
       // can only take selections that correspond to these submissions
       if (selections === 0) {
@@ -104,7 +130,7 @@ function getRestrictedDataMap(user, permissions, ws) {
           dataMap.responses = subResponses;
         }
       }
-    }
+
   } else {
     // returning all submisisons
 

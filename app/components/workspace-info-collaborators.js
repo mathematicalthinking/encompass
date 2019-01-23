@@ -161,6 +161,10 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       obj.id = 1;
       obj.value = 'all';
       obj.display = 'All';
+    } else if (subObj.userOnly) {
+      obj.id = 2;
+      obj.value = 'userOnly';
+      obj.display = 'Own Only';
     } else {
       obj.id = 3;
       obj.value = 'custom';
@@ -177,18 +181,19 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         return ids;
       }
       return [];
-    } else if (submissionsValue === 'userOnly') {
-      // filter for only submissions that have selectedUser as student
-      const subs = this.get('workspace.submissions.content');
-      const selectedUsername = this.get('selectedUser.username');
-      const selectedUserId = this.get('selectedUser.id');
-      if (subs) {
-        const filtered = subs.filter((sub) => {
-          return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
-        });
-        return filtered.mapBy('id');
-      }
     }
+    // } else if (submissionsValue === 'userOnly') {
+    //   // filter for only submissions that have selectedUser as student
+    //   const subs = this.get('workspace.submissions.content');
+    //   const selectedUsername = this.get('selectedUser.username');
+    //   const selectedUserId = this.get('selectedUser.id');
+    //   if (subs) {
+    //     const filtered = subs.filter((sub) => {
+    //       return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
+    //     });
+    //     return filtered.mapBy('id');
+    //   }
+    // }
     return [];
   },
 
@@ -230,26 +235,21 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       }
 
       let subValue = this.get('submissions.value');
-      let viewAllSubs;
-      let submissionIds;
-      if (subValue === 'all') {
-        viewAllSubs = true;
-        submissionIds = existingObj.submissions.submissionIds;
-      } else if (subValue === 'userOnly') {
-        viewAllSubs = false;
-        submissionIds = this.buildCustomSubmissionIds('userOnly');
-      } else if (subValue === 'custom'){
-        viewAllSubs = false;
-        submissionIds = this.get('customSubmissionIds');
-      } else {
-        viewAllSubs = false;
-      }
 
       let newObj = {
         user: existingObj.user,
-        submissions: { all: viewAllSubs, submissionIds: submissionIds },
         global: this.get('globalPermissionValue'),
+        submissions: {all: false, userOnly: false, submissionIds: []},
       };
+
+      if (subValue === 'all') {
+        newObj.submissions.all = true;
+      } else if (subValue === 'userOnly') {
+        newObj.submissions.userOnly = true;
+      } else if (subValue === 'custom'){
+        newObj.submissions.submissionIds = this.get('customSubmissionIds');
+      }
+
       let globalSetting = this.get('globalPermissionValue');
         if (globalSetting === 'viewOnly') {
           newObj.folders = 1;

@@ -58,7 +58,6 @@
                     Submissions
                   </div>
                   <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                       {{my-select cannotBeNull=true selectedValue=submissions content=submissionPermissions optionLabelPath="display" action=(action (mut submissions))}}
                       {{#if (is-equal submissions.value 'custom')}}
                         <span class="submission-count">{{customSubmissionIds.length}} submissions selected</span>
@@ -68,13 +67,6 @@
                           <span class="viewer-toggle" {{action 'toggleSubmissionView'}}>Show Submission Viewer</span>
                         {{/if}}
                       {{/if}}
-                    {{else}}
-                      {{#if collaborator.submissions.all}}
-                        View All
-                      {{else}}
-                        Custom
-                      {{/if}}
-                    {{/if}}
                   </div>
                 </div>
                 <div class="card-row">
@@ -82,11 +74,7 @@
                     Selections
                   </div>
                   <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                       {{my-select cannotBeNull=true selectedValue=selections content=mainPermissions optionLabelPath="display" action=(action (mut selections))}}
-                    {{else}}
-                      {{collab-permissions collaborator.selections}}
-                    {{/if}}
                   </div>
                 </div>
                 <div class="card-row">
@@ -94,11 +82,7 @@
                     Comments
                   </div>
                   <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                       {{my-select cannotBeNull=true selectedValue=comments content=mainPermissions optionLabelPath="display" action=(action (mut comments))}}
-                    {{else}}
-                      {{collab-permissions collaborator.comments}}
-                    {{/if}}
                   </div>
                 </div>
                 <div class="card-row">
@@ -106,11 +90,7 @@
                     Folders
                   </div>
                   <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                       {{my-select cannotBeNull=true selectedValue=folders content=mainPermissions optionLabelPath="display" action=(action (mut folders))}}
-                    {{else}}
-                      {{collab-permissions collaborator.folders}}
-                    {{/if}}
                   </div>
                 </div>
                 <div class="card-row">
@@ -118,15 +98,12 @@
                     Feedback
                   </div>
                   <div class="row-value">
-                    {{#if (is-equal collaborator.userObj selectedCollaborator)}}
                       {{my-select cannotBeNull=true selectedValue=feedback content=feedbackPermissions optionLabelPath="display" action=(action (mut feedback))}}
-                    {{else}}
-                      {{collab-permissions collaborator.feedback}}
-                    {{/if}}
                   </div>
                 </div>
             {{/if}}
           {{else}}
+          {{!-- NOT EDITING --}}
             {{#if (is-equal collaborator.global 'custom')}}
               <div class="card-row">
                 <div class="row-label">
@@ -146,6 +123,8 @@
                   {{else}}
                     {{#if collaborator.submissions.all}}
                       View All
+                    {{else if collaborator.submissions.userOnly}}
+                      Own Only
                     {{else}}
                       Custom
                     {{/if}}
@@ -157,11 +136,7 @@
                   Selections
                 </div>
                 <div class="row-value">
-                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    {{my-select cannotBeNull=true selectedValue=selections content=mainPermissions optionLabelPath="display" action=(action (mut selections))}}
-                  {{else}}
-                    {{collab-permissions collaborator.selections}}
-                  {{/if}}
+                  {{collab-permissions collaborator.selections}}
                 </div>
               </div>
               <div class="card-row">
@@ -169,11 +144,7 @@
                   Comments
                 </div>
                 <div class="row-value">
-                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    {{my-select cannotBeNull=true selectedValue=comments content=mainPermissions optionLabelPath="display" action=(action (mut comments))}}
-                  {{else}}
-                    {{collab-permissions collaborator.comments}}
-                  {{/if}}
+                  {{collab-permissions collaborator.comments}}
                 </div>
               </div>
               <div class="card-row">
@@ -181,11 +152,7 @@
                   Folders
                 </div>
                 <div class="row-value">
-                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    {{my-select cannotBeNull=true selectedValue=folders content=mainPermissions optionLabelPath="display" action=(action (mut folders))}}
-                  {{else}}
-                    {{collab-permissions collaborator.folders}}
-                  {{/if}}
+                  {{collab-permissions collaborator.folders}}
                 </div>
               </div>
               <div class="card-row">
@@ -193,11 +160,7 @@
                   Feedback
                 </div>
                 <div class="row-value">
-                  {{#if (is-equal collaborator.userObj selectedCollaborator)}}
-                    {{my-select cannotBeNull=true selectedValue=feedback content=feedbackPermissions optionLabelPath="display" action=(action (mut feedback))}}
-                  {{else}}
                     {{collab-permissions collaborator.feedback}}
-                  {{/if}}
                 </div>
               </div>
             {{/if}}

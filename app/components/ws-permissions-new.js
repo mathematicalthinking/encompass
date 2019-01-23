@@ -243,19 +243,20 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         return ids;
       }
       return [];
-    } else if (submissionsValue === 'userOnly') {
-      // filter for only submissions that have selectedUser as student
-      const subs = this.get('workspace.submissions.content');
-      const selectedUsername = this.get('selectedUser.username');
-      const selectedUserId = this.get('selectedUser.id');
-      if (subs) {
-        const filtered = subs.filter((sub) => {
-          return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
-        });
-        return filtered.mapBy('id');
-      }
-
     }
+    // } else if (submissionsValue === 'userOnly') {
+    //   // filter for only submissions that have selectedUser as student
+    //   const subs = this.get('workspace.submissions.content');
+    //   const selectedUsername = this.get('selectedUser.username');
+    //   const selectedUserId = this.get('selectedUser.id');
+    //   if (subs) {
+    //     const filtered = subs.filter((sub) => {
+    //       return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
+    //     });
+    //     return filtered.mapBy('id');
+    //   }
+
+    // }
     return [];
   },
 
@@ -265,15 +266,17 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     const submissions = this.get('submissions');
 
     const includeAllSubs = submissions === 'all';
+    const isUserOnly = submissions === 'userOnly';
+
     let submissionOptions = {
       all: includeAllSubs,
+      userOnly: isUserOnly,
       submissionIds: []
     };
 
-    if (!includeAllSubs) {
+    if (!includeAllSubs && !isUserOnly) {
       submissionOptions.submissionIds = this.buildCustomSubmissionIds(submissions);
     }
-
 
     const results = {
       user,
