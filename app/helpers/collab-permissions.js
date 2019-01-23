@@ -18,13 +18,31 @@ Encompass.CollabPermissionsHelper = Ember.Helper.helper(function(val) {
       text = 'Delete';
       return text;
     case 'preAuth':
-      text = 'Pre-Authorized';
+      text = 'Pre-Approved';
       return text;
     case 'none':
       text = 'None';
       return text;
     case 'authReq':
-      text = 'Authorization Required';
+      text = 'Approval Required';
+      return text;
+    case 'approver':
+      text = 'Approver';
+      return text;
+    case 'indirectMentor':
+      text = 'Mentor';
+      return text;
+    case 'directMentor':
+      text = 'Mentor with Direct Send';
+      return text;
+    case 'editor':
+      text = 'Editor';
+      return text;
+    case 'viewOnly':
+      text = "View Only";
+      return text;
+    case 'custom':
+      text = "Custom";
       return text;
     default:
       text = "N/A";
