@@ -130,6 +130,8 @@ describe('Answer CRUD operations by account type', function() {
                 }
                 expect(res).to.have.status(200);
                 expect(res.body.answer).to.have.any.keys('problem', 'answer', 'priorAnswer');
+                expect(res.body.meta.updatedWorkspaceInfo.workspaceId).to.eql(workspaceToUpdate);
+                expect(res.body.meta.updatedWorkspaceInfo.submissionId).to.exist;
                 newAnswerId = res.body.answer._id;
                 done();
               });
@@ -137,9 +139,8 @@ describe('Answer CRUD operations by account type', function() {
           });
           it('should have created a new submission ', async function() {
             try {
-              newSubmission = await models.Submission.findOne({answer: newAnswerId, workspace: workspaceToUpdate}).lean().exec();
+              newSubmission = await models.Submission.findOne({answer: newAnswerId, workspaces: workspaceToUpdate}).lean().exec();
 
-              console.log('new sub', newSubmission);
               expect(newSubmission).to.exist;
               expect(newSubmission.creator.studentId).to.eql(firstRevision.createdBy);
 
@@ -153,8 +154,7 @@ describe('Answer CRUD operations by account type', function() {
           it('should have added the submission to the workspace', async function() {
             try {
               let workspace = await models.Workspace.findById(workspaceToUpdate).lean().exec();
-
-              expect(workspace.submissions).to.contain(newSubmission._id.toString());
+              expect(workspace.submissions.map(sub => sub.toString())).to.contain(newSubmission._id.toString());
               expect(workspace.submissions).to.have.lengthOf.at.least(2);
             }catch(err) {
               throw err;
