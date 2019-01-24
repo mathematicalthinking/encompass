@@ -321,6 +321,92 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
 
 }
 
+function canUpdateSubmissions(user, ws, updateType) {
+  if (!isNonEmptyObject(user) || !isNonEmptyObject(ws)) {
+    return false;
+  }
+  if (!isNonEmptyObject(ws.owner) || !isNonEmptyObject(ws.createdBy)) {
+    return false;
+  }
+
+  if (isNil(ws.owner._id) || isNil(ws.createdBy._id)) {
+    return false;
+  }
+
+  const actingRole = user.actingRole;
+
+  const isOwner = areObjectIdsEqual(user._id, ws.owner._id);
+  const isCreator = areObjectIdsEqual(user._id, ws.createdBy._id);
+
+  if (isOwner || isCreator) {
+    return true;
+  }
+
+  const isAdmin = user.accountType === 'A';
+
+  if (isAdmin && actingRole !== 'student') {
+    return true;
+  }
+
+  const isPdAdmin = user.accountType === 'P';
+    //pdAdmins should be able to modify any ws where the owner or creator belongs to their org
+
+  if (isPdAdmin && actingRole !== 'student') {
+    let pdOrg = user.organization;
+    let ownerOrg = ws.owner.organization;
+    let creatorOrg = ws.createdBy.organization;
+
+    if (areObjectIdsEqual(pdOrg, ownerOrg) || areObjectIdsEqual(pdOrg, creatorOrg)) {
+      return true;
+    }
+  }
+  // at this point, user is not Owner, creator, admin, or the proper pdadmin
+  // thus they can not remove submissions or do a mass update of the workspace, only add their own submissions
+
+  // should teachers or approvers be able to do this?
+  if (updateType === 'bulk') {
+    return false;
+  }
+
+  let sectionTeachers = _.propertyOf(ws)(['linkedAssignment', 'section', 'teachers']);
+  let isTeacher;
+
+  if (Array.isArray(sectionTeachers)) {
+    isTeacher = _.find(sectionTeachers, (teacher) => {
+      return areObjectIdsEqual(teacher, user._id);
+    }) !== undefined;
+  }
+  if (updateType === 'remove') {
+    return isTeacher;
+  }
+
+  if (updateType === 'add') {
+    if (isTeacher) {
+      return true;
+    }
+
+    let assignmentStudents = _.propertyOf(ws)(['linkedAssignment', 'students']);
+
+    let isStudent;
+
+    if (Array.isArray(assignmentStudents)) {
+      isStudent = _.find(assignmentStudents, (student) => {
+        return areObjectIdsEqual(student, user._id);
+      }) !== undefined;
+    }
+    if (isStudent) {
+      return true;
+    }
+
+    // what about situations where there is not a linked assignment?
+    // cannot allow a student to add a submission to any ws where one of their answers
+    // is already contained because could be a copied ws
+  }
+  return false;
+
+}
+
 module.exports.get.workspace = canLoadWorkspace;
 module.exports.get.workspaces = accessibleWorkspacesQuery;
 module.exports.canModify = canModify;
+module.exports.canUpdateSubmissions = canUpdateSubmissions;
