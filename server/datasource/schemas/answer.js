@@ -27,7 +27,8 @@ var AnswerSchema = new Schema({
   priorAnswer: { type: ObjectId, ref: 'Answer' },
   isSubmitted: { type: Boolean, default: true },
   notes: { type: String },
-  powsSubmId: { type: Number }, // old POWs submission ID
+  powsSubmId: { type: Number }, // old POWs submission ID,
+  workspaceToUpdate: { type: ObjectId, ref: 'Workspace' },
 }, { versionKey: false });
 
 /**

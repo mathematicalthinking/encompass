@@ -6,5 +6,8 @@ Encompass.Assignment = DS.Model.extend(Encompass.Auditable, {
   section: DS.belongsTo('section', {async: true}),
   problem: DS.belongsTo('problem', {async: true}),
   assignedDate: DS.attr('date'),
-  dueDate: DS.attr('date')
+  dueDate: DS.attr('date'),
+  taskWorkspace: DS.belongsTo('workspace', {inverse: null} ),
+  assignmentType: DS.attr('string'),
+  linkedWorkspace: DS.belongsTo('workspace'),
 });
