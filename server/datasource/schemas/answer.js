@@ -93,6 +93,20 @@ AnswerSchema.post('save', function (Answer) {
       });
   }
 
+  if (Answer.problem) {
+    mongoose.models.Problem.findById(Answer.problem, function (err, problem) {
+      if (err) {
+        throw new Error(err.message);
+      }
+      if (problem) {
+        if (!problem.isUsed) {
+          problem.isUsed = true;
+          problem.save();
+        }
+      }
+    });
+  }
+
   // not used (no answers array in problem)
   // if (Answer.problem) {
   //   var problemIdObj = mongoose.Types.ObjectId(Answer.problem);
