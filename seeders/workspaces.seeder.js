@@ -380,6 +380,7 @@ var data = [
     ],
     "editors" : [],
     "linkedAssignment": "5b91743a3da5efca74705773",
+    "doAllowSubmissionUpdates": true,
     "lastModifiedDate" : "2018-11-14T14:52:05.688Z",
     "isTrashed" : false,
     "createDate" : "2018-11-14T14:30:46.526Z"
