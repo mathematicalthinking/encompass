@@ -342,6 +342,7 @@ module.exports = {
           explanation: 'This is my second explanation.',
           briefSummary: 'This is a brief summary of my thoughts.',
           contributors: ['tracyc'],
+          workspaceToUpdate: '5bec36958c73047613e2f34e',
         }
       },
     }
@@ -385,7 +386,7 @@ module.exports = {
         assignedDate: 'Sep 6th 2018',
         dueDate: 'Nov 30th 2018',
         className: `Summer's Algebra 2 1st Period`,
-        problemStatement: `This is Summer's private problem`
+        problemStatement: `This is Summer's private problem`,
       },
       submitting: {
         isRevision: false,

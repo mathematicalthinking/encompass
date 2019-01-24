@@ -158,7 +158,25 @@ describe('Assignments as Student', async function () {
             await helpers.waitForSelector(driver, css.assignmentsStudent.infoPage.pastSubsHeader);
 
             let pastAnswers = await helpers.getWebElements(driver, `${css.assignmentsStudent.infoPage.subList} li`);
+
             expect(pastAnswers).to.have.lengthOf(assignments.answers.count + 1);
+
+            if (submitDetails.isRevision) {
+              await driver.get(`${host}/#/workspaces/${submitDetails.newAnswer.workspaceToUpdate}/work`);
+              await helpers.waitForSelector(driver, 'span.submission_count');
+
+              // click x button on tour box
+              await helpers.findAndClickElement(driver, 'div.guiders_x_button');
+
+              await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+
+              expect(await helpers.findAndGetText(driver, 'span.submission_count')).to.eql('2');
+
+              await helpers.findAndClickElement(driver, css.topBar.assignments);
+              await helpers.waitForSelector(driver, css.assignmentsStudent.ownList);
+              await helpers.findAndClickElement(driver, assignmentLink);
+              await helpers.waitForSelector(driver, css.assignmentsStudent.infoPage.container);
+            }
           });
 
           describe('Viewing most recent submission', function() {
