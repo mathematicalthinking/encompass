@@ -170,6 +170,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
+          workspaceToUpdate: that.get('workspaceToUpdate'),
         });
       });
       // additional uploaded image base 64 data was concatenated to explanation

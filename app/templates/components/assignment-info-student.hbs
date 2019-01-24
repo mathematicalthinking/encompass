@@ -42,12 +42,16 @@
 {{#if isResponding}}
   {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
   section=section problem=problem
-  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+  handleCreatedAnswer=(action "handleCreatedAnswer")
+  workspaceToUpdate=linkedWorkspace
+  }}
 
 {{else if isRevising}}
   {{answer-new store=store assignment=assignment isRevision=true priorAnswer=priorAnswer
   section= section problem=problem toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
-  handleCreatedAnswer=(action "handleCreatedAnswer")}}
+  handleCreatedAnswer=(action "handleCreatedAnswer")
+  workspaceToUpdate=linkedWorkspace
+  }}
 {{else}}
   {{#if sortedList.length}}
     <button class="primary-button revise" {{action 'reviseAssignmentResponse'}}>Revise</button>
