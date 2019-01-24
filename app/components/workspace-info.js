@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-info',
   comments: Ember.inject.controller,
@@ -61,6 +62,86 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     return ['private', 'org', 'public', 'internet'];
 
   }.property('currentUser.isAdmin', 'currentUser.isStudent'),
+
+  globalItems: {
+    groupName: 'globalPermissionValue',
+    groupLabel: 'Workspace Permissions',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    required: true,
+    inputs: [
+      {
+        label: 'View Only',
+        value: 'viewOnly',
+        moreInfo: 'This user will be able to see the workspace, but not add or make any changes',
+      },
+      {
+        label: 'Editor',
+        value: 'editor',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders, but they will not be able to see or create new responses'
+      },
+      {
+        label: 'Mentor',
+        value: 'indirectMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send feedback that will be delivered once approved by a designated feedback approver'
+      },
+      {
+        label: 'Mentor with Direct Send',
+        value: 'directMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send direct feedback that does not require approval'
+      },
+      {
+        label: 'Approver',
+        value: 'approver',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users'
+      },
+      {
+        label: 'Custom',
+        value: 'custom',
+        moreInfo: 'Select this if you want to set permissions for each aspect of a workspace',
+      }
+    ]
+  },
+
+  initialCollabOptions: function() {
+    let peeked = this.get('store').peekAll('user');
+    let collabs = this.get('selectedCollaborators');
+
+    if (!_.isObject(peeked)) {
+      return [];
+    }
+    let filtered = peeked.reject((record) => {
+      return collabs[record.get('id')];
+    });
+    return filtered.map((obj) => {
+      return {
+        id: obj.get('id'),
+        username: obj.get('username')
+      };
+    });
+  }.property('selectedCollaborators'),
+
+  selectedCollaborators: function() {
+    let hash = {};
+    let wsOwnerId = this.get('workspace.owner.id');
+
+    // no reason to set owner as a collaborator
+    if (wsOwnerId) {
+      hash[wsOwnerId] = true;
+    }
+    const originalCollaborators = this.get('originalCollaborators');
+
+    if (!this.get('utils').isNonEmptyArray(originalCollaborators)) {
+      return hash;
+    }
+    originalCollaborators.forEach((user) => {
+      if (_.isString(user)) {
+        hash[user] = true;
+      } else if (_.isObject(user)) {
+        hash[user.get('id')] = true;
+      }
+    });
+    return hash;
+  }.property('originalCollaborators.[]', 'workspace.owner.id'),
 
   actions: {
     removeCollab(user) {

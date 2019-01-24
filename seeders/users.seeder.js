@@ -14,6 +14,9 @@ var data = [{
     "sections": [],
     "assignments": [],
     "createDate": "2018-08-12T18:20:51.382Z",
+    "collabWorkspaces": [
+      "53e1156db48b12793f000442",
+    ],
   }, {
     "_id": "529646eae4bad7087700014d",
     "accountType": 'A',
@@ -24,6 +27,9 @@ var data = [{
     "username": "jsilverman",
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "529646eae4bad7087700014d",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "52964714e4bad7087700014e",
     "accountType": 'A',
@@ -34,6 +40,9 @@ var data = [{
     "username": "maxray",
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "52964714e4bad7087700014e",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "52a8823d729e9ef59ba7eb4a",
     "createdBy": "52a8823d729e9ef59ba7eb4a",
@@ -56,6 +65,9 @@ var data = [{
     "username": "wes",
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "52a88ae2729e9ef59ba7eb4b",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "52a88def729e9ef59ba7eb4c",
     "accountType": 'T',
@@ -66,7 +78,10 @@ var data = [{
     "seenTour": null,
     "username": "candice.roberts",
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "52a88def729e9ef59ba7eb4c"
+    "createdBy": "52a88def729e9ef59ba7eb4c",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "52b05fae729e9ef59ba7eb4d",
     "accountType": 'A',
@@ -77,7 +92,10 @@ var data = [{
     "seenTour": null,
     "username": "vklein",
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "52b05fae729e9ef59ba7eb4d"
+    "createdBy": "52b05fae729e9ef59ba7eb4d",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ],
   }, {
     "_id": "5370dc9c8f3e3d1f21000022",
     "accountType": 'T',
@@ -88,7 +106,10 @@ var data = [{
     "seenTour": null,
     "username": "dsl44",
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "5370dc9c8f3e3d1f21000022"
+    "createdBy": "5370dc9c8f3e3d1f21000022",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "53a355a932f2863240000026",
     "accountType": 'T',
@@ -99,7 +120,10 @@ var data = [{
     "seenTour": null,
     "username": "hle22",
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "53a355a932f2863240000026"
+    "createdBy": "53a355a932f2863240000026",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "53a43f7c729e9ef59ba7ebf2",
     "accountType": 'T',
@@ -112,7 +136,10 @@ var data = [{
     "assignments": [],
     "sections": [],
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "53a43f7c729e9ef59ba7ebf2"
+    "createdBy": "53a43f7c729e9ef59ba7ebf2",
+    "collabWorkspaces": [
+      "53e1156db48b12793f000442",
+    ],
   }, {
     "_id": "53d274a032f2863240001a71",
     "name": "salejandre",
@@ -123,7 +150,10 @@ var data = [{
     "lastSeen": null,
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "53d274a032f2863240001a71"
+    "createdBy": "53d274a032f2863240001a71",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   }, {
     "_id": "53d9a577729e9ef59ba7f118",
     "accountType": 'T',
@@ -161,7 +191,11 @@ var data = [{
     "sections": [],
     "organization": "5b4a64a028e4b75919c28512",
     "createDate": "2018-08-12T18:20:51.382Z",
-    "createdBy": "5b1e7bf9a5d2157ef4c911a6"
+    "createdBy": "5b1e7bf9a5d2157ef4c911a6",
+    "collabWorkspaces" : [
+      "5bec36958c73047613e2f34e"
+    ],
+
   }, {
     "_id": "5b1e7ca6a5d2157ef4c91210",
     "accountType": 'T',
@@ -190,7 +224,10 @@ var data = [{
     "isEmailConfirmed": true,
     "actingRole": "teacher",
     "createdBy": "5b245760ac75842be3189525",
-    "seenTour": "2018-11-17T10:20:51.382Z"
+    "seenTour": "2018-11-17T10:20:51.382Z",
+    "collabWorkspaces": [
+      "53e1156db48b12793f000442", "53e36522b48b12793f000d3b",
+    ],
   }, {
     "_id": "5b245841ac75842be3189526",
     "username": "morty",
@@ -241,7 +278,12 @@ var data = [{
     "isAuthorized": true,
     "assignments": [],
     "answers": [],
-    "sections": [],
+    "sections": [
+      {
+        "role" : "student",
+        "sectionId" : "5b9149a32ecaf7c30dd4748f"
+      },
+    ],
     "isTrashed": false,
     "createDate": "2018-08-12T18:20:51.382Z",
     "createdBy": "5b245760ac75842be3189525"
@@ -328,6 +370,9 @@ var data = [{
     "createDate": "2018-08-14T18:20:51.382Z",
     "lastSeen": "2018-08-16T20:19:26.457Z",
     "createdBy": "5b245760ac75842be3189525",
+    "collabWorkspaces": [
+     "5bec36958c73047613e2f34e",
+    ],
     "seenTour": "2018-11-18T10:20:51.382Z"
   },
   {
@@ -346,7 +391,10 @@ var data = [{
     "createDate": "2018-08-14T18:20:51.382Z",
     "lastSeen": "2018-08-16T20:19:26.457Z",
     "actingRole": "teacher",
-    "createdBy": "5b7321ee59a672806ec903d5"
+    "createdBy": "5b7321ee59a672806ec903d5",
+    "collabWorkspaces": [
+      "53e36522b48b12793f000d3b",
+    ]
   },
   {
     "_id" : "5b913ebe3add43b868ae9807",
@@ -480,7 +528,10 @@ var data = [{
   "isAuthorized" : true,
   "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
   "isTrashed" : false,
-  "createDate" : "2018-09-06T15:30:21.278Z"
+  "createDate" : "2018-09-06T15:30:21.278Z",
+  "collabWorkspaces": [
+    "5bec36958c73047613e2f34e",
+  ]
 },
 {
   "_id" : "5b914a802ecaf7c30dd47493",

@@ -1,21 +1,27 @@
+/* eslint-disable complexity */
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
-const _     = require('underscore');
+const mongooseUtils = require('../../utils/mongoose');
+
+const _ = require('underscore');
+
+const objectUtils = require('../../utils/objects');
+const { isNil, isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { areObjectIdsEqual } = mongooseUtils;
 
 module.exports.get = {};
 
 function getUserWsPermissions(user, ws) {
-  if (!apiUtils.isNonEmptyObject(ws) || !apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(ws) || !isNonEmptyObject(user)) {
     return;
   }
 
   const userId = user._id;
-  if (apiUtils.isNullOrUndefined(userId)) {
+  if (isNil(userId)) {
     return;
   }
 
   const permissionObjects = ws.permissions;
-  if (!apiUtils.isNonEmptyArray(permissionObjects)) {
+  if (!isNonEmptyArray(permissionObjects)) {
     return;
   }
 
@@ -29,14 +35,14 @@ function getUserWsPermissions(user, ws) {
 // only return customPermissions if restricted else null
 // eslint-disable-next-line complexity
 const canLoadWorkspace = function(user, ws) {
-  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyObject(ws)) {
+  if (!isNonEmptyObject(user) || !isNonEmptyObject(ws)) {
     return [false, null];
   }
   const userId = _.propertyOf(user)('_id');
   const ownerId = _.propertyOf(ws)(['owner','_id']);
   const creatorId = _.propertyOf(ws)(['createdBy', '_id']);
 
-  if (apiUtils.isNullOrUndefined(userId) || apiUtils.isNullOrUndefined(ownerId) || apiUtils.isNullOrUndefined(creatorId)) {
+  if (isNil(userId) || isNil(ownerId) || isNil(creatorId)) {
     return [false, null];
   }
 
@@ -51,6 +57,7 @@ const canLoadWorkspace = function(user, ws) {
 
   const isPublic = ws.mode === 'public';
   const isInternet = ws.mode === 'internet';
+  const isOrgPrivacy = ws.mode === 'org';
 
   // Students can access workspaces they've created and workspaces they've been added as collabs
   // (in their collabWorkspaces array)
@@ -62,20 +69,28 @@ const canLoadWorkspace = function(user, ws) {
       if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
         return [true, userPermissions];
       }
-      if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
+      let globalPermissions = userPermissions.global;
+
+      // no access restrictions
+      if (globalPermissions === 'directMentor' || globalPermissions === 'indirectMentor' || globalPermissions === 'approver') {
         return [true, null];
       }
-        // make sure no restrictions
-        const { folders, selections, comments } = userPermissions;
 
-        if (folders === 0 || selections === 0 || comments === 0) {
-          return [true, userPermissions];
-        }
-
-        // student has permission with no view restrictions
-        return [true, null];
-
+      // responses restricted
+      if (globalPermissions === 'viewOnly' || globalPermissions === 'editor') {
+        return [true, userPermissions];
       }
+
+      // make sure no restrictions
+      const { folders, selections, comments, feedback } = userPermissions;
+
+      if (folders === 0 || selections === 0 || comments === 0 || feedback === 'none') {
+        return [true, userPermissions];
+      }
+
+      // student has permission with no view restrictions
+      return [true, null];
+    }
       // student does not have permission
       return [false, null];
   }
@@ -85,56 +100,52 @@ const canLoadWorkspace = function(user, ws) {
     return [true, null];
   }
 
-  let ownerOrg;
-  let userOrg;
-  let creatorOrg;
+  // if ws mode is org and the org is the same as the user's
+  let isOrgWs = isOrgPrivacy && areObjectIdsEqual(user.organization, ws.organization);
 
-  if (ws.owner.organization) {
-    ownerOrg = ws.owner.organization.toString();
-  } else {
-    ownerOrg === null;
-  }
-  if (user.organization) {
-    userOrg = user.organization.toString();
-  } else {
-    userOrg === null;
+  // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
+  if (isOwner || isCreator || isOrgWs || isPublic || isInternet) {
+    return [true, null];
   }
 
-  if (ws.createdBy.organization) {
-    creatorOrg = ws.createdBy.organization.toString();
-  } else {
-    creatorOrg = null;
-  }
+  let ownerOrg = _.propertyOf(ws)(['owner', 'organization']);
+  let userOrg = user.organization;
+  let creatorOrg = _.propertyOf(ws)(['createdBy', 'organization']);
+
+  let isInPdOrg = areObjectIdsEqual(ownerOrg, userOrg) || areObjectIdsEqual(creatorOrg, userOrg);
 
 
   // PdAdmins can get any workspace that is owned by a member of their org
   if (accountType === 'P') {
-    if (ownerOrg === userOrg || creatorOrg === userOrg) {
+    if (isInPdOrg) {
       return [true, null];
     }
-  }
-
-  // Any teacher or PdAdmin can view a workspace if they are the owner, editor, or ws is public
-  if (isOwner || isCreator || isPublic || isInternet) {
-    return [true, null];
   }
 
   if (isCollaborator) {
     if (_.propertyOf(userPermissions)(['submissions', 'all']) !== true) {
       return [true, userPermissions];
     }
-    if (userPermissions.global === 'editor' || userPermissions.global === 'viewOnly') {
-      return [true, null];
-    }
-      // make sure no restrictions
-      const { folders, selections, comments } = userPermissions;
+    let globalPermissions = userPermissions.global;
 
+      // no access restrictions
+      if (globalPermissions === 'directMentor' || globalPermissions === 'indirectMentor' || globalPermissions === 'approver') {
+        return [true, null];
+      }
 
-      if (folders === 0 || selections === 0 || comments === 0) {
+      // responses restricted
+      if (globalPermissions === 'viewOnly' || globalPermissions === 'editor') {
         return [true, userPermissions];
       }
 
-      // user has permission with no view restrictions
+      // make sure no restrictions
+      const { folders, selections, comments, feedback } = userPermissions;
+
+      if (folders === 0 || selections === 0 || comments === 0 || feedback === 'none') {
+        return [true, userPermissions];
+      }
+
+      // no feedback restrictions
       return [true, null];
 
     }
@@ -145,7 +156,7 @@ const canLoadWorkspace = function(user, ws) {
 
 const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
 
-  if (!apiUtils.isNonEmptyObject(user)) {
+  if (!isNonEmptyObject(user)) {
     return {};
   }
   if (isTrashedOnly) {
@@ -153,64 +164,72 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   }
   const { accountType, actingRole, collabWorkspaces } = user;
 
+  let isStudent = accountType === 'S' || actingRole === 'student';
+
   let filter = {
     $and: []
   };
 
   filter.$and.push({ isTrashed: false });
 
-  if (apiUtils.isNonEmptyArray(ids)) {
+  if (isNonEmptyArray(ids)) {
     filter.$and.push({_id: {$in : ids } });
-  } else if (apiUtils.isValidMongoId(ids)) {
+  } else if (mongooseUtils.isValidMongoId(ids)) {
     filter.$and.push({_id: ids });
   }
-  if (apiUtils.isNonEmptyObject(filterBy)) {
+  if (isNonEmptyObject(filterBy)) {
     filter.$and.push(filterBy);
   }
 
-  if (apiUtils.isNonEmptyObject(searchBy)) {
+  if (isNonEmptyObject(searchBy)) {
     filter.$and.push(searchBy);
+  }
+
+  if (accountType === 'A' && !isStudent) {
+    return filter;
   }
 
   let accessCrit = {$or: []};
 
-  // should be stopped earlier in the middleware chain
-  if (actingRole === 'student' || accountType === 'S') {
-    accessCrit.$or.push({ createdBy : user.id });
-    accessCrit.$or.push({ owner: user.id});
+  // all users can access any workspace theyve created, own, or are collab in
+
+  accessCrit.$or.push({ createdBy : user._id });
+  accessCrit.$or.push({ owner: user._id});
+
+  if (isNonEmptyArray(collabWorkspaces)) {
+    accessCrit.$or.push({_id: {$in: collabWorkspaces}});
+  }
+
+  if (isStudent) {
     accessCrit.$or.push({ mode: 'internet' });
 
-    if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
-      accessCrit.$or.push({_id: {$in: collabWorkspaces}});
-    }
-
     filter.$and.push(accessCrit);
-
     return filter;
   }
 
-  if (accountType === 'A') {
-    return filter;
-  }
+  // assignments of type workspace with ws reference?
+
+
 
   accessCrit.$or.push({ mode: { $in: ['public', 'internet'] } });
-  accessCrit.$or.push({ owner: user._id });
-  accessCrit.$or.push({ createdBy : user.id });
 
-
- if (apiUtils.isNonEmptyArray(collabWorkspaces)) {
-  accessCrit.$or.push({_id: {$in: collabWorkspaces}});
-}
 // will only reach here if admins/pdadmins are in actingRole teacher
 // Teachers and PdAdmins
 
   if (accountType === 'P') {
     const userOrg = user.organization;
-    const userIds = await utils.getModelIds('User', { organization: userOrg });
 
-    accessCrit.$or.push({owner: {$in : userIds}});
-    accessCrit.$or.push({createdBy: {$in : userIds}});
-    accessCrit.$or.push({organization: user.organization});
+    if (mongooseUtils.isValidMongoId(userOrg)) {
+      accessCrit.$or.push({organization: user.organization});
+
+      const userIds = await utils.getModelIds('User', { organization: userOrg });
+      if (isNonEmptyArray(userIds)) {
+        accessCrit.$or.push({
+          createdBy: { $in: userIds },
+          owner: {$in: userIds }
+        });
+      }
+    }
 
     filter.$and.push(accessCrit);
 
@@ -220,6 +239,7 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   if (accountType === 'T') {
     // Workspaces where a teacher is the primary teacher or in the teachers array
 
+    // assignment workspaces?
     accessCrit.$or.push({'teacher.id': user.id});
     accessCrit.$or.push({'teachers': user.id});
 
@@ -235,18 +255,18 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
     return false;
   }
 
-  if (!apiUtils.isNonEmptyObject(ws.owner) || !apiUtils.isNonEmptyObject(ws.createdBy)) {
+  if (!isNonEmptyObject(ws.owner) || !isNonEmptyObject(ws.createdBy)) {
     return false;
   }
 
-  if (apiUtils.isNullOrUndefined(ws.owner._id) || apiUtils.isNullOrUndefined(ws.createdBy._id)) {
+  if (isNil(ws.owner._id) || isNil(ws.createdBy._id)) {
     return false;
   }
 
   const actingRole = user.actingRole;
 
-  const isOwner = user.id === ws.owner._id.toString();
-  const isCreator = user.id === ws.createdBy._id.toString();
+  const isOwner = areObjectIdsEqual(user._id, ws.owner._id);
+  const isCreator = areObjectIdsEqual(user._id, ws.createdBy._id);
 
   if (isOwner || isCreator) {
     return true;
@@ -266,7 +286,7 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
     let ownerOrg = ws.owner.organization;
     let creatorOrg = ws.createdBy.organization;
 
-    if (_.isEqual(pdOrg, ownerOrg) || _.isEqual(pdOrg, creatorOrg)) {
+    if (areObjectIdsEqual(pdOrg, ownerOrg) || areObjectIdsEqual(pdOrg, creatorOrg)) {
       return true;
     }
   }
@@ -278,10 +298,11 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
   }
 
   const globalPermissions = userPermissions.global;
-  if (globalPermissions === 'editor') {
+
+  if (globalPermissions === 'approver') {
     return true;
   }
-  if (globalPermissions === 'readOnly') {
+  if (globalPermissions === 'viewOnly') {
     return false;
   }
   // else custom permissions

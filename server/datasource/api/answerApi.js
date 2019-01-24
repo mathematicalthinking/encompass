@@ -6,7 +6,6 @@
 /* jshint ignore:start */
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
-const apiUtils = require('../../datasource/api/utils');
 const _ = require('underscore');
 
 //REQUIRE FILES
@@ -14,6 +13,12 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access= require('../../middleware/access/answers');
+
+const mongooseUtils = require('../../utils/mongoose');
+const { cleanObjectIdArray } = mongooseUtils;
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyArray, } = objectUtils;
 
 
 module.exports.get = {};
@@ -60,10 +65,10 @@ async function getAnswers(req, res, next) {
         }
       }
 
-      if (apiUtils.isNonEmptyArray(students)) {
-        let pruned = apiUtils.cleanObjectIdArray(students);
+      if (isNonEmptyArray(students)) {
+        let pruned = cleanObjectIdArray(students);
 
-        if (apiUtils.isNonEmptyArray(pruned)) {
+        if (isNonEmptyArray(pruned)) {
           filterBy.createdBy = {$in: pruned};
         }
       }

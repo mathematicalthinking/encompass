@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
+const WorkspacePermissionObject = require('./workspace').WorkspacePermissionObject;
 
 /**
   * @public
@@ -34,19 +35,7 @@ var EncWorkspaceRequestSchema = new Schema({
     privacySetting: {type: 'String', enum: ['M', 'O', 'E']}
   },
   answers: [{type: ObjectId, ref: 'Answer'}],
-  permissionObjects: [{
-    user: { type: ObjectId, ref: 'User'},
-    global: {type: String, enum: ['viewOnly', 'editor', 'custom'] },
-    submissions: {
-      all: { type: Boolean },
-      submissionIds: [ {type: ObjectId, ref: 'Submission'} ],
-      userOnly: [ { type: Boolean }]
-    },
-    folders: { type: Number, enum: [0, 1, 2, 3, 4] },
-    comments: { type: Number, enum: [0, 1, 2, 3, 4] },
-    selections: { type: Number, enum: [0, 1, 2, 3, 4] },
-    feedback: { type: String, enum: ['none', 'authReq', 'preAuth'] }
-  }]
+  permissionObjects: [ WorkspacePermissionObject ]
 }, { versionKey: false });
 
 /**

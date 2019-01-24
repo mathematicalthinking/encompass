@@ -47,7 +47,7 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
   canDelete: function() {
     let ws = this.get('workspace');
-    return this.get('permissions').canEdit(ws, 'folders', 4);
+    return this.get('permissions').canEdit(ws, 'folders', 3);
   }.property('workspace.id', 'currentUser.id'),
 
   init: function() {

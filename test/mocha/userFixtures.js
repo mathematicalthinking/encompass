@@ -22,6 +22,10 @@ const admin = {
       username: 'tracyc',
       accountType: 'S'
     },
+    outsideCollab: {
+      _id: '5b4e4b48808c7eebc9f9e827',
+      username: 'ssmith',
+    },
     accessibleUserCount: 37,
   },
   submissions: {
@@ -147,7 +151,35 @@ const admin = {
       _id: '5c1ba70fcdc05df4b5edc60c',
       name: 'Rick Public Set'
     },
-  }
+  },
+  workspaces: {
+    accessibleWorkspacesCount: 4,
+    accessibleWorkspace:
+      {
+        _id: "53e1156db48b12793f000442" ,
+        name: 'Feathers and Fur / Period 5 Basic Math',
+        submissions: ["53e1156db48b12793f000418", "53e1156db48b12793f00042e", "53e1156db48b12793f000420", "53e1156db48b12793f000425", "53e1156db48b12793f000416", "53e1156db48b12793f000421", "53e1156db48b12793f000432", "53e1156db48b12793f000436", "53e1156db48b12793f00041a", "53e1156db48b12793f00042f", "53e1156db48b12793f00041e", "53e1156db48b12793f000430", "53e1156db48b12793f00043e", "53e1156db48b12793f000419", "53e1156db48b12793f00042d", "53e1156db48b12793f000438", "53e1156db48b12793f00041b", "53e1156db48b12793f000434", "53e1156db48b12793f000417", "53e1156db48b12793f000427", "53e1156db48b12793f000423", "53e1156db48b12793f000440", "53e1156db48b12793f000407", "53e1156db48b12793f000437", "53e1156db48b12793f000422", "53e1156db48b12793f000433", "53e1156db48b12793f000428", "53e1156db48b12793f00043d", "53e1156db48b12793f00042c", "53e1156db48b12793f00041d", "53e1156db48b12793f000439", "53e1156db48b12793f000414", "53e1156db48b12793f00041f", "53e1156db48b12793f00043a", "53e1156db48b12793f000415", "53e1156db48b12793f000426"],
+        comments: ["53e12264b48b12793f000b84", "53e12507b48b12793f000b91","5bbbba86a6a7ee1a9a5ebc75"],
+        responses: ["5b1aef7ae53645e768926123"],
+        taggings: ["53e1194bb48b12793f000a62", "53e11b5eb48b12793f000abb", "53e11eceb48b12793f000b36", "53e11fa8b48b12793f000b48", "53e12250b48b12793f000b83", "53e12518b48b12793f000b92"],
+        selections: ["53e11942b48b12793f000a5f", "53e11b38b48b12793f000ab7", "53e11ec4b48b12793f000b34", "53e11f20b48b12793f000b3a", "53e11f82b48b12793f000b44", "53e12158b48b12793f000b68", "53e12211b48b12793f000b7e", "53e1223cb48b12793f000b80", "53e1223eb48b12793f000b81", "53e12503b48b12793f000b90", "5bbbba75a6a7ee1a9a5ebc74",],
+        permissions: [],
+        feedbackAuthorizers: [],
+        folders: ["53e11604b48b12793f0004ee", "53e1165eb48b12793f0005e7", "53e1166db48b12793f0005e9", "53e118f3b48b12793f000a41", "53e11b0ab48b12793f000ab1"],
+      }
+  },
+  responses: {
+    accessibleResponsesCount: 3,
+    accessibleResponse: {
+      _id: "5bec64f7aa4a927d50cd5ba0",
+    },
+    inaccessibleResponse: {
+      _id: ''
+    },
+    modifiableResponse: {
+      _id: ''
+    }
+  },
 };
 const pdAdminDrexel = {
   details: {
@@ -179,10 +211,14 @@ const pdAdminDrexel = {
       username: 'sam3',
       accountType: 'S'
     },
-    accessibleUserCount: 25,
+    outsideCollab: {
+      _id: "5b99146e25b620610ceead75",
+      username: "actingstudent",
+    },
+    accessibleUserCount: 29,
   },
   submissions: {
-    accessibleSubmissionCount: 53,
+    accessibleSubmissionCount: 55,
     unaccessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
@@ -191,7 +227,7 @@ const pdAdminDrexel = {
     },
   },
   comments: {
-    accessibleCommentCount: 4,
+    accessibleCommentCount: 8,
     accessibleComment: {
       _id: "53e12264b48b12793f000b84"
     },
@@ -221,10 +257,10 @@ const pdAdminDrexel = {
     },
   },
   answers: {
-    accessibleAnswerCount: 2,
+    accessibleAnswerCount: 4,
   },
   selections: {
-    accessibleSelectionCount: 72,
+    accessibleSelectionCount: 76,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -242,7 +278,7 @@ const pdAdminDrexel = {
     },
   },
   folders: {
-    accessibleFolderCount: 32,
+    accessibleFolderCount: 41,
     inaccessibleFolder: {
       _id: '5bb814d19885323f6d894975'
     },
@@ -326,7 +362,54 @@ const pdAdminDrexel = {
     inaccessibleFolderSet: {
       _id: '5bec409176124a776f2ff00e'
     }
-  }
+  },
+  workspaces: {
+    accessibleWorkspacesCount: 3,
+    accessibleWorkspace:
+      {
+        _id: '5bec36958c73047613e2f34e' ,
+        name: `Summer's Test Workspace 1`,
+        submissions: ["5bec36958c73047613e2f34c",
+        "5bec36958c73047613e2f34d"],
+        comments: ["5bec375d8c73047613e2f35e",
+        "5bec37708c73047613e2f35f",
+        "5bec37a08c73047613e2f364",
+        "5bec37e38c73047613e2f366"],
+        responses: ["5bec6497aa4a927d50cd5b9b",
+        "5bec64f7aa4a927d50cd5ba0"],
+        taggings: ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368","5bec38338c73047613e2f36b","5bec386a8c73047613e2f36d"],
+        selections: ["5bec373d8c73047613e2f35c",
+        "5bec37408c73047613e2f35d",
+        "5bec37838c73047613e2f361",
+        "5bec37a78c73047613e2f365"],
+        permissions: [],
+        feedbackAuthorizers: [],
+        folders: ["5bec36c58c73047613e2f352",
+        "5bec36ca8c73047613e2f353",
+        "5bec36cd8c73047613e2f354",
+        "5bec36dd8c73047613e2f355",
+        "5bec36e98c73047613e2f356",
+        "5bec36f78c73047613e2f357",
+        "5bec37048c73047613e2f358",
+        "5bec37108c73047613e2f359",
+        "5bec371f8c73047613e2f35a"]
+      },
+      inaccessibleWorkspace: {
+        _id: '5bb814d19885323f6d894974',
+      },
+  },
+  responses: {
+    accessibleResponsesCount: 3,
+    accessibleResponse: {
+      _id: "5b1aef7ae53645e768926123",
+    },
+    inaccessibleResponse: {
+      _id: '',
+    },
+    modifiableResponse: {
+      _id: ''
+    }
+  },
 };
 
 const teacherMT = {
@@ -361,7 +444,15 @@ const teacherMT = {
       username: 'tracyc',
       accountType: 'S'
     },
-    accessibleUserCount: 19,
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    },
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
+    },
+    accessibleUserCount: 22,
   },
   submissions: {
     accessibleSubmissionCount: 20,
@@ -508,7 +599,41 @@ const teacherMT = {
     modifiableProblem: {
       _id: ''
     }
-  }
+  },
+  workspaces: {
+    accessibleWorkspacesCount: 3,
+    accessibleWorkspace:
+      {
+        _id: '5bb814d19885323f6d894974' ,
+        name: `Summer's Org Problem Workspace`,
+        submissions: ['5bb814d19885323f6d894973'],
+        comments: ['5bbb9d86c2aa0a1696840ceb'],
+        responses: [],
+        taggings: ['5bbb9d5dc2aa0a1696840cea'],
+        selections: ['5bbb9d57c2aa0a1696840ce9'],
+        permissions: [],
+        feedbackAuthorizers: [],
+        folders: ["5bb814d19885323f6d894975",
+        "5bb814d19885323f6d894976",
+        "5bb814d19885323f6d894977",
+        "5bb814d19885323f6d894978"],
+      },
+      inaccessibleWorkspace: {
+        _id: '53e1156db48b12793f000442',
+      },
+  },
+  responses: {
+    accessibleResponsesCount: 2,
+    accessibleResponse: {
+      _id: "5bec6497aa4a927d50cd5b9b",
+    },
+    inaccessibleResponse: {
+      _id: "5b1aef7ae53645e768926123",
+    },
+    modifiableResponse: {
+      _id: ''
+    }
+  },
 };
 
 
@@ -538,21 +663,29 @@ const studentMT = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 6,
+    accessibleUserCount: 9,
     modifiableUser: {
       _id: '5b914a102ecaf7c30dd47492',
       username: 'tracyc',
       accountType: 'S'
     },
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    },
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
+    },
   },
   submissions: {
-    accessibleSubmissionCount: 0,
+    accessibleSubmissionCount: 1,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4df"
     },
   },
   comments: {
-    accessibleCommentCount: 0,
+    accessibleCommentCount: 2,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -571,7 +704,7 @@ const studentMT = {
     accessibleAnswerCount: 1,
   },
   selections: {
-    accessibleSelectionCount: 0,
+    accessibleSelectionCount: 2,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -656,7 +789,40 @@ const studentMT = {
       text: '',
       categories: []
     }
-  }
+  },
+  workspaces: {
+    accessibleWorkspacesCount: 1,
+    accessibleWorkspace:
+      {
+        _id: '5bec36958c73047613e2f34e/' ,
+        name: `Summer's Test Workspace 1`,
+        submissions: ["5bec36958c73047613e2f34c",],
+        comments: ["5bec375d8c73047613e2f35e",
+        "5bec37708c73047613e2f35f",],
+        responses: ["5bec64f7aa4a927d50cd5ba0"],
+        taggings: [],
+        selections: ["5bec373d8c73047613e2f35c",
+        "5bec37408c73047613e2f35d",],
+        permissions: [],
+        folders: [],
+        feedbackAuthorizers: [],
+      },
+      inaccessibleWorkspace: {
+        _id: '5bb814d19885323f6d894974'
+      } ,
+  },
+  responses: {
+    accessibleResponsesCount: 1,
+    accessibleResponse: {
+      _id: "5bec64f7aa4a927d50cd5ba0",
+    },
+    inaccessibleResponse: {
+      _id: "5bec6497aa4a927d50cd5b9b",
+    },
+    modifiableResponse: {
+      _id: ''
+    }
+  },
 };
 
 const teacherActingStudent = {
@@ -686,11 +852,19 @@ const teacherActingStudent = {
       organization: '5b4a64a028e4b75919c28512',
       accountType: 'S'
     },
-    accessibleUserCount: 6,
+    accessibleUserCount: 9,
     modifiableUser: {
       _id: '5b99146e25b620610ceead75',
       username: 'actingstudent',
       accountType: 'T'
+    },
+    outsideCollab: {
+      _id: "5b1e7bf9a5d2157ef4c911a6",
+      username: "drex",
+    },
+    outsideStudent: {
+      _id: "5b4e5180a2eed65e2434d475",
+      username: "testUser2",
     },
   },
   submissions: {
@@ -806,7 +980,46 @@ const teacherActingStudent = {
       categories: []
     }
 
-  }
+  },
+  workspaces: {
+    accessibleWorkspacesCount: 1 ,
+    accessibleWorkspace:
+      {
+        _id: '5bec36958c73047613e2f34e/' ,
+        name: `Summer's Test Workspace 1`,
+        submissions: ["5bec36958c73047613e2f34c",
+        "5bec36958c73047613e2f34d"],
+        comments: ["5bec375d8c73047613e2f35e",
+        "5bec37708c73047613e2f35f",
+        "5bec37a08c73047613e2f364",
+        "5bec37e38c73047613e2f366"],
+        responses: ["5bec6497aa4a927d50cd5b9b",
+        "5bec64f7aa4a927d50cd5ba0"],
+        taggings: [],
+        selections: ["5bec373d8c73047613e2f35c",
+        "5bec37408c73047613e2f35d",
+        "5bec37838c73047613e2f361",
+        "5bec37a78c73047613e2f365"],
+        permissions: [],
+        folders: [],
+        feedbackAuthorizers: [],
+      },
+      inaccessibleWorkspace: {
+        _id: '53e36522b48b12793f000d3b',
+      },
+  },
+  responses: {
+    accessibleResponsesCount: 2,
+    accessibleResponse: {
+      _id: "5bec6497aa4a927d50cd5b9b",
+    },
+    inaccessibleResponse: {
+      _id: "5b1aef7ae53645e768926123" ,
+    },
+    modifiableResponse: {
+      _id: ''
+    }
+  },
 };
 const users = {
   admin,

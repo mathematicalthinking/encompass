@@ -20,7 +20,7 @@ describe('User CRUD operations by account type', async function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole, _id, createdBy, name } = user.details;
-      const { modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount } = user.users;
+      const { modifiableUser, unaccessibleUser, accessibleUser, accessibleUserCount, outsideCollab, outsideStudent } = user.users;
       const isStudent = accountType === 'S' || actingRole === 'S';
       const defaultSelfPutBody = {
         user: {
@@ -347,6 +347,50 @@ describe('User CRUD operations by account type', async function() {
             });
           });
         });
+
+        //outside org, not owner, creator, editor, etc of any workspace you have access to
+
+          describe('Accessing a workspace collaborator who is outside your org', function() {
+            it('should be able to access', function(done) {
+              agent
+              .get(baseUrl + outsideCollab._id)
+              .end((err, res) => {
+                if (err) {
+                  console.error(err);
+                  done();
+                } else {
+                  expect(res).to.have.status(200);
+                  expect(res.body).to.have.all.keys('user');
+                  expect(res.body.user).to.be.an('object');
+                  expect(res.body.user.username).to.eql(outsideCollab.username);
+                  done();
+                }
+              });
+            });
+          });
+          if (outsideStudent) {
+            describe('Accessing a student (outisde org) from one of your sections', function() {
+              it('should be able to access', function(done) {
+                agent
+                .get(baseUrl + outsideStudent._id)
+                .end((err, res) => {
+                  if (err) {
+                    console.error(err);
+                    done();
+                  } else {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.have.all.keys('user');
+                    expect(res.body.user).to.be.an('object');
+                    expect(res.body.user.username).to.eql(outsideStudent.username);
+                    done();
+                  }
+                });
+              });
+            });
+          }
+
+
+
 
     });
   }

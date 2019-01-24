@@ -2,20 +2,38 @@
 Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
   elementId: 'ws-new-settings-permissions',
   utils: Ember.inject.service('utility-methods'),
-
+  globalPermissionValue: 'viewOnly',
   globalItems: {
-    groupName: 'global',
+    groupName: 'globalPermissionValue',
     groupLabel: 'Workspace Permissions',
-    info: 'Workspace permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       { label: 'View Only', value: 'viewOnly', moreInfo: 'This user will be able to see the workspace, but not add or make any changes' },
-      { label: 'Editor', value: 'editor', moreInfo: 'This user can add, delete or modify everything in this workspace' },
-    ]
+      {
+        label: 'Editor',
+        value: 'editor',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders, but they will not be able to see or create new responses'
+      },
+      {
+        label: 'Mentor',
+        value: 'indirectMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send feedback that will be delivered once approved by a designated feedback approver'
+      },
+      {
+        label: 'Mentor with Direct Send',
+        value: 'directMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send direct feedback that does not require approval'
+      },
+      {
+        label: 'Approver',
+        value: 'approver',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users'
+      },    ]
   },
   buildPermissionsObject() {
     const user = this.get('selectedCollaborator');
-    const globalSetting = this.get('global');
+    const globalSetting = this.get('globalPermissionValue');
 
     let submissionOptions = {
       all: true
@@ -35,11 +53,39 @@ Encompass.WsNewSettingsPermissionsComponent = Ember.Component.extend({
 
       return results;
     }
+
     if (globalSetting === 'editor') {
-      results.folders = 4;
+      results.folders = 3;
       results.selections = 4;
       results.comments = 4;
+      results.feedback = 'none';
+
+      return results;
+    }
+
+    if (globalSetting === 'indirectMentor') {
+      results.folders = 2;
+      results.selections = 2;
+      results.comments = 2;
+      results.feedback = 'authReq';
+
+      return results;
+    }
+
+    if (globalSetting === 'directMentor') {
+      results.folders = 2;
+      results.selections = 2;
+      results.comments = 2;
       results.feedback = 'preAuth';
+
+      return results;
+    }
+
+    if (globalSetting === 'approver') {
+      results.folders = 3;
+      results.selections = 4;
+      results.comments = 4;
+      results.feedback = 'approver';
 
       return results;
     }

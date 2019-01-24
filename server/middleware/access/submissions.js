@@ -1,11 +1,14 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
 const accessibleSubmissionsQuery = async function(user, ids) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user)) {
       return {};
     }
 
@@ -20,9 +23,9 @@ const accessibleSubmissionsQuery = async function(user, ids) {
     };
 
 
-      if (apiUtils.isNonEmptyArray(ids)) {
+      if (isNonEmptyArray(ids)) {
         filter.$and.push({ _id: { $in : ids } });
-      } else if(apiUtils.isValidMongoId(ids)) {
+      } else if(mongooseUtils.isValidMongoId(ids)) {
         filter.$and.push({ _id: ids });
       }
 
@@ -40,7 +43,7 @@ const accessibleSubmissionsQuery = async function(user, ids) {
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'submissions');
     console.log('restrictedSubmissionIds', restrictedRecords);
 
-    if (apiUtils.isNonEmptyArray(restrictedRecords)) {
+    if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }
 

@@ -4,10 +4,10 @@ module.exports = {
     "mode" : "private",
     "name" : "Summer's Test Workspace 1",
     "owner" : "5b4e4b48808c7eebc9f9e827",
+    "organization": "5b4e4d5f808c7eebc9f9e82c",
     "createdBy" : "5b4e4b48808c7eebc9f9e827",
     "lastModifiedBy" : "5b4e4b48808c7eebc9f9e827",
     "lastViewed" : "2018-11-14T15:00:52.991Z",
-    "feedbackAuthorizers" : [],
     "permissions" : [
         {
             "user" : "5b99146e25b620610ceead75",
@@ -16,7 +16,6 @@ module.exports = {
             "selections" : 2,
             "comments" : 2,
             "feedback" : "authReq",
-            "_id" : "5c3f3dd017bd196ef1073b19",
             "submissions" : {
                 "all" : true,
                 "submissionIds" : []
@@ -24,17 +23,52 @@ module.exports = {
         },
         {
             "user" : "5b9149c22ecaf7c30dd47490",
-            "global" : "viewOnly",
+            "global" : "custom",
             "folders" : 1,
             "selections" : 1,
             "comments" : 1,
             "feedback" : "none",
-            "_id" : "5c3f3f4891241a7971aaddee",
             "submissions" : {
                 "all" : false,
-                "submissionIds" : [
-                    "5bec36958c73047613e2f34d"
-                ]
+                "userOnly": true,
+                "submissionIds": [],
+            }
+        },
+        {
+            "user" : "5b1e7bf9a5d2157ef4c911a6",
+            "global": "directMentor",
+            "selections" : 2,
+            "folders" : 2,
+            "comments" : 2,
+            "feedback" : "preAuth",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5b7321ee59a672806ec903d5",
+            "global": "indirectMentor",
+            "selections" : 2,
+            "folders" : 2,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "submissions" : {
+                "all" : true,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5b914a102ecaf7c30dd47492",
+            "global": "custom",
+            "selections" : 2,
+            "folders" : 0,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "submissions" : {
+                "all" : false,
+                "userOnly": true,
+                "submissionIds": [],
             }
         }
     ],

@@ -89,7 +89,7 @@
     </p>
     {{radio-group options=submissionSettingsInputs selectedValue=selectedSubmissionSettings}}
   </div>
-  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator}}
+  {{ws-new-settings-permissions permissions=workspacePermissions store=store users=users isEditing=isEditingPermissions selectedCollaborator = unsavedCollaborator initialCollabOptions=initialCollabOptions selectedCollaborators=selectedCollaborators}}
 
   <div class="create-ws-error">
     {{#if createWorkspaceError}}

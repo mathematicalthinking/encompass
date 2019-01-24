@@ -33,7 +33,7 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         startDate = moment(startDate);
       }
       if (!endDate) {
-        endDate = moment();
+        endDate = moment().add(1, 'days');
       } else if (_.isString(endDate)) {
         endDate = moment(endDate);
       }

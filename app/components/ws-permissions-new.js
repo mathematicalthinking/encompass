@@ -50,22 +50,18 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       }, {
         label: 'Create',
         value: 2,
-        moreInfo: 'User will be able to see add folders ',
+        moreInfo: 'User will be able to create new folders ',
       }, {
-        label: 'Edit',
+        label: 'Modify',
         value: 3,
-        moreInfo: 'User will be able to see, add and edit folders',
-      }, {
-        label: 'Delete',
-        value: 4,
-        moreInfo: 'User will be able to see, add, edit and delete folders',
-      }
+        moreInfo: 'User will be able to rename, reorder, and delete existing folders',
+      },
     ]
   },
   selectionItems: {
     groupName: 'selections',
     groupLabel: 'Selection Permissions',
-    info: 'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections',
+    info: 'Selection permissions decide what users can do with selections in this workspace. Delete is the highest setting which means this user can do anything related to selections. If you can create selections, you can file them in any available folders.',
     required: true,
     inputs: [
       {
@@ -79,15 +75,15 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       }, {
         label: 'Create',
         value: 2,
-        moreInfo: 'User will be able to see add selections ',
+        moreInfo: 'User will be able to see and add selections ',
       }, {
         label: 'Edit',
         value: 3,
-        moreInfo: 'User will be able to see, add and edit selections',
+        moreInfo: 'User will be able to see, add, and edit selections',
       }, {
         label: 'Delete',
         value: 4,
-        moreInfo: 'User will be able to see, add, edit and delete selections',
+        moreInfo: 'User will be able to see, add, edit, and delete selections',
       }
     ]
   },
@@ -108,11 +104,11 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       }, {
         label: 'Create',
         value: 2,
-        moreInfo: 'User will be able to see add comments ',
+        moreInfo: 'User will be able to see and add comments ',
       }, {
         label: 'Edit',
         value: 3,
-        moreInfo: 'User will be able to see, add and edit comments',
+        moreInfo: 'User will be able to see, add, and edit comments',
       }, {
         label: 'Delete',
         value: 4,
@@ -132,20 +128,25 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         value: 'none',
         moreInfo: 'User will not be able to see feedback',
       }, {
-        label: 'Authorization Required',
+        label: 'Approval Required',
         value: 'authReq',
         moreInfo: 'User can send feeback but the owner will have to approve it first',
       }, {
-        label: 'Pre-authorized',
+        label: 'Pre-approved',
         value: 'preAuth',
         moreInfo: 'User can send feedback directly to students without approval',
+      }, {
+        label: 'Feedback Approver',
+        value: 'approver',
+        moreInfo: 'User can send feedback directly and approve other feedback that is pending approval'
       }
     ]
   },
+
   globalItems: {
     groupName: 'global',
     groupLabel: 'Workspace Permissions',
-    info: 'Workspace permissions apply to all aspects of a worksapce for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
+    info: 'Workspace permissions apply to all aspects of a workspace for this user. This means whatever you select applies to all the selections, comments, folders, etc.',
     required: true,
     inputs: [
       {
@@ -156,7 +157,22 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       {
         label: 'Editor',
         value: 'editor',
-        moreInfo: 'This user can add, delete or modify everything in this workspace',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders, but they will not be able to see or create new responses'
+      },
+      {
+        label: 'Mentor',
+        value: 'indirectMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send feedback that will be delivered once approved by a designated feedback approver'
+      },
+      {
+        label: 'Mentor with Direct Send',
+        value: 'directMentor',
+        moreInfo: 'This user can create selections, comments, and folders. They can also send direct feedback that does not require approval'
+      },
+      {
+        label: 'Approver',
+        value: 'approver',
+        moreInfo: 'This user can add, delete or modify selections, comments, and folders. They can directly send their own feedback and approve feedback created by other users'
       },
       {
         label: 'Custom',
@@ -227,19 +243,20 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
         return ids;
       }
       return [];
-    } else if (submissionsValue === 'userOnly') {
-      // filter for only submissions that have selectedUser as student
-      const subs = this.get('workspace.submissions.content');
-      const selectedUsername = this.get('selectedUser.username');
-      const selectedUserId = this.get('selectedUser.id');
-      if (subs) {
-        const filtered = subs.filter((sub) => {
-          return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
-        });
-        return filtered.mapBy('id');
-      }
-
     }
+    // } else if (submissionsValue === 'userOnly') {
+    //   // filter for only submissions that have selectedUser as student
+    //   const subs = this.get('workspace.submissions.content');
+    //   const selectedUsername = this.get('selectedUser.username');
+    //   const selectedUserId = this.get('selectedUser.id');
+    //   if (subs) {
+    //     const filtered = subs.filter((sub) => {
+    //       return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
+    //     });
+    //     return filtered.mapBy('id');
+    //   }
+
+    // }
     return [];
   },
 
@@ -249,15 +266,17 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
     const submissions = this.get('submissions');
 
     const includeAllSubs = submissions === 'all';
+    const isUserOnly = submissions === 'userOnly';
+
     let submissionOptions = {
       all: includeAllSubs,
+      userOnly: isUserOnly,
       submissionIds: []
     };
 
-    if (!includeAllSubs) {
+    if (!includeAllSubs && !isUserOnly) {
       submissionOptions.submissionIds = this.buildCustomSubmissionIds(submissions);
     }
-
 
     const results = {
       user,
@@ -274,10 +293,34 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       return results;
     }
     if (globalSetting === 'editor') {
-      results.folders = 4;
+      results.folders = 3;
       results.selections = 4;
       results.comments = 4;
+      results.feedback = 'none';
+
+      return results;
+    }
+    if (globalSetting === 'indirectMentor') {
+      results.folders = 2;
+      results.selections = 2;
+      results.comments = 2;
+      results.feedback = 'authReq';
+
+      return results;
+    }
+    if (globalSetting === 'directMentor') {
+      results.folders = 2;
+      results.selections = 2;
+      results.comments = 2;
       results.feedback = 'preAuth';
+
+      return results;
+    }
+    if (globalSetting === 'approver') {
+      results.folders = 3;
+      results.selections = 4;
+      results.comments = 4;
+      results.feedback = 'approver';
 
       return results;
     }

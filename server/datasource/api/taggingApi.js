@@ -12,6 +12,9 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/taggings');
+
+const { areObjectIdsEqual, } = require('../../utils/mongoose');
+
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
@@ -116,7 +119,8 @@ function postTagging(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(wsAccess.canModify(user, ws, 'folders', 3)) {
+    // if you can select, you can tag
+    if(wsAccess.canModify(user, ws, 'selections', 2)) {
 
       var tagging = new models.Tagging(req.body.tagging);
       tagging.createdBy = user;
@@ -156,7 +160,8 @@ function putTagging(req, res, next) {
       logger.error(err);
       return utils.sendError.InternalError(err, res);
     }
-    if(_.isEqual(user.id, req.body.tagging.createdBy) || wsAccess.canModify(user, ws, 'folders', 3)) {
+    // if can modify selections can modify taggings
+    if(areObjectIdsEqual(user.id, req.body.tagging.createdBy) || wsAccess.canModify(user, ws, 'selections', 3)) {
       models.Tagging.findById(req.params.id,
         function (err, doc) {
           if(err) {

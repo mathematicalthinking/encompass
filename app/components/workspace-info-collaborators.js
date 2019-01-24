@@ -3,6 +3,8 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
   elementId: ['workspace-info-collaborators'],
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
+  globalPermissionValue: null,
+  showCustom: Ember.computed.equal('globalPermissionValue', 'custom'),
   mainPermissions: [
     {
       id: 1,
@@ -38,13 +40,18 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
     {
       id: 2,
-      display: 'Authorization Required',
+      display: 'Approval Required',
       value: 'authReq',
     },
     {
       id: 3,
-      display: 'Pre-Authorized',
+      display: 'Pre-Approved',
       value: 'preAuth',
+    },
+    {
+      id: 4,
+      display: 'Approver',
+      value: 'approver',
     },
   ],
   submissionPermissions: [
@@ -127,12 +134,16 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         obj.id = 1;
         break;
       case 'authReq':
-        obj.display = 'Authorization Required';
+        obj.display = 'Approval Required';
         obj.id = 2;
         break;
       case 'preAuth':
-        obj.display = 'Pre-Authorized';
+        obj.display = 'Pre-Approved';
         obj.id = 3;
+        break;
+      case 'approver':
+        obj.display = 'Approver';
+        obj.id = 4;
         break;
       default:
         break;
@@ -150,6 +161,10 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       obj.id = 1;
       obj.value = 'all';
       obj.display = 'All';
+    } else if (subObj.userOnly) {
+      obj.id = 2;
+      obj.value = 'userOnly';
+      obj.display = 'Own Only';
     } else {
       obj.id = 3;
       obj.value = 'custom';
@@ -166,18 +181,19 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         return ids;
       }
       return [];
-    } else if (submissionsValue === 'userOnly') {
-      // filter for only submissions that have selectedUser as student
-      const subs = this.get('workspace.submissions.content');
-      const selectedUsername = this.get('selectedUser.username');
-      const selectedUserId = this.get('selectedUser.id');
-      if (subs) {
-        const filtered = subs.filter((sub) => {
-          return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
-        });
-        return filtered.mapBy('id');
-      }
     }
+    // } else if (submissionsValue === 'userOnly') {
+    //   // filter for only submissions that have selectedUser as student
+    //   const subs = this.get('workspace.submissions.content');
+    //   const selectedUsername = this.get('selectedUser.username');
+    //   const selectedUserId = this.get('selectedUser.id');
+    //   if (subs) {
+    //     const filtered = subs.filter((sub) => {
+    //       return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
+    //     });
+    //     return filtered.mapBy('id');
+    //   }
+    // }
     return [];
   },
 
@@ -188,6 +204,8 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         return;
       }
       this.set('selectedCollaborator', collaborator.userObj);
+      this.set('globalPermissionValue', collaborator.global);
+
       let submissions = this.createSubmissionValueObject(collaborator.submissions);
       let selections = this.createValueObject(collaborator.selections);
       let comments = this.createValueObject(collaborator.comments);
@@ -217,33 +235,71 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       }
 
       let subValue = this.get('submissions.value');
-      let viewAllSubs;
-      let submissionIds;
-      if (subValue === 'all') {
-        viewAllSubs = true;
-        submissionIds = existingObj.submissions.submissionIds;
-      } else if (subValue === 'userOnly') {
-        viewAllSubs = false;
-        submissionIds = this.buildCustomSubmissionIds('userOnly');
-      } else if (subValue === 'custom'){
-        viewAllSubs = false;
-        submissionIds = this.get('customSubmissionIds');
-      } else {
-        viewAllSubs = false;
-      }
 
       let newObj = {
         user: existingObj.user,
-        submissions: { all: viewAllSubs, submissionIds: submissionIds },
-        selections: this.get('selections.value'),
-        folders: this.get('folders.value'),
-        comments: this.get('comments.value'),
-        feedback: this.get('feedback.value'),
+        global: this.get('globalPermissionValue'),
+        submissions: {all: false, userOnly: false, submissionIds: []},
       };
 
+      if (subValue === 'all') {
+        newObj.submissions.all = true;
+      } else if (subValue === 'userOnly') {
+        newObj.submissions.userOnly = true;
+      } else if (subValue === 'custom'){
+        newObj.submissions.submissionIds = this.get('customSubmissionIds');
+      }
+
+      let globalSetting = this.get('globalPermissionValue');
+        if (globalSetting === 'viewOnly') {
+          newObj.folders = 1;
+          newObj.selections = 1;
+          newObj.comments = 1;
+          newObj.feedback = 'none';
+
+        }
+
+        if (globalSetting === 'editor') {
+          newObj.folders = 3;
+          newObj.selections = 4;
+          newObj.comments = 4;
+          newObj.feedback = 'none';
+
+        }
+
+        if (globalSetting === 'indirectMentor') {
+          newObj.folders = 2;
+          newObj.selections = 2;
+          newObj.comments = 2;
+          newObj.feedback = 'authReq';
+
+        }
+
+        if (globalSetting === 'directMentor') {
+          newObj.folders = 2;
+          newObj.selections = 2;
+          newObj.comments = 2;
+          newObj.feedback = 'preAuth';
+
+        }
+
+        if (globalSetting === 'approver') {
+          newObj.folders = 3;
+          newObj.selections = 4;
+          newObj.comments = 4;
+          newObj.feedback = 'approver';
+
+        }
+        if (globalSetting === 'custom') {
+          newObj.selections = this.get('selections.value');
+          newObj.folders = this.get('folders.value');
+          newObj.comments = this.get('comments.value');
+          newObj.feedback = this.get('feedback.value');
+        }
       permissions.addObject(newObj);
 
       ws.save().then(() => {
+        this.set('globalPermissionValue', null);
         this.get('alert').showToast('success', `Permissions set for ${permissionsObject.userObj.get('username')}`, 'bottom-end', 3000, null, false);
         this.set('selectedCollaborator', null);
         this.set('selectedUser', null);
@@ -280,6 +336,12 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     },
     toggleSubmissionView: function () {
       this.set('isShowingCustomViewer', !this.get('isShowingCustomViewer'));
-    }
+    },
+    cancelEditCollab: function() {
+      this.set('selectedCollaborator', null);
+      if (this.get('isShowingCustomViewer')) {
+        this.set('isShowingCustomViewer', false);
+      }
+    },
   }
 });

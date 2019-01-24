@@ -1,11 +1,14 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
 const accessibleFolderSetsQuery = function(user, ids) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user)) {
       return {};
     }
 
@@ -19,9 +22,9 @@ const accessibleFolderSetsQuery = function(user, ids) {
       ]
     };
 
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
-    } else if(apiUtils.isValidMongoId(ids)) {
+    } else if(mongooseUtils.isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 

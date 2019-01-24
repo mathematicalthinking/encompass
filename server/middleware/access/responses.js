@@ -1,13 +1,18 @@
 const utils = require('./utils');
-const apiUtils = require('../../datasource/api/utils');
 const _ = require('underscore');
+const mongooseUtils = require('../../utils/mongoose');
+const submissionAccess = require('./submissions');
+const objectUtils = require('../../utils/objects');
+
+const { isValidMongoId } = mongooseUtils;
+const { isNonEmptyObject, isNonEmptyArray, isNil } = objectUtils;
 
 module.exports.get = {};
 
 const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) {
   try {
-    if (!apiUtils.isNonEmptyObject(user)) {
-      return {};
+    if (!isNonEmptyObject(user)) {
+      return;
     }
 
     const { accountType, actingRole } = user;
@@ -20,13 +25,13 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       ]
     };
 
-    if (apiUtils.isNonEmptyArray(ids)) {
+    if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
-    } else if(apiUtils.isValidMongoId(ids)) {
+    } else if(isValidMongoId(ids)) {
       filter.$and.push({ _id: ids });
     }
 
-    if (apiUtils.isNonEmptyObject(filterBy)) {
+    if (isNonEmptyObject(filterBy)) {
       let allowedKeyHash = {
         workspace: true,
         submission: true,
@@ -42,7 +47,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       });
     }
 
-    if (apiUtils.isValidMongoId(workspace)) {
+    if (isValidMongoId(workspace)) {
       filter.$and.push({workspace});
     }
 
@@ -63,12 +68,23 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
 
     // can access any feedback from workspace where user has approve permissions
 
-    let approverWorkspaceIds = await utils.getApproverWorkspaceIds(user);
-    if (apiUtils.isNonEmptyArray(approverWorkspaceIds)) {
+    // let approverWorkspaceIds = await utils.getApproverWorkspaceIds(user);
+
+    // if (isNonEmptyArray(approverWorkspaceIds)) {
+    //   orFilter.$or.push({
+    //     workspace: {$in: approverWorkspaceIds}
+    //   });
+    // }
+
+    let subCriteria = await submissionAccess.get.submissions(user);
+
+    let allowedSubmissionIds = await utils.getModelIds('Submission', subCriteria);
+    if (isNonEmptyArray(allowedSubmissionIds)) {
       orFilter.$or.push({
-        workspace: {$in: approverWorkspaceIds}
+        submission: {$in: allowedSubmissionIds}
       });
     }
+    // can access any feedback from submissions you have access to
 
     // can access any feedback you created
 
@@ -77,12 +93,11 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     orFilter.$or.push({ createdBy: user._id });
     // orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
-    // const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
-    // console.log('restrictedResponseIds', restrictedRecords);
+    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
 
-    // if (apiUtils.isNonEmptyArray(restrictedRecords)) {
-    //   filter.$and.push({ _id: { $nin: restrictedRecords } });
-    // }
+    if (isNonEmptyArray(restrictedRecords)) {
+      filter.$and.push({ _id: { $nin: restrictedRecords } });
+    }
 
     if (isStudent) {
       filter.$and.push(orFilter);
@@ -97,10 +112,13 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
       const userOrg = user.organization;
 
       //const userIds = await getOrgUsers(userOrg);
-      const userIds = await utils.getModelIds('User', {organization: userOrg});
-      userIds.push(user._id);
+      if (isValidMongoId(userOrg)) {
+        const userIds = await utils.getModelIds('User', {organization: userOrg});
 
-      orFilter.$or.push({createdBy : {$in : userIds}, recipient: {$in: userIds}});
+        orFilter.$or.push({createdBy : {$in : userIds}});
+        orFilter.$or.push({recipient: {$in: userIds}});
+      }
+
       filter.$and.push(orFilter);
 
       return filter;
@@ -109,11 +127,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     if (accountType === 'T') {
     // teachers can get any responses where they are the primary teacher or in the teachers array
     // should teachers be able to get all responses from organization?
-
-    // createdBy is already taken care of above
-      // filter.$or.push({ createdBy : user._id });
-      // filter.$or.push({ 'teacher.id': user.id });
-      // filter.$or.push({ teachers : user.id });
+    // get ids of all students? or unneccessary because responses are always tied to submissions?
       filter.$and.push(orFilter);
 
       return filter;
@@ -126,28 +140,24 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
 };
 
 const canGetResponse = async function(user, responseId) {
-  if (!user) {
-    return;
+  try {
+    if (!isNonEmptyObject(user)) {
+      return false;
+    }
+
+    const { accountType, actingRole } = user;
+    const isStudent = accountType === 'S' || actingRole === 'student';
+
+    if (accountType === 'A' && !isStudent) {
+      return true; // admins currently can get all responses
+    }
+
+    let criteria = await accessibleResponsesQuery(user, responseId);
+
+    return utils.doesRecordExist('Response', criteria);
+  } catch(err) {
+    console.error(`Error canGetResponse: ${err}`);
   }
-
-  const { accountType, actingRole } = user;
-  const isStudent = accountType === 'S' || actingRole === 'student';
-
-  // if (accountType === 'S' || actingRole === 'student') {
-  //   return false; // currently we are blocking students from getting responses
-  // }
-
-  if (accountType === 'A' && !isStudent) {
-    return true; // admins currently can get all responses
-  }
-
-  // use accessibleResponses criteria to determine access for teachers/pdAdmins
-
-  let criteria = await accessibleResponsesQuery(user, responseId);
-  let accessibleIds = await utils.getModelIds('Response', criteria);
-
-  accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
-  return _.contains(accessibleIds, responseId);
 };
 
 module.exports.get.responses = accessibleResponsesQuery;

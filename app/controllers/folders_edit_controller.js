@@ -38,7 +38,7 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
 
     // return Permissions.userCan(user, ws, "SELECTIONS");
     const workspace = this.get('currentWorkspace');
-    return this.get('permissions').canEdit(workspace, 'folders', 4);
+    return this.get('permissions').canEdit(workspace, 'selections', 3);
   }.property('currentUser', 'currentWorkspace'),
 
   evidence: function() {

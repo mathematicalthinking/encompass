@@ -24,30 +24,67 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
+const responseAccess = require('../../middleware/access/responses');
+
+const objectUtils = require('../../utils/objects');
+const stringUtils = require('../../utils/strings');
+const mongooseUtils = require('../../utils/mongoose');
+
+const { isNil, isNonEmptyArray, isNonEmptyObject, } = objectUtils;
+
+const { capitalizeString, } = stringUtils;
+
+const { areObjectIdsEqual } = mongooseUtils;
+
 module.exports.get = {};
 module.exports.post = {};
 module.exports.put = {};
-
 
 function getRestrictedDataMap(user, permissions, ws) {
   // check if user has specific permissions in ws permissions array
   // ws has selections, submissions, folders, taggings populated
 
-  if (apiUtils.isNullOrUndefined(permissions) || !apiUtils.isNonEmptyObject(ws)) {
+  if (isNil(permissions) || !isNonEmptyObject(ws)) {
     return {};
   }
 
   const dataMap = {};
-  const { submissions, folders, selections, comments } = permissions;
+  const { submissions, folders, selections, comments, feedback } = permissions;
 
   // filter submissions to requestedIds
   if (_.propertyOf(submissions)('all') !== true) {
-    const submissionIds = _.propertyOf(submissions)('submissionIds');
-    const wsSubs = ws.submissions;
-    if (apiUtils.isNonEmptyArray(wsSubs) && _.isArray(submissionIds)) {
-      let filteredSubs = _.filter(wsSubs, (sub) => {
-        return _.contains(_.map(submissionIds, id => id.toString()), sub._id.toString());
+    let submissionIds = _.propertyOf(submissions)('submissionIds') || [];
+    let wsSubs = ws.submissions || [];
+
+    let filteredSubs;
+
+
+    if (_.propertyOf(submissions)('userOnly') === true ) {
+      // filter for subs created by currentUser
+      // i.e. creator.studentId property equals current userId
+      filteredSubs = wsSubs.filter((sub) => {
+        let userId = _.propertyOf(sub)(['creator', 'studentId']);
+        console.log('userId gdm', userId);
+        return areObjectIdsEqual(userId, user.id);
       });
+
+      // if (Array.isArray(ws.submissions)) {
+      //   submissionIds = ws.submissions.filter((sub) => {
+      //     let userId = _.propertyOf(sub)(['creator', 'studentId']);
+      //     console.log('userId gdm', userId);
+      //     return areObjectIdsEqual(userId, user.id);
+      //   });
+      // } else {
+      //   submissionIds = [];
+      // }
+    } else {
+      filteredSubs = wsSubs.filter((sub) => {
+        console.log('pop sub gdm', sub.creator);
+        return _.contains(submissionIds, sub._id.toString());
+      });
+
+    }
+
       dataMap.submissions = filteredSubs;
       // can only take selections that correspond to these submissions
       if (selections === 0) {
@@ -82,8 +119,18 @@ function getRestrictedDataMap(user, permissions, ws) {
           .value();
            dataMap.comments = selComments;
         }
+        if (feedback === 'none') {
+          dataMap.responses = [];
+        } else {
+          const subIds = _.map(filteredSubs, sub => sub._id.toString());
+          const subResponses = _.chain(ws.responses)
+            .filter(res => res.submission && subIds.includes(res.submission.toString()))
+            .flatten()
+            .value();
+          dataMap.responses = subResponses;
+        }
       }
-    }
+
   } else {
     // returning all submisisons
 
@@ -100,6 +147,11 @@ function getRestrictedDataMap(user, permissions, ws) {
     dataMap.folders = [];
     dataMap.taggings = [];
   }
+
+  if (feedback === 'none') {
+    dataMap.responses = [];
+  }
+
   return dataMap;
 }
 /**
@@ -112,12 +164,13 @@ function getRestrictedDataMap(user, permissions, ws) {
   * @throws {MongoError} Data retrieval failed
   * @todo This should really accept a node-style callback
   */
-function getWorkspace(id, user, specialPermissions, callback) {
+function getWorkspace(id, user, specialPermissions, callback, doCheckAllowedResponses) {
   models.Workspace.findById(id)
     .populate('selections')
     .populate('submissions')
     .populate('folders')
     .populate('taggings')
+    .populate('responses')
     .exec(function(err, ws){
     if(err) {
       throw err;
@@ -141,14 +194,16 @@ function getWorkspace(id, user, specialPermissions, callback) {
       'selections':  'selection',
       'submissions': 'submission',
       'folders':     'folder',
-      'taggings':     'tagging'
+      'taggings':     'tagging',
+      'responses': 'response',
     };
 
     var relatedData = {
       'selections':  [],
       'submissions': [],
       'folders':     [],
-      'taggings':    []
+      'taggings':    [],
+      'responses': [],
 //      'workspace': {},
 //      'createdBy': {}
     };
@@ -176,7 +231,7 @@ function getWorkspace(id, user, specialPermissions, callback) {
       }
       data[modelName] = _.values(relatedData[key]);
     });
-    callback(data);
+            callback(data);
   });
 }
 
@@ -228,6 +283,77 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
       });
 }
 
+function filterRequestedWorkspaceData(user, results) {
+  if (!isNonEmptyObject(user) || !isNonEmptyArray(results)) {
+    return Promise.resolve([]);
+  }
+
+  const { accountType, actingRole } = user;
+
+  const isStudent = accountType === 'S' || actingRole === 'student';
+
+  if (accountType === 'A' && !isStudent) {
+    return Promise.resolve(results);
+  }
+
+  return Promise.all(
+    _.map(results, (ws) => {
+      // check if user has a special permission object
+
+      // if no permisisons object, just return ws;
+      if (!isNonEmptyArray(ws.permissions)) {
+        return Promise.resolve(ws);
+      }
+
+      // if there is no permisisonObject for user, just return ws
+      const permissionObject = _.find(ws.permissions, obj => areObjectIdsEqual(user._id, obj.user));
+      if (isNil(permissionObject)) {
+        return Promise.resolve(ws);
+      }
+
+      return models.Workspace.findById(ws._id)
+      .populate('selections')
+      .populate('submissions')
+      .populate('folders')
+      .populate('taggings')
+      .populate('owner')
+      .populate('editors')
+      .populate('createdBy')
+      .populate('responses')
+      .lean().exec()
+      .then((populatedWs) => {
+        // eslint-disable-next-line no-unused-vars
+        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
+        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
+        // val is array of populated Docs, but we just need Ids
+        _.each(restrictedDataMap, (val, key) => {
+          if (ws[key]) {
+            if (Array.isArray(val)) {
+              ws[key] = _.map(val, (val) => {
+                if (val._id) {
+                  return val._id;
+                }
+                return val;
+              });
+            } else {
+              ws[key] = val;
+            }
+          }
+        });
+        // make sure only returning responses that have been approved
+        return responseAccess.get.responses(user, ws.responses)
+        .then((criteria) => {
+          return models.Response.find(criteria).lean().exec()
+          .then((responses) => {
+            ws.responses = responses.map(r => r._id);
+            return ws;
+          });
+        });
+      });
+    })
+  );
+}
+
 
 /**
   * @public
@@ -254,12 +380,22 @@ function sendWorkspace(req, res, next) {
       logger.info("permission denied");
       return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
     } else {
-
+      // return filterRequestedWorkspaceData(user, [ws])
+      // .then((results) => {
+      //   console.log('results', results);
+      //   if (results) {
+      //     utils.sendResponse(res, results[0]);
+      //   }
+      // });
       //need to check that the user's permissions aren't limited for this workspace
       getWorkspace(req.params.id, user, specialPermissions, function(data) {
+        console.log('data sending back workspace: ', JSON.stringify(data.responses, null, 2));
+
+      //   // responses need to be filtered so only ones user should have access to are sent back
+      //   // ideally this would be done already but for now do here
         utils.sendResponse(res, data);
-      });
-    }
+       });
+      }
   });
 }
 
@@ -277,7 +413,7 @@ async function putWorkspace(req, res, next) {
   // for now let acting role student modify workspaces but need to come up with a better solution
   const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec();
 
-  if (apiUtils.isNullOrUndefined(popWs || popWs.isTrashed)) {
+  if (isNil(popWs || popWs.isTrashed)) {
     return utils.sendResponse(res, null);
   }
   if(!access.get.workspace(user, popWs)) {
@@ -296,9 +432,9 @@ async function putWorkspace(req, res, next) {
 
   const originalPermissions = ws.permissions;
     let originalCollabIds = [];
-    if (apiUtils.isNonEmptyArray(originalPermissions)) {
+    if (isNonEmptyArray(originalPermissions)) {
       originalCollabIds = _.chain(originalPermissions)
-      .filter(obj => !apiUtils.isNullOrUndefined(obj.user))
+      .filter(obj => !isNil(obj.user))
       .map(obj => obj.user.toString())
       .value();
     }
@@ -331,12 +467,13 @@ async function putWorkspace(req, res, next) {
       if (_.isArray(wsPermissions)) {
 
         const newCollabIds = _.chain(wsPermissions)
-        .filter(obj => !apiUtils.isNullOrUndefined(obj.user))
+        .filter(obj => !isNil(obj.user))
         .map(obj => obj.user.toString())
         .value();
 
         let removedCollabs = _.difference(originalCollabIds, newCollabIds);
         // remove workspace from users' collabWorkspaces if they were removed as collab
+        // do we need to wait for this?
         await models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
         }
       return utils.sendResponse(res, {workspace: savedWorkspace});
@@ -461,7 +598,7 @@ async function newFolderStructure(user, wsInfo, folderSetHash) {
     let folders = [];
     const folderIds = [];
 
-    if (!apiUtils.isNonEmptyObject(wsInfo) || !apiUtils.isNonEmptyObject(folderSetHash)) {
+    if (!isNonEmptyObject(wsInfo) || !isNonEmptyObject(folderSetHash)) {
       return;
     }
 
@@ -472,7 +609,7 @@ async function newFolderStructure(user, wsInfo, folderSetHash) {
       return folders;
     }
 
-    if (apiUtils.isNonEmptyArray(folderSetObjects)) {
+    if (isNonEmptyArray(folderSetObjects)) {
       folders = folderSetObjects;
     } else if (folderSetId) {
       // lookup folderSet in db
@@ -989,70 +1126,6 @@ function newWorkspaceRequest(req, res, next) {
   });
 }
 
-function filterRequestedWorkspaceData(user, results) {
-  if (!apiUtils.isNonEmptyObject(user) || !apiUtils.isNonEmptyArray(results)) {
-    return [];
-  }
-
-  const { accountType, actingRole } = user;
-
-  const isStudent = accountType === 'S' || actingRole === 'student';
-
-  if (accountType === 'A' && !isStudent) {
-    return results;
-  }
-
-  return Promise.all(
-    _.map(results, (ws) => {
-      // check if user has a special permission object
-
-      // if no permisisons object, just return ws;
-      if (!apiUtils.isNonEmptyArray(ws.permissions)) {
-        return ws;
-      }
-
-      // if there is no permisisonObject for user, just return ws
-      const permissionObject = _.find(ws.permissions, obj => _.isEqual(user._id, obj.user));
-      if (apiUtils.isNullOrUndefined(permissionObject)) {
-        return ws;
-      }
-
-      return models.Workspace.findById(ws._id)
-      .populate('selections')
-      .populate('submissions')
-      .populate('folders')
-      .populate('taggings')
-      .populate('owner')
-      .populate('editors')
-      .populate('createdBy')
-      .lean().exec()
-      .then((populatedWs) => {
-        // eslint-disable-next-line no-unused-vars
-        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
-        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
-        // val is array of populated Docs, but we just need Ids
-        _.each(restrictedDataMap, (val, key) => {
-          if (ws[key]) {
-            if (Array.isArray(val)) {
-              ws[key] = _.map(val, (val) => {
-                if (val._id) {
-                  return val._id;
-                }
-                return val;
-              });
-            } else {
-              ws[key] = val;
-            }
-          }
-        });
-
-        return ws;
-      });
-    })
-  );
-  }
-
-
 /**
   * @public
   * @method getWorkspaces
@@ -1072,7 +1145,7 @@ async function getWorkspaces(req, res, next) {
 
     if (includeFromOrg && user.organization) {
       let userIdsFromOrg = await accessUtils.getModelIds('User', { organization: user.organization });
-      if (apiUtils.isNonEmptyArray(userIdsFromOrg)) {
+      if (isNonEmptyArray(userIdsFromOrg)) {
         if (_.isArray(filterBy.$or)) {
           filterBy.$or.push({ createdBy: { $in: userIdsFromOrg } });
           filterBy.$or.push({ owner: { $in: userIdsFromOrg } });
@@ -1097,15 +1170,15 @@ async function getWorkspaces(req, res, next) {
         let crit = {};
         let { organizations, includeFromOrg } = org;
 
-        if (apiUtils.isNonEmptyArray(organizations)) {
+        if (isNonEmptyArray(organizations)) {
           if (!crit.$or) {
             crit.$or = [];
           }
           crit.$or.push({ organization: { $in: organizations } });
         }
-        if (includeFromOrg && apiUtils.isNonEmptyArray(organizations)) {
+        if (includeFromOrg && isNonEmptyArray(organizations)) {
           let userIdsFromOrg = await accessUtils.getModelIds('User', { organization: {$in: organizations} });
-          if (apiUtils.isNonEmptyArray(userIdsFromOrg)) {
+          if (isNonEmptyArray(userIdsFromOrg)) {
             crit.$or.push({ createdBy: { $in: userIdsFromOrg } });
             crit.$or.push({ owner: { $in: userIdsFromOrg } });
           }
@@ -1144,7 +1217,7 @@ async function getWorkspaces(req, res, next) {
         let combined = _.flatten(ownerIds.concat(editorIds));
         let uniqueIds = _.uniq(combined);
 
-        if (apiUtils.isNonEmptyArray(uniqueIds)) {
+        if (isNonEmptyArray(uniqueIds)) {
           searchFilter.$or.push({ _id: { $in: uniqueIds } });
         }
 
@@ -1152,13 +1225,13 @@ async function getWorkspaces(req, res, next) {
       } else if (criterion === 'owner') {
         let ids = await apiUtils.filterByForeignRef('Workspace', query, 'owner', 'username');
 
-        if (apiUtils.isNonEmptyArray(ids)) {
+        if (isNonEmptyArray(ids)) {
           searchFilter = { _id: { $in: ids } };
         }
 
       } else if (criterion === 'editors') {
         let ids = await apiUtils.filterByForeignRefArray('Workspace', query, 'editors', 'username');
-        if (apiUtils.isNonEmptyArray(ids)) {
+        if (isNonEmptyArray(ids)) {
           searchFilter = { _id: { $in: ids } };
         }
 
@@ -1349,14 +1422,14 @@ async function answersToSubmissions(answers) {
           creator.studentId = student._id;
           creator.username = student.username;
         } else {
-          if (apiUtils.isNonEmptyArray(studentNames)) {
+          if (isNonEmptyArray(studentNames)) {
             if (studentNames.length === 1) {
-              creator.fullName = apiUtils.capitalizeString(studentNames[0], true);
+              creator.fullName = capitalizeString(studentNames[0], true);
               creator.safeName = apiUtils.getSafeName(creator.fullName, false, false);
             } else {
               // handle cases of multiple students?
               // for now just take first
-              creator.fullName = apiUtils.capitalizeString(studentNames[0], true);
+              creator.fullName = capitalizeString(studentNames[0], true);
               creator.safeName = apiUtils.getSafeName(creator.fullName, false, false);
             }
           }
@@ -1370,7 +1443,7 @@ async function answersToSubmissions(answers) {
         clazz.sectionId = section._id;
         clazz.name = section.name;
         teachers = section.teachers;
-        if (apiUtils.isNonEmptyArray(teachers)) {
+        if (isNonEmptyArray(teachers)) {
           primaryTeacher = teachers[0];
           teacher.id = primaryTeacher;
         }
@@ -1427,9 +1500,9 @@ async function postWorkspaceEnc(req, res, next) {
       }
     }
 
-    if (apiUtils.isNonEmptyArray(answers)) {
+    if (isNonEmptyArray(answers)) {
       let records = await models.Answer.find({_id: {$in: answers}});
-      if (apiUtils.isNonEmptyArray(records)) {
+      if (isNonEmptyArray(records)) {
         answersToConvert = records;
       } else {
         // something went wrong
@@ -1539,7 +1612,7 @@ function buildSubmissionsToClone(submissions, hash) {
     return [...submissions];
   }
 
-  if (none || !apiUtils.isNonEmptyArray(submissionIds)) {
+  if (none || !isNonEmptyArray(submissionIds)) {
     return [];
   }
 
@@ -1556,7 +1629,7 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
       folderSetObjects: [],
       isInvalidWorkspace: false
     };
-    if (apiUtils.isNonEmptyObject(folderSetOptions)) {
+    if (isNonEmptyObject(folderSetOptions)) {
       const { existingFolderSetToUse } = folderSetOptions;
 
       if (existingFolderSetToUse) {
@@ -1578,7 +1651,7 @@ async function copyAndSaveFolderStructure(user, originalWsId, folderIds, folderS
     }
 
     const topLevelFolders = _.filter(folders, (folder => {
-      return apiUtils.isNullOrUndefined(folder.parent) && _.contains(_.map(folderIds, id => id.toString()), folder._id.toString());
+      return isNil(folder.parent) && _.contains(_.map(folderIds, id => id.toString()), folder._id.toString());
     }));
     const topLevelFolderIds = _.map(topLevelFolders, folder => folder._id);
     const recurse = function(folderId) {
@@ -1672,7 +1745,7 @@ function copyTagging(id, newFolder, taggingsKey, wsInfo) {
 }
 
 function copyTaggings(oldTaggingIds, newFolder, taggingsKey, wsInfo) {
-  if (!apiUtils.isNonEmptyArray(oldTaggingIds)) {
+  if (!isNonEmptyArray(oldTaggingIds)) {
     return Promise.resolve([]);
   }
 
@@ -1722,7 +1795,7 @@ function copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo) {
 
     const taggings = folder.taggings;
 
-    if (apiUtils.isNonEmptyArray(taggings)) {
+    if (isNonEmptyArray(taggings)) {
 
       let ids = await copyTaggings(taggings, f, taggingsKey, wsInfo);
       taggingIds.push(...ids);
@@ -1768,13 +1841,13 @@ async function deepCloneFolders(user, folderIds, taggingsKey, wsInfo) {
   // taggings key is hash where key is oldTaggingId and value is new selectionId
 
   try {
-    if (!apiUtils.isNonEmptyArray(folderIds) || !apiUtils.isNonEmptyObject(wsInfo)) {
+    if (!isNonEmptyArray(folderIds) || !isNonEmptyObject(wsInfo)) {
       return;
     }
     // do we need to check for isTrashed here?
     const oldFolders = await models.Folder.find({_id: { $in: folderIds }}).lean().exec();
     const oldTopLevelFolders = _.filter(oldFolders, (folder => {
-      return apiUtils.isNullOrUndefined(folder.parent);
+      return isNil(folder.parent);
     }));
 
     return copyFolders(user, oldTopLevelFolders, taggingsKey, wsInfo);
@@ -1786,7 +1859,7 @@ async function deepCloneFolders(user, folderIds, taggingsKey, wsInfo) {
 
 async function buildTaggingsKey(folderIdsToCopy, selectionsKey) {
   const hash = {};
-  if (!apiUtils.isNonEmptyArray(folderIdsToCopy)) {
+  if (!isNonEmptyArray(folderIdsToCopy)) {
     return hash;
   }
 
@@ -1820,7 +1893,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       folderSet: null
     };
     // verify before destructuring
-    if (!apiUtils.isNonEmptyObject(options) || !apiUtils.isNonEmptyObject(wsInfo)) {
+    if (!isNonEmptyObject(options) || !isNonEmptyObject(wsInfo)) {
       return results;
     }
 
@@ -1832,7 +1905,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
      newWsOwner
    };
     */
-   const areOldIdsToCopy = apiUtils.isNonEmptyArray(oldFolderIds);
+   const areOldIdsToCopy = isNonEmptyArray(oldFolderIds);
 
     const { originalWsId } = wsInfo;
 
@@ -1841,7 +1914,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
 
     if (none || !areOldIdsToCopy) {
       // return right away if no folderIds to copy and user did not request to use an existing folder set
-      if (!apiUtils.isNonEmptyObject(folderSetOptions) || apiUtils.isNullOrUndefined(folderSetOptions.existingFolderSetToUse)) {
+      if (!isNonEmptyObject(folderSetOptions) || isNil(folderSetOptions.existingFolderSetToUse)) {
         return results;
       }
       // just create folder structure from folderSet Id;
@@ -1851,7 +1924,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       }
       const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
 
-      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+      if (isNonEmptyArray(newFolderIds)) {
         results.folders = newFolderIds;
       }
       return results;
@@ -1878,7 +1951,7 @@ async function handleNewFolders(user, wsInfo, oldFolderIds, options, selectionsK
       }
       const newFolderIds = await newFolderStructure(user, wsInfo, folderSetInfo);
 
-      if (apiUtils.isNonEmptyArray(newFolderIds)) {
+      if (isNonEmptyArray(newFolderIds)) {
         results.folders = newFolderIds;
       }
       return results;
@@ -1957,7 +2030,7 @@ function copyComment(oldCommentId, newSub, selectionsKey, newWsId) {
 
 function copyComments(commentsKey, newSub, selectionsKey, newWsId) {
   const oldCommentIds = newSub.comments;
-  if (!apiUtils.isNonEmptyArray(oldCommentIds)) {
+  if (!isNonEmptyArray(oldCommentIds)) {
     return Promise.resolve([]);
   }
 
@@ -2012,7 +2085,7 @@ function copySelection(user, oldSelId, newSubId, newWsId, selectionsKey) {
 function copySelections(user, selectionsKey, oldSub, newSub, newWsId) {
   //selectionsKey is hash where keys are oldSelectionIds to be copied and value is true
   const oldSelections = oldSub.selections;
-  if (!apiUtils.isNonEmptyArray(oldSelections)) {
+  if (!isNonEmptyArray(oldSelections)) {
     return Promise.resolve([]);
   }
   return Promise.all(
@@ -2090,14 +2163,14 @@ function copyResponse(originalResponseId, newSubId, newWsId) {
 }
 //copyResponses(responsesKey, submission, newWs._id)
 function copyResponses(responsesKey, newSubmission, newWsId) {
-  if (!apiUtils.isNonEmptyArray(newSubmission.responses)) {
+  if (!isNonEmptyArray(newSubmission.responses)) {
     return Promise.resolve([]);
   }
   return Promise.all(
     _.chain(newSubmission.responses)
       .filter(responseId => responsesKey[responseId])
       .map(id => copyResponse(id, newSubmission._id, newWsId))
-      .reject(apiUtils.isNullOrUndefined)
+      .reject(isNil)
       .value()
   );
 }
@@ -2115,14 +2188,14 @@ function buildSubmissionSetAndSubmissionsMap(originalWs) {
     // use the original workspace's submissions array to get the submission pool
     const submissions = originalWs.submissions;
     // return error if there are no submissions (and thus submissions) to copy from original workspace
-    if (!apiUtils.isNonEmptyArray(submissions)) {
+    if (!isNonEmptyArray(submissions)) {
       error = 'Workspace does not have any submissions to copy.';
       return [error, null, null];
     }
     // all submissions (except currently 15 extraneous KenKen submissions) should have an associated Encompass answer record
-    const subsWithAnswers = _.reject(submissions, (sub => apiUtils.isNullOrUndefined(sub.answer)));
+    const subsWithAnswers = _.reject(submissions, (sub => isNil(sub.answer)));
     // return error if there are no submissions associated with submissions
-    if (!apiUtils.isNonEmptyArray(subsWithAnswers)) {
+    if (!isNonEmptyArray(subsWithAnswers)) {
       error = 'This workspace does not have any submissions';
       return [error, null, null];
     }
@@ -2142,7 +2215,7 @@ async function cloneWorkspace(req, res, next) {
     // check if user has permission to copy this workspace
     const copyWorkspaceRequest = req.body.copyWorkspaceRequest;
 
-    if (!apiUtils.isNonEmptyObject(copyWorkspaceRequest)) {
+    if (!isNonEmptyObject(copyWorkspaceRequest)) {
       return utils.sendError.InvalidContentError('Invalid or missing copy workspace request parameters', res);
     }
 
@@ -2208,7 +2281,7 @@ async function cloneWorkspace(req, res, next) {
     }
 
     // process basic settings
-    const { name, owner, mode, createdBy } = copyWorkspaceRequest;
+    const { name, owner, mode, createdBy, } = copyWorkspaceRequest;
 
     if (mode === 'public' || mode === 'internet') {
      let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {mode: {$in: ['public', 'internet']}});
@@ -2278,7 +2351,7 @@ async function cloneWorkspace(req, res, next) {
     // submissionsToClone is filtered submission docs based on request params
     let submissionsToClone = buildSubmissionsToClone(submissionSet, submissionOptions);
 
-    if (!apiUtils.isNonEmptyArray(submissionsToClone)) {
+    if (!isNonEmptyArray(submissionsToClone)) {
       requestDoc.copyWorkspaceError = `There are no submissions to copy.`;
       let saved = await requestDoc.save();
       const data = { copyWorkspaceRequest: saved };
@@ -2303,7 +2376,7 @@ async function cloneWorkspace(req, res, next) {
     let submissionSels = {};
     _.each(submissionsToClone, (sub => {
       submissionsKey[sub._id] = true;
-        if (apiUtils.isNonEmptyArray(sub.selections)) {
+        if (isNonEmptyArray(sub.selections)) {
           _.each(sub.selections, (selId) => {
             submissionSels[selId] = true;
           });
@@ -2375,7 +2448,7 @@ async function cloneWorkspace(req, res, next) {
         // copy selections and set new selections on new submission
         return copySelections(user, selectionsKey, oldSub, submission, newWs._id)
           .then((selIds) => {
-            if (apiUtils.isNonEmptyArray(selIds)) {
+            if (isNonEmptyArray(selIds)) {
               submission.selections = selIds;
             } else {
               submission.selections = [];
@@ -2401,7 +2474,7 @@ async function cloneWorkspace(req, res, next) {
       _.map(newSubsWithSelections, (submission) => {
         return copyComments(commentsKey, submission, selectionsKey, newWs._id)
         .then((commentIds) => {
-          if (apiUtils.isNonEmptyArray(commentIds)) {
+          if (isNonEmptyArray(commentIds)) {
             submission.comments = commentIds;
           } else {
             submission.comments = [];
@@ -2422,7 +2495,7 @@ async function cloneWorkspace(req, res, next) {
       _.map(newSubsWithComments, (submission) => {
         return copyResponses(responsesKey, submission, newWs._id)
         .then((responseIds) => {
-          if (apiUtils.isNonEmptyArray(responseIds)) {
+          if (isNonEmptyArray(responseIds)) {
             submission.responses = responseIds;
           } else {
             submission.responses = [];
@@ -2464,8 +2537,8 @@ async function cloneWorkspace(req, res, next) {
 
   const { permissionOptions } = copyWorkspaceRequest;
 
-  if (apiUtils.isNonEmptyObject(permissionOptions)) {
-    if (apiUtils.isNonEmptyArray(permissionOptions.permissionObjects)) {
+  if (isNonEmptyObject(permissionOptions)) {
+    if (isNonEmptyArray(permissionOptions.permissionObjects)) {
       let subMapOnlyId = _.mapObject(submissionsMap, (oldSub, newSubId) => {
         return oldSub._id;
       });
@@ -2479,7 +2552,7 @@ async function cloneWorkspace(req, res, next) {
         submissionIds = submissionOptions.submissionIds;
       }
 
-        if (!obj.all && apiUtils.isNonEmptyArray(submissionIds)) {
+        if (!obj.all && isNonEmptyArray(submissionIds)) {
           let newSubmissionIds = _.map(submissionIds, (oldId) => {
             return invertedSubMap[oldId];
           });
@@ -2501,6 +2574,7 @@ async function cloneWorkspace(req, res, next) {
     }
   }
   newWs.sourceWorkspace = originalWsId;
+
 
   const savedWs = await newWs.save();
 

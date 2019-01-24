@@ -16,7 +16,10 @@ const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/folders');
 const fsAccess = require('../../middleware/access/foldersets');
-const apiUtils = require('../api/utils');
+
+const objectUtils = require('../../utils/objects');
+const { isNil, } = objectUtils;
+
 
 module.exports.get = {};
 module.exports.post = {};
@@ -79,7 +82,7 @@ function getFolderSets(req, res, next) {
   }
 
   let criteria = fsAccess.get.folderSets(user, req.query.ids);
-  if (apiUtils.isNullOrUndefined(criteria)) {
+  if (isNil(criteria)) {
     return utils.sendError.NotAuthorizedError(null, res);
   }
 

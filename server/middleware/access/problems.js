@@ -1,7 +1,11 @@
 const utils = require('./utils');
 const models = require('../../datasource/schemas');
 const _ = require('underscore');
-const apiUtils = require('../../datasource/api/utils');
+const mongooseUtils = require('../../utils/mongoose');
+
+const objectUtils = require('../../utils/objects');
+const { isNonEmptyArray, } = objectUtils;
+
 
 module.exports.get = {};
 
@@ -33,9 +37,9 @@ const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, is
   // if (ids) {
   //   filter.$and.push({_id: {$in : ids } });
   // }
-  if (apiUtils.isNonEmptyArray(ids)) {
+  if (isNonEmptyArray(ids)) {
     filter.$and.push({ _id: { $in : ids } });
-  } else if(apiUtils.isValidMongoId(ids)) {
+  } else if(mongooseUtils.isValidMongoId(ids)) {
     filter.$and.push({ _id: ids });
   }
   if (!_.isEmpty(filterBy)) {
