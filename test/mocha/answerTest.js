@@ -3,11 +3,13 @@
 // REQUIRE MODULES
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const mongoose = require('mongoose');
 
 // REQUIRE FILES
 const fixtures = require('./fixtures.js');
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
+const models = require('../../server/datasource/schemas');
 
 const expect = chai.expect;
 const host = helpers.host;
@@ -24,7 +26,7 @@ describe('Answer CRUD operations by account type', function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleAnswerCount, accessibleAnswer, inaccessibleAnswer } = user.answers;
+      const { accessibleAnswerCount, accessibleAnswer, inaccessibleAnswer, firstRevision } = user.answers;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
       let isAdmin = accountType === 'A' && !isStudent;
@@ -103,6 +105,64 @@ describe('Answer CRUD operations by account type', function() {
           });
         });
       });
+
+      if (accountType === 'S') {
+        describe('/POST revised answer to assignment with a linked workspace', function() {
+          before(async function() {
+            await mongoose.connect('mongodb://localhost:27017/encompass_seed');
+
+          });
+          after( function() {
+            mongoose.connection.close();
+          });
+
+          let newAnswerId;
+          let { workspaceToUpdate } = firstRevision;
+          let newSubmission;
+
+          it('should post the revision successfully', function(done) {
+              agent
+              .post(baseUrl)
+              .send({answer: firstRevision})
+              .end((err, res) => {
+                if (err) {
+                  console.error(err);
+                }
+                expect(res).to.have.status(200);
+                expect(res.body.answer).to.have.any.keys('problem', 'answer', 'priorAnswer');
+                newAnswerId = res.body.answer._id;
+                done();
+              });
+
+          });
+          it('should have created a new submission ', async function() {
+            try {
+              newSubmission = await models.Submission.findOne({answer: newAnswerId, workspace: workspaceToUpdate}).lean().exec();
+
+              console.log('new sub', newSubmission);
+              expect(newSubmission).to.exist;
+              expect(newSubmission.creator.studentId).to.eql(firstRevision.createdBy);
+
+            }catch(err) {
+              throw err;
+            }
+
+
+          });
+
+          it('should have added the submission to the workspace', async function() {
+            try {
+              let workspace = await models.Workspace.findById(workspaceToUpdate).lean().exec();
+
+              expect(workspace.submissions).to.contain(newSubmission._id.toString());
+              expect(workspace.submissions).to.have.lengthOf.at.least(2);
+            }catch(err) {
+              throw err;
+            }
+          });
+        });
+      }
+
 
     });
   }

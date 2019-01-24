@@ -11,12 +11,14 @@ var data = [
     "lastModifiedBy" : null,
     "section" : "5b913e723add43b868ae9804",
     "problem" : "5b91463c3add43b868ae9808",
+    "assignmentType": "problem",
     "answers" : [],
     "students" : [
         "5b913ea33add43b868ae9805",
         "5b913eaf3add43b868ae9806",
         "5b913ebe3add43b868ae9807"
     ],
+
     "lastModifiedDate" : null,
     "isTrashed" : false,
     "createDate" : "2018-09-06T15:24:24.236Z"
@@ -30,6 +32,7 @@ var data = [
   "lastModifiedBy" : null,
   "section" : "5b9149a32ecaf7c30dd4748f",
   "problem" : "5b9173e23da5efca74705772",
+  "assignmentType": "problem",
   "answers" : ["5bb813fc9885323f6d894972", "5bec35898c73047613e2f34b"],
   "students" : [
       "5b9149c22ecaf7c30dd47490",
@@ -37,6 +40,7 @@ var data = [
       "5b914a102ecaf7c30dd47492",
       "5b99146e25b620610ceead75"
   ],
+  "linkedWorkspace": "5bec36958c73047613e2f34e",
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2018-09-06T18:38:50.073Z"
