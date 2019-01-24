@@ -109,6 +109,13 @@
         border-radius: 3px;
         font-size: .9em;
       }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
     }
     img {
       max-width: 100%;
