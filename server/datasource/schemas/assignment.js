@@ -122,6 +122,21 @@ AssignmentSchema.post('save', function (assignment) {
         }
       });
     }
+
+    if (assignment.linkedWorkspace) {
+      let updateHash = { $set: {linkedAssignment: assignment._id} };
+
+      if (assignment.isTrashed) {
+        updateHash = { $set: {linkedAssignment: null } };
+      }
+
+      mongoose.models.Workspace.findByIdAndUpdate(assignment.linkedWorkspace, updateHash, function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('update linkedWorkspace count: ', affected);
+      });
+    }
 });
 
 module.exports.Assignment = mongoose.model('Assignment', AssignmentSchema);
