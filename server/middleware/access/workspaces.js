@@ -363,6 +363,13 @@ function canUpdateSubmissions(user, ws, updateType) {
   // at this point, user is not Owner, creator, admin, or the proper pdadmin
   // thus they can not remove submissions or do a mass update of the workspace, only add their own submissions
 
+
+  // for now always let admins, owners, creators, or org pdadmins to update submissions regardless of this flag
+
+  if (!ws.doAllowSubmissionUpdates) {
+    return false;
+  }
+
   // should teachers or approvers be able to do this?
   if (updateType === 'bulk') {
     return false;
