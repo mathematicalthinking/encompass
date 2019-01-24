@@ -229,9 +229,19 @@ const getAnswer = (req, res, next) => {
       updatedWorkspaceInfo =  await wsApi.addAnswerToWorkspace(user, savedAnswer);
       }
     }
+    // savedAnswer createdBy, problem, section were populated
+    // need just id
 
+    if (savedAnswer.problem._id) {
+      savedAnswer.problem = savedAnswer.problem._id;
+    }
+    if (savedAnswer.section._id) {
+      savedAnswer.section = savedAnswer.section._id;
+    }
+    if (savedAnswer.createdBy._id) {
+      savedAnswer.createdBy = savedAnswer.createdBy._id;
+    }
     let data = { 'answer': savedAnswer };
-
     if (updatedWorkspaceInfo) {
       data.meta = updatedWorkspaceInfo;
     }

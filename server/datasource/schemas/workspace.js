@@ -78,7 +78,6 @@ var WorkspaceSchema = new Schema({
   * Before saving we must verify (synchonously) that:
   */
 WorkspaceSchema.pre('save', function (next) {
-  console.log('did linked assn change? ', this.isModified('linkedAssignment'));
   var toObjectId = function(elem, ind, arr) {
     if( !(elem instanceof mongoose.Types.ObjectId) && !_.isUndefined(elem) ) {
       arr[ind] = mongoose.Types.ObjectId(elem);
