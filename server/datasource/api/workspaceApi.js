@@ -34,7 +34,7 @@ const { isNil, isNonEmptyArray, isNonEmptyObject, } = objectUtils;
 
 const { capitalizeString, } = stringUtils;
 
-const { areObjectIdsEqual } = mongooseUtils;
+const { areObjectIdsEqual, isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 module.exports.post = {};
@@ -68,18 +68,8 @@ function getRestrictedDataMap(user, permissions, ws) {
         return areObjectIdsEqual(userId, user.id);
       });
 
-      // if (Array.isArray(ws.submissions)) {
-      //   submissionIds = ws.submissions.filter((sub) => {
-      //     let userId = _.propertyOf(sub)(['creator', 'studentId']);
-      //     console.log('userId gdm', userId);
-      //     return areObjectIdsEqual(userId, user.id);
-      //   });
-      // } else {
-      //   submissionIds = [];
-      // }
     } else {
       filteredSubs = wsSubs.filter((sub) => {
-        console.log('pop sub gdm', sub.creator);
         return _.contains(submissionIds, sub._id.toString());
       });
 
@@ -2592,6 +2582,78 @@ async function cloneWorkspace(req, res, next) {
     return utils.sendError.InternalError(err, res);
   }
 }
+/**
+  * @private
+  * Takes an answer record with a linkedWorkspace property, creates a new submission record,
+  * and then adds that submission record to the workspace
+  * @method addAnswerToWorkspace
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+
+async function addAnswerToWorkspace(user, answer) {
+  try {
+    if (!isNonEmptyObject(user) || !isNonEmptyObject(answer)) {
+      return;
+    }
+    // make sure it is valid workspace
+    let workspaceId = answer.workspaceToUpdate;
+
+    if (!isValidMongoId(workspaceId)) {
+      return;
+    }
+    let workspaceToUpdate = await models.Workspace.findById(workspaceId)
+    .populate('submissions')
+    .populate({path: 'linkedAssignment', populate: 'section'})
+    .populate('owner')
+    .populate('createdBy')
+    .exec();
+
+    if (isNil(workspaceToUpdate)) {
+      return;
+    }
+    // do we need to check for submissions already containing this answer?
+
+    // create JSON submission obj from answer
+    if (!access.canUpdateSubmissions(user, workspaceToUpdate, 'add')) {
+      return;
+    }
+    // returns array
+    let submissionJSON = await answersToSubmissions([answer]);
+
+    if (!isNonEmptyArray(submissionJSON)) {
+      return;
+    }
+    // add createdBy and createDate and create submission record
+    let obj = submissionJSON[0];
+    obj.createDate = Date.now();
+    obj.createdBy = user._id;
+
+    // add workspaceId to workspaces array
+
+    let newSubmission = new models.Submission(obj);
+    newSubmission.workspaces.push(workspaceId);
+
+    let savedSub = await newSubmission.save();
+    workspaceToUpdate.submissions = workspaceToUpdate.submissions.map(sub => sub._id);
+    workspaceToUpdate.submissions.push(savedSub._id);
+
+    await workspaceToUpdate.save();
+
+   return {
+     updatedWorkspaceInfo: {
+       workspaceId: workspaceToUpdate._id,
+       submissionId: savedSub._id,
+     }
+   };
+
+  }catch(err) {
+    console.error(`Error addAnswerToWorkspace: ${err}`);
+    console.trace();
+
+  }
+}
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
@@ -2604,3 +2666,4 @@ module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
 module.exports.newFolderStructure = newFolderStructure;
 module.exports.getRestrictedDataMap = getRestrictedDataMap;
+module.exports.addAnswerToWorkspace = addAnswerToWorkspace;

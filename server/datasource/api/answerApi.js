@@ -13,6 +13,7 @@ const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access= require('../../middleware/access/answers');
+const wsApi = require('./workspaceApi');
 
 const mongooseUtils = require('../../utils/mongoose');
 const { cleanObjectIdArray } = mongooseUtils;
@@ -209,31 +210,39 @@ const getAnswer = (req, res, next) => {
   */
 
  const postAnswer = async function(req, res, next) {
-  const user = userAuth.requireUser(req);
+   try {
+    const user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-  // Add permission checks here
-  const answer = new models.Answer(req.body.answer);
-
-  answer.createDate = Date.now();
-  await answer.save((err, doc) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
-    const data = {'answer': doc};
-    utils.sendResponse(res, data);
-    next();
-  }).then((answer) => {
-    models.Problem.findById(answer.problem).exec().then((problem) => {
-      if (!problem.isUsed) {
-        problem.isUsed = true;
+    // Add permission checks here
+    const answer = new models.Answer(req.body.answer);
+
+    answer.createDate = Date.now();
+    let savedAnswer = await answer.save();
+    let updatedWorkspaceInfo;
+
+    if (savedAnswer) {
+      // check if should update workspace
+      if (savedAnswer.workspaceToUpdate) {
+      updatedWorkspaceInfo =  await wsApi.addAnswerToWorkspace(user, savedAnswer);
       }
-      problem.save();
-    });
-  });
+    }
+
+    let data = { 'answer': savedAnswer };
+
+    if (updatedWorkspaceInfo) {
+      data.meta = updatedWorkspaceInfo;
+    }
+    utils.sendResponse(res, data);
+   }catch(err) {
+     console.error(`Error postAnswer: ${err}`);
+     console.trace();
+     return utils.sendError.InternalError(null, res);
+   }
+
+
 };
 
 /**
