@@ -24,6 +24,19 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       presence: true
     }
   },
+  createButtonText: function() {
+    if (this.get('createButtonText')) {
+      return this.get('createButtonText');
+    }
+    return 'Create Answer';
+  }.property('createButtonText'),
+
+  mainHeaderText: function() {
+    if (this.get('mainHeaderText')) {
+      return this.get('mainHeaderText');
+    }
+    return 'Create New Answer';
+  }.property('mainHeaderText'),
 
   didInsertElement: function() {
     // initialize quill editor
@@ -175,7 +188,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       });
       // additional uploaded image base 64 data was concatenated to explanation
       // so can delete image record
-      return Promise.all(records.map((rec) => {
+      return Ember.RSVP.all(records.map((rec) => {
         let uploadedImages = this.get('uploadResults');
         if (uploadedImages) {
           uploadedImages.forEach((image) => {

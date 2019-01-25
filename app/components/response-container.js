@@ -53,9 +53,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       .rejectBy('isTrashed')
       .filter((response) => {
         let subId = response.belongsTo('submission').id();
-        return this.get('submission.id') === subId;
+        return this.get('studentSubmissions')
+          .mapBy('id')
+          .includes(subId);
       });
-  }.property('responses.@each.isTrashed', 'submission.id'),
+  }.property('responses.@each.isTrashed', 'submission.id', 'studentSubmissions.[]'),
 
   approverReplies: function() {
     let reviewedResponseId;
@@ -179,6 +181,13 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     }
     return this.get('workspace.feedbackAuthorizers');
   }.property('workspace.feedbackAuthorizers.[]'),
+
+  studentSubmissions: function() {
+    if (!this.get('submissions') || !this.get('submission')) {
+      return [];
+    }
+    return this.get('submissions').filterBy('student', this.get('submission.student'));
+  }.property('submissions.[]', 'submission'),
 
   actions: {
     onSaveSuccess(response) {

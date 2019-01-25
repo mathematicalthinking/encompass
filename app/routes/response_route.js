@@ -12,12 +12,15 @@ Encompass.ResponseRoute = Ember.Route.extend(Encompass.ConfirmLeavingRoute, {
           responses: this.get('store').peekAll('response'),
         })
         .then((hash) => {
-          return {
+          // get other submissions created by creator of submission for this ws
+
+          return Ember.RSVP.hash( {
             response: hash.response,
             submission: hash.submission,
             workspace: hash.workspace,
             responses: hash.responses,
-          };
+            submissions: hash.workspace.get('submissions')
+          });
         });
       });
   },

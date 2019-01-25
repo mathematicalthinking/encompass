@@ -5,6 +5,25 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   isImageExpanded: false,
   isUploadExpanded: false,
   isRevising: false,
+  submissionList: [],
+  primaryResponse: null,
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+    if (this.get('studentSubmissions')) {
+      this.get('submissionList').addObjects(this.get('studentSubmissions'));
+    }
+
+    if (this.get('response')) {
+      if (this.get('primaryResponse.id') !== this.get('response.id')) {
+        // response route changed, set submission to the responses submission
+
+        this.set('submissionToView', this.get('submission'));
+        this.set('primaryResponse', this.get('response'));
+
+      }
+    }
+  },
 
   isOwnSubmission: function() {
     return this.get('submission.creator.studentId') === this.get('currentUser.id');
@@ -17,6 +36,16 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   showButtonRow: function() {
     return this.get('canRevise');
   }.property('canRevise'),
+
+  displaySubmission: function() {
+    if (this.get('submissionToView')) {
+      return this.get('submissionToView');
+    }
+    return this.get('submission');
+  }.property('submission', 'submissionToView'),
+  sortedStudentSubmissions: function() {
+    return this.get('submissionList').sortBy('createDate');
+  }.property('submissionList.[]'),
 
   actions: {
     openProblem() {
@@ -49,7 +78,7 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
 
       }
     },
-    insertQuillContent: function(selector, options) {
+    insertQuillContent(selector, options) {
       if (!this.get('isRevising')) {
         return;
       }
@@ -63,5 +92,29 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
 
       this.$('.ql-editor').html(explanation);
     },
+    toSubmissionFromAnswer(answer) {
+      this.get('store').queryRecord('submission', {
+        filterBy: {
+          answer: answer.get('id')
+        }
+      })
+      .then((sub) => {
+        if (!this.get('isDestroyed') && !this.get('isDestroying')) {
+          this.get('submissionList').addObject(sub);
+          this.set('submissionToView', sub);
+          this.set('isRevising', false);
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+        this.send('cancelRevising');
+
+      });
+    },
+    setDisplaySubmission(sub) {
+      if (sub && sub.get('id') !== this.get('displaySubmission.id')) {
+        this.set('submissionToView', sub);
+      }
+    }
   }
 });

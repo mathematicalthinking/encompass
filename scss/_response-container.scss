@@ -89,6 +89,19 @@
         margin-right: 10px;
       }
     }
+    .submission-date {
+      @include flex-item(1, flex-start, 1 1 auto);
+      font-weight: $light-font-weight;
+      font-size: 1.1em;
+      color: $filter-list-border-color;
+      text-align: left;
+      margin-bottom: 15px;
+    }
+    .submission-time {
+      font-size: .8em;
+      color: black;
+      margin-left: 5px;
+    }
     .submission-content-container {
       margin-bottom: 20px;
       .submission-header {
