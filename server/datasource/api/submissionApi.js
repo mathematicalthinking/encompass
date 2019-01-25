@@ -105,12 +105,8 @@ function toPDSubmission(obj, index, arr) {
 async function getSubmissions(req, res, next) {
   var user = userAuth.getUser(req);
   try {
-    var criteria;
-  if (req.query.ids) {
-    criteria = await access.get.submissions(user, req.query.ids);
-  } else {
-    criteria = await access.get.submissions(user, null);
-  }
+
+  let criteria = await access.get.submissions(user, req.query.ids, req.query.filterBy);
 
   models.Submission.find(criteria)
     .exec(function(err, submissions) {
