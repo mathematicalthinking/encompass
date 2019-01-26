@@ -192,17 +192,17 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
       let isYourApproverReply = isByYou && response.get('responseType') === 'approver';
       let needsApproval = response.get('status') === 'pendingApproval';
-
+      let isReplyToApprove = !isByYou && needsApproval;
       // show responses you approved?
 
-      return isYourApproverReply || needsApproval;
+      return isYourApproverReply || isReplyToApprove;
     });
   }.property('nonTrashedResponses.[]', 'currentUser'),
 
   sortedSubmitterResponses: function() {
     return this.get('submitterResponses').sort((a, b) => {
-      let isAUnread = !a.get('wasReadByRecipient');
-      let isBUnread = !b.get('wasReadByRecipient');
+      let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
+      let isBUnread = this.isResponseUnread(b, this.get('currentUser.id'));
 
       if (isAUnread && !isBUnread) {
         return -1;
@@ -230,8 +230,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   sortedApprovingResponses: function() {
     return this.get('approvingResponses').sort((a, b) => {
-      let isAUnread = !a.get('wasReadByRecipient');
-      let isBUnread = !b.get('wasReadByRecipient');
+      let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
+      let isBUnread = this.isResponseUnread(b, this.get('currentUser.id'));
 
       if (isAUnread && !isBUnread) {
         return -1;
@@ -273,8 +273,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   sortedMentoringResponses: function() {
     return this.get('mentoringResponses').sort((a, b) => {
-      let isAUnread = !a.get('wasReadByRecipient');
-      let isBUnread = !b.get('wasReadByRecipient');
+      let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
+      let isBUnread = this.isResponseUnread(b, this.get('currentUser.id'));
 
       if (isAUnread && !isBUnread) {
         return -1;
@@ -313,6 +313,23 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       return 0;
     });
   }.property('mentoringResponses'),
+  isResponseUnread(response, userId) {
+    if (!userId) {
+      userId = this.get('currentUser.id');
+    }
+
+    if (!response || !userId) {
+      return;
+    }
+    let recipientRef = response.belongsTo('recipient');
+    let recipientId;
+
+    if (recipientRef) {
+      recipientId = recipientRef.id();
+    }
+
+    return !response.get('wasReadByRecipient') && userId === recipientId;
+  },
   actions: {
     showSubmitterResponses() {
       this.set('currentFilter', 'submitter');
