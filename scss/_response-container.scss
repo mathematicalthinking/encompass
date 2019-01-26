@@ -144,6 +144,13 @@
         white-space: pre-wrap;
       }
     }
+    img {
+      display: block;
+      max-width: 250px;
+      width: 100%;
+      height: auto;
+      margin-top: 40px;
+    }
     div.compose-mentor-reply {
       margin-left: 15px;
       h5 {

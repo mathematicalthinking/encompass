@@ -62,9 +62,20 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
         recipient: user._id,
         $or: [
           { status: 'approved' },
-          { type: 'approver', status: { $ne: 'superceded' } }
+          { responseType: 'approver', status: { $ne: 'superceded' } }
         ]
       });
+
+      let [ collabApproverWorkspaceIds, approverWorkspaceIds ] = await Promise.all([utils.getCollabApproverWorkspaceIds(user), utils.getApproverWorkspaceIds(user)]);
+
+      console.log('caw', collabApproverWorkspaceIds, 'aw', approverWorkspaceIds);
+      if (isNonEmptyArray(collabApproverWorkspaceIds)) {
+        orFilter.$or.push({workspace: {$in: collabApproverWorkspaceIds}});
+      }
+
+      if (isNonEmptyArray(approverWorkspaceIds)) {
+        orFilter.$or.push({workspace: {$in: approverWorkspaceIds}});
+      }
 
     // can access any feedback from workspace where user has approve permissions
 
@@ -76,14 +87,14 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     //   });
     // }
 
-    let subCriteria = await submissionAccess.get.submissions(user);
+    // let subCriteria = await submissionAccess.get.submissions(user);
 
-    let allowedSubmissionIds = await utils.getModelIds('Submission', subCriteria);
-    if (isNonEmptyArray(allowedSubmissionIds)) {
-      orFilter.$or.push({
-        submission: {$in: allowedSubmissionIds}
-      });
-    }
+    // let allowedSubmissionIds = await utils.getModelIds('Submission', subCriteria);
+    // if (isNonEmptyArray(allowedSubmissionIds)) {
+    //   orFilter.$or.push({
+    //     submission: {$in: allowedSubmissionIds}
+    //   });
+    // }
     // can access any feedback from submissions you have access to
 
     // can access any feedback you created
@@ -94,7 +105,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     // orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
-
+    console.log('restricted records', restrictedRecords);
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }

@@ -64,7 +64,6 @@ function getRestrictedDataMap(user, permissions, ws) {
       // i.e. creator.studentId property equals current userId
       filteredSubs = wsSubs.filter((sub) => {
         let userId = _.propertyOf(sub)(['creator', 'studentId']);
-        console.log('userId gdm', userId);
         return areObjectIdsEqual(userId, user.id);
       });
 
@@ -109,16 +108,14 @@ function getRestrictedDataMap(user, permissions, ws) {
           .value();
            dataMap.comments = selComments;
         }
-        if (feedback === 'none') {
-          dataMap.responses = [];
-        } else {
-          const subIds = _.map(filteredSubs, sub => sub._id.toString());
+
+          const submissionIds = _.map(filteredSubs, sub => sub._id.toString());
           const subResponses = _.chain(ws.responses)
-            .filter(res => res.submission && subIds.includes(res.submission.toString()))
+            .filter(res => res.submission && submissionIds.includes(res.submission.toString()))
             .flatten()
             .value();
           dataMap.responses = subResponses;
-        }
+
       }
 
   } else {
@@ -138,9 +135,9 @@ function getRestrictedDataMap(user, permissions, ws) {
     dataMap.taggings = [];
   }
 
-  if (feedback === 'none') {
-    dataMap.responses = [];
-  }
+  // if (feedback === 'none') {
+  //   dataMap.responses = [];
+  // }
 
   return dataMap;
 }

@@ -450,6 +450,21 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   .then(_.flatten);
 }
 
+function getCollabApproverWorkspaceIds(user) {
+  if (!isNonEmptyArray(_.propertyOf(user)('collabWorkspaces'))) {
+    return [];
+  }
+  return models.Workspace.find({_id: { $in: user.collabWorkspaces }, isTrashed: false }, {permissions: 1}).lean().exec()
+    .then((workspaces) => {
+      return _.chain(workspaces)
+        .filter((ws) => {
+          return ws.permissions && ws.permissions.feedback === 'approver';
+        })
+        .pluck('_id')
+        .value();
+    });
+}
+
 // TODO update with new permissions structure
 function getApproverWorkspaceIds(user) {
   if (!isNonEmptyObject(user)) {
@@ -470,8 +485,8 @@ function getApproverWorkspaceIds(user) {
         criteria.$or.push({organization: user.organization});
       }
     }
+      return getModelIds('Workspace', criteria);
   }
-  return getModelIds('Workspace', criteria);
 }
 
 function doesRecordExist(model, criteria) {
@@ -505,3 +520,4 @@ module.exports.getApproverWorkspaceIds = getApproverWorkspaceIds;
 module.exports.getResponseUsers = getResponseUsers;
 module.exports.getUsersFromTeacherSections = getUsersFromTeacherSections;
 module.exports.doesRecordExist = doesRecordExist;
+module.exports.getCollabApproverWorkspaceIds = getCollabApproverWorkspaceIds;
