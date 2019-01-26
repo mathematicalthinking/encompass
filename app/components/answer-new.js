@@ -149,7 +149,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       if (that.isDestroyed || that.isDestroying) {
         return;
       }
-      that.set('showLoadingMessage', true);
+      if (that.get('isCreatingAnswer')) {
+        that.set('showLoadingMessage', true);
+      }
     }, 500);
 
   }.observes('isCreatingAnswer'),

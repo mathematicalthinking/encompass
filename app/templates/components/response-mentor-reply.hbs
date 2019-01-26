@@ -16,9 +16,7 @@
     <div class="mentor-replies">
       {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
     </div>
-  {{/if}}
-
-    <div class="response-info">
+        <div class="response-info">
       {{#if displayResponse}}
         <p class="response-title">Mentor Response</p>
         <p class="response-date">{{format-date displayResponse.createDate 'Do MMM YYYY'}}
@@ -103,6 +101,18 @@
         {{/if}}
     </div>
   {{/if}}
+    {{else}}
+    <p class="info">No Mentor Feedback for this revision yet.</p>
+     <img src="/images/no-message.svg" alt="No Replies">
+    {{#if canSendNew}}
+      You can either first visit the submission and make some selections and comments, or compose a new response right away.
+
+    <button {{action "toNewResponse"}} class="primary-button">New Response</button>
+
+    {{/if}}
+  {{/if}}
+
+
 {{/if}}
 
 

@@ -60,6 +60,7 @@ Encompass.Router.map(function() {
       this.route("workspace",  {path: '/workspace/:workspace_id'});
       this.route("folder",     {path: '/folder/:folder_id'});
     });
+    this.route("submission", {path: '/submission/:submission_id'});
     this.route("response", {resetNamespace: true, path: '/:response_id'}, function(){
       //this.route("print");
     });

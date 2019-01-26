@@ -81,8 +81,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
 
   },
   actions: {
-    toResponse(responseId) {
-      this.transitionTo('response', responseId);
+    toResponse(submissionId, responseId) {
+      this.transitionTo('responses.submission', submissionId, {queryParams: {responseId: responseId} });
     }
   }
 

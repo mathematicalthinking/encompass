@@ -11,7 +11,7 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   didReceiveAttrs() {
     this._super(...arguments);
     if (this.get('studentSubmissions')) {
-      this.get('submissionList').addObjects(this.get('studentSubmissions'));
+      this.set('submissionList', this.get('studentSubmissions'));
     }
 
     if (this.get('response')) {
@@ -38,9 +38,6 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   }.property('canRevise'),
 
   displaySubmission: function() {
-    if (this.get('submissionToView')) {
-      return this.get('submissionToView');
-    }
     return this.get('submission');
   }.property('submission', 'submissionToView'),
   sortedStudentSubmissions: function() {
@@ -100,9 +97,8 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
       })
       .then((sub) => {
         if (!this.get('isDestroyed') && !this.get('isDestroying')) {
-          this.get('submissionList').addObject(sub);
-          this.set('submissionToView', sub);
-          this.set('isRevising', false);
+          this.send('cancelRevising');
+          this.get('onSubChange')(sub);
         }
       })
       .catch((err) => {
@@ -112,9 +108,7 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
       });
     },
     setDisplaySubmission(sub) {
-      if (sub && sub.get('id') !== this.get('displaySubmission.id')) {
-        this.set('submissionToView', sub);
-      }
+      this.get('onSubChange')(sub);
     }
   }
 });

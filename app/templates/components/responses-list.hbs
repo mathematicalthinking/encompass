@@ -30,7 +30,7 @@
       {{#each displayResponses as |response|}}
       <tr  style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
         <td style="padding-left: 55px;">
-          {{#link-to 'response' response.id}} {{short-text response.text}} {{/link-to}}
+          {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}} {{short-text response.text}} {{/link-to}}
         </td>
         <td>{{response.createdBy.displayName}}</td>
         {{#if response.recipient}}
@@ -39,7 +39,7 @@
           <td>PoW User</td>
         {{/if}}
         <td>
-          {{#link-to 'response' response.id}}
+          {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}}
           <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
           {{/link-to}}
         </td>

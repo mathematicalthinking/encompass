@@ -86,10 +86,13 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   showTrash: function() {
     return this.get('canTrash') && !this.get('isComposing');
   }.property('canTrash', 'isComposing'),
+  canSendNew: function() {
+    return this.get('canSend') && !this.get('isOwnSubmission');
+  }.property('canSend', 'isOwnSubmission'),
 
   actions: {
-    onSaveSuccess(response) {
-      this.get('onSaveSuccess')(response);
+    onSaveSuccess(submission, response) {
+      this.get('onSaveSuccess')(submission, response);
     },
     startEditing() {
       this.set('editRevisionText', this.get('displayResponse.text'));
@@ -244,6 +247,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
           this.handleErrors(err, 'recordSaveErrors', response);
         });
 
+    },
+    toNewResponse: function() {
+      this.get('toNewResponse')();
     }
  }
 });

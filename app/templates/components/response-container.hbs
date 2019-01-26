@@ -25,7 +25,8 @@
     response=response
     submission=submission
     workspace=workspace
-    studentSubmissions=studentSubmissions
+    studentSubmissions=submissions
+    onSubChange=(action "onSubmissionChange")
     }}
   </div>
 
@@ -43,10 +44,13 @@
       canApprove=canApprove
       isOwnMentorReply=isOwnMentorReply
       onSaveSuccess=(action "onSaveSuccess")
-      isOwnMentorReply=isOwnMentorReply
       onMentorReplySwitch=(action "onMentorReplySwitch")
       toResponses=(action "toResponses")
       submissionResponses=nonTrashedResponses
+      canSend=canSend
+      isMentorRecipient=isMentorRecipient
+      isOwnSubmission=isOwnSubmission
+      toNewResponse=(action "toNewResponse")
     }}
   </div>
 

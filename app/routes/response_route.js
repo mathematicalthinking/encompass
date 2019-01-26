@@ -34,6 +34,9 @@ Encompass.ResponseRoute = Ember.Route.extend(Encompass.ConfirmLeavingRoute, {
     },
     toResponses() {
       this.transitionTo('responses');
+    },
+    toNewResponse: function(submissionId, workspaceId) {
+      this.transitionTo('responses.new.submission', submissionId, {queryParams: {workspaceId: workspaceId}});
     }
   }
 });
