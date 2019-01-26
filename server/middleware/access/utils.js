@@ -496,7 +496,7 @@ function getCollabFeedbackWorkspaceIds(user) {
 
   return wsAuth.get.workspaces(user)
     .then((criteria) => {
-      return models.Workspace.find(criteria, {permissions: 1}).lean().exec();
+      return models.Workspace.find(criteria, {permissions: 1, createdBy: 1, owner: 1, organization: 1}).lean().exec();
     })
     .then((workspaces) => {
       workspaces.forEach((ws) => {
