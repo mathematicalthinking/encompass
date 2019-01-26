@@ -10,6 +10,8 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
     let responseId = transition.queryParams.responseId;
     if (this.get('utils').isValidMongoId(responseId)) {
       this.set('response', this.modelFor('responses').findBy('id', responseId));
+    } else {
+      this.set('response', null);
     }
 
   },
@@ -42,9 +44,10 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         return subId === hash.submission.get('id');
       });
       let response = this.get('response');
-
       if (!this.get('response')) {
-        response = associatedResponses.sortBy('createDate').get('lastObject');
+        response = associatedResponses
+          .filterBy('responseType', 'mentor')
+          .sortBy('createDate').get('lastObject');
       }
 
       return {
