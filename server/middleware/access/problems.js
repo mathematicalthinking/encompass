@@ -1,99 +1,89 @@
 const utils = require('./utils');
-const models = require('../../datasource/schemas');
-const _ = require('underscore');
 const mongooseUtils = require('../../utils/mongoose');
-
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyArray, } = objectUtils;
-
+const { isNonEmptyArray, isNonEmptyObject } = objectUtils;
 
 module.exports.get = {};
 
-async function getStudentProblems(user) {
-  const assignments = await models.Assignment.find({'_id': {$in: user.assignments}});
-
-  return assignments.map(assn => assn.problem);
-
-}
-
-
 const accessibleProblemsQuery = async function(user, ids, filterBy, searchBy, isTrashedOnly=false) {
   try {
-    if (!user) {
-      return [];
+    if (!isNonEmptyObject(user)) {
+      return;
     }
     if (isTrashedOnly) {
       return { isTrashed: true };
     }
     let filter = {
-      $and: []
+      $and: [
+        { isTrashed: false }
+      ]
     };
 
-    const accountType = user.accountType;
-    const actingRole = user.actingRole;
+    let { accountType, actingRole } = user;
+    let isStudent = accountType === 'S' || actingRole === 'student';
 
-    filter.$and.push({isTrashed: false});
-
-  // if (ids) {
-  //   filter.$and.push({_id: {$in : ids } });
-  // }
   if (isNonEmptyArray(ids)) {
     filter.$and.push({ _id: { $in : ids } });
   } else if(mongooseUtils.isValidMongoId(ids)) {
     filter.$and.push({ _id: ids });
   }
-  if (!_.isEmpty(filterBy)) {
+  if (isNonEmptyObject(filterBy)) {
     filter.$and.push(filterBy);
   }
 
   if (searchBy) {
     filter.$and.push(searchBy);
   }
+  // Admins with acting role 'teacher' can get everything
 
-  let accessCrit = {$or: []};
 
-  if (actingRole === 'student' || accountType === 'S') {
-    const studentProblems = await getStudentProblems(user);
-      accessCrit.$or.push({ privacySetting: "E" });
-      accessCrit.$or.push({ $and: [{ organization: user.organization },{ privacySetting: "O" }]});
-      accessCrit.$or.push({_id: { $in: studentProblems } });
+  if (accountType === 'A' && !isStudent) {
+    return filter;
+  }
+
+  let [ assignmentProblems, workspaceProblems, recommendedProblems ] = await Promise.all([
+    utils.getAssignmentProblems(user),
+    utils.getWorkspaceProblemIds(user),
+    utils.getOrgRecommendedProblems(user)
+  ]);
+
+  let accessCrit = {
+    $or: [
+      { privacySetting: "E" },
+      { createdBy: user._id }
+    ]
+  };
+
+  [ assignmentProblems, workspaceProblems, recommendedProblems ].forEach((list) => {
+    if (isNonEmptyArray(list)) {
+      accessCrit.$or.push({_id: {$in: list}});
+    }
+  });
+
+  if (accountType === 'P') {
+    accessCrit.$or.push({ organization: user.organization });
+
     filter.$and.push(accessCrit);
     return filter;
   }
 
-  // Admins with acting role 'teacher' can get everything
-  if (accountType === 'A') {
-    return filter;
-  }
+  // block flagged problems for non admins / pdadmins?
+  filter.$and.push({ status: { $ne: 'flagged' } });
 
-  if (accountType === 'P') {
-    const problems = await utils.getAssignmentProblems(user);
-      accessCrit.$or.push({ privacySetting: "E" });
-      accessCrit.$or.push({ createdBy: user._id });
-      if (!_.isEmpty(problems)) {
-        accessCrit.$or.push({ _id: { $in: problems }});
-      }
 
-      accessCrit.$or.push({ organization: user.organization });
+  if (actingRole === 'student' || accountType === 'S') {
+    accessCrit.$or.push({ $and: [{ organization: user.organization },{ privacySetting: "O" }]});
 
-      filter.$and.push(accessCrit);
+    filter.$and.push(accessCrit);
+
     return filter;
   }
 
   if (accountType === 'T') {
-    const problems = await utils.getAssignmentProblems(user);
+    accessCrit.$or.push({ $and: [{ organization: user.organization }, { privacySetting: "O" }]});
 
-      accessCrit.$or.push({ privacySetting: "E" });
-      accessCrit.$or.push({ createdBy: user._id });
-      if (!_.isEmpty(problems)) {
-        accessCrit.$or.push({ _id: { $in: problems }});
-      }
-
-      accessCrit.$or.push({ $and: [{ organization: user.organization }, { privacySetting: "O" }]});
-
-      filter.$and.push(accessCrit);
-      filter.$and.push({ status: { $ne: 'flagged' } });
-      return filter;
+    filter.$and.push(accessCrit);
+    return filter;
   }
   }catch(err) {
     console.log('err', err);
@@ -105,25 +95,17 @@ const canGetProblem = async function(user, problemId) {
     return;
   }
 
-  const { accountType } = user;
+  const { accountType, actingRole } = user;
 
   // admins currently can get all problems
-  if (accountType === 'A') {
+  if (accountType === 'A' && actingRole !== 'student') {
     return true;
   }
 
   // use accessibleProblems criteria to determine access for teachers/pdAdmins
 
   let criteria = await accessibleProblemsQuery(user, problemId);
-  let accessibleIds = await utils.getModelIds('Problem', criteria);
-
-  // map objectIds to strings to check for existence
-  accessibleIds = accessibleIds.map(id => id.toString());
-
-    if (accessibleIds.includes(problemId)) {
-      return true;
-    }
-    return false;
+  return utils.doesRecordExist('Problem', criteria);
 };
 
 

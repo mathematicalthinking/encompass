@@ -9,7 +9,7 @@ const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
 const { isNil, isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
-
+const { isValidMongoId } = mongooseUtils;
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
   try {
@@ -39,11 +39,47 @@ async function getOrgSections(user) {
 
 async function getAssignmentProblems(user) {
   try {
+    if (!isNonEmptyObject(user)) {
+      return [];
+    }
     const criteria = await assignmentAuth.get.assignments(user);
-    const assignments = await models.Assignment.find(criteria).lean();
-    return assignments.map(assn => assn.problem.toString());
+
+    if (!isNonEmptyObject(criteria)) {
+      return [];
+    }
+
+    let assignments = await models.Assignment.find(criteria, { problem: 1 }).lean().exec();
+
+    return _.chain(assignments)
+      .filter(assn => isValidMongoId(assn.problem))
+      .pluck('problem')
+      .value();
+
   } catch(err) {
     console.error(`Error getAssignmentProblems: ${err}`);
+    console.trace();
+  }
+}
+async function getWorkspaceProblemIds(user) {
+  try {
+    if (!isNonEmptyObject(user)) {
+      return [];
+    }
+    const criteria = await wsAuth.get.workspaces(user);
+
+    if (!isNonEmptyObject(criteria)) {
+      return [];
+    }
+
+    let workspaces = await models.Workspace.find(criteria, { 'submissionSet': 1 }).lean().exec();
+    return _.chain(workspaces)
+      .filter((ws) => {
+        return isValidMongoId(_.propertyOf(ws)(['submissionSet', 'criteria', 'puzzle', 'puzzleId']));
+      })
+      .map(ws => ws.submissionSet.criteria.puzzle.puzzleId)
+      .value();
+  } catch(err) {
+    console.error(`Error getWorkspaceProblemsIds: ${err}`);
     console.trace();
   }
 }
@@ -195,7 +231,7 @@ async function getUsersFromTeacherSections(user) {
 function getPdAdminUsers(user) {
   try {
     let userOrg = _.propertyOf(user)('organization');
-    if (!mongooseUtils.isValidMongoId(userOrg)) {
+    if (!isValidMongoId(userOrg)) {
       return [];
     }
 
@@ -215,7 +251,7 @@ function getPdAdminUsers(user) {
 function getTeacherUsers(user) {
   try {
     let userOrg = _.propertyOf(user)('organization');
-    if (!mongooseUtils.isValidMongoId(userOrg)) {
+    if (!isValidMongoId(userOrg)) {
       return [];
     }
 
@@ -481,7 +517,7 @@ function getApproverWorkspaceIds(user) {
     criteria.$or.push({owner: user._id});
 
     if (accountType === 'P' && actingRole !== 'student') {
-      if (mongooseUtils.isValidMongoId(user.organization)) {
+      if (isValidMongoId(user.organization)) {
         criteria.$or.push({organization: user.organization});
       }
     }
@@ -497,6 +533,20 @@ function doesRecordExist(model, criteria) {
     .then((record) => {
       return !isNil(record);
     });
+}
+
+async function getOrgRecommendedProblems(user) {
+  try {
+    if (!isValidMongoId(_.propertyOf(user)('organization'))) {
+      return [];
+    }
+
+    let org = await models.Organization.findById(user.organization, {recommendedProblems: 1}).lean().exec();
+
+    return org.recommendedProblems;
+  } catch(err) {
+    console.error(`Error getOrgRecommendedProblems: `, err);
+  }
 }
 
 
@@ -521,3 +571,5 @@ module.exports.getResponseUsers = getResponseUsers;
 module.exports.getUsersFromTeacherSections = getUsersFromTeacherSections;
 module.exports.doesRecordExist = doesRecordExist;
 module.exports.getCollabApproverWorkspaceIds = getCollabApproverWorkspaceIds;
+module.exports.getWorkspaceProblemIds = getWorkspaceProblemIds;
+module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;

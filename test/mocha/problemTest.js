@@ -24,7 +24,7 @@ describe('Problem CRUD operations by account type', function() {
       this.timeout('10s');
       const agent = chai.request.agent(host);
       const { username, password, accountType, actingRole } = user.details;
-      const { accessibleProblemCount, accessibleProblem, inaccessibleProblem, validProblem, modifiableProblem } = user.problems;
+      const { accessibleProblemCount, accessibleProblem, inaccessibleProblem, validProblem, modifiableProblem , outsideOrgCollabProblem} = user.problems;
       // eslint-disable-next-line no-unused-vars
       const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -183,6 +183,27 @@ describe('Problem CRUD operations by account type', function() {
           });
         });
       });
+      //TODO test with other account types
+      if (accountType === 'P') {
+        describe('Get private problem as outside-org collaborator', function() {
+          it('should be able to access', function(done) {
+            const url = baseUrl + outsideOrgCollabProblem._id;
+            agent
+            .get(url)
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+                throw(err);
+              }
+              expect(res).to.have.status(200);
+              expect(res.body.problem).to.have.any.keys('title', 'privacySetting', 'title', 'text');
+              expect(res.body.problem._id).to.eql(outsideOrgCollabProblem._id);
+              done();
+            });
+          });
+        });
+      }
+
 
       /** PUT name**/
       if (accountType === 'A' || isStudent) {
