@@ -1,11 +1,12 @@
 <h1 class="heading">Approver Panel</h1>
-
 {{#if showApproverActions}}
 <div class="action-container">
   <h2 class="sub-heading">Manage Mentor Reply</h2>
   <div class="approver-actions button-row">
     {{#if showNoActionsMessage}}
-      <p class="info">{{noActionToTakeMessage}}</p>
+      <p class="info">
+     This Mentor Reply has already been approved by {{responseToApprove.approvedBy.username}} and sent to {{responseToApprove.recipient.username}}. There are no further approval actions to take at this time.
+      </p>
     {{else}}
       {{#if showApprove}}
         <button class="approve-button" {{action "confirmApproval"}}>Approve <i class="fas fa-check"></i></button>
@@ -37,7 +38,8 @@
         {{/if}}
         {{#if isComposingReply}}
           <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
-          <button {{action "saveReply"}} class="primary-button">Send Reply</button>
+          <button {{action "saveReply" 'needsRevisions'}} class="primary-button">Needs Revisions</button>
+          <button {{action "saveReply" 'approved'}} class="primary-button">Approve</button>
         {{/if}}
       </div>
     </div>
