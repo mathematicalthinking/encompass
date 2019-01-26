@@ -4,10 +4,15 @@
     {{#if showAllFilter}}
       <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
     {{/if}}
-      <button {{action 'showMyResponses'}} class="new-link-btn {{if isShowMine 'active-filter'}}">Notes {{notesCounter}}</button>
-      <button {{action 'showSentResponses'}} class="new-link-btn {{if isShowSent 'active-filter'}}">Sent {{sentCounter}}</button>
-      <button {{action 'showPendingResponses'}} class="new-link-btn {{if isShowPending 'active-filter'}}">Pending Approval {{pendingApprovalCounter}}</button>
-      <button {{action 'showNeedsRevisionResponses'}} class="new-link-btn {{if isShowNeedsRevisions 'active-filter'}}">Needs Revisions {{needsRevisionsCounter}}</button>
+    {{#if showSubmitterTab}}
+      <button {{action 'showSubmitterResponses'}} class="new-link-btn {{if isShowSubmitter 'active-filter'}}">Solver{{submitterCounter}}</button>
+    {{/if}}
+    {{#if showMentoringTab}}
+      <button {{action 'showMentoringResponses'}} class="new-link-btn {{if isShowMentoring 'active-filter'}}">Mentoring {{mentoringCounter}}</button>
+    {{/if}}
+    {{#if showApprovingTab}}
+      <button {{action 'showApprovingResponses'}} class="new-link-btn {{if isShowApproving 'active-filter'}}">Approving {{approvingCounter}}</button>
+    {{/if}}
   </div>
   <div class="clear"></div>
 </header>
@@ -16,6 +21,7 @@
   <table border="1" width="100%">
     <thead>
       <tr class="top-row">
+        <th align="left">Problem</th>
         <th align="left" style="padding-left: 55px;">Text</th>
         <th align="left">From</th>
         <th align="left">Recipient</th>
@@ -28,7 +34,8 @@
 
     <tbody>
       {{#each displayResponses as |response|}}
-      <tr  style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
+      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
+        <td>{{response.submission.answer.problem.title}}</td>
         <td style="padding-left: 55px;">
           {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}} {{short-text response.text}} {{/link-to}}
         </td>

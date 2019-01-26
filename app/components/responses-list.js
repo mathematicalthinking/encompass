@@ -1,19 +1,19 @@
+/*global _:false */
 Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'responses-list',
 
   utils: Ember.inject.service('utility-methods'),
 
-  isShowAll: Ember.computed.equal('currentFilter', 'all'),
-  isShowMine: Ember.computed.equal('currentFilter', 'toUser'),
-  isShowSent: Ember.computed.equal('currentFilter', 'sent'),
-  isShowPending: Ember.computed.equal('currentFilter', 'pendingApproval'),
-  isShowNeedsRevisions: Ember.computed.equal('currentFilter', 'needsRevisions'),
+  isShowSubmitter: Ember.computed.equal('currentFilter', 'submitter'),
+  isShowMentoring: Ember.computed.equal('currentFilter', 'mentoring'),
+  isShowApproving: Ember.computed.equal('currentFilter', 'approving'),
 
-  currentFilter: 'toUser',
+  currentFilter: 'submitter',
   sortParam: 'newest',
 
   areDisplayResponses: Ember.computed.gt('displayResponses.length', 0),
   areNoResponses: Ember.computed.not('areDisplayResponses'),
+  noResponsesMessage: 'No responses found',
 
   statusMap: {
     'approved': 'APPROVED',
@@ -22,118 +22,84 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     'superceded': 'SUPERCEDED',
   },
 
+  areAnyActionItems: function() {
+    return this.get('submitterActions.length') > 0 || this.get('mentoringActionItems.length') > 0 || this.get('approvingActionItems.length') > 0;
+  }.property('submitterActionItems.[]', 'mentoringActionItems.[]', 'approvingActionItems.[]'),
+
   didReceiveAttrs() {
-    let pendingCount = this.get('pendingResponses.length');
-    let revisionsCount = this.get('needsRevisionsResponses.length');
 
-    let propToSet = 'toUserMentorCommentMessages';
-    let filterToSet = 'toUser';
+    let list = [
+      {name: 'sortedSubmitterResponses', actionCount : this.get('submitterActionItems.length'), allCount: this.get('submitterResponses.length'), currentFilter: 'submitter'},
+      {name: 'sortedMentoringResponses', actionCount: this.get('mentoringActionItems.length'), allCount: this.get('mentoringResponses.length'), currentFilter: 'mentoring'},
+      {name: 'sortedApprovingResponses', actionCount: this.get('approvingActionItems.length'), allCount: this.get('approvingResponses.length'), currentFilter: 'approving'}
+    ];
 
-    // if student, prioritize needsRevisions over pendingApproval
-    if (this.get('currentUser.isStudent')) {
-      if (revisionsCount > 0) {
-        propToSet = 'needsRevisionsResponses';
-        filterToSet = 'needsRevisions';
-      } else if (pendingCount > 0) {
-        propToSet = 'pendingResponses';
-        filterToSet = 'pendingApproval';
-      }
-      this.set('filteredResponses', this.get(propToSet));
-      this.set('currentFilter', filterToSet);
+    // ascending
+    let sorted = list.sortBy('actionCount', 'allCount');
 
-      return;
-    }
-    // if nonStudent, prioritize pendingApproval over needsRevisions
-
-    // maybe could check if user has any workspaces where they could be an approver?
-
-    if (pendingCount > 0) {
-      propToSet = 'pendingResponses';
-      filterToSet = 'pendingApproval';
-    } else if (revisionsCount > 0 ) {
-      propToSet = 'needsRevisionsResponses';
-      filterToSet = 'needsRevisions';
-    }
-
-    this.set('filteredResponses', this.get(propToSet));
-    this.set('currentFilter', filterToSet);
+    this.set('filteredResponses', this.get(sorted[2].name));
+    this.set('currentFilter', sorted[2].currentFilter);
 
     this._super(...arguments);
   },
 
-  unreadNotes: function() {
-    return this.get('toUserMentorCommentMessages').rejectBy('wasReadByRecipient');
-  }.property('toUserMentorCommentMessages.@each.wasReadByRecipient'),
+  showSubmitterTab: Ember.computed.gt('submitterResponses.length', 0),
+  showMentoringTab: Ember.computed.gt('mentoringResponses.length', 0),
+  showApprovingTab: Ember.computed.gt('approvingResponses.length', 0),
 
-  unreadNotesCounter: function() {
-    let count = this.get('unreadNotes.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('unreadNotes.[]'),
+  submitterActionItems: function() {
+    return this.get('submitterResponses').rejectBy('wasReadByRecipient');
+  }.property('submitterResponses.@each.wasReadByRecipient'),
 
-  notesCounter: function() {
-    let count = this.get('toUserMentorCommentMessages.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('toUserMentorCommentMessages.[]'),
+  mentoringActionItems: function() {
+    return this.get('mentoringResponses').filter((response) => {
+      return !response.get('wasReadByRecipient') && response.get('status') === 'needsRevisions';
+    });
+  }.property('mentoringResponses.@each.{wasReadByRecipient,status}'),
+  approvingActionItems: function() {
+    return this.get('approvingResponses').filter((response) => {
+      return !response.get('wasReadByRecipient') && response.get('status') === 'pendingApproval';
+    });
+  }.property('approvingResponses.@each.{wasReadByRecipient,status}'),
 
-  pendingApprovalCounter: function() {
-    let count = this.get('pendingResponses.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('pendingResponses.[]'),
-  needsRevisionsCounter: function() {
-    let count = this.get('needsRevisionsResponses.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('needsRevisionsResponses.[]'),
-  sentCounter: function() {
-    let count = this.get('sentResponses.length');
-    if (count > 0) {
-      return `(${count})`;
-    }
-    return '';
-  }.property('sentResponses.[]'),
+  submitterCounter: function() {
+    let count = this.get('submitterActionItems.length');
 
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('submitterActionItems.[]'),
+
+  mentoringCounter: function() {
+    let count = this.get('mentoringActionItems.length');
+
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('mentoringActionItems.[]'),
+
+  approvingCounter: function() {
+    let count = this.get('approvingActionItems.length');
+
+    if (count > 0) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('approvingActionItems.[]'),
 
   showAllFilter: function() {
     return !this.get('currentUser.isStudent') && this.get('currentUser.isAdmin');
   }.property('currentUser.isStudent', 'currentUser.isAdmin'),
 
   showStatusColumn: function() {
-    return this.get('currentFilter') === 'pendingApproval' || this.get('currentFilter') === 'needsRevisions' || this.get('currentFilter') === 'all';
-  }.property('currentFilter'),
-
-  noResponsesMessage: function() {
-    let val = this.get('currentFilter');
-    if (val === 'sent') {
-      return `Looks like you have not created any responses. You can create one by clicking the "respond" button from a workspace.`;
-    }
-    if (val === 'all') {
-      return 'No responses found.';
-    }
-    if (val === 'toUser') {
-      return 'No responses addressed to you were found';
-    }
-    if (val === 'pendingApproval') {
-      return 'There are no responses needing approval at this time.';
-    }
-    if (val === 'needsRevisions') {
-      return 'There are no responses needing revisions at this time.';
-    }
+    return this.get('currentFilter') === 'mentoring' || this.get('currentFilter') === 'approving' || this.get('currentFilter') === 'all';
   }.property('currentFilter'),
 
   displayResponses: function() {
-    return this.sortResponses(this.get('filteredResponses'), this.get('sortParam'));
-  }.property('filteredResponses.[]', 'sortParam'),
+    return this.get('filteredResponses');
+  }.property('filteredResponses.[]'),
 
   sortResponses(responses, sortParam) {
     if (!responses) {
@@ -174,31 +140,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
 
   },
-  sentResponses: function() {
-    return this.get('nonTrashedResponses').filter((response) => {
-      // pdAdmins and admins need a way of seeing approved feedback that their students/teachers have sent
-      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-      let isToMe = recipientId === this.get('currentUser.id');
-
-      return response.get('status') === 'approved' && !isToMe && (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly'));
-    });
-  }.property('currentUser', 'nonTrashedResponses.[]'),
-
-  pendingResponses: function() {
-    return this.filterByStatus('pendingApproval', this.get('nonTrashedResponses'));
-  }.property('nonTrashedResponses.[]'),
-
-  needsRevisionsResponses: function() {
-    return this.filterByStatus('needsRevisions', this.get('nonTrashedResponses'));
-  }.property('nonTrashedResponses.[]'),
-
-  toUserMentorCommentMessages: function() {
-    return this.get('nonTrashedResponses').filter((response) => {
-      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-      return recipientId === this.get('currentUser.id') && response.get('status') === 'approved' &&
-      (response.get('responseType') !== 'approver' || response.get('isApproverNoteOnly') === true);
-    });
-  }.property('nonTrashedResponses.[]', 'currentUser'),
 
   filterByCreatedBy(creatorId, responses ) {
     if (!creatorId) {
@@ -215,28 +156,176 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
   },
 
-  actions: {
-    showMyResponses: function () {
-      this.set('currentFilter', 'toUser');
-      this.set('filteredResponses', this.get('toUserMentorCommentMessages'));
-    },
+  submitterResponses: function() {
+    return this.get('nonTrashedResponses').filter((response) => {
+      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+      return recipientId === this.get('currentUser.id') && response.get('status') === 'approved' && response.get('responseType') === 'mentor';
+    });
+  }.property('nonTrashedResponses.[]', 'currentUser'),
 
-    showAllResponses: function () {
-      this.set('currentFilter', 'all');
-      this.set('filteredResponses', this.get('nonTrashedResponses'));
+  mentoringResponses: function() {
+    return this.get('nonTrashedResponses').filter((response) => {
+      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
+      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+
+      let isByYou = creatorId === this.get('currentUser.id');
+      let isToYou = recipientId === this.get('currentUser.id');
+
+      let isYourMentorReply = isByYou && response.get('responseType') === 'mentor';
+      let isApproverNote = isToYou && response.get('isApproverNoteOnly');
+      let isNewRevisionNotice = isToYou && response.get('responseType') === 'newRevisionNotice';
+
+      return isYourMentorReply || isApproverNote || isNewRevisionNotice;
+    });
+  }.property('nonTrashedResponses.[]', 'currentUser'),
+
+  approvingResponses: function() {
+    return this.get('nonTrashedResponses').filter((response) => {
+      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
+      let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+      let approvedById = this.get('utils').getBelongsToId(response, 'approvedBy');
+
+      let isByYou = creatorId === this.get('currentUser.id');
+      let isToYou = recipientId === this.get('currentUser.id');
+
+      let wasApprovedByYou = approvedById === this.get('currentUser.id');
+
+      let isYourApproverReply = isByYou && response.get('responseType') === 'approver';
+      let needsApproval = response.get('status') === 'pendingApproval';
+
+      // show responses you approved?
+
+      return isYourApproverReply || needsApproval;
+    });
+  }.property('nonTrashedResponses.[]', 'currentUser'),
+
+  sortedSubmitterResponses: function() {
+    return this.get('submitterResponses').sort((a, b) => {
+      let isAUnread = !a.get('wasReadByRecipient');
+      let isBUnread = !b.get('wasReadByRecipient');
+
+      if (isAUnread && !isBUnread) {
+        return -1;
+      }
+
+      if (isBUnread && !isAUnread) {
+        return 1;
+      }
+
+      // both unread , sort newest first
+      let momentA = moment(a.get('createDate'));
+      let momentB = moment(b.get('createDate'));
+
+      let diff = momentA.diff(momentB);
+
+      if (diff > 0) {
+        return -1;
+      }
+      if (diff < 0) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('submitterResponses.[]'),
+
+  sortedApprovingResponses: function() {
+    return this.get('approvingResponses').sort((a, b) => {
+      let isAUnread = !a.get('wasReadByRecipient');
+      let isBUnread = !b.get('wasReadByRecipient');
+
+      if (isAUnread && !isBUnread) {
+        return -1;
+      }
+
+      if (isBUnread && !isAUnread) {
+        return 1;
+      }
+
+      // both unread or both read , sort  by pending first
+
+      let isAPendingApproval = a.get('status') === 'pendingApproval';
+      let isBPendingApproval = b.get('status') === 'pendingApproval';
+
+      if (isAPendingApproval && !isBPendingApproval) {
+        return -1;
+      }
+
+      if (isBPendingApproval && !isAPendingApproval) {
+        return 1;
+      }
+
+      // both pending or both not pending, sort by newest first
+
+      let momentA = moment(a.get('createDate'));
+      let momentB = moment(b.get('createDate'));
+
+      let diff = momentA.diff(momentB);
+
+      if (diff > 0) {
+        return -1;
+      }
+      if (diff < 0) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('approvingResponses.[]'),
+
+  sortedMentoringResponses: function() {
+    return this.get('mentoringResponses').sort((a, b) => {
+      let isAUnread = !a.get('wasReadByRecipient');
+      let isBUnread = !b.get('wasReadByRecipient');
+
+      if (isAUnread && !isBUnread) {
+        return -1;
+      }
+
+      if (isBUnread && !isAUnread) {
+        return 1;
+      }
+
+      // both unread or both read , sort needsRevisiosn first
+
+      let doesANeedsRevisions = a.get('status') === 'needsRevisions';
+      let doesBNeedRevisions = b.get('status') === 'needsRevisions';
+
+      if (doesANeedsRevisions && !doesBNeedRevisions) {
+        return -1;
+      }
+
+      if (doesBNeedRevisions && !doesANeedsRevisions) {
+        return 1;
+      }
+
+      // both need revisions or both dont need revisions, sort by newest first
+
+      let momentA = moment(a.get('createDate'));
+      let momentB = moment(b.get('createDate'));
+
+      let diff = momentA.diff(momentB);
+
+      if (diff > 0) {
+        return -1;
+      }
+      if (diff < 0) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('mentoringResponses'),
+  actions: {
+    showSubmitterResponses() {
+      this.set('currentFilter', 'submitter');
+      this.set('filteredResponses', this.get('sortedSubmitterResponses'));
     },
-    showSentResponses() {
-      this.set('currentFilter', 'sent');
-      this.set('filteredResponses', this.get('sentResponses'));
+    showApprovingResponses() {
+      this.set('currentFilter', 'approving');
+      this.set('filteredResponses', this.get('sortedApprovingResponses'));
     },
-    showPendingResponses() {
-      this.set('currentFilter', 'pendingApproval');
-      this.set('filteredResponses', this.get('pendingResponses'));
-    },
-    showNeedsRevisionResponses() {
-      this.set('currentFilter', 'needsRevisions');
-      this.set('filteredResponses', this.get('needsRevisionsResponses'));
-    },
+    showMentoringResponses() {
+      this.set('currentFilter', 'mentoring');
+      this.set('filteredResponses', this.get('sortedMentoringResponses'));
+    }
   },
 
 });
