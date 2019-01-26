@@ -322,12 +322,12 @@ const pdAdminDrexel = {
     },
   },
   problems: {
-    accessibleProblemCount: 18,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b1e7a0ba5d2157ef4c91028',
     },
     inaccessibleProblem: {
-      _id: '5b9173e23da5efca74705772'
+      _id: '5b4e2e56be1e18425515308c'
     },
     validProblem: {
       title: 'test math problem',
@@ -343,6 +343,9 @@ const pdAdminDrexel = {
     },
     modifiableProblem: {
       _id: ''
+    },
+    outsideOrgCollabProblem: {
+      _id: '5b9173e23da5efca74705772',
     }
   },
   folderSets: {
@@ -785,7 +788,7 @@ const studentMT = {
     }
   },
   problems: {
-    accessibleProblemCount: 19,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },
@@ -974,7 +977,7 @@ const teacherActingStudent = {
     },
   },
   problems: {
-    accessibleProblemCount: 19,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },

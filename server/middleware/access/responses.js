@@ -66,11 +66,12 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
         ]
       });
 
-      let [ collabApproverWorkspaceIds, approverWorkspaceIds ] = await Promise.all([utils.getCollabApproverWorkspaceIds(user), utils.getApproverWorkspaceIds(user)]);
+      orFilter.$or.push({ createdBy: user._id });
 
-      console.log('caw', collabApproverWorkspaceIds, 'aw', approverWorkspaceIds);
-      if (isNonEmptyArray(collabApproverWorkspaceIds)) {
-        orFilter.$or.push({workspace: {$in: collabApproverWorkspaceIds}});
+      let [ mentorWorkspaceIds, approverWorkspaceIds ] = await utils.getCollabFeedbackWorkspaceIds(user);
+
+      if (isNonEmptyArray(mentorWorkspaceIds)) {
+        orFilter.$or.push({ workspace: {$in: mentorWorkspaceIds }, responseType: 'mentor', status: 'approved'});
       }
 
       if (isNonEmptyArray(approverWorkspaceIds)) {
@@ -101,11 +102,10 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
 
 
     // orFilter.$or = [];
-    orFilter.$or.push({ createdBy: user._id });
     // orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
-    console.log('restricted records', restrictedRecords);
+    console.log('restricted responseIds', restrictedRecords);
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }

@@ -24,7 +24,7 @@ var ResponseSchema = new Schema({
     comments: [{type: ObjectId, ref:'Comments'}],
     workspace: {type:ObjectId, ref:'Workspace'},
     submission: {type:ObjectId, ref:'Submission'},
-    responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note']},
+    responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice']},
     status: { type: String, enum: ['approved', 'pendingApproval', 'needsRevisions', 'superceded'] },
     priorRevision : {type: ObjectId, ref: 'Response'}, // previous mentor reply if responding to an approver reply
     reviewedResponse: {type: ObjectId, ref: 'Response'}, // mentor reply that was source of approver reply

@@ -9,7 +9,7 @@ const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
 const { isNil, isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
-const { isValidMongoId } = mongooseUtils;
+const { isValidMongoId, areObjectIdsEqual } = mongooseUtils;
 //Returns an array of oIds
 const getModelIds = async function(model, filter={}) {
   try {
@@ -486,18 +486,42 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   .then(_.flatten);
 }
 
-function getCollabApproverWorkspaceIds(user) {
-  if (!isNonEmptyArray(_.propertyOf(user)('collabWorkspaces'))) {
+function getCollabFeedbackWorkspaceIds(user) {
+  if (!isNonEmptyObject(user)) {
     return [];
   }
-  return models.Workspace.find({_id: { $in: user.collabWorkspaces }, isTrashed: false }, {permissions: 1}).lean().exec()
+
+  let mentorWorkspaceIds = [];
+  let approverWorkspaceIds = [];
+
+  return wsAuth.get.workspaces(user)
+    .then((criteria) => {
+      return models.Workspace.find(criteria, {permissions: 1}).lean().exec();
+    })
     .then((workspaces) => {
-      return _.chain(workspaces)
-        .filter((ws) => {
-          return ws.permissions && ws.permissions.feedback === 'approver';
-        })
-        .pluck('_id')
-        .value();
+      workspaces.forEach((ws) => {
+        let isCreator = areObjectIdsEqual(ws.createdBy, user._id);
+        let isOwner = areObjectIdsEqual(ws.owner, user._id);
+        let isPdWs = user.accountType === 'P' && user.actingRole !== 'student' && areObjectIdsEqual(ws.organization, user.organization);
+
+        if (isCreator || isOwner || isPdWs) {
+          approverWorkspaceIds.push(ws._id);
+        }
+        let userPermissionObject = _.find(ws.permissions, (obj) => {
+          return areObjectIdsEqual(obj.user, user._id);
+        });
+
+        if (userPermissionObject) {
+          let feedbackLevel = userPermissionObject.feedback;
+
+          if (feedbackLevel === 'approver') {
+            approverWorkspaceIds.push(ws._id);
+          } else if (feedbackLevel === 'authReq' || feedbackLevel === 'preAuth') {
+            mentorWorkspaceIds.push(ws._id);
+          }
+        }
+      });
+      return [mentorWorkspaceIds, approverWorkspaceIds];
     });
 }
 
@@ -570,6 +594,6 @@ module.exports.getApproverWorkspaceIds = getApproverWorkspaceIds;
 module.exports.getResponseUsers = getResponseUsers;
 module.exports.getUsersFromTeacherSections = getUsersFromTeacherSections;
 module.exports.doesRecordExist = doesRecordExist;
-module.exports.getCollabApproverWorkspaceIds = getCollabApproverWorkspaceIds;
+module.exports.getCollabFeedbackWorkspaceIds = getCollabFeedbackWorkspaceIds;
 module.exports.getWorkspaceProblemIds = getWorkspaceProblemIds;
 module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
