@@ -176,6 +176,8 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       delete copy.lastModifiedBy;
       delete copy.comments;
       delete copy.selections;
+      delete copy.wasReadByRecipient;
+      delete copy.wasReadByApprover;
 
       copy.text = newText;
       copy.note = newNote;
