@@ -9,7 +9,7 @@
     newReplyType="mentor"
     onSaveSuccess=(action "onSaveSuccess")
     canDirectSend=canDirectSend
-    submissionResponses=submissionResponses
+    submissionResponses=mentorReplies
   }}
 {{else}}
   {{#if sortedMentorReplies}}
@@ -105,8 +105,7 @@
     <p class="info">No Mentor Feedback for this revision yet.</p>
      <img src="/images/no-message.svg" alt="No Replies">
     {{#if canSendNew}}
-      You can either first visit the submission and make some selections and comments, or compose a new response right away.
-
+      Click 'New Response' to begin composing a new Mentor Reply.
     <button {{action "toNewResponse"}} class="primary-button">New Response</button>
 
     {{/if}}

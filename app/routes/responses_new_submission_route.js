@@ -51,13 +51,17 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         return this.resolveWorkspace(this.get('workspace'), submission);
       })
       .then((workspace) => {
+        let associatedResponses = this.modelFor('responses').filter((response) => {
+          let subId = response.belongsTo('submission').id();
+          return subId === submission.get('id');
+        });
         return Ember.RSVP.hash({
           submission,
           workspace,
           recipient: this.resolveRecipient(submission, workspace),
           selections: submission.get('selections'),
           comments: submission.get('comments'),
-          responses: this.get('store').peekAll('response'),
+          responses: associatedResponses,
         });
       })
       .then((hash) => {

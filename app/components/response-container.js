@@ -134,8 +134,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (this.get('reviewedResponse')) {
       return this.get('reviewedResponse');
     }
+    if (this.get('primaryResponseType') === 'mentor') {
+      return this.get('response');
+    }
     return null;
-  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse'),
+  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse', 'response'),
 
   canApprove: function() {
     return this.get('wsPermissions').canApproveFeedback(this.get('workspace'));

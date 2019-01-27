@@ -13,7 +13,6 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   },
   statusIconFill: function () {
     let status = this.get('displayResponse.status');
-    console.log('status is', status);
     return this.get('iconFillOptions')[status];
   }.property('displayResponse.status'),
 
@@ -229,7 +228,6 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       if (!response) {
         return;
       }
-      console.log('mentorReplies', this.get('mentorReplies'));
 
       return this.get('alert').showModal('warning', 'Are you sure you want to delete this response?', '', 'Delete')
         .then((result) => {
