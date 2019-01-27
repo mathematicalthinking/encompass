@@ -2,6 +2,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   formattedDueDate: null,
   formattedAssignedDate: null,
   isResponding: false,
+  isRevising: false,
   displayedAnswer: null,
   loadAnswerErrors: [],
   elementId: 'assignment-info-student',
@@ -11,6 +12,7 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   },
 
   didReceiveAttrs() {
+    console.log('dra ais');
     if (this.get('assignment')) {
       if (this.get('displayedAnswer')) {
           this.set('displayedAnswer', null);
@@ -26,6 +28,19 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
     this._super(...arguments);
   },
+
+  isComposing: function() {
+    return this.get('isRevising') || this.get('isResponding');
+  }.property('isRevising', 'isResponding'),
+
+  showReviseButton: function() {
+    return !this.get('isComposing') && this.get('sortedList.length') > 0;
+  }.property('isComposing', 'sortedList.[]'),
+
+  showRespondButton: function() {
+    return !this.get('isComposing') && this.get('sortedList.length') === 0;
+
+  }.property('isComposing', 'sortedList.[]'),
 
   sortedList: function() {
     if (!this.get('answerList')) {
@@ -58,10 +73,11 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
     },
 
     reviseAssignmentResponse: function() {
-      this.set('isRevising', true);
       if (this.get('answerCreated')) {
         this.set('answerCreated', false);
       }
+      this.set('isRevising', true);
+
       Ember.run.later(() => {
         $('html, body').animate({scrollTop: $(document).height()});
       }, 100);
