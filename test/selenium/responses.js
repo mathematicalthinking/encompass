@@ -108,8 +108,11 @@ describe('Responses', function() {
 
       it('should let us save and take us to a new URL', async function() {
         try {
+          // type some dummy text
+          await helpers.findAndClickElement(driver, 'input[name="ownMarkUpOnly"]');
+          await driver.sleep(3000);
           await driver.findElement(By.css('button.save-response')).click();
-          await driver.wait(until.urlMatches(/#\/responses\/[0-9a-f]{24}$/), 5000);
+          await driver.wait(until.urlMatches(/#\/responses\/submission\/[0-9a-f]{24}/), 5000);
         }catch(err) {
           console.log(err);
         }
