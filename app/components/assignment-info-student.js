@@ -12,7 +12,6 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
   },
 
   didReceiveAttrs() {
-    console.log('dra ais');
     if (this.get('assignment')) {
       if (this.get('displayedAnswer')) {
           this.set('displayedAnswer', null);
