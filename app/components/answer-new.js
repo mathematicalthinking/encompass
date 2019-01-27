@@ -24,14 +24,14 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       presence: true
     }
   },
-  createButtonText: function() {
+  createButtonDisplayText: function() {
     if (this.get('createButtonText')) {
       return this.get('createButtonText');
     }
     return 'Create Answer';
   }.property('createButtonText'),
 
-  mainHeaderText: function() {
+  mainHeaderDisplayText: function() {
     if (this.get('mainHeaderText')) {
       return this.get('mainHeaderText');
     }
