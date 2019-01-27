@@ -42,14 +42,18 @@
           <ul class="response-listing">
           {{#each existingResponses as |response|}}
             <li>
-              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{response.shortText}}... {{#link-to 'response' response.id}} View{{/link-to}}
+              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{response.shortText}}... {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}} View{{/link-to}}
             </li>
           {{/each}}
           </ul>
         {{/if}}
       </div>
       {{/if}}
-      {{#if model.selections.length}}
+      <input type="checkbox" name="ownMarkUpOnly" checked={{doUseOnlyOwnMarkup}} onclick={{action "toggleOwnMarkUpOnly"}}/>
+      <label>Use Only Own Markup</label>
+
+      {{#if filteredSelections.length}}
+
         <section class="selections">
           <p class="response-header" {{action 'toggleProperty' 'showSelections'}}>
             Selections
@@ -57,7 +61,7 @@
           </p>
           {{#if showSelections}}
             <ul class="selections-list">
-            {{#each model.selections as |selection|}}
+            {{#each filteredSelections as |selection|}}
               <li class="selections-list-item">
                 {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
               </li>
@@ -72,7 +76,7 @@
           </p>
           {{#if showComments}}
             <ul class="comments-list">
-            {{#each model.comments as |comment|}}
+            {{#each filteredComments as |comment|}}
               <li class="comments-list-item">
                 {{#link-to 'workspace.submission.selection' comment.workspace comment.submission comment.selection}}
                 "{{comment.text}}"{{/link-to}}
@@ -86,7 +90,13 @@
     <div class="response-info">
       {{#if explainEmptiness}}
         <p class="response-prefill">
-          It looks like you haven't made any selections or comments for this submission. You should go back to the {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}} and create some selections and comments.
+          It looks like
+         {{#if doUseOnlyOwnMarkup}}
+            you haven't made
+          {{else}}
+          there aren't
+         {{/if}}
+           any selections or comments for this submission. You can go back to the {{#link-to 'workspace.submission' model.workspace model.submission}}submission{{/link-to}} and create some selections and comments.
         </p>
       {{/if}}
     </div>
