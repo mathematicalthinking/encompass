@@ -242,6 +242,11 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   _persistThen: function (callback) {
     let response = this.get('model');
+
+    if (!this.get('replyText.length') > 0) {
+      this.set('emptyReplyError', 'Message Body Cannot Be Blank');
+      return;
+    }
     response.set('original', this.get('originalText'));
     response.set('createdBy', this.get('currentUser'));
     response.set('status', this.get('newReplyStatus'));
