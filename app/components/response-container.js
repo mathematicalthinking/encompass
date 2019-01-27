@@ -77,16 +77,9 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('primaryApproverReply', 'mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
 
   mentorReplies: function() {
-    if (!this.get('mentorReplyDisplayResponse')) {
-      return [];
-    }
-    let mentorId = this.get('mentorReplyDisplayResponse').belongsTo('createdBy').id();
-    return this.get('nonTrashedResponses').filter((response) => {
-      let id = response.belongsTo('createdBy').id();
-          return response.get('responseType') === 'mentor' && mentorId === id;
-        });
+    return this.get('nonTrashedResponses').filterBy('responseType', 'mentor');
 
-  }.property('mentorReplyDisplayResponse', 'nonTrashedResponses.[]',),
+  }.property('nonTrashedResponses.[]',),
 
   responseToApprove: function() {
     if (this.get('primaryResponseType') === 'mentor' && this.get('canApprove') && !this.get('isCreatingNewMentorReply')) {
