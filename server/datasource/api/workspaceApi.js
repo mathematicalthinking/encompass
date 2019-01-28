@@ -2689,7 +2689,7 @@ const updateWorkspaceRequest = async function (req, res, next) {
   let { workspace, linkedAssignment } = req.body.updateWorkspaceRequest;
 
   if (!isValidMongoId(workspace) || !isValidMongoId(linkedAssignment)) {
-    newUpdateRequest.errors.push('Invalid workspace or assignment.');
+    newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
     await newUpdateRequest.save();
     return utils.sendResponse(res, {
       updateWorkspaceRequest: newUpdateRequest
@@ -2707,11 +2707,17 @@ const updateWorkspaceRequest = async function (req, res, next) {
   ]);
 
   if (isNil(popWorkspace) || isNil(assignment)) {
-    newUpdateRequest.errors.push('Invalid workspace or assignment.');
+    newUpdateRequest.updateErrors.push('Invalid workspace or assignment.');
     await newUpdateRequest.save();
     return utils.sendResponse(res, {
       updateWorkspaceRequest: newUpdateRequest
     });
+  }
+
+  // check if user has permission to do this
+
+  if (!access.canUpdateSubmissions(user, popWorkspace, 'bulk')) {
+    return utils.sendError.NotAuthorizedError('You do not have permission to update this workspace\'s submissions', res);
   }
 
   let missingAnswers = [];
@@ -2727,7 +2733,7 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
   if (!isNonEmptyArray(missingAnswers)) {
     // no answers to update
-    newUpdateRequest.wereNoAnswersToUpdate === true;
+    newUpdateRequest.wereNoAnswersToUpdate = true;
     await newUpdateRequest.save();
     return utils.sendResponse(res, {
       updateWorkspaceRequest: newUpdateRequest
@@ -2736,7 +2742,7 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
   let JSONObjects = await answersToSubmissions(missingAnswers);
   if (!isNonEmptyArray(JSONObjects)) {
-    newUpdateRequest.errors.push('Error updating workspace with new submissions.');
+    newUpdateRequest.updateErrors.push('Error updating workspace with new submissions.');
     await newUpdateRequest.save();
     return utils.sendResponse(res, {
       updateWorkspaceRequest: newUpdateRequest
@@ -2755,11 +2761,11 @@ const updateWorkspaceRequest = async function (req, res, next) {
   popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
   savedSubs.forEach((sub) => {
     popWorkspace.submissions.push(sub._id);
-    newUpdateRequest.addedSubmissons.push(sub._id);
+    newUpdateRequest.addedSubmissions.push(sub._id);
   });
   await popWorkspace.save();
 
-  newUpdateRequest.workspace = popWorkspace;
+  newUpdateRequest.workspace = popWorkspace._id;
   await newUpdateRequest.save();
 
   return utils.sendResponse(res, {
