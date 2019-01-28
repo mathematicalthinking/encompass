@@ -1,9 +1,8 @@
-/*global _:false */
 Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'responses-list',
 
   utils: Ember.inject.service('utility-methods'),
-
+  isShowAll: Ember.computed.equal('currentFilter', 'all'),
   isShowSubmitter: Ember.computed.equal('currentFilter', 'submitter'),
   isShowMentoring: Ember.computed.equal('currentFilter', 'mentoring'),
   isShowApproving: Ember.computed.equal('currentFilter', 'approving'),
@@ -199,6 +198,35 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
   }.property('nonTrashedResponses.[]', 'currentUser'),
 
+  sortedAllResponses: function() {
+    return this.get('nonTrashedResponses').sort((a, b) => {
+      let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
+      let isBUnread = this.isResponseUnread(b, this.get('currentUser.id'));
+
+      if (isAUnread && !isBUnread) {
+        return -1;
+      }
+
+      if (isBUnread && !isAUnread) {
+        return 1;
+      }
+
+      // both unread , sort newest first
+      let momentA = moment(a.get('createDate'));
+      let momentB = moment(b.get('createDate'));
+
+      let diff = momentA.diff(momentB);
+
+      if (diff > 0) {
+        return -1;
+      }
+      if (diff < 0) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('nonTrashedResponses.[]'),
+
   sortedSubmitterResponses: function() {
     return this.get('submitterResponses').sort((a, b) => {
       let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
@@ -342,6 +370,11 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     showMentoringResponses() {
       this.set('currentFilter', 'mentoring');
       this.set('filteredResponses', this.get('sortedMentoringResponses'));
+    },
+    showAllResponses() {
+      this.set('currentFilter', 'all');
+      this.set('filteredResponses', this.get('sortedAllResponses'));
+
     }
   },
 
