@@ -428,14 +428,17 @@ async function putWorkspace(req, res, next) {
 
     // should we be validating these before setting?
     ws.editors = req.body.workspace.editors;
-    ws.mode    = req.body.workspace.mode;
-    ws.name = req.body.workspace.name;
-    ws.owner = req.body.workspace.owner;
     ws.lastViewed = new Date();
     ws.lastModifiedDate = new Date();
     ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
     ws.permissions = req.body.workspace.permissions;
-    ws.organization = req.body.workspace.organization;
+
+    let updateLinkedAssignment = false;
+
+    if (isValidMongoId(ws.linkedAssignment) && isNil(req.body.workspace.linkedAssignment)) {
+      // need to upate the assignment
+      updateLinkedAssignment = true;
+    }
 
     if (ws.permissions) {
       ws.permissions.forEach((permission) => {
@@ -444,11 +447,28 @@ async function putWorkspace(req, res, next) {
     }
     // only admins or ws owner should be able to trash ws
     // this check should be done for mode, name, owner, organization, and permissions(?)
-    if (user.accountType === 'A' || user.id === ws.owner.toString()) {
+    let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    let isPdAdmin = user.accountType === 'P' && user.actingRole !== 'student';
+
+    let isOwner = areObjectIdsEqual(user._id, ws.owner);
+    let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
+    let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
+
+    if (isAdmin || isOwner || isCreator || isPdWs) {
       ws.isTrashed = req.body.workspace.isTrashed;
+      ws.mode    = req.body.workspace.mode;
+      ws.name = req.body.workspace.name;
+      ws.owner = req.body.workspace.owner;
+      ws.organization = req.body.workspace.organization;
+      ws.linkedAssignment = req.body.workspace.linkedAssignment;
+
     }
 
     const savedWorkspace = await ws.save();
+
+    if (updateLinkedAssignment) {
+      models.Assignment.updateMany({linkedWorkspace: ws._id}, {$set: {linkedWorkspace: null}}).exec();
+    }
     const wsPermissions = savedWorkspace.permissions;
 
       if (_.isArray(wsPermissions)) {
