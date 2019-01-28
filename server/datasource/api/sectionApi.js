@@ -39,19 +39,18 @@ module.exports.put = {};
 
 const getSections = (req, res, next) => {
   const user = userAuth.requireUser(req);
-
-  let criteria;
   let ids = req.query.ids;
-  criteria = access.get.sections(user, ids);
 
-  models.Section.find(criteria)
-  .exec((err, sections) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
+  return access.get.sections(user, ids)
+  .then((criteria) => {
+    return models.Section.find(criteria).lean().exec();
+  })
+  .then((sections) => {
     const data = {'sections': sections};
     utils.sendResponse(res, data);
+  })
+  .catch((err) => {
+    return utils.sendError.InternalError(err, res);
   });
 };
 
