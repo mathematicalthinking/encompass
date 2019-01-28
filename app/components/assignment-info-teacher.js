@@ -4,6 +4,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isEditing: false,
   isDisplaying: Ember.computed.not('isEditing'),
   showReport: false,
+  isPreparingReport: false,
   htmlDateFormat: 'MM/DD/YYYY',
   displayDateFormat: "MMM Do YYYY",
   assignmentToDelete: null,
@@ -56,7 +57,9 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   },
 
   prepReport() {
+    this.set('isPreparingReport', true);
     if (!this.get('studentList') || !this.get('assignmentAnswers')) {
+      this.set('isPreparingReport', false);
       return;
     }
     let sortedAnswers = this.get('assignmentAnswers').sortBy('createdBy.username');
@@ -67,6 +70,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let sortedByDate = ownFiltered.sortBy('createDate').reverse();
       student.set('filteredAnswers', sortedByDate);
     });
+    this.set('isPreparingReport', false);
     this.set('showReport', true);
   },
 

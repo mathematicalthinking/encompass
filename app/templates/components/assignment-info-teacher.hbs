@@ -79,7 +79,9 @@
         </ol>
       </fieldset>
     </section>
-    <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+    {{#if canEdit}}
+      <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+    {{/if}}
   {{/if}}
   </section>
 
@@ -105,7 +107,8 @@
 
   {{#if showReport}}
     {{assignment-report assignment=assignment students=studentList }}
-  {{else}}
+  {{/if}}
+  {{#if isPreparingReport}}
     <p class="loading-message">Loading Assignment Report... Thank you for your patience.</p>
   {{/if}}
 
