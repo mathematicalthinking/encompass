@@ -6,10 +6,12 @@ const _ = require('underscore');
 const objectUtils = require('../../utils/objects');
 const { isNonEmptyArray, isNonEmptyObject, isNonEmptyString } = objectUtils;
 
+const { isValidMongoId, } = mongooseUtils;
+
 module.exports.get = {};
 
 async function accessibleAssignmentsQuery(user, ids, filterBy) {
-  if (!user) {
+  if (!isNonEmptyObject(user)) {
     return;
   }
   const { accountType, actingRole } = user;
@@ -17,11 +19,12 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
   let filter = {
     isTrashed: false
   };
+
   // ids will either be an array of ids or a single id or null
   if (ids) {
     if (isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else if (mongooseUtils.isValidMongoId(ids)) {
+    } else if (isValidMongoId(ids)) {
       filter._id = ids;
     }
   }
@@ -34,17 +37,28 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
     }
   }
 
+  if (accountType === 'A' && actingRole !== 'student') {
+    return filter;
+  }
+  // everyone can get assignments linked to workspaces they have access to
+
+  let accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
+
+  filter.$or = [
+    { createdBy: user._id },
+  ];
+  if (isNonEmptyArray(accessibleWorkspaceIds)) {
+    filter.$or.push({linkedWorkspace: {$in: accessibleWorkspaceIds}});
+  }
   // students can get any assignment that has been assigned to them
   if (accountType === 'S' || actingRole === 'student') {
-    filter.students = user;
+    filter.students = user._id;
     return filter;
   }
   // teachers can get any assignment they have created or any section where they
   if (accountType === 'T') {
     const sections = _.pluck(utils.getTeacherSections(user), 'sectionId');
-    filter.$or = [
-      { createdBy: user },
-    ];
+
     if (isNonEmptyArray(sections)) {
       filter.$or.push({
         section: { $in: sections }
@@ -55,17 +69,15 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
 
   if (accountType === 'P') {
     const sections = await utils.getOrgSections(user);
-    filter.$or = [
-      { createdBy: user },
-      { section: { $in: sections} }
-    ];
+    if (isNonEmptyArray(sections)) {
+      filter.$or.push({
+        section: { $in: sections}
+      });
+    }
 
     return filter;
   }
 
-  if (accountType === 'A') {
-    return filter;
-  }
 }
 
 const canGetAssignment = async function(user, assignmentId) {
@@ -83,15 +95,8 @@ const canGetAssignment = async function(user, assignmentId) {
   // use accessibleAssignments criteria to determine access for teachers/pdAdmins
 
   let criteria = await accessibleAssignmentsQuery(user, assignmentId);
-  let accessibleIds = await utils.getModelIds('Assignment', criteria);
 
-  // map objectIds to strings to check for existence
-  accessibleIds = accessibleIds.map(id => id.toString());
-
-    if (accessibleIds.includes(assignmentId)) {
-      return true;
-    }
-    return false;
+  return utils.doesRecordExist('Assignment', criteria);
 };
 
 module.exports.get.assignments = accessibleAssignmentsQuery;
