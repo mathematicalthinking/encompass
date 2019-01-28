@@ -269,7 +269,7 @@ const pdAdminDrexel = {
     },
   },
   assignments: {
-    accessibleAssignmentCount: 1,
+    accessibleAssignmentCount: 2,
     accessibleAssignment: {
       _id: '5b9146a83add43b868ae9809',
     },
@@ -296,7 +296,7 @@ const pdAdminDrexel = {
     },
   },
   sections: {
-    accessibleSectionCount: 2,
+    accessibleSectionCount: 3,
     inaccessibleSection: {
       _id: '5b9149a32ecaf7c30dd4748f'
     },

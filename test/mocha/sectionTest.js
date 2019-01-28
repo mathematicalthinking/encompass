@@ -62,7 +62,7 @@ describe('Section CRUD operations by account type', function() {
       });
     });
   });
-  if (accountType !== 'A') {
+  if (accountType !== 'A' && accountType !== 'P') {
     describe('/GET inaccessible section by id', () => {
       it('should return 403 error', done => {
         const url = baseUrl + inaccessibleSection._id;
