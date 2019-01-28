@@ -61,39 +61,41 @@
         {{/if}}
       </div>
     </div>
-    <div class="card-row">
-      <div class="row-label">
-        Linked Assignment
-      </div>
-      <div class="row-value">
-        {{#if isEditing}}
-          {{selectize-input
-          store=store
-          inputId="linked-assignment-select"
-          maxItems=1
-          initialItems=initialLinkedAssignmentItem
-          onItemAdd=(action "setLinkedAssignment")
-          onItemRemove=(action "setLinkedAssignment")
-          labelField="name"
-          valueField="id"
-          searchField="name"
-          model="assignment"
-          topLevelQueryParams="filterBy"
-          queryParamsKey="name"
-          isAsync=true
-          placeholder="Search for an assignment by name"
-          preload="focus"
-          }}
-        {{else}}
-        {{#if linkedAssignment}}
-            {{#link-to 'assignment' linkedAssignment.id}}{{linkedAssignment.name}}{{/link-to}}
+    {{#if doShowLinkedAssignment}}
+      <div class="card-row">
+        <div class="row-label">
+          Linked Assignment
+        </div>
+        <div class="row-value">
+          {{#if isEditing}}
+            {{selectize-input
+            store=store
+            inputId="linked-assignment-select"
+            maxItems=1
+            initialItems=initialLinkedAssignmentItem
+            onItemAdd=(action "setLinkedAssignment")
+            onItemRemove=(action "setLinkedAssignment")
+            labelField="name"
+            valueField="id"
+            searchField="name"
+            model="assignment"
+            topLevelQueryParams="filterBy"
+            queryParamsKey="name"
+            isAsync=true
+            placeholder="Search for an assignment by name"
+            preload="focus"
+            }}
           {{else}}
-          N/A
-          {{/if}}
+          {{#if linkedAssignment}}
+              {{#link-to 'assignment' linkedAssignment.id}}{{linkedAssignment.name}}{{/link-to}}
+            {{else}}
+            N/A
+            {{/if}}
 
-        {{/if}}
+          {{/if}}
+        </div>
       </div>
-    </div>
+    {{/if}}
 
     {{#if isEditing}}
       <div class="card-row button-row">

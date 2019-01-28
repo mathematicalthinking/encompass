@@ -13,6 +13,10 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     this._super(...arguments);
   },
 
+  doShowLinkedAssignment: function() {
+    return this.get('permissions').hasOwnerPrivileges(this.get('workspace'));
+  }.property('currentUser', 'workspace'),
+
   initialOwnerItem: function () {
     const owner = this.get('workspace.owner');
     if (this.get('utils').isNonEmptyObject(owner)) {
