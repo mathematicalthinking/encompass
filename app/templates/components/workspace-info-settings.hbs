@@ -2,11 +2,11 @@
   <div class="heading">
     Workspace Settings
     {{#if canEdit}}
-    {{#unless isEditing}}
-      <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
-        <i class="fas fa-edit"></i>
-      </span>
-    {{/unless}}
+      {{#unless isEditing}}
+        <span class="heading-icon" {{action 'editWorkspaceInfo'}}>
+          <i class="fas fa-edit"></i>
+        </span>
+      {{/unless}}
     {{/if}}
   </div>
   <div class="card-content">
@@ -95,6 +95,41 @@
           {{/if}}
         </div>
       </div>
+      <div class="card-row">
+      <div class="row-label">
+        Allow Automatic Submission Updates
+      </div>
+      <div class="row-value">
+        {{#if isEditing}}
+          {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
+        {{else}}
+          {{yes-no workspace.doAllowSubmissionUpdates}}
+        {{/if}}
+      </div>
+      </div>
+      {{#unless isEditing}}
+        <div class="update-submissions">
+          <button {{action "updateWithExistingWork"}} class="primary-button">Update Workspace</button>
+          <div class="update-results">
+            {{#if wereNoAnswersToUpdate}}
+              <p class="info">Workpace already up to date.</p>
+            {{/if}}
+            {{#if missingLinkedAssignment}}
+              {{error-box error="Please link an assignment first." showDismiss=true resetError=(action (mut missingLinkedAssignment) null)}}
+            {{/if}}
+            {{#each updateErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'updateErrors' error)}}
+            {{/each}}
+            {{#each serverErrors as |error|}}
+              {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" 'serverErrors' error)}}
+            {{/each}}
+            {{#if addedSubmissions}}
+              <p class="info">Successfully updated workspace with {{addedSubmissions.length}} new submissions.</p>
+            {{/if}}
+          </div>
+
+        </div>
+      {{/unless}}
     {{/if}}
 
     {{#if isEditing}}

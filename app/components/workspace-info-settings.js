@@ -1,5 +1,5 @@
 /*global _:false */
-Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: ['workspace-info-settings'],
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('workspace-permissions'),
@@ -7,6 +7,7 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
   selectedMode: null,
   workspacePermissions: Ember.computed.alias('workspace.permissions'),
   selectedLinkedAssignment: null,
+  selectedAutoUpdateSetting: null,
   didLinkedAssignmentChange: false,
 
   didReceiveAttrs() {
@@ -44,6 +45,8 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     return ['private', 'org', 'public', 'internet'];
 
   }.property('currentUser.isAdmin', 'currentUser.isStudent'),
+
+  yesNoMySelect: ['Yes', 'No'],
 
   actions: {
     editWorkspaceInfo () {
@@ -140,6 +143,22 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
       //only make put request if there were changes - works but not for owner
       let workspace = this.get('workspace');
 
+      let updateSetting = this.get('selectedAutoUpdateSetting');
+
+      let updateSettingBool;
+
+      if (updateSetting === 'Yes') {
+        updateSettingBool = true;
+      } else if (updateSetting === 'No') {
+        updateSettingBool = false;
+      }
+
+      if (typeof updateSettingBool === 'boolean') {
+        if (updateSettingBool !== workspace.get('doAllowSubmissionUpdates')) {
+          workspace.set('doAllowSubmissionUpdates', updateSettingBool );
+        }
+      }
+
       if (this.get('didLinkedAssignmentChange')) {
         workspace.set('linkedAssignment', this.get('selectedLinkedAssignment'));
       }
@@ -162,6 +181,52 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
       this.set('isEditing', false);
       this.set('didLinkedAssignmentChange', false);
       this.set('selectedLinkedAssignment', null);
+    },
+
+    updateWithExistingWork() {
+      _.each(['wereNoAnswersToUpdate', 'updateErrors', 'addedSubmissions', 'missingLinkedAssignment', 'serverErrors'], (prop) => {
+        if (this.get(prop)) {
+          this.set(prop, null);
+        }
+      });
+
+      if (!this.get('linkedAssignment')) {
+        this.set('missingLinkedAssignment', true);
+        return;
+      }
+      if (!this.get('workspace')) {
+        return;
+      }
+      this.set('isUpdateRequestInProgress', true);
+
+      let newUpdateRequest = this.get('store').createRecord('updateWorkspaceRequest', {
+        workspace: this.get('workspace'),
+        linkedAssignment: this.get('linkedAssignment'),
+        createdBy: this.get('currentUser'),
+      });
+      newUpdateRequest.save()
+        .then((results) => {
+          this.set('isUpdateRequestInProgress', false);
+
+          if (results.get('wereNoAnswersToUpdate') === true) {
+            this.set('wereNoAnswersToUpdate', true);
+            return;
+          }
+          if (this.get('utils').isNonEmptyArray(results.get('updateErrors'))) {
+            this.set('updateErrors', results.get('updateErrors'));
+            return;
+          }
+          this.set('addedSubmissions', results.get('addedSubmissions'));
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'serverErrors');
+        });
+    },
+    removeErrorFromArray(prop, err) {
+      if (!this.get(prop)) {
+        return;
+      }
+      this.get(prop).removeObject(err);
     }
   }
 });
