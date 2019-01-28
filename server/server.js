@@ -226,6 +226,7 @@ server.post('/api/assignments', api.post.assignment);
 server.post('/api/encWorkspaceRequests', api.post.workspaceEnc);
 server.post('/api/copyWorkspaceRequests', api.post.cloneWorkspace);
 server.post('/api/folderSets', api.post.folderSet);
+server.post('/api/updateWorkspaceRequests', api.post.updateWorkspaceRequest);
 
 
 //ALL PUT REQUESTS

@@ -2670,7 +2670,80 @@ async function addAnswerToWorkspace(user, answer) {
     console.trace();
 
   }
+
 }
+
+const updateWorkspaceRequest = async function (req, res, next) {
+  let user = userAuth.requireUser(req);
+
+  if (!user) {
+    return utils.sendError.NotAuthorizedError(null, res);
+  }
+
+  if (!isNonEmptyObject(req.body.updateWorkspaceRequest)) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  let { workspaceId, linkedAssignmentId } = req.body.updateWorkspaceRequest;
+
+  if (!isValidMongoId(workspaceId) || !isValidMongoId(linkedAssignmentId)) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  let [ workspace, assignment ] = await Promise.all([
+    models.Workspace.findById(workspaceId)
+    .populate('submissions')
+    .populate({path: 'linkedAssignment', populate: 'section'})
+    .populate('owner')
+    .populate('createdBy')
+    .exec(),
+    models.Assignment.findById(linkedAssignmentId).populate('answers').lean().exec()
+  ]);
+
+  if (isNil(workspace) || isNil(assignment)) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  let missingAnswers = [];
+
+  assignment.answers.forEach((answer) => {
+    let foundAnswer = _.find(workspace.submissions, (sub) => {
+      return areObjectIdsEqual(sub.answer, answer._id);
+    });
+    if (!foundAnswer) {
+      missingAnswers.push(answer);
+    }
+  });
+
+  let JSONObjects = await answersToSubmissions(missingAnswers);
+  if (!isNonEmptyArray(JSONObjects)) {
+    return utils.sendError.InvalidContentError(null, res);
+  }
+
+  let savedSubs = await Promise.all(JSONObjects.map((obj) => {
+    obj.createDate = Date.now();
+    obj.createdBy = user._id;
+    let newSubmission = new models.Submission(obj);
+
+    newSubmission.workspaces.push(workspaceId);
+    return newSubmission.save();
+
+  }));
+
+  workspace.submissions = workspace.submissions.map(sub => sub._id);
+  savedSubs.forEach((sub) => {
+    workspace.submissions.push(sub._id);
+  });
+  await workspace.save();
+
+  let data = {
+    updateWorkspaceRequest: {
+      updatedSubmissions: savedSubs
+    }
+  };
+  return utils.sendResponse(res, data);
+
+};
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
@@ -2684,3 +2757,4 @@ module.exports.nameWorkspace = nameWorkspace;
 module.exports.newFolderStructure = newFolderStructure;
 module.exports.getRestrictedDataMap = getRestrictedDataMap;
 module.exports.addAnswerToWorkspace = addAnswerToWorkspace;
+module.exports.post.updateWorkspaceRequest = updateWorkspaceRequest;
