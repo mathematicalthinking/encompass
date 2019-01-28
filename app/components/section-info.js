@@ -2,6 +2,8 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
   elementId: 'section-info',
   className: ['section-info'],
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
   removeTeacherError: null,
   isEditingStudents: false,
   isEditingTeachers: false,
@@ -67,13 +69,35 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       });
   },
 
-  cantEdit: Ember.computed('section.id', function () {
-    let currentUser = this.get('currentUser');
-    let isStudent = currentUser.get('isStudent');
+  canEdit: function() {
+    // can only edit if created section, admin, pdadmin, or teacher
 
-    let cantEdit = isStudent;
-    return cantEdit;
-  }),
+    if (this.get('currentUser.isStudent')) {
+      return false;
+    }
+    if (this.get('currentUser.isAdmin')) {
+      return true;
+    }
+    let creatorId = this.get('utils').getBelongsToId(this.get('section'), 'createdBy');
+
+    if (creatorId === this.get('currentUser.id')) {
+      return true;
+    }
+
+    let teacherIds = this.get('section').hasMany('teachers').ids();
+    if (teacherIds.includes(this.get('currentUser.id'))) {
+      return true;
+    }
+
+    if (this.get('isPdAdmin')) {
+      let sectionOrgId = this.get('utils').getBelongsToId(this.get('section'), 'organization');
+      let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
+      return sectionOrgId === userOrgId;
+    }
+
+  }.property('currentUser.actingRole', 'currentUser.accountType', 'section.teachers', 'section.organization'),
+
+  cantEdit: Ember.computed.not('canEdit'),
 
   clearSelectizeInput(id) {
     if (!id) {

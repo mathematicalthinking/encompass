@@ -62,7 +62,7 @@ describe('Section CRUD operations by account type', function() {
       });
     });
   });
-  if (accountType !== 'A') {
+  if (accountType !== 'A' && accountType !== 'P') {
     describe('/GET inaccessible section by id', () => {
       it('should return 403 error', done => {
         const url = baseUrl + inaccessibleSection._id;
@@ -170,18 +170,15 @@ if (!isStudent) {
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'teachers');
         expect(res.body.section.teachers).to.have.members(modifiableSection.newTeachers);
         expect(res.body.section.teachers).to.contain(modifiableSection.teacherToAdd);
-        console.log('ending first test');
         done();
       });
     });
 
     it('should add section object to new teacher\'s sections array', function(done) {
-      console.log('starting 2nd test');
       models.User.findById(modifiableSection.teacherToAdd, (err, res) => {
         if (err) {
           done(err);
         }
-        console.log('res', res.sections);
         expect(_.find(res.sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'teacher')).to.exist;
         expect(_.find(res.sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'student')).to.not.exist;
         done();
@@ -206,18 +203,15 @@ if (!isStudent) {
         expect(res.body.section).to.have.any.keys('name', 'problems', 'students', 'students');
         expect(res.body.section.students).to.have.members(modifiableSection.newStudents);
         expect(res.body.section.students).to.contain(modifiableSection.studentToAdd);
-        console.log('ending first test');
         done();
       });
     });
 
     it('should add section object to new student\'s sections array', function(done) {
-      console.log('starting 2nd test');
       models.User.findById(modifiableSection.studentToAdd, (err, res) => {
         if (err) {
           done(err);
         }
-        console.log('res', res.sections);
         expect(_.find(res.sections, obj => obj.sectionId.toString() === modifiableSection._id && obj.role === 'student')).to.exist;
         expect(_.find(res.sections, obj => obj.sectionId === modifiableSection._id && obj.role === 'teacher')).to.not.exist;
         done();

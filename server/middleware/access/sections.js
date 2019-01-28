@@ -1,19 +1,19 @@
 const utils = require('./utils');
+const assignmentAccess = require('./assignments');
 const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyArray, } = objectUtils;
-
+const { isNonEmptyArray, isNonEmptyObject } = objectUtils;
+const { isValidMongoId, } = mongooseUtils;
 
 module.exports.get = {};
 
-const accessibleSectionsQuery = function(user, ids) {
+const accessibleSectionsQuery = async function(user, ids) {
   try {
-    if (!user) {
-      return [];
+    if (!isNonEmptyObject(user)) {
+      return;
     }
-    const accountType = user.accountType;
-    const actingRole = user.actingRole;
+    const { accountType, actingRole } = user;
 
   let filter = {
     isTrashed: false
@@ -23,26 +23,43 @@ const accessibleSectionsQuery = function(user, ids) {
   if (ids) {
     if (isNonEmptyArray(ids)) {
       filter._id = { $in: ids };
-    } else if (mongooseUtils.isValidMongoId(ids)) {
+    } else if (isValidMongoId(ids)) {
       filter._id = ids;
     }
   }
-  // Students can get sections they are a student of
-  if (actingRole === 'student' || accountType === 'S') {
-    filter.students = user._id;
-
-    return filter;
-  }
 
   // Admins with acting role 'teacher' can get everything
-  if (accountType === 'A') {
+  if (accountType === 'A' && actingRole !== 'student') {
     return filter;
   }
+
+  filter.$or = [
+    { createdBy: user._id }
+  ];
+
+  // everyone needs to be able to get any sections that reference an
+  // assignment they have access to
+
+  let assignmentsCriteria = await assignmentAccess.get.assignments(user);
+  let assignmentIds = await utils.getModelIds('Assignment', assignmentsCriteria);
+
+  if (isNonEmptyArray(assignmentIds)) {
+    filter.$or.push({assignments : { $elemMatch: { $in: assignmentIds} }});
+  }
+
+  // Students can get sections they are a student of
+  if (actingRole === 'student' || accountType === 'S') {
+    filter.$or.push({ students: user._id});
+
+    return filter;
+  }
+
+
   // PdAdmins with acting role 'teacher' can get all sections tied to their org
   if (accountType === 'P') {
     const userOrg = user.organization;
     if (userOrg) {
-      filter.organization = userOrg;
+      filter.$or.push({ organization: userOrg});
     }
 
     return filter;
@@ -50,7 +67,7 @@ const accessibleSectionsQuery = function(user, ids) {
   // Teachers with acting role 'teacher' can get all sections where they are a teacher
   if (accountType === 'T') {
 
-    filter.teachers = user._id;
+    filter.$or.push({teachers: user._id});
     return filter;
   }
   }catch(err) {
@@ -74,15 +91,8 @@ const canGetSection = async function(user, sectionId) {
   // use accessibleSections criteria to determine access for teachers/pdAdmins
 
   let criteria = await accessibleSectionsQuery(user, sectionId);
-  let accessibleIds = await utils.getModelIds('Section', criteria);
 
-  // map objectIds to strings to check for existence
-  accessibleIds = accessibleIds.map(id => id.toString());
-
-    if (accessibleIds.includes(sectionId)) {
-      return true;
-    }
-    return false;
+  return utils.doesRecordExist('Section', criteria);
 };
 
 module.exports.get.sections = accessibleSectionsQuery;

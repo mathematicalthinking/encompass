@@ -156,8 +156,12 @@ describe('Assignments as Student', async function () {
             }
             await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
             await helpers.waitForSelector(driver, css.assignmentsStudent.infoPage.pastSubsHeader);
+            await driver.wait(async function() {
+              let pastAnswers = await helpers.getWebElements(driver, 'ol.submission-list li');
+              return pastAnswers.length === assignments.answers.count + 1;
+            }, 5000);
 
-            let pastAnswers = await helpers.getWebElements(driver, `${css.assignmentsStudent.infoPage.subList} li`);
+            let pastAnswers = await helpers.getWebElements(driver, 'ol.submission-list li');
 
             expect(pastAnswers).to.have.lengthOf(assignments.answers.count + 1);
 

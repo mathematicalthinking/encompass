@@ -64,6 +64,11 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
   },
+  hasOwnerPrivileges: function(ws) {
+    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
+      return true;
+    }
+  },
 
   canCopy: function(ws) {
     // let canCopy = ws.get('canCopy');

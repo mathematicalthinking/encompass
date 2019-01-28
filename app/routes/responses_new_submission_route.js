@@ -58,6 +58,7 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         return Ember.RSVP.hash({
           submission,
           workspace,
+          submissions: workspace.get('submissions'),
           recipient: this.resolveRecipient(submission, workspace),
           selections: submission.get('selections'),
           comments: submission.get('comments'),
@@ -65,6 +66,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         });
       })
       .then((hash) => {
+        let studentSubmissions = hash.submissions.filterBy('student', hash.submission.get('student'));
+
         let response = this.get('store').createRecord('response', {
           submission: hash.submission,
           workspace: hash.workspace,
@@ -79,7 +82,8 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
           response,
           submission: hash.submission,
           workspace: hash.workspace,
-          responses: hash.responses
+          responses: hash.responses,
+          submissions: studentSubmissions
         };
       });
 
@@ -87,7 +91,10 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
   actions: {
     toResponse(submissionId, responseId) {
       this.transitionTo('responses.submission', submissionId, {queryParams: {responseId: responseId} });
-    }
+    },
+    toResponseSubmission(subId) {
+      this.transitionTo('responses.submission', subId);
+    },
   }
 
 });
