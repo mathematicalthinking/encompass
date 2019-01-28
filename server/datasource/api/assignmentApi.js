@@ -39,7 +39,7 @@ const getAssignments = async function(req, res, next) {
     return utils.sendResponse(res, data);
   }
 
-  criteria = await access.get.assignments(user);
+  criteria = await access.get.assignments(user, req.query.ids, req.query.filterBy);
   models.Assignment.find(criteria)
   .exec((err, assignments) => {
     if (err) {
