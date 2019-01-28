@@ -33,28 +33,10 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         startDate = moment(startDate);
       }
       if (!endDate) {
-        endDate = moment().add(1, 'days');
+        endDate = moment();
       } else if (_.isString(endDate)) {
         endDate = moment(endDate);
       }
-
-      // $('input[name="daterange"]').daterangepicker({
-      //   autoUpdateInput: true,
-      //   showDropdowns: true,
-      //   locale: {
-      //     cancelLabel: 'Clear'
-      //   },
-      //   startDate: startDate,
-      //   endDate: endDate
-      // });
-      // $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
-      //   $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-      // });
-
-      // $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
-      //   $(this).val('');
-      // });
-      // $('input[name="daterange"]').attr('placeholder', 'mm/dd/yyyy - mm/dd/yyyy');
 
       $('input[name="startDate"]').daterangepicker({
         singleDatePicker: true,
@@ -583,26 +565,7 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
 
       let startDate = $('#startDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
       let endDate = $('#endDate').data('daterangepicker').startDate.format('YYYY-MM-DD');
-      // let startDate;
-      // let endDate;
-      // let dateRangeTextVal = $('#dateRange').val(); // empty string if no date range is picked
-      // if (dateRangeTextVal) { // user selected a date range
-      //   const start = $('#dateRange').data('daterangepicker').startDate.format('YYYY-MM-DD');
-      //   const end = $('#dateRange').data('daterangepicker').endDate.format('YYYY-MM-DD');
-      //   startDate = this.getMongoDate(start);
-      //   endDate = this.getEndDate(end);
-      //   if (_.isDate(startDate) && _.isDate(endDate)) {
-      //     if (startDate > endDate ) {
-      //       this.set('isInvalidDateRange', true);
-      //       return;
-      //     }
-      //   }
-      //   // this.set('startDate', start);
-      //   // this.set('endDate', end);
-      // } else {
-      //   startDate = null;
-      //   endDate = null;
-      // }
+
       const students = this.get('selectedStudents');
       let studentIds;
       if (students) {
@@ -693,15 +656,5 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         prop.pushObject(record);
       }
     }
-
-    // setSelectedProblem(problemId) {
-    //   let peeked = this.get('store').peekAll('problem');
-
-    //   let problem = peeked.findBy('id', problemId);
-    //   if (!problem) {
-    //     return;
-    //   }
-    //   this.set('selectedProblem', problem);
-    // }
   }
 });

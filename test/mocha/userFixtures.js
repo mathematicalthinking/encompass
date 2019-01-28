@@ -322,12 +322,12 @@ const pdAdminDrexel = {
     },
   },
   problems: {
-    accessibleProblemCount: 18,
+    accessibleProblemCount: 19,
     accessibleProblem: {
       _id: '5b1e7a0ba5d2157ef4c91028',
     },
     inaccessibleProblem: {
-      _id: '5b9173e23da5efca74705772'
+      _id: '5b4e2e56be1e18425515308c'
     },
     validProblem: {
       title: 'test math problem',
@@ -343,6 +343,9 @@ const pdAdminDrexel = {
     },
     modifiableProblem: {
       _id: ''
+    },
+    outsideOrgCollabProblem: {
+      _id: '5b9173e23da5efca74705772',
     }
   },
   folderSets: {
@@ -702,6 +705,21 @@ const studentMT = {
   },
   answers: {
     accessibleAnswerCount: 1,
+    firstRevision: {
+      "answer" : "This is my 2nd try",
+      "explanation" : "<p>This is my 2nd explanation.</p>",
+      "createdBy" : "5b914a102ecaf7c30dd47492",
+      "problem" : "5b9173e23da5efca74705772",
+      "explanationImage" : null,
+      "section" : "5b9149a32ecaf7c30dd4748f",
+      "priorAnswer" : "5bb813fc9885323f6d894972",
+      "assignment" : "5b91743a3da5efca74705773",
+      "isSubmitted" : true,
+      "students" : [
+          "5b914a102ecaf7c30dd47492"
+      ],
+      "workspaceToUpdate":"5bec36958c73047613e2f34e"
+    }
   },
   selections: {
     accessibleSelectionCount: 2,
@@ -770,7 +788,7 @@ const studentMT = {
     }
   },
   problems: {
-    accessibleProblemCount: 19,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },
@@ -959,7 +977,7 @@ const teacherActingStudent = {
     },
   },
   problems: {
-    accessibleProblemCount: 19,
+    accessibleProblemCount: 17,
     accessibleProblem: {
       _id: '5b9173e23da5efca74705772',
     },

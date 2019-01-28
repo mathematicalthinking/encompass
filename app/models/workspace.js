@@ -120,6 +120,8 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
     return [];
   }.property('permissions.@each.feedback'),
   sourceWorkspace: DS.attr(),
+  linkedAssignment: DS.belongsTo('assignment'),
+  doAllowSubmissionUpdates: DS.attr('boolean', { default: true }),
 
 //  comments: function() {
 //    var allComments = [];

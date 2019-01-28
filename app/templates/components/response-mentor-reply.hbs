@@ -9,16 +9,14 @@
     newReplyType="mentor"
     onSaveSuccess=(action "onSaveSuccess")
     canDirectSend=canDirectSend
-    submissionResponses=submissionResponses
+    submissionResponses=mentorReplies
   }}
 {{else}}
   {{#if sortedMentorReplies}}
     <div class="mentor-replies">
       {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
     </div>
-  {{/if}}
-
-    <div class="response-info">
+        <div class="response-info">
       {{#if displayResponse}}
         <p class="response-title">Mentor Response</p>
         <p class="response-date">{{format-date displayResponse.createDate 'Do MMM YYYY'}}
@@ -103,6 +101,19 @@
         {{/if}}
     </div>
   {{/if}}
+    {{else}}
+    <p class="info">No Mentor Feedback for this revision yet.</p>
+     <img src="/images/no-message.svg" alt="No Replies">
+    {{#if canSendNew}}
+      Click 'New Response' to begin composing a new Mentor Reply.
+    <div class="submit-buttons button-row">
+      <button {{action "toNewResponse"}} class="primary-button">New Response</button>
+    </div>
+
+    {{/if}}
+  {{/if}}
+
+
 {{/if}}
 
 

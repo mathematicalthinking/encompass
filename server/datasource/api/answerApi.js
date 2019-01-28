@@ -7,12 +7,14 @@
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
+const moment = require('moment');
 
 //REQUIRE FILES
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access= require('../../middleware/access/answers');
+const wsApi = require('./workspaceApi');
 
 const mongooseUtils = require('../../utils/mongoose');
 const { cleanObjectIdArray } = mongooseUtils;
@@ -54,8 +56,11 @@ async function getAnswers(req, res, next) {
       let {startDate, endDate, students } = filterBy;
 
       if (startDate && endDate) {
-        let startDateObj = new Date(startDate);
-        let endDateObj = new Date(endDate);
+        let startMoment = moment(startDate).startOf('day');
+        let endMoment =  moment(endDate).endOf('day');
+        let startDateObj = new Date(startMoment);
+
+        let endDateObj = new Date(endMoment);
 
         if (_.isDate(startDateObj) && _.isDate(endDateObj)) {
           filterBy.createDate = {
@@ -209,31 +214,49 @@ const getAnswer = (req, res, next) => {
   */
 
  const postAnswer = async function(req, res, next) {
-  const user = userAuth.requireUser(req);
+   try {
+    const user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-  // Add permission checks here
-  const answer = new models.Answer(req.body.answer);
-
-  answer.createDate = Date.now();
-  await answer.save((err, doc) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
-    const data = {'answer': doc};
-    utils.sendResponse(res, data);
-    next();
-  }).then((answer) => {
-    models.Problem.findById(answer.problem).exec().then((problem) => {
-      if (!problem.isUsed) {
-        problem.isUsed = true;
+    // Add permission checks here
+    const answer = new models.Answer(req.body.answer);
+
+    answer.createDate = Date.now();
+    let savedAnswer = await answer.save();
+    let updatedWorkspaceInfo;
+
+    if (savedAnswer) {
+      // check if should update workspace
+      if (savedAnswer.workspaceToUpdate) {
+      updatedWorkspaceInfo =  await wsApi.addAnswerToWorkspace(user, savedAnswer);
       }
-      problem.save();
-    });
-  });
+    }
+    // savedAnswer createdBy, problem, section were populated
+    // need just id
+
+    if (savedAnswer.problem._id) {
+      savedAnswer.problem = savedAnswer.problem._id;
+    }
+    if (savedAnswer.section._id) {
+      savedAnswer.section = savedAnswer.section._id;
+    }
+    if (savedAnswer.createdBy._id) {
+      savedAnswer.createdBy = savedAnswer.createdBy._id;
+    }
+    let data = { 'answer': savedAnswer };
+    if (updatedWorkspaceInfo) {
+      data.meta = updatedWorkspaceInfo;
+    }
+    utils.sendResponse(res, data);
+   }catch(err) {
+     console.error(`Error postAnswer: ${err}`);
+     console.trace();
+     return utils.sendError.InternalError(null, res);
+   }
+
+
 };
 
 /**

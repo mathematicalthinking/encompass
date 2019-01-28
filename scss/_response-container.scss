@@ -89,6 +89,19 @@
         margin-right: 10px;
       }
     }
+    .submission-date {
+      @include flex-item(1, flex-start, 1 1 auto);
+      font-weight: $light-font-weight;
+      font-size: 1.1em;
+      color: $filter-list-border-color;
+      text-align: left;
+      margin-bottom: 15px;
+    }
+    .submission-time {
+      font-size: .8em;
+      color: black;
+      margin-left: 5px;
+    }
     .submission-content-container {
       margin-bottom: 20px;
       .submission-header {
@@ -109,6 +122,13 @@
         border-radius: 3px;
         font-size: .9em;
       }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
     }
     img {
       max-width: 100%;
@@ -123,6 +143,13 @@
       pre.message {
         white-space: pre-wrap;
       }
+    }
+    img {
+      display: block;
+      max-width: 250px;
+      width: 100%;
+      height: auto;
+      margin-top: 40px;
     }
     div.compose-mentor-reply {
       margin-left: 15px;

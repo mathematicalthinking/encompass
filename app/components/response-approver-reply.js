@@ -3,7 +3,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   alert: Ember.inject.service('sweet-alert'),
 
   showNoActionsMessage: Ember.computed.equal('responseToApprove.status', 'approved'),
-  noActionToTakeMessage: 'This Mentor Reply has already been approved and sent to its intended recipient. There are no further approval actions to take at this time.',
 
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
@@ -151,7 +150,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     },
 
-    saveReply() {
+    saveReply(newStatus) {
       this.removeMessages(['saveRecordErrors','emptyReplyError']);
 
       let text = this.get('editRevisionText');
@@ -175,46 +174,31 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         text: trimmed
       });
 
-      let oldMentorStatus = this.get('responseToApprove.status');
+      this.get('responseToApprove').set('status', newStatus);
 
-      let promptText = 'What should now be the status of the Mentor Feedback you are replying to?';
+      if (newStatus === 'approved') {
+        this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+        record.set('isApproverNoteOnly', true);
+      }
 
-      return this.get('alert').showPromptSelect(promptText, this.get('statusOptions'), 'Select a status', null, 'Send')
-        .then((result) => {
-          if (!result.value) {
-            return;
-          }
-          let hash = {};
+      return Ember.RSVP.hash({
+        newReply: record.save(),
+        updatedReply: this.get('responseToApprove').save()
+      })
+    .then((hash) => {
+      if (!hash) {
+        return;
+      }
+      this.send('cancelReply');
 
-          if (oldMentorStatus !== result.value) {
-            this.get('responseToApprove').set('status', result.value);
-            if (result.value === 'approved') {
-              this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
-
-              // should be distinction between when approver sends a reply with revisions and when approver sends reply and approves
-              record.set('isApproverNoteOnly', true);
-            }
-            hash.updatedReply = this.get('responseToApprove').save();
-          }
-
-            hash.newReply = record.save();
-
-          return Ember.RSVP.hash(hash);
-        })
-        .then((hash) => {
-          if (!hash) {
-            return;
-          }
-          this.send('cancelReply');
-
-          this.get('approverReplies').addObject(hash.newReply);
-          this.set('replyToView', hash.newReply);
-          this.get('alert').showToast('success', 'Reply Sent', 'bottom-end', 3000, false, null);
-        })
-        .catch((err) => {
-          this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('repsonseToApprove')]);
-        });
-    },
+      this.get('approverReplies').addObject(hash.newReply);
+      this.set('replyToView', hash.newReply);
+      this.get('alert').showToast('success', 'Reply Sent', 'bottom-end', 3000, false, null);
+    })
+    .catch((err) => {
+      this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('repsonseToApprove')]);
+    });
+  },
     setReplyToView(response) {
       if (!response || this.get('displayReply.id') === response.get('id')) {
         return;
@@ -298,6 +282,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       delete copy.approvedBy;
       delete copy.lastModifiedDate;
       delete copy.lastModifiedBy;
+      delete copy.wasReadByRecipient;
+      delete copy.wasReadByApprover;
 
       copy.text = newText;
       copy.note = newNote;

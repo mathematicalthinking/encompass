@@ -1,11 +1,10 @@
 const utils = require('./utils');
 const _ = require('underscore');
 const mongooseUtils = require('../../utils/mongoose');
-const submissionAccess = require('./submissions');
 const objectUtils = require('../../utils/objects');
 
 const { isValidMongoId } = mongooseUtils;
-const { isNonEmptyObject, isNonEmptyArray, isNil } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
@@ -62,39 +61,24 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
         recipient: user._id,
         $or: [
           { status: 'approved' },
-          { type: 'approver', status: { $ne: 'superceded' } }
+          { responseType: 'approver', status: { $ne: 'superceded' } }
         ]
       });
 
-    // can access any feedback from workspace where user has approve permissions
+      orFilter.$or.push({ createdBy: user._id });
 
-    // let approverWorkspaceIds = await utils.getApproverWorkspaceIds(user);
+      let [ mentorWorkspaceIds, approverWorkspaceIds ] = await utils.getCollabFeedbackWorkspaceIds(user);
 
-    // if (isNonEmptyArray(approverWorkspaceIds)) {
-    //   orFilter.$or.push({
-    //     workspace: {$in: approverWorkspaceIds}
-    //   });
-    // }
-
-    let subCriteria = await submissionAccess.get.submissions(user);
-
-    let allowedSubmissionIds = await utils.getModelIds('Submission', subCriteria);
-    if (isNonEmptyArray(allowedSubmissionIds)) {
-      orFilter.$or.push({
-        submission: {$in: allowedSubmissionIds}
-      });
-    }
-    // can access any feedback from submissions you have access to
-
-    // can access any feedback you created
+      if (isNonEmptyArray(mentorWorkspaceIds)) {
+        orFilter.$or.push({ workspace: {$in: mentorWorkspaceIds }, responseType: 'mentor', status: 'approved'});
+      }
+      if (isNonEmptyArray(approverWorkspaceIds)) {
+        orFilter.$or.push({workspace: {$in: approverWorkspaceIds}});
+      }
 
 
-    // orFilter.$or = [];
-    orFilter.$or.push({ createdBy: user._id });
-    // orFilter.$or.push({workspace : { $in: accessibleWorkspaceIds} });
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
-
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }

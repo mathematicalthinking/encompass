@@ -6,7 +6,7 @@ const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleSubmissionsQuery = async function(user, ids) {
+const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
   try {
     if (!isNonEmptyObject(user)) {
       return {};
@@ -29,6 +29,12 @@ const accessibleSubmissionsQuery = async function(user, ids) {
         filter.$and.push({ _id: ids });
       }
 
+      if (isNonEmptyObject(filterBy)) {
+        if (mongooseUtils.isValidMongoId(filterBy.answer)) {
+          filter.$and.push({answer: filterBy.answer });
+        }
+      }
+
       if (accountType === 'A' && !isStudent) {
         return filter;
       }
@@ -41,7 +47,6 @@ const accessibleSubmissionsQuery = async function(user, ids) {
     orFilter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaceIds} }});
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'submissions');
-    console.log('restrictedSubmissionIds', restrictedRecords);
 
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });

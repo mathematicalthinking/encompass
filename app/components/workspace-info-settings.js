@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: ['workspace-info-settings'],
   alert: Ember.inject.service('sweet-alert'),
@@ -5,6 +6,12 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
   utils: Ember.inject.service('utility-methods'),
   selectedMode: null,
   workspacePermissions: Ember.computed.alias('workspace.permissions'),
+  selectedLinkedAssignment: null,
+  didLinkedAssignmentChange: false,
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+  },
 
   initialOwnerItem: function () {
     const owner = this.get('workspace.owner');
@@ -13,6 +20,15 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     }
     return [];
   }.property('workspace.owner'),
+
+  initialLinkedAssignmentItem: function() {
+    let linkedAssignmentId = this.get('linkedAssignment.id');
+
+    if (linkedAssignmentId) {
+      return [linkedAssignmentId];
+    }
+    return [];
+  }.property('linkedAssignment'),
 
   modes: function () {
     const basic = ['private', 'org', 'public'];
@@ -71,6 +87,31 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
       }
     },
 
+    setLinkedAssignment(val, $item) {
+      if (!val) {
+        return;
+      }
+
+      let linkedAssignmentId = this.get('linkedAssignment.id');
+
+      if (_.isNull($item)) {
+        if (linkedAssignmentId) {
+          this.set('selectedLinkedAssignment', null);
+          this.set('didLinkedAssignmentChange', true);
+        }
+        return;
+      }
+
+      let assignment = this.get('store').peekRecord('assignment', val);
+
+      if (assignment) {
+        if (assignment.get('id') !== linkedAssignmentId) {
+          this.set('selectedLinkedAssignment', assignment);
+          this.set('didLinkedAssignmentChange', true);
+        }
+      }
+    },
+
     checkWorkspace: function () {
       let workspace = this.get('workspace');
       let workspaceOrg = workspace.get('organization.content');
@@ -94,12 +135,18 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
     saveWorkspace: function () {
       //only make put request if there were changes - works but not for owner
       let workspace = this.get('workspace');
-      if (workspace.get('hasDirtyAttributes') || this.get('saveOwner')) {
+
+      if (this.get('didLinkedAssignmentChange')) {
+        workspace.set('linkedAssignment', this.get('selectedLinkedAssignment'));
+      }
+
+      if (workspace.get('hasDirtyAttributes') || this.get('saveOwner') || this.get('didLinkedAssignmentChange')) {
         let workspace = this.get('workspace');
         workspace.save().then((res) => {
           this.get('alert').showToast('success', 'Workspace Updated', 'bottom-end', 3000, null, false);
           this.set('isEditing', false);
           this.set('saveOwner', null);
+          this.set('didLinkedAssignmentChange', false);
         }).catch((err) => {
           this.handleErrors(err, 'updateRecordErrors', workspace);
         });
@@ -107,5 +154,10 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
         this.set('isEditing', false);
       }
     },
+    stopEditing() {
+      this.set('isEditing', false);
+      this.set('didLinkedAssignmentChange', false);
+      this.set('selectedLinkedAssignment', null);
+    }
   }
 });

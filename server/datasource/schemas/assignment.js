@@ -17,13 +17,16 @@ var AssignmentSchema = new Schema({
   lastModifiedBy: { type: ObjectId, ref: 'User' },
   lastModifiedDate: { type: Date, 'default': Date.now() },
   //====
-  name: { type: String },
-  problem: { type: ObjectId, ref: 'Problem', required: true },
+  name: { type: String, trim: true },
+  problem: { type: ObjectId, ref: 'Problem' },
+  taskWorkspace: { type: ObjectId, ref: 'Workspace' }, // for type workspace assignments
   students: [{ type: ObjectId, ref: 'User' }],
   section: { type: ObjectId, ref: 'Section' },
   assignedDate: { type: Date },
   answers: [{ type: ObjectId, ref: 'Answer'}],
   dueDate: { type: Date },
+  assignmentType: {type: String, enum: ['problem', 'workspace'], default: 'problem' },
+  linkedWorkspace: { type: ObjectId, ref: 'Workspace' }, // for auto updatingtype problem assignments
 }, { versionKey: false });
 
 /* + The Problem exists */
@@ -117,6 +120,21 @@ AssignmentSchema.post('save', function (assignment) {
         } else {
           console.log(`added assignment to section: `, affected);
         }
+      });
+    }
+
+    if (assignment.linkedWorkspace) {
+      let updateHash = { $set: {linkedAssignment: assignment._id} };
+
+      if (assignment.isTrashed) {
+        updateHash = { $set: {linkedAssignment: null } };
+      }
+
+      mongoose.models.Workspace.findByIdAndUpdate(assignment.linkedWorkspace, updateHash, function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('update linkedWorkspace count: ', affected);
       });
     }
 });

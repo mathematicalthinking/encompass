@@ -1,17 +1,39 @@
-
+// use to indicate unread responses or responses that need approval or revisions for now
 Encompass.IsUnreadResponseHelper = Ember.Helper.helper( function(args){
   let [response, currentUser] = args;
-  let recipientRef = response.belongsTo('recipient');
-  let recipientId;
 
   if (!response || !currentUser) {
     return;
   }
 
+  let recipientRef = response.belongsTo('recipient');
+  let creatorRef = response.belongsTo('createdBy');
+
+  let status = response.get('status');
+
+  let recipientId;
+  let creatorId;
+
   if (recipientRef) {
     recipientId = recipientRef.id();
   }
 
-  return !response.get('wasReadByRecipient') && currentUser.get('id') === recipientId;
+  if (creatorRef) {
+    creatorId = creatorRef.id();
+  }
+
+  if (!response.get('wasReadByRecipient') && currentUser.get('id') === recipientId) {
+    return true;
+  }
+
+  if (status === 'pendingApproval') {
+    if (creatorId !== currentUser.get('id')) {
+      return true;
+    }
+  }
+
+  if (status === 'needsRevisions') {
+    return creatorId === currentUser.get('id');
+  }
 
 });

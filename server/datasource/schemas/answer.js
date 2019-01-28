@@ -27,7 +27,8 @@ var AnswerSchema = new Schema({
   priorAnswer: { type: ObjectId, ref: 'Answer' },
   isSubmitted: { type: Boolean, default: true },
   notes: { type: String },
-  powsSubmId: { type: Number }, // old POWs submission ID
+  powsSubmId: { type: Number }, // old POWs submission ID,
+  workspaceToUpdate: { type: ObjectId, ref: 'Workspace' },
 }, { versionKey: false });
 
 /**
@@ -90,6 +91,20 @@ AnswerSchema.post('save', function (Answer) {
           throw new Error(err.message);
         }
       });
+  }
+
+  if (Answer.problem) {
+    mongoose.models.Problem.findById(Answer.problem, function (err, problem) {
+      if (err) {
+        throw new Error(err.message);
+      }
+      if (problem) {
+        if (!problem.isUsed) {
+          problem.isUsed = true;
+          problem.save();
+        }
+      }
+    });
   }
 
   // not used (no answers array in problem)

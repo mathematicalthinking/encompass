@@ -36,7 +36,7 @@ var WorkspaceSchema = new Schema({
   lastModifiedDate: { type: Date, 'default': Date.now() },
   lastViewed: { type: Date },
 //====
-  name: { type: String, required: true },
+  name: { type: String, required: true, trim: true },
   owner: { type: ObjectId, ref: 'User' },
   editors: [{type: ObjectId, ref: 'User'}],
   mode: { type: String, enum: ['internet', 'public', 'org', 'private'] },
@@ -68,7 +68,9 @@ var WorkspaceSchema = new Schema({
 
   // 0: none, 1: view only, 2: create, 3: edit, 4: delete
   permissions: [ WorkspacePermissionObjectSchema ],
-  sourceWorkspace: { type: ObjectId, ref: 'Workspace', _id: false}
+  sourceWorkspace: { type: ObjectId, ref: 'Workspace' },
+  linkedAssignment: { type: ObjectId, ref: 'Assignment' },
+  doAllowSubmissionUpdates: {type: Boolean, default: true },
 }, {versionKey: false});
 
 /**
@@ -109,6 +111,7 @@ WorkspaceSchema.post('save', function (workspace) {
     function (err, affected, results) {
       if (err) { throw new Error(err.message); }
     });
+
     if (Array.isArray(workspace.permissions)) {
       let collaboratorIds = workspace.permissions.map(obj => obj.user);
       if (collaboratorIds.length > 0) {
@@ -119,6 +122,20 @@ WorkspaceSchema.post('save', function (workspace) {
           console.log('updated user collab workspaces', affected, results);
         });
       }
+    }
+
+    if (workspace.linkedAssignment) {
+      let updateHash = { $set: { linkedWorkspace: workspace._id } };
+
+      if (workspace.isTrashed) {
+        updateHash = { $set: { linkedWorkspace: null } };
+      }
+      mongoose.models.Assignment.findByIdAndUpdate(workspace.linkedAssignment, updateHash, function (err, affected, result) {
+        if (err) {
+          throw new Error(err.message);
+        }
+        console.log('update linkedAssignment count: ', affected);
+      });
     }
 });
 

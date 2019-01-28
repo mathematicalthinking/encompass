@@ -24,6 +24,19 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       presence: true
     }
   },
+  createButtonDisplayText: function() {
+    if (this.get('createButtonText')) {
+      return this.get('createButtonText');
+    }
+    return 'Create Answer';
+  }.property('createButtonText'),
+
+  mainHeaderDisplayText: function() {
+    if (this.get('mainHeaderText')) {
+      return this.get('mainHeaderText');
+    }
+    return 'Create New Answer';
+  }.property('mainHeaderText'),
 
   didInsertElement: function() {
     // initialize quill editor
@@ -136,7 +149,9 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       if (that.isDestroyed || that.isDestroying) {
         return;
       }
-      that.set('showLoadingMessage', true);
+      if (that.get('isCreatingAnswer')) {
+        that.set('showLoadingMessage', true);
+      }
     }, 500);
 
   }.observes('isCreatingAnswer'),
@@ -170,11 +185,12 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
+          workspaceToUpdate: that.get('workspaceToUpdate'),
         });
       });
       // additional uploaded image base 64 data was concatenated to explanation
       // so can delete image record
-      return Promise.all(records.map((rec) => {
+      return Ember.RSVP.all(records.map((rec) => {
         let uploadedImages = this.get('uploadResults');
         if (uploadedImages) {
           uploadedImages.forEach((image) => {

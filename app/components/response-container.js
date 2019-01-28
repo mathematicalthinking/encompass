@@ -6,12 +6,14 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   primaryResponseType: Ember.computed.alias('response.responseType'),
 
   isCreatingNewMentorReply: false,
+  areMentorReplies: Ember.computed.gt('mentorReplies.length', 0),
 
   didReceiveAttrs() {
     if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
       return;
-    } else if (this.get('primaryResponseType') === 'approver') {
+    }
+    if (this.get('primaryResponseType') === 'approver') {
       this.get('response.reviewedResponse')
         .then((response) => {
           if (!this.get('isDestroying') && !this.get('isDestroyed')) {
@@ -50,12 +52,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   nonTrashedResponses: function() {
     return this.get('responses')
-      .rejectBy('isTrashed')
-      .filter((response) => {
-        let subId = response.belongsTo('submission').id();
-        return this.get('submission.id') === subId;
-      });
-  }.property('responses.@each.isTrashed', 'submission.id'),
+      .rejectBy('isTrashed');
+  }.property('responses.@each.isTrashed'),
 
   approverReplies: function() {
     let reviewedResponseId;
@@ -79,17 +77,9 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('primaryApproverReply', 'mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
 
   mentorReplies: function() {
-    if (!this.get('mentorReplyDisplayResponse')) {
-      return [];
-    }
-    let mentorId = this.get('mentorReplyDisplayResponse').belongsTo('createdBy').id();
+    return this.get('nonTrashedResponses').filterBy('responseType', 'mentor');
 
-    return this.get('nonTrashedResponses').filter((response) => {
-      let id = response.belongsTo('createdBy').id();
-          return response.get('responseType') === 'mentor' && mentorId === id;
-        });
-
-  }.property('mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
+  }.property('nonTrashedResponses.[]',),
 
   responseToApprove: function() {
     if (this.get('primaryResponseType') === 'mentor' && this.get('canApprove') && !this.get('isCreatingNewMentorReply')) {
@@ -144,8 +134,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (this.get('reviewedResponse')) {
       return this.get('reviewedResponse');
     }
+    if (this.get('primaryResponseType') === 'mentor') {
+      return this.get('response');
+    }
     return null;
-  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse'),
+  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse', 'response'),
 
   canApprove: function() {
     return this.get('wsPermissions').canApproveFeedback(this.get('workspace'));
@@ -158,6 +151,10 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (this.get('primaryResponseType') === 'approver') {
       return true;
     }
+    if (!this.get('areMentorReplies')) {
+      return false;
+    }
+
     // if you have direct send, do not show approver panel if you are viewing your own reply
     if (this.get('isOwnMentorReply')) {
       return !this.get('canDirectSend');
@@ -181,11 +178,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('workspace.feedbackAuthorizers.[]'),
 
   actions: {
-    onSaveSuccess(response) {
-      this.sendAction('toResponse', response.get('id'));
+    onSaveSuccess(submission, response) {
+      this.sendAction('toResponse', submission.get('id'), response.get('id'));
     },
     onMentorReplySwitch(response) {
-      this.sendAction('toResponseInfo',response);
+      let subId = response.belongsTo('submission').id();
+      this.sendAction('toResponse', subId, response.get('id'));
     },
     toResponses() {
       this.sendAction('toResponses');
@@ -199,6 +197,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       let baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 
       window.open(`${baseUrl}#/workspaces/${workspaceId}/submissions/${submissionId}`, 'newwindow', 'width=1200, height=700');
-    }
+    },
+    onSubmissionChange(sub) {
+      this.sendAction('toResponseSubmission', sub.get('id'));
+    },
+    toNewResponse: function() {
+      this.sendAction('toNewResponse', this.get('submission.id', this.get('workspace.id')));
+    },
   }
 });

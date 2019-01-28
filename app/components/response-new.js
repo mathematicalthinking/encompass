@@ -9,8 +9,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   selections: [],
   comments: [],
   submission: null,
-  showSelections: true,
-  showComments: true,
+  showSelections: false,
+  showComments: false,
   notEditing: Ember.computed.not('isEditing'),
   notPersisted: Ember.computed.not('persisted'),
   notDirty: Ember.computed.not('dirty'),
@@ -19,7 +19,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
   alert: Ember.inject.service('sweet-alert'),
   todaysDate: new Date(),
-  utils: Ember.inject.service('utils'),
+  doUseOnlyOwnMarkup: true,
+  utils: Ember.inject.service('utility-methods'),
 
 
   didReceiveAttrs() {
@@ -27,11 +28,30 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       // this.set('isEditing', true);
       // preformat text and set on model;
       this.preFormatText();
-      this.getExistingResponses();
     }
 
     this._super(...arguments);
   },
+
+  filteredSelections: function() {
+    if (this.get('doUseOnlyOwnMarkup')) {
+      return this.get('model.selections').filter((selection) => {
+        let creatorId = this.get('utils').getBelongsToId(selection, 'createdBy');
+        return creatorId === this.get('currentUser.id');
+      });
+    }
+    return this.get('model.selections');
+  }.property('model.selections.[]', 'doUseOnlyOwnMarkup'),
+
+  filteredComments: function() {
+    if (this.get('doUseOnlyOwnMarkup')) {
+      return this.get('model.comments').filter((comment) => {
+        let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
+        return creatorId === this.get('currentUser.id');
+      });
+    }
+    return this.get('model.comments');
+  }.property('model.comments.[]', 'doUseOnlyOwnMarkup'),
 
   willDestroyElement() {
     if (!this.get('model.persisted')) {
@@ -78,12 +98,10 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     Ember.run.next(this, Ember.verticalSizing);
   }.observes('showDetails', 'isEditing'),
 
-  getExistingResponses: function () {
-    let filtered = this.get('submissionResponses').filter((response) => {
-      return this.get('model.id') !== response.get('id') && response.get('responseType') === 'mentor';
-    });
-    this.set('existingResponses', filtered);
-  },
+  existingResponses: function() {
+    let modelId = this.get('model.id');
+    return this.get('submissionResponses').rejectBy('id', modelId);
+  }.property('submissionResponses.[]'),
 
   dirty: function () {
     if (this.get('data.text')) {
@@ -101,8 +119,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('isStatic'),
 
   explainEmptiness: function () {
-    return (this.get('model.selections.length') === 0 && !this.get('isEditing') && !this.get('isRevising') && !this.get('model.text'));
-  }.property('isEditing', 'model.selections.[]', 'model.text', 'isRevising'),
+    return (this.get('filteredSelections.length') === 0 && !this.get('isEditing') && !this.get('isRevising') && !this.get('model.text'));
+  }.property('isEditing', 'filteredSelections.[]', 'model.text', 'isRevising'),
 
   modelChanged: function () {
     if (!this.get('persisted') && !this.get('model.text')) {
@@ -191,37 +209,28 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var greeting = this.get('greeting');
     var text = `${greeting}\n\n`;
 
-    return Ember.RSVP.hash({
-      selections: this.get('model.selections'),
-      comments: this.get('model.comments')
-    })
-    .then((hash) => {
-      let { selections, comments } = hash;
-      if (selections) {
-        selections.forEach((s) => {
-          //text += '%@1 wrote: \n\n%@2'.fmt(this.get('who'), this.quote(s.get('text')));
-          var who = this.get('who');
-          var quoteText = this.quote(s.get('text'));
-          text += `${who} wrote: \n\n${quoteText}`;
+    if (this.get('filteredSelections.length') > 0) {
+      this.get('filteredSelections').forEach((s) => {
+        //text += '%@1 wrote: \n\n%@2'.fmt(this.get('who'), this.quote(s.get('text')));
+        var who = this.get('who');
+        var quoteText = this.quote(s.get('text'));
+        text += `${who} wrote: \n\n${quoteText}`;
 
-         comments
-            .filterBy('selection.id', s.get('id'))
-            .forEach((c)=> {
-              var opts = {
-                type: c.get('label'),
-                usePrefix: true,
-              };
+      this.get('filteredComments').forEach((comment) => {
+        let selId = this.get('utils').getBelongsToId(comment, 'selection');
+        if (selId === s.get('id')) {
+          let opts = {
+            type: comment.get('label'),
+            usePrefix: true,
+          };
 
-              text += this.quote(c.get('text'), opts);
-
-            });
-            this.set('replyText', text);
-            this.set('originalText', text);
-        });
-      }
+          text += this.quote(comment.get('text'), opts);
+        }
+      });
     });
-
-    //return text;
+          this.set('replyText', text);
+          this.set('originalText', text);
+      }
   },
 
   shortText: function () {
@@ -233,6 +242,11 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   _persistThen: function (callback) {
     let response = this.get('model');
+
+    if (!this.get('replyText.length') > 0) {
+      this.set('emptyReplyError', 'Message Body Cannot Be Blank');
+      return;
+    }
     response.set('original', this.get('originalText'));
     response.set('createdBy', this.get('currentUser'));
     response.set('status', this.get('newReplyStatus'));
@@ -285,8 +299,13 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       var controller = this;
         this._persistThen(function (saved) {
           controller.get('alert').showToast('success', 'Response Sent', 'bottom-end', 3000, false, null);
-          controller.get('onSaveSuccess')(saved);
+          controller.get('onSaveSuccess')(controller.get('submission'), saved);
         });
     },
-  }
+    toggleOwnMarkUpOnly(e) {
+      this.send('toggleProperty', 'doUseOnlyOwnMarkup');
+      this.set('replyText', '');
+      this.preFormatText();
+    }
+  },
 });

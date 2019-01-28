@@ -4,11 +4,11 @@ const mongooseUtils = require('../../utils/mongoose');
 const _ = require('underscore');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyArray, } = objectUtils;
+const { isNonEmptyArray, isNonEmptyObject, isNonEmptyString } = objectUtils;
 
 module.exports.get = {};
 
-async function accessibleAssignmentsQuery(user, ids) {
+async function accessibleAssignmentsQuery(user, ids, filterBy) {
   if (!user) {
     return;
   }
@@ -23,6 +23,14 @@ async function accessibleAssignmentsQuery(user, ids) {
       filter._id = { $in: ids };
     } else if (mongooseUtils.isValidMongoId(ids)) {
       filter._id = ids;
+    }
+  }
+
+  if (isNonEmptyObject(filterBy)) {
+    if (isNonEmptyString(filterBy.name)) {
+      let replaced = filterBy.name.replace(/\s+/g, "");
+      let regex = new RegExp(replaced, 'i');
+      filter.name = regex;
     }
   }
 

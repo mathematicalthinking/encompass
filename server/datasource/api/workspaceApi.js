@@ -34,7 +34,7 @@ const { isNil, isNonEmptyArray, isNonEmptyObject, } = objectUtils;
 
 const { capitalizeString, } = stringUtils;
 
-const { areObjectIdsEqual } = mongooseUtils;
+const { areObjectIdsEqual, isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 module.exports.post = {};
@@ -64,22 +64,11 @@ function getRestrictedDataMap(user, permissions, ws) {
       // i.e. creator.studentId property equals current userId
       filteredSubs = wsSubs.filter((sub) => {
         let userId = _.propertyOf(sub)(['creator', 'studentId']);
-        console.log('userId gdm', userId);
         return areObjectIdsEqual(userId, user.id);
       });
 
-      // if (Array.isArray(ws.submissions)) {
-      //   submissionIds = ws.submissions.filter((sub) => {
-      //     let userId = _.propertyOf(sub)(['creator', 'studentId']);
-      //     console.log('userId gdm', userId);
-      //     return areObjectIdsEqual(userId, user.id);
-      //   });
-      // } else {
-      //   submissionIds = [];
-      // }
     } else {
       filteredSubs = wsSubs.filter((sub) => {
-        console.log('pop sub gdm', sub.creator);
         return _.contains(submissionIds, sub._id.toString());
       });
 
@@ -119,16 +108,14 @@ function getRestrictedDataMap(user, permissions, ws) {
           .value();
            dataMap.comments = selComments;
         }
-        if (feedback === 'none') {
-          dataMap.responses = [];
-        } else {
-          const subIds = _.map(filteredSubs, sub => sub._id.toString());
+
+          const submissionIds = _.map(filteredSubs, sub => sub._id.toString());
           const subResponses = _.chain(ws.responses)
-            .filter(res => res.submission && subIds.includes(res.submission.toString()))
+            .filter(res => res.submission && submissionIds.includes(res.submission.toString()))
             .flatten()
             .value();
           dataMap.responses = subResponses;
-        }
+
       }
 
   } else {
@@ -148,9 +135,9 @@ function getRestrictedDataMap(user, permissions, ws) {
     dataMap.taggings = [];
   }
 
-  if (feedback === 'none') {
-    dataMap.responses = [];
-  }
+  // if (feedback === 'none') {
+  //   dataMap.responses = [];
+  // }
 
   return dataMap;
 }
@@ -441,14 +428,17 @@ async function putWorkspace(req, res, next) {
 
     // should we be validating these before setting?
     ws.editors = req.body.workspace.editors;
-    ws.mode    = req.body.workspace.mode;
-    ws.name = req.body.workspace.name;
-    ws.owner = req.body.workspace.owner;
     ws.lastViewed = new Date();
     ws.lastModifiedDate = new Date();
     ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
     ws.permissions = req.body.workspace.permissions;
-    ws.organization = req.body.workspace.organization;
+
+    let updateLinkedAssignment = false;
+
+    if (isValidMongoId(ws.linkedAssignment) && isNil(req.body.workspace.linkedAssignment)) {
+      // need to upate the assignment
+      updateLinkedAssignment = true;
+    }
 
     if (ws.permissions) {
       ws.permissions.forEach((permission) => {
@@ -457,11 +447,28 @@ async function putWorkspace(req, res, next) {
     }
     // only admins or ws owner should be able to trash ws
     // this check should be done for mode, name, owner, organization, and permissions(?)
-    if (user.accountType === 'A' || user.id === ws.owner.toString()) {
+    let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+    let isPdAdmin = user.accountType === 'P' && user.actingRole !== 'student';
+
+    let isOwner = areObjectIdsEqual(user._id, ws.owner);
+    let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
+    let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
+
+    if (isAdmin || isOwner || isCreator || isPdWs) {
       ws.isTrashed = req.body.workspace.isTrashed;
+      ws.mode    = req.body.workspace.mode;
+      ws.name = req.body.workspace.name;
+      ws.owner = req.body.workspace.owner;
+      ws.organization = req.body.workspace.organization;
+      ws.linkedAssignment = req.body.workspace.linkedAssignment;
+
     }
 
     const savedWorkspace = await ws.save();
+
+    if (updateLinkedAssignment) {
+      models.Assignment.updateMany({linkedWorkspace: ws._id}, {$set: {linkedWorkspace: null}}).exec();
+    }
     const wsPermissions = savedWorkspace.permissions;
 
       if (_.isArray(wsPermissions)) {
@@ -2592,6 +2599,78 @@ async function cloneWorkspace(req, res, next) {
     return utils.sendError.InternalError(err, res);
   }
 }
+/**
+  * @private
+  * Takes an answer record with a linkedWorkspace property, creates a new submission record,
+  * and then adds that submission record to the workspace
+  * @method addAnswerToWorkspace
+  * @throws {NotAuthorizedError} User has inadequate permissions
+  * @throws {InternalError} Data update failed
+  * @throws {RestError} Something? went wrong
+  */
+
+async function addAnswerToWorkspace(user, answer) {
+  try {
+    if (!isNonEmptyObject(user) || !isNonEmptyObject(answer)) {
+      return;
+    }
+    // make sure it is valid workspace
+    let workspaceId = answer.workspaceToUpdate;
+
+    if (!isValidMongoId(workspaceId)) {
+      return;
+    }
+    let workspaceToUpdate = await models.Workspace.findById(workspaceId)
+    .populate('submissions')
+    .populate({path: 'linkedAssignment', populate: 'section'})
+    .populate('owner')
+    .populate('createdBy')
+    .exec();
+
+    if (isNil(workspaceToUpdate)) {
+      return;
+    }
+    // do we need to check for submissions already containing this answer?
+
+    // create JSON submission obj from answer
+    if (!access.canUpdateSubmissions(user, workspaceToUpdate, 'add')) {
+      return;
+    }
+    // returns array
+    let submissionJSON = await answersToSubmissions([answer]);
+
+    if (!isNonEmptyArray(submissionJSON)) {
+      return;
+    }
+    // add createdBy and createDate and create submission record
+    let obj = submissionJSON[0];
+    obj.createDate = Date.now();
+    obj.createdBy = user._id;
+
+    // add workspaceId to workspaces array
+
+    let newSubmission = new models.Submission(obj);
+    newSubmission.workspaces.push(workspaceId);
+
+    let savedSub = await newSubmission.save();
+    workspaceToUpdate.submissions = workspaceToUpdate.submissions.map(sub => sub._id);
+    workspaceToUpdate.submissions.push(savedSub._id);
+
+    await workspaceToUpdate.save();
+
+   return {
+     updatedWorkspaceInfo: {
+       workspaceId: workspaceToUpdate._id,
+       submissionId: savedSub._id,
+     }
+   };
+
+  }catch(err) {
+    console.error(`Error addAnswerToWorkspace: ${err}`);
+    console.trace();
+
+  }
+}
 
 module.exports.post.workspaceEnc = postWorkspaceEnc;
 module.exports.post.cloneWorkspace = cloneWorkspace;
@@ -2604,3 +2683,4 @@ module.exports.packageSubmissions = packageSubmissions;
 module.exports.nameWorkspace = nameWorkspace;
 module.exports.newFolderStructure = newFolderStructure;
 module.exports.getRestrictedDataMap = getRestrictedDataMap;
+module.exports.addAnswerToWorkspace = addAnswerToWorkspace;

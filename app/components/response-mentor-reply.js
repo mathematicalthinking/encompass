@@ -13,7 +13,6 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   },
   statusIconFill: function () {
     let status = this.get('displayResponse.status');
-    console.log('status is', status);
     return this.get('iconFillOptions')[status];
   }.property('displayResponse.status'),
 
@@ -86,10 +85,13 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   showTrash: function() {
     return this.get('canTrash') && !this.get('isComposing');
   }.property('canTrash', 'isComposing'),
+  canSendNew: function() {
+    return this.get('canSend') && !this.get('isOwnSubmission');
+  }.property('canSend', 'isOwnSubmission'),
 
   actions: {
-    onSaveSuccess(response) {
-      this.get('onSaveSuccess')(response);
+    onSaveSuccess(submission, response) {
+      this.get('onSaveSuccess')(submission, response);
     },
     startEditing() {
       this.set('editRevisionText', this.get('displayResponse.text'));
@@ -173,6 +175,8 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       delete copy.lastModifiedBy;
       delete copy.comments;
       delete copy.selections;
+      delete copy.wasReadByRecipient;
+      delete copy.wasReadByApprover;
 
       copy.text = newText;
       copy.note = newNote;
@@ -224,7 +228,6 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       if (!response) {
         return;
       }
-      console.log('mentorReplies', this.get('mentorReplies'));
 
       return this.get('alert').showModal('warning', 'Are you sure you want to delete this response?', '', 'Delete')
         .then((result) => {
@@ -244,6 +247,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
           this.handleErrors(err, 'recordSaveErrors', response);
         });
 
+    },
+    toNewResponse: function() {
+      this.get('toNewResponse')();
     }
  }
 });
