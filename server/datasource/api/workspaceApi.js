@@ -2684,30 +2684,40 @@ const updateWorkspaceRequest = async function (req, res, next) {
     return utils.sendError.InvalidContentError(null, res);
   }
 
-  let { workspaceId, linkedAssignmentId } = req.body.updateWorkspaceRequest;
+  let newUpdateRequest = new models.UpdateWorkspaceRequest(req.body.updateWorkspaceRequest);
 
-  if (!isValidMongoId(workspaceId) || !isValidMongoId(linkedAssignmentId)) {
-    return utils.sendError.InvalidContentError(null, res);
+  let { workspace, linkedAssignment } = req.body.updateWorkspaceRequest;
+
+  if (!isValidMongoId(workspace) || !isValidMongoId(linkedAssignment)) {
+    newUpdateRequest.errors.push('Invalid workspace or assignment.');
+    await newUpdateRequest.save();
+    return utils.sendResponse(res, {
+      updateWorkspaceRequest: newUpdateRequest
+    });
   }
 
-  let [ workspace, assignment ] = await Promise.all([
-    models.Workspace.findById(workspaceId)
+  let [ popWorkspace, assignment ] = await Promise.all([
+    models.Workspace.findById(workspace)
     .populate('submissions')
     .populate({path: 'linkedAssignment', populate: 'section'})
     .populate('owner')
     .populate('createdBy')
     .exec(),
-    models.Assignment.findById(linkedAssignmentId).populate('answers').lean().exec()
+    models.Assignment.findById(linkedAssignment).populate('answers').lean().exec()
   ]);
 
-  if (isNil(workspace) || isNil(assignment)) {
-    return utils.sendError.InvalidContentError(null, res);
+  if (isNil(popWorkspace) || isNil(assignment)) {
+    newUpdateRequest.errors.push('Invalid workspace or assignment.');
+    await newUpdateRequest.save();
+    return utils.sendResponse(res, {
+      updateWorkspaceRequest: newUpdateRequest
+    });
   }
 
   let missingAnswers = [];
 
   assignment.answers.forEach((answer) => {
-    let foundAnswer = _.find(workspace.submissions, (sub) => {
+    let foundAnswer = _.find(popWorkspace.submissions, (sub) => {
       return areObjectIdsEqual(sub.answer, answer._id);
     });
     if (!foundAnswer) {
@@ -2715,33 +2725,46 @@ const updateWorkspaceRequest = async function (req, res, next) {
     }
   });
 
+  if (!isNonEmptyArray(missingAnswers)) {
+    // no answers to update
+    newUpdateRequest.wereNoAnswersToUpdate === true;
+    await newUpdateRequest.save();
+    return utils.sendResponse(res, {
+      updateWorkspaceRequest: newUpdateRequest
+    });
+  }
+
   let JSONObjects = await answersToSubmissions(missingAnswers);
   if (!isNonEmptyArray(JSONObjects)) {
-    return utils.sendError.InvalidContentError(null, res);
-  }
+    newUpdateRequest.errors.push('Error updating workspace with new submissions.');
+    await newUpdateRequest.save();
+    return utils.sendResponse(res, {
+      updateWorkspaceRequest: newUpdateRequest
+    });  }
 
   let savedSubs = await Promise.all(JSONObjects.map((obj) => {
     obj.createDate = Date.now();
     obj.createdBy = user._id;
     let newSubmission = new models.Submission(obj);
 
-    newSubmission.workspaces.push(workspaceId);
+    newSubmission.workspaces.push(workspace);
     return newSubmission.save();
 
   }));
 
-  workspace.submissions = workspace.submissions.map(sub => sub._id);
+  popWorkspace.submissions = popWorkspace.submissions.map(sub => sub._id);
   savedSubs.forEach((sub) => {
-    workspace.submissions.push(sub._id);
+    popWorkspace.submissions.push(sub._id);
+    newUpdateRequest.addedSubmissons.push(sub._id);
   });
-  await workspace.save();
+  await popWorkspace.save();
 
-  let data = {
-    updateWorkspaceRequest: {
-      updatedSubmissions: savedSubs
-    }
-  };
-  return utils.sendResponse(res, data);
+  newUpdateRequest.workspace = popWorkspace;
+  await newUpdateRequest.save();
+
+  return utils.sendResponse(res, {
+    updateWorkspaceRequest: newUpdateRequest
+  });
 
 };
 

@@ -1,8 +1,7 @@
 Encompass.UpdateWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
-  workspaceId: DS.attr(),
-  linkedAssignmentId: DS.attr(),
+  workspace: DS.belongsTo('workspace', { inverse: null }),
+  linkedAssignment: DS.belongsTo('assignment', {inverse: null}),
   errors: DS.attr(),
-  failedAnswers: DS.hasMany('answer', { inverse: null }),
-  updatedSubmissions: DS.hasMany('submission', {inverse: null}),
-  updatedAnswers: DS.hasMany('answer', {inversE: null }),
+  addedSubmissions: DS.hasMany('submission', {inverse: null}),
+  wereNoAnswersToUpdate: DS.attr('boolean', { default: false }),
 });
