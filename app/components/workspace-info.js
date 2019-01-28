@@ -33,6 +33,15 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
   },
 
+  getLinkedAssignment: function() {
+    return this.get('workspace.linkedAssignment')
+      .then((assignment) => {
+        if (!this.get('isDestroyed') && !this.get('isDestroying')) {
+          this.set('linkedAssignment', assignment);
+        }
+      });
+  },
+
   willDestroyElement: function () {
     let workspace = this.get('workspace');
     workspace.save();
