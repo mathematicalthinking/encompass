@@ -20,8 +20,7 @@ var UpdateWorkspaceRequestSchema = new Schema({
   linkedAssignment: { type: ObjectId, ref: 'Assignment' },
   workspace: { type: ObjectId, ref: 'Workspace' },
   wereNoAnswersToUpdate: { type: Boolean, default: false },
-  errors: [ { type: String } ],
-  addedAnswers: [ {type: ObjectId, ref: 'Answers'}],
+  updateErrors: [ { type: String } ],
   addedSubmissions: [ { type: ObjectId, ref: 'Submission' } ],
 }, { versionKey: false });
 
