@@ -149,48 +149,28 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   actions: {
     removeStudent: function (user) {
+      if(!user) {
+        return;
+      }
+
       let section = this.get('currentSection');
       let students = section.get('students');
       let selectedUser = user;
-      let selectedUserId = selectedUser.get('id');
+
       students.removeObject(selectedUser);
 
       section.save().then((section) => {
-        return this.store.findRecord('user', selectedUserId)
-          .then((user) => {
-            let userSections = user.get('sections');
-            if (!userSections) {
-              this.set('removedStudent', true);
-              return;
-            }
-            let removedSectionId = section.get('id');
-            let newSections = [];
-            userSections.map((section) => {
-              if (section.sectionId !== removedSectionId) {
-                newSections.push(section);
-              }
-            });
-            user.set('sections', newSections);
-            user.save().then((res) => {
-              this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
-            }).catch((err) => {
-              this.handleErrors(err, 'updateStudentErrors', user);
-            });
-          }).catch((err) => {
-            this.handleErrors(err, 'findRecordErrors');
-          });
+        this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
+
       }).catch((err) => {
         this.handleErrors(err, 'updateSectionErrors', section);
       });
-      this.set('removedStudent', true);
     },
 
     removeTeacher: function (user) {
       let section = this.get('currentSection');
       let teachers = this.get('teacherList');
       let teachersLength = teachers.get('length');
-      let selectedUser = user;
-      let selectedUserId = selectedUser.get('id');
 
       if (teachersLength > 1) {
         teachers.removeObject(user);
@@ -203,30 +183,11 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
 
       section.save().then((section) => {
-        return this.store.findRecord('user', selectedUserId)
-          .then((user) => {
-            let userSections = user.get('sections');
-            if (!userSections) {
-              return;
-            }
-            let removedSectionId = section.get('id');
-            let newSections = [];
-            userSections.map((section) => {
-              if (section.sectionId !== removedSectionId) {
-                newSections.push(section);
-              }
-            });
-            user.set('sections', newSections);
-            user.save().then((res) => {
-              this.get('alert').showToast('success', 'Teacher Removed', 'bottom-end', 3000, false, null);
-            }).catch((err) => {
-              this.handleErrors(err, 'updateTeacherErrors', user);
-            });
-          }).catch((err) => {
-            this.handleErrors(err, 'findRecordErrors');
-          });
+        this.get('alert').showToast('success', 'Teacher Removed', 'bottom-end', 3000, false, null);
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'updateSectionErrors');
       });
-      this.set('removedTeacher', true);
     },
 
     confirmDelete: function () {
@@ -296,27 +257,14 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
       let section = this.get('currentSection');
 
-      let sectionObj = {
-        sectionId: section.id,
-        role: 'teacher'
-      };
-
       let teachers = this.get('teacherList');
 
       if (!teachers.includes(teacher)) {
         teachers.addObject(teacher);
 
         section.save().then(() => {
-          if (!teacher.get('sections')) {
-            teacher.set('sections', []);
-          }
-          teacher.get('sections').addObject(sectionObj);
-          teacher.save().then(() => {
-            this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
-            this.clearSelectizeInput('select-add-teacher');
-          }).catch((err) => {
-            this.handleErrors(err, 'updateTeacherErrors', teacher);
-          });
+          this.get('alert').showToast('success', 'Teacher Added', 'bottom-end', 3000, false, null);
+          this.clearSelectizeInput('select-add-teacher');
         }).catch((err) => {
           this.handleErrors(err, 'updateSectionErrors', section);
         });

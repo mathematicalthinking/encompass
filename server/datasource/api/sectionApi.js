@@ -3,12 +3,15 @@
   * @description This is the API for section based requests
   * @author Michael McVeigh
 */
+const _ = require('underscore');
 
 const logger = require('log4js').getLogger('server');
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/sections');
+
+const { isNonEmptyArray, } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -137,34 +140,68 @@ const postSection = (req, res, next) => {
   * @throws {RestError} Something? went wrong
 */
 
-const putSection = (req, res, next) => {
-  const user = userAuth.requireUser(req);
+const putSection = async (req, res, next) => {
+  try {
+    const user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-  // what check do we want to perform if the user can edit
-  // if they created the section?
-  models.Section.findById(req.params.id, (err, doc) => {
-    if(err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
     }
-    // make the updates
+    let section = await models.Section.findById(req.params.id).exec();
+
+    // ids coming from put request are strings
+    // ids from database record are objects
+    // convert db record ids to strings for easy comparison
+
+    let originalStudentIds = section.students || [];
+    let newStudentIds = req.body.section.students || [];
+
+    let originalStringIds = originalStudentIds.map(id => id.toString());
+
+    let addedStudents = _.difference(newStudentIds, originalStringIds);
+    let removedStudents = _.difference(originalStringIds, newStudentIds);
+
+    let originalTeacherIds = section.teachers || [];
+    let newTeacherIds = req.body.section.teachers || [];
+
+    let originalTeacherStringIds = originalTeacherIds.map(id => id.toString());
+
+    let addedTeachers = _.difference(newTeacherIds, originalTeacherStringIds);
+    let removedTeachers = _.difference(originalTeacherStringIds, newTeacherIds);
+
+    //TODO: permissions
+
     for(let field in req.body.section) {
       if((field !== '_id') && (field !== undefined)) {
-        doc[field] = req.body.section[field];
+        section[field] = req.body.section[field];
       }
     }
-    doc.save((err, section) => {
-      if (err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
-      const data = {'section': section};
-      utils.sendResponse(res, data);
-    });
-  });
+
+    let savedSection = await section.save();
+
+    if (isNonEmptyArray(removedStudents)) {
+      models.User.updateMany({_id: {$in: removedStudents}}, { $pull: { 'sections': { sectionId: savedSection._id, role: 'student'} } }).exec();
+    }
+
+    if (isNonEmptyArray(addedStudents)) {
+      models.User.updateMany({_id: {$in: addedStudents}}, { $addToSet: { 'sections': { sectionId: savedSection._id, role: 'student'} } }).exec();
+    }
+
+    if (isNonEmptyArray(removedTeachers)) {
+      models.User.updateMany({_id: {$in: removedTeachers}}, { $pull: { 'sections': { sectionId: savedSection._id, role: 'teacher'} } }).exec();
+    }
+
+    if (isNonEmptyArray(addedTeachers)) {
+      models.User.updateMany({_id: {$in: addedTeachers}}, { $addToSet: { 'sections': { sectionId: savedSection._id, role: 'teacher'} } }).exec();
+    }
+    const data = {'section': section};
+    utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error put section: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 };
 
 /**
