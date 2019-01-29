@@ -392,6 +392,14 @@ function canUpdateSubmissions(user, ws, updateType) {
       return true;
     }
 
+    // student who has answer in workspace and has permission should be able to add
+    let existingStudentSub = _.find(ws.submissions, (sub) => {
+      return areObjectIdsEqual(_.propertyOf(sub)(['creator', 'studentId']), user._id);
+    });
+    if (existingStudentSub) {
+      return true;
+    }
+
     let assignmentStudents = _.propertyOf(ws)(['linkedAssignment', 'students']);
 
     let isStudent;
