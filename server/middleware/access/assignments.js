@@ -52,7 +52,7 @@ async function accessibleAssignmentsQuery(user, ids, filterBy) {
   }
   // students can get any assignment that has been assigned to them
   if (accountType === 'S' || actingRole === 'student') {
-    filter.students = user._id;
+    filter.$or.push({ students: user._id });
     return filter;
   }
   // teachers can get any assignment they have created or any section where they

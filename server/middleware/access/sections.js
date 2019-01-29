@@ -58,7 +58,7 @@ const accessibleSectionsQuery = async function(user, ids) {
   // PdAdmins with acting role 'teacher' can get all sections tied to their org
   if (accountType === 'P') {
     const userOrg = user.organization;
-    if (userOrg) {
+    if (isValidMongoId(userOrg)) {
       filter.$or.push({ organization: userOrg});
     }
 
