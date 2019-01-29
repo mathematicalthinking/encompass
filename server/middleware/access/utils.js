@@ -573,6 +573,20 @@ async function getOrgRecommendedProblems(user) {
   }
 }
 
+async function getAccessibleResponseIds(user, ids, workspace, filterBy) {
+  if (!user) {
+    return;
+  }
+  try {
+    const criteria = await responsesAuth.get.responses(user, ids, workspace, filterBy);
+    return getModelIds('Response', criteria);
+
+  } catch(err) {
+    console.error(`Error accessibleResponseIds: ${err}`);
+    console.trace();
+  }
+}
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -597,3 +611,4 @@ module.exports.doesRecordExist = doesRecordExist;
 module.exports.getCollabFeedbackWorkspaceIds = getCollabFeedbackWorkspaceIds;
 module.exports.getWorkspaceProblemIds = getWorkspaceProblemIds;
 module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
+module.exports.getAccessibleResponseIds = getAccessibleResponseIds;
