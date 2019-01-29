@@ -349,41 +349,107 @@ function filterRequestedWorkspaceData(user, results) {
   * @howto Ideally we'd send back the workspace with all of it's dependencies.
            It's sending back way too much data right now
   */
-function sendWorkspace(req, res, next) {
-  var user = userAuth.requireUser(req);
+async function sendWorkspace(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-  models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      console.error(`Error sendWorkspace: ${err}`);
-      console.trace();
-      return utils.sendError.InternalError(err, res);
-    }
-    if (!ws || ws.isTrashed) {
-      return utils.sendResponse(res, null);
-    }
+    let [ ws, accessibleResponseIds] = await Promise.all([models.Workspace.findById(req.params.id)
+      .populate('owner')
+      .populate('createdBy')
+      .populate('selections')
+      .populate('submissions')
+      .populate('folders')
+      .populate('taggings')
+      .populate('responses')
+      .lean().exec(),
 
-    const [ canLoad, specialPermissions ] = access.get.workspace(user, ws);
-    if(!canLoad) {
-      logger.info("permission denied");
-      return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
-    } else {
-      // return filterRequestedWorkspaceData(user, [ws])
-      // .then((results) => {
-      //   console.log('results', results);
-      //   if (results) {
-      //     utils.sendResponse(res, results[0]);
-      //   }
-      // });
-      //need to check that the user's permissions aren't limited for this workspace
-      getWorkspace(req.params.id, user, specialPermissions, function(data) {
-        console.log('data sending back workspace: ', JSON.stringify(data.responses, null, 2));
+      accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
 
-      //   // responses need to be filtered so only ones user should have access to are sent back
-      //   // ideally this would be done already but for now do here
-        utils.sendResponse(res, data);
-       });
+      if (isNil(ws) || ws.isTrashed) {
+        return utils.sendResponse(res, null);
       }
-  });
+
+      const [ canLoad, specialPermissions ] = access.get.workspace(user, ws);
+      if(!canLoad) {
+        return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
+      }
+      const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, ws);
+      _.each(restrictedDataMap, (val, key) => {
+        if (ws[key]) {
+          ws[key] = val;
+        }
+      });
+
+      if (Array.isArray(ws.responses)) {
+        ws.responses = ws.responses.filter((response) => {
+          return _.find(accessibleResponseIds, (accId) => {
+            return areObjectIdsEqual(response._id, accId);
+          });
+        });
+      }
+
+      if (_.propertyOf(ws)(['createdBy', '_id'])) {
+        ws.createdBy = ws.createdBy._id;
+      }
+
+      if (_.propertyOf(ws)(['owner', '_id'])) {
+        ws.owner = ws.owner._id;
+      }
+
+      let data = {
+        workspace: ws
+      };
+
+      let dataMap = {
+        selections: 'selection',
+        submissions:'submission',
+        folders: 'folder',
+        taggings: 'tagging',
+        responses: 'response',
+      };
+
+      let relatedData = {
+        selections: [],
+        submissions: [],
+        folders: [],
+        taggings: [],
+        responses: [],
+  //      'workspace': {},
+  //      'createdBy': {}
+      };
+
+      //this would probably be better done as an aggregate?
+      //we're just massaging the data into an ember friendly format for side-loading
+      _.keys(relatedData).forEach(function(key){
+        if(ws[key]){ //array
+          var idBag = [];
+          ws[key].forEach(function(item){
+            relatedData[key].push(item);//[ws[key]._id] = comment[key];
+            idBag.push(item._id);
+          });
+          ws[key] = idBag;
+        } else {
+          logger.error('workspace ' + ws._id + ' missing ' + key);
+          delete ws[key];
+        }
+      });
+
+      _.keys(relatedData).forEach(function(key){
+        var modelName = key;
+        if(dataMap[key]) {
+          modelName = dataMap[key];
+        }
+        data[modelName] = _.values(relatedData[key]);
+      });
+
+    return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error sendWorkspace: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
 }
 
 /**
