@@ -410,7 +410,6 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   }
   // if collabWorkspaces is empty, user has not been added as a collab on any workspaces
   // and thus does not have any accessible workspaces with restricted access
-
   if (!isNonEmptyArray(collabWorkspaces)) {
     return [];
   }
@@ -432,7 +431,6 @@ function getRestrictedWorkspaceData(user, requestedModel) {
         const [canLoad, specialPermissions] = wsAuth.get.workspace(user, populatedWs);
 
         const restrictedDataMap = wsApi.getRestrictedDataMap(user, specialPermissions, populatedWs);
-
         // no restrictions
         if (!isNonEmptyObject(restrictedDataMap)) {
           return [];
@@ -587,6 +585,69 @@ async function getAccessibleResponseIds(user, ids, workspace, filterBy) {
   }
 }
 
+async function getAssignmentUsers(user) {
+  try {
+    if (!isNonEmptyObject(user)) {
+      return [];
+    }
+
+    let userMap = {};
+
+    let assnCriteria = await assignmentAuth.get.assignments(user);
+
+    let assignments = await models.Assignment.find(assnCriteria, {createdBy: 1, section: 1, students: 1}).populate('section').lean().exec();
+
+    if (isNonEmptyArray(assignments)) {
+      assignments.forEach((assignment) => {
+        if (Array.isArray(assignment.students)) {
+          assignment.students.forEach((studentId) => {
+            if (!userMap[studentId]) {
+              userMap[studentId] = true;
+            }
+          });
+
+          if (isValidMongoId(assignment.createdBy)) {
+            if (!userMap[assignment.createdBy]) {
+              userMap[assignment.createdBy] = true;
+            }
+          }
+
+          if (assignment.section) {
+            if (isValidMongoId(assignment.section.createdBy)) {
+              if (!userMap[assignment.section.createdBy]) {
+                userMap[assignment.section.createdBy] = true;
+              }
+            }
+
+            if (Array.isArray(assignment.section.teachers)) {
+              assignment.section.teachers.forEach((teacherId) => {
+                if (!userMap[teacherId]) {
+                  userMap[teacherId] = true;
+                }
+              });
+            }
+
+            if (Array.isArray(assignment.section.students)) {
+              assignment.section.students.forEach((studentId) => {
+                if (!userMap[studentId]) {
+                  userMap[studentId] = true;
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+    return _.keys(userMap);
+
+  } catch(err) {
+    console.error(`Error getAssignmentUsers: ${err}`);
+    console.trace();
+  }
+}
+
+
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -612,3 +673,4 @@ module.exports.getCollabFeedbackWorkspaceIds = getCollabFeedbackWorkspaceIds;
 module.exports.getWorkspaceProblemIds = getWorkspaceProblemIds;
 module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
 module.exports.getAccessibleResponseIds = getAccessibleResponseIds;
+module.exports.getAssignmentUsers = getAssignmentUsers;
