@@ -242,21 +242,13 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         submissions: {all: false, userOnly: false, submissionIds: []},
       };
 
-      if (subValue === 'all') {
-        newObj.submissions.all = true;
-      } else if (subValue === 'userOnly') {
-        newObj.submissions.userOnly = true;
-      } else if (subValue === 'custom'){
-        newObj.submissions.submissionIds = this.get('customSubmissionIds');
-      }
-
       let globalSetting = this.get('globalPermissionValue');
         if (globalSetting === 'viewOnly') {
           newObj.folders = 1;
           newObj.selections = 1;
           newObj.comments = 1;
           newObj.feedback = 'none';
-
+          newObj.submissions.all = true;
         }
 
         if (globalSetting === 'editor') {
@@ -264,6 +256,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
           newObj.selections = 4;
           newObj.comments = 4;
           newObj.feedback = 'none';
+          newObj.submissions.all = true;
 
         }
 
@@ -272,6 +265,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
           newObj.selections = 2;
           newObj.comments = 2;
           newObj.feedback = 'authReq';
+          newObj.submissions.all = true;
 
         }
 
@@ -280,6 +274,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
           newObj.selections = 2;
           newObj.comments = 2;
           newObj.feedback = 'preAuth';
+          newObj.submissions.all = true;
 
         }
 
@@ -288,6 +283,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
           newObj.selections = 4;
           newObj.comments = 4;
           newObj.feedback = 'approver';
+          newObj.submissions.all = true;
 
         }
         if (globalSetting === 'custom') {
@@ -295,6 +291,14 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
           newObj.folders = this.get('folders.value');
           newObj.comments = this.get('comments.value');
           newObj.feedback = this.get('feedback.value');
+
+          if (subValue === 'all') {
+            newObj.submissions.all = true;
+          } else if (subValue === 'userOnly') {
+            newObj.submissions.userOnly = true;
+          } else if (subValue === 'custom'){
+            newObj.submissions.submissionIds = this.get('customSubmissionIds');
+          }
         }
       permissions.addObject(newObj);
 
