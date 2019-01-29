@@ -8,6 +8,7 @@ const problemsAccess = require('./problems');
 
 const objectUtils = require('../../utils/objects');
 const { isNonEmptyObject, isNonEmptyArray, isNonEmptyString, } = objectUtils;
+const { isValidMongoId, areObjectIdsEqual } = mongooseUtils;
 
 module.exports.get = {};
 module.exports.put = {};
@@ -79,8 +80,8 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
   // all users need to be able to access users from any workspace they have access to
 
   if (isStudent) {
-    let [ workspaceUsers, studentUsers, responseUsers ] = await Promise.all([
-      utils.getUsersFromWorkspaces(user), utils.getStudentUsers(user), utils.getResponseUsers(user)
+    let [ workspaceUsers, studentUsers, responseUsers, assignmentUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getStudentUsers(user), utils.getResponseUsers(user), utils.getAssignmentUsers(user)
     ]);
 
     if (isNonEmptyArray(workspaceUsers)) {
@@ -93,6 +94,10 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
     if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
+    }
+
+    if (isNonEmptyArray(assignmentUsers)) {
+      filter.$or.push({ _id: {$in: assignmentUsers } });
     }
 
     return filter;
@@ -109,8 +114,8 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
   // pdadmins can do a lot more in terms of modifying / creating / deleting
 
   if (accountType === 'P') {
-    let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
-      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
+    let [ workspaceUsers, teacherUsers, responseUsers, assignmentUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user), utils.getAssignmentUsers(user)
     ]);
 
     if (isNonEmptyArray(workspaceUsers)) {
@@ -123,14 +128,18 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
     if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
+    }
+
+    if (isNonEmptyArray(assignmentUsers)) {
+      filter.$or.push({ _id: {$in: assignmentUsers } });
     }
 
     return filter;
   }
 
   if (accountType === 'T') {
-    let [ workspaceUsers, teacherUsers, responseUsers ] = await Promise.all([
-      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user)
+    let [ workspaceUsers, teacherUsers, responseUsers, assignmentUsers ] = await Promise.all([
+      utils.getUsersFromWorkspaces(user), utils.getUsersFromTeacherSections(user), utils.getResponseUsers(user), utils.getAssignmentUsers(user)
     ]);
     if (isNonEmptyArray(workspaceUsers)) {
       filter.$or.push({ _id: {$in: workspaceUsers } });
@@ -142,6 +151,10 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
     if (isNonEmptyArray(responseUsers)) {
       filter.$or.push({ _id: {$in: responseUsers } });
+    }
+
+    if (isNonEmptyArray(assignmentUsers)) {
+      filter.$or.push({ _id: {$in: assignmentUsers } });
     }
 
     return filter;
@@ -274,44 +287,66 @@ const canGetUser = async function(user, id, username) {
   };
 };
 
-const modifiableUserCriteria = function(user) {
-  if (!user) {
-    return;
-  }
-  const accountType = user.accountType;
-  const actingRole = user.actingRole;
+const modifiableUserCriteria = async function(user, userIdToModify) {
+  try {
+    if (!user) {
+      return;
+    }
+    const accountType = user.accountType;
+    const actingRole = user.actingRole;
 
-  let filter = {
-    isTrashed: false
-  };
-  // students can only modify their own account
-  if (accountType === 'S' || actingRole === 'student') {
-    filter._id = user._id;
-    return filter;
-  }
+    let filter = {
+      isTrashed: false
+    };
 
-  if (accountType === 'A') {
-    return filter;
-  }
+    if (isValidMongoId(userIdToModify)) {
+      if (!filter.$and) {
+        filter.$and = [
+          { _id: userIdToModify }
+        ];
+      }
+    }
+    // students can only modify their own account
+    if (accountType === 'S' || actingRole === 'student') {
 
-  // pdAdmins can modify anyone in their organization
-  if (accountType === 'P') {
-    filter.organization = user.organization;
-    return filter;
-  }
-  // teachers can only modify themselves or students
-  // for now let teachers modify any students from their org
-  if (accountType === 'T') {
+      filter._id = user._id;
+      return filter;
+    }
+
+    if (accountType === 'A') {
+      return filter;
+    }
+
     filter.$or = [
-      { _id: user._id },
-      { $and: [
-        { organization: user.organization },
-        // { accountType: 'S' }
-      ]}
-
+      { _id: user._id }
     ];
-    return filter;
+
+    // teacher or pdadmin needs to be able to remove a user from one of their sections
+
+    let teacherSectionUsers = await utils.getUsersFromTeacherSections(user);
+
+    if (isNonEmptyArray(teacherSectionUsers)) {
+      filter.$or.push({
+        _id: { $in: teacherSectionUsers }
+      });
+    }
+    // pdAdmins can modify anyone in their organization
+    if (accountType === 'P') {
+      if (isValidMongoId(user.organization)) {
+        filter.$or.push({ organization: user.organization });
+
+      }
+      return filter;
+    }
+    // teachers can only modify themselves or users from their teacher sections
+    if (accountType === 'T') {
+      return filter;
+    }
+  }catch(err) {
+    console.error(`Error modifiableUserCriteria: ${err}`);
+    console.trace();
   }
+
 };
 
 const canModifyUser = async function(user, userIdToModify) {
@@ -328,15 +363,12 @@ const canModifyUser = async function(user, userIdToModify) {
   }
 
   // can always modify self
-  if (_.isEqual(id, userIdToModify)) {
+  if (areObjectIdsEqual(id, userIdToModify)) {
     return true;
   }
-  const criteria = await modifiableUserCriteria(user);
-  const modifiableUsers = await models.User.find(criteria, {_id: 1}).lean().exec();
-  const userIds = modifiableUsers.map(obj => obj._id.toString());
+  const criteria = await modifiableUserCriteria(user, userIdToModify );
 
-  return _.contains(userIds, userIdToModify);
-
+  return utils.doesRecordExist('User', criteria);
 };
 
 
