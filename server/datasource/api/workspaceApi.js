@@ -365,7 +365,7 @@ async function sendWorkspace(req, res, next) {
 
       accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
 
-      if (isNil(ws)) {
+      if (isNil(ws) || ws.isTrashed) {
         return utils.sendResponse(res, null);
       }
 
