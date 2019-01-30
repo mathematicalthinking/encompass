@@ -9,7 +9,7 @@
           </li>
           <li>
             <label for="problem">Problem</label>
-              {{#if canEdit}}
+              {{#if canEditProblem}}
                 {{twitter-typeahead sourceFunction=addProblemTypeahead placeholder="Start typing a problem title..." selectedValue=selectedProblem isAsync=true optionLabelPath="title"}}
               {{else}}
                 <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
@@ -17,7 +17,7 @@
             </li>
           <li>
             <label for="section">Section</label>
-            {{#if canEdit}}
+            {{#if canEditProblem}}
               {{my-select cannotBeNull=true selectedValue=selectedSection prompt="Select a section." content=sections optionLabelPath="name" action=(action (mut select)) isDisabled=isReadOnly}}
               {{input required=true type="hidden" value=selectedSection}}
             {{else}}

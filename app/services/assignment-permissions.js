@@ -17,7 +17,8 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
     if (this.get('base.isActingAdmin')) {
       return 4;
     }
-    if (this.get('base').isRecordInPdDomain(assignment)) {
+    // assignments do not have org field but section does
+    if (this.get('base').isRecordInPdDomain(section)) {
       return 3;
     }
 
@@ -61,13 +62,14 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
     }
   },
 
-  canEditProblem(assignment) {
+  canEditProblem(assignment, section) {
     if (this.get('base.isActingAdmin')) {
       return true;
     }
     if (this.haveAnswersBeenSubmitted(assignment)) {
       return false;
     }
+    return this.getPermissionsLevel(assignment, section) > 1;
   },
   canEditLinkedWorkspace(assignment) {
     if (this.get('base.isActingAdmin')) {
@@ -106,6 +108,7 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
 
   haveAnswersBeenSubmitted(assignment) {
     let answerIds = this.get('utils').getHasManyIds(assignment, 'answers');
+    console.log('answerIds', answerIds);
     return this.get('utils').isNonEmptyArray(answerIds);
   }
 

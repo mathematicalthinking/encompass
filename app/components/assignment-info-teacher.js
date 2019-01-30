@@ -100,16 +100,19 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isReadOnly: Ember.computed.not('canEdit'),
 
   canEditDueDate: function() {
-    return this.get('permissions').canEditDueDate(this.get('assignment'));
-  }.property('assignment', 'currentUser.actingRole'),
+    return this.get('hasBasicEditPrivileges');
+  }.property('hasBasicEditPrivileges'),
 
   canEditAssignedDate: function() {
     return this.get('permissions').canEditAssignedDate(this.get('assignment'));
   }.property('assignment.assignedDate'),
 
   canEditProblem: function() {
-    return this.get('permissions').canEditProblem(this.get('assignment'));
-  }.property('assignment.answers.[]'),
+    if (this.get('currentUser.isAdmin') && !this.get('currentUser.isStudent')) {
+      return true;
+    }
+    return this.get('sortedAnswers.length') === 0 && this.get('hasBasicEditPrivileges');
+  }.property('sortedAnswers.[]', 'hasBasicEditPrivileges', 'currentUser.actingRole'),
 
   hasBasicEditPrivileges: function() {
     return this.get('permissions').getPermissionsLevel(this.get('assignment'), this.get('section')) > 0;
