@@ -44,7 +44,7 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
       return false;
     }
 
-    let teacherIds = this.get('base').getHasManyIds(section, 'teacher');
+    let teacherIds = this.get('utils').getHasManyIds(section, 'teachers');
     if (!this.get('utils').isNonEmptyArray(teacherIds)) {
       return false;
     }

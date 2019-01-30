@@ -4,7 +4,6 @@ Encompass.EditPermissionsService = Ember.Service.extend(Encompass.CurrentUserMix
   user: Ember.computed.alias('currentUser'),
   userId: Ember.computed.alias('user.id'),
   userOrg: Ember.computed.alias('user.organization'),
-  userOrgId: Ember.computed.alias('userOrg.id'),
   accountType: Ember.computed.alias('user.accountType'),
   actingRole: Ember.computed.alias('user.actingRole'),
   isAdmin: Ember.computed.equal('accountType', 'A'),
@@ -12,6 +11,10 @@ Encompass.EditPermissionsService = Ember.Service.extend(Encompass.CurrentUserMix
   isTeacher: Ember.computed.equal('accountType', 'T'),
   isStudent: Ember.computed.equal('accountType', 'S'),
   isPseudoStudent: Ember.computed.equal('actingRole', 'S'),
+
+  userOrgId: function() {
+   return this.get('utils').getBelongsToId(this.get('user'), 'organization');
+  }.property('user'),
 
   isActingAdmin: function() {
     return !this.get('isPseudoStudent') && this.get('isAdmin');
@@ -28,11 +31,11 @@ Encompass.EditPermissionsService = Ember.Service.extend(Encompass.CurrentUserMix
     return this.get('utils').getBelongsToId(record, 'createdBy') === this.get('userId');
   },
 
-  doesRecordBelongToOrg(record, org=this.get('userOrg')) {
-    if (!record || !org) {
+  doesRecordBelongToOrg(record, orgId=this.get('userOrgId')) {
+    if (!record || !orgId) {
       return;
     }
-    return this.get('utils').getBelongsToId(record, 'organization') === this.get('userOrgId');
+    return this.get('utils').getBelongsToId(record, 'organization') === orgId;
   },
 
   isRecordInPdDomain(record) {

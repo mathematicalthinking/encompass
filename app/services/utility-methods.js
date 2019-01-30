@@ -21,16 +21,50 @@ isValidMongoId(val) {
 },
 getBelongsToId(record, relationshipName) {
   if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
-    return;
+    return null;
   }
+
+  let hasEachRelationship = 'eachRelationship' in record;
+  if (!hasEachRelationship) {
+    return null;
+  }
+
+  let hasRequestedRelationship = false;
+
+  record.eachRelationship((name, descriptor) => {
+  if (name === relationshipName) {
+    hasRequestedRelationship = true;
+  }
+});
+  if (!hasRequestedRelationship) {
+    return null;
+  }
+
   let ref = record.belongsTo(relationshipName);
+
   if (ref) {
     return ref.id();
   }
-  return;
+
+  return null;
 },
 getHasManyIds(record, relationshipName) {
   if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
+    return [];
+  }
+  let hasEachRelationship = 'eachRelationship' in record;
+  if (!hasEachRelationship) {
+    return [];
+  }
+
+  let hasRequestedRelationship = false;
+
+  record.eachRelationship((name, descriptor) => {
+  if (name === relationshipName) {
+    hasRequestedRelationship = true;
+  }
+});
+  if (!hasRequestedRelationship) {
     return [];
   }
 
