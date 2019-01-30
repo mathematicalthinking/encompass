@@ -12,6 +12,7 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   findRecordErrors: [],
   updateRecordErrors: [],
   alert: Ember.inject.service('sweet-alert'),
+  permissions: Ember.inject.service('assignment-permissions'),
 
   init: function() {
     this._super(...arguments);
@@ -86,12 +87,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   isClean: Ember.computed.not('isDirty'),
 
   canDelete: function() {
-    const isAdmin = this.get('currentUser.isAdmin');
-    const isClean = this.get('isClean');
-    const isYourOwn = this.get('isYourOwn');
-
-    return isAdmin || (isClean && isYourOwn);
-  }.property('isClean', 'isYourOwn'),
+    return this.get('permissions').canDelete(this.get('assignment'));
+  }.property('currentUser.actingRole', 'assignment.answers[]'),
 
   canEdit: function() {
     const isAdmin = this.get('currentUser.isAdmin');
@@ -101,6 +98,22 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     return isAdmin || (isClean && isYourOwn);
   }.property('isClean', 'isYourOwn'),
   isReadOnly: Ember.computed.not('canEdit'),
+
+  canEditDueDate: function() {
+    return this.get('permissions').canEditDueDate(this.get('assignment'));
+  }.property('assignment', 'currentUser.actingRole'),
+
+  canEditAssignedDate: function() {
+    return this.get('permissions').canEditAssignedDate(this.get('assignment'));
+  }.property('assignment.assignedDate'),
+
+  canEditProblem: function() {
+    return this.get('permissions').canEditProblem(this.get('assignment'));
+  }.property('assignment.answers.[]'),
+
+  hasBasicEditPrivileges: function() {
+    return this.get('permissions').getPermissionsLevel(this.get('assignment'), this.get('section')) > 0;
+  }.property('section.teachers.[]', 'currentUser.actingRole', 'assignment'),
 
   isBeforeAssignedDate: function() {
     // true if assignedDate is in future
@@ -137,6 +150,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     date.setHours(23, 59, 59);
     return date;
   },
+
+  showEditButton: function() {
+    return !this.get('isEditing') && this.get('hasBasicEditPrivileges');
+  }.property('hasBasicEditPrivileges', 'isEditing'),
 
   actions: {
     editAssignment: function() {

@@ -27,11 +27,19 @@
         </li>
         <li class="assignment-info">
           <label for="assignedDate">Assigned Date</label>
+          {{#if canEditAssignedDate}}
             {{input name="assignedDate" id="assignedDate" type="text" value=formattedAssignedDate disabled=true}}
+          {{else}}
+            <p class="assignment-info">{{#link-to 'problem' assignment.problem.id}}{{assignment.problem.title}}{{/link-to}}</p>
+          {{/if}}
         </li>
         <li class="assignment-info">
           <label for="dueDate">Due Date</label>
-          {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
+          {{#if canEditDueDate}}
+            {{input id="dueDate" name="daterange" type="text" value=formattedDueDate}}
+          {{else}}
+              <p class="assignment-info">{{format-date assignment.dueDate displayDateFormat}}</p>
+          {{/if}}
         </li>
         </ol>
       </fieldset>
@@ -79,7 +87,7 @@
         </ol>
       </fieldset>
     </section>
-    {{#if canEdit}}
+    {{#if showEditButton}}
       <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
     {{/if}}
   {{/if}}
