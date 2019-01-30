@@ -244,19 +244,7 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       }
       return [];
     }
-    // } else if (submissionsValue === 'userOnly') {
-    //   // filter for only submissions that have selectedUser as student
-    //   const subs = this.get('workspace.submissions.content');
-    //   const selectedUsername = this.get('selectedUser.username');
-    //   const selectedUserId = this.get('selectedUser.id');
-    //   if (subs) {
-    //     const filtered = subs.filter((sub) => {
-    //       return sub.get('creator.studentId') === selectedUserId|| sub.get('creator.username') === selectedUsername;
-    //     });
-    //     return filtered.mapBy('id');
-    //   }
 
-    // }
     return [];
   },
 
@@ -283,7 +271,6 @@ Encompass.WsPermissionsNewComponent = Ember.Component.extend({
       submissions: submissionOptions,
       global: globalSetting
     };
-
     if (globalSetting === 'viewOnly') {
       results.folders = 1;
       results.selections = 1;

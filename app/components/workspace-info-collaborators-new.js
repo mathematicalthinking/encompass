@@ -160,18 +160,6 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
       }
       return [];
     }
-    // } else if (submissionsValue === 'userOnly') {
-    //   // filter for only submissions that have selectedUser as student
-    //   const subs = this.get('workspace.submissions.content');
-    //   const selectedUsername = this.get('collabUser.username');
-    //   const selectedUserId = this.get('collabUser.id');
-    //   if (subs) {
-    //     const filtered = subs.filter((sub) => {
-    //       return sub.get('creator.studentId') === selectedUserId || sub.get('creator.username') === selectedUsername;
-    //     });
-    //     return filtered.mapBy('id');
-    //   }
-    // }
     return [];
   },
 
@@ -209,14 +197,6 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         submissions: { all: false, userOnly: false, submissionIds: [] },
       };
 
-      if (subValue === 'all') {
-        newObj.submissions.all = true;
-      } else if (subValue === 'userOnly') {
-        newObj.submissions.userOnly = true;
-      } else if (subValue === 'custom'){
-        newObj.submissions.submissionIds = this.get('customSubmissionIds');
-      }
-
       let globalSetting = this.get('globalPermissionValue');
 
       if (globalSetting === 'viewOnly') {
@@ -224,6 +204,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         newObj.selections = 1;
         newObj.comments = 1;
         newObj.feedback = 'none';
+        newObj.submissions.all = true;
 
       }
 
@@ -232,7 +213,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         newObj.selections = 4;
         newObj.comments = 4;
         newObj.feedback = 'none';
-
+        newObj.submissions.all = true;
       }
 
       if (globalSetting === 'indirectMentor') {
@@ -240,7 +221,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         newObj.selections = 2;
         newObj.comments = 2;
         newObj.feedback = 'authReq';
-
+        newObj.submissions.all = true;
       }
 
       if (globalSetting === 'directMentor') {
@@ -248,7 +229,7 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         newObj.selections = 2;
         newObj.comments = 2;
         newObj.feedback = 'preAuth';
-
+        newObj.submissions.all = true;
       }
 
       if (globalSetting === 'approver') {
@@ -256,13 +237,21 @@ Encompass.WorkspaceInfoCollaboratorsNewComponent = Ember.Component.extend(Encomp
         newObj.selections = 4;
         newObj.comments = 4;
         newObj.feedback = 'approver';
-
+        newObj.submissions.all = true;
       }
       if (globalSetting === 'custom') {
         newObj.selections = this.get('selections.value') || 0;
         newObj.folders = this.get('folders.value') || 0;
         newObj.comments = this.get('comments.value') || 0;
         newObj.feedback = this.get('feedback.value') || 'none';
+
+        if (subValue === 'all') {
+          newObj.submissions.all = true;
+        } else if (subValue === 'userOnly') {
+          newObj.submissions.userOnly = true;
+        } else if (subValue === 'custom'){
+          newObj.submissions.submissionIds = this.get('customSubmissionIds');
+        }
       }
       this.get('originalCollaborators').addObject(this.get('collabUser'));
 

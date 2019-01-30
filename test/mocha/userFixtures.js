@@ -215,7 +215,7 @@ const pdAdminDrexel = {
       _id: "5b99146e25b620610ceead75",
       username: "actingstudent",
     },
-    accessibleUserCount: 29,
+    accessibleUserCount: 31,
   },
   submissions: {
     accessibleSubmissionCount: 55,
