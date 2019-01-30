@@ -28,5 +28,16 @@ getBelongsToId(record, relationshipName) {
     return ref.id();
   }
   return;
+},
+getHasManyIds(record, relationshipName) {
+  if (!this.isNonEmptyObject(record) || !this.isNonEmptyString(relationshipName)) {
+    return [];
+  }
+
+  let ref = record.hasMany(relationshipName);
+  if (ref) {
+    return ref.ids();
+  }
+  return [];
 }
 });
