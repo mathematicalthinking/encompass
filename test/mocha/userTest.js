@@ -57,7 +57,7 @@ describe('User CRUD operations by account type', async function() {
           });
         });
       });
-      if (accountType !== 'A') {
+      if (accountType !== 'A' && accountType !== 'P') {
         /** GET **/
         describe('/GET unaccessible user by username', () => {
           it('should return 404 error', done => {
