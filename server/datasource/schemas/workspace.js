@@ -119,7 +119,6 @@ WorkspaceSchema.post('save', function (workspace) {
           $addToSet: { collabWorkspaces: workspace._id }
         }, {multi: true}, (err, affected, results) => {
           if (err) {throw new Error(err.message);}
-          console.log('updated user collab workspaces', affected, results);
         });
       }
     }
@@ -134,7 +133,6 @@ WorkspaceSchema.post('save', function (workspace) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('update linkedAssignment count: ', affected);
       });
     }
 });
