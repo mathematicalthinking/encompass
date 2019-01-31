@@ -2,12 +2,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   elementId: 'response-mentor-reply',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
-  iconFillOptions: {
-    approved: '#35A853',
-    pendingApproval: '#FFD204',
-    needsRevisions: '#EB5757',
-    superceded: '#9b59b6',
-  },
+
   isRevising: false,
   isFinishingDraft: false,
 
@@ -93,7 +88,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   }.property('isOwnMentorReply', 'canApprove', 'displayResponse.note'),
 
   canTrash: function() {
-    return this.get('displayResponse.status') === 'pendingApproval' && (this.get('isOwnMentorReply') || this.get('canApprove'));
+    let status = this.get('displayResponse.status');
+
+    return status === 'draft' || status === 'pendingApproval' && (this.get('isOwnMentorReply') || this.get('canApprove'));
   }.property('isOwnMentorReply', 'canApprove', 'displayResponse.status'),
   showTrash: function() {
     return this.get('canTrash') && !this.get('isComposing');
@@ -338,9 +335,10 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
         .then((saved) => {
           if(saved) {
             this.get('alert').showToast('success', 'Response Deleted', 'bottom-end', 3000, false, null);
-             this.get('toResponses')();
+
+            let prevResponse = this.get('sortedMentorReplies.lastObject') || null;
+            this.get('onSaveSuccess')(this.get('submission'), prevResponse);
           }
-          // just go to responses page for now?
         })
         .catch((err) => {
           this.handleErrors(err, 'recordSaveErrors', response);

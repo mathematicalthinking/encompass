@@ -166,7 +166,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var defaultPrefix = '         ';
     var prefix = defaultPrefix;
     var str = '';
-    var lines = [];
 
     if (opts && opts.hasOwnProperty('type')) {
       if (opts.usePrefix) {
