@@ -5,6 +5,7 @@ Encompass.ResponseStatusHelper = Ember.Helper.helper( function(args){
     'pendingApproval': 'Pending Approval',
     'needsRevisions': 'Needs Revisions',
     'superceded': 'Superceded',
+    'draft': 'Draft',
   };
   return statusMap[status];
 });
