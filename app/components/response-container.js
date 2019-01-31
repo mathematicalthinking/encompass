@@ -21,6 +21,15 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           }
         });
       }
+
+    if (this.get('primaryResponseType') === 'mentor') {
+      return this.get('response.priorRevision')
+      .then((revision) => {
+        if (!this.get('isDestroying') && !this.get('isDestroyed')) {
+          this.set('priorMentorRevision', revision);
+        }
+      });
+    }
       this.handleResponseViewAudit();
 
     this._super(...arguments);
