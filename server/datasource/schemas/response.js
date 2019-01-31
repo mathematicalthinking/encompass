@@ -25,14 +25,14 @@ var ResponseSchema = new Schema({
     workspace: {type:ObjectId, ref:'Workspace'},
     submission: {type:ObjectId, ref:'Submission'},
     responseType: {type: String, enum: ['mentor', 'approver', 'student', 'note', 'newRevisionNotice']},
-    status: { type: String, enum: ['approved', 'pendingApproval', 'needsRevisions', 'superceded'] },
+    status: { type: String, enum: ['approved', 'pendingApproval', 'needsRevisions', 'superceded', 'draft'] },
     priorRevision : {type: ObjectId, ref: 'Response'}, // previous mentor reply if responding to an approver reply
     reviewedResponse: {type: ObjectId, ref: 'Response'}, // mentor reply that was source of approver reply
     note: {type: String },
     approvedBy: { type: ObjectId, ref: 'User' },
     wasReadByRecipient: { type: Boolean, default: false },
     wasReadByApprover: { type: Boolean, default: false },
-    isApproverNoteOnly: { type: Boolean, default: false }
+    isApproverNoteOnly: { type: Boolean, default: false },
   }, {versionKey: false});
 
 /**
