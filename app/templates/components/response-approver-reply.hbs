@@ -34,12 +34,21 @@
       <div class="submit-buttons button-row">
         {{#if isRevisingApproverReply}}
           <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
+          <button {{action "saveReply" null true}} class="primary-button">Save as Draft</button>
           <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
         {{/if}}
         {{#if isComposingReply}}
           <button class="primary-button cancel-button" {{action "stopComposing"}}>Cancel</button>
-          <button {{action "saveReply" 'needsRevisions'}} class="primary-button">Needs Revisions</button>
+          <button {{action "saveReply" null true}} class="primary-button">Save as Draft</button>
+          <button {{action "saveReply" 'needsRevisions'}}
+          class="primary-button">Needs Revisions</button>
           <button {{action "saveReply" 'approved'}} class="primary-button">Approve</button>
+        {{/if}}
+        {{#if isFinishingDraft}}
+          <button {{action "stopDraft"}} class="primary-button cancel-button">Cancel</button>
+          <button {{action "saveDraft" 'draft'}} class="primary-button">Save as Draft</button>
+          <button {{action "saveDraft" 'needsRevisions'}} class="primary-button">Needs Revisions</button>
+          <button {{action "saveDraft" 'approved'}} class="primary-button">Approve</button>
         {{/if}}
       </div>
     </div>
@@ -75,6 +84,16 @@
         <span class="reply-value recipient">{{displayReply.recipient.username}}</span>
       </p>
     </div>
+    {{#if isDraft}}
+      <p class="response-status">
+        <svg height="20" width="20">
+          <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
+        </svg>
+        <span class="status-text">
+          {{response-status displayReply.status}}
+        </span>
+      </p>
+    {{/if}}
     <p class="reply-header">
       Message
       {{#if showApproverEdit}}
@@ -95,6 +114,9 @@
     <div class="display-reply-actions">
       {{#if showApproverRevise}}
         <button class="primary-button" {{action "startRevising"}}>Revise</button>
+      {{/if}}
+      {{#if showResumeDraft}}
+        <button {{action 'resumeDraft'}} class="primary-button">Resume Draft</button>
       {{/if}}
       {{#if showTrash}}
         <i {{action 'confirmTrash' displayReply}} class="fas fa-trash"></i>

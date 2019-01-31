@@ -7,6 +7,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
 
+  statusIconFill: function () {
+    let status = this.get('displayReply.status');
+    return this.get('iconFillOptions')[status];
+  }.property('displayReply.status'),
+
   didReceiveAttrs() {
     if (!this.get('approverReplies.length') > 0 ) {
       this.set('replyToView', null);
@@ -23,6 +28,10 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
+
+  isDraft: function() {
+    return this.get('displayReply.status') === 'draft';
+  }.property('displayReply.status'),
 
   sortedApproverReplies: function() {
     if (!this.get('approverReplies')) {
@@ -44,9 +53,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   showApprove: function() {
     return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
+
   showCompose: function() {
     return this.get('responseToApprove.status') !== 'approved';
   }.property('responseToApprove.status'),
+
   showEdit: function() {
     return this.get('responseToApprove.status') === 'pendingApproval';
   }.property('responseToApprove.status'),
@@ -62,18 +73,24 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('isOwnDisplayReply'),
 
   showApproverEdit: function() {
-    return this.get('canEditApproverReply') && !this.get('isRevisingApproverReply') && !this.get('isEditingApproverReply');
-  }.property('canEditApproverReply', 'isRevisingApproverReply', 'isEditingApproverReply'),
+    return this.get('canEditApproverReply') && !this.get('isRevisingApproverReply') && !this.get('isEditingApproverReply') && !this.get('isFinishingDraft');
+  }.property('canEditApproverReply', 'isRevisingApproverReply', 'isEditingApproverReply', 'isFinishingDraft'),
+
   showApproverRevise: function() {
-    return this.get('canReviseApproverReply') && !this.get('isRevisingApproverReply') && !this.get('isEditingApproverReply');
-  }.property('canReviseApproverReply', 'isRevisingApproverReply', 'isEditingApproverReply'),
+    return this.get('canReviseApproverReply') && !this.get('isDraft') && !this.get('showReplyInput');
+  }.property('canReviseApproverReply', 'showReplyInput', 'isDraft'),
+
+  showResumeDraft: function() {
+    return this.get('isOwnDisplayReply') && this.get('isDraft') && !this.get('showReplyInput');
+  }.property('isOwnDisplayReply', 'isDraft', 'showReplyInput'),
+
   isOwnDisplayReply: function() {
     return this.get('currentUser.id') === this.get('displayReply.createdBy.id');
   }.property('currentUser', 'displayReply'),
 
   showReplyInput: function() {
-    return this.get('isEditingApproverReply') || this.get('isRevisingApproverReply') || this.get('isComposingReply');
-  }.property('isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'),
+    return this.get('isEditingApproverReply') || this.get('isRevisingApproverReply') || this.get('isComposingReply') || this.get('isFinishingDraft');
+  }.property('isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply', 'isFinishingDraft'),
 
   showDisplayReplyActions: function () {
     return !this.get('showReplyInput');
@@ -114,7 +131,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('editRevisionText', '');
     },
     cancelReply() {
-      let props = ['isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply'];
+      let props = ['isEditingApproverReply', 'isRevisingApproverReply', 'isComposingReply', 'isFinishingDraft'];
       props.forEach((prop) => {
         if (this.get(prop)) {
           this.set(prop, false);
@@ -150,9 +167,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     },
 
-    saveReply(newStatus) {
+    saveReply(newStatus, isDraft) {
       this.removeMessages(['saveRecordErrors','emptyReplyError']);
-
       let text = this.get('editRevisionText');
 
       if (typeof text !== 'string' || text.trim().length === 0) {
@@ -162,38 +178,48 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
       let trimmed = text.trim();
 
+      let replyStatus = 'approved';
+      let toastMessage = 'Reply Sent';
+
+      if (isDraft) {
+        replyStatus = 'draft';
+        toastMessage = 'Draft Saved';
+      }
       let record = this.get('store').createRecord('response', {
         recipient: this.get('responseToApprove.createdBy.content'),
         createdBy: this.get('currentUser'),
         submission: this.get('submission'),
         workspace: this.get('workspace'),
-        status: 'approved',
+        status: replyStatus,
         responseType: 'approver',
         source: 'submission',
         reviewedResponse: this.get('responseToApprove') || this.get('reviewedResponse'),
         text: trimmed
       });
 
-      this.get('responseToApprove').set('status', newStatus);
-
-      if (newStatus === 'approved') {
-        this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
-        record.set('isApproverNoteOnly', true);
-      }
-
-      return Ember.RSVP.hash({
+      let hash = {
         newReply: record.save(),
-        updatedReply: this.get('responseToApprove').save()
-      })
+      };
+
+
+      if (!isDraft) {
+        this.get('responseToApprove').set('status', newStatus);
+        if (newStatus === 'approved') {
+          this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+          record.set('isApproverNoteOnly', true);
+        }
+        hash.updatedReply = this.get('responseToApprove').save();
+      }
+    return Ember.RSVP.hash(hash)
     .then((hash) => {
       if (!hash) {
         return;
       }
       this.send('cancelReply');
 
-      this.get('approverReplies').addObject(hash.newReply);
+      this.get('subResponses').addObject(hash.newReply);
       this.set('replyToView', hash.newReply);
-      this.get('alert').showToast('success', 'Reply Sent', 'bottom-end', 3000, false, null);
+      this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
     })
     .catch((err) => {
       this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('repsonseToApprove')]);
@@ -229,6 +255,76 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.removeMessages(['saveRecordErrors','emptyReplyError']);
 
     },
+    resumeDraft() {
+      this.set('editRevisionText', this.get('displayReply.text'));
+
+      this.set('isFinishingDraft', true);
+    },
+
+    stopDraft() {
+      this.set('isFinishingDraft', false);
+
+      this.set('editRevisionText', '');
+      this.set('editRevisionNote', '');
+
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+    },
+
+    saveDraft(newStatus) {
+      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+
+      let oldMessageBody = this.get('displayReply.text');
+      let messageBody = this.get('editRevisionText');
+
+      if (!messageBody || messageBody.length === 0) {
+        this.set('emptyReplyError', true);
+        return;
+      }
+      // if they clicked Needs Revisions or Approve, there are changes
+      if (newStatus === 'draft') {
+        if (oldMessageBody === messageBody) {
+          this.get('alert').showToast('info', 'No changes to save', 'bottom-end', 3000, false, null);
+          this.set('isFinishingDraft', false);
+          this.set('editRevisionText', '');
+
+          return;
+        }
+      }
+
+      this.get('displayReply').set('text', messageBody);
+
+      let isDraft = newStatus === 'draft';
+      let toastMessage = 'Draft Saved';
+
+      if (!isDraft) {
+        toastMessage = 'Reply Sent';
+        this.get('responseToApprove').set('status', newStatus);
+        this.get('displayReply').set('status', 'approved');
+        if (newStatus === 'approved') {
+          this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+          this.get('displayReply').set('isApproverNoteOnly', true);
+        }
+      }
+
+      let hash = {
+        newReply: this.get('displayReply').save()
+      };
+
+      if (!isDraft) {
+        hash.updatedResponse = this.get('responseToApprove').save();
+      }
+
+    Ember.RSVP.hash(hash)
+      .then((hash) => {
+        this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
+        this.set('isFinishingDraft', false);
+        this.set('editRevisionText', '');
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
+      });
+    },
+
     saveEdit() {
       this.removeMessages(['saveRecordErrors','emptyReplyError']);
 
@@ -302,7 +398,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
           this.set('isRevisingApproverReply', false);
           this.set('editRevisionText', '');
-          this.get('approverReplies').addObject(saved);
+          this.get('subResponses').addObject(saved);
         })
         .catch((err) => {
           this.handleErrors(err, 'saveRecordErrors', revision);
@@ -323,9 +419,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         .then((saved) => {
           if(saved) {
             this.get('alert').showToast('success', 'Response Deleted', 'bottom-end', 3000, false, null);
-             this.get('toResponses')();
+            this.set('replyToView', null);
           }
-          // just go to responses page for now?
         })
         .catch((err) => {
           this.handleErrors(err, 'recordSaveErrors', response);

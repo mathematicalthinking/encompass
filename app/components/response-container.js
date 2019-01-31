@@ -9,6 +9,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   areMentorReplies: Ember.computed.gt('mentorReplies.length', 0),
 
   didReceiveAttrs() {
+    this.set('subResponses', this.get('responses'));
     if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
       return;
@@ -33,6 +34,14 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       this.handleResponseViewAudit();
 
     this._super(...arguments);
+  },
+
+  iconFillOptions: {
+    approved: '#35A853',
+    pendingApproval: '#FFD204',
+    needsRevisions: '#EB5757',
+    superceded: '#9b59b6',
+    draft: '#778899'
   },
 
   handleResponseViewAudit() {
@@ -62,7 +71,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   nonTrashedResponses: function() {
     return this.get('responses')
       .rejectBy('isTrashed');
-  }.property('responses.@each.isTrashed'),
+  }.property('subResponses.@each.isTrashed'),
 
   approverReplies: function() {
     let reviewedResponseId;
@@ -188,7 +197,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   actions: {
     onSaveSuccess(submission, response) {
-      this.sendAction('toResponse', submission.get('id'), response.get('id'));
+      let responseId = !response ? null : response.get('id');
+      this.sendAction('toResponse', submission.get('id'), responseId);
     },
     onMentorReplySwitch(response) {
       let subId = response.belongsTo('submission').id();

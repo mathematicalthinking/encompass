@@ -41,7 +41,7 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
 
       let associatedResponses = this.modelFor('responses').filter((response) => {
         let subId = response.belongsTo('submission').id();
-        return subId === hash.submission.get('id');
+        return response.get('id') && !response.get('isTrashed') && subId === hash.submission.get('id');
       });
       let response = this.get('response');
       if (!this.get('response')) {
