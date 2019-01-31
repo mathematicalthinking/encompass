@@ -14,12 +14,54 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   areNoResponses: Ember.computed.not('areDisplayResponses'),
   noResponsesMessage: 'No responses found',
 
+  showStudentColumn: Ember.computed.equal('isShowMentoring', true),
+
   statusMap: {
     'approved': 'APPROVED',
     'pendingApproval': 'PENDING APPROVAL',
     'needsRevisions': 'NEEDS REVISIONS',
     'superceded': 'SUPERCEDED',
   },
+
+  submitterThreads: function() {
+    let hash = {};
+    this.get('submitterResponses').forEach((response) => {
+      let subId = this.get('utils').getBelongsToId(response, 'submission');
+      if (!hash[subId]) {
+        hash[subId] = [response];
+      } else {
+        hash[subId].addObject(response);
+      }
+    });
+    return hash;
+  }.property('submitterResponses.[]'),
+
+  mentoringThreads: function() {
+    let hash = {};
+    this.get('mentoringResponses').forEach((response) => {
+      let subId = this.get('utils').getBelongsToId(response, 'submission');
+      if (!hash[subId]) {
+        hash[subId] = [response];
+      } else {
+        hash[subId].addObject(response);
+      }
+    });
+    return hash;
+  }.property('mentoringResponses.[]'),
+
+  approvingThreads: function() {
+    let hash = {};
+    this.get('approvingResponses').forEach((response) => {
+      let subId = this.get('utils').getBelongsToId(response, 'submission');
+      if (!hash[subId]) {
+        hash[subId] = [response];
+      } else {
+        hash[subId].addObject(response);
+      }
+    });
+    return hash;
+  }.property('approvingResponses.[]'),
+
 
   areAnyActionItems: function() {
     return this.get('submitterActions.length') > 0 || this.get('mentoringActionItems.length') > 0 || this.get('approvingActionItems.length') > 0;
@@ -166,7 +208,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     return this.get('nonTrashedResponses').filter((response) => {
       let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
       let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
-
       let isByYou = creatorId === this.get('currentUser.id');
       let isToYou = recipientId === this.get('currentUser.id');
 
@@ -188,13 +229,11 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let isToYou = recipientId === this.get('currentUser.id');
 
       let wasApprovedByYou = approvedById === this.get('currentUser.id');
-
       let isYourApproverReply = isByYou && response.get('responseType') === 'approver';
       let needsApproval = response.get('status') === 'pendingApproval';
-      let isReplyToApprove = !isByYou && needsApproval;
-      // show responses you approved?
+      let isReplyToApprove = (!isToYou && !isByYou) && needsApproval;
 
-      return isYourApproverReply || isReplyToApprove;
+      return isReplyToApprove || isYourApproverReply || wasApprovedByYou;
     });
   }.property('nonTrashedResponses.[]', 'currentUser'),
 
@@ -269,6 +308,15 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
         return 1;
       }
 
+      let isADraft = a.get('status') === 'draft';
+      let isBDraft = b.get('status') === 'draft';
+
+      if (isADraft && !isBDraft) {
+        return -1;
+      }
+      if (isBDraft && !isADraft) {
+        return 1;
+      }
       // both unread or both read , sort  by pending first
 
       let isAPendingApproval = a.get('status') === 'pendingApproval';
@@ -304,18 +352,31 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let isAUnread = this.isResponseUnread(a, this.get('currentUser.id'));
       let isBUnread = this.isResponseUnread(b, this.get('currentUser.id'));
 
+      let isANoteOnly = a.get('isApproverNoteOnly');
+      let isBNoteOnly = b.get('isApproverNoteOnly');
+
+      let doesANeedsRevisions = a.get('status') === 'needsRevisions';
+      let doesBNeedRevisions = b.get('status') === 'needsRevisions';
+
+      let isADraft = a.get('status') === 'draft';
+      let isBDraft = b.get('status') === 'draft';
+
       if (isAUnread && !isBUnread) {
+        // sort action items before unread notes
+        if (isANoteOnly && (doesBNeedRevisions || isBDraft)) {
+          return 1;
+        }
         return -1;
       }
 
       if (isBUnread && !isAUnread) {
+        if (isBNoteOnly && (doesANeedsRevisions || isADraft)) {
+          return -1;
+        }
         return 1;
       }
 
       // both unread or both read , sort needsRevisiosn first
-
-      let doesANeedsRevisions = a.get('status') === 'needsRevisions';
-      let doesBNeedRevisions = b.get('status') === 'needsRevisions';
 
       if (doesANeedsRevisions && !doesBNeedRevisions) {
         return -1;
