@@ -59,24 +59,20 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     // can access direct feedback addressed to user only if status is approved
       orFilter.$or.push({
         recipient: user._id,
+        status: { $nin: ['superceded', 'draft'] },
         $or: [
           { status: 'approved' },
-          { responseType: 'approver', status: { $ne: 'superceded' } }
+          { responseType: 'approver' }
         ]
       });
 
       orFilter.$or.push({ createdBy: user._id });
 
-      let [ mentorWorkspaceIds, approverWorkspaceIds ] = await utils.getCollabFeedbackWorkspaceIds(user);
+      let [mentorWorkspaceIds, approverWorkspaceIds ] = await utils.getCollabFeedbackWorkspaceIds(user);
 
-      if (isNonEmptyArray(mentorWorkspaceIds)) {
-        orFilter.$or.push({ workspace: {$in: mentorWorkspaceIds }, responseType: 'mentor', status: 'approved'});
-      }
       if (isNonEmptyArray(approverWorkspaceIds)) {
-        orFilter.$or.push({workspace: {$in: approverWorkspaceIds}});
+        orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
       }
-
-
 
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
     if (isNonEmptyArray(restrictedRecords)) {
@@ -100,7 +96,8 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
         const userIds = await utils.getModelIds('User', {organization: userOrg});
 
         orFilter.$or.push({createdBy : {$in : userIds}});
-        orFilter.$or.push({recipient: {$in: userIds}});
+        // shouldn't be seeing drafts addressed to their own account
+        orFilter.$or.push({$and: [ {recipient: {$ne: user._id }}, {recipient: {$in: userIds}} ]});
       }
 
       filter.$and.push(orFilter);
