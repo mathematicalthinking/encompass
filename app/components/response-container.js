@@ -50,8 +50,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     let notifications = this.get('notifications') || [];
 
     let newSubNotification = notifications.find((ntf) => {
-      let recipientId = this.get('utils').getBelongstoId(ntf, 'recipient');
-      let newSubId = this.get('utils').getBelongstoId(ntf, 'newSubmission');
+      let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
+      let newSubId = this.get('utils').getBelongsToId(ntf, 'newSubmission');
       let ntfType = ntf.get('notificationType');
 
       return ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id') && newSubId === this.get('submission.id');

@@ -43,17 +43,177 @@
       background: darken($accent-yellow, 5%)
     }
   }
-  table {
-    width: 100%;
-    position: relative;
-    top: 70px;
-    .top-row {
-      border-bottom: 1px solid #d3d3d3;
-      line-height: 50px;
+
+  .no-results-container {
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 20px;
+    .info {
+      font-size: 1.4em;
+      margin: 50px 0 40px 0;
     }
-    tr.unread {
-      td {
-        font-weight: $bolder-font-weight
+  }
+  .list-container {
+    .top-row {
+      width: 100%;
+      height: 42px;
+      @include flex-container(null, null, row, row, center, center, center);
+    }
+    .heading {
+      @include flex-item(1, center, 1 0 auto);
+      margin-top: 0;
+    }
+    .action {
+      @include flex-item(2, stretch, 1 0 auto);
+      max-width: 180px;
+      button {
+        width: 100%;
+        margin: 0;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+
+  .results-list {
+    .results-icons {
+      i {
+        margin-right: 5px;
+      }
+      .icon-message {
+        font-weight: $light-font-weight;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+    }
+    .side-icons {
+      width: 220px;
+      @include flex-container(auto, null, row, nowrap, flex-end, center, center);
+      #my-select {
+        width: 100%;
+        margin-right: 30px;
+        select {
+          height: 30px;
+          font-size: 1em;
+          border: none;
+          text-indent: 5px;
+          background: none;
+          width: 100%;
+          max-width: 130px;
+          text-align-last: left;
+          margin: 0 auto;
+          text-transform: capitalize;
+          color: black;
+          background: url(/images/caret-down.svg) no-repeat right;
+          background-size: 12px;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+    .results-items {
+      .sort-bar-item, .item-section {
+        font-size: .8em;
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        // border: 1px solid red;
+        .fa-minus, .fa-arrow-up, .fa-arrow-down, .fa-filter {
+          font-size: .7em;
+          position: relative;
+          top: -1px;
+        }
+        &:hover {
+          cursor: pointer;
+          color: black;
+        }
+        &.student {
+          @include flex-item(1, start, .08 0 auto);
+          width: 8%;
+          vertical-align: top;
+        }
+        &.submission-date {
+          @include flex-item(2, start, .10 0 auto);
+          width: 10%;
+        }
+        &.problem {
+          @include flex-item(3, start, .20 0 auto);
+          width: 20%;
+        }
+        &.brief-summary {
+          @include flex-item(4, start, .30 0 auto);
+          width: 30%;
+          text-align: left;
+        }
+        &.mentor {
+          @include flex-item(5, start, .08 0 auto);
+          width: 8%;
+          vertical-align: top;
+        }
+        &.reply-date {
+          @include flex-item(6, start, .10 0 auto);
+          width: 10%;
+        }
+        &.flags {
+          @include flex-item(7, start, .12 0 auto);
+          width: 12%;
+        }
+        &.more {
+          @include flex-item(8, start, .01 0 auto);
+          width: 2%;
+        }
+      }
+      .item-section {
+        font-size: 1em;
+        &:hover {
+          cursor: default;
+          color: $primary-font-color;
+        }
+      }
+    }
+  }
+
+  .response-submission-thread {
+    .item-container {
+      cursor: pointer;
+    }
+    .has-unread-reply {
+      font-weight: $bolder-font-weight;
+    }
+    div.item-section.flags {
+      span {
+        border-radius: 20px;
+        padding: 10px;
+        text-align: center;
+
+        &.pending-approval {
+          background-color: #FFD204;
+        }
+        &.needs-revisions {
+          background-color: #EB5757;
+          color: $background-color;
+        }
+        &.unfinished-draft {
+          background-color: #778899;
+          color: $background-color
+        }
+        &.no-action-needed {
+          background-color: #35A853;
+          color: $background-color;
+        }
+        &.unread {
+          background-color: $accent-color;
+          color: $background-color;
+        }
+        &.new-revision {
+          background-color: $accent-color;
+          color: $background-color;
+        }
       }
     }
   }

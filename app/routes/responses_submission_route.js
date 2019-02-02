@@ -8,8 +8,10 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
 
   beforeModel(transition) {
     let responseId = transition.queryParams.responseId;
+    let responsesModel = this.modelFor('responses');
+
     if (this.get('utils').isValidMongoId(responseId)) {
-      this.set('response', this.modelFor('responses').findBy('id', responseId));
+      this.set('response', responsesModel.responses.findBy('id', responseId));
     } else {
       this.set('response', null);
     }
@@ -19,6 +21,9 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
     if (!params.submission_id) {
       return null;
     }
+    let user = this.modelFor('application');
+
+    let responsesModel = this.modelFor('responses');
 
     return this.get('store').findRecord('submission', params.submission_id)
     .then((submission) => {
@@ -34,15 +39,17 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         submission: hash.submission,
         workspace: hash.workspace,
         submissions: hash.workspace.get('submissions'),
+        notifications: user.get('notifications'),
       });
     })
     .then((hash) => {
       let studentSubmissions = hash.submissions.filterBy('student', hash.submission.get('student'));
 
-      let associatedResponses = this.modelFor('responses').filter((response) => {
+      let associatedResponses = responsesModel.responses.filter((response) => {
         let subId = response.belongsTo('submission').id();
         return response.get('id') && !response.get('isTrashed') && subId === hash.submission.get('id');
       });
+
       let response = this.get('response');
       if (!this.get('response')) {
         response = associatedResponses
@@ -56,6 +63,7 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         submissions: studentSubmissions,
         responses: associatedResponses,
         response: response,
+        notifications: hash.notifications
       };
 
     });

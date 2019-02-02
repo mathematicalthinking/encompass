@@ -1,0 +1,56 @@
+<div {{action 'toSubmissionResponse'}} class="item-container {{if isUnreadReply "has-unread-reply"}}" id="container">
+  {{#if showStudent}}
+    <div class="item-section student">
+        {{submission.student}}
+    </div>
+  {{/if}}
+  <div class="item-section submission-date">
+    <span>{{format-date submission.createDate 'L'}}</span>
+  </div>
+  <div class="item-section problem">
+    {{submission.answer.problem.title}}
+  </div>
+  <div class="item-section brief-summary">
+      {{{submission.answer.answer}}}
+  </div>
+  {{#if showMentor}}
+    <div class="item-section mentor">
+      {{#each submissionMentors as |mentor|}}
+      <span>{{mentor.displayName}}</span>
+      {{/each}}
+    </div>
+  {{/if}}
+  <div class="item-section reply-date">
+    <span>{{format-date newestResponse.createDate 'L'}}</span>
+  </div>
+  <div class="item-section flags">
+    {{#if isUnreadReply}}
+      <span class="unread">Unread Reply</span>
+    {{/if}}
+    {{#if inNeedOfRevisions}}
+      <span class="needs-revisions">Needs Revisions</span>
+    {{/if}}
+    {{#if waitingForApproval}}
+      <span class="pending-approval">Pending Approval</span>
+    {{/if}}
+    {{#if isUnfinishedDraft}}
+      <span class="unfinished-draft">Unfinished Draft</span>
+    {{/if}}
+    {{#if isNew}}
+      <span class="new-revision">New Submission</span>
+    {{/if}}
+    {{#if isNoActionNeeded}}
+      <span class="no-action-needed">Up to Date</span>
+    {{/if}}
+  </div>
+</div>
+
+<script>
+  $('.item-container').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+
+  $('.flex-item-full').click(function (e) {
+    $('.click-menu').addClass('hidden');
+  });
+</script>

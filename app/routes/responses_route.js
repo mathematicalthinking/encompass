@@ -1,17 +1,27 @@
-Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend({
-
+Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.CurrentUserMixin, {
   model: function(){
-    var responses = this.get('store').findAll('response');
-    return responses;
-    // var route = this;
-    // var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-    //   route.store.findAll('response').then( function(responses){
-    //     var filteredResponses = responses.filterBy( 'persisted', true );
-    //     resolve( filteredResponses );
-    //   });
-    // });
+    let currentUser = this.modelFor('application');
 
-    // return promise;
+    return Ember.RSVP.hash({
+      notifications: currentUser.get('notifications'),
+      responses: this.get('store').findAll('response'),
+    })
+    .then((hash) => {
+      let newWorkToMentorNotifications = hash.notifications.filterBy('notificationType', 'newWorkToMentor');
+
+      return Ember.RSVP.hash({
+        responses: hash.responses,
+        notifications: hash.notifications,
+        newSubmissions: Ember.RSVP.all(newWorkToMentorNotifications.mapBy('newSubmission')),
+        responseSubmissions: Ember.RSVP.all(hash.responses.mapBy('submission'))
+      });
+    });
+
+  },
+  actions: {
+    toSubmissionResponse(subId) {
+      this.transitionTo('responses.submission', subId);
+    }
   }
 });
 
