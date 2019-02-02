@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.UserNotificationsMixin, {
+Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'responses-list',
 
   utils: Ember.inject.service('utility-methods'),
@@ -129,7 +129,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
     return hash;
 
-  }.property('nonTrashedResponses.[]', 'responseNotifications.[]', 'responseSubmissions.[]', 'newSubmissions.[]'),
+  }.property('nonTrashedResponses.[]', 'responseSubmissions.[]', 'newSubmissions.[]'),
 
   allThreads: function() {
     return Object.values(this.get('submissionThreads'));
