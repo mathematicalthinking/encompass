@@ -7,9 +7,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   isCreatingNewMentorReply: false,
   areMentorReplies: Ember.computed.gt('mentorReplies.length', 0),
+  utils: Ember.inject.service('utility-methods'),
 
   didReceiveAttrs() {
     this.set('subResponses', this.get('responses'));
+    this.handleResponseViewAudit();
+
     if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
       return;
@@ -31,7 +34,6 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
         }
       });
     }
-      this.handleResponseViewAudit();
 
     this._super(...arguments);
   },
@@ -45,6 +47,21 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   },
 
   handleResponseViewAudit() {
+    let notifications = this.get('notifications') || [];
+
+    let newSubNotification = notifications.find((ntf) => {
+      let recipientId = this.get('utils').getBelongstoId(ntf, 'recipient');
+      let newSubId = this.get('utils').getBelongstoId(ntf, 'newSubmission');
+      let ntfType = ntf.get('notificationType');
+
+      return ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id') && newSubId === this.get('submission.id');
+    });
+
+    if (newSubNotification && !newSubNotification.get('wasSeen')) {
+      newSubNotification.set('wasSeen', true);
+      newSubNotification.save();
+    }
+
     if (this.get('isPrimaryRecipient')) {
       if (!this.get('response.wasReadByRecipient')) {
         this.get('response').set('wasReadByRecipient', true);
@@ -195,6 +212,12 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     return this.get('workspace.feedbackAuthorizers');
   }.property('workspace.feedbackAuthorizers.[]'),
 
+  existingSubmissionMentors: function() {
+    return this.get('mentorReplies')
+      .mapBy('createdBy.content')
+      .uniqBy('id');
+  }.property('mentorReplies.@each.createdBy'),
+
   actions: {
     onSaveSuccess(submission, response) {
       let responseId = !response ? null : response.get('id');
@@ -223,5 +246,25 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     toNewResponse: function() {
       this.sendAction('toNewResponse', this.get('submission.id', this.get('workspace.id')));
     },
+
+    sendSubmissionRevisionNotices(oldSub, newSub) {
+      if (!this.get('existingSubmissionMentors')) {
+        return;
+      }
+      // just send out from here for now
+      // should find better way to do in post save hook on backend
+
+      this.get('existingSubmissionMentors').forEach((user) => {
+        let notification = this.get('store').createRecord('notification', {
+          createdBy: this.get('currentUser'),
+          recipient: user,
+          notificationType: 'newWorkToMentor',
+          primaryRecordType: 'response',
+          newSubmission: newSub,
+          oldSubmission: oldSub
+        });
+        notification.save();
+      });
+    }
   }
 });

@@ -98,6 +98,7 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
       .then((sub) => {
         if (!this.get('isDestroyed') && !this.get('isDestroying')) {
           this.send('cancelRevising');
+          this.get('sendRevisionNotices')(this.get('submission'), sub);
           this.get('onSubChange')(sub);
         }
       })
