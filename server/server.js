@@ -207,6 +207,8 @@ server.get('/api/images', api.get.images);
 server.get('/api/images/:id', path.validateId(), api.get.image);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
+server.get('/api/notifications', api.get.notifications);
+server.get('/api/notifications/:id', path.validateId(), api.get.notification);
 
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
@@ -227,6 +229,7 @@ server.post('/api/encWorkspaceRequests', api.post.workspaceEnc);
 server.post('/api/copyWorkspaceRequests', api.post.cloneWorkspace);
 server.post('/api/folderSets', api.post.folderSet);
 server.post('/api/updateWorkspaceRequests', api.post.updateWorkspaceRequest);
+server.post('/api/notifications', api.post.notification);
 
 
 //ALL PUT REQUESTS
@@ -255,6 +258,7 @@ server.put('/api/sections/addProblem/:id', path.validateId(), api.put.section.ad
 server.put('/api/sections/removeProblem/:id', path.validateId(), api.put.section.removeProblem);
 server.put('/api/organizations/:id', path.validateId(), api.put.organization);
 server.put('/api/assignments/:id', path.validateId(), api.put.assignment);
+server.put('/api/notifications/:id', path.validateId(), api.put.notification);
 
 //ALL DELETE REQUESTS
 server.delete('/api/images/:id', path.validateId(), api.delete.image);
