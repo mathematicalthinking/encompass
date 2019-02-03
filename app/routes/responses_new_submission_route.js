@@ -45,6 +45,9 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
   model: function(params){
     let submission;
 
+    let isDraft = false;
+    let draftId = null;
+
     let responsesModel = this.modelFor('responses');
     let user = this.modelFor('application');
 
@@ -55,9 +58,24 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
       })
       .then((workspace) => {
         let associatedResponses = responsesModel.responses.filter((response) => {
+          let creatorId = response.belongsTo('createdBy').id();
+          let status = response.get('status');
           let subId = response.belongsTo('submission').id();
+
+          if (status === 'draft' && subId === submission.get('id') && creatorId === user.get('id')) {
+            isDraft = true;
+            draftId = response.get('id');
+          }
           return subId === submission.get('id');
         });
+
+        if (isDraft) {
+          return Ember.RSVP.hash({
+            isDraft: true,
+            submissionId: submission.get('id'),
+            responseId: draftId,
+          });
+        }
 
         return Ember.RSVP.hash({
           submission,
@@ -71,6 +89,9 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         });
       })
       .then((hash) => {
+        if (hash.isDraft) {
+          return hash;
+        }
         let studentSubmissions = hash.submissions.filterBy('student', hash.submission.get('student'));
 
         let response = this.get('store').createRecord('response', {
@@ -93,6 +114,11 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         };
       });
 
+  },
+
+  afterModel(model, transition) {
+    if (model.isDraft) {
+      this.transitionTo('responses.submission', model.submissionId, {queryParams: {responseId: model.responseId} });    }
   },
   actions: {
     toResponse(submissionId, responseId) {
