@@ -222,7 +222,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
     })
     .catch((err) => {
-      this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('repsonseToApprove')]);
+      this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('responseToApprove')]);
     });
   },
     setReplyToView(response) {

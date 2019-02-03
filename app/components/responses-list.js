@@ -135,6 +135,97 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     return Object.values(this.get('submissionThreads'));
   }.property('submissionThreads'),
 
+  sortedAllThreads: function() {
+    return this.get('allThreads').sort((a, b) => {
+      let aResponses = a.responses;
+      let bResponses = b.responses;
+
+      let doesAHaveUnreadReply = this.doesHaveUnreadReply(aResponses);
+      let doesBHaveUnreadReply = this.doesHaveUnreadReply(bResponses);
+
+      let isANew = a.isNew;
+      let isBNew = b.isNew;
+
+      let doesANeedRevisions = this.doesNeedRevisions(aResponses);
+      let doesBNeedRevisions = this.doesNeedRevisions(bResponses);
+
+      let isAWaitingForApproval = this.isWaitingForApproval(aResponses);
+      let isBWaitingForApproval = this.isWaitingForApproval(bResponses);
+
+      let isADraft = this.doesHaveDraft(aResponses);
+      let isBDraft = this.doesHaveDraft(bResponses);
+
+      let areANotesOnly = this.areUnreadNotesOnly(aResponses);
+      let areBNotesOnly = this.areUnreadNotesOnly(bResponses);
+
+      if (doesAHaveUnreadReply && !doesBHaveUnreadReply) {
+        // sort action items before unread notes
+        if (areANotesOnly && (isBWaitingForApproval || doesBNeedRevisions || isBDraft || isBNew)) {
+          return 1;
+        }
+        return -1;
+      }
+
+      if (doesBHaveUnreadReply && !doesAHaveUnreadReply) {
+        if (areBNotesOnly && (isAWaitingForApproval || doesANeedRevisions || isADraft || isANew)) {
+          return -1;
+        }
+        return 1;
+      }
+
+      // both unread or both read , sort needsRevisiosn first
+      if (isAWaitingForApproval && !isBWaitingForApproval) {
+        return -1;
+      }
+
+      if (isBWaitingForApproval && !isAWaitingForApproval) {
+        return 1;
+      }
+
+      if (doesANeedRevisions && !doesBNeedRevisions) {
+        return -1;
+      }
+
+      if (doesBNeedRevisions && !doesANeedRevisions) {
+        return 1;
+      }
+
+      if (isANew && !isBNew) {
+        return -1;
+      }
+
+      if (isBNew && !isANew) {
+        return 1;
+      }
+
+      let newestA = aResponses.sortBy('createDate').get('lastObject');
+      let newestB = bResponses.sortBy('createDate').get('lastObject');
+
+      // both need revisions or both dont need revisions, sort by newest first
+
+      if (newestA && !newestB) {
+        return -1;
+      }
+
+      if (!newestA && newestB) {
+        return 1;
+      }
+
+      let momentA = moment(newestA.get('createDate'));
+      let momentB = moment(newestB.get('createDate'));
+
+      let diff = momentA.diff(momentB);
+
+      if (diff > 0) {
+        return -1;
+      }
+      if (diff < 0) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('allThreads'),
+
   mentoringThreads: function() {
     return this.get('allThreads').filter((thread) => {
       return thread.mentoringResponses.length > 0 || thread.isNew;
@@ -704,7 +795,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
       let unreadReply = responses.find((response) => {
         let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-        return !response.getWasReadByRecipient && creatorId === this.get('currentUser.id');
+        return !response.get('wasReadByRecipient') && creatorId === this.get('currentUser.id');
       });
       return !this.get('utils').isNullOrUndefined(unreadReply);
   },
@@ -715,7 +806,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
     let unreadReplies = responses.filter((response) => {
       let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-      return !response.get('WasReadByRecipient') && creatorId === this.get('currentUser.id');
+      return !response.get('wasReadByRecipient') && creatorId === this.get('currentUser.id');
     });
 
     if (unreadReplies.get('length') === 0) {
