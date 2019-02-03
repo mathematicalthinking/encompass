@@ -21,6 +21,9 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
   actions: {
     toSubmissionResponse(subId) {
       this.transitionTo('responses.submission', subId);
+    },
+    toResponses() {
+      this.refresh();
     }
   }
 });

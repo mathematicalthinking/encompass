@@ -86,6 +86,29 @@
         display: inline-block;
         margin-bottom: 8px;
       }
+      span {
+        color: $primary-font-color;
+        background: $accent-yellow;
+        font-weight: $main-font-weight;
+        font-family: $primary-font;
+        border-radius: 3px;
+        font-size: .8em;
+        padding: 0px 15px;
+        margin-left: 10px;
+        border: none;
+        line-height: 35px;
+        float: right;
+        &:hover {
+          font-weight: $bold-font-weight;
+          cursor: pointer;
+          background: lighten($accent-yellow, 10%);
+        }
+        &.active-filter {
+          font-weight: $bolder-font-weight;
+          background: darken($accent-yellow, 5%);
+          font-size: 1em;
+        }
+      }
     }
     .side-icons {
       width: 220px;

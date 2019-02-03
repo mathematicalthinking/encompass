@@ -776,6 +776,9 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
     toSubmissionResponse(sub) {
       this.sendAction('toSubmissionResponse', sub.get('id'));
+    },
+    refreshList() {
+      this.sendAction('toResponses');
     }
   },
 

@@ -10,24 +10,24 @@
       </div>
       <div class="results-list">
         <div class="results-info">
-          <div class="results-icons">
+          <div class="results-icons" id="response-list-tabs">
             {{#if showSubmitterTab}}
-              <span {{action 'showSubmitterResponses'}} class="icon-message submissions">
+              <span {{action 'showSubmitterResponses'}} class="submitter {{if isShowSubmitter "active-filter"}}">
                 Solver {{submitterCounter}}
               </span>
             {{/if}}
             {{#if showMentoringTab}}
-              <span {{action 'showMentoringResponses'}} class="icon-message selected">
+              <span {{action 'showMentoringResponses'}} class="mentoring {{if isShowMentoring "active-filter"}}">
                Mentoring {{mentoringCounter}}
               </span>
             {{/if}}
             {{#if showApprovingTab}}
-              <span {{action 'showApprovingResponses'}}  class="icon-message students">
+              <span {{action 'showApprovingResponses'}}  class="approving {{if isShowApproving "active-filter"}}">
                 Approving {{approvingCounter}}
               </span>
             {{/if}}
             {{#if showAllFilter}}
-              <span {{action 'showAllResponses'}} class="icon-message students">
+              <span {{action 'showAllResponses'}} class="all {{if isShowAll "active-filter"}}">
                 All
               </span>
             {{/if}}
