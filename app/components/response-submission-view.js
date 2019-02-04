@@ -7,9 +7,15 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   isRevising: false,
   submissionList: [],
   primaryResponse: null,
+  currentSubmissionId: null,
 
   didReceiveAttrs() {
     this._super(...arguments);
+
+    if (this.get('submission.id') !== this.get('currentSubmissionId')) {
+      this.set('currentSubmissionId', this.get('submission.id'));
+      this.set('isRevising', false);
+    }
     if (this.get('studentSubmissions')) {
       this.set('submissionList', this.get('studentSubmissions'));
     }
@@ -98,6 +104,7 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
       .then((sub) => {
         if (!this.get('isDestroyed') && !this.get('isDestroying')) {
           this.send('cancelRevising');
+          this.get('sendRevisionNotices')(this.get('submission'), sub);
           this.get('onSubChange')(sub);
         }
       })

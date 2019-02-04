@@ -1,64 +1,92 @@
-<header class= "{{if areNoResponses 'no-responses'}}">
-  <h2 class="list-header">Select a response</h2>
-  <div class="toggle-btn">
-    {{#if showAllFilter}}
-      <button {{action 'showAllResponses'}} class="new-link-btn {{if isShowAll 'active-filter'}}">All</button>
-    {{/if}}
-    {{#if showSubmitterTab}}
-      <button {{action 'showSubmitterResponses'}} class="new-link-btn {{if isShowSubmitter 'active-filter'}}">Solver{{submitterCounter}}</button>
-    {{/if}}
-    {{#if showMentoringTab}}
-      <button {{action 'showMentoringResponses'}} class="new-link-btn {{if isShowMentoring 'active-filter'}}">Mentoring {{mentoringCounter}}</button>
-    {{/if}}
-    {{#if showApprovingTab}}
-      <button {{action 'showApprovingResponses'}} class="new-link-btn {{if isShowApproving 'active-filter'}}">Approving {{approvingCounter}}</button>
-    {{/if}}
-  </div>
-  <div class="clear"></div>
-</header>
+<div class="flex-container-full">
+    <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    </div>
 
-{{#if areDisplayResponses}}
-  <table border="1" width="100%">
-    <thead>
-      <tr class="top-row">
-        <th align="left">Problem</th>
-        <th align="left" style="padding-left: 55px;">Text</th>
-        <th align="left">From</th>
-        <th align="left">Recipient</th>
-        <th align="left">Date</th>
-        {{#if showStatusColumn }}
-          <th align="left">Status</th>
-        {{/if}}
-      </tr>
-    </thead>
+    <div class="flex-item-full list-view">
+      <div class="list-container">
+        <div class="top-row">
+          <h1 class="heading">Responses</h1>
+        </div>
+      </div>
+      <div class="results-list">
+        <div class="results-info">
+          <div class="results-icons" id="response-list-tabs">
+            {{#if showSubmitterTab}}
+              <span {{action 'showSubmitterResponses'}} class="submitter {{if isShowSubmitter "active-filter"}}">
+                Solver {{submitterCounter}}
+              </span>
+            {{/if}}
+            {{#if showMentoringTab}}
+              <span {{action 'showMentoringResponses'}} class="mentoring {{if isShowMentoring "active-filter"}}">
+               Mentoring {{mentoringCounter}}
+              </span>
+            {{/if}}
+            {{#if showApprovingTab}}
+              <span {{action 'showApprovingResponses'}}  class="approving {{if isShowApproving "active-filter"}}">
+                Approving {{approvingCounter}}
+              </span>
+            {{/if}}
+            {{#if showAllFilter}}
+              <span {{action 'showAllResponses'}} class="all {{if isShowAll "active-filter"}}">
+                All
+              </span>
+            {{/if}}
+          </div>
+          <div class="side-icons">
+            <i class="fas fa-redo-alt refresh-icon" {{action 'refreshList'}} title="Refresh Responses list"></i>
+          </div>
+        </div>
+        <div class="results-items" id="layout-view">
+          <div class="sort-bar">
+            {{#if showStudentHeader}}
+              <div class="sort-bar-item student">
+                <span>Student</span>
+              </div>
+            {{/if}}
+            <div class="sort-bar-item submission-date">
+              <span>Submission Date</span>
+            </div>
+            <div class="sort-bar-item problem">
+              <span>Problem</span>
+            </div>
+            <div class="sort-bar-item brief-summary">
+              <span>Brief Summary</span>
+            </div>
+            {{#if showMentorHeader}}
+              <div class="sort-bar-item mentor">
+                <span>Mentor</span>
+              </div>
+            {{/if}}
+            <div class="sort-bar-item reply-date">
+              <span>Latest Reply Date</span>
+            </div>
+            <div class="sort-bar-item status">
+              <span>Status</span>
+            </div>
+          </div>
 
-    <tbody>
-      {{#each displayResponses as |response|}}
-      <tr style="border-bottom: 1px solid #d3d3d3; line-height: 50px" class="response {{if (is-unread-response response currentUser) 'unread'}}">
-        <td>{{response.submission.answer.problem.title}}</td>
-        <td style="padding-left: 55px;">
-          {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}} {{short-text response.text}} {{/link-to}}
-        </td>
-        <td>{{response.createdBy.displayName}}</td>
-        {{#if response.recipient}}
-          <td>{{response.recipient.username}}</td>
-        {{else}}
-          <td>PoW User</td>
-        {{/if}}
-        <td>
-          {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}}
-          <span title="{{response.strCreateDate}}">{{format-date response.createDate "MMM Do YYYY hh:mm A"}}</span>
-          {{/link-to}}
-        </td>
-        {{#if showStatusColumn}}
-          <td>{{response-status response.status}}</td>
-        {{/if}}
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
+          <div class="main-list">
+  {{#each displayThreads as |thread|}}
+    {{response-submission-thread
+      submission=thread.submission
+      isNew=thread.isNew
+      threadType=currentFilter
+      responses=thread.responses
+      mentoringResponses=thread.mentoringResponses
+      approvingResponses=thread.approvingResponses
+      submitterResponses=thread.submitterResponses
+      toSubmissionResponse=(action "toSubmissionResponse")
+      showStudent=showStudentHeader
+      showMentor=showMentorHeader
+    }}
   {{else}}
-  <div class="empty-message">
-    <p class="notice">{{noResponsesMessage}}</p>
+    <div class="no-results-container">
+      <p class="notice">{{noResponsesMessage}}</p>
+    </div>
+  {{/each}}
+</div>
+        </div>
+      </div>
+    </div>
+
   </div>
-{{/if}}

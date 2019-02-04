@@ -84,6 +84,9 @@
     {{#if showRevise}}
       <button {{action 'startRevising'}} class="primary-button">Revise</button>
     {{/if}}
+    {{#if showResumeDraft}}
+      <button {{action 'resumeDraft'}} class="primary-button">Resume Draft</button>
+    {{/if}}
     {{#if showTrash}}
       <i {{action 'confirmTrash' displayResponse}} class="fas fa-trash"></i>
     {{/if}}
@@ -97,8 +100,14 @@
       {{/if}}
       {{#if isRevising}}
         <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
-        <button {{action "saveRevision"}} class="primary-button">Send Revision</button>
-        {{/if}}
+        <button {{action "saveRevision" true}} class="primary-button">Save as Draft</button>
+        <button {{action "saveRevision"}} class="primary-button">{{sendButtonText}}</button>
+      {{/if}}
+      {{#if isFinishingDraft}}
+        <button {{action "stopDraft"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "saveDraft" true}} class="primary-button">Save as Draft</button>
+        <button {{action "saveDraft"}} class="primary-button">{{sendButtonText}}</button>
+      {{/if}}
     </div>
   {{/if}}
     {{else}}

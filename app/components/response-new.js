@@ -1,5 +1,5 @@
 
-Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'response-new',
   isEditing: false,
   isCreating: false,
@@ -166,7 +166,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     var defaultPrefix = '         ';
     var prefix = defaultPrefix;
     var str = '';
-    var lines = [];
 
     if (opts && opts.hasOwnProperty('type')) {
       if (opts.usePrefix) {
@@ -295,13 +294,46 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     toggleProperty: function (p) {
       this.toggleProperty(p);
     },
-    save: function () {
-      var controller = this;
-        this._persistThen(function (saved) {
-          controller.get('alert').showToast('success', 'Response Sent', 'bottom-end', 3000, false, null);
-          controller.get('onSaveSuccess')(controller.get('submission'), saved);
-        });
+    saveResponse(isDraft) {
+
+      if (!this.get('replyText.length') > 0) {
+        this.set('emptyReplyError', 'Message Body Cannot Be Blank');
+        return;
+      }
+
+      let response = this.get('model');
+
+      let toastMessage = 'Response Sent';
+
+      if (isDraft) {
+        toastMessage = 'Draft Saved';
+      }
+
+      let newStatus;
+
+      if (isDraft) {
+        newStatus = 'draft';
+      } else {
+        newStatus = this.get('newReplyStatus');
+      }
+
+    response.set('original', this.get('originalText'));
+    response.set('createdBy', this.get('currentUser'));
+    response.set('status', newStatus);
+    response.set('responseType', this.get('newReplyType'));
+    response.set('text', this.get('replyText'));
+    response.set('note', this.get('replyNote'));
+
+    response.save()
+      .then((savedResponse) => {
+        this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
+        this.get('onSaveSuccess')(this.get('submission'), savedResponse);
+      })
+      .catch((err) => {
+        this.handleErrors(err, 'recordSaveErrors', response);
+      });
     },
+
     toggleOwnMarkUpOnly(e) {
       this.send('toggleProperty', 'doUseOnlyOwnMarkup');
       this.set('replyText', '');

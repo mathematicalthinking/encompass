@@ -85,6 +85,7 @@ var UserSchema = new Schema({
   // only used for non-admins because admins can access any workspace by default
   collabWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
   hiddenWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
+  notifications: [ { type: ObjectId, ref: 'Notification' } ],
   seenTour: { type: Date },
   lastSeen: { type: Date },
   history: [Log] // currently not working

@@ -3,6 +3,7 @@ const mongooseUtils = require('../../utils/mongoose');
 
 const objectUtils = require('../../utils/objects');
 const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
+const { isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 
@@ -22,16 +23,33 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
       ]
     };
 
-
       if (isNonEmptyArray(ids)) {
         filter.$and.push({ _id: { $in : ids } });
-      } else if(mongooseUtils.isValidMongoId(ids)) {
+      } else if(isValidMongoId(ids)) {
         filter.$and.push({ _id: ids });
       }
 
       if (isNonEmptyObject(filterBy)) {
-        if (mongooseUtils.isValidMongoId(filterBy.answer)) {
-          filter.$and.push({answer: filterBy.answer });
+        let { answer, answers, student, startDate, workspace } = filterBy;
+        if (isValidMongoId(filterBy.answer)) {
+          filter.$and.push({answer: answer });
+        }
+
+        if (isNonEmptyArray(answers)) {
+          filter.$and.push({answer: {$in: answers}});
+        }
+
+        if (isValidMongoId(student)) {
+          filter.$and.push({'creator.studentId': student});
+        }
+
+        if (startDate) {
+          let date = new Date(startDate);
+          filter.$and.push({createDate: {$gt: date}});
+        }
+
+        if (isValidMongoId(workspace)) {
+          filter.$and.push({workspaces: workspace});
         }
       }
 

@@ -29,6 +29,7 @@
   "folderSet",
   "copyWorkspaceRequest",
   "updateWorkspaceRequest",
+  "notification"
 ].forEach(function (path) {
   var module = require('./' + path);
 

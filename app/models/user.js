@@ -24,6 +24,8 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
   assignments: DS.hasMany('assignment', {async: true, inverse: null}),
   answers: DS.hasMany('answer', {async: true}),
   actingRole: DS.attr('string'),
+  notifications: DS.hasMany('notifications', {inverse: null}),
+
   actingRoleName: function() {
     let actingRole = this.get('actingRole');
     if (this.get('accountType') === "P") {

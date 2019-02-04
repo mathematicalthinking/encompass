@@ -27,6 +27,7 @@
     workspace=workspace
     studentSubmissions=submissions
     onSubChange=(action "onSubmissionChange")
+    sendRevisionNotices=(action "sendSubmissionRevisionNotices")
     }}
   </div>
 
@@ -51,6 +52,9 @@
       isMentorRecipient=isMentorRecipient
       isOwnSubmission=isOwnSubmission
       toNewResponse=(action "toNewResponse")
+      priorMentorRevision=priorMentorRevision
+      iconFillOptions=iconFillOptions
+      toSubmission=(action "onSubmissionChange")
     }}
   </div>
 
@@ -69,6 +73,8 @@
         isOwnApproverReply=isOwnApproverReply
         reviewedResponse=reviewedResponse
         toResponses=(action "toResponses")
+        iconFillOptions=iconFillOptions
+        subResponses=subResponses
       }}
     </div>
   {{/if}}

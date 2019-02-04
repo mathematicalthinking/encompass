@@ -115,11 +115,6 @@ AssignmentSchema.post('save', function (assignment) {
         if (err) {
           throw new Error(err.message);
         }
-        if (assignment.isTrashed) {
-          console.log(`removed assignment from section: `, affected);
-        } else {
-          console.log(`added assignment to section: `, affected);
-        }
       });
     }
 
@@ -134,7 +129,6 @@ AssignmentSchema.post('save', function (assignment) {
         if (err) {
           throw new Error(err.message);
         }
-        console.log('update linkedWorkspace count: ', affected);
       });
     }
 });
