@@ -647,7 +647,26 @@ async function getAssignmentUsers(user) {
   }
 }
 
+async function getPublicOldPowsWorkIds() {
+  try {
+    let publicProblems = await getModelIds('Problem', {
+      isTrashed: false,
+      privacySetting: 'E'
+    });
 
+    if (!isNonEmptyArray(publicProblems)) {
+      return [];
+    }
+
+    return getModelIds('Answer', {
+      isTrashed: false,
+      createdBy: "5bb4c600379d310929989c7e"
+    });
+
+  }catch(err) {
+    console.error(`Error getPublicOldPowsWork: ${err}`);
+  }
+}
 
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
@@ -674,3 +693,4 @@ module.exports.getWorkspaceProblemIds = getWorkspaceProblemIds;
 module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
 module.exports.getAccessibleResponseIds = getAccessibleResponseIds;
 module.exports.getAssignmentUsers = getAssignmentUsers;
+module.exports.getPublicOldPowsWorkIds = getPublicOldPowsWorkIds;

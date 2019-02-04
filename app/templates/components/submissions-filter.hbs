@@ -130,6 +130,10 @@
         {{input class="single-text-input" id="endDate" name="endDate" type="text" value=endDate}}
       </div>
     </li>
+    <li class="include-pows-input">
+      {{input type="checkbox" checked=doIncludeOldPows name="doIncludeOldPows"}}
+      <label>Include Old Pows Work</label>
+    </li>
 
     {{#if isMissingCriteria}}
       {{error-box error=missingCriteriaMessage showDismiss=true resetError=(action (mut isMissingCriteria) null) }}

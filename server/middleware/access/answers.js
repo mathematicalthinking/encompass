@@ -26,6 +26,8 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       }
       return;
     }
+    let doIncludeOldPows = false;
+    let oldPowsWorkIds = [];
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -79,16 +81,29 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
       if (filterBy.teacher) {
         delete filterBy.teacher;
       }
+
+      if (filterBy.doIncludeOldPows === "true" || filterBy.doIncludeOldPows === true) {
+        doIncludeOldPows = true;
+        oldPowsWorkIds = await utils.getPublicOldPowsWorkIds();
+        delete filterBy.doIncludeOldPows;
+
+      }
       filter.$and.push(filterBy);
     }
     if (isNonEmptyObject(searchBy)) {
       filter.$and.push(searchBy);
     }
+
     if (accountType === 'A' && !isStudent) {
       return filter;
     }
+
     const orFilter = { $or: [] };
     orFilter.$or.push({ createdBy: user._id });
+
+    if (doIncludeOldPows && isNonEmptyArray(oldPowsWorkIds)) {
+      orFilter.$or.push({_id: {$in: oldPowsWorkIds}});
+    }
 
     // everyone needs to be able to access answers that correspond with a submission they have access to
     const submissionCriteria = await submissionsAccess.get.submissions(user, null);
@@ -109,7 +124,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
   // PdAdmins with acting role 'teacher' can get all answers tied to their org
   if (accountType === 'P') {
     const userOrg = user.organization;
-    const userIds = await utils.getModelIds('User', {organization: userOrg});
+    const userIds = await utils.getModelIds('User', {organization: userOrg, _id: {$ne: "5bb4c600379d310929989c7e"}});
     orFilter.$or.push( {createdBy : {$in : userIds} });
     filter.$and.push(orFilter);
 

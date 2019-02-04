@@ -578,7 +578,8 @@ Encompass.SubmissionsFilterComponent = Ember.Component.extend(Encompass.CurrentU
         section: this.get('selectedSection.id'),
         startDate: startDate,
         endDate: endDate,
-        students: studentIds
+        students: studentIds,
+        doIncludeOldPows: this.get('doIncludeOldPows'),
       };
       _.each(criteria, (val, key) => {
         if (utils.isNullOrUndefined(val)|| val === '') {
