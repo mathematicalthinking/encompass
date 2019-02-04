@@ -261,7 +261,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           notificationType: 'newWorkToMentor',
           primaryRecordType: 'response',
           newSubmission: newSub,
-          oldSubmission: oldSub
+          oldSubmission: oldSub,
+          createDate: new Date(),
         });
         notification.save();
       });
