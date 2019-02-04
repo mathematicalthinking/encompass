@@ -22,7 +22,6 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
       ]
     };
 
-
       if (isNonEmptyArray(ids)) {
         filter.$and.push({ _id: { $in : ids } });
       } else if(mongooseUtils.isValidMongoId(ids)) {
@@ -32,6 +31,19 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
       if (isNonEmptyObject(filterBy)) {
         if (mongooseUtils.isValidMongoId(filterBy.answer)) {
           filter.$and.push({answer: filterBy.answer });
+        }
+
+        if (isNonEmptyArray(filterBy.answers)) {
+          filter.$and.push({answer: {$in: filterBy.answers}});
+        }
+
+        if (mongooseUtils.isValidMongoId(filterBy.student)) {
+          filter.$and.push({'creator.studentId': filterBy.student});
+        }
+
+        if (filterBy.startDate) {
+          let date = new Date(filterBy.startDate);
+          filter.$and.push({createDate: {$gt: date}});
         }
       }
 
