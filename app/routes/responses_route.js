@@ -16,10 +16,12 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
       let laterReplies = Ember.RSVP.all(ownMentorReplies.map((response) => {
         let createDate = response.get('createDate');
         let recipientId = this.get('utils').getBelongsToId(response, 'recipient');
+        let workspaceId = this.get('utils').getBelongsToId(response, 'workspace');
         return this.get('store').query('submission', {
           filterBy: {
             student: recipientId,
-            startDate: createDate
+            startDate: createDate,
+            workspaces: workspaceId
           }
         });
       }));

@@ -48,7 +48,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
    return ntfs.filterBy('notificationType', 'newWorkToMentor');
 
-  }.property('notifications.[]'),
+  }.property('notifications.@each.{wasSeen,isTrashed}'),
 
   showMentorHeader: function() {
     return this.get('currentFilter') !== 'mentoring';
@@ -70,7 +70,9 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       });
 
       let isNew = true;
-
+      if (subNtf) {
+        console.log('submission NTF', subNtf.toJSON());
+      }
       if (!subNtf || subNtf.get('isTrashed') || subNtf.get('wasSeen')) {
         isNew = false;
       }
@@ -242,7 +244,17 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let aResponses = a.mentoringResponses;
       let bResponses = b.mentoringResponses;
 
+      let isANew = a.isNew;
+      let isBNew = b.isNew;
+
       if (aResponses.get('length') === 0 && bResponses.get('length') === 0) {
+        if (isANew && !isBNew) {
+          return -1;
+        }
+        if (!isANew && isBNew) {
+          return 1;
+        }
+
         // both are new, use submission create date
         return b.submission.get('createDate') - a.submission.get('createDate');
       }
@@ -250,8 +262,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let doesAHaveUnreadReply = this.doesHaveUnreadReply(aResponses);
       let doesBHaveUnreadReply = this.doesHaveUnreadReply(bResponses);
 
-      let isANew = a.isNew;
-      let isBNew = b.isNew;
+
 
       let doesANeedRevisions = this.doesNeedRevisions(aResponses);
       let doesBNeedRevisions = this.doesNeedRevisions(bResponses);
