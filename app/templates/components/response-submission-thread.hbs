@@ -21,26 +21,50 @@
     </div>
   {{/if}}
   <div class="item-section reply-date">
-    <span>{{format-date newestResponse.createDate 'L'}}</span>
+    <span>
+      {{#if newestResponse}}
+        {{format-date newestResponse.createDate 'L'}}
+      {{else}}
+        N/A
+      {{/if}}
+    </span>
   </div>
-  <div class="item-section flags">
+  <div class="item-section status">
     {{#if isUnreadReply}}
-      <span class="unread">Unread Reply</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#3997EE"/>
+      </svg>
+      <span class="unread">Unread Reply {{unreadCounter}}</span>
     {{/if}}
     {{#if inNeedOfRevisions}}
-      <span class="needs-revisions">Needs Revisions</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#EB5757"/>
+      </svg>
+      <span class="status-text">Needs Revisions {{needsRevisionCounter}}</span>
     {{/if}}
     {{#if waitingForApproval}}
-      <span class="pending-approval">Pending Approval</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#FFD204" />
+      </svg>
+      <span class="status-text">Pending Approval {{pendingApprovalCounter}}</span>
     {{/if}}
     {{#if isUnfinishedDraft}}
-      <span class="unfinished-draft">Unfinished Draft</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#778899" />
+      </svg>
+      <span class="status-text">Unfinished Draft {{draftCounter}}</span>
     {{/if}}
     {{#if isNew}}
-      <span class="new-revision">New Submission</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#3997EE"/>
+      </svg>
+      <span class="status-text">New Submission</span>
     {{/if}}
     {{#if isNoActionNeeded}}
-      <span class="no-action-needed">Up to Date</span>
+    <svg height="20" width="20">
+        <circle cx="10" cy="15" r="5" fill="#35A853"/>
+      </svg>
+      <span class="status-text">Up to Date</span>
     {{/if}}
   </div>
 </div>
