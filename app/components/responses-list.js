@@ -61,6 +61,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   submissionThreads: function() {
     let hash = {};
 
+    // need a thread for each student, per workspace
+
     this.get('submissions').forEach((submission) => {
       let ntfs = this.get('newWorkToMentorNtfs');
 
@@ -247,7 +249,19 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let isANew = a.isNew;
       let isBNew = b.isNew;
 
+      let isADraft = this.doesHaveDraft(aResponses);
+      let isBDraft = this.doesHaveDraft(bResponses);
+
+      if (isADraft && !isBDraft) {
+        return -1;
+      }
+      if (!isADraft && isBDraft) {
+        return 1;
+      }
+
       if (aResponses.get('length') === 0 && bResponses.get('length') === 0) {
+
+
         if (isANew && !isBNew) {
           return -1;
         }
@@ -267,8 +281,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       let doesANeedRevisions = this.doesNeedRevisions(aResponses);
       let doesBNeedRevisions = this.doesNeedRevisions(bResponses);
 
-      let isADraft = this.doesHaveDraft(aResponses);
-      let isBDraft = this.doesHaveDraft(bResponses);
 
       let areANotesOnly = this.areUnreadNotesOnly(aResponses);
       let areBNotesOnly = this.areUnreadNotesOnly(bResponses);
