@@ -8,9 +8,10 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   isUnfinishedDraft: Ember.computed.gt('draftResponses.length', 0),
   isUnreadReply: Ember.computed.gt('unreadResponses.length', 0),
 
+  isActionNeeded: Ember.computed.not('isNoActionNeeded'),
+
   didReceiveAttrs() {
     this.resolveMentors();
-
     this._super(...arguments);
   },
 
@@ -32,7 +33,7 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     }
 
     if (type === 'all') {
-      return this.get('repsonses');
+      return this.get('responses');
     }
     return [];
   }.property('threadType'),
@@ -52,17 +53,53 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     });
   }.property('mainResponses.@each.wasReadByRecipient'),
 
+  unreadCounter: function() {
+    let count = this.get('unreadResponses.length');
+
+    if (count > 1) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('unreadResponses.[]'),
+
   draftResponses: function() {
     return this.get('mainResponses').filterBy('status', 'draft');
   }.property('mainResponses.@each.status'),
+
+  draftCounter: function() {
+    let count = this.get('draftResponses.length');
+
+    if (count > 1) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('draftResponses.[]'),
 
   needsRevisionResponses: function() {
     return this.get('mainResponses').filterBy('status', 'needsRevisions');
   }.property('mainResponses.@each.status'),
 
+  needsRevisionCounter: function() {
+    let count = this.get('needsRevisionResponses.length');
+
+    if (count > 1) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('needsRevisionResponses.[]'),
+
   pendingApprovalResponses: function() {
     return this.get('mainResponses').filterBy('status', 'pendingApproval');
   }.property('mainResponses.@each.status'),
+
+  pendingApprovalCounter: function() {
+    let count = this.get('pendingApprovalResponses.length');
+
+    if (count > 1) {
+      return `(${count})`;
+    }
+    return '';
+  }.property('pendingApprovalResponses.[]'),
 
   newestResponse: function() {
     return this.get('sortedMainResponses.lastObject');
@@ -84,7 +121,7 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     return Ember.RSVP.all(mentors)
     .then((users) => {
       if (!this.get('isDestroying') && !this.get('isDestroyed')) {
-        this.set('submissionMentors', users);
+        this.set('submissionMentors', users.uniqBy('id'));
       }
     });
   },

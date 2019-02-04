@@ -43,6 +43,15 @@
       background: darken($accent-yellow, 5%)
     }
   }
+  .flex-container-full {
+    #filter-list-side {
+      display: none;
+    }
+
+    .flex-item-full.list-view {
+      grid-column-start: 1;
+    }
+  }
 
   .no-results-container {
     margin: 0 auto;
@@ -53,6 +62,7 @@
       margin: 50px 0 40px 0;
     }
   }
+
   .list-container {
     .top-row {
       width: 100%;
@@ -165,12 +175,12 @@
           width: 10%;
         }
         &.problem {
-          @include flex-item(3, start, .20 0 auto);
-          width: 20%;
+          @include flex-item(3, start, .15 0 auto);
+          width: 15%;
         }
         &.brief-summary {
-          @include flex-item(4, start, .30 0 auto);
-          width: 30%;
+          @include flex-item(4, start, .20 0 auto);
+          width: 20%;
           text-align: left;
         }
         &.mentor {
@@ -179,12 +189,12 @@
           vertical-align: top;
         }
         &.reply-date {
-          @include flex-item(6, start, .10 0 auto);
+          @include flex-item(6, start, .20 0 auto);
           width: 10%;
         }
-        &.flags {
+        &.status {
           @include flex-item(7, start, .12 0 auto);
-          width: 12%;
+          width: 20%;
         }
         &.more {
           @include flex-item(8, start, .01 0 auto);
@@ -209,35 +219,16 @@
       font-weight: $bolder-font-weight;
     }
     div.item-section.flags {
-      span {
-        border-radius: 20px;
-        padding: 10px;
-        text-align: center;
+      .flag-container {
+        @include flex-container(auto, null, row, wrap, flex-end, center, center);
 
-        &.pending-approval {
-          background-color: #FFD204;
-        }
-        &.needs-revisions {
-          background-color: #EB5757;
-          color: $background-color;
-        }
-        &.unfinished-draft {
-          background-color: #778899;
-          color: $background-color
-        }
-        &.no-action-needed {
-          background-color: #35A853;
-          color: $background-color;
-        }
-        &.unread {
-          background-color: $accent-color;
-          color: $background-color;
-        }
-        &.new-revision {
-          background-color: $accent-color;
-          color: $background-color;
+        span {
+          text-align: left;
+          text-indent: 3%;
+          padding-bottom: 8px;
         }
       }
+
     }
   }
 }
