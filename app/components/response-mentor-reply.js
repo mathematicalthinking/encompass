@@ -6,8 +6,19 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   isRevising: false,
   isFinishingDraft: false,
 
+  currentDisplayResponseId: null,
+
 
   didReceiveAttrs() {
+    if (this.get('displayResponse.id') !== this.get('currentDisplayResponseId')) {
+      this.set('currentDisplayResponseId', this.get('displayResponse.id'));
+
+      ['isEditing', 'isRevising', 'isFinishingDraft'].forEach((prop) => {
+        if (this.get(prop)) {
+          this.set(prop, false);
+        }
+      });
+    }
     this._super(...arguments);
   },
   statusIconFill: function () {

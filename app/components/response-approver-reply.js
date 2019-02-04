@@ -229,8 +229,15 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       if (!response || this.get('displayReply.id') === response.get('id')) {
         return;
       }
+      ['isEditingApproverReply', 'isRevisingApproverReply', 'isFinishingDraft'].forEach((prop) => {
+        if (this.get(prop)) {
+          this.set(prop, false);
+        }
+      });
+
       this.set('replyToView', response);
     },
+
     startEditing() {
       this.set('editRevisionText', this.get('displayReply.text'));
       this.set('editRevisionNote', this.get('displayReply.note'));
