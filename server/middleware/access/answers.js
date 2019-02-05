@@ -84,9 +84,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
 
       if (filterBy.doIncludeOldPows === "true" || filterBy.doIncludeOldPows === true) {
         doIncludeOldPows = true;
-        oldPowsWorkIds = await utils.getPublicOldPowsWorkIds();
         delete filterBy.doIncludeOldPows;
-
       }
       filter.$and.push(filterBy);
     }
@@ -101,8 +99,15 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
     const orFilter = { $or: [] };
     orFilter.$or.push({ createdBy: user._id });
 
-    if (doIncludeOldPows && isNonEmptyArray(oldPowsWorkIds)) {
-      orFilter.$or.push({_id: {$in: oldPowsWorkIds}});
+    if (doIncludeOldPows) {
+      let publicProblemIds = await utils.getModelIds('Problem', {
+        isTrashed: false,
+        privacySetting: 'E',
+      });
+
+      if (isNonEmptyArray(publicProblemIds)) {
+        orFilter.$or.push({ problem: {$in: publicProblemIds }, createdBy: '5bb4c600379d310929989c7e'});
+      }
     }
 
     // everyone needs to be able to access answers that correspond with a submission they have access to
