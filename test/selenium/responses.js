@@ -103,6 +103,7 @@ describe('Responses', function() {
         expect(await helpers.isElementVisible(driver, 'button.save-response')).to.eql(true);
         }catch(err) {
           console.log(err);
+          throw(err);
         }
       });
 
@@ -113,10 +114,14 @@ describe('Responses', function() {
           await driver.sleep(3000);
           await driver.findElement(By.css('button.save-response')).click();
           await driver.wait(until.urlMatches(/#\/responses\/submission\/[0-9a-f]{24}/), 5000);
+
+          await helpers.waitForSelector(driver, 'span.response-value.recipient');
+          expect(await helpers.findAndGetText(driver, 'span.response-value.recipient')).to.eql('maxray');
+          // expect(await helpers.isElementVisible(driver, 'div.response-info')).to.eql(true);
         }catch(err) {
           console.log(err);
         }
-        expect(await helpers.isElementVisible(driver, 'div.response-info')).to.eql(true);
+
       });
 
       //TODO: There is a bug when clicking responses after saving a response

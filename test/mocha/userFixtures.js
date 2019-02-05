@@ -378,8 +378,7 @@ const pdAdminDrexel = {
         "5bec37708c73047613e2f35f",
         "5bec37a08c73047613e2f364",
         "5bec37e38c73047613e2f366"],
-        responses: ["5bec6497aa4a927d50cd5b9b",
-        "5bec64f7aa4a927d50cd5ba0"],
+        responses: [],
         taggings: ["5bec37f48c73047613e2f367","5bec38018c73047613e2f368","5bec38338c73047613e2f36b","5bec386a8c73047613e2f36d"],
         selections: ["5bec373d8c73047613e2f35c",
         "5bec37408c73047613e2f35d",
@@ -402,7 +401,7 @@ const pdAdminDrexel = {
       },
   },
   responses: {
-    accessibleResponsesCount: 3,
+    accessibleResponsesCount: 1,
     accessibleResponse: {
       _id: "5b1aef7ae53645e768926123",
     },
@@ -1011,8 +1010,7 @@ const teacherActingStudent = {
         "5bec37708c73047613e2f35f",
         "5bec37a08c73047613e2f364",
         "5bec37e38c73047613e2f366"],
-        responses: ["5bec6497aa4a927d50cd5b9b",
-        "5bec64f7aa4a927d50cd5ba0"],
+        responses: [],
         taggings: [],
         selections: ["5bec373d8c73047613e2f35c",
         "5bec37408c73047613e2f35d",
@@ -1027,7 +1025,7 @@ const teacherActingStudent = {
       },
   },
   responses: {
-    accessibleResponsesCount: 2,
+    accessibleResponsesCount: 0,
     accessibleResponse: {
       _id: "5bec6497aa4a927d50cd5b9b",
     },
