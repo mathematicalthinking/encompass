@@ -24,6 +24,7 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
+const assignmentAccess = require('../../middleware/access/assignments');
 const responseAccess = require('../../middleware/access/responses');
 
 const objectUtils = require('../../utils/objects');
@@ -371,7 +372,13 @@ async function sendWorkspace(req, res, next) {
 
       const [ canLoad, specialPermissions ] = access.get.workspace(user, ws);
       if(!canLoad) {
-        return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
+        if (!isValidMongoId(ws.linkedAssignment)) {
+          return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
+        }
+        let isLinked = await assignmentAccess.get.assignment(user, ws.linkedAssignment);
+        if (!isLinked) {
+          return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
+        }
       }
       const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, ws);
       _.each(restrictedDataMap, (val, key) => {
