@@ -16,6 +16,7 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
     }
     return Ember.RSVP.hash(hash)
     .then((hash) => {
+
       let areResponses = hash.responses.get('length') > 0;
       let newSubmissions = [];
       let responseSubmissions = [];
