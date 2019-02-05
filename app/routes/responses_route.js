@@ -3,10 +3,18 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
 
   model: function(){
     let currentUser = this.modelFor('application');
-    return Ember.RSVP.hash({
-      notifications: currentUser.get('notifications'),
-      responses: this.get('store').findAll('response'),
-    })
+    let hash = {
+      notifications: currentUser.get('notifications')
+    };
+
+    if (currentUser.get('isAdmin') && !currentUser.get('isStudent')) {
+      hash.responses = this.get('store').query('response', {
+        isAdminActingPd: true
+      });
+    } else {
+      hash.responses = this.get('store').findAll('response');
+    }
+    return Ember.RSVP.hash(hash)
     .then((hash) => {
       let areResponses = hash.responses.get('length') > 0;
       let newSubmissions = [];
@@ -81,6 +89,9 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
     },
     toResponses() {
       this.refresh();
+    },
+    toResponse(submissionId, responseId) {
+      this.transitionTo('responses.submission', submissionId, {queryParams: {responseId: responseId} });
     },
   }
 });

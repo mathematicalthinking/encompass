@@ -130,6 +130,18 @@
         resize: none;
       }
     }
+    #answer-new {
+      .quill-container {
+        width: 100%;
+      }
+      textarea {
+        width: 100%;
+        border: 1px solid $input-border;
+        border-radius: 3px;
+        margin-bottom: 15px;
+        resize: none;
+      }
+    }
     img {
       max-width: 100%;
     }

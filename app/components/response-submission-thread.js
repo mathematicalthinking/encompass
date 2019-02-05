@@ -223,6 +223,13 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
 
   actions: {
     toSubmissionResponse: function() {
+      if (this.get('highestPriorityStatus') === 'doesHaveUnreadReply') {
+        let sortedUnread = this.get('unreadResponses').sortBy('createDate');
+        let newestUnread = sortedUnread.get('lastObject');
+        let responseId = sortedUnread.get('lastObject.id');
+        let submissionId = this.get('utils').getBelongsToId(newestUnread, 'submission');
+        this.get('toResponse')(submissionId, responseId);
+      }
       this.get('toSubmissionResponse')(this.get('latestRevision'));
     }
   }

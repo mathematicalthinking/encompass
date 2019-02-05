@@ -8,7 +8,7 @@ const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
 
-const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) {
+const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, isAdminActingPd) {
   try {
     if (!isNonEmptyObject(user)) {
       return;
@@ -49,8 +49,9 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     if (isValidMongoId(workspace)) {
       filter.$and.push({workspace});
     }
+    let isAdmin = accountType === 'A' && !isStudent && !isAdminActingPd;
 
-    if (accountType === 'A' && !isStudent) {
+    if (isAdmin) {
       return filter;
     }
 
@@ -87,7 +88,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy) 
     //should have access to all responses that you created
     // in case they are not in a workspace
 
-    if (accountType === 'P') {
+    if (accountType === 'P' || (isAdminActingPd === 'true' || isAdminActingPd === true)) {
       // PDamins can get any responses created by someone from their organization
       const userOrg = user.organization;
 
