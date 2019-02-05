@@ -87,5 +87,18 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
 
   isStatic: function () {
     return !this.get('powId');
-  }.property('powId')
+  }.property('powId'),
+  uniqueIdentifier: function() {
+    // encompass user
+    if (this.get('creator.studentId')) {
+      return this.get('creator.studentId');
+    }
+
+    // pows username
+    if (this.get('creator.username')) {
+      return this.get('creator.username');
+    }
+    return this.get('creator.safeName');
+
+  }.property('creator.username', 'creator.studentId'),
 });

@@ -1,18 +1,21 @@
 <div {{action 'toSubmissionResponse'}} class="item-container {{if isUnreadReply "has-unread-reply"}}" id="container">
   {{#if showStudent}}
     <div class="item-section student">
-        {{submission.student}}
+        {{studentDisplay}}
     </div>
   {{/if}}
+  <div class="item-section workspace">
+    <span>{{workspace.name}}</span>
+  </div>
   <div class="item-section submission-date">
-    <span>{{format-date submission.createDate 'L'}}</span>
+    <span>{{format-date thread.latestRevision.createDate 'L'}}</span>
   </div>
   <div class="item-section problem">
-    {{submission.answer.problem.title}}
+    {{latestRevision.answer.problem.title}}
   </div>
-  <div class="item-section brief-summary">
-      {{{submission.answer.answer}}}
-  </div>
+  {{!-- <div class="item-section brief-summary">
+      {{{latestRevision.answer.answer}}}
+  </div> --}}
   {{#if showMentor}}
     <div class="item-section mentor">
       {{#each submissionMentors as |mentor|}}
@@ -22,50 +25,18 @@
   {{/if}}
   <div class="item-section reply-date">
     <span>
-      {{#if newestResponse}}
-        {{format-date newestResponse.createDate 'L'}}
+      {{#if latestReply}}
+        {{format-date latestReply.createDate 'L'}}
       {{else}}
         N/A
       {{/if}}
     </span>
   </div>
   <div class="item-section status">
-    {{#if isUnreadReply}}
     <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#3997EE"/>
-      </svg>
-      <span class="unread">Unread Reply {{unreadCounter}}</span>
-    {{/if}}
-    {{#if inNeedOfRevisions}}
-    <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#EB5757"/>
-      </svg>
-      <span class="status-text">Needs Revisions {{needsRevisionCounter}}</span>
-    {{/if}}
-    {{#if waitingForApproval}}
-    <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#FFD204" />
-      </svg>
-      <span class="status-text">Pending Approval {{pendingApprovalCounter}}</span>
-    {{/if}}
-    {{#if isUnfinishedDraft}}
-    <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#778899" />
-      </svg>
-      <span class="status-text">Unfinished Draft {{draftCounter}}</span>
-    {{/if}}
-    {{#if isNew}}
-    <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#3997EE"/>
-      </svg>
-      <span class="status-text">New Submission</span>
-    {{/if}}
-    {{#if isNoActionNeeded}}
-    <svg height="20" width="20">
-        <circle cx="10" cy="15" r="5" fill="#35A853"/>
-      </svg>
-      <span class="status-text">Up to Date</span>
-    {{/if}}
+        <circle cx="10" cy="15" r="5" fill={{displayStatus.statusFill}} />
+    </svg>
+      <span class="status-text">{{displayStatus.display}}</span>
   </div>
 </div>
 

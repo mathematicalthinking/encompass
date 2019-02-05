@@ -43,15 +43,18 @@
                 <span>Student</span>
               </div>
             {{/if}}
+            <div class="sort-bar-item workspace">
+              <span>Workspace</span>
+            </div>
             <div class="sort-bar-item submission-date">
-              <span>Submission Date</span>
+              <span>Latest Revision Date</span>
             </div>
             <div class="sort-bar-item problem">
               <span>Problem</span>
             </div>
-            <div class="sort-bar-item brief-summary">
+            {{!-- <div class="sort-bar-item brief-summary">
               <span>Brief Summary</span>
-            </div>
+            </div> --}}
             {{#if showMentorHeader}}
               <div class="sort-bar-item mentor">
                 <span>Mentor</span>
@@ -68,16 +71,11 @@
           <div class="main-list">
   {{#each displayThreads as |thread|}}
     {{response-submission-thread
-      submission=thread.submission
-      isNew=thread.isNew
-      threadType=currentFilter
-      responses=thread.responses
-      mentoringResponses=thread.mentoringResponses
-      approvingResponses=thread.approvingResponses
-      submitterResponses=thread.submitterResponses
       toSubmissionResponse=(action "toSubmissionResponse")
       showStudent=showStudentHeader
       showMentor=showMentorHeader
+      thread=thread
+      store=store
     }}
   {{else}}
     <div class="no-results-container">
