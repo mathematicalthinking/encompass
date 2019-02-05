@@ -82,6 +82,9 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
     toResponses() {
       this.refresh();
     },
+    toResponse(submissionId, responseId) {
+      this.transitionTo('responses.submission', submissionId, {queryParams: {responseId: responseId} });
+    },
   }
 });
 

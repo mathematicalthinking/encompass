@@ -147,6 +147,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     let approvedById = this.get('utils').getBelongsToId(response, 'approvedBy');
 
     let responseType = response.get('responseType');
+    let status = response.get('status');
 
     let isToYou = recipientId === this.get('currentUser.id');
     let isByYou = creatorId === this.get('currentUser.id');
@@ -254,7 +255,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     });
     return mentoringThreads;
-  }.property('studentSubmissionThreads'),
+  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}'),
 
   submitterThreads: function() {
     let submitterThreads = Ember.Map.create();
@@ -294,7 +295,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     });
     return submitterThreads;
-  }.property('studentSubmissionThreads'),
+  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}'),
 
   approvingThreads: function() {
     let approvingThreads = Ember.Map.create();
@@ -340,7 +341,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     });
     return approvingThreads;
-  }.property('studentSubmissionThreads'),
+  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}'),
 
   workspaceSubmissionThreads: function() {
     let threads = Ember.Map.create();
@@ -1006,6 +1007,9 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     },
     toSubmissionResponse(sub) {
       this.sendAction('toSubmissionResponse', sub.get('id'));
+    },
+    toResponse(submissionId, responseId) {
+      this.sendAction('toResponse', submissionId, responseId);
     },
     refreshList() {
       this.sendAction('toResponses');
