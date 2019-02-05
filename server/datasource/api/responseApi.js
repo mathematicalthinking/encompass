@@ -69,29 +69,11 @@ module.exports.put = {};
 function getResponses(req, res, next) {
   let user = userAuth.requireUser(req);
 
-  let { ids, workspace, filterBy } = req.query;
-
-  return access.get.responses(user, ids, workspace, filterBy)
+  let { ids, workspace, filterBy, isAdminActingPd } = req.query;
+  return access.get.responses(user, ids, workspace, filterBy, isAdminActingPd)
   .then((criteria) => {
     models.Response.find(criteria).lean().exec()
       .then((responses) => {
-        //let idMap = {};
-        // responses.forEach((response) => {
-        //   if (!idMap[response._id]) {
-        //     idMap[response._id] = true;
-        //   }
-        // });
-        // let filtered = responses.map((response) => {
-        //   if (Array.isArray(response.children)) {
-        //     response.children = response.children.filter((child) => {
-        //       return idMap[child];
-        //     });
-        //     if (!idMap[response.parent]) {
-        //       response.parent = null;
-        //     }
-        //   }
-        //   return response;
-        // });
 
         let data = {'response': responses};
 

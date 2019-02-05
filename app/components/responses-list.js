@@ -31,6 +31,10 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   areThreads: Ember.computed.gt('allThreads.length', 0),
 
+  isAdmin: function() {
+    return this.get('currentUser.isAdmin') && !this.get('currentUser.isStudent');
+  },
+
   didReceiveAttrs() {
     let list = [
       {name: 'sortedSubmitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.size'), currentFilter: 'submitter'},
@@ -255,7 +259,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     });
     return mentoringThreads;
-  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}'),
+  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}', 'newWorkToMentorNtfs.@each.{wasSeen,isTrashed}'),
 
   submitterThreads: function() {
     let submitterThreads = Ember.Map.create();
