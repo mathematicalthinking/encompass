@@ -179,12 +179,30 @@ const putSection = async (req, res, next) => {
 
     let savedSection = await section.save();
 
+    let sectionAssignments = savedSection.assignments;
+
     if (isNonEmptyArray(removedStudents)) {
-      models.User.updateMany({_id: {$in: removedStudents}}, { $pull: { 'sections': { sectionId: savedSection._id, role: 'student'} } }).exec();
+
+      let updateHash = { $pull: { sections: { sectionId: savedSection._id, role: 'student'} } };
+
+      if (isNonEmptyArray(sectionAssignments)) {
+        // remove assignments from user's assignments array
+        updateHash = { $pull: { sections: { sectionId: savedSection._id, role: 'student'}, assignments: { $each: { sectionAssignments } } } };
+      }
+      models.User.updateMany({_id: {$in: removedStudents}}, updateHash).exec();
+
     }
 
     if (isNonEmptyArray(addedStudents)) {
-      models.User.updateMany({_id: {$in: addedStudents}}, { $addToSet: { 'sections': { sectionId: savedSection._id, role: 'student'} } }).exec();
+      let updateHash = { $addToSet: { 'sections': { sectionId: savedSection._id, role: 'student'} } };
+
+      if (isNonEmptyArray(sectionAssignments)) {
+        updateHash = { $addToSet: { 'sections': { sectionId: savedSection._id, role: 'student'}, assignments: {$each: sectionAssignments} } };
+
+        models.Assignment.updateMany({_id: { $in: sectionAssignments}}, { $addToSet: { students: { $each: addedStudents} } }).exec();
+
+      }
+      models.User.updateMany({_id: {$in: addedStudents}}, updateHash).exec();
     }
 
     if (isNonEmptyArray(removedTeachers)) {
