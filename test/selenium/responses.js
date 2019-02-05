@@ -115,8 +115,8 @@ describe('Responses', function() {
           await driver.findElement(By.css('button.save-response')).click();
           await driver.wait(until.urlMatches(/#\/responses\/submission\/[0-9a-f]{24}/), 5000);
 
-          await helpers.waitForSelector(driver, 'span.response-value.recipient');
-          expect(await helpers.findAndGetText(driver, 'span.response-value.recipient')).to.eql('maxray');
+          await helpers.waitForSelector(driver, 'span.status-text');
+          expect(await helpers.findAndGetText(driver, 'span.status-text')).to.eql('Approved');
           // expect(await helpers.isElementVisible(driver, 'div.response-info')).to.eql(true);
         }catch(err) {
           console.log(err);

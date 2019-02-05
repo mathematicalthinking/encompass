@@ -48,7 +48,7 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
     let isDraft = false;
     let draftId = null;
 
-    let responsesModel = this.modelFor('responses');
+    let allResponses = this.get('store').peekAll('response');
     let user = this.modelFor('application');
 
     return this.get('store').findRecord('submission', params.submission_id)
@@ -57,7 +57,7 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
         return this.resolveWorkspace(this.get('workspace'), submission);
       })
       .then((workspace) => {
-        let associatedResponses = responsesModel.responses.filter((response) => {
+        let associatedResponses = allResponses.filter((response) => {
           let creatorId = response.belongsTo('createdBy').id();
           let status = response.get('status');
           let subId = response.belongsTo('submission').id();
