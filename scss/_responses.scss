@@ -170,31 +170,35 @@
           width: 8%;
           vertical-align: top;
         }
+        &.workspace {
+          @include flex-item(2, start, .15 0 auto);
+          width: 15%;
+        }
         &.submission-date {
-          @include flex-item(2, start, .10 0 auto);
+          @include flex-item(3, start, .10 0 auto);
           width: 10%;
         }
         &.problem {
-          @include flex-item(3, start, .15 0 auto);
+          @include flex-item(4, start, .15 0 auto);
           width: 15%;
         }
-        &.brief-summary {
-          @include flex-item(4, start, .20 0 auto);
-          width: 20%;
-          text-align: left;
-        }
+        // &.brief-summary {
+        //   @include flex-item(5, start, .20 0 auto);
+        //   width: 20%;
+        //   text-align: left;
+        // }
         &.mentor {
-          @include flex-item(5, start, .08 0 auto);
-          width: 8%;
+          @include flex-item(5, start, .18 0 auto);
+          width: 18%;
           vertical-align: top;
         }
         &.reply-date {
-          @include flex-item(6, start, .20 0 auto);
+          @include flex-item(6, start, .10 0 auto);
           width: 10%;
         }
         &.status {
           @include flex-item(7, start, .12 0 auto);
-          width: 20%;
+          width: 12%;
         }
         &.more {
           @include flex-item(8, start, .01 0 auto);

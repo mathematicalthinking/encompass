@@ -10,40 +10,107 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
 
   isActionNeeded: Ember.computed.not('isNoActionNeeded'),
 
+  statusMap: {
+    upToDate: {
+      display: 'Up To Date',
+      statusFill: '#35A853'
+    },
+    doesHaveDraft: {
+      display: 'Unfinished Draft',
+      statusFill: '#778899'
+    },
+    hasNewRevision: {
+      display: 'New Revision',
+      statusFill: '#3997EE'
+    },
+    doesHaveUnmentoredRevision: {
+      display: 'Unmentored Revision',
+      statusFill: '#3997EE'
+    },
+    doesHaveUnreadReply: {
+      display: 'Unread Reply',
+      statusFill: '#3997EE'
+    },
+    isWaitingForApproval: {
+      display: 'Pending Approval',
+      statusFill: '#FFD204'
+    },
+    doesNeedRevisions: {
+      display: 'Needs Revisions',
+      statusFill: '#EB5757'
+    }
+
+  },
+  displayStatus: function() {
+    let status = this.get('highestPriorityStatus');
+    return this.get('statusMap.' + status);
+  }.property('highestPriorityStatus'),
+
   didReceiveAttrs() {
+
+    this.get('thread').forEach((val, key) => {
+      this.set(key, val);
+    });
     this.resolveMentors();
+    this.resolveWorkspace();
+
+    this.resolveStudent().then((student) => {
+      this.set('student', student);
+    });
     this._super(...arguments);
   },
+
+  resolveStudent() {
+    let id = this.get('studentId');
+    if (this.get('utils').isValidMongoId(id)) {
+      let user = this.get('store').peekRecord('user', id);
+      if (user) {
+        return Ember.RSVP.resolve(user);
+      }
+      return Ember.RSVP.resolve(this.get('store').findRecord('user', id));
+    }
+    // otherwise is old pows user
+    let submissions = this.get('submissions');
+    if (!submissions) {
+      return Ember.RSVP.resolve('unknown');
+    }
+    return Ember.RSVP.resolve(submissions.get('firstObject.student'));
+  },
+
+  resolveWorkspace() {
+    let id = this.get('workspaceId');
+    if (!id) {
+      return Ember.RSVP.resolve(null);
+    }
+
+    return this.get('store').findRecord('workspace', id)
+      .then((workspace) => {
+        if (!this.get('isDestroyed') && !this.get('isDestroying')) {
+          this.set('workspace', workspace);
+        }
+      });
+  },
+
+  studentDisplay: function() {
+    let student = this.get('student');
+    if (typeof student === 'string') {
+      return student;
+    }
+    if (typeof student === 'object') {
+      return student.get('username');
+    }
+  }.property('student'),
 
   isNoActionNeeded: function() {
     return !this.get('inNeedOfRevisions') && !this.get('waitingForApproval') && !this.get('isUnfinishedDraft') && !this.get('isUnreadReply') && !this.get('isNew');
   }.property('inNeedOfRevisions', 'waitingForApproval', 'isUnfinishedDraft', 'isUnreadReply', 'isNew'),
 
   mainResponses: function() {
-    let type = this.get('threadType');
-    if (type === 'submitter') {
-      return this.get('submitterResponses');
-    }
-    if (type === 'mentoring') {
-      return this.get('mentoringResponses');
-    }
-
-    if (type === 'approving') {
-      return this.get('approvingResponses');
-    }
-
-    if (type === 'all') {
-      return this.get('responses');
-    }
-    return [];
-  }.property('threadType'),
+    return this.get('responses') || [];
+  }.property('responses.[]'),
 
   sortedMainResponses: function() {
     return this.get('mainResponses').sortBy('createDate');
-  }.property('mainResponses.[]'),
-
-  toMeResponses: function() {
-
   }.property('mainResponses.[]'),
 
   unreadResponses: function() {
@@ -102,8 +169,8 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   }.property('pendingApprovalResponses.[]'),
 
   newestResponse: function() {
-    return this.get('sortedMainResponses.lastObject');
-  }.property('sortedMainResponses.[]'),
+    return this.get('thread.latestReply');
+  }.property('thread.latestReply'),
 
   resolveMentors() {
     let mentors = [];
@@ -126,9 +193,37 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     });
   },
 
+  highestPriorityStatus: function() {
+    if (this.get('doesHaveDraft')) {
+      return 'doesHaveDraft';
+    }
+
+    if (this.get('hasNewRevision')) {
+      return 'hasNewRevision';
+    }
+
+    if (this.get('doesHaveUnmentoredRevision')) {
+      return 'doesHaveUnmentoredRevision';
+    }
+
+    if (this.get('doesHaveUnreadReply')) {
+      return 'doesHaveUnreadReply';
+    }
+
+    if (this.get('isWaitingForApproval')) {
+      return 'isWaitingForApproval';
+    }
+    if (this.get('doesNeedRevisions')) {
+      return 'doesNeedRevisions';
+    }
+
+    return 'upToDate';
+
+  }.property('doesHaveDraft', 'doesHaveUnreadReply', 'isWaitingForApproval', 'hasNewRevision', 'dosHaveUnmentoredRevision', 'doesNeedRevisions', 'isWaitingForApproval'),
+
   actions: {
     toSubmissionResponse: function() {
-      this.get('toSubmissionResponse')(this.get('submission'));
+      this.get('toSubmissionResponse')(this.get('latestRevision'));
     }
   }
 
