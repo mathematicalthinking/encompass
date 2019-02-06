@@ -75,6 +75,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
     if (this.get('currSubId') !== this.model.id) {
       this.imageTagging.removeAllTags();
+      this.set('makingSelection', false);
+      this.set('showingSelections', false);
     return this.sendAction('handleTransition', true);
     }
     if (this.trashed.get('length') > this.get('trashedSelections.length')) {
