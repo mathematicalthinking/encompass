@@ -39,7 +39,6 @@
  *  window is clicked.
  */
 var ImageTagging = function(args) {
-  'use strict';
 
   args = args || {};
 
@@ -259,19 +258,22 @@ NoteInput = function() {
     cancel.style.left = boxLeft + 'px';
     cancel.style.top = boxTop + boxHeight  + 2 * boxBorderWidth + 'px';
 
+    let diff;
+
     // ensure buttons are not on top of each other if tagging is small
     if (boxWidth < 2 * buttonsWidth) {
-      var diff = 2 * buttonsWidth - boxWidth;
+      diff = 2 * buttonsWidth - boxWidth;
       confirm.style.left =  _styleAsInt(confirm, 'left') + diff / 2 - 2 * boxBorderWidth + 'px';
       cancel.style.left = _styleAsInt(cancel, 'left') - diff / 2 + 'px';
     }
+
     var [imgX, imgY] = _findPosition(targetImage);
     var imgBottom = imgY + targetImage.height;
     var overflow = imgBottom - visibleImage.bottomEdge;
 
     if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
 
-      var diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
+      diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
       document.getElementById(scrollableContainer).scrollTop -= diff;
     }
 
@@ -342,7 +344,7 @@ NoteInput = function() {
 
     taggingContainer.appendChild(confirm);
     taggingContainer.appendChild(cancel);
-  }
+  };
 
   function _initiateSelection(event) {
     event.preventDefault();
@@ -361,7 +363,7 @@ NoteInput = function() {
 
   function _getVisibleImageBoundaries(event, scrollDiv, img) {
     var container = document.getElementById(scrollDiv);
-    var containerHeight = _styleAsInt(container, 'height');
+
     var [containerX, containerY] = _findPosition(container);
     var root = document.documentElement;
 
@@ -419,9 +421,15 @@ NoteInput = function() {
   // TODO: Refactor into smaller, reusable functions
   function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
-    var containerHeight = _styleAsInt(container, 'height');
+
     var [containerX, containerY] = _findPosition(container);
-    var root = document.documentElement;
+    var [imgX, imgY] = _findPosition(img);
+
+    let diffLeft = imgX - containerX;
+    let diffTop = imgY - containerY;
+
+    let diffRight = container.scrollWidth - img.width - diffLeft;
+    let diffBottom = container.scrollHeight - diffTop - img.height;
 
     var [selectionLeft, selectionTop] = _findPosition(selection);
     var selectionBottom = selectionTop + _styleAsInt(selection, 'height');
@@ -432,17 +440,11 @@ NoteInput = function() {
     var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
     var overflowTop = Math.floor(container.scrollTop);
 
-    var scrollRangeX = root.scrollWidth - root.clientWidth;
-    var overflowLeft = Math.floor(root.scrollLeft);
-    var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
+    var scrollRangeX = container.scrollWidth - container.clientWidth;
+    var overflowLeft = Math.floor(container.scrollLeft);
+    var overflowRight = scrollRangeX - Math.floor(container.scrollLeft);
 
-    var [imgX, imgY] = _findPosition(img);
-    var imgScrollPosition = _findScrollPosition(img);
-
-    var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
-    var diffTop = imgY + _styleAsInt(img, 'borderWidth') - containerY;
-    var diffLeft = imgX;
-    var diffRight = root.scrollWidth - imgX - img.width;
+    // var imgScrollPosition = _findScrollPosition(img);
 
     var imgOverflowLeft;
     var imgOverflowRight;
@@ -489,21 +491,19 @@ NoteInput = function() {
     //     }
     //   }
     // }
-
     if ( up && imgOverflowTop > 0 && selectionTop <= topOfVisibleImage + 25) {
-      container.scrollTop = container.scrollTop - 10;
+      container.scrollTop -= 10;
     }
 
     if (down && imgOverflowBottom > 0 && selectionBottom >= bottomOfVisibleImage - 25) {
-      container.scrollTop = container.scrollTop + 10;
+      container.scrollTop += 10;
     }
 
     if (left && imgOverflowLeft > 0 && selectionLeft <= leftEdgeVisibleImage + 25) {
-      root.scrollLeft = root.scrollLeft - 10;
+      container.scrollLeft -= 10;
     }
-
     if (right && imgOverflowRight > 0 && selectionRight >= rightEdgeVisibleImage - 25) {
-      root.scrollLeft = root.scrollLeft + 10;
+      container.scrollLeft += 10;
     }
   }
 
@@ -612,7 +612,7 @@ NoteInput = function() {
       taggingContainer.appendChild(box);
     }
     tagging.prevCoords = eventCoords;
-  }
+  };
 
   function _handleMouseMove(event) {
     event.preventDefault();
@@ -705,7 +705,7 @@ NoteInput = function() {
       posX = event.clientX + document.documentElement.scrollLeft;
       posY = event.clientY + document.documentElement.scrollTop;
     }
-    posX = posX - imgX;
+    posX -= imgX;
     posY = posY - imgY + sc[1];
 
     return [posX, posY];
@@ -791,14 +791,14 @@ NoteInput = function() {
 
     if (tagLeft < imageLeft) {
       if (resizing) {
-        tagWidth = tagWidth - (imageLeft - tagLeft);
+        tagWidth -= (imageLeft - tagLeft);
       }
       tagLeft = imageLeft;
       changed = true;
     }
     if (tagTop < imageTop) {
       if (resizing) {
-        tagHeight = tagHeight - (imageTop - tagTop);
+        tagHeight -= (imageTop - tagTop);
       }
       tagTop = imageTop;
       changed = true;
@@ -808,9 +808,9 @@ NoteInput = function() {
       if (tagLeft === imageLeft) {
         tagWidth = image.clientWidth;
       } else if (resizing) {
-        tagWidth = tagWidth - (tagRight - imageRight);
+        tagWidth -= (tagRight - imageRight);
       } else if (!resizing) {
-        tagLeft = tagLeft - (tagRight - imageRight);
+        tagLeft -= (tagRight - imageRight);
       }
       changed = true;
     }
@@ -818,9 +818,9 @@ NoteInput = function() {
       if (tagTop === imageTop) {
         tagHeight = image.clientHeight;
       } else if (resizing) {
-        tagHeight = tagHeight - (tagBottom - imageBottom);
+        tagHeight -= (tagBottom - imageBottom);
       } else if (!resizing) {
-        tagTop = tagTop - (tagBottom - imageBottom);
+        tagTop -= (tagBottom - imageBottom);
       }
       changed = true;
     }
@@ -924,10 +924,10 @@ NoteInput = function() {
 
     newHeight = height + diff;
     if (newHeight < _minHeight) {
-      diff = diff - (newHeight - _minHeight);
+      diff -= (newHeight - _minHeight);
       newHeight = _minHeight;
     } else if (newHeight > _maxHeight) {
-      diff = diff - (newHeight - _maxHeight);
+      diff -= (newHeight - _maxHeight);
       newHeight = _maxHeight;
     }
 
@@ -965,10 +965,10 @@ NoteInput = function() {
 
     newHeight = height - diff;
     if (newHeight < _minHeight) {
-      diff = diff - (newHeight - _minHeight);
+      diff -= (newHeight - _minHeight);
       newHeight = _minHeight;
     } else if (newHeight > _maxHeight) {
-      diff = diff - (newHeight - _maxHeight);
+      diff -= (newHeight - _maxHeight);
       newHeight = _maxHeight;
     }
 
@@ -1005,10 +1005,10 @@ NoteInput = function() {
 
     newWidth = width - diff;
     if (newWidth < _minWidth) {
-      diff = diff - (newWidth - _minWidth);
+      diff -= (newWidth - _minWidth);
       newWidth = _minWidth;
     } else if (newWidth > _maxWidth) {
-      diff = diff - (newWidth - _maxWidth);
+      diff -= (newWidth - _maxWidth);
       newWidth = _maxWidth;
     }
 
@@ -1044,10 +1044,10 @@ NoteInput = function() {
 
     newWidth = width + diff;
     if (newWidth < _minWidth) {
-      diff = diff - (newWidth - _minWidth);
+      diff -= (newWidth - _minWidth);
       newWidth = _minWidth;
     } else if (newWidth > _maxWidth) {
-      diff = diff - (newWidth - _maxWidth);
+      diff -= (newWidth - _maxWidth);
       newWidth = _maxWidth;
     }
 
@@ -1383,7 +1383,6 @@ NoteInput = function() {
    */
   this.showAllTags = function() {
     var i;
-    console.log('_tags', _tags);
     for (i = 0; i < _tags.length; i++) {
       tagging.showTag(i);
     }
@@ -1541,7 +1540,7 @@ NoteInput = function() {
 
   this.eventCreateNewTag = function(event) {
 
-  }
+  };
 
   /**
    * Public function createTag()
