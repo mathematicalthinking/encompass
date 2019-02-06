@@ -5,7 +5,7 @@
  * selections come from this.currentSubmission.selections
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  makingSelection: true,
+  makingSelection: false,
   showingSelections: false,
   isTransitioning: false,
   isDirty: false,
