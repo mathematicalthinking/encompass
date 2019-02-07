@@ -46,7 +46,7 @@
 
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
-    <h3>Selectable View!</h3>
+    <h3 class="selectable-view-header">Selectable View!</h3>
     {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
       <div id="submission_container">
         <div class="submission-short">
@@ -70,6 +70,7 @@
       </div>
     {{/selectable-area}}
   {{else}}
+    <h5 class="submission-header summary">Brief Summary</h5>
     <div class="submission short">
       {{#if currentSubmission.answer.answer}}
         {{{currentSubmission.answer.answer}}}
@@ -77,6 +78,7 @@
         {{{currentSubmission.shortAnswer}}}
       {{/if}}
     </div>
+    <h5 class="submission-header explanation">Explanation</h5>
     <div class="submission long">
       {{#if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}
@@ -112,16 +114,9 @@
         {{/if}}
       </p>
     --}}
-
-
-    {{#unless currentSubmission.selections.length}}
-      <p class="al_small">No selections have been made yet.
-        {{#if canSelect}}
-          Click "make selection" above and highlight some text in the submission.
-        {{/if}}
-      </p>
-    {{/unless}}
-
+    {{#if this.workspaceSelections}}
+      <h5 class="submission-header selections">Selections</h5>
+    {{/if}}
     <ul>
     {{#each this.workspaceSelections as |selection|}}
       <li class="selection">
@@ -134,6 +129,12 @@
           {{/if}}
         {{/unless}}
       </li>
+      {{else}}
+        <p class="al_small">No selections have been made yet.
+        {{#if canSelect}}
+          Click "make selection" above and highlight some text in the submission.
+        {{/if}}
+      </p>
     {{/each}}
     </ul>
   </div>
