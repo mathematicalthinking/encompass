@@ -3,7 +3,7 @@
   {{#if showTruncatedView}}
     <ul class="breadcrumbs truncated">
         {{#with this.itemsList.firstObject as |firstItem|}}
-          {{bread-crumbs-item item=firstItem displayValue=1 onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+          {{bread-crumbs-item item=firstItem displayValue=1 onSelect=(action "onItemSelect") selectedItem=selectedItem titleTextPath=titleTextPath}}
 
         {{/with}}
         <abbr title="expand">
@@ -12,14 +12,14 @@
           </span>
         </abbr>
         {{#with itemsList.lastObject as |lastItem|}}
-          {{bread-crumbs-item item=lastItem displayValue=lastItemValue onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+          {{bread-crumbs-item item=lastItem displayValue=lastItemValue onSelect=(action "onItemSelect") selectedItem=selectedItem titleTextPath=titleTextPath}}
 
         {{/with}}
     </ul>
   {{else}}
     <ul class="breadcrumbs">
       {{#each itemsList as |item index|}}
-        {{bread-crumbs-item item=item displayValue=(add-to index 1) onSelect=(action "onItemSelect") selectedItem=selectedItem}}
+        {{bread-crumbs-item item=item displayValue=(add-to index 1) onSelect=(action "onItemSelect") selectedItem=selectedItem titleTextPath=titleTextPath}}
       {{/each}}
       {{#if areManyItems}}
 

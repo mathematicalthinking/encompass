@@ -386,3 +386,76 @@ span.meta.response-count.existing {
   font-size: 1em;
 }
 
+#al_center {
+  padding-left: 5px;
+}
+
+#submission-nav {
+  .bread-crumbs-comp {
+    display: inline-block;
+  }
+}
+
+#al_submission {
+  h3.selectable-view-header {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+  h5.submission-header {
+    padding: 5px 0;
+    font-size: 1.1em;
+    color: black;
+    font-weight: 300;
+    margin-left: 10px;
+  }
+  .submission.short, .submission-short {
+    background-color: $background-body;
+    border: 0.5px solid #ccc;
+    padding: 20px;
+    border-radius: 3px;
+    font-size: .9em;
+  }
+  .submission.long, .submission-long {
+    background-color: $background-body;
+    border: 0.5px solid #ccc;
+    padding: 20px;
+    border-radius: 3px;
+    font-size: .9em;
+  }
+}
+#selectable-area {
+  #submission_container {
+    margin-left: 10px;
+    .submission-short {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+#submission_selections {
+  h5.submission-header {
+    padding: 5px 0;
+    font-size: 1.1em;
+    color: black;
+    font-weight: 300;
+    margin-left: 10px;
+  }
+  ul {
+    margin-left: 10px;
+    margin-top: 10px;
+    li {
+
+      i {
+        margin-left: 2px;
+      }
+    }
+  }
+}
+
+.submission.long {
+  img {
+    max-width: 700px;
+  }
+}
+

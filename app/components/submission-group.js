@@ -15,6 +15,13 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
   showStudents: false,
   switching: false,
 
+  currentRevision: function() {
+    if (!this.get('currentRevisions') || !this.get('currentRevisionIndex')) {
+      return null;
+    }
+    return this.get('currentRevisions').objectAt(this.get('currentRevisionIndex') - 1);
+  }.property('currentRevisions.[]', 'currentRevisionIndex'),
+
   //TODO Use the new thread.threadId property on submissions
   submissionThreads: function() {
     var threads = Ember.Map.create();
@@ -124,7 +131,10 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
 
   currentRevisionIndex: function() {
     const revisions = this.get('currentRevisions');
-    const currentSubmissionId = this.get('submission').id;
+    if (!revisions || revisions.get('length') === 0) {
+      return 0;
+    }
+    const currentSubmissionId = this.get('submission.id');
     if (revisions.length === 1) {
       return 1;
     }
@@ -165,6 +175,16 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     },
     toNewResponse(subId, wsId) {
       this.get('toNewResponse')(subId, wsId);
+    },
+    setCurrentSubmission(currentRevision) {
+      if (!currentRevision) {
+        return;
+      }
+      let submission = currentRevision.revision;
+      if (!submission) {
+        return;
+      }
+      this.get('toSubmission')(submission);
     }
   }
 });

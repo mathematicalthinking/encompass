@@ -331,8 +331,11 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       });
     },
 
-    toNewResponse: function(submission, workspace) {
+    toNewResponse(submission, workspace) {
       this.transitionToRoute('responses.new.submission', submission, {queryParams: {workspaceId: workspace}});
+    },
+    toSubmission(submission) {
+      this.transitionToRoute('workspace.submission', submission);
     }
   }
 });

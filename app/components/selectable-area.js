@@ -6,6 +6,7 @@
  */
 Encompass.SelectableAreaComponent = Ember.Component.extend({
   //classNameBindings: ['id'],
+  elementId: 'selectable-area',
 
   init: function() {
     this._super(...arguments);
