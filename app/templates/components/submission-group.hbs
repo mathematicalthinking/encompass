@@ -33,48 +33,7 @@
   </div>
 </div>
 
-  <div class="breadcrumbs"> <!-- TODO itemController -->
-    {{#unless manyRevisions}}
-    <ul class="breadcrumbs">
-      {{#each this.currentRevisions as |rev|}}
-      <li>
-        <abbr title="{{unbound rev.label}}">
-        {{#link-to 'workspace.submission' rev.revision}}
-        {{rev.index}}
-        {{#if rev.revision.selections }}*{{/if}}
-        {{/link-to}}
-        </abbr>
-      </li>
-      {{/each}}
-    </ul>
-    {{else}}
-    <ul class="breadcrumbs">
-      {{#with this.currentRevisions.firstObject as |firstRev|}}
-      <li>
-        <abbr title="{{unbound this.label}}">
-        {{#link-to 'workspace.submission' firstRev}}
-          {{this.index}} {{#if firstRev.selections}} * {{/if}}
-        {{/link-to}}
-        </abbr>
-      </li>
-      {{/with}}
-      <abbr title="Show All Revisions">
-        <div {{action 'showAllRevisions'}} class="truncate">
-          ...
-        </div>
-      </abbr>
-      {{#with currentRevisions.lastObject as |lastRev|}}
-      <li>
-        <abbr title="{{unbound this.label}}">
-        {{#link-to 'workspace.submission' lastRev}}
-          {{this.index}} {{#if lastRev.selections}} * {{/if}}
-        {{/link-to}}
-        </abbr>
-      </li>
-      {{/with}}
-    </ul>
-    {{/unless}}
-  </div>
+{{bread-crumbs items=currentRevisions onSelect=(action "setCurrentSubmission") selectedItem=currentRevision titleTextPath="label"}}
 
 	<div class="al_controller">
 		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
