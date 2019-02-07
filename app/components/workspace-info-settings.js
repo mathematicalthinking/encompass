@@ -209,14 +209,21 @@ Encompass.WorkspaceInfoSettingsComponent = Ember.Component.extend(Encompass.Curr
           this.set('isUpdateRequestInProgress', false);
 
           if (results.get('wereNoAnswersToUpdate') === true) {
-            this.set('wereNoAnswersToUpdate', true);
+            this.get('alert').showToast('info', 'Workspace Up to Date', 'bottom-start', 3000, false, null);
             return;
           }
           if (this.get('utils').isNonEmptyArray(results.get('updateErrors'))) {
             this.set('updateErrors', results.get('updateErrors'));
             return;
           }
-          this.set('addedSubmissions', results.get('addedSubmissions'));
+          if (results.get('addedSubmissions')) {
+            let count = results.get('addedSubmissions.length');
+            let msg = `Added ${count} new submissions`;
+            if (count === 1) {
+              msg = 'Added 1 new submission';
+            }
+            this.get('alert').showToast('success', msg , 'bottom-start', 3000, false, null);
+          }
         })
         .catch((err) => {
           this.handleErrors(err, 'serverErrors');

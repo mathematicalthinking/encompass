@@ -1,4 +1,5 @@
 Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  utils: Ember.inject.service('utility-methods'),
 
   currentAssignment: null,
 
@@ -9,7 +10,6 @@ Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUser
       let promiseHash = {
         section: this.get('assignment.section'),
         problem: this.get('assignment.problem'),
-        linkedWorkspace: this.get('assignment.linkedWorkspace')
       };
 
       if (this.get('currentUser.isStudent')) {
@@ -32,7 +32,6 @@ Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUser
       .then((hash) => {
         this.set('problem', hash.problem);
         this.set('section', hash.section);
-        this.set('linkedWorkspace', hash.linkedWorkspace);
 
         if (hash.studentAnswers) {
           this.set('studentAnswers', hash.studentAnswers.toArray());

@@ -455,7 +455,12 @@ span.meta.response-count.existing {
 
 .submission.long {
   img {
-    max-width: 700px;
+    max-width: 100%;
+  }
+}
+#submission_container {
+  img {
+    max-width: 100%;
   }
 }
 

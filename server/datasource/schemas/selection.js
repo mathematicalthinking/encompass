@@ -22,7 +22,15 @@ var SelectionSchema = new Schema({
     submission: { type: ObjectId, ref: 'Submission', required: true },
     workspace: { type: ObjectId, ref: 'Workspace' },
     comments: [{type: ObjectId, ref: 'Comment'}],
-    taggings: [{type: ObjectId, ref: 'Tagging'}]
+    taggings: [{type: ObjectId, ref: 'Tagging'}],
+    relativeCoords: {
+      tagLeftPct: Number,
+      tagTopPct: Number,
+    },
+    relativeSize: {
+      widthPct: Number,
+      heightPct: Number
+    }
   }, {versionKey: false});
 
 

@@ -14,10 +14,16 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
     this.setupTagging();
   },
+
+  handleResize() {
+    if (this.get('showingSelections')) {
+      this.set('showingSelections', false);
+    }
+  },
   didInsertElement: function() {
-    this.set('currSubId', this.model.id);
-    this.set('selecting', this.makingSelection);
-    this.set('showing', this.showingSelections);
+    this.set('currSubId', this.get('model.id'));
+    this.set('selecting', this.get('makingSelection'));
+    this.set('showing', this.get('showingSelections'));
     var comp = this;
     var containerId = 'submission_container';
     var scrollableContainer = 'al_submission';
@@ -55,8 +61,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       comp.sendAction('addSelection', tag);
     });
 
-
-
     comp.selectionHighlighting.loadSelections(comp.get('selections'));
     comp.imageTagging.loadTags(comp.get('imgTags'));
     //comp.myPropertyDidChange();
@@ -68,6 +72,9 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       comp.selectionHighlighting.disableSelection();
       comp.imageTagging.disable();
     }
+
+    $(window).on('resize', this.get('handleResize').bind(this));
+
   },
 
   didUpdateAttrs: function() {
@@ -158,7 +165,9 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
               height: arrCoords[4]
             },
             note: selection.get('text'),
-            comments: selection.get('comments')
+            comments: selection.get('comments'),
+            relativeCoords: selection.get('relativeCoords'),
+            relativeSize: selection.get('relativeSize'),
           };
         }
       });
@@ -168,12 +177,19 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
   },
 
 
-  willDestroyElement: function() {
+  willDestroyElement() {
     this.sendAction('handleTransition', false);
     this.selectionHighlighting.destroy();
     this.imageTagging.destroy();
-
+    $(window).off('resize');
+    this._super(...arguments);
   },
+
+  actions: {
+    toggleShow() {
+      this.get('toggleShow')();
+    }
+  }
 
 
 });

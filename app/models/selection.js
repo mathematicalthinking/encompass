@@ -6,11 +6,13 @@ Encompass.Selection = DS.Model.extend(Encompass.Auditable, {
   comments: DS.hasMany('comment', {async: true}),
   submission: DS.belongsTo('submission', {async: true}),
   workspace: DS.belongsTo('workspace', {async: false}),
+  relativeCoords: DS.attr(),
+  relativeSize: DS.attr(),
   folders: function() {
     return this.get('taggings').filterBy('isTrashed', false).getEach('folder').toArray();
   }.property('taggings.@each.isTrashed', 'taggings.[]'),
   link: function() {
-    return '#/workspaces/' + this.get('workspace.id') + 
+    return '#/workspaces/' + this.get('workspace.id') +
       '/submissions/' + this.get('submission.id') +
       '/selections/' + this.get('id');
     //https://github.com/emberjs/ember.js/pull/4718

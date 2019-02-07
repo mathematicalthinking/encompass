@@ -77,8 +77,8 @@
           <li>
             <label for="dueDate">Linked Workspace</label>
             <p class="assignment-info">
-              {{#if assignment.linkedWorkspace}}
-                {{#link-to 'workspace.work' assignment.linkedWorkspace.id}}{{assignment.linkedWorkspace.name}}{{/link-to}}
+              {{#if linkedWorkspace}}
+                {{#link-to 'workspace.work' linkedWorkspace.id}}{{linkedWorkspace.name}}{{/link-to}}
                 {{else}}
                   N/A
                 {{/if}}
