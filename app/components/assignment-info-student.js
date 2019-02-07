@@ -1,4 +1,6 @@
 Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  utils: Ember.inject.service('utility-methods'),
+
   formattedDueDate: null,
   formattedAssignedDate: null,
   isResponding: false,
@@ -27,6 +29,10 @@ Encompass.AssignmentInfoStudentComponent = Ember.Component.extend(Encompass.Curr
 
     this._super(...arguments);
   },
+
+  workspaceToUpdateId: function() {
+    return this.get('utils').getBelongsToId(this.get('assignment'), 'linkedWorkspace');
+  }.property('assignment'),
 
   isComposing: function() {
     return this.get('isRevising') || this.get('isResponding');

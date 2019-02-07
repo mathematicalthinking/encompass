@@ -3,6 +3,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   createAnswerError: null,
   isMissingRequiredFields: null,
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
   students: [],
   editor: null,
   findRecordErrors: [],
@@ -185,7 +187,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           priorAnswer: priorAnswer,
           section: that.section,
           students: students,
-          workspaceToUpdate: that.get('workspaceToUpdate'),
+          workspaceToUpdate: this.get('workspaceToUpdateId'),
         });
       });
       // additional uploaded image base 64 data was concatenated to explanation
