@@ -1341,9 +1341,29 @@ NoteInput = function() {
     let imageHeight = image.height;
     let imageWidth = image.width;
 
-    let { widthPct, heightPct } = tagInfo.relativeSize;
+    let widthPct;
+    let heightPct;
 
-    let { tagLeftPct, tagTopPct } = tagInfo.relativeCoords;
+    let tagLeftPct;
+    let tagTopPct;
+
+    if (tagInfo.relativeSize) {
+      widthPct = tagInfo.relativeSize.widthPct;
+      heightPct = tagInfo.relativeSize.heightPct;
+    } else {
+      // for old tags
+      widthPct = tagWidth / imageWidth;
+      heightPct = tagHeight / imageHeight;
+    }
+
+    if (tagInfo.relativeCoords) {
+      tagLeftPct = tagInfo.relativeCoords.tagLeftPct;
+      tagTopPct = tagInfo.relativeCoords.tagTopPct;
+    } else {
+      // for old tags
+      tagLeftPct = tagLeft / imageWidth;
+      tagTopPct = tagTop / imageHeight;
+    }
 
     let adjustedTagWidth = Math.floor(widthPct * imageWidth);
     let adjustedTagHeight = Math.floor(heightPct * imageHeight);
