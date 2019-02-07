@@ -742,7 +742,6 @@ NoteInput = function() {
     var id = _getTagId(tagElement),
       tagInfo = _tags[id],
       imageCoords = _imageTrueCoords(document.getElementById(tagInfo.parent));
-
     if (!tagInfo) {
       return;
     }
@@ -1338,15 +1337,29 @@ NoteInput = function() {
     tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
     tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
 
+    let image = _getImageFor(tag);
+    let imageHeight = image.height;
+    let imageWidth = image.width;
+
+    let { widthPct, heightPct } = tagInfo.relativeSize;
+
+    let { tagLeftPct, tagTopPct } = tagInfo.relativeCoords;
+
+    let adjustedTagWidth = Math.floor(widthPct * imageWidth);
+    let adjustedTagHeight = Math.floor(heightPct * imageHeight);
+
+    let adjustedTagLeft = Math.floor(tagLeftPct * imageWidth + imageCoords.left);
+    let adjustedTagTop = Math.floor(tagTopPct * imageHeight + imageCoords.top);
+
     styles = {
       position: 'absolute',
       overflow: 'hidden',
       border: _border,
       background: _backgroundColor,
-      top: tagTop + 'px',
-      left: tagLeft + 'px',
-      height: tagHeight + 'px',
-      width: tagWidth + 'px'
+      top: adjustedTagTop + 'px',
+      left: adjustedTagLeft + 'px',
+      height: adjustedTagHeight + 'px',
+      width: adjustedTagWidth + 'px'
     };
     for (style in styles) {
       if (styles.hasOwnProperty(style)) {
@@ -1361,8 +1374,8 @@ NoteInput = function() {
         position: 'absolute',
         border: _border,
         background: 'white',
-        top: (tagTop + tagHeight + borderWidth) + 'px',
-        left: tagLeft + 'px',
+        top: (adjustedTagTop + adjustedTagHeight + borderWidth) + 'px',
+        left: adjustedTagLeft + 'px',
         minWidth: _minWidth + 'px',
         maxWidth: _maxWidth + 'px',
         paddingLeft: '3px',
@@ -1563,6 +1576,9 @@ NoteInput = function() {
     if (!image || image.nodeName.toLowerCase() !== 'img') {
       return tagging;
     }
+    let imageWidth = parseInt(image.width, 10);
+    let imageHeight = parseInt(image.height, 10);
+
 
     // Center the tag around the mouse
     tagWidth = _styleAsInt(selection, 'width');
@@ -1570,16 +1586,23 @@ NoteInput = function() {
     tagLeft = parseInt(coords[0], 10);
     tagTop = parseInt(coords[1], 10);
 
+    let widthPct = tagWidth / imageWidth;
+    let heightPct = tagHeight / imageHeight;
+
+    let tagLeftPct = tagLeft / imageWidth;
+    let tagTopPct = tagTop / imageHeight;
+
     newTag = {
         id: id,
         parent: imageId,
         coords: { left: tagLeft, top: tagTop },
+        relativeCoords: { tagLeftPct, tagTopPct },
         size: { width: tagWidth, height: tagHeight },
+        relativeSize: { widthPct, heightPct },
         note: 'Click here to add text',
         comments: [],
         isDirty: true
       };
-
     _tags[id] = newTag;
     tagging.editTag(id);
 
