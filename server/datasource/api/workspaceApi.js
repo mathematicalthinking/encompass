@@ -24,7 +24,6 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
-const assignmentAccess = require('../../middleware/access/assignments');
 const responseAccess = require('../../middleware/access/responses');
 
 const objectUtils = require('../../utils/objects');
@@ -481,7 +480,7 @@ async function putWorkspace(req, res, next) {
     const user = userAuth.requireUser(req);
   // 403 error when a teacher is in a workspace and switches to acting role of student
   // for now let acting role student modify workspaces but need to come up with a better solution
-  const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('editors').populate('createdBy').exec();
+  const popWs = await models.Workspace.findById(req.params.id).lean().populate('owner').populate('createdBy').exec();
 
   if (isNil(popWs || popWs.isTrashed)) {
     return utils.sendResponse(res, null);
@@ -490,83 +489,102 @@ async function putWorkspace(req, res, next) {
     logger.info("permission denied");
     return utils.sendError.NotAuthorizedError("You don't have permission to modify this workspace", res);
   }
-  if (req.body.workspace.mode === 'public' || req.body.workspace.mode === 'internet') {
-    let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', req.body.workspace.name, 'name', {_id: {$ne: req.params.id}, mode: {$in: ['public', 'internet']}});
+
+  let { mode, name } = req.body.workspace;
+
+  if (mode === 'public' || mode === 'internet') {
+    let isNameUnique = await apiUtils.isRecordUniqueByStringProp('Workspace', name, 'name', {_id: {$ne: req.params.id}, mode: {$in: ['public', 'internet']}});
 
     if (!isNameUnique) {
-      return utils.sendError.ValidationError(`There is already an existing public workspace named "${req.body.workspace.name}."`, 'name', res);
+      return utils.sendError.ValidationError(`There is already an existing public workspace named "${name}."`, 'name', res);
     }
   }
 
   const ws = await models.Workspace.findById(req.params.id).exec();
 
+  let { doOnlyUpdateLastViewed, lastViewed } = req.body.workspace;
+
+  if (doOnlyUpdateLastViewed) {
+    ws.lastViewed = lastViewed;
+
+    await ws.save();
+
+    return utils.sendResponse(res, {
+      workspace: ws
+    });
+  }
+
+  // only admins or ws owner should be able to trash ws
+  // this check should be done for mode, name, owner, organization, and permissions(?)
+
+  let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
+  let isPdAdmin = user.accountType === 'P' && user.actingRole !== 'student';
+
+  let isOwner = areObjectIdsEqual(user._id, ws.owner);
+  let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
+  let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
+
+  let { isTrashed, owner, organization, linkedAssignment, doAllowSubmissionUpdates, permissions } = req.body.workspace;
+
+  if (isAdmin || isOwner || isCreator || isPdWs) {
+    ws.isTrashed = isTrashed;
+    ws.mode = mode;
+    ws.name = name;
+    ws.owner = owner;
+    ws.organization = organization;
+    ws.linkedAssignment = linkedAssignment;
+    ws.doAllowSubmissionUpdates = doAllowSubmissionUpdates;
+    ws.permissions = permissions;
+  }
+
   const originalPermissions = ws.permissions;
-    let originalCollabIds = [];
-    if (isNonEmptyArray(originalPermissions)) {
-      originalCollabIds = _.chain(originalPermissions)
+  let originalCollabIds = [];
+
+  if (isNonEmptyArray(originalPermissions)) {
+    originalCollabIds = _.chain(originalPermissions)
+    .filter(obj => !isNil(obj.user))
+    .map(obj => obj.user.toString())
+    .value();
+  }
+
+  let doUpdateLinkedAssignment = false;
+
+  if (isValidMongoId(ws.linkedAssignment) && !areObjectIdsEqual(linkedAssignment, ws.linkedAssignment)) {
+    // linkedAssignment was removed or changed
+    doUpdateLinkedAssignment = true;
+  }
+
+  if (ws.permissions) {
+    ws.permissions.forEach((permission) => {
+      delete permission.userObj;
+    });
+  }
+
+  ws.lastViewed = lastViewed;
+  ws.lastModifiedDate = new Date();
+  ws.lastModifiedBy = user._id;
+
+  const savedWorkspace = await ws.save();
+
+  if (doUpdateLinkedAssignment) {
+    models.Assignment.updateMany({linkedWorkspace: ws._id}, {$set: {linkedWorkspace: null}}).exec();
+  }
+    const wsPermissions = savedWorkspace.permissions;
+
+    if (_.isArray(wsPermissions)) {
+      const newCollabIds = _.chain(wsPermissions)
       .filter(obj => !isNil(obj.user))
       .map(obj => obj.user.toString())
       .value();
+
+      let removedCollabs = _.difference(originalCollabIds, newCollabIds);
+      // remove workspace from users' collabWorkspaces if they were removed as collab
+
+      if (isNonEmptyArray(removedCollabs)) {
+        models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
+      }
     }
-
-    // should we be validating these before setting?
-    ws.editors = req.body.workspace.editors;
-    ws.lastViewed = new Date();
-    ws.lastModifiedDate = new Date();
-    ws.lastModifiedBy = req.body.workspace.lastModifiedBy;
-    ws.permissions = req.body.workspace.permissions;
-
-    let updateLinkedAssignment = false;
-
-    if (isValidMongoId(ws.linkedAssignment) && isNil(req.body.workspace.linkedAssignment)) {
-      // need to upate the assignment
-      updateLinkedAssignment = true;
-    }
-
-    if (ws.permissions) {
-      ws.permissions.forEach((permission) => {
-        delete permission.userObj;
-      });
-    }
-    // only admins or ws owner should be able to trash ws
-    // this check should be done for mode, name, owner, organization, and permissions(?)
-    let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
-    let isPdAdmin = user.accountType === 'P' && user.actingRole !== 'student';
-
-    let isOwner = areObjectIdsEqual(user._id, ws.owner);
-    let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
-    let isPdWs = isPdAdmin && (areObjectIdsEqual(user.organization, ws.organization));
-
-    if (isAdmin || isOwner || isCreator || isPdWs) {
-      ws.isTrashed = req.body.workspace.isTrashed;
-      ws.mode    = req.body.workspace.mode;
-      ws.name = req.body.workspace.name;
-      ws.owner = req.body.workspace.owner;
-      ws.organization = req.body.workspace.organization;
-      ws.linkedAssignment = req.body.workspace.linkedAssignment;
-      ws.doAllowSubmissionUpdates = req.body.workspace.doAllowSubmissionUpdates;
-    }
-
-    const savedWorkspace = await ws.save();
-
-    if (updateLinkedAssignment) {
-      models.Assignment.updateMany({linkedWorkspace: ws._id}, {$set: {linkedWorkspace: null}}).exec();
-    }
-    const wsPermissions = savedWorkspace.permissions;
-
-      if (_.isArray(wsPermissions)) {
-
-        const newCollabIds = _.chain(wsPermissions)
-        .filter(obj => !isNil(obj.user))
-        .map(obj => obj.user.toString())
-        .value();
-
-        let removedCollabs = _.difference(originalCollabIds, newCollabIds);
-        // remove workspace from users' collabWorkspaces if they were removed as collab
-        // do we need to wait for this?
-        await models.User.updateMany({_id: {$in: removedCollabs}}, {$pull: {collabWorkspaces: savedWorkspace._id}}).exec();
-        }
-      return utils.sendResponse(res, {workspace: savedWorkspace});
+    return utils.sendResponse(res, {workspace: savedWorkspace});
 
   }catch(err) {
     console.error(`Error putWorkspace: ${err}`);
