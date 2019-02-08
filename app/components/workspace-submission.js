@@ -67,10 +67,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
 
+    let doOnlyUpdateLastViewed = true;
+
     if (this.get('isDirty')) {
       workspace.set('lastModifiedDate', new Date());
       workspace.set('lastModifiedBy', this.get('currentUser'));
+      doOnlyUpdateLastViewed = false;
     }
+    workspace.set('doOnlyUpdateLastViewed', doOnlyUpdateLastViewed);
+    workspace.set('lastViewed', new Date());
     workspace.save();
     this._super(...arguments);
   },

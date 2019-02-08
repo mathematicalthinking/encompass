@@ -556,7 +556,7 @@ var data = [{
           "sectionId" : "5b9149a32ecaf7c30dd4748f"
       }
   ],
-  "isEmailConfirmed" : false,
+  "isEmailConfirmed" : true,
   "isAuthorized" : true,
   "lastModifiedDate" : "2018-09-06T15:30:21.278Z",
   "isTrashed" : false,
