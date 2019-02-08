@@ -375,8 +375,18 @@ async function sendWorkspace(req, res, next) {
         if (!isValidMongoId(ws.linkedAssignment)) {
           return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
         }
-        let isLinked = await assignmentAccess.get.assignment(user, ws.linkedAssignment);
-        if (!isLinked) {
+
+        let assignment = await models.Assignment.findById(ws.linkedAssignment).lean().exec();
+        if (!assignment) {
+          return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
+        }
+
+        let userSections = user.sections || [];
+        let foundSection = _.find(userSections, (sectionObj) => {
+          return sectionObj.role === 'teacher' && areObjectIdsEqual(sectionObj.sectionId, assignment.section);
+        });
+
+        if (!foundSection) {
           return utils.sendError.NotAuthorizedError("You don't have permission for this workspace", res);
         }
       }
