@@ -82,5 +82,6 @@ Encompass.User = DS.Model.extend(Encompass.Auditable, {
 
   shouldSendAuthEmail: DS.attr('boolean'),
   collabWorkspaces: DS.attr(),
-  hiddenWorkspaces: DS.attr()
+  hiddenWorkspaces: DS.attr(),
+  socketId: DS.attr('string'),
 });
