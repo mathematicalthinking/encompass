@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('underscore');
-
+const sockets = require('../../socketInit');
 const ObjectId = Schema.ObjectId;
 
 const  { User } = require('../schemas');
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isNil } = require('../../utils/objects');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 /**
   * @public
@@ -70,21 +71,55 @@ NotificationSchema.pre('save', function (next) {
   next();
 });
 
+async function notifyUser(recipientId, notification) {
+  if (!isValidMongoId(recipientId)) {
+    return;
+  }
+
+  let user = await User.findById(recipientId);
+
+  if (isNil(user)) {
+    return;
+  }
+
+  let existingNtf = _.find(user.notifications, (ntfId) => {
+    return areObjectIdsEqual(ntfId, notification._id);
+  });
+
+  // ntf doesnt exist, add to user array
+  if (isNil(existingNtf)) {
+    let sliced = user.notifications.slice();
+    sliced.push(notification._id);
+    user.$set('notifications', sliced);
+    await user.save();
+
+    // emit event to user
+
+    let socketId = user.socketId;
+    if (socketId) {
+      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+
+      if (socket) {
+        socket.emit('NEW_NOTIFICATION', {
+          notifications: [ notification ]
+        });
+      }
+    }
+  }
+
+}
+
 /**
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
 NotificationSchema.post('save', function (notification) {
-  console.log('should add to recip?', notification.doAddToRecipient);
-  console.log('should pull from recip?', notification.doPullFromRecipient);
-
 
   if (notification.doAddToRecipient) {
-    // add to recipient's notifications array
+
+
     if (isValidMongoId(notification.recipient)) {
-      User.findByIdAndUpdate(notification.recipient, {
-        $addToSet: { notifications: notification._id }
-      }).exec();
+      notifyUser(notification.recipient, notification);
     }
   }
 
