@@ -269,6 +269,8 @@ function postUser(req, res, next) {
 
       updateHash = requestBody;
     }
+    updateHash.socketId = requestBody.socketId;
+
     const updatedUser = await models.User.findByIdAndUpdate(req.params.id, updateHash, {new: true}).exec();
 
     const data = {'user': updatedUser};

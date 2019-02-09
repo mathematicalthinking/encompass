@@ -11,6 +11,9 @@ const passport = require('passport');
 const multer = require('multer');
 const expressPath = require('path');
 const paginate = require('express-paginate');
+const sockets = require('./socketInit');
+const socketListeners = require('./sockets');
+
 require('dotenv').config();
 
 
@@ -93,6 +96,9 @@ console.info(`db name: ${dbConf.name}`);
 server.set('port', port);
 
 const mainServer = http.createServer(server);
+
+sockets.init(mainServer);
+socketListeners();
 
 mainServer.listen(port);
 
@@ -300,3 +306,4 @@ server.use(function (err, req, res, next) {
 });
 
 module.exports = mainServer;
+
