@@ -23,12 +23,16 @@ var NotificationSchema = new Schema({
 //====
     text: { type: String, },
     primaryRecordType: { type: String, enum: ['workspace', 'assignment', 'section', 'response', 'problem', 'organization']},
-    notificationType: {type: String, enum: ['newWorkToMentor', 'mentorReplyNeedsRevisions', 'newAssignmentAnswer', 'newMentorReply', 'mentorReplyRequiresApproval', 'newApproverReply']},
-    newSubmission: { type: ObjectId, ref: 'Submission' },
-    oldSubmission: {type: ObjectId, ref: 'Submission'},
+    notificationType: {type: String, enum: ['newWorkToMentor', 'mentorReplyNeedsRevisions', 'newAssignmentAnswer', 'newMentorReply', 'mentorReplyRequiresApproval', 'newApproverReply', 'newlyApprovedReply']},
+    submission: { type: ObjectId, ref: 'Submission' },
     workspace: {type: ObjectId, ref: 'Workspace' },
     response: {type: ObjectId , ref: 'Response' },
     recipient: {type: ObjectId, ref: 'User'},
+    section: { type: ObjectId, ref: 'Section'},
+    assignment: { type: ObjectId, ref: 'Assignment' },
+    user: { type: ObjectId, ref: 'User' },
+    organization: { type: ObjectId, ref: 'Organization' },
+    problem: { type: ObjectId, ref: 'Problem' },
     wasSeen: {type: Boolean, default: false},
     doAddToRecipient: { type: Boolean }, // only used for post save hook,
     doPullFromRecipient: { type: Boolean } // only used for post save hook,
@@ -100,9 +104,35 @@ async function notifyUser(recipientId, notification) {
       let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
 
       if (socket) {
-        socket.emit('NEW_NOTIFICATION', {
-          notifications: [ notification ]
+       await notification
+        .populate('submission')
+        .populate('workspace')
+        .populate('response')
+        .populate('problem')
+        .populate('assignment')
+        .populate('section')
+        .populate('user')
+        .populate('organization')
+        .execPopulate();
+
+        let ntfData = {};
+        let props = ['submission', 'workspace', 'response', 'problem', 'assignment', 'section', 'user', 'organization'];
+
+        props.forEach((prop) => {
+          if (notification[prop]) {
+            let plural = prop + 's';
+            ntfData[plural] = [notification[prop]];
+          }
         });
+        // depopulate ntf
+
+        props.forEach((prop) => {
+          notification.depopulate(prop);
+        });
+
+        ntfData.notifications = [notification];
+        // find any related records and
+        socket.emit('NEW_NOTIFICATION', ntfData);
       }
     }
   }
