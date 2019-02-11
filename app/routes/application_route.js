@@ -9,22 +9,16 @@
   */
 Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't require authentication since it's getting the user
   model: function() {
-    var store = this.get('store');
-    var currentUser = new Ember.RSVP.Promise(function(resolve, reject) {
-      store.query('user', {alias: 'current'}).then( function (result) {
-        var user = result.get('firstObject');
-        if(result.get('length') > 1) {
-          console.error('something is wrong: current user request is returning multiple items');
-        }
-        resolve(user);
-      }, function currentUserError(err){
-        reject(err);
-        window.alert('You are no longer logged in, redirecting you');
-        window.location.href = '/';
+    let currentUser;
+    return this.get('store').queryRecord('user', {alias: 'current'})
+        .then((user) => {
+         currentUser = user;
+         return user.get('notifications');
+      })
+      .then(() => {
+        return currentUser;
       });
-    });
-    return currentUser;
-  },
+    },
 
   afterModel: function(user, transition) {
     //not crazy that this is duplicated here and in AuthenticatedRoute...

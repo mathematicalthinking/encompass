@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
 
+const models = require('../schemas');
+
 /**
   * @public
   * @class Response
@@ -33,6 +35,8 @@ var ResponseSchema = new Schema({
     wasReadByRecipient: { type: Boolean, default: false },
     wasReadByApprover: { type: Boolean, default: false },
     isApproverNoteOnly: { type: Boolean, default: false },
+    isNewlyApproved: { type: Boolean, default: false },
+    isNewApproved: { type: Boolean, default : false },
   }, {versionKey: false});
 
 /**
@@ -53,6 +57,17 @@ ResponseSchema.pre('save', function (next) {
   try {
     this.selections.forEach(toObjectId);
     this.comments.forEach(toObjectId);
+
+    // if status is approved, send ntf to recipient
+    let isNew = this.isNew;
+    let modifiedFields = this.modifiedPaths();
+    let isNewApproved = this.isNew && this.status === 'approved';
+
+    let isNewlyApproved = !isNew && this.status === 'approved' && modifiedFields.includes('status');
+    // send ntf to recipient after save
+    this.isNewApproved = isNewApproved;
+    this.isNewlyApproved = isNewlyApproved;
+
     next();
   }
   catch(err) {
@@ -90,6 +105,46 @@ ResponseSchema.post('save', function (response) {
           throw new Error(err.message);
         }
       });
+  }
+
+  if (response.recipient) {
+    if (this.isNewApproved || this.isNewlyApproved) {
+      // send ntf to recipient
+      let responseType = response.responseType;
+      let ntfType;
+      let text = '';
+      if (responseType === 'mentor') {
+        ntfType = 'newMentorReply';
+        text = 'You have received a new mentor reply.';
+      } else if (responseType === 'approver') {
+        ntfType = 'newApproverReply';
+        text = 'You have received a new reply from a feedback approver.';
+      }
+
+      let newReplyNtf = new models.Notification({
+        createdBy: response.createdBy,
+        recipient: response.recipient,
+        response: response._id,
+        primaryRecordType: 'response',
+        notificationType: ntfType,
+        text
+      });
+
+      newReplyNtf.save();
+
+      if (this.isNewlyApproved) {
+        // send ntf to creator
+        let newlyApprovedNtf = new models.Notification({
+          createdBy: response.approvedBy,
+          recipient: response.createdBy,
+          response: response._id,
+          primaryRecordType: 'response',
+          notificationType: 'newlyApprovedReply',
+          text: 'One of your mentor replies was recently approved.'
+        });
+        newlyApprovedNtf.save();
+      }
+    }
   }
 
 });

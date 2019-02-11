@@ -86,6 +86,7 @@ var UserSchema = new Schema({
   collabWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
   hiddenWorkspaces: [{ type: ObjectId, ref: 'Workspace' }],
   notifications: [ { type: ObjectId, ref: 'Notification' } ],
+  socketId: { type: String },
   seenTour: { type: Date },
   lastSeen: { type: Date },
   history: [Log] // currently not working

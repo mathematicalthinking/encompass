@@ -46,23 +46,38 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     draft: '#778899'
   },
 
-  handleResponseViewAudit() {
-    let notifications = this.get('notifications') || [];
+  newRevisionNotifications: function() {
+    let ntfs = this.get('responseNotifications') || [];
 
-    let newSubNotification = notifications.find((ntf) => {
+    return ntfs.filter((ntf) => {
       let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
-      let newSubId = this.get('utils').getBelongsToId(ntf, 'newSubmission');
       let ntfType = ntf.get('notificationType');
 
-      return ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id') && newSubId === this.get('submission.id');
+      return ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id');
     });
 
+  }.property('responseNotifications.[]'),
+
+  handleResponseViewAudit() {
+    let newSubNotification = this.get('newRevisionNotifications').find((ntf) => {
+      let newSubId = this.get('utils').getBelongsToId(ntf, 'submission');
+      return newSubId === this.get('submission.id');
+    });
     if (newSubNotification && !newSubNotification.get('wasSeen')) {
       newSubNotification.set('wasSeen', true);
       newSubNotification.save();
     }
 
     if (this.get('isPrimaryRecipient')) {
+      let foundNtf = this.get('newReplyNotifications').find((ntf) => {
+        let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+        return responseId === this.get('response.id');
+      });
+
+      if (foundNtf && !foundNtf.get('wasSeen')) {
+        foundNtf.set('wasSeen', true);
+        foundNtf.save();
+      }
       if (!this.get('response.wasReadByRecipient')) {
         this.get('response').set('wasReadByRecipient', true);
         this.get('response').save();
@@ -86,7 +101,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
   }.property('submission.creator.studentId', 'currentUser.id'),
 
   nonTrashedResponses: function() {
-    return this.get('responses')
+    return this.get('subResponses')
       .rejectBy('isTrashed');
   }.property('subResponses.@each.isTrashed'),
 
@@ -260,8 +275,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           recipient: user,
           notificationType: 'newWorkToMentor',
           primaryRecordType: 'response',
-          newSubmission: newSub,
-          oldSubmission: oldSub,
+          submission: newSub,
           createDate: new Date(),
         });
         notification.save();

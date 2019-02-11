@@ -73,5 +73,34 @@ getHasManyIds(record, relationshipName) {
     return ref.ids();
   }
   return [];
+},
+filterByBelongsToId(records, relationshipName, targetId) {
+  if (!records || !relationshipName || !targetId) {
+    return [];
+  }
+
+  return records.filter((record) => {
+    if (!record) {
+      return false;
+    }
+    let id = this.getBelongsToId(record, relationshipName);
+
+    return id === targetId;
+  });
+},
+
+findByBelongsToId(records, relationshipName, targetId) {
+  if (!records || !relationshipName || !targetId) {
+    return;
+  }
+
+  return records.find((record) => {
+    if (!record) {
+      return false;
+    }
+    let id = this.getBelongsToId(record, relationshipName);
+
+    return id === targetId;
+  });
 }
 });

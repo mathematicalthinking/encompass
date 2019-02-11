@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('underscore');
-
+const sockets = require('../../socketInit');
 const ObjectId = Schema.ObjectId;
 
 const  { User } = require('../schemas');
 
-const { isValidMongoId } = require('../../utils/mongoose');
+const { isNil } = require('../../utils/objects');
+const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
 
 /**
   * @public
@@ -22,12 +23,16 @@ var NotificationSchema = new Schema({
 //====
     text: { type: String, },
     primaryRecordType: { type: String, enum: ['workspace', 'assignment', 'section', 'response', 'problem', 'organization']},
-    notificationType: {type: String, enum: ['newWorkToMentor', 'mentorReplyNeedsRevisions', 'newAssignmentAnswer', 'newMentorReply', 'mentorReplyRequiresApproval', 'newApproverReply']},
-    newSubmission: { type: ObjectId, ref: 'Submission' },
-    oldSubmission: {type: ObjectId, ref: 'Submission'},
+    notificationType: {type: String, enum: ['newWorkToMentor', 'mentorReplyNeedsRevisions', 'newAssignmentAnswer', 'newMentorReply', 'mentorReplyRequiresApproval', 'newApproverReply', 'newlyApprovedReply']},
+    submission: { type: ObjectId, ref: 'Submission' },
     workspace: {type: ObjectId, ref: 'Workspace' },
     response: {type: ObjectId , ref: 'Response' },
     recipient: {type: ObjectId, ref: 'User'},
+    section: { type: ObjectId, ref: 'Section'},
+    assignment: { type: ObjectId, ref: 'Assignment' },
+    user: { type: ObjectId, ref: 'User' },
+    organization: { type: ObjectId, ref: 'Organization' },
+    problem: { type: ObjectId, ref: 'Problem' },
     wasSeen: {type: Boolean, default: false},
     doAddToRecipient: { type: Boolean }, // only used for post save hook,
     doPullFromRecipient: { type: Boolean } // only used for post save hook,
@@ -70,21 +75,81 @@ NotificationSchema.pre('save', function (next) {
   next();
 });
 
+async function notifyUser(recipientId, notification) {
+  if (!isValidMongoId(recipientId)) {
+    return;
+  }
+
+  let user = await User.findById(recipientId);
+
+  if (isNil(user)) {
+    return;
+  }
+
+  let existingNtf = _.find(user.notifications, (ntfId) => {
+    return areObjectIdsEqual(ntfId, notification._id);
+  });
+
+  // ntf doesnt exist, add to user array
+  if (isNil(existingNtf)) {
+    let sliced = user.notifications.slice();
+    sliced.push(notification._id);
+    user.$set('notifications', sliced);
+    await user.save();
+
+    // emit event to user
+
+    let socketId = user.socketId;
+    if (socketId) {
+      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+
+      if (socket) {
+       await notification
+        .populate('submission')
+        .populate('workspace')
+        .populate('response')
+        .populate('problem')
+        .populate('assignment')
+        .populate('section')
+        .populate('user')
+        .populate('organization')
+        .execPopulate();
+
+        let ntfData = {};
+        let props = ['submission', 'workspace', 'response', 'problem', 'assignment', 'section', 'user', 'organization'];
+
+        props.forEach((prop) => {
+          if (notification[prop]) {
+            let plural = prop + 's';
+            ntfData[plural] = [notification[prop]];
+          }
+        });
+        // depopulate ntf
+
+        props.forEach((prop) => {
+          notification.depopulate(prop);
+        });
+
+        ntfData.notifications = [notification];
+        // find any related records and
+        socket.emit('NEW_NOTIFICATION', ntfData);
+      }
+    }
+  }
+
+}
+
 /**
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
   */
 NotificationSchema.post('save', function (notification) {
-  console.log('should add to recip?', notification.doAddToRecipient);
-  console.log('should pull from recip?', notification.doPullFromRecipient);
-
 
   if (notification.doAddToRecipient) {
-    // add to recipient's notifications array
+
+
     if (isValidMongoId(notification.recipient)) {
-      User.findByIdAndUpdate(notification.recipient, {
-        $addToSet: { notifications: notification._id }
-      }).exec();
+      notifyUser(notification.recipient, notification);
     }
   }
 
