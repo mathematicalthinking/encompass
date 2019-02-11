@@ -1,0 +1,23 @@
+@import "variables";
+
+.circle-ntf {
+  display: inline-block;
+  position: relative;
+    top: -5px;
+    left: -3px;
+  .ntf {
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    padding: 4px;
+    background: $accent-color;
+    border: 1px;
+    border-color: $input-border;
+    color: $primary-font-color;
+    text-align: center;
+    font-size: 1em;
+    &.empty {
+      display: none;
+    }
+  }
+}

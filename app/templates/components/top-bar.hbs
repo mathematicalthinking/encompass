@@ -15,7 +15,11 @@
             <li>{{#link-to 'import' classNames='menu import'}}import{{/link-to}}</li>
           {{/if}} --}}
           {{!-- {{#if isStudent}} --}}
-            <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}</li>
+            <li>{{#link-to 'assignments.home' classNames='menu assignments'}}assignments{{/link-to}}
+              {{#if assignmentNotifications}}
+                {{circle-ntf displayCount=assignmentNotifications.length}}
+              {{/if}}
+            </li>
           {{!-- {{/if}} --}}
           {{#if currentUser.isStudent}}
             <li>{{#link-to 'answers.home' classNames='menu answers'}}answers{{/link-to}}</li>
@@ -36,6 +40,9 @@
           <li>
             <div class="dropdown">
               {{#link-to 'sections.home' classNames='menu sections' id="sections-home"}}classes <i class="fa fa-caret-down caret-down"></i>{{/link-to}}
+              {{#if sectionNotifications}}
+              {{circle-ntf displayCount=sectionNotifications.length}}
+            {{/if}}
               <div class="dropdown-content">
                 {{#link-to 'sections.new' classNames='menu sections-new'}}new{{/link-to}}
               </div>
@@ -58,7 +65,11 @@
             </div>
           </li>
           {{!-- {{/if}} --}}
-          <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}</li>
+          <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
+            {{#if responseNotifications}}
+              {{circle-ntf displayCount=responseNotifications.length}}
+            {{/if}}
+          </li>
           {{#if notStudent}}
             {{#if user.isAdmin}}
             <li>
