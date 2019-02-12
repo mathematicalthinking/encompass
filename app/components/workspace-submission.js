@@ -115,9 +115,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   }.property('currentSubmission.id', 'currentWorkspace.id', 'currentUser.id'),
 
   actions: {
-    addSelection: function( selection ){
+    addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
-      this.sendAction( 'addSelection', selection );
+      this.sendAction( 'addSelection', selection, isUpdateOnly );
     },
 
     deleteSelection: function( selection ){

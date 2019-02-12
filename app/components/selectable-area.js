@@ -55,10 +55,10 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       scrollableContainer: scrollableContainer,
       //tagsListContainer: tagsListContainer
     });
-    comp.imageTagging.onSave(function(id) {
+    comp.imageTagging.onSave(function(id, isUpdateOnly) {
       var tag = comp.imageTagging.getTag(id);
       tag.selectionType = 'image-tag';
-      comp.sendAction('addSelection', tag);
+      comp.sendAction('addSelection', tag, isUpdateOnly);
     });
 
     comp.selectionHighlighting.loadSelections(comp.get('selections'));

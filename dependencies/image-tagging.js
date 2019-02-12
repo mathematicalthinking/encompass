@@ -1333,13 +1333,25 @@ NoteInput = function() {
     tagHeight = parseInt(tagInfo.size.height, 10);
 
     // shift the tag to match the image's actual coordinates
-    imageCoords = _imageTrueCoords(_getImageFor(tag));
-    tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
-    tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
+
+    if (tagInfo.relativeCoords) {
+      imageCoords = _imageTrueCoords(_getImageFor(tag));
+      tagLeft = parseInt(tagInfo.coords.left, 10) + imageCoords.left;
+      tagTop = parseInt(tagInfo.coords.top, 10) + imageCoords.top;
+    } else {
+      // for old tags
+      imageCoords = _imageTrueCoords(_getImageFor(tag));
+      tagLeft = parseInt(tagInfo.coords.left, 10);
+      tagTop = parseInt(tagInfo.coords.top, 10);
+    }
+
 
     let image = _getImageFor(tag);
     let imageHeight = image.height;
     let imageWidth = image.width;
+
+    let naturalHeight = image.naturalHeight;
+    let naturalWidth = image.naturalWidth;
 
     let widthPct;
     let heightPct;
@@ -1347,24 +1359,47 @@ NoteInput = function() {
     let tagLeftPct;
     let tagTopPct;
 
+    let doUpdateOldTag = false;
+
     if (tagInfo.relativeSize) {
       widthPct = tagInfo.relativeSize.widthPct;
       heightPct = tagInfo.relativeSize.heightPct;
     } else {
+      doUpdateOldTag = true;
       // for old tags
-      widthPct = tagWidth / imageWidth;
-      heightPct = tagHeight / imageHeight;
+      let baseWidth = naturalWidth || imageWidth;
+      let baseHeight = naturalHeight || imageHeight;
+
+      widthPct = tagWidth / baseWidth;
+      heightPct = tagHeight / baseHeight;
+
+      tagInfo.relativeSize = {};
+
+      tagInfo.relativeSize.widthPct = widthPct;
+      tagInfo.relativeSize.heightPct = heightPct;
     }
 
     if (tagInfo.relativeCoords) {
       tagLeftPct = tagInfo.relativeCoords.tagLeftPct;
       tagTopPct = tagInfo.relativeCoords.tagTopPct;
     } else {
+      doUpdateOldTag = true;
       // for old tags
-      tagLeftPct = tagLeft / imageWidth;
-      tagTopPct = tagTop / imageHeight;
+      let baseWidth = naturalWidth || imageWidth;
+      let baseHeight = naturalHeight || imageHeight;
+
+      tagLeftPct = tagLeft / baseWidth;
+      tagTopPct = tagTop / baseHeight;
+
+      tagInfo.relativeCoords = {};
+
+      tagInfo.relativeCoords.tagLeftPct = tagLeftPct;
+      tagInfo.relativeCoords.tagTopPct = tagTopPct;
     }
 
+    if (doUpdateOldTag) {
+      _onSave(tagInfo.id, true);
+    }
     let adjustedTagWidth = Math.floor(widthPct * imageWidth);
     let adjustedTagHeight = Math.floor(heightPct * imageHeight);
 

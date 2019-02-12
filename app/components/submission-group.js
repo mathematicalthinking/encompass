@@ -163,8 +163,8 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
     /**
      * This action will be sent to this component from the workspace-submission component.
      */
-    addSelection: function( selection ){
-      this.sendAction( 'addSelection', selection );
+    addSelection: function( selection, isUpdateOnly ){
+      this.sendAction( 'addSelection', selection, isUpdateOnly );
     },
 
     /**
