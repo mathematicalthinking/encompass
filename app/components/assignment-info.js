@@ -7,48 +7,38 @@ Encompass.AssignmentInfoComponent = Ember.Component.extend(Encompass.CurrentUser
     if (this.get('assignment.id') !== this.get('currentAssignment.id')) {
       this.set('currentAssignment', this.get('assignment'));
 
+      let isStudent = this.get('currentUser.isStudent');
+
       let promiseHash = {
         section: this.get('assignment.section'),
         problem: this.get('assignment.problem'),
       };
 
-      if (this.get('currentUser.isStudent')) {
-        promiseHash.studentAnswers = this.get('store').query('answer', {
-          filterBy: {
-            createdBy: this.get('currentUser.id'),
-            assignment: this.get('assignment.id')
-          }
-        });
-      } else {
-        promiseHash.assignmentAnswers = this.get('store').query('answer', {
-          filterBy: {
-            assignment: this.get('assignment.id')
-          }
-        });
-        promiseHash.assignmentStudents = this.get('assignment.students');
-      }
-
       return Ember.RSVP.hash(promiseHash)
-      .then((hash) => {
-        this.set('problem', hash.problem);
-        this.set('section', hash.section);
+        .then((results) => {
+          this.set('problem', results.problem);
+          this.set('section', results.section);
 
-        if (hash.studentAnswers) {
-          this.set('studentAnswers', hash.studentAnswers.toArray());
-        }
-
-        if (hash.assignmentAnswers) {
-          this.set('assignmentAnswers', hash.assignmentAnswers.toArray());
-        }
-
-        if (hash.assignmentStudents) {
-          this.set('assignmentStudents', hash.assignmentStudents);
-        }
-      })
-      .catch((err) => {
-        this.handleErrors(err, 'initialLoadErrors');
-      });
-    }
+          let hash = {
+            answers: this.get('assignment.answers')
+          };
+          if (!isStudent) {
+            hash.students = this.get('assignment.students');
+          }
+          return Ember.RSVP.hash(hash);
+        })
+        .then((results) => {
+          if (isStudent) {
+            this.set('studentAnswers', results.answers);
+          } else {
+            this.set('assignmentAnswers', results.answers);
+            this.set('assignmentStudents', results.students);
+          }
+        })
+        .catch((err) => {
+          this.handleErrors(err, 'initialLoadErrors');
+        });
+      }
   },
 
   actions: {
