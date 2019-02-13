@@ -27,7 +27,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
 
   setupSocket: function (user) {
     //TODO: dynamic url
-    let url = 'http://localhost:8080/';
+    let url = 'https://enc-test.mathematicalthinking.org/';
     const socket = io.connect(url);
     this.set('socket', socket);
 
