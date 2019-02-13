@@ -48,75 +48,63 @@ function makeGuest() {
            and do whatever they want with the rest of the users
 */
 async function sendUsers(req, res, next) {
-  var user = userAuth.getUser(req);
-  if(!user) {
+  try {
+    const user = userAuth.getUser(req);
+
+    if(!user) {
     // they aren't authorized just send them a list of the guest user back
     utils.sendResponse(res, {user: [makeGuest()]});
     return next();
-  }
+    }
 
-  if (req.query.alias === 'current') {
-    // if all they wanted was the current user, fine
-    return utils.sendResponse(res, {user: [user]});
-  }
+    if (req.query.alias === 'current') {
+      // if all they wanted was the current user, fine
+      return utils.sendResponse(res, {user: [user]});
+    }
 
-  var criteria;
+    let criteria;
 
-  if (req.query.usernameSearch) {
-    var username = req.query.usernameSearch;
-    let filterBy = req.query.filterBy;
-    var regex;
-    // we currently allow emails as usernames so had to fix this to just replace whitespace
-    username = username.replace(/\s+/g, "");
-    regex = new RegExp(username, 'i');
+    if (req.query.usernameSearch) {
+      var username = req.query.usernameSearch;
+      let filterBy = req.query.filterBy;
+      var regex;
+      // we currently allow emails as usernames so had to fix this to just replace whitespace
+      username = username.replace(/\s+/g, "");
 
+      let exactRegex = new RegExp(`^${username}$`, 'i');
 
-    criteria = await access.get.users(user, null, null, regex, filterBy);
+      regex = new RegExp(username, 'i');
+
+      criteria = await access.get.users(user, null, null, regex, filterBy, exactRegex);
+
+    } else if (req.query.username) {
+      criteria = await access.get.users(user, null, req.query.username);
+    } else if (req.query.ids) {
+      criteria = await access.get.users(user, req.query.ids, null);
+    } else if (req.query.isTrashed) {
+      criteria = { isTrashed: true };
+    } else {
+      criteria = await access.get.users(user, null, null);
+    }
+
     const requestedUsers = await models.User.find(criteria).lean().exec();
-    // either empty array or array of one user
-    //const accessibleUserIds = await accessUtils.getModelIds('User', criteria);
+    //TODO filter what is being sent back from user
 
-    // if requestedUser exists but don't have permission
-    // if (requestedUser && !_.isEqual(accessibleUserIds[0], requestedUser._id)) {
-    //   return utils.sendError.NotAuthorizedError(null, res);
-    // }
-    let data;
-    requestedUsers.forEach((user) => {
-      delete user.key;
-      // delete user.password;
-      delete user.history;
-    });
-        data = {'user': requestedUsers};
-      return utils.sendResponse(res, data);
+      requestedUsers.forEach((user) => {
+        delete user.password;
+        delete user.key;
+        delete user.history;
+      });
 
-  } else if (req.query.username) {
-    criteria = await access.get.users(user, null, req.query.username);
-  } else if (req.query.ids) {
-    criteria = await access.get.users(user, req.query.ids, null);
-  } else if (req.query.isTrashed) {
-    criteria = { isTrashed: true };
-  } else {
-    criteria = await access.get.users(user, null, null);
+    let data = {'user': requestedUsers};
+    return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error sendUsers: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
 
-  models.User.find(criteria)
-    .lean()
-    .exec(function(err, docs) {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      if (_.isEmpty(docs)) {
-        return utils.sendResponse(res, null);
-      }
-      docs.forEach(function(doc){
-        delete doc.key; //don't send the users keys out
-        delete doc.history; //don't send user history out
-        // delete doc.password;
-      });
-      var data = {'user': docs};
-      return utils.sendResponse(res, data);
-      //next();
-    });
 }
 
 /**

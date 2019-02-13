@@ -61,21 +61,21 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
     }
 
     // pd admin for user's org
-    if (this.get('basePermissions.isActingPdAdmin')) {
-      if (this.get('basePermissions').doesRecordBelongToOrg(user)) {
-        return true;
-      }
+    if (this.get('basePermissions').isRecordInPdDomain(user)) {
+      return true;
     }
     return false;
   }),
 
   canConfirm: Ember.computed('user.id', function () {
-    let accountType = this.get('currentUser.accountType');
-    let isAdmin = accountType === 'A';
-    let isPdAdmin = accountType === 'P';
 
-    let canConfirm = isPdAdmin || isAdmin;
-    return canConfirm;
+    if (this.get('basePermissions.isActingAdmin')) {
+      return true;
+    }
+    if (this.get('basePermissions').isRecordInPdDomain(this.get('user'))) {
+      return true;
+    }
+    return false;
   }),
 
   unconfirmedEmail: Ember.computed('user.id', function () {
