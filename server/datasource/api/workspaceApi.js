@@ -285,6 +285,12 @@ function filterRequestedWorkspaceData(user, results) {
 
   return Promise.all(
     _.map(results, (ws) => {
+      // no restrictions for workspaces in pdadmin's org
+      if (accountType === 'P' && !isStudent) {
+        if (areObjectIdsEqual(user.organization, ws.organization)) {
+          return Promise.resolve(ws);
+        }
+      }
       // check if user has a special permission object
 
       // if no permisisons object, just return ws;
@@ -298,44 +304,70 @@ function filterRequestedWorkspaceData(user, results) {
         return Promise.resolve(ws);
       }
 
-      return models.Workspace.findById(ws._id)
-      .populate('selections')
-      .populate('submissions')
-      .populate('folders')
-      .populate('taggings')
-      .populate('owner')
-      .populate('editors')
-      .populate('createdBy')
-      .populate('responses')
-      .lean().exec()
+      // check if submission restrictions
+      let areSubmissionRestrictions = _.propertyOf(permissionObject)(['submissions', 'all']) !== true;
+
+      let isApprover = permissionObject.feedback === 'approver';
+      let fetchedWs;
+
+      if (!areSubmissionRestrictions) {
+        fetchedWs = models.Workspace.findById(ws._id)
+          .populate('responses').lean().exec();
+      } else {
+        fetchedWs = models.Workspace.findById(ws._id)
+        .populate('selections')
+        .populate('submissions')
+        .populate('folders')
+        .populate('taggings')
+        .populate('owner')
+        .populate('createdBy')
+        .populate('responses')
+        .lean().exec();
+      }
+      return fetchedWs
       .then((populatedWs) => {
         // eslint-disable-next-line no-unused-vars
-        const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
-        const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
-        // val is array of populated Docs, but we just need Ids
-        _.each(restrictedDataMap, (val, key) => {
-          if (ws[key]) {
-            if (Array.isArray(val)) {
-              ws[key] = _.map(val, (val) => {
-                if (val._id) {
-                  return val._id;
-                }
-                return val;
-              });
-            } else {
-              ws[key] = val;
+
+        if (areSubmissionRestrictions) {
+          const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
+          const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
+          // val is array of populated Docs, but we just need Ids
+          _.each(restrictedDataMap, (val, key) => {
+            if (ws[key]) {
+              if (Array.isArray(val)) {
+                ws[key] = _.map(val, (val) => {
+                  if (val._id) {
+                    return val._id;
+                  }
+                  return val;
+                });
+              } else {
+                ws[key] = val;
+              }
             }
-          }
-        });
-        // make sure only returning responses that have been approved
-        return responseAccess.get.responses(user, ws.responses)
-        .then((criteria) => {
-          return models.Response.find(criteria).lean().exec()
-          .then((responses) => {
-            ws.responses = responses.map(r => r._id);
-            return ws;
           });
-        });
+        }
+
+          ws.responses = _.chain(ws.responses)
+            .filter((response) => {
+              if (!response) {
+                return false;
+              }
+              let isYours = areObjectIdsEqual(response.createdBy, user._id);
+              let isApproved = response.status === 'approved';
+              let isToYou = areObjectIdsEqual(response.recipient, user._id);
+
+              if (isApprover) {
+                // just filter out drafts not created by you
+                let isNotYourDraft = !isYours && response.status === 'draft';
+
+                return !isNotYourDraft;
+              }
+
+              return isYours || (isApproved && isToYou);
+            })
+            .pluck('_id').value();
+        return ws;
       });
     })
   );
