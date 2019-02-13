@@ -12,6 +12,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
     if (!socket) {
       return;
     }
+
     socket.on('NEW_NOTIFICATION', (data) => {
      _.each(data, (val, key) => {
       if (val) {
@@ -27,7 +28,10 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
 
   setupSocket: function (user) {
     //TODO: dynamic url
-    let url = 'https://enc-test.mathematicalthinking.org/';
+    let windowHref = window.location.href;
+    let hashIndex = windowHref.indexOf('#');
+    let url = windowHref.slice(0, hashIndex);
+
     const socket = io.connect(url);
     this.set('socket', socket);
 
