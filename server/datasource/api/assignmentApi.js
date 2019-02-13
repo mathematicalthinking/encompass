@@ -12,7 +12,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
 
-const { areObjectIdsEqual } = require('../../utils/objects');
+const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
