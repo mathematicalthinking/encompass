@@ -5,10 +5,14 @@
 */
 /* jshint ignore:start */
 const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
+
 const models = require('../schemas');
 const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
+
+const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -27,28 +31,52 @@ module.exports.put = {};
 
 
 const getAssignments = async function(req, res, next) {
-  const user = userAuth.requireUser(req);
-  let criteria;
+  try {
+    const user = userAuth.requireUser(req);
+    let criteria;
 
-  if (req.query.problem) {
-    criteria = req.query;
-    const requestedAssignments = await models.Assignment.findOne(criteria).exec();
-    let data = {
-      assignments: requestedAssignments
-    };
+    if (req.query.problem) {
+      criteria = req.query;
+      const requestedAssignments = await models.Assignment.findOne(criteria).exec();
+      let data = {
+        assignments: requestedAssignments
+      };
+      return utils.sendResponse(res, data);
+    }
+
+    criteria = await access.get.assignments(user, req.query.ids, req.query.filterBy);
+
+    let doFilterAnswers = user.accountType === 'S' || user.actingRole === 'student';
+
+    let assignments;
+
+    if (doFilterAnswers) {
+      assignments = await models.Assignment.find(criteria).populate('answers').lean().exec();
+    } else {
+      assignments = await models.Assignment.find(criteria).lean().exec();
+    }
+
+    if (doFilterAnswers) {
+      // only send back student's own answers with assignment
+      assignments.forEach((assignment) => {
+        let answers = assignment.answers || [];
+
+        assignment.answers = _.chain(answers)
+          .filter((answer) => {
+            return areObjectIdsEqual(answer.createdBy, user._id);
+          })
+          .pluck('_id').value();
+      });
+    }
+
+    const data = {'assignments': assignments};
     return utils.sendResponse(res, data);
+  }catch(err) {
+    console.error(`Error getAssignments: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
   }
 
-  criteria = await access.get.assignments(user, req.query.ids, req.query.filterBy);
-  models.Assignment.find(criteria)
-  .exec((err, assignments) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    const data = {'assignments': assignments};
-    utils.sendResponse(res, data);
-  });
 };
 
 /**

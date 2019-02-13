@@ -1,4 +1,7 @@
 Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+
+  utils: Ember.inject.service('utility-methods'),
+
   didReceiveAttrs: function() {
     this.filterAssignments();
   },
@@ -22,8 +25,8 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let currentUser = this.get('currentUser');
     let yourList = this.assignments.filter((assignment) => {
       let userId = currentUser.get('id');
-      let assigmentCreator = assignment.get('createdBy');
-      return userId === assigmentCreator.get('id') && !assignment.get('isTrashed');
+      let assigmentCreatorId = this.get('utils').getBelongsToId(assignment, 'createdBy');
+      return userId === assigmentCreatorId && !assignment.get('isTrashed');
     });
     return yourList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
@@ -33,8 +36,8 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let currentUser = this.get('currentUser');
     let adminList = this.get('assignmentList').filter((assignment) => {
       let userId = currentUser.get('id');
-      let assigmentCreator = assignment.get('createdBy');
-      return userId !== assigmentCreator.get('id') && !assignment.get('isTrashed');
+      let assigmentCreatorId = this.get('utils').getBelongsToId(assignment, 'createdBy');
+      return userId !== assigmentCreatorId && !assignment.get('isTrashed');
     });
     return adminList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),
@@ -43,8 +46,8 @@ Encompass.AssignmentListComponent = Ember.Component.extend(Encompass.CurrentUser
     let currentUser = this.get('currentUser');
     let pdList = this.get('assignmentList').filter((assignment) => {
       let userId = currentUser.get('id');
-      let assigmentCreator = assignment.get('createdBy');
-      return userId !== assigmentCreator.get('id') && !assignment.get('isTrashed');
+      let assigmentCreatorId = this.get('utils').getBelongsToId(assignment, 'createdBy');
+      return userId !== assigmentCreatorId && !assignment.get('isTrashed');
     });
     return pdList.sortBy('createDate').reverse();
   }.property('assignments.@each.isTrashed', 'currentUser.isStudent'),

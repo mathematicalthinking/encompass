@@ -21,7 +21,7 @@ module.exports.put = {};
   * @returns {Object} A filter object that can be passed to a Mongoose find operation
   *
   */
-const accessibleUsersQuery = async function(user, ids, usernames, regex, filterBy) {
+const accessibleUsersQuery = async function(user, ids, usernames, regex, filterBy, exactRegex) {
   if (!isNonEmptyObject(user)) {
     return;
   }
@@ -67,6 +67,10 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
 
   if (!filter.$or) {
     filter.$or = [];
+  }
+
+  if (exactRegex) {
+    filter.$or.push({ username: exactRegex});
   }
   // all users can access themselves, users they created, and the user who created them(?)
 

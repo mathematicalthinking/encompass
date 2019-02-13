@@ -1,6 +1,9 @@
 Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'user-info',
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+  basePermissions: Ember.inject.service('edit-permissions'),
+
   isEditing: false,
   authorized: null,
   selectedType: null,
@@ -34,41 +37,49 @@ Encompass.UserInfoComponent = Ember.Component.extend(Encompass.CurrentUserMixin,
 
   canEdit: Ember.computed('user.id', function () {
     let user = this.get('user');
-    if (Ember.isEmpty(user)) {
+    let currentUser = this.get('currentUser');
+
+    if (!user || !currentUser) {
       return;
     }
-    let creator = user.get('createdBy.content.id');
-    let currentUserId = this.get('currentUser').get('id');
-    let accountType = this.get('currentUser').get('accountType');
-    let yourUsername = this.get('currentUser').get('username');
-    let selectedUsername = user.get('username');
 
-    let isOwner = yourUsername === selectedUsername;
-    let isAdmin = accountType === 'A';
-    let isPdAdmin = accountType === 'P';
+    // is Admin
+    if (this.get('basePermissions.isActingAdmin')) {
+      return true;
+    }
 
-    let canEdit = (creator === currentUserId ? true : false) || isAdmin || isPdAdmin || isOwner;
-    return canEdit;
+    // is self
+    if (user.get('id') === currentUser.get('id')) {
+      return true;
+    }
+
+    let creatorId = this.get('utils').getBelongsToId(user, 'createdBy');
+
+    // is creator
+    if (currentUser.get('id') === creatorId) {
+      return true;
+    }
+
+    // pd admin for user's org
+    if (this.get('basePermissions').isRecordInPdDomain(user)) {
+      return true;
+    }
+    return false;
   }),
 
   canConfirm: Ember.computed('user.id', function () {
-    let accountType = this.get('currentUser').get('accountType');
-    let isAdmin = accountType === 'A';
-    let isPdAdmin = accountType === 'P';
 
-    let canConfirm = isPdAdmin || isAdmin;
-    return canConfirm;
+    if (this.get('basePermissions.isActingAdmin')) {
+      return true;
+    }
+    if (this.get('basePermissions').isRecordInPdDomain(this.get('user'))) {
+      return true;
+    }
+    return false;
   }),
 
   unconfirmedEmail: Ember.computed('user.id', function () {
-    let user = this.get('user');
-    let emailConfirm = user.get('isEmailConfirmed');
-
-    if (emailConfirm) {
-      return false;
-    } else if (!emailConfirm) {
-      return true;
-    }
+    return !this.get('user.isEmailConfirmed');
   }),
 
   getUserSections: function () {

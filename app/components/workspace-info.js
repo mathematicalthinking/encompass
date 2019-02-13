@@ -61,6 +61,18 @@ Encompass.WorkspaceInfoComponent = Ember.Component.extend(Encompass.CurrentUserM
     return isAdmin || isOwner || isCreator;
   }),
 
+  canEditCollaborators: function() {
+    if (this.get('canEdit')) {
+      return true;
+    }
+    return this.get('workspace.feedbackAuthorizers').includes(this.get('currentUser.id'));
+
+  }.property('workspace.feedbackAuthorizers.[]'),
+
+  showRemoveSelfAsCollab: function() {
+    return this.get('workspace.collaborators').includes(this.get('currentUser.id'));
+  }.property('workspace.collaborators.[]'),
+
   modes: function () {
     const basic = ['private', 'org', 'public'];
 

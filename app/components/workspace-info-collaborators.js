@@ -313,6 +313,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
     removeCollab(user) {
       let workspace = this.get('workspace');
       const utils = this.get('utils');
+
       if (!utils.isNonEmptyObject(user)) {
         return;
       }
@@ -321,7 +322,18 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
       if (utils.isNonEmptyArray(permissions)) {
         const objToRemove = permissions.findBy('user', user.get('id'));
         if (objToRemove) {
-          this.get('alert').showModal('warning', `Are you sure you want to remove ${user.get('username')} as a collaborator?`, `This may affect their ability to access ${this.get('workspace.name')} `, 'Yes, remove')
+
+          let userDisplay = user.get('username');
+          let pronoun = 'their';
+
+          let isSelf = user.get('id') === this.get('currentUser.id');
+
+          if (isSelf) {
+            userDisplay = 'yourself';
+            pronoun = 'your';
+          }
+
+          this.get('alert').showModal('warning', `Are you sure you want to remove ${userDisplay} as a collaborator?`, `This may affect ${pronoun} ability to access ${this.get('workspace.name')} `, 'Yes, remove')
         .then((result) => {
           if (result.value) {
             permissions.removeObject(objToRemove);
@@ -335,6 +347,7 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         }
       }
     },
+
     addCollaborator: function() {
       this.set('createNewCollaborator', true);
     },
@@ -347,5 +360,8 @@ Encompass.WorkspaceInfoCollaboratorsComponent = Ember.Component.extend(Encompass
         this.set('isShowingCustomViewer', false);
       }
     },
+    confirmRemoveSelf() {
+      this.send('removeCollab', this.get('currentUser'));
+    }
   }
 });

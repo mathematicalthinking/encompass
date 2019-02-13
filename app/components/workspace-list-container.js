@@ -681,9 +681,10 @@ buildCollabFilter() {
         console.log('getWorksapces and isHiddenOnly is', isHiddenOnly);
       }
     }).catch((err) => {
-      this.handleErrors(err, 'workspaceLoadErrors');
-      this.set('isFetchingWorkspaces', false);
-
+      if (!this.get('isDestroyed') && !this.get('isDestroying')) {
+        this.handleErrors(err, 'workspaceLoadErrors');
+        this.set('isFetchingWorkspaces', false);
+      }
     });
   },
 
