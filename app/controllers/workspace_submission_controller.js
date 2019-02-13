@@ -232,7 +232,7 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       this.transitionToRoute('workspace.submission');
     },
 
-    addSelection: function(selection) {
+    addSelection: function(selection, isUpdateOnly) {
       var user = this.get('currentUser');
       var workspace = this.get('currentWorkspace');
       var submission = this.get('model');
@@ -243,6 +243,12 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       if(alreadyExists.length > 0) {
         // TODO: display message to user
         // console.error("That selection already exists");
+        if (isUpdateOnly) {
+          let oldSel = alreadyExists.get('firstObject');
+          oldSel.set('relativeSize', selection.relativeSize);
+          oldSel.set('relativeCoords', selection.relativeCoords);
+          oldSel.save();
+        }
         return;
       }
 

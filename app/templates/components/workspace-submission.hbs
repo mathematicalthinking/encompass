@@ -47,7 +47,7 @@
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
     <h3 class="selectable-view-header">Selectable View!</h3>
-    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections}}
+    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections setupResizeHandler=(action "setupResizeHandler")}}
       <div id="submission_container">
         <div class="submission-short">
           {{#if currentSubmission.answer.answer}}
