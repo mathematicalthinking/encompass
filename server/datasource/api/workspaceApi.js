@@ -566,10 +566,10 @@ async function putWorkspace(req, res, next) {
     ws.organization = organization;
     ws.linkedAssignment = linkedAssignment;
     ws.doAllowSubmissionUpdates = doAllowSubmissionUpdates;
-    ws.permissions = permissions;
   }
 
-  const originalPermissions = ws.permissions;
+  const originalPermissions = ws.permissions || [];
+
   let originalCollabIds = [];
 
   if (isNonEmptyArray(originalPermissions)) {
@@ -577,6 +577,31 @@ async function putWorkspace(req, res, next) {
     .filter(obj => !isNil(obj.user))
     .map(obj => obj.user.toString())
     .value();
+  }
+
+  let ownPermissionObj = _.find(originalPermissions, (obj) => {
+    return areObjectIdsEqual(obj.user, user._id);
+  });
+
+  let isApprover = ownPermissionObj && ownPermissionObj.feedback === 'approver';
+
+  if (isAdmin || isOwner || isCreator || isPdWs || isApprover) {
+    ws.permissions = permissions;
+  } else  {
+    // everyone needs to be able to remove themself as collab
+    if (originalCollabIds.includes(user._id.toString())) {
+      // check if user tried to remove self
+      let newPermissionObj = _.find(permissions, (obj) => {
+        return areObjectIdsEqual(obj.user, user._id);
+      });
+
+      if (!newPermissionObj) {
+        //user removed self as collab, ignore other changes
+        ws.permissions = originalPermissions.filter((obj) => {
+          return !areObjectIdsEqual(obj.user, user._id);
+        });
+      }
+    }
   }
 
   let doUpdateLinkedAssignment = false;
