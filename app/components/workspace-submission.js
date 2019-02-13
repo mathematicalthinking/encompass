@@ -12,6 +12,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   isDirty: false,
   wsSaveErrors: [],
   permissions: Ember.inject.service('workspace-permissions'),
+  wasShowingBeforeResizing: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     var making = this.get('makingSelection');
@@ -25,8 +26,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   shouldCheck: Ember.computed('makingSelection', function() {
     return this.get('makingSelection');
   }),
-
-
 
   init: function() {
     this._super(...arguments);
@@ -159,8 +158,40 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     },
     toNewResponse: function(subId, wsId) {
       this.get('toNewResponse')(subId, wsId);
-    }
+    },
 
+    setupResizeHandler() {
+      let doneResizing;
+
+      let handleResize = () => {
+        if (this.get('showingSelections')) {
+          this.set('showingSelections', false);
+          this.set('wasShowingBeforeResizing', true);
+
+          clearTimeout(doneResizing);
+
+          doneResizing = setTimeout(() => {
+            if (this.get('wasShowingBeforeResizing')) {
+              this.set('showingSelections', true);
+              this.set('wasShowingBeforeResizing', false);
+            }
+          }, 500);
+        }
+
+        if (this.get('wasShowingBeforeResizing')) {
+          clearTimeout(doneResizing);
+
+          doneResizing = setTimeout(() => {
+            if (this.get('wasShowingBeforeResizing')) {
+              this.set('showingSelections', true);
+              this.set('wasShowingBeforeResizing', false);
+            }
+          }, 500);
+        }
+      };
+
+      $(window).on('resize', handleResize);
+    }
   }
 });
 

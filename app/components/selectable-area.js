@@ -15,11 +15,6 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this.setupTagging();
   },
 
-  handleResize() {
-    if (this.get('showingSelections')) {
-      this.set('showingSelections', false);
-    }
-  },
   didInsertElement: function() {
     this.set('currSubId', this.get('model.id'));
     this.set('selecting', this.get('makingSelection'));
@@ -72,8 +67,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
       comp.selectionHighlighting.disableSelection();
       comp.imageTagging.disable();
     }
-
-    $(window).on('resize', this.get('handleResize').bind(this));
+    this.get('setupResizeHandler')();
 
   },
 
