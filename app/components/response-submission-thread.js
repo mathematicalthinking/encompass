@@ -8,6 +8,8 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   isUnfinishedDraft: Ember.computed.gt('draftResponses.length', 0),
   isUnreadReply: Ember.computed.gt('unreadResponses.length', 0),
 
+  hasNewRevision: Ember.computed.gt('newRevisions.length', 0),
+
   isActionNeeded: Ember.computed.not('isNoActionNeeded'),
 
   statusMap: {
@@ -247,7 +249,7 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
 
   highestPrioritySubmission: function() {
     if (this.get('hasNewRevision')) {
-      return this.get('latestRevision');
+      return this.get('newRevisions').sortBy('createDate').get('lastObject');
     }
 
     if (this.get('doesHaveUnmentoredRevision')) {
