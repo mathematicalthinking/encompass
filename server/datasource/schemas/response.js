@@ -40,7 +40,8 @@ var ResponseSchema = new Schema({
     isNewlyApproved: { type: Boolean, default: false },
     isNewApproved: { type: Boolean, default : false },
     isNewPending: { type: Boolean, default: false },
-    isNewlyNeedsRevisions: { type: Boolean, default: false }
+    isNewlyNeedsRevisions: { type: Boolean, default: false },
+    isNewlySuperceded: { type: Boolean, default: false},
   }, {versionKey: false});
 
 /**
@@ -78,11 +79,13 @@ ResponseSchema.pre('save', function (next) {
 
     let isNewlyApproved = !isNew && this.status === 'approved' && didStatusChange;
 
+    let isNewlySuperceded = !isNew && this.status === 'superceded' && didStatusChange;
     // send ntf to recipient after save
     this.isNewApproved = isNewApproved;
     this.isNewlyApproved = isNewlyApproved;
     this.isNewPending = isNewPending || statusChangedToPending;
     this.isNewlyNeedsRevisions = isNewlyNeedsRevisions;
+    this.isNewlySuperceded = isNewlySuperceded;
 
     next();
   }
@@ -159,6 +162,20 @@ ResponseSchema.post('save', function (response) {
           text: 'One of your mentor replies was recently approved.'
         });
         newlyApprovedNtf.save();
+
+        //clear old waiting for approval ntfs
+        models.Notification.find({
+          notificationType: 'mentorReplyRequiresApproval',
+          response: response._id,
+          wasSeen: false,
+          isTrashed: false
+        }).exec()
+          .then((ntfs) => {
+            ntfs.forEach((ntf) => {
+              ntf.wasSeen = true;
+              ntf.save();
+            });
+          });
       }
     }
   }
@@ -206,6 +223,22 @@ ResponseSchema.post('save', function (response) {
       });
       ntf.save();
     }
+  }
+
+  if (response.isNewlySuperceded) {
+    // clear any notification relevant to this response
+    models.Notification.find({
+      primaryRecordType: 'response',
+      response: response._id,
+      wasSeen: false,
+      isTrashed: false
+    }).exec()
+      .then((ntfs) => {
+        ntfs.forEach((ntf) => {
+          ntf.wasSeen = true;
+          ntf.save();
+        });
+      });
   }
 
 });
