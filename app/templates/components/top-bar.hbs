@@ -100,6 +100,9 @@
           <li id="user-image">
             {{input type="checkbox" id="menu-button" name="menu-toggle" checked=openMenu click=(action "toggleMenu")}}
             <img src={{user.avatar}} alt="">
+            {{#if newNotifications}}
+              {{circle-ntf displayCount=newNotifications.length}}
+            {{/if}}
           </li>
         </ul>
       </div>
@@ -119,7 +122,11 @@
         {{#unless currentUser.isStudent}}
         <li>{{#link-to 'import'}}import{{/link-to}}</li>
         {{/unless}}
-        <li>{{#link-to 'responses'}}responses{{/link-to}}</li>
+        <li>{{#link-to 'responses'}}responses{{/link-to}}
+          {{#if responseNotifications}}
+            {{circle-ntf displayCount=responseNotifications.length}}
+          {{/if}}
+        </li>
         {{#unless currentUser.isStudent}}
           <li>{{#link-to 'users.home'}}users{{/link-to}}</li>
         {{/unless}}

@@ -8,6 +8,8 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   isUnfinishedDraft: Ember.computed.gt('draftResponses.length', 0),
   isUnreadReply: Ember.computed.gt('unreadResponses.length', 0),
 
+  hasNewRevision: Ember.computed.gt('newRevisions.length', 0),
+
   isActionNeeded: Ember.computed.not('isNoActionNeeded'),
 
   statusMap: {
@@ -47,12 +49,10 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   }.property('highestPriorityStatus'),
 
   didReceiveAttrs() {
-
     this.get('thread').forEach((val, key) => {
       this.set(key, val);
     });
     this.resolveMentors();
-    this.resolveWorkspace();
 
     this.resolveStudent().then((student) => {
       this.set('student', student);
@@ -75,20 +75,6 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
       return Ember.RSVP.resolve('unknown');
     }
     return Ember.RSVP.resolve(submissions.get('firstObject.student'));
-  },
-
-  resolveWorkspace() {
-    let id = this.get('workspaceId');
-    if (!id) {
-      return Ember.RSVP.resolve(null);
-    }
-
-    return this.get('store').findRecord('workspace', id)
-      .then((workspace) => {
-        if (!this.get('isDestroyed') && !this.get('isDestroying')) {
-          this.set('workspace', workspace);
-        }
-      });
   },
 
   studentDisplay: function() {
@@ -172,6 +158,15 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     return this.get('thread.latestReply');
   }.property('thread.latestReply'),
 
+  unmentoredRevisions: function() {
+    let mentoredRevisionIds = this.get('mainResponses').map((response) => {
+      return this.get('utils').getBelongsToId(response, 'submission');
+    }).compact().uniq();
+   return this.get('submissions').filter((submission) => {
+      return !mentoredRevisionIds.includes(submission.get('id'));
+   });
+ }.property('mainResponses.[]', 'submissions.[]'),
+
   resolveMentors() {
     let mentors = [];
 
@@ -192,6 +187,37 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
       }
     });
   },
+
+  highestPriorityResponse: function() {
+    let status = this.get('highestPriorityStatus');
+
+    if (status === 'doesHaveDraft') {
+      return this.get('draftResponses').sortBy('createDate').get('lastObject');
+    }
+
+    if (status === 'hasNewRevision') {
+      return null;
+    }
+
+    if (status === 'doesHaveUnmentoredRevision') {
+      return null;
+    }
+
+    if (status === 'doesHaveUnreadReply') {
+      return this.get('unreadResponses').sortBy('createDate').get('lastObject');
+    }
+
+    if (status === 'isWaitingForApproval') {
+      return this.get('pendingApprovalResponses').sortBy('createDate').get('lastObject');
+    }
+
+    if (status === 'doesNeedRevisions') {
+      return this.get('needsRevisionResponses').sortBy('createDate').get('lastObject');
+    }
+
+    return this.get('latestReply');
+
+  }.property('highestPriorityStatus'),
 
   highestPriorityStatus: function() {
     if (this.get('doesHaveDraft')) {
@@ -221,16 +247,30 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
 
   }.property('doesHaveDraft', 'doesHaveUnreadReply', 'isWaitingForApproval', 'hasNewRevision', 'dosHaveUnmentoredRevision', 'doesNeedRevisions', 'isWaitingForApproval'),
 
+  highestPrioritySubmission: function() {
+    if (this.get('hasNewRevision')) {
+      return this.get('newRevisions').sortBy('createDate').get('lastObject');
+    }
+
+    if (this.get('doesHaveUnmentoredRevision')) {
+      return this.get('unmentoredRevisions').sortBy('createDate').get('lastObject');
+    }
+  }.property('highestPriorityStatus'),
+
   actions: {
     toSubmissionResponse: function() {
-      if (this.get('highestPriorityStatus') === 'doesHaveUnreadReply') {
-        let sortedUnread = this.get('unreadResponses').sortBy('createDate');
-        let newestUnread = sortedUnread.get('lastObject');
-        let responseId = sortedUnread.get('lastObject.id');
-        let submissionId = this.get('utils').getBelongsToId(newestUnread, 'submission');
+      let response = this.get('highestPriorityResponse');
+      if (response) {
+        let responseId = response.get('id');
+        let submissionId = this.get('utils').getBelongsToId(response, 'submission');
         this.get('toResponse')(submissionId, responseId);
+      } else {
+        let submission = this.get('highestPrioritySubmission');
+        if (!submission) {
+          submission = this.get('latestRevision');
+        }
+        this.get('toSubmissionResponse')(submission);
       }
-      this.get('toSubmissionResponse')(this.get('latestRevision'));
     }
   }
 

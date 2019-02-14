@@ -13,6 +13,14 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     this.set('subResponses', this.get('responses'));
     this.handleResponseViewAudit();
 
+    let relatedNtfs = this.findRelatedNtfs('response', this.get('response'));
+
+    relatedNtfs.forEach((ntf) => {
+      if (!ntf.get('wasSeen')) {
+        ntf.set('wasSeen', true);
+        ntf.save();
+      }
+    });
     if (this.get('response.isNew')) {
       this.set('isCreatingNewMentorReply', true);
       return;
@@ -46,38 +54,19 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     draft: '#778899'
   },
 
-  newRevisionNotifications: function() {
-    let ntfs = this.get('responseNotifications') || [];
-
-    return ntfs.filter((ntf) => {
-      let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
-      let ntfType = ntf.get('notificationType');
-
-      return ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id');
-    });
-
-  }.property('responseNotifications.[]'),
 
   handleResponseViewAudit() {
-    let newSubNotification = this.get('newRevisionNotifications').find((ntf) => {
-      let newSubId = this.get('utils').getBelongsToId(ntf, 'submission');
-      return newSubId === this.get('submission.id');
+    let newSubNotifications = this.findRelatedNtfs('response', this.get('submission'), 'newWorkToMentor', 'submission');
+
+    newSubNotifications.forEach((ntf) => {
+      if (!ntf.get('wasSeen')) {
+        ntf.set('wasSeen', true);
+        ntf.save();
+      }
     });
-    if (newSubNotification && !newSubNotification.get('wasSeen')) {
-      newSubNotification.set('wasSeen', true);
-      newSubNotification.save();
-    }
+
 
     if (this.get('isPrimaryRecipient')) {
-      let foundNtf = this.get('newReplyNotifications').find((ntf) => {
-        let responseId = this.get('utils').getBelongsToId(ntf, 'response');
-        return responseId === this.get('response.id');
-      });
-
-      if (foundNtf && !foundNtf.get('wasSeen')) {
-        foundNtf.set('wasSeen', true);
-        foundNtf.save();
-      }
       if (!this.get('response.wasReadByRecipient')) {
         this.get('response').set('wasReadByRecipient', true);
         this.get('response').save();
@@ -277,6 +266,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           primaryRecordType: 'response',
           submission: newSub,
           createDate: new Date(),
+          text: 'There is a new revision for you to mentor.'
         });
         notification.save();
       });

@@ -15,7 +15,7 @@ const { isValidMongoId, areObjectIdsEqual } = require('../../utils/mongoose');
   */
 var NotificationSchema = new Schema({
 //== Shared properties (Because Mongoose doesn't support schema inheritance)
-    createdBy: { type: ObjectId, ref: 'User', required: true },
+    createdBy: { type: ObjectId, ref: 'User'},
     createDate: { type: Date, 'default': Date.now() },
     isTrashed: { type: Boolean, 'default': false },
     lastModifiedBy: { type: ObjectId, ref: 'User' },
@@ -43,7 +43,11 @@ var NotificationSchema = new Schema({
   * Before saving we must verify (synchonously) that:
   */
 NotificationSchema.pre('save', function (next) {
+  this.doAddToRecipient = false;
+  this.doPullFromRecipient = false;
+
   // new notification, add to user's ntf array
+
   if (this.isNew) {
     this.doAddToRecipient = true;
     next();

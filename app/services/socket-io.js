@@ -2,6 +2,7 @@
 /*global _:false */
 Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
   store: Ember.inject.service(),
+  alert: Ember.inject.service('sweet-alert'),
 
   init() {
     this._super(...arguments);
@@ -23,6 +24,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         );
       }
      });
+     this.triggerToast(data.notifications[0]);
     });
   },
 
@@ -41,4 +43,20 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       this.setupListeners();
     });
   },
+
+  triggerToast(ntf) {
+    if (!ntf) {
+      return;
+    }
+    let ntfText = ntf.text;
+    let toastText;
+    if (ntfText) {
+      toastText = ntfText;
+    } else {
+      let notificationType = ntf.notificationType;
+      toastText = `You have received a ${notificationType} notification.`;
+    }
+    this.get('alert').showToast('info', toastText, 'top-end', 3000, false, null);
+    return;
+  }
 });
