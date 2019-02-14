@@ -5,6 +5,8 @@ const ObjectId = Schema.ObjectId;
 
 const models = require('../schemas');
 
+const { isValidMongoId } = require('../../utils/mongoose');
+
 /**
   * @public
   * @class Response
@@ -37,6 +39,8 @@ var ResponseSchema = new Schema({
     isApproverNoteOnly: { type: Boolean, default: false },
     isNewlyApproved: { type: Boolean, default: false },
     isNewApproved: { type: Boolean, default : false },
+    isNewPending: { type: Boolean, default: false },
+    isNewlyNeedsRevisions: { type: Boolean, default: false }
   }, {versionKey: false});
 
 /**
@@ -61,12 +65,24 @@ ResponseSchema.pre('save', function (next) {
     // if status is approved, send ntf to recipient
     let isNew = this.isNew;
     let modifiedFields = this.modifiedPaths();
-    let isNewApproved = this.isNew && this.status === 'approved';
 
-    let isNewlyApproved = !isNew && this.status === 'approved' && modifiedFields.includes('status');
+    let didStatusChange = modifiedFields.includes('status');
+
+    let isNewApproved = this.isNew && this.responseType === 'mentor' && this.status === 'approved';
+    let isNewPending = this.isNew && this.status === 'pendingApproval';
+
+    // for when a draft is saved
+    let statusChangedToPending = this.status === 'pendingApproval' && didStatusChange;
+
+    let isNewlyNeedsRevisions = !isNew && this.status === 'needsRevisions' && didStatusChange;
+
+    let isNewlyApproved = !isNew && this.status === 'approved' && didStatusChange;
+
     // send ntf to recipient after save
     this.isNewApproved = isNewApproved;
     this.isNewlyApproved = isNewlyApproved;
+    this.isNewPending = isNewPending || statusChangedToPending;
+    this.isNewlyNeedsRevisions = isNewlyNeedsRevisions;
 
     next();
   }
@@ -132,7 +148,7 @@ ResponseSchema.post('save', function (response) {
 
       newReplyNtf.save();
 
-      if (this.isNewlyApproved) {
+      if (response.isNewlyApproved) {
         // send ntf to creator
         let newlyApprovedNtf = new models.Notification({
           createdBy: response.approvedBy,
@@ -144,6 +160,51 @@ ResponseSchema.post('save', function (response) {
         });
         newlyApprovedNtf.save();
       }
+    }
+  }
+
+  if (response.isNewPending) {
+    // send ntf to owner of workspace and any approvers
+    return models.Workspace.findById(response.workspace).lean().exec()
+      .then((workspace) => {
+        if (!workspace) {
+          return null;
+        }
+        let ntfRecipients = [];
+        if (isValidMongoId(workspace.owner)) {
+          ntfRecipients.push(workspace.owner);
+        }
+        let permissions = workspace.permissions || [];
+
+        permissions.forEach((obj) => {
+          if (obj.user && obj.feedback === 'approver') {
+            ntfRecipients.push(obj.user);
+          }
+        });
+        ntfRecipients.forEach((userId) => {
+          let ntf = new models.Notification({
+            createdBy: response.createdBy,
+            recipient: userId,
+            response: response._id,
+            primaryRecordType: 'response',
+            notificationType: 'mentorReplyRequiresApproval',
+            text: 'There is a new mentor reply waiting to be approved.'
+          });
+          ntf.save();
+        });
+      });
+  }
+  if (response.isNewlyNeedsRevisions) {
+    // send ntf to creator of response
+    if (isValidMongoId(response.createdBy)) {
+      let ntf = new models.Notification({
+        recipient: response.createdBy,
+        response: response._id,
+        primaryRecordType: 'response',
+        notificationType: 'mentorReplyNeedsRevisions',
+        text: 'One of your mentor replies needs revisions.'
+      });
+      ntf.save();
     }
   }
 
