@@ -139,11 +139,7 @@ const accessibleAnswersQuery = async function(user, ids, filterBy, searchBy, isT
   if (accountType === 'T') {
     // only answers from either a teacher's assignments or from a section where they are in the teachers array
 
-    // const ownSections = await utils.getTeacherSections(user);
-
-    // const ownAssignmentIds = await utils.getModelIds('Assignment', {createdBy: user._id});
-
-    const [ ownSections, ownAssignmentIds ] = await Promise.all([
+    const [ ownAssignmentIds, ownSections ] = await Promise.all([
       utils.getTeacherAssignments(user._id),
       utils.getTeacherSectionsById(user._id)
      ]);
