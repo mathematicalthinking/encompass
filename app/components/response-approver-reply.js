@@ -31,18 +31,18 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('replyToView', 'sortedApproverReplies.[]'),
 
   checkReplyNtf: function() {
-    if (!this.get('displayReply') || !this.get('newReplyNotifications')) {
+    if (!this.get('displayReply')) {
       return;
     }
-    let foundNtf = this.get('newReplyNotifications').find((ntf) => {
-      return this.get('utils').getBelongsToId(ntf, 'response') === this.get('displayReply.id');
+    let relatedNtfs = this.findRelatedNtfs('response', this.get('displayReply'));
+    relatedNtfs.forEach((ntf) => {
+      if (!ntf.get('wasSeen')) {
+        ntf.set('wasSeen', true);
+        ntf.save();
+      }
     });
-    if (foundNtf && !foundNtf.get('wasSeen')) {
-      foundNtf.set('wasSeen', true);
-      foundNtf.save();
-    }
 
-  }.observes('displayReply', 'newReplyNotifications.[]'),
+  }.observes('displayReply', 'responseNotifications.[]'),
 
   isDraft: function() {
     return this.get('displayReply.status') === 'draft';
