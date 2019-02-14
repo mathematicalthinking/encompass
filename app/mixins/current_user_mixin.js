@@ -48,4 +48,26 @@ Encompass.CurrentUserMixin = Ember.Mixin.create({
     });
   }.property('responseNotifications.[]'),
 
+  findRelatedNtfs(primaryRecordType, relatedRecord, ntfType, belongsToType) {
+    if (!primaryRecordType || !relatedRecord) {
+      return [];
+    }
+    let propName = `${primaryRecordType}Notifications`;
+    let baseNtfs = this.get(propName);
+
+    if (!baseNtfs) {
+      return [];
+    }
+
+    let relationshipType = belongsToType || primaryRecordType;
+    return baseNtfs.filter((ntf) => {
+      let belongsToId = this.get('utils').getBelongsToId(ntf, relationshipType);
+
+      if (ntfType) {
+        return ntf.get('notificationType') === ntfType && belongsToId === relatedRecord.get('id');
+      }
+      return belongsToId === relatedRecord.get('id');
+    });
+  },
+
 });
