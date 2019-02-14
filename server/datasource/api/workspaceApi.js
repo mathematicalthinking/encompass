@@ -326,6 +326,7 @@ function filterRequestedWorkspaceData(user, results) {
       }
       return fetchedWs
       .then((populatedWs) => {
+        let populatedResponses = populatedWs.responses ? populatedWs.responses.slice() : [];
         // eslint-disable-next-line no-unused-vars
 
         if (areSubmissionRestrictions) {
@@ -347,11 +348,19 @@ function filterRequestedWorkspaceData(user, results) {
             }
           });
         }
-
-          ws.responses = _.chain(ws.responses)
+          ws.responses = _.chain(populatedResponses)
             .filter((response) => {
               if (!response) {
                 return false;
+              }
+
+              if (areSubmissionRestrictions) {
+                // must be in restricted responses
+                if (!_.find(ws.responses, (responseId) => {
+                  return areObjectIdsEqual(responseId, response._id);
+                })) {
+                  return false;
+                }
               }
               let isYours = areObjectIdsEqual(response.createdBy, user._id);
               let isApproved = response.status === 'approved';

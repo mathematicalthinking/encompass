@@ -1,6 +1,7 @@
 Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'response-approver-reply',
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
 
   showNoActionsMessage: Ember.computed.equal('responseToApprove.status', 'approved'),
 
@@ -28,6 +29,20 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
+
+  checkReplyNtf: function() {
+    if (!this.get('displayReply') || !this.get('newReplyNotifications')) {
+      return;
+    }
+    let foundNtf = this.get('newReplyNotifications').find((ntf) => {
+      return this.get('utils').getBelongsToId(ntf, 'response') === this.get('displayReply.id');
+    });
+    if (foundNtf && !foundNtf.get('wasSeen')) {
+      foundNtf.set('wasSeen', true);
+      foundNtf.save();
+    }
+
+  }.observes('displayReply', 'newReplyNotifications.[]'),
 
   isDraft: function() {
     return this.get('displayReply.status') === 'draft';

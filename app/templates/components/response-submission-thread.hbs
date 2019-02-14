@@ -5,7 +5,11 @@
     </div>
   {{/if}}
   <div class="item-section workspace">
-    <span>{{workspace.name}}</span>
+    {{#if latestReply}}
+      <span>{{latestReply.workspace.name}}</span>
+    {{else}}
+    <span>{{latestRevision.workspaces.firstObject.name}}</span>
+    {{/if}}
   </div>
   <div class="item-section submission-date">
     <span>{{format-date thread.latestRevision.createDate 'L'}}</span>
@@ -13,7 +17,6 @@
   <div class="item-section problem">
     {{latestRevision.answer.problem.title}}
   </div>
-
   {{#if showMentor}}
     <div class="item-section mentor">
       {{#each submissionMentors as |mentor|}}
