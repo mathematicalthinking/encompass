@@ -36,6 +36,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didReceiveAttrs() {
+    this.checkForOldWaitingForApprovalNtfs();
+
     let list = [
       {name: 'sortedSubmitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.size'), currentFilter: 'submitter'},
       {name: 'sortedMentoringResponses', actionCount: this.get('actionMentoringThreads.length'), allCount: this.get('mentoringThreads.size'), currentFilter: 'mentoring'},
@@ -50,30 +52,35 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
   },
 
-  // newWorkToMentorNtfs: function() {
-  //   let ntfs = this.get('responseNotifications') || [];
+  checkForOldWaitingForApprovalNtfs() {
+    let ntfs = this.get('responseNotifications').filterBy('notificationType', 'mentorReplyRequiresApproval');
 
-  //   return ntfs.filter((ntf) => {
-  //     let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
-  //     let ntfType = ntf.get('notificationType');
+    if (!ntfs) {
+      return;
+    }
 
-  //    let isMatch = ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id');
+    let allResponses = Ember.RSVP.all(ntfs.mapBy('response'));
+    return allResponses
+    .then((responses) => {
+      return responses.filter((response) => {
+        return response && response.get('status') !== 'pendingApproval';
+      });
+    })
+    .then((oldResponses) => {
+      if (oldResponses.get('length') > 0) {
+        let oldResponseIds = oldResponses.mapBy('id');
+        ntfs.forEach((ntf) => {
+          let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+          if (oldResponseIds.includes(responseId)) {
+            ntf.set('wasSeen', true);
+            ntf.save();
+          }
+        });
 
-  //    if (isMatch) {
-  //     let subId = this.get('utils').getBelongsToId(ntf, 'submission');
+      }
+    });
 
-
-  //       let existingRecord = this.get('submissions').findBy('id', subId);
-
-  //       if (!existingRecord) {
-  //         let peeked = this.get('store').peekRecord('submission', subId);
-  //         this.get('submissions').addObject(peeked);
-  //       }
-  //    }
-  //    return isMatch;
-  //   });
-
-  // }.property('responseNotifications.[]'),
+  },
 
   newRevisions: function() {
     let newWorkNtfs = this.get('responseNotifications').filterBy('notificationType', 'newWorkToMentor');
