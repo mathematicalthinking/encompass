@@ -7,6 +7,9 @@ Encompass.CircleNtfComponent = Ember.Component.extend({
     if (typeof count !== 'number') {
       return 0;
     }
+    if (count > 99) {
+      return '99+';
+    }
     return count;
   }.property('displayCount'),
 
