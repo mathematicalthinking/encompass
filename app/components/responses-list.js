@@ -50,30 +50,49 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     this._super(...arguments);
   },
 
-  newWorkToMentorNtfs: function() {
-    let ntfs = this.get('responseNotifications') || [];
+  // newWorkToMentorNtfs: function() {
+  //   let ntfs = this.get('responseNotifications') || [];
 
-    return ntfs.filter((ntf) => {
-      let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
-      let ntfType = ntf.get('notificationType');
+  //   return ntfs.filter((ntf) => {
+  //     let recipientId = this.get('utils').getBelongsToId(ntf, 'recipient');
+  //     let ntfType = ntf.get('notificationType');
 
-     let isMatch = ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id');
+  //    let isMatch = ntfType === 'newWorkToMentor' && recipientId === this.get('currentUser.id');
 
-     if (isMatch) {
-      let subId = this.get('utils').getBelongsToId(ntf, 'submission');
+  //    if (isMatch) {
+  //     let subId = this.get('utils').getBelongsToId(ntf, 'submission');
 
 
-        let existingRecord = this.get('submissions').findBy('id', subId);
+  //       let existingRecord = this.get('submissions').findBy('id', subId);
 
-        if (!existingRecord) {
-          let peeked = this.get('store').peekRecord('submission', subId);
+  //       if (!existingRecord) {
+  //         let peeked = this.get('store').peekRecord('submission', subId);
+  //         this.get('submissions').addObject(peeked);
+  //       }
+  //    }
+  //    return isMatch;
+  //   });
+
+  // }.property('responseNotifications.[]'),
+
+  newRevisions: function() {
+    let newWorkNtfs = this.get('responseNotifications').filterBy('notificationType', 'newWorkToMentor');
+
+    let newSubIds = newWorkNtfs.map((ntf) => {
+      return this.get('utils').getBelongsToId(ntf, 'submission');
+    }).compact().uniq();
+    let newRevisions = newSubIds.map((id) => {
+        let peeked = this.get('store').peekRecord('submission', id);
+        if (peeked) {
           this.get('submissions').addObject(peeked);
         }
-     }
-     return isMatch;
-    });
+        return peeked;
 
-  }.property('responseNotifications.[]'),
+    }).compact();
+
+    return newRevisions;
+
+  }.property('responseNotifications.[]', 'submissions.[]'),
 
   observeNewReplyNtfs: function() {
     let ntfs = this.get('newReplyNotifications');
@@ -115,7 +134,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     this.get('uniqueStudentIdentifiers').forEach((studentId) => {
 
       this.get('workspaceSubmissionThreads').forEach((wsSubs, wsId, map) => {
-
         let studentWork = wsSubs.filterBy('uniqueIdentifier', studentId);
         if (studentWork.get('length') > 0) {
           let combinedUniqueId = wsId + studentId;
@@ -137,7 +155,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       map.get(combinedId).set('submissions', subs.sortBy('createDate'));
     });
     return threads;
-  }.property('workspaceSubmissionThreads', 'uniqueStudentIds.[]'),
+  }.property('workspaceSubmissionThreads',  'newRevisions.[]','wstSubmissions.[]', 'uniqueStudentIds.[]'),
 
   isMentoringResponse(response) {
     if (!response) {
@@ -195,24 +213,23 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   isNewRevision(submission) {
-    let ntfs = this.get('newWorkToMentorNtfs');
 
-    let subNtf = ntfs.find((ntf) => {
-      let subId = this.get('utils').getBelongsToId(ntf, 'submission');
-      return subId === submission.get('id');
-    });
+    let ntfs = this.findRelatedNtfs('response', submission, 'newWorkToMentor', 'submission');
 
-    if (!subNtf) {
-      return false;
-    }
-    return !subNtf.get('isTrashed') && !subNtf.get('wasSeen');
+    return ntfs.get('length') > 0;
   },
 
   hasNewRevision(submissions) {
-    let newSub = submissions.find((sub) => {
-      return this.isNewRevision(sub);
-    });
-    return !this.get('utils').isNullOrUndefined(newSub);
+    let newRevisionIds = this.get('newRevisions').mapBy('id');
+
+    let subIds = submissions.mapBy('id');
+
+    for (let id of subIds) {
+      if (newRevisionIds.includes(id)) {
+        return true;
+      }
+    }
+    return false;
   },
   doesThreadRequireAction(thread) {
     let actionProps = ['hasNewRevision', 'doesHaveDraft', 'doesHaveUnreadReply', 'doesNeedRevisions', 'isWaitingForApproval', 'doesHaveUnmentoredRevision'];
@@ -227,7 +244,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   mentoringThreads: function() {
     let mentoringThreads = Ember.Map.create();
-
     this.get('studentSubmissionThreads').forEach((thread, combinedId, map) => {
       // just exclude your own Id
       //each thread has studentId prop and submissions prop
@@ -256,8 +272,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
           studentMap.set('responses', subResponses);
           studentMap.set('workspaceId', workspaceId);
 
-          studentMap.set('hasNewRevision', this.hasNewRevision(subs));
-
+          studentMap.set('newRevisions', this.get('newRevisions'));
+          // studentMap.set('hasNewRevision', this.hasNewRevision(subs));
           studentMap.set('doesHaveDraft', this.doesHaveDraft(subResponses));
           studentMap.set('latestRevision', subs.get('lastObject'));
           studentMap.set('latestReply', subResponses.get('lastObject'));
@@ -288,7 +304,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       }
     });
     return mentoringThreads;
-  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}', 'newWorkToMentorNtfs.@each.{wasSeen,isTrashed}'),
+  }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}', 'responseNotifications.[]'),
+
 
   submitterThreads: function() {
     let submitterThreads = Ember.Map.create();
@@ -374,6 +391,14 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
     return approvingThreads;
   }.property('studentSubmissionThreads', 'nonTrashedResponses.@each.{status,wasReadByRecipient}'),
+
+  wstSubmissions: function() {
+    let subs = [];
+    this.get('workspaceSubmissionThreads').forEach((wsSubs) => {
+      subs.addObjects(wsSubs);
+    });
+    return subs;
+  }.property('submissions.[]'),
 
   workspaceSubmissionThreads: function() {
     let threads = Ember.Map.create();
@@ -723,7 +748,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     if (val === 'all') {
       return this.get('sortedAllThreads');
     }
-  }.property('currentFilter', 'sortedSubmitterThreads', 'sortedMentoringThreads,', 'sortedApprovingThreads'),
+  }.property('currentFilter', 'sortedSubmitterThreads.[]', 'sortedMentoringThreads.[],', 'sortedApprovingThreads.[]'),
 
   submitterActionItems: function() {
     return this.get('submitterResponses').rejectBy('wasReadByRecipient');
