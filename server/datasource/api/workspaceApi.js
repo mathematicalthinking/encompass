@@ -1724,7 +1724,20 @@ async function postWorkspaceEnc(req, res, next) {
     let subs = await answersToSubmissions(answersToConvert);
     const submissions = await Promise.all(subs.map((obj) => {
       let sub = new models.Submission(obj);
-      sub.createdBy = user;
+
+      let creatorId;
+
+      let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+      // set creator of submission as the enc user who created it if applicable
+      // else set as importer
+
+      if (isValidMongoId(encUserId)) {
+        creatorId = encUserId;
+      } else {
+        creatorId = user._id;
+      }
+      sub.createdBy = creatorId;
       sub.createDate = Date.now();
       return sub.save();
     }));
@@ -2812,7 +2825,23 @@ async function addAnswerToWorkspace(user, answer) {
     // add createdBy and createDate and create submission record
     let obj = submissionJSON[0];
     obj.createDate = Date.now();
-    obj.createdBy = user._id;
+
+    console.log('sub obj updateWorkspace', obj);
+    let creatorId;
+
+    let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+    // set creator of submission as the enc user who created it if applicable
+    // else set as importer
+
+    if (isValidMongoId(encUserId)) {
+      creatorId = encUserId;
+    } else {
+      creatorId = user._id;
+    }
+    console.log('creatorId', creatorId);
+    obj.createdBy = creatorId;
+    // obj.createdBy = user._id;
 
     // add workspaceId to workspaces array
 
@@ -2917,7 +2946,20 @@ const updateWorkspaceRequest = async function (req, res, next) {
 
     let savedSubs = await Promise.all(JSONObjects.map((obj) => {
       obj.createDate = Date.now();
-      obj.createdBy = user._id;
+      let creatorId;
+
+      let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+      // set creator of submission as the enc user who created it if applicable
+      // else set as importer
+
+      if (isValidMongoId(encUserId)) {
+        creatorId = encUserId;
+      } else {
+        creatorId = user._id;
+      }
+      obj.createdBy = creatorId;
+      // obj.createdBy = user._id;
       let newSubmission = new models.Submission(obj);
 
       newSubmission.workspaces.push(workspace);
