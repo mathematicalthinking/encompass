@@ -720,18 +720,20 @@ div.selectBox {
   position: relative;
   background-color: #f8f8ff;
   margin: 2px;
-  width: 10em;
+  width: 15em;
   line-height: 2em;
   display:inline-block;
+  vertical-align: middle;
 }
 
 div.selectBox .selected {
-  background: transparent url('http://mathforum.org/img/glyphish/icons/icons-gray/140-gradhat-16.png') center left no-repeat;
+  /* background: transparent url('http://mathforum.org/img/glyphish/icons/icons-gray/140-gradhat-16.png') center left no-repeat; */
   color:#000;
   padding: 0px;
   margin: 0px;
   border: solid 1px;
   border-radius:2px;
+  width: 100%;
 }
 
 div.selectBox .selector {
@@ -739,12 +741,17 @@ div.selectBox .selector {
   background: transparent url('http://mathforum.org/img/glyphish/icons/icons-gray/259-list-16.png') center left no-repeat;
   width:16px;
   height:11px;
-  left: 80%;
+  left: 90%;
   top: 30%;
 }
 
 .studentItem {
-  padding-left: 1.5em;
+  padding-left: 3px;
+  font-size: 0.9em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
 }
 
 .studentItem a:hover {
