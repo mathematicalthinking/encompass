@@ -227,6 +227,23 @@ const canGetUser = async function(user, id, username) {
     };
   }
 
+  // check if request user sent user a response
+
+  let isResponseRelated = await utils.doesRecordExist('Response', {
+    isTrashed: false,
+    recipient: user._id,
+    createdBy: requestedUser._id,
+    status: 'approved'
+  });
+
+  if (isResponseRelated) {
+    return {
+      doesExist: true,
+      hasPermission: true,
+      requestedUser
+    };
+  }
+
   if (id) {
     criteria = await accessibleUsersQuery(user, id, null);
   } else {

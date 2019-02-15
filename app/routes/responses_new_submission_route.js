@@ -18,11 +18,11 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
     if (workspace) {
       return Ember.RSVP.resolve(workspace);
     }
+    let wsIds = submission.hasMany('workspaces').ids();
+    let wsId = wsIds.get('firstObject');
+    return this.get('store').findRecord('workspace', wsId);
+
     // in current structure do submissions ever have multiple workspaces?
-    return submission.get('workspaces')
-    .then((workspaces) => {
-      return workspaces.get('firstObject');
-    });
   },
   resolveRecipient(submission, workspace) {
     // if creator of submission is enc user, they should always be in store
