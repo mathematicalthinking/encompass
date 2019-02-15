@@ -64,6 +64,19 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
     orFilter.$or.push({ createdBy: user._id });
     orFilter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaceIds} }});
 
+    // everyone should have access to submissions related to approved mentor replies addressed to them
+
+    let approvedMentorReplies = await utils.getModelIds('Response', {
+      isTrashed: false,
+      responseType: 'mentor',
+      status: 'approved',
+      recipient: user._id
+    });
+
+    if (isNonEmptyArray(approvedMentorReplies)) {
+      orFilter.$or.push({ responses: { $elemMatch: { $in: approvedMentorReplies } } } );
+    }
+
     const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'submissions');
 
     if (isNonEmptyArray(restrictedRecords)) {
@@ -123,10 +136,7 @@ const canLoadSubmission = async function(user, id) {
 
   let criteria = await accessibleSubmissionsQuery(user, id);
 
-  let accessibleIds = await utils.getModelIds('Submission', criteria);
-  accessibleIds = accessibleIds.map(id => id.toString()); // map objectIds to strings to check for existence
-
-  return accessibleIds.includes(id);
+  return utils.doesRecordExist('Submission', criteria);
   };
 
 module.exports.get.submissions = accessibleSubmissionsQuery;

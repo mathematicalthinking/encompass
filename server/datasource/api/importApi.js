@@ -5,6 +5,7 @@
 
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
+const _ = require('underscore');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -15,6 +16,7 @@ const workspaceApi = require('./workspaceApi');
 const objectUtils = require('../../utils/objects');
 const { isNil, isNonEmptyArray, } = objectUtils;
 
+const { isValidMongoId } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -161,7 +163,20 @@ const postImport = async function(req, res, next) {
   try {
     submissions = await Promise.all(subData.map((obj) => {
       let sub = new models.Submission(obj);
-      sub.createdBy = user;
+
+      let creatorId;
+
+      let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
+
+      // set creator of submission as the enc user who created it if applicable
+      // else set as importer
+
+      if (isValidMongoId(encUserId)) {
+        creatorId = encUserId;
+      } else {
+        creatorId = user._id;
+      }
+      sub.createdBy = creatorId;
       sub.createDate = Date.now();
 
       return sub.save();
