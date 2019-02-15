@@ -53,7 +53,7 @@ describe('Workspace CRUD operations by account type', async function() {
       });
     });
 
-    if (accountType !== 'A') {
+    if (accountType !== 'A' && accountType !== 'S') {
       /** GET **/
       describe('/GET inaccessible workspace by id', () => {
         it('should return 403 error', done => {
