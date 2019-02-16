@@ -279,8 +279,12 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
           studentMap.set('responses', subResponses);
           studentMap.set('workspaceId', workspaceId);
 
-          studentMap.set('newRevisions', this.get('newRevisions'));
-          // studentMap.set('hasNewRevision', this.hasNewRevision(subs));
+          let threadNewRevisions = this.get('newRevisions').filter((revision) => {
+            return subs.includes(revision);
+          });
+
+          studentMap.set('newRevisions', threadNewRevisions);
+
           studentMap.set('doesHaveDraft', this.doesHaveDraft(subResponses));
           studentMap.set('latestRevision', subs.get('lastObject'));
           studentMap.set('latestReply', subResponses.get('lastObject'));
