@@ -356,7 +356,7 @@
           border: 1px solid $input-border;
           border-radius: 3px;
           margin-bottom: 15px;
-          resize: none;
+          resize: vertical;
         }
         .approve-note {
           margin-top: 30px;
@@ -466,8 +466,8 @@
           border: 1px solid $input-border;
           border-radius: 3px;
           margin: 15px 0;
-          resize: none;
-          height: 60px;
+          resize: vertical;
+          height: 150px;
         }
       }
     }
