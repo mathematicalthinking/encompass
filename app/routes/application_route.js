@@ -8,16 +8,10 @@
   * @todo Manage the current user without setting on the Encompass object itself.
   */
 Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't require authentication since it's getting the user
+  userNtfs: Ember.inject.service('user-ntfs'),
+
   model: function() {
-    let currentUser;
-    return this.get('store').queryRecord('user', {alias: 'current'})
-        .then((user) => {
-         currentUser = user;
-         return user.get('notifications');
-      })
-      .then(() => {
-        return currentUser;
-      });
+    return this.get('store').queryRecord('user', {alias: 'current'});
     },
 
   afterModel: function(user, transition) {
@@ -25,6 +19,10 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
 
     // Need this check so that the user isn't auto-redirected to home after
     // clicking on reset password link
+
+    if (user.get('isAuthenticated')) {
+      this.get('userNtfs').setupProperties(user);
+    }
     const allowedPaths = ['auth.reset', 'auth.confirm', 'auth.forgot', 'auth.login', 'auth.signup'];
     const targetPath = transition.targetName;
 
@@ -34,7 +32,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
     //Do we need this check for isAuthenticated here? All routes that should be authenticated
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
-      this.transitionTo('/');
+      this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {

@@ -17,8 +17,9 @@ const access   = require('../../middleware/access/users');
 const auth = require('../../datasource/api/auth');
 
 const objectUtils = require('../../utils/objects');
-const { isNonEmptyObject, } = objectUtils;
+const { isNonEmptyObject, isNonEmptyArray } = objectUtils;
 
+const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -221,6 +222,8 @@ function postUser(req, res, next) {
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     const user = userAuth.requireUser(req);
 
+    let isSelf = areObjectIdsEqual(user._id, req.params.id);
+
     let canModifyUser = await access.canModifyUser(user, req.params.id);
     if (!canModifyUser) {
       return utils.sendError.NotAuthorizedError('You do not have permissions modify this user.', res);
@@ -259,6 +262,12 @@ function postUser(req, res, next) {
       updateHash = requestBody;
     }
     updateHash.socketId = requestBody.socketId;
+
+    if (isSelf) {
+      if (Array.isArray(requestBody.notifications)) {
+        updateHash.notifications = requestBody.notifications;
+      }
+    }
 
     const updatedUser = await models.User.findByIdAndUpdate(req.params.id, updateHash, {new: true}).exec();
 
