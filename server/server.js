@@ -215,7 +215,7 @@ server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 server.get('/api/notifications', api.get.notifications);
 server.get('/api/notifications/:id', path.validateId(), api.get.notification);
-
+server.get('/api/responsethreads/:threadType', api.get.responseThreads);
 //ALL POST REQUESTS
 server.post('/api/users', api.post.user);
 server.post('/api/workspaces', api.post.workspace);

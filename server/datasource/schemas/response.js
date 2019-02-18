@@ -42,6 +42,7 @@ var ResponseSchema = new Schema({
     isNewPending: { type: Boolean, default: false },
     isNewlyNeedsRevisions: { type: Boolean, default: false },
     isNewlySuperceded: { type: Boolean, default: false},
+    powsRecipient: { type: String },
   }, {versionKey: false});
 
 /**
