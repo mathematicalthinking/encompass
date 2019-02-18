@@ -3,6 +3,7 @@
 Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
   store: Ember.inject.service(),
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
 
   init() {
     this._super(...arguments);
@@ -15,6 +16,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
     }
 
     socket.on('NEW_NOTIFICATION', (data) => {
+      console.log('emitting ntf', data);
      _.each(data, (val, key) => {
       if (val) {
         this.get('store').pushPayload(
@@ -24,7 +26,43 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
         );
       }
      });
-     this.triggerToast(data.notifications[0]);
+     let ntf = data.notifications[0];
+
+     // check if we need to clear any now outdated notifications
+     if (ntf) {
+      this.triggerToast(data.notifications[0]);
+     }
+    });
+
+    socket.on('CLEAR_NOTIFICATION', (data) => {
+      /*
+      data {
+        notificationId,
+        doTrash,
+        doSetAsSeen
+      }
+      */
+      if (this.get('utils').isValidMongoId(data.notificationId)) {
+        let peeked = this.get('store').peekRecord('notification', data.notificationId);
+        console.log('clearing ntf', peeked);
+        if (!peeked) {
+          return;
+        }
+
+        let doSave = data.doTrash || data.doSetAsSeen;
+
+        if (!doSave) {
+          this.get('store').unloadRecord(peeked);
+          return;
+        }
+        if (data.doTrash) {
+          peeked.set('isTrashed', true);
+        }
+        if (data.doSetAsSeen) {
+          peeked.set('wasSeen', true);
+        }
+        peeked.save();
+      }
     });
   },
 
