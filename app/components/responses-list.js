@@ -36,7 +36,7 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   },
 
   didReceiveAttrs() {
-    this.checkForOldWaitingForApprovalNtfs();
+    // this.checkForOldWaitingForApprovalNtfs();
 
     let list = [
       {name: 'sortedSubmitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.size'), currentFilter: 'submitter'},

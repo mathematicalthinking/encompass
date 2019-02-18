@@ -3,26 +3,24 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
 
   model: function(){
     let currentUser = this.modelFor('application');
-    let hash = {
-      notifications: currentUser.get('notifications')
-    };
 
+    let responses;
     if (currentUser.get('isAdmin') && !currentUser.get('isStudent')) {
-      hash.responses = this.get('store').query('response', {
+      responses = this.get('store').query('response', {
         isAdminActingPd: true
       });
     } else {
-      hash.responses = this.get('store').findAll('response');
+      responses = this.get('store').findAll('response');
     }
-    return Ember.RSVP.hash(hash)
-    .then((hash) => {
+    return Ember.RSVP.resolve(responses)
+    .then((responses) => {
 
-      let areResponses = hash.responses.get('length') > 0;
+      let areResponses = responses.get('length') > 0;
       let newSubmissions = [];
       let responseSubmissions = [];
 
       if (areResponses) {
-        let subIds = hash.responses.map((response) => {
+        let subIds = responses.map((response) => {
           return this.get('utils').getBelongsToId(response, 'submission');
         })
         .compact()
@@ -32,7 +30,7 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
           ids: subIds
         });
 
-      let ownMentorReplies = hash.responses.filter((response) => {
+      let ownMentorReplies = responses.filter((response) => {
         let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
         return response.get('responseType') === 'mentor' && creatorId === currentUser.get('id');
       });
@@ -55,8 +53,7 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
     }
 
       return Ember.RSVP.hash({
-        responses: hash.responses,
-        notifications: hash.notifications,
+        responses,
         responseSubmissions,
         newSubmissions,
       })
@@ -73,7 +70,6 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
 
           return {
             responses: hash.responses,
-            notifications: hash.notifications,
             submissions: uniqueSubs
           };
       })
