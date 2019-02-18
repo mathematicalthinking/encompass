@@ -1,8 +1,7 @@
 Encompass.SocketLoaderComponent = Ember.Component.extend({
   socketIo: Ember.inject.service('socket-io'),
-
   didReceiveAttrs() {
-    if (this.get('currentUser')) {
+    if (this.get('currentUser') && !this.get('currentUser.isGuest')) {
       this.get('socketIo').setupSocket(this.get('currentUser'));
     }
     this._super(...arguments);
