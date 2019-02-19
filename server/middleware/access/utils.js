@@ -668,6 +668,26 @@ async function getPublicOldPowsWorkIds() {
   }
 }
 
+function getWorkspacesWithOwnSubmissions(user) {
+  if (!user) {
+    return [];
+  }
+  let userId = user._id.toString();
+  return getModelIds('Submission', {
+    isTrashed: false,
+    'creator.studentId': userId
+  })
+  .then((subIds) => {
+    if (!isNonEmptyArray(subIds)) {
+      return [];
+    }
+    return getModelIds('Workspace', {
+      isTrashed: false,
+      submissions: {$elemMatch: {$in: subIds}}
+    });
+  });
+}
+
 module.exports.getModelIds = getModelIds;
 module.exports.getTeacherSections = getTeacherSections;
 module.exports.getStudentSections = getStudentSections;
@@ -694,3 +714,4 @@ module.exports.getOrgRecommendedProblems = getOrgRecommendedProblems;
 module.exports.getAccessibleResponseIds = getAccessibleResponseIds;
 module.exports.getAssignmentUsers = getAssignmentUsers;
 module.exports.getPublicOldPowsWorkIds = getPublicOldPowsWorkIds;
+module.exports.getWorkspacesWithOwnSubmissions = getWorkspacesWithOwnSubmissions;
