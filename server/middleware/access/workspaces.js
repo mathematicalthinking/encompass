@@ -196,10 +196,11 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
   accessCrit.$or.push({ createdBy : user._id });
   accessCrit.$or.push({ owner: user._id});
 
-  let workspacesOwnSubs = await utils.getWorkspacesWithOwnSubmissions(user);
-
-  if (isNonEmptyArray(workspacesOwnSubs)) {
-    accessCrit.$or.push({_id: {$in: workspacesOwnSubs}});
+  if (ids) {
+    let workspacesOwnSubs = await utils.getWorkspacesWithOwnSubmissions(user);
+    if (isNonEmptyArray(workspacesOwnSubs)) {
+      accessCrit.$or.push({_id: {$in: workspacesOwnSubs}});
+    }
   }
 
   if (isNonEmptyArray(collabWorkspaces)) {
