@@ -808,7 +808,7 @@ const studentMT = {
     }
   },
   workspaces: {
-    accessibleWorkspacesCount: 1,
+    accessibleWorkspacesCount: 2,
     accessibleWorkspace:
       {
         _id: '5bec36958c73047613e2f34e/' ,
