@@ -681,13 +681,13 @@ const studentMT = {
     },
   },
   submissions: {
-    accessibleSubmissionCount: 1,
+    accessibleSubmissionCount: 2,
     unaccessibleSubmission: {
       _id: "53e36522729e9ef59ba7f4df"
     },
   },
   comments: {
-    accessibleCommentCount: 2,
+    accessibleCommentCount: 3,
     inaccessibleComment: {
       _id: "53e37a4ab48b12793f00104c"
     },
@@ -721,7 +721,7 @@ const studentMT = {
     }
   },
   selections: {
-    accessibleSelectionCount: 2,
+    accessibleSelectionCount: 3,
     inaccessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -736,7 +736,7 @@ const studentMT = {
     },
   },
   folders: {
-    accessibleFolderCount: 0,
+    accessibleFolderCount: 4,
     inaccessibleFolder: {
       _id: '53e36cdbb48b12793f000d43'
     },
@@ -808,7 +808,7 @@ const studentMT = {
     }
   },
   workspaces: {
-    accessibleWorkspacesCount: 1,
+    accessibleWorkspacesCount: 2,
     accessibleWorkspace:
       {
         _id: '5bec36958c73047613e2f34e/' ,

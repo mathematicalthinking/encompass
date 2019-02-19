@@ -285,6 +285,90 @@ function getWorkspaceWithDependencies(id, callback) { // eslint-disable-line no-
           });
       });
 }
+async function resolvePermissionObject(user, ws) {
+  try {
+    if (!user || !ws) {
+      return {};
+    }
+    let results = {
+      areNoRestrictions: true,
+      permisisonObject: null,
+      isBasicStudentAccess: false,
+    };
+
+    let { accountType, actingRole } = user;
+
+    let isStudent = accountType === 'S' || actingRole === 'student';
+
+    let isAdmin = accountType === 'A' && !isStudent;
+    let isCreator = areObjectIdsEqual(user._id, ws.createdBy);
+    let isOwner = areObjectIdsEqual(user._id, ws.owner);
+
+    let isInUserOrg = areObjectIdsEqual(user.organization, ws.organization);
+
+    let isPdAdmin = accountType === 'P' && !isStudent;
+    let isPdOrg = isPdAdmin && isInUserOrg;
+
+
+    if (isAdmin || isCreator || isOwner || isPdOrg) {
+      return results;
+    }
+
+    // look for permisison obj
+
+    let permissions = ws.permissions || [];
+    let permissionObject = _.find(permissions, obj => areObjectIdsEqual(user._id, obj.user));
+
+    if (isNonEmptyObject(permissionObject)) {
+      results.areNoRestrictions = false;
+      results.permisisonObject = permissionObject;
+      return results;
+    }
+
+    let isPublic;
+
+    if (isStudent) {
+      isPublic = ws.mode === 'internet';
+    } else {
+      isPublic = ws.mode === 'internet' || ws.mode === 'public' || (ws.mode === 'org' && isInUserOrg);
+    }
+
+    if (isPublic) {
+      return results;
+    }
+    let islinkedTeacher = false;
+
+    if (isValidMongoId(ws.linkedAssignment)) {
+      let assignment = await models.Assignment.findById(ws.linkedAssignment).lean().exec();
+
+      if (assignment) {
+        let userSections = user.sections || [];
+
+        let foundSection = _.find(userSections, (sectionObj) => {
+          return sectionObj.role === 'teacher' && areObjectIdsEqual(sectionObj.sectionId, assignment.section);
+        });
+
+        if (foundSection) {
+          islinkedTeacher = true;
+          return results;
+        }
+
+      }
+    }
+    if (!islinkedTeacher) {
+      results.isBasicStudentAccess = true;
+      results.areNoRestrictions = false;
+      return results;
+    }
+
+
+  }catch(err) {
+    console.error(`Error resolvePermissionObject: ${err}`);
+  }
+
+
+
+}
 
 function filterRequestedWorkspaceData(user, results) {
   if (!isNonEmptyObject(user) || !isNonEmptyArray(results)) {
@@ -301,29 +385,16 @@ function filterRequestedWorkspaceData(user, results) {
 
   return Promise.all(
     _.map(results, (ws) => {
-      // no restrictions for workspaces in pdadmin's org
-      if (accountType === 'P' && !isStudent) {
-        if (areObjectIdsEqual(user.organization, ws.organization)) {
-          return Promise.resolve(ws);
-        }
-      }
-      // check if user has a special permission object
+      return resolvePermissionObject(user, ws)
+        .then((results) => {
+          let { areNoRestrictions, permissionObject, isBasicStudentAccess } = results;
+          if (areNoRestrictions) {
+            return Promise.resolve(ws);
+          }
+          // check if submission restrictions
+      let areSubmissionRestrictions = _.propertyOf(permissionObject)(['submissions', 'all']) !== true || isBasicStudentAccess;
 
-      // if no permisisons object, just return ws;
-      if (!isNonEmptyArray(ws.permissions)) {
-        return Promise.resolve(ws);
-      }
-
-      // if there is no permisisonObject for user, just return ws
-      const permissionObject = _.find(ws.permissions, obj => areObjectIdsEqual(user._id, obj.user));
-      if (isNil(permissionObject)) {
-        return Promise.resolve(ws);
-      }
-
-      // check if submission restrictions
-      let areSubmissionRestrictions = _.propertyOf(permissionObject)(['submissions', 'all']) !== true;
-
-      let isApprover = permissionObject.feedback === 'approver';
+      let isApprover = _.propertyOf(permissionObject)('feedback') === 'approver';
       let fetchedWs;
 
       if (!areSubmissionRestrictions) {
@@ -347,7 +418,7 @@ function filterRequestedWorkspaceData(user, results) {
 
         if (areSubmissionRestrictions) {
           const [canLoad, specialPermissions] = access.get.workspace(user, populatedWs);
-          const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs);
+          const restrictedDataMap = getRestrictedDataMap(user, specialPermissions, populatedWs, isBasicStudentAccess);
           // val is array of populated Docs, but we just need Ids
           _.each(restrictedDataMap, (val, key) => {
             if (ws[key]) {
@@ -364,35 +435,37 @@ function filterRequestedWorkspaceData(user, results) {
             }
           });
         }
-          ws.responses = _.chain(populatedResponses)
-            .filter((response) => {
-              if (!response) {
+        ws.responses = _.chain(populatedResponses)
+          .filter((response) => {
+            if (!response) {
+              return false;
+            }
+
+            if (areSubmissionRestrictions) {
+              // must be in restricted responses
+              if (!_.find(ws.responses, (responseId) => {
+                return areObjectIdsEqual(responseId, response._id);
+              })) {
                 return false;
               }
+            }
+            let isYours = areObjectIdsEqual(response.createdBy, user._id);
+            let isApproved = response.status === 'approved';
+            let isToYou = areObjectIdsEqual(response.recipient, user._id);
 
-              if (areSubmissionRestrictions) {
-                // must be in restricted responses
-                if (!_.find(ws.responses, (responseId) => {
-                  return areObjectIdsEqual(responseId, response._id);
-                })) {
-                  return false;
-                }
-              }
-              let isYours = areObjectIdsEqual(response.createdBy, user._id);
-              let isApproved = response.status === 'approved';
-              let isToYou = areObjectIdsEqual(response.recipient, user._id);
+            if (isApprover) {
+              // just filter out drafts not created by you
+              let isNotYourDraft = !isYours && response.status === 'draft';
 
-              if (isApprover) {
-                // just filter out drafts not created by you
-                let isNotYourDraft = !isYours && response.status === 'draft';
+              return !isNotYourDraft;
+            }
 
-                return !isNotYourDraft;
-              }
+            return isYours || (isApproved && isToYou);
+          })
+          .pluck('_id').value();
 
-              return isYours || (isApproved && isToYou);
-            })
-            .pluck('_id').value();
-        return ws;
+          return ws;
+        });
       });
     })
   );

@@ -54,7 +54,7 @@ describe('Selection CRUD operations by account type', async function() {
         });
         });
       });
-      if (accountType !== 'A') {
+      if (accountType !== 'A' && accountType !=='S') {
         describe('/GET inaccessible selection by id', () => {
           it('should return 403 error', done => {
             const url = baseUrl + inaccessibleSelection._id;
