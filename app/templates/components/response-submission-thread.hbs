@@ -1,33 +1,29 @@
-<div {{action 'toSubmissionResponse'}} class="item-container {{if isUnreadReply "has-unread-reply"}}" id="container">
+<div {{action 'toSubmissionResponse'}} class="item-container {{if thread.hasUnreadReply "has-unread-reply"}}" id="container">
   {{#if showStudent}}
     <div class="item-section student">
-        {{studentDisplay}}
+        {{thread.studentDisplay}}
     </div>
   {{/if}}
   <div class="item-section workspace">
-    {{#if latestReply}}
-      <span>{{latestReply.workspace.name}}</span>
-    {{else}}
-    <span>{{latestRevision.workspaces.firstObject.name}}</span>
-    {{/if}}
+    <span>{{thread.workspaceName}}</span>
   </div>
   <div class="item-section submission-date">
     <span>{{format-date thread.latestRevision.createDate 'L'}}</span>
   </div>
   <div class="item-section problem">
-    {{latestRevision.answer.problem.title}}
+    {{thread.problemTitle}}
   </div>
   {{#if showMentor}}
     <div class="item-section mentor">
-      {{#each submissionMentors as |mentor|}}
+      {{#each mentors as |mentor|}}
       <span>{{mentor.displayName}}</span>
       {{/each}}
     </div>
   {{/if}}
   <div class="item-section reply-date">
     <span>
-      {{#if latestReply}}
-        {{format-date latestReply.createDate 'L'}}
+      {{#if thread.latestReply}}
+        {{format-date thread.latestReply.createDate 'L'}}
       {{else}}
         N/A
       {{/if}}
@@ -37,7 +33,7 @@
     <svg height="20" width="20">
         <circle cx="10" cy="15" r="5" fill={{displayStatus.statusFill}} />
     </svg>
-      <span class="status-text">{{displayStatus.display}}</span>
+      <span class="status-text">{{displayStatusText}}</span>
   </div>
 </div>
 
