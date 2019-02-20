@@ -34,6 +34,9 @@
         <circle cx="10" cy="15" r="5" fill={{displayStatus.statusFill}} />
     </svg>
       <span class="status-text">{{displayStatusText}}</span>
+      {{#if thread.newNtfCount}}
+        <i title={{ntfTitleText}} class="far fa-bell"></i>
+      {{/if}}
   </div>
 </div>
 

@@ -130,6 +130,20 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   .uniq();
  }.property('thread.mentors.[]'),
 
+ ntfTitleText: function() {
+  let count = this.get('thread.newNtfCount');
+  if (!count) {
+    return '';
+  }
+
+  if (count === 1) {
+    return '1 New Notification';
+  }
+  if (count > 1) {
+    return `${count} New Notifications`;
+  }
+ }.property('thread.newNtfCount'),
+
   actions: {
     toSubmissionResponse: function() {
       let response = this.get('thread.highestPriorityResponse');

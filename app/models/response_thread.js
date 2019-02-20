@@ -10,6 +10,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   threadType: DS.attr('string'),
   studentDisplay: DS.attr('string'),
   mentors: DS.attr(),
+  isNewThread: DS.attr('boolean', { default: false }),
   hasNewRevision: Ember.computed.gt('newRevisions.length', 0),
 
   inNeedOfRevisions: Ember.computed.gt('needsRevisionResponses.length', 0),
@@ -18,6 +19,31 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   hasUnreadReply: Ember.computed.gt('unreadResponses.length', 0),
   hasUnmentoredRevisions: Ember.computed.gt('unmentoredRevisions.length', 0),
   hasNewlyApprovedReply: Ember.computed.gt('newlyApprovedReplies.length', 0),
+
+  relatedNewNtfs: function() {
+    return this.get('newNotifications').filter((ntf) => {
+      if (ntf.get('primaryRecordType') !== 'response') {
+        return false;
+      }
+      let responseId = this.get('utils').getBelongsToId(ntf, 'response');
+      let subId = this.get('utils').getBelongsToId(ntf, 'submission');
+
+      let foundResponse = this.get('cleanResponses').find((response) => {
+        return response.get('id') === responseId;
+      });
+
+      if (foundResponse) {
+        return true;
+      }
+      return this.get('sortedRevisions').find((sub) => {
+        return sub.get('id') === subId;
+      });
+    });
+  }.property('newNotifications.[]', 'cleanResponses.[]', 'sortdRevisions'),
+
+  newNtfCount: function() {
+    return this.get('relatedNewNtfs.length');
+  }.property('relatedNewNtfs.[]'),
 
   sortPriority: function() {
     let threadType = this.get('threadType');
