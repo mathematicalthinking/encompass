@@ -149,6 +149,40 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
             ntfData[plural] = [notification[prop]];
           }
         });
+
+        if (notification.response) {
+          let response = notification.response;
+          await response
+            .populate('submission')
+            .populate('createdBy')
+            .populate('workspace')
+            .execPopulate();
+
+            if (response.submission) {
+              if (ntfData.submissions) {
+                ntfData.submissions.push(response.submission);
+              } else {
+                ntfData.submissions = [response.submission];
+              }
+            }
+            if (response.createdBy) {
+              if (ntfData.users) {
+                ntfData.users.push(response.createdBy);
+              } else {
+                ntfData.users = [response.createdBy];
+              }
+            }
+            if (response.workspace) {
+              let name = response.workspace.name;
+              ntfData.workspaceName = name;
+            }
+            response.depopulate('submission');
+            response.depopulate('createdBy');
+            response.depopulate('workspace');
+
+          // need to send back submission, createdBy
+        }
+
         // depopulate ntf
 
         props.forEach((prop) => {
