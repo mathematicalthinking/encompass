@@ -1,5 +1,4 @@
 Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
-
   utils: Ember.inject.service('utility-methods'),
   store: Ember.inject.service(),
 
@@ -121,24 +120,24 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   }.property('submissions.content.[]'),
 
   newRevisions: function() {
-    let newWorkNtfs = this.get('responseNotifications').filterBy('notificationType', 'newWorkToMentor');
+    let newWorkNtfs = this.get('newNotifications').filterBy('notificationType', 'newWorkToMentor');
 
     let newSubIds = newWorkNtfs.map((ntf) => {
       return this.get('utils').getBelongsToId(ntf, 'submission');
     }).compact().uniq();
+    return this.get('sortedRevisions').filter((sub) => {
+      return newSubIds.includes(sub.get('id'));
+    });
 
-    let newRevisions = newSubIds.map((id) => {
-      let peeked = this.get('store').peekRecord('submission', id);
-        if (peeked) {
-          this.get('submissions').addObject(peeked);
-        }
-      return peeked;
 
-    }).compact();
+  }.property('newNotifications.[]', 'sortedRevisions.[]'),
 
-    return newRevisions;
-
-  }.property('responseNotifications.[]', 'submissions.[]'),
+  yourMentorReplies: function() {
+    return this.get('cleanResponses').filter((response) => {
+      let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
+      return response.get('responseType') === 'mentor' && creatorId === this.get('currentUser');
+    });
+  }.property('cleanResponses.@each.responseType'),
 
   newlyApprovedReplies: function() {
     let newlyApprovedNtfs = this.get('newNotifications').filterBy('notificationType', 'newlyApprovedReply');
@@ -156,13 +155,16 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   }.property('newNotifications.@each.notificationType', 'cleanresponses.[]'),
 
   unmentoredRevisions: function() {
-    let mentoredRevisionIds = this.get('cleanResponses').map((response) => {
+    if (this.get('threadType') !== 'mentor') {
+      return [];
+    }
+    let mentoredRevisionIds = this.get('yourMentorReplies').map((response) => {
       return this.get('utils').getBelongsToId(response, 'submission');
     }).compact().uniq();
    return this.get('sortedRevisions').filter((submission) => {
       return !mentoredRevisionIds.includes(submission.get('id'));
    });
- }.property('cleanResponses.[]', 'sortedRevisions.[]'),
+ }.property('yourMentorReplies.[]', 'sortedRevisions.[]', 'threadType'),
 
   latestRevision: function() {
     return this.get('sortedRevisions.lastObject');

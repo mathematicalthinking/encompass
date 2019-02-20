@@ -266,7 +266,8 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
           primaryRecordType: 'response',
           submission: newSub,
           createDate: new Date(),
-          text: 'There is a new revision for you to mentor.'
+          text: 'There is a new revision for you to mentor.',
+          workspace: this.get('workspace')
         });
         notification.save();
       });
