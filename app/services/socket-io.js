@@ -140,9 +140,11 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
     let responseCreatorId = this.get('utils').getBelongsToId(newResponse, 'createdBy');
     let problemTitle;
     let studentIdentifier; // encUserId or pows username
+    let studentDisplay;
 
     if (submission) {
       problemTitle = submission.get('publication.puzzle.title');
+      studentDisplay = submission.get('creator.username');
 
       if (submission.get('creator.studentId')) {
         studentIdentifier = submission.get('creator.studentId');
@@ -165,7 +167,9 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
          workspaceName,
          mentors: [responseCreatorId],
          problemTitle,
-         id: uniqueId
+         id: uniqueId,
+         isNewThread: true,
+         studentDisplay,
        });
        newThread.get('submissions').addObject(submission);
        newThread.get('responses').addObject(newResponse);
@@ -198,6 +202,8 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
           workspaceName,
           mentors: [responseCreatorId],
           problemTitle,
+          isNewThread: true,
+          studentDisplay
         });
         newThread.get('submissions').addObject(submission);
         newThread.get('responses').addObject(newResponse);
