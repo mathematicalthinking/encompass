@@ -219,6 +219,9 @@
     .item-container {
       cursor: pointer;
     }
+    i.far.fa-bell {
+      cursor: default;
+    }
     .has-unread-reply {
       font-weight: $bolder-font-weight;
     }
