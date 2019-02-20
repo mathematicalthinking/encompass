@@ -31,6 +31,23 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
   threadsPerPage: 50,
 
+  didReceiveAttrs() {
+    this.set('storeThreads', this.get('store').peekAll('response-thread'));
+
+    let list = [
+      {name: 'submitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.length'), currentFilter: 'submitter'},
+      {name: 'mentoringResponses', actionCount: this.get('actionMentoringThreads.length'), allCount: this.get('mentoringThreads.length'), currentFilter: 'mentoring'},
+      {name: 'approvingResponses', actionCount: this.get('actionApprovingThreads.length'), allCount: this.get('approvingThreads.length'), currentFilter: 'approving'}
+    ];
+
+    // ascending
+    let sorted = list.sortBy('actionCount', 'allCount');
+
+    this.set('currentFilter', sorted[2].currentFilter);
+
+    this._super(...arguments);
+  },
+
   currentMetadata: function() {
     let filter = this.get('currentFilter');
     if (filter === 'submitter') {
@@ -44,9 +61,19 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     }
   }.property('currentFilter', 'meta.{submitter,mentoring,approving}'),
 
+
+  newThreads: function() {
+    return this.get('storeThreads').filterBy('isNewThread');
+  }.property('storeThreads.[]'),
+
   allThreads: function() {
-    return this.get('threads');
-  }.property('threads.[]'),
+    let newThreads = this.get('newThreads') || [];
+    let threads = this.get('threads');
+    newThreads.forEach((thread) => {
+      threads.addObject(thread);
+    });
+    return threads;
+  }.property('threads.[]', 'newThreads.[]'),
 
   mentoringThreads: function() {
     return this.get('allThreads').filterBy('threadType', 'mentor');
@@ -135,23 +162,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
   isAdmin: function() {
     return this.get('currentUser.isAdmin') && !this.get('currentUser.isStudent');
   },
-
-  didReceiveAttrs() {
-    this.set('storeThreads', this.get('store').peekAll('response-thread'));
-    let list = [
-      {name: 'submitterResponses', actionCount : this.get('actionSubmitterThreads.length'), allCount: this.get('submitterThreads.length'), currentFilter: 'submitter'},
-      {name: 'mentoringResponses', actionCount: this.get('actionMentoringThreads.length'), allCount: this.get('mentoringThreads.length'), currentFilter: 'mentoring'},
-      {name: 'approvingResponses', actionCount: this.get('actionApprovingThreads.length'), allCount: this.get('approvingThreads.length'), currentFilter: 'approving'}
-    ];
-
-    // ascending
-    let sorted = list.sortBy('actionCount', 'allCount');
-
-    this.set('currentFilter', sorted[2].currentFilter);
-
-    this._super(...arguments);
-  },
-
 
   showMentorHeader: function() {
     return this.get('currentFilter') !== 'mentoring';
