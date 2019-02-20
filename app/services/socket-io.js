@@ -137,6 +137,7 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
     let newResponse = this.get('store').peekRecord('response', newResponseObj._id);
     let submission = this.get('store').peekRecord('submission', newResponseObj.submission);
 
+    let responseCreatorId = this.get('utils').getBelongsToId(newResponse, 'createdBy');
     let problemTitle;
     let studentIdentifier; // encUserId or pows username
 
@@ -162,8 +163,9 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
          threadType: 'submitter',
          uniqueIdentifier: workspaceId,
          workspaceName,
-         mentors: [newResponse.get('createdBy')],
-         problemTitle
+         mentors: [responseCreatorId],
+         problemTitle,
+         id: uniqueId
        });
        newThread.get('submissions').addObject(submission);
        newThread.get('responses').addObject(newResponse);
@@ -181,6 +183,26 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       } else {
         // should always be existing mentoring thread
       }
+    }
+    if (notificationType === 'mentorReplyRequiresApproval') {
+      let uniqueId = workspaceId + studentIdentifier + responseCreatorId;
+
+      let existingThread = this.findExistingResponseThread('approver', uniqueId);
+      if (existingThread) {
+        existingThread.get('responses').addObject(newResponse);
+      } else {
+        // create new approver thread
+        let newThread = this.get('store').createRecord('response-thread',{
+          threadType: 'approver',
+          id: uniqueId,
+          workspaceName,
+          mentors: [responseCreatorId],
+          problemTitle,
+        });
+        newThread.get('submissions').addObject(submission);
+        newThread.get('responses').addObject(newResponse);
+      }
+
     }
   },
 
