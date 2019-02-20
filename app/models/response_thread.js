@@ -135,7 +135,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   yourMentorReplies: function() {
     return this.get('cleanResponses').filter((response) => {
       let creatorId = this.get('utils').getBelongsToId(response, 'createdBy');
-      return response.get('responseType') === 'mentor' && creatorId === this.get('currentUser');
+      return response.get('responseType') === 'mentor' && creatorId === this.get('currentUser.id');
     });
   }.property('cleanResponses.@each.responseType'),
 
