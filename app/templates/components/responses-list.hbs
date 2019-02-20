@@ -83,6 +83,9 @@
       <p class="notice">{{noResponsesMessage}}</p>
     </div>
   {{/each}}
+  {{#if displayThreads}}
+    {{pagination-control details=currentMetadata initiatePageChange=(action "initiatePageChange")}}
+  {{/if}}
 </div>
         </div>
       </div>

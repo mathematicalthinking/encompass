@@ -3,10 +3,10 @@ Encompass.ResponsesRoute = Encompass.AuthenticatedRoute.extend(Encompass.Current
     return this.get('store').query('responseThread', {
       threadType: 'all',
       page: 1,
+      limit: 50,
     })
     .then((results) => {
-      let meta = results.get('meta');
-      console.log('result threads', meta);
+      let meta = results.get('meta.meta');
       return {
         threads: results.toArray(),
         meta

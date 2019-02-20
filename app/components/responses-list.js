@@ -29,8 +29,23 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     'superceded': 'SUPERCEDED',
   },
 
+  threadsPerPage: 50,
+
+  currentMetadata: function() {
+    let filter = this.get('currentFilter');
+    if (filter === 'submitter') {
+      return this.get('meta.submitter');
+    }
+    if (filter === 'mentoring') {
+      return this.get('meta.mentoring');
+    }
+    if (filter === 'approving') {
+      return this.get('meta.approving');
+    }
+  }.property('currentFilter', 'meta.{submitter,mentoring,approving}'),
+
   allThreads: function() {
-    return this.get('store').peekAll('response-thread');
+    return this.get('threads');
   }.property('threads.[]'),
 
   mentoringThreads: function() {
@@ -149,15 +164,19 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
 
 
 
-  fetchThreads(threadType, page, limit=25) {
+  fetchThreads(threadType, page, limit=this.get('threadsPerPage')) {
     return this.get('store').query('responseThread', {
       threadType,
       page,
       limit
     })
     .then((results) => {
-      let meta = results.get('meta');
+      let meta = results.get('meta.meta');
+      this.set('threads', results.toArray());
       this.set('meta', meta);
+      if (this.get('isLoadingNewPage')) {
+        this.set('isLoadingNewPage', false);
+      }
       console.log('result threads meta', meta);
     });
   },
@@ -292,5 +311,23 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     refreshList() {
       this.fetchThreads('all', 1);
     },
+
+    initiatePageChange(page) {
+      let currentFilter = this.get('currentFilter');
+      let threadType;
+
+      if (currentFilter === 'submitter') {
+        threadType = 'submitter';
+      }
+      if (currentFilter === 'mentoring') {
+        threadType = 'mentor';
+      }
+      if (currentFilter === 'approving') {
+        threadType = 'approver';
+      }
+
+      this.set('isLoadingNewPage', true);
+      this.fetchThreads(threadType, page);
+    }
   }
 });
