@@ -216,6 +216,7 @@ function postUser(req, res, next) {
     delete requestBody.username;
     delete requestBody.createDate;
     delete requestBody.key;
+    delete requestBody.password;
 
     //TODO: Filter so teachers can only modify students they created (or in any of their sections?)
     const user = userAuth.requireUser(req);
