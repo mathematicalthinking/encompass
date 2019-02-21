@@ -19,12 +19,6 @@ Encompass.ProblemsRoute = Encompass.AuthenticatedRoute.extend({
       }
     }
 
-    const user = this.modelFor('application');
-    const isStudent = user.get('isStudent');
-
-    if (isStudent) {
-      this.transitionTo('/');
-    }
   },
   model: function (params) {
     const store = this.get('store');
