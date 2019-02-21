@@ -28,6 +28,15 @@ let mentorInfo = {
   username: 'mtgstudent1',
 };
 
+let responseInfo = {
+  submission: {
+    _id: '5c6ec5eba89be9751158ce08'
+  },
+  response: {
+    _id: '5c6eca77a89be9751158ce0c',
+  },
+};
+
 function checkSortBarDisplay(webDriver, hiddenSelectors=[]) {
   let defaults = Object.values(css.responsesList.sortBar);
 
@@ -128,8 +137,32 @@ describe('Mentoring Interactions', function() {
       let statusCircle = await helpers.getWebElements(driver, css.responsesList.threadItems.statusCircle);
       expect(statusCircle).to.have.lengthOf(1);
       expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
+
+      let ntfBell = await helpers.getWebElements(driver, css.responsesList.threadItems.ntfBell);
+      expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
     });
 
+  });
+
+  describe('Viewing response in paneled view', function() {
+    before(async function() {
+      await helpers.findAndClickElement(driver, css.responsesList.threadItemContainer);
+      let subId = responseInfo.submission._id;
+      let responseId = responseInfo.response._id;
+      let expectedUrl = `/responses/submission/${subId}?responseId=${responseId}`;
+
+      await driver.wait(until.urlContains(expectedUrl), 5000);
+    });
+
+    it('should display submission view', async function() {
+      expect(await helpers.findAndGetText(driver, css.responseInfo.submissionView.studentIndicator)).to.eql(feedbackReceiver.username);
+    });
+
+    it('should display mentor reply view', async function() {
+      expect(await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.recipient)).to.eql(feedbackReceiver.username);
+
+      expect( await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.sender)).to.eql(mentorInfo.username);
+    });
   });
 
 });

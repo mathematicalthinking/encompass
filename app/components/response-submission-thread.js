@@ -60,7 +60,7 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
     if (!prop) {
       return '';
     }
-    return this.get(prop);
+    return this.get(prop) || '';
   }.property('displayStatus.counterProp', 'unreadCounter', 'unmentoredCounter', 'needsRevisionCounter', 'draftCounter', 'newlyApprovedCounter', 'pendingApprovalCounter', 'newRevisionCounter'),
 
   newRevisionCounter: function() {
@@ -73,7 +73,12 @@ Encompass.ResponseSubmissionThreadComponent = Ember.Component.extend(Encompass.C
   }.property('thread.newRevisions.[]'),
 
   unreadCounter: function() {
+    let count = this.get('thread.unreadResponses.length');
 
+    if (count > 1) {
+      return `(${count})`;
+    }
+    return '';
   }.property('unreadResponses.[]'),
 
   draftCounter: function() {

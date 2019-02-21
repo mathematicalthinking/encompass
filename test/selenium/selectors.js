@@ -361,6 +361,16 @@ module.exports = {
       replyDate: '.item-section.reply-date span',
       statusText: '.item-section.status span.status-text',
       statusCircle: '#container > div.item-section.status > svg > circle',
+      ntfBell: '#container > div.item-section.status > i.far.fa-bell'
+    }
+  },
+  responseInfo: {
+    submissionView: {
+      studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span'
+    },
+    mentorReplyView: {
+      recipient: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(1) > span.response-value.recipient',
+      sender: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(2) > span.response-value'
     }
   }
 };
