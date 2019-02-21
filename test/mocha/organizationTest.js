@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 describe('Organization CRUD operations by account type', async function() {
   const testUsers = userFixtures.users;
-  const accessibleOrgCount = 3;
+  const accessibleOrgCount = 4;
 
   async function runTests(user) {
     await describe(`Organization CRUD operations as ${user.details.testDescriptionTitle}` , function() {

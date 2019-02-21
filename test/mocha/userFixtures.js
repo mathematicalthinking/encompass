@@ -26,10 +26,10 @@ const admin = {
       _id: '5b4e4b48808c7eebc9f9e827',
       username: 'ssmith',
     },
-    accessibleUserCount: 37,
+    accessibleUserCount: 41,
   },
   submissions: {
-    accessibleSubmissionCount: 56,
+    accessibleSubmissionCount: 59,
     accessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
@@ -60,7 +60,7 @@ const admin = {
     },
   },
   answers: {
-    accessibleAnswerCount: 4,
+    accessibleAnswerCount: 7,
   },
   selections: {
     accessibleSelectionCount: 77,
@@ -69,7 +69,7 @@ const admin = {
     },
   },
   assignments: {
-    accessibleAssignmentCount: 2,
+    accessibleAssignmentCount: 3,
     accessibleAssignment: {
       _id: '5b9146a83add43b868ae9809',
     },
@@ -90,7 +90,7 @@ const admin = {
     },
   },
   sections: {
-    accessibleSectionCount: 3,
+    accessibleSectionCount: 4,
     accessibleSection: {
       _id: '5b9149a32ecaf7c30dd4748f',
     },
@@ -153,7 +153,7 @@ const admin = {
     },
   },
   workspaces: {
-    accessibleWorkspacesCount: 4,
+    accessibleWorkspacesCount: 5,
     accessibleWorkspace:
       {
         _id: "53e1156db48b12793f000442" ,

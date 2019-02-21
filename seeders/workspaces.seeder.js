@@ -384,6 +384,156 @@ var data = [
     "lastModifiedDate" : "2018-11-14T14:52:05.688Z",
     "isTrashed" : false,
     "createDate" : "2018-11-14T14:30:46.526Z"
+},
+{
+    "_id" : "5c6ebc4a9852e5710311d641",
+    "mode" : "private",
+    "name" : "MTG Congruent Rectangles",
+    "owner" : "5c6eb45d9852e5710311d633",
+    "organization" : "5c6df20a9466896b1c5d84af",
+    "createdBy" : "5c6eb45d9852e5710311d633",
+    "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+    "lastViewed" : "2019-02-21T14:57:14.704Z",
+    "doAllowSubmissionUpdates" : true,
+    "permissions" : [],
+    "taggings" : [],
+    "comments" : [],
+    "selections" : [],
+    "responses" : [],
+    "submissions" : [
+        "5c6ebc4a9852e5710311d63e",
+        "5c6ebc4a9852e5710311d63f",
+        "5c6ebc4a9852e5710311d640"
+    ],
+    "submissionSet" : {
+        "description" : {
+            "group" : {
+                "name" : "MTG Period 1"
+            },
+            "puzzle" : {
+                "title" : "Seven Congruent Rectangles"
+            },
+            "lastSubmissionDate" : "2019-02-21T14:57:14.692Z",
+            "firstSubmissionDate" : "2019-02-21T14:57:14.690Z",
+            "pdSource" : "default"
+        },
+        "criteria" : {
+            "puzzle" : {
+                "puzzleId" : "5bac07fcea4c0a230b2c7ab0"
+            },
+            "group" : {
+                "groupId" : "5c6eb4d49852e5710311d637"
+            },
+            "pdSet" : "default"
+        }
+    },
+    "folders" : [],
+    "editors" : [],
+    "lastModifiedDate" : "2019-02-21T14:57:14.704Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T13:00:49.171Z"
+},
+{
+    "_id" : "5c6ebc4a9852e5710311d63f",
+    "createdBy" : "5c6eb4ac9852e5710311d635",
+    "answer" : "5c6eb8319852e5710311d63c",
+    "responses" : [],
+    "workspaces" : [
+        "5c6ebc4a9852e5710311d641"
+    ],
+    "comments" : [],
+    "selections" : [],
+    "teacher" : {
+        "id" : "5c6eb45d9852e5710311d633"
+    },
+    "teachers" : [],
+    "pdSet" : "default",
+    "publication" : {
+        "publicationId" : null,
+        "puzzle" : {
+            "title" : "Seven Congruent Rectangles",
+            "problemId" : "5bac07fcea4c0a230b2c7ab0"
+        }
+    },
+    "clazz" : {
+        "sectionId" : "5c6eb4d49852e5710311d637",
+        "name" : "MTG Period 1"
+    },
+    "creator" : {
+        "studentId" : "5c6eb4ac9852e5710311d635",
+        "username" : "mtgstudent2"
+    },
+    "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T14:57:14.691Z"
+},
+{
+    "_id" : "5c6ebc4a9852e5710311d63e",
+    "createdBy" : "5c6eb49c9852e5710311d634",
+    "answer" : "5c6eb7f89852e5710311d639",
+    "responses" : [],
+    "workspaces" : [
+        "5c6ebc4a9852e5710311d641"
+    ],
+    "comments" : [],
+    "selections" : [],
+    "teacher" : {
+        "id" : "5c6eb45d9852e5710311d633"
+    },
+    "teachers" : [],
+    "pdSet" : "default",
+    "publication" : {
+        "publicationId" : null,
+        "puzzle" : {
+            "title" : "Seven Congruent Rectangles",
+            "problemId" : "5bac07fcea4c0a230b2c7ab0"
+        }
+    },
+    "clazz" : {
+        "sectionId" : "5c6eb4d49852e5710311d637",
+        "name" : "MTG Period 1"
+    },
+    "creator" : {
+        "studentId" : "5c6eb49c9852e5710311d634",
+        "username" : "mtgstudent1"
+    },
+    "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T14:57:14.690Z"
+},
+{
+    "_id" : "5c6ebc4a9852e5710311d640",
+    "createdBy" : "5c6eb4c19852e5710311d636",
+    "answer" : "5c6eb85d9852e5710311d63d",
+    "responses" : [],
+    "workspaces" : [
+        "5c6ebc4a9852e5710311d641"
+    ],
+    "comments" : [],
+    "selections" : [],
+    "teacher" : {
+        "id" : "5c6eb45d9852e5710311d633"
+    },
+    "teachers" : [],
+    "pdSet" : "default",
+    "publication" : {
+        "publicationId" : null,
+        "puzzle" : {
+            "title" : "Seven Congruent Rectangles",
+            "problemId" : "5bac07fcea4c0a230b2c7ab0"
+        }
+    },
+    "clazz" : {
+        "sectionId" : "5c6eb4d49852e5710311d637",
+        "name" : "MTG Period 1"
+    },
+    "creator" : {
+        "studentId" : "5c6eb4c19852e5710311d636",
+        "username" : "mtgstudent3"
+    },
+    "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T14:57:14.692Z"
 }
 ];
 

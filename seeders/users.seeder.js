@@ -679,6 +679,131 @@ var data = [{
   "isTrashed" : true,
   "username": "trasheduser",
   "accountType": "T"
+},
+{
+  "_id" : "5c6eb45d9852e5710311d633",
+  "confirmEmailExpires" : "2019-02-22T14:23:25.864Z",
+  "confirmEmailToken" : "3a9571cf158344cb6c621949bcfc1ceef6865903",
+  "name" : "Alex Smith",
+  "email" : "alex@mtgfake.com",
+  "organization" : "5c6df20a9466896b1c5d84af",
+  "location" : "MD",
+  "username" : "mtgteacher",
+  "password" : "$2a$12$jX8lx.4o2CMShsuMQHjfueR7sdf5ORrf3RGWO0yeHHMeLJoL55r2y",
+  "accountType" : "T",
+  "createdBy" : "5b245760ac75842be3189525",
+  "authorizedBy" : "5b245760ac75842be3189525",
+  "actingRole" : "teacher",
+  "avatar" : "https://ui-avatars.com/api/?rounded=true&color=ffffff&background=fcc2cd&name=Alex+Smith",
+  "history" : [],
+  "notifications" : [],
+  "hiddenWorkspaces" : [],
+  "collabWorkspaces" : [],
+  "assignments" : [],
+  "answers" : [],
+  "sections" : [],
+  "isEmailConfirmed" : true,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2019-02-21T14:23:34.424Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T13:00:49.191Z",
+  "googleId" : null,
+  "lastModifiedBy" : "5b245760ac75842be3189525",
+  "lastSeen" : "2019-02-21T14:26:33.735Z",
+  "organizationRequest" : null,
+  "requestReason" : null,
+  "seenTour" : "2019-02-21T14:23:33.447Z",
+  "socketId" : "gRmVdk-Wo5RXOewnAAAB"
+},
+
+{
+  "_id" : "5c6eb49c9852e5710311d634",
+  "name" : "Kerry Davis",
+  "organization" : "5c6df20a9466896b1c5d84af",
+  "username" : "mtgstudent1",
+  "password" : "$2a$12$VHxAuasK/L/9F/vJiAXtNewhM9xCAYXrJtbtG41M25QAoXkXb.8o.",
+  "accountType" : "S",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "authorizedBy" : "5c6eb45d9852e5710311d633",
+  "history" : [],
+  "notifications" : [],
+  "hiddenWorkspaces" : [],
+  "collabWorkspaces" : [],
+  "assignments" : [
+      "5c6eb5199852e5710311d638"
+  ],
+  "answers" : ["5c6eb7f89852e5710311d639"],
+  "sections" : [
+      {
+          "role" : "student",
+          "sectionId" : "5c6eb4d49852e5710311d637"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2019-02-21T13:00:49.191Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T13:00:49.191Z"
+},
+
+{
+  "_id" : "5c6eb4ac9852e5710311d635",
+  "name" : "Jamie Baker",
+  "organization" : "5c6df20a9466896b1c5d84af",
+  "username" : "mtgstudent2",
+  "password" : "$2a$12$n4fBSZGf87HDoHIZiS1IiuMkcMjPAHFtORvQ07vS6CeO94Qe4SPR.",
+  "accountType" : "S",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "authorizedBy" : "5c6eb45d9852e5710311d633",
+  "history" : [],
+  "notifications" : [],
+  "hiddenWorkspaces" : [],
+  "collabWorkspaces" : [],
+  "assignments" : [
+      "5c6eb5199852e5710311d638"
+  ],
+  "answers" : ["5c6eb8319852e5710311d63c"],
+  "sections" : [
+      {
+          "role" : "student",
+          "sectionId" : "5c6eb4d49852e5710311d637"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2019-02-21T13:00:49.191Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T13:00:49.191Z"
+},
+
+{
+  "_id" : "5c6eb4c19852e5710311d636",
+  "name" : "Micah Anderson",
+  "organization" : "5c6df20a9466896b1c5d84af",
+  "username" : "mtgstudent3",
+  "password" : "$2a$12$ecQid5ydhJfIIpwp9R4bROEu5SIQ/VS81MweEymT07Jp2vfy/aBVq",
+  "accountType" : "S",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "authorizedBy" : "5c6eb45d9852e5710311d633",
+  "history" : [],
+  "notifications" : [],
+  "hiddenWorkspaces" : [],
+  "collabWorkspaces" : [],
+  "assignments" : [
+      "5c6eb5199852e5710311d638"
+  ],
+  "answers" : ["5c6eb85d9852e5710311d63d"],
+  "sections" : [
+      {
+          "role" : "student",
+          "sectionId" : "5c6eb4d49852e5710311d637"
+      }
+  ],
+  "isEmailConfirmed" : false,
+  "isAuthorized" : true,
+  "lastModifiedDate" : "2019-02-21T13:00:49.191Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T13:00:49.191Z"
 }
 
 ];
