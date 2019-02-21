@@ -29,7 +29,7 @@ const admin = {
     accessibleUserCount: 41,
   },
   submissions: {
-    accessibleSubmissionCount: 59,
+    accessibleSubmissionCount: 62,
     accessibleSubmission: {
       _id: "5bb814d19885323f6d894973"
     },
@@ -153,7 +153,7 @@ const admin = {
     },
   },
   workspaces: {
-    accessibleWorkspacesCount: 5,
+    accessibleWorkspacesCount: 6,
     accessibleWorkspace:
       {
         _id: "53e1156db48b12793f000442" ,

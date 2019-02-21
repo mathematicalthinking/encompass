@@ -2,7 +2,9 @@ module.exports = {
   general: {
     successMessage: ".success-message",
     errorMessage: ".error-message",
-    newErrorMessage: ".error-box"
+    newErrorMessage: ".error-box",
+    boldFontWeight: '700',
+    unreadReplyFill: 'rgb(57, 151, 238)',
   },
   topBar: {
     login: "a.menu.login",
@@ -19,6 +21,7 @@ module.exports = {
     sectionsNew: "a.menu.sections-new",
     usersNew: "a.menu.users-new",
     assignments: "a.menu.assignments",
+    responseNtf: 'li[data-test="topbar-responses"] .circle-ntf span',
   },
   login: {
     username: "input[name=username]",
@@ -332,6 +335,32 @@ module.exports = {
       explanation: 'div.info-detail.explanation',
       studentList: 'div.info-detail.students ul'
 
+    }
+  },
+  responsesList: {
+    submitterTab: '#response-list-tabs span.submitter',
+    mentoringTab: '#response-list-tabs span.mentoring' ,
+    approvingTab: '#response-list-tabs span.approver',
+    responseThreads: '.main-list .response-submission-thread',
+    sortBar: {
+      student: '.sort-bar-item.student',
+      workspace: '.sort-bar-item.workspace',
+      submissionDate: '.sort-bar-item.submission-date',
+      problem: '.sort-bar-item.problem',
+      mentor: '.sort-bar-item.mentor',
+      replyDate: '.sort-bar-item.reply-date',
+      status: '.sort-bar-item.status'
+    },
+    threadItemContainer: '.response-submission-thread .item-container',
+    threadItems: {
+      student: '.item-section.student',
+      workspace: '.item-section.workspace span',
+      submissionDate: '.item-section.submission-date span',
+      problem: '.item-section.problem',
+      mentors: '.item-section.mentor span',
+      replyDate: '.item-section.reply-date span',
+      statusText: '.item-section.status span.status-text',
+      statusCircle: '#container > div.item-section.status > svg > circle',
     }
   }
 };

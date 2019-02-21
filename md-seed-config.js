@@ -26,6 +26,8 @@ var Assignments = require('./seeders/assignments.seeder');
 var EncWorkspaceRequests = require('./seeders/encworkspacerequests.seeder');
 var Images = require('./seeders/images.seeder');
 var FolderSets = require('./seeders/foldersets.seeder');
+var CopyWorkspaceRequests = require('./seeders/copyworkspacerequests.seeder');
+var Notifications = require('./seeders/notifications.seeder');
 
 // to be able to read the .env file
 require('dotenv').config();
@@ -47,6 +49,7 @@ module.exports = {
   */
   seedersList: {
     Users,
+    Notifications,
     Sections,
     Answers,
     Organizations,
@@ -63,6 +66,8 @@ module.exports = {
     Assignments,
     EncWorkspaceRequests,
     Images,
-    FolderSets
+    FolderSets,
+    CopyWorkspaceRequests,
+
   }
 };

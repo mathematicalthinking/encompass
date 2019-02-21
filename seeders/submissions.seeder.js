@@ -2160,7 +2160,223 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
 "lastModifiedDate" : "2018-11-14T14:30:46.531Z",
 "isTrashed" : false,
 "createDate" : "2018-11-14T14:52:05.677Z"
+},
+{
+  "_id" : "5c6ebc4a9852e5710311d63f",
+  "createdBy" : "5c6eb4ac9852e5710311d635",
+  "answer" : "5c6eb8319852e5710311d63c",
+  "responses" : [],
+  "workspaces" : [
+      "5c6ebc4a9852e5710311d641"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb4ac9852e5710311d635",
+      "username" : "mtgstudent2"
+  },
+  "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T14:57:14.691Z"
+},
+{
+  "_id" : "5c6ebc4a9852e5710311d63e",
+  "createdBy" : "5c6eb49c9852e5710311d634",
+  "answer" : "5c6eb7f89852e5710311d639",
+  "responses" : [],
+  "workspaces" : [
+      "5c6ebc4a9852e5710311d641"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb49c9852e5710311d634",
+      "username" : "mtgstudent1"
+  },
+  "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T14:57:14.690Z"
+},
+{
+  "_id" : "5c6ebc4a9852e5710311d640",
+  "createdBy" : "5c6eb4c19852e5710311d636",
+  "answer" : "5c6eb85d9852e5710311d63d",
+  "responses" : [],
+  "workspaces" : [
+      "5c6ebc4a9852e5710311d641"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb4c19852e5710311d636",
+      "username" : "mtgstudent3"
+  },
+  "lastModifiedDate" : "2019-02-21T13:00:49.176Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T14:57:14.692Z"
+},
+{
+  "_id" : "5c6ec5eba89be9751158ce07",
+  "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "answer" : "5c6eb7f89852e5710311d639",
+  "responses" : [],
+  "workspaces" : [
+      "5c6ec5eba89be9751158ce06"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb49c9852e5710311d634",
+      "username" : "mtgstudent1"
+  },
+  "lastModifiedDate" : "2019-02-21T15:38:19.873Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T15:38:19.872Z"
+},
+
+{
+  "_id" : "5c6ec5eba89be9751158ce08",
+  "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "answer" : "5c6eb8319852e5710311d63c",
+  "responses" : [
+      "5c6eca77a89be9751158ce0c"
+  ],
+  "workspaces" : [
+      "5c6ec5eba89be9751158ce06"
+  ],
+  "comments" : [
+      "5c6ec924a89be9751158ce0b"
+  ],
+  "selections" : [
+      "5c6ec919a89be9751158ce0a"
+  ],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb4ac9852e5710311d635",
+      "username" : "mtgstudent2"
+  },
+  "lastModifiedDate" : "2019-02-21T15:38:19.873Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T15:38:19.873Z"
+},
+
+{
+  "_id" : "5c6ec5eba89be9751158ce09",
+  "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "answer" : "5c6eb85d9852e5710311d63d",
+  "responses" : [],
+  "workspaces" : [
+      "5c6ec5eba89be9751158ce06"
+  ],
+  "comments" : [],
+  "selections" : [],
+  "teacher" : {
+      "id" : "5c6eb45d9852e5710311d633"
+  },
+  "teachers" : [],
+  "pdSet" : "default",
+  "publication" : {
+      "publicationId" : null,
+      "puzzle" : {
+          "title" : "Seven Congruent Rectangles",
+          "problemId" : "5bac07fcea4c0a230b2c7ab0"
+      }
+  },
+  "clazz" : {
+      "sectionId" : "5c6eb4d49852e5710311d637",
+      "name" : "MTG Period 1"
+  },
+  "creator" : {
+      "studentId" : "5c6eb4c19852e5710311d636",
+      "username" : "mtgstudent3"
+  },
+  "lastModifiedDate" : "2019-02-21T15:38:19.875Z",
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T15:38:19.875Z"
 }
+
 ];
 
 var SubmissionsSeeder = Seeder.extend({
