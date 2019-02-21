@@ -132,10 +132,10 @@ describe('Home Page', function () {
   });
 
   describe('Logging Out', function () {
-    it('should redirect to homepage after logging out', async function () {
+    it('should redirect to login page after logging out', async function () {
       await helpers.findAndClickElement(driver, css.topBar.logout);
       await helpers.waitForSelector(driver, css.topBar.login);
-      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/`);
+      expect(await helpers.getCurrentUrl(driver)).to.eql(`${host}/#/auth/login`);
       expect(await helpers.isElementVisible(driver, css.topBar.login)).to.be.true;
       expect(await helpers.isElementVisible(driver, css.topBar.signup)).to.be.true;
     });

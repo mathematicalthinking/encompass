@@ -12,7 +12,7 @@ Encompass.AuthenticatedRoute = Ember.Route.extend({
   authenticate: function() { //not crazy that this is duplicated here and in ApplicationRoute
     var user = this.modelFor('application');
     if(!user.get('isAuthenticated')) {
-      this.transitionTo('/');
+      this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {
