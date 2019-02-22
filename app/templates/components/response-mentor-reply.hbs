@@ -10,6 +10,7 @@
     onSaveSuccess=(action "onSaveSuccess")
     canDirectSend=canDirectSend
     submissionResponses=mentorReplies
+    handleResponseThread=(action "handleNewMentorReply")
   }}
 {{else}}
   {{#if sortedMentorReplies}}
@@ -36,7 +37,7 @@
             <svg height="20" width="20">
               <circle cx="10" cy="15" r="5" fill={{statusIconFill}} />
             </svg>
-            <span class="status-text">
+            <span class="status-text mentor-reply">
               {{response-status displayResponse.status}}
             </span>
           </p>

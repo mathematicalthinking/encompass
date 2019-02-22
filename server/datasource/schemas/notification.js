@@ -79,7 +79,7 @@ NotificationSchema.pre('save', function (next) {
   next();
 });
 
-async function notifyUser(recipientId, notification) {
+async function notifyUser(recipientId, notification, isRemovalOnly) {
   if (!isValidMongoId(recipientId)) {
     return;
   }
@@ -90,12 +90,33 @@ async function notifyUser(recipientId, notification) {
     return;
   }
 
+  if (isRemovalOnly) {
+    let socketId = user.socketId;
+    if (socketId) {
+      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+      if (socket) {
+
+        let data = {
+          notificationId: notification._id,
+          doTrash: false,
+          doSetAsSeen: false,
+        };
+        socket.emit('CLEAR_NOTIFICATION', data);
+
+      }
+    }
+    return;
+  }
+
   let existingNtf = _.find(user.notifications, (ntfId) => {
     return areObjectIdsEqual(ntfId, notification._id);
   });
 
   // ntf doesnt exist, add to user array
   if (isNil(existingNtf)) {
+    if (!Array.isArray(user.notifications)) {
+      user.notifications = [];
+    }
     let sliced = user.notifications.slice();
     sliced.push(notification._id);
     user.$set('notifications', sliced);
@@ -128,6 +149,40 @@ async function notifyUser(recipientId, notification) {
             ntfData[plural] = [notification[prop]];
           }
         });
+
+        if (notification.response) {
+          let response = notification.response;
+          await response
+            .populate('submission')
+            .populate('createdBy')
+            .populate('workspace')
+            .execPopulate();
+
+            if (response.submission) {
+              if (ntfData.submissions) {
+                ntfData.submissions.push(response.submission);
+              } else {
+                ntfData.submissions = [response.submission];
+              }
+            }
+            if (response.createdBy) {
+              if (ntfData.users) {
+                ntfData.users.push(response.createdBy);
+              } else {
+                ntfData.users = [response.createdBy];
+              }
+            }
+            if (response.workspace) {
+              let name = response.workspace.name;
+              ntfData.workspaceName = name;
+            }
+            response.depopulate('submission');
+            response.depopulate('createdBy');
+            response.depopulate('workspace');
+
+          // need to send back submission, createdBy
+        }
+
         // depopulate ntf
 
         props.forEach((prop) => {
@@ -159,6 +214,9 @@ NotificationSchema.post('save', function (notification) {
 
   if (notification.doPullFromRecipient) {
     if (isValidMongoId(notification.recipient)) {
+      notifyUser(notification.recipient, notification, true);
+      // emit event so ntf will be removed live
+
       User.findByIdAndUpdate(notification.recipient, {
         $pull: { notifications: notification._id }
       }).exec();

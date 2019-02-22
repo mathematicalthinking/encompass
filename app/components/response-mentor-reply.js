@@ -318,6 +318,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
           this.set('isRevising', false);
           this.set('editRevisionText', '');
           this.send('setDisplayMentorReply', hash.revision);
+
+          // look for responseThread to add response to
+          this.get('handleResponseThread')(hash.revision, 'mentor');
         })
         .catch((err) => {
           this.handleErrors(err, 'saveRecordErrors', null, [revision, this.get('displayResponse')]);
@@ -358,6 +361,9 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     },
     toNewResponse: function() {
       this.get('toNewResponse')();
+    },
+    handleNewMentorReply(response, threadType) {
+      this.get('handleResponseThread')(response, threadType);
     }
  }
 });

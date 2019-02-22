@@ -1,14 +1,18 @@
 Encompass.CurrentUserMixin = Ember.Mixin.create({
   application: Ember.inject.controller(),
   utils: Ember.inject.service('utility-methods'),
+  userNtfs: Ember.inject.service('user-ntfs'),
   //needs: 'application',
   currentUser: Ember.computed.alias('application.currentUser'),
 
+  areNtfsLoaded: Ember.computed.alias('userNtfs.areNtfsLoaded'),
+
   newNotifications: function() {
-    return this.get('currentUser.notifications').filter((ntf) => {
-      return !ntf.get('isTrashed') && !ntf.get('wasSeen');
-    });
-  }.property('currentUser.notifications.@each.{isTrashed,wasSeen}'),
+    if (this.get('areNtfsLoaded')) {
+      return this.get('userNtfs.newNotifications');
+    }
+    return [];
+  }.property('userNtfs.newNotifications.[]', 'areNtfsLoaded'),
 
   responseNotifications: function() {
     return this.get('newNotifications').filterBy('primaryRecordType', 'response');

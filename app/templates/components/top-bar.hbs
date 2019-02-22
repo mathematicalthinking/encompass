@@ -65,7 +65,7 @@
             </div>
           </li>
           {{!-- {{/if}} --}}
-          <li>{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
+          <li data-test="topbar-responses">{{#link-to 'responses' classNames='menu responses'}}responses{{/link-to}}
             {{#if responseNotifications}}
               {{circle-ntf displayCount=responseNotifications.length}}
             {{/if}}

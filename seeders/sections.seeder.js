@@ -61,6 +61,28 @@ var data = [{
   "_id" : "5bbdfaaaecd6e597fd8d3d42",
   "isTrashed" : true,
   "createdBy": "5b4e4b48808c7eebc9f9e827"
+},
+{
+  "_id" : "5c6eb4d49852e5710311d637",
+  "name" : "MTG Period 1",
+  "sectionPassword" : null,
+  "createdBy" : "5c6eb45d9852e5710311d633",
+  "lastModifiedBy" : null,
+  "organization" : "5c6df20a9466896b1c5d84af",
+  "assignments" : [
+      "5c6eb5199852e5710311d638"
+  ],
+  "students" : [
+      "5c6eb49c9852e5710311d634",
+      "5c6eb4ac9852e5710311d635",
+      "5c6eb4c19852e5710311d636"
+  ],
+  "teachers" : [
+      "5c6eb45d9852e5710311d633"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-02-21T14:25:24.711Z"
 }
 ];
 

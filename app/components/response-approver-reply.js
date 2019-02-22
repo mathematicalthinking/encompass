@@ -235,6 +235,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('subResponses').addObject(hash.newReply);
       this.set('replyToView', hash.newReply);
       this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
+      this.get('handleResponseThread')(hash.newReply, 'approver');
     })
     .catch((err) => {
       this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('responseToApprove')]);
@@ -421,6 +422,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.set('isRevisingApproverReply', false);
           this.set('editRevisionText', '');
           this.get('subResponses').addObject(saved);
+          this.get('handleResponseThread')(saved, 'approver');
         })
         .catch((err) => {
           this.handleErrors(err, 'saveRecordErrors', revision);

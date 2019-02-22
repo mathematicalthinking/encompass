@@ -40,7 +40,6 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         submission: hash.submission,
         workspace: hash.workspace,
         submissions: hash.workspace.get('submissions'),
-        notifications: user.get('notifications'),
       });
     })
     .then((hash) => {
@@ -64,7 +63,6 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         submissions: studentSubmissions,
         responses: associatedResponses,
         response: response,
-        notifications: hash.notifications
       };
 
     });

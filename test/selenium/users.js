@@ -219,16 +219,16 @@ describe('Users', function() {
 
       it('should have a list of pd admins', async function () {
         expect(await helpers.getWebElements(driver, 'ul.pd-users>li')).to.have.lengthOf.at.least(1);
-        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('tpool');
+        expect(await helpers.findAndGetText(driver, 'ul.pd-users>li:first-child')).to.contain('mentorpd');
       });
 
       it('should have a list of teachers', async function () {
         expect(await helpers.getWebElements(driver, 'ul.teacher-users>li')).to.have.lengthOf.at.least(11);
-        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('actingstudent');
+        expect(await helpers.findAndGetText(driver, 'ul.teacher-users>li:first-child')).to.contain('mentort2');
       });
 
       it('should have a list of students', async function () {
-        expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf(9);
+        expect(await helpers.getWebElements(driver, 'ul.student-users>li')).to.have.lengthOf(12);
         // expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('tracyc');
       });
 

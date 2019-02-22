@@ -43,7 +43,7 @@ describe('Visiting Workspaces', function() {
     }catch(err) {
       console.log(err);
     }
-    expect(names.length).to.eql(4);
+    expect(names.length).to.eql(6);
   });
 
   describe('Visiting ESI 2014 Wednesday Reflection', function() {

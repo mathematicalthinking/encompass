@@ -85,7 +85,6 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
           selections: submission.get('selections'),
           comments: submission.get('comments'),
           responses: associatedResponses,
-          notifications: user.get('notifications'),
         });
       })
       .then((hash) => {
@@ -110,7 +109,6 @@ Encompass.ResponsesNewSubmissionRoute = Ember.Route.extend(Encompass.ConfirmLeav
           workspace: hash.workspace,
           responses: hash.responses,
           submissions: studentSubmissions,
-          notifications: hash.notifications,
         };
       });
 

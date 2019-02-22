@@ -384,6 +384,140 @@ var data = [
     "lastModifiedDate" : "2018-11-14T14:52:05.688Z",
     "isTrashed" : false,
     "createDate" : "2018-11-14T14:30:46.526Z"
+},
+{
+    "_id" : "5c6ebc4a9852e5710311d641",
+    "mode" : "private",
+    "name" : "MTG Congruent Rectangles",
+    "owner" : "5c6eb45d9852e5710311d633",
+    "organization" : "5c6df20a9466896b1c5d84af",
+    "createdBy" : "5c6eb45d9852e5710311d633",
+    "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+    "lastViewed" : "2019-02-21T14:57:14.704Z",
+    "doAllowSubmissionUpdates" : true,
+    "permissions" : [
+        {
+            "user" : "5c6f4075b1ccdf96abab26fe",
+            "global" : "indirectMentor",
+            "folders" : 2,
+            "selections" : 2,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "submissions" : {
+                "all" : true,
+                "userOnly" : false,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5c6f4032b1ccdf96abab26fd",
+            "global" : "approver",
+            "folders" : 3,
+            "selections" : 4,
+            "comments" : 4,
+            "feedback" : "approver",
+            "submissions" : {
+                "all" : true,
+                "userOnly" : false,
+                "submissionIds" : []
+            }
+        }
+    ],
+    "taggings" : [],
+    "comments" : [
+        "5c6f426fb1ccdf96abab2701"
+    ],
+    "selections" : [
+        "5c6f425bb1ccdf96abab2700"
+    ],
+    "responses" : [],
+    "submissions" : [
+        "5c6ebc4a9852e5710311d63e",
+        "5c6ebc4a9852e5710311d63f",
+        "5c6ebc4a9852e5710311d640"
+    ],
+    "submissionSet" : {
+        "description" : {
+            "pdSource" : "default",
+            "firstSubmissionDate" : "2019-02-21T14:57:14.690Z",
+            "lastSubmissionDate" : "2019-02-21T14:57:14.692Z",
+            "puzzle" : {
+                "title" : "Seven Congruent Rectangles"
+            },
+            "group" : {
+                "name" : "MTG Period 1"
+            }
+        },
+        "criteria" : {
+            "pdSet" : "default",
+            "group" : {
+                "groupId" : "5c6eb4d49852e5710311d637"
+            },
+            "puzzle" : {
+                "puzzleId" : "5bac07fcea4c0a230b2c7ab0"
+            }
+        }
+    },
+    "folders" : [],
+    "editors" : [],
+    "lastModifiedDate" : "2019-02-22T00:21:46.112Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T13:00:49.171Z",
+    "linkedAssignment" : null
+},
+{
+    "_id" : "5c6ec5eba89be9751158ce06",
+    "sourceWorkspace" : "5c6ebc4a9852e5710311d641",
+    "name" : "mtgstudent 1 - MTG Congruent Rectangle",
+    "owner" : "5c6eb49c9852e5710311d634",
+    "mode" : "private",
+    "createdBy" : "5c6eb45d9852e5710311d633",
+    "organization" : "5c6df20a9466896b1c5d84af",
+    "doAllowSubmissionUpdates" : true,
+    "permissions" : [],
+    "taggings" : [],
+    "comments" : [
+        "5c6ec924a89be9751158ce0b"
+    ],
+    "selections" : [
+        "5c6ec919a89be9751158ce0a"
+    ],
+    "responses" : ["5c6eca77a89be9751158ce0c"],
+    "submissions" : [
+        "5c6ec5eba89be9751158ce07",
+        "5c6ec5eba89be9751158ce08",
+        "5c6ec5eba89be9751158ce09"
+    ],
+    "submissionSet" : {
+        "description" : {
+            "group" : {
+                "name" : "MTG Period 1"
+            },
+            "puzzle" : {
+                "title" : "Seven Congruent Rectangles"
+            },
+            "lastSubmissionDate" : "2019-02-21T15:38:19.875Z",
+            "firstSubmissionDate" : "2019-02-21T15:38:19.872Z",
+            "pdSource" : "default"
+        },
+        "criteria" : {
+            "puzzle" : {
+                "puzzleId" : "5bac07fcea4c0a230b2c7ab0"
+            },
+            "group" : {
+                "groupId" : "5c6eb4d49852e5710311d637"
+            },
+            "pdSet" : "default"
+        }
+    },
+    "folders" : [],
+    "editors" : [],
+    "lastModifiedDate" : "2019-02-21T15:51:05.992Z",
+    "isTrashed" : false,
+    "createDate" : "2019-02-21T15:12:36.795Z",
+    "lastViewed" : "2019-02-21T15:38:31.010Z",
+    "lastModifiedBy" : "5c6eb45d9852e5710311d633",
+    "linkedAssignment" : null
 }
 ];
 
