@@ -327,6 +327,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     response.save()
       .then((savedResponse) => {
         this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
+        this.get('handleResponseThread')(savedResponse, 'mentor');
         this.get('onSaveSuccess')(this.get('submission'), savedResponse);
       })
       .catch((err) => {

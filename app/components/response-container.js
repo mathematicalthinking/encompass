@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'response-container',
   wsPermissions: Ember.inject.service('workspace-permissions'),
@@ -222,6 +223,18 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       .uniqBy('id');
   }.property('mentorReplies.@each.createdBy'),
 
+  findExistingResponseThread(threadType, threadId) {
+    let peekedResponseThreads = this.get('store').peekAll('response-thread').toArray();
+    if (!peekedResponseThreads) {
+      return;
+    }
+
+    return peekedResponseThreads.find((thread) => {
+      return thread.get('threadType') === threadType && _.isEqual(thread.get('id'), threadId);
+    });
+
+  },
+
   actions: {
     onSaveSuccess(submission, response) {
       let responseId = !response ? null : response.get('id');
@@ -258,6 +271,9 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       // just send out from here for now
       // should find better way to do in post save hook on backend
 
+      // add submission to existing thread
+      this.send('handleResponseThread', null, 'submitter', newSub);
+
       this.get('existingSubmissionMentors').forEach((user) => {
         let notification = this.get('store').createRecord('notification', {
           createdBy: this.get('currentUser'),
@@ -271,6 +287,79 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
         });
         notification.save();
       });
-    }
+    },
+    handleResponseThread(response, threadType, submission) {
+      let studentId;
+      let mentorId;
+      let threadId;
+      let workspaceId = this.get('workspace.id');
+      let workspaceName = this.get('workspace.name');
+      // mentorThreadId is workspaceId + studentId
+
+      if (threadType === 'mentor') {
+        studentId = this.get('utils').getBelongsToId(response, 'recipient');
+        threadId = workspaceId + studentId;
+      } else if (threadType === 'approver') {
+        // id is workspaceId + studentId + mentorId
+        mentorId = this.get('utils').getBelongsToId(response, 'recipient');
+
+        let reviewedResponseId = this.get('utils').getBelongsToId(response, 'reviewedResponse');
+
+        if (reviewedResponseId) {
+          let reviewedResponse = this.get('store').peekRecord('response', reviewedResponseId);
+          if (reviewedResponse) {
+            studentId = this.get('utils').getBelongsToId(reviewedResponse, 'recipient');
+
+            threadId = workspaceId + studentId + mentorId;
+          }
+        }
+      } else if (threadType === 'submitter') {
+        // id is 'srt' + workspaceId
+        threadId = 'srt' + workspaceId;
+      }
+
+      let existingThread = this.findExistingResponseThread(threadType, threadId);
+
+      // should always be existing thead if creating a response from this component
+      if (existingThread) {
+        if (threadType === 'submitter') {
+          existingThread.get('submissions').addObject(submission);
+        } else {
+          existingThread.get('responses').addObject(response);
+        }
+      } else {
+        // create new thread
+        let submissionId = this.get('utils').getBelongsToId(response, 'submission');
+
+        let submission = this.get('store').peekRecord('submission', submissionId);
+
+        let problemTitle;
+        let studentDisplay;
+
+        if (submission) {
+          problemTitle = submission.get('publication.puzzle.title');
+          studentDisplay = submission.get('creator.username');
+        }
+
+        let newThread = this.get('store').createRecord('response-thread', {
+          threadType,
+          id: threadId,
+          workspaceName,
+          problemTitle,
+          studentDisplay,
+          isNewThread: true,
+        });
+
+        if (mentorId) {
+          newThread.set('mentors', [mentorId]);
+        }
+        if (submission) {
+          newThread.get('submissions').addObject(submission);
+        }
+        if (response) {
+          newThread.get('responses').addObject(response);
+        }
+      }
+    },
   }
 });
