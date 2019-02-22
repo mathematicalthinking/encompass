@@ -31,6 +31,7 @@ let mentorInfo = {
 
 let submissionInfo = {
    _id: '5c6ebc4a9852e5710311d63f',
+   createDate: '2019-02-21 14:57:14.691Z',
 
 };
 
@@ -87,7 +88,8 @@ describe('Mentoring / Approving Interactions', function() {
     let subId = submissionInfo._id;
     let url = `${host}/#/workspaces/${wsId}/submissions/${subId}`;
     before(async function() {
-      await driver.get(url);
+      // await driver.get(url);
+      await helpers.navigateAndWait(driver, url, css.workspace.newResponse);
     });
 
     it('should display Respond Button', async function() {
@@ -171,8 +173,8 @@ describe('Mentoring / Approving Interactions', function() {
     it('should display correct information about thread', async function() {
       let values = {
         workspace: workspaceInfo.name,
-        submissionDate: '02/21/2019',
-        replyDate: moment().format('L'),
+        submissionDate: moment(submissionInfo.createDate).fromNow(),
+        replyDate: moment().fromNow(),
         problem: workspaceInfo.problem,
         student: feedbackReceiver.username,
       };
