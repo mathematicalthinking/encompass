@@ -293,7 +293,7 @@ Encompass.WsCopyCustomConfigComponent = Ember.Component.extend({
           this.set('showSelectionInputs', true);
           return;
         }
-        this.set('noSubmissionssToCopy', true);
+        this.set('noSubmissionsToCopy', true);
         return;
       }
       this.set('showSelectionInputs', true);
