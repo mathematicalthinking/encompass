@@ -570,7 +570,6 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
       hasNeedsRevisions: { $gte: [{ $size: { $filter: { input: '$mentorResponses', as: 'r', cond: { $eq: ['$$r.status', 'needsRevisions'] } } } }, 1]},
       hasDraft: { $gte: [{ $size: { $filter: { input: '$fromUserResponses', as: 'r', cond: { $eq: ['$$r.status', 'draft'] } } } }, 1]},
     }},
-
     {$facet: {
       paginatedResults: [
         {$sort: {
@@ -588,8 +587,6 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
         }
       ]
     }},
-
-
   ]).exec();
 }
 
@@ -610,7 +607,7 @@ async function getResponseThreads(req, res, next) {
       threads = await Promise.all([
         getSubmitterThreads(user, limit, skip),
         getMentorThreads(user, limit, skip),
-        getApproverThreads(user, asSuperAdmin, limit, page, skip)
+        getApproverThreads(user, asSuperAdmin, limit, skip)
       ]);
     } else if (threadType === 'submitter') {
       let submitterThreads = await getSubmitterThreads(user, limit, skip);
@@ -635,9 +632,9 @@ async function getResponseThreads(req, res, next) {
         { totalCount: [] }
       ];
       threads = [submitterThreads, mentoringThreads, approvingThreads];
-
     } else if (threadType === 'approver') {
-      let approvingThreads = await getApproverThreads(user, asSuperAdmin, limit, page, skip);
+      let approvingThreads = await getApproverThreads(user, asSuperAdmin, limit, skip);
+
       let submitterThreads = [
         { paginatedResults: [] },
         { totalCount: [] }
