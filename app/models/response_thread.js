@@ -267,7 +267,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return this.get('newRevisions').sortBy('createDate').get('lastObject');
     }
 
-    if (this.get('hasUnmentoredRevision')) {
+    if (this.get('hasUnmentoredRevisions')) {
       return this.get('unmentoredRevisions.lastObject');
     }
   }.property('highestPriorityStatus'),
