@@ -18,5 +18,24 @@ Encompass.AuthenticatedRoute = Ember.Route.extend({
     }else if(!user.get('isAuthz')) {
       this.transitionTo('unauthorized');
     }
+  },
+  actions: {
+    error(error, transition) {
+      let errorStatus;
+
+      if (error && error.errors) {
+        let errorObj = error.errors[0];
+
+        if (errorObj) {
+          errorStatus = errorObj.status;
+        }
+      }
+
+      if (errorStatus === '401') {
+        this.replaceWith('auth.login');
+      } else {
+        return true;
+      }
+    }
   }
 });
