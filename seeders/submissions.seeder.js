@@ -2169,8 +2169,8 @@ the heads and the legs, 36 heads and 80 legs and so in made a chart and went dow
   "workspaces" : [
       "5c6ebc4a9852e5710311d641"
   ],
-  "comments" : [],
-  "selections" : [],
+  "comments" : ["5c6f426fb1ccdf96abab2701"],
+  "selections" : ["5c6f425bb1ccdf96abab2700"],
   "teacher" : {
       "id" : "5c6eb45d9852e5710311d633"
   },

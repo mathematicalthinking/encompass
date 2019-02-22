@@ -35,7 +35,7 @@ const admin = {
     },
   },
   comments: {
-    accessibleCommentCount: 10,
+    accessibleCommentCount: 11,
     accessibleComment: {
       _id: "53e12507b48b12793f000b91"
     },
@@ -63,7 +63,7 @@ const admin = {
     accessibleAnswerCount: 7,
   },
   selections: {
-    accessibleSelectionCount: 78,
+    accessibleSelectionCount: 79,
     accessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
@@ -169,7 +169,7 @@ const admin = {
       }
   },
   responses: {
-    accessibleResponsesCount: 3,
+    accessibleResponsesCount: 4,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },

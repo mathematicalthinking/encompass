@@ -372,5 +372,8 @@ module.exports = {
       recipient: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(1) > span.response-value.recipient',
       sender: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(2) > span.response-value'
     }
+  },
+  workspace: {
+    newResponse: 'button.action_button:nth-child(1)'
   }
 };
