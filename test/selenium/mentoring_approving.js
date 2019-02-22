@@ -1,7 +1,7 @@
 // REQUIRE MODULES
 const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
-
+const moment = require('moment');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
@@ -18,7 +18,7 @@ let feedbackReceiver = {
 
 let workspaceInfo = {
   _id: "5c6ebc4a9852e5710311d641",
-  name: 'MTG Congruent Rectangle',
+  name: 'MTG Congruent Rectangles',
   problem: 'Seven Congruent Rectangles',
   owner: 'mtgteacher',
 };
@@ -30,7 +30,7 @@ let mentorInfo = {
 };
 
 let submissionInfo = {
-   _id: '5c6ec5eba89be9751158ce08',
+   _id: '5c6ebc4a9852e5710311d63f',
 
 };
 
@@ -85,7 +85,7 @@ describe('Mentoring / Approving Interactions', function() {
   describe('Navigating to workspace submission', function() {
     let wsId = workspaceInfo._id;
     let subId = submissionInfo._id;
-    let url = `${host}/workspaces/${wsId}/submissions/${subId}`;
+    let url = `${host}/#/workspaces/${wsId}/submissions/${subId}`;
     before(async function() {
       await driver.get(url);
     });
@@ -94,27 +94,66 @@ describe('Mentoring / Approving Interactions', function() {
       let btn = await helpers.getWebElements(driver, css.workspace.newResponse);
       expect(btn[0]).to.exist;
 
-      await btn.click();
+      await btn[0].click();
+      await helpers.waitForUrlMatch(driver, /responses\/new\/submission\/[0-9a-f]{24}/);
     });
 
-    // it ('shoul')
+     it('should display submission view', async function() {
+        expect(await helpers.findAndGetText(driver, css.responseInfo.submissionView.studentIndicator)).to.eql(feedbackReceiver.username);
+      });
+
+      it('should display mentor reply view', async function() {
+      expect(await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.recipient)).to.eql(feedbackReceiver.username);
+
+      expect( await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.sender)).to.eql(mentorInfo.username);
+    });
+
+    it('should display proper buttons', async function() {
+      let sendBtn = await helpers.getWebElements(driver, css.responseInfo.mentorReplyView.saveButton);
+
+      expect(await sendBtn[0].getText()).to.eql('Submit for Approval');
+
+      let saveDraftBtn = await helpers.getWebElements(driver,
+      css.responseInfo.mentorReplyView.saveAsDraft);
+      expect(await saveDraftBtn[0].getText()).to.eql('Save as Draft');
+
+    });
+
+    //TODO test saving as draft and checking if response item updated
+  });
+
+  describe('Submitting response for approval', function() {
+    before(async function() {
+      let sendBtn = await helpers.getWebElements(driver, css.responseInfo.mentorReplyView.saveButton);
+
+      await sendBtn[0].click();
+      await helpers.waitForUrlMatch(driver, /responses\/submission\/[0-9a-f]{24}\?responseId=[0-9a-f]{24}/);
+    });
+    it('should display new reply with pending approval status', async function() {
+      let statusText = await helpers.getWebElements(driver, css.responseInfo.mentorReplyView.statusText);
+      expect(await statusText[0].getText()).to.eql('Pending Approval');
+    });
+
+    // approver panel should display but be empty
+
+
   });
 
   describe('Visting Responses List', function() {
     before(async function() {
       await helpers.findAndClickElement(driver, css.topBar.responses);
-      await helpers.waitForUrlMatch(driver, /\/#\/responses/);
+      await helpers.waitForSelector(driver, css.responsesList.mentoringTab);
     });
 
-    it('should display solver tab and display count', async function() {
-      let submitterTabs = await helpers.getWebElements(driver, css.responsesList.submitterTab);
+    it('should display mentoring tab and display count', async function() {
+      let mentoringTabs = await helpers.getWebElements(driver, css.responsesList.mentoringTab);
 
-      expect(submitterTabs).to.have.lengthOf(1);
-      expect(await submitterTabs[0].getText()).to.eql('Solver (1)');
+      expect(mentoringTabs).to.have.lengthOf(1);
+      expect(await mentoringTabs[0].getText()).to.eql('Mentoring (1)');
     });
 
-    it('should not display mentoring tab', async function() {
-      expect(await helpers.isElementVisible(driver, css.responsesList.mentoringTab)).to.eql(false);
+    it('should not display submitter tab', async function() {
+      expect(await helpers.isElementVisible(driver, css.responsesList.submitterTab)).to.eql(false);
     });
     it('should not display approving tab', async function() {
       expect(await helpers.isElementVisible(driver, css.responsesList.approvingTab)).to.eql(false);
@@ -125,55 +164,36 @@ describe('Mentoring / Approving Interactions', function() {
       expect(responseThreads).to.have.lengthOf(1);
     });
 
-    it('should dispaly correct sort-bar items', async function() {
-     await checkSortBarDisplay(driver, [css.responsesList.sortBar.student]);
+    it('should display correct sort-bar items', async function() {
+     await checkSortBarDisplay(driver, [css.responsesList.sortBar.mentor]);
     });
 
     it('should display correct information about thread', async function() {
       let values = {
         workspace: workspaceInfo.name,
         submissionDate: '02/21/2019',
-        replyDate: '02/21/2019',
-        mentors: mentorInfo.displayName,
-        problem: workspaceInfo.problem
+        replyDate: moment().format('L'),
+        problem: workspaceInfo.problem,
+        student: feedbackReceiver.username,
       };
       let excludedValues = ['statusText'];
       await checkThreadValues(driver, values,  excludedValues);
     });
 
-    it('should indicate that thread has unread reply', async function() {
+    it('should indicate that thread has pending reply', async function() {
       let itemContainer = await helpers.getWebElements(driver, css.responsesList.threadItemContainer);
-      expect(await itemContainer[0].getCssValue('font-weight')).to.eql(css.general.boldFontWeight);
+      expect(await itemContainer[0].getCssValue('font-weight')).to.not.eql(css.general.boldFontWeight);
 
       let statusCircle = await helpers.getWebElements(driver, css.responsesList.threadItems.statusCircle);
       expect(statusCircle).to.have.lengthOf(1);
-      expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.unreadReplyFill);
+      expect(await statusCircle[0].getCssValue('fill')).to.eql(css.general.pendingFill);
 
-      let ntfBell = await helpers.getWebElements(driver, css.responsesList.threadItems.ntfBell);
-      expect(await ntfBell[0].getAttribute('title')).to.eql('1 New Notification');
+      expect(await helpers.isElementVisible(driver, css.responsesList.threadItems.ntfBell)).to.eql(false);
     });
 
   });
 
-  // describe('Viewing response in paneled view', function() {
-  //   before(async function() {
-  //     await helpers.findAndClickElement(driver, css.responsesList.threadItemContainer);
-  //     let subId = responseInfo.submission._id;
-  //     let responseId = responseInfo.response._id;
-  //     let expectedUrl = `/responses/submission/${subId}?responseId=${responseId}`;
-
-  //     await driver.wait(until.urlContains(expectedUrl), 5000);
-  //   });
-
-  //   it('should display submission view', async function() {
-  //     expect(await helpers.findAndGetText(driver, css.responseInfo.submissionView.studentIndicator)).to.eql(feedbackReceiver.username);
-  //   });
-
-  //   it('should display mentor reply view', async function() {
-  //     expect(await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.recipient)).to.eql(feedbackReceiver.username);
-
-  //     expect( await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.sender)).to.eql(mentorInfo.username);
-  //   });
-  // });
+  // TODO: login in as approver and test approving functions
+  // TODO: login in as feedback receiver and check that they have not recieved the feedback yet
 
 });

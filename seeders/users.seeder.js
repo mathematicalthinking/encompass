@@ -876,7 +876,7 @@ var data = [{
   "lastSeen" : null,
   "organizationRequest" : null,
   "requestReason" : null,
-  "seenTour" : null,
+  "seenTour" : "2019-02-21T23:56:33.392Z",
   "socketId" : null
 },
 {

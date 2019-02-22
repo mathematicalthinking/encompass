@@ -5,6 +5,7 @@ module.exports = {
     newErrorMessage: ".error-box",
     boldFontWeight: '700',
     unreadReplyFill: 'rgb(57, 151, 238)',
+    pendingFill: 'rgb(255, 210, 4)',
   },
   topBar: {
     login: "a.menu.login",
@@ -369,8 +370,11 @@ module.exports = {
       studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span'
     },
     mentorReplyView: {
-      recipient: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(1) > span.response-value.recipient',
-      sender: '#response-mentor-reply > div.response-info > div.response-users > p:nth-child(2) > span.response-value'
+      recipient: '.response-value.recipient',
+      sender: 'div.response-users > p:nth-child(2) > span.response-value',
+      saveButton: 'button.primary-button.save-response',
+      saveAsDraft: 'button.primary-button.save-draft',
+      statusText: '.status-text.mentor-reply'
     }
   },
   workspace: {
