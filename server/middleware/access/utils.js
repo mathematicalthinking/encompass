@@ -295,7 +295,8 @@ async function getUsersFromWorkspaces(user) {
       return [];
     }
 
-    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, }).lean().exec();
+    let accessibleWorkspaces = await models.Workspace.find(wsCriteria, {owner: 1, createdBy: 1, 'permissions.user': 1, })
+      .populate('submissions', 'creator').lean().exec();
 
     if (!isNonEmptyArray(accessibleWorkspaces)) {
       return [];
@@ -314,6 +315,14 @@ async function getUsersFromWorkspaces(user) {
         workspace.permissions.forEach((obj) => {
           if (!userMap[obj.user]) {
             userMap[obj.user] = true;
+          }
+        });
+      }
+      if (Array.isArray(workspace.submissions)) {
+        workspace.submissions.forEach((sub) => {
+          let userId = _.propertyOf(sub)(['creator', 'studentId']);
+          if (isValidMongoId(userId) && !userMap[userId]) {
+            userMap[userId] = true;
           }
         });
       }
