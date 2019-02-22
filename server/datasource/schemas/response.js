@@ -78,7 +78,10 @@ ResponseSchema.pre('save', function (next) {
 
     let isNewlyNeedsRevisions = !isNew && this.status === 'needsRevisions' && didStatusChange;
 
-    let isNewlyApproved = !isNew && this.status === 'approved' && didStatusChange;
+    let wasApproved = isValidMongoId(this.approvedBy);
+
+    // not newly approved if user saved one of their drafts
+    let isNewlyApproved = !isNew && (this.status === 'approved' && didStatusChange && wasApproved);
 
     let isNewlySuperceded = !isNew && this.status === 'superceded' && didStatusChange;
     // send ntf to recipient after save
