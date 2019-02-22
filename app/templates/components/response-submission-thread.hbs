@@ -8,7 +8,7 @@
     <span>{{thread.workspaceName}}</span>
   </div>
   <div class="item-section submission-date">
-    <span>{{format-date thread.latestRevision.createDate 'L'}}</span>
+    <span>{{format-date thread.latestRevision.createDate 'L' true}}</span>
   </div>
   <div class="item-section problem">
     {{thread.problemTitle}}
@@ -23,7 +23,7 @@
   <div class="item-section reply-date">
     <span>
       {{#if thread.latestReply}}
-        {{format-date thread.latestReply.createDate 'L'}}
+        {{format-date thread.latestReply.createDate 'L' true}}
       {{else}}
         N/A
       {{/if}}

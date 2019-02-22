@@ -70,7 +70,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('responseToApprove.status'),
 
   showCompose: function() {
-    return this.get('responseToApprove.status') !== 'approved';
+    return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
 
   showEdit: function() {
@@ -92,8 +92,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   }.property('canEditApproverReply', 'isRevisingApproverReply', 'isEditingApproverReply', 'isFinishingDraft'),
 
   showApproverRevise: function() {
-    return this.get('canReviseApproverReply') && !this.get('isDraft') && !this.get('showReplyInput');
-  }.property('canReviseApproverReply', 'showReplyInput', 'isDraft'),
+    return this.get('canReviseApproverReply') && !this.get('isDraft') && !this.get('showReplyInput') && this.get('showCompose');
+  }.property('canReviseApproverReply', 'showReplyInput', 'isDraft', 'showCompose'),
 
   showResumeDraft: function() {
     return this.get('isOwnDisplayReply') && this.get('isDraft') && !this.get('showReplyInput');

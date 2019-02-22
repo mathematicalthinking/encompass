@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const {Builder, By, until} = require('selenium-webdriver');
 const expect = require('chai').expect;
+const moment = require('moment');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -30,10 +31,12 @@ let mentorInfo = {
 
 let responseInfo = {
   submission: {
-    _id: '5c6ec5eba89be9751158ce08'
+    _id: '5c6ec5eba89be9751158ce08',
+    createDate: '2019-02-21 15:38:19.873Z',
   },
   response: {
     _id: '5c6eca77a89be9751158ce0c',
+    createDate: '2019-02-21 15:57:43.792Z'
   },
 };
 
@@ -121,8 +124,8 @@ describe('Mentoring Interactions', function() {
     it('should display correct information about thread', async function() {
       let values = {
         workspace: workspaceInfo.name,
-        submissionDate: '02/21/2019',
-        replyDate: '02/21/2019',
+        submissionDate: moment(responseInfo.submission.createDate).fromNow(),
+        replyDate: moment(responseInfo.response.createDate).fromNow(),
         mentors: mentorInfo.displayName,
         problem: workspaceInfo.problem
       };
