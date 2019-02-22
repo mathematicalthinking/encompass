@@ -195,7 +195,7 @@ module.exports = {
         count: 0
       },
       all: {
-        count: 2
+        count: 3
       },
       testExample: {
         _id: '5b1e7b2aa5d2157ef4c91108',
