@@ -498,7 +498,8 @@ function getApproverThreads(user, asSuperAdmin, limit, skip) {
                 { $and: [
                   {$eq: ['$$r.responseType', 'mentor']},
                   {$ne: ['$$r.createdBy', userId]},
-                  {$ne: ['$$r.recipient', userId]}
+                  {$ne: ['$$r.recipient', userId]},
+                  {$ne: ['$$r.status', 'draft']}
                 ]},
                 { $and: [
                   {$eq: ['$$r.responseType', 'approver']},

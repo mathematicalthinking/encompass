@@ -319,12 +319,32 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       let isDraft = newStatus === 'draft';
       let toastMessage = 'Draft Saved';
 
+      let responseToUpdate;
       if (!isDraft) {
         toastMessage = 'Reply Sent';
-        this.get('responseToApprove').set('status', newStatus);
+
+        if (this.get('responseToApprove')) {
+          responseToUpdate = this.get('responseToApprove');
+        } else {
+          let reviewedResponseId = this.get('utils').getBelongsToId(this.get('displayReply'), 'reviewedResponse');
+          let reviewedResponse;
+
+          if (reviewedResponseId) {
+            reviewedResponse = this.get('store').peekRecord('response', reviewedResponseId);
+          }
+
+          responseToUpdate = reviewedResponse;
+
+        }
+        if (responseToUpdate) {
+          responseToUpdate.set('status', newStatus);
+        }
+
         this.get('displayReply').set('status', 'approved');
         if (newStatus === 'approved') {
-          this.get('responseToApprove').set('approvedBy', this.get('currentUser'));
+          if (responseToUpdate) {
+            responseToUpdate.set('approvedBy', this.get('currentUser'));
+          }
           this.get('displayReply').set('isApproverNoteOnly', true);
         }
       }
@@ -333,8 +353,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         newReply: this.get('displayReply').save()
       };
 
-      if (!isDraft) {
-        hash.updatedResponse = this.get('responseToApprove').save();
+      if (!isDraft && responseToUpdate) {
+        hash.updatedResponse = responseToUpdate.save();
       }
 
     Ember.RSVP.hash(hash)

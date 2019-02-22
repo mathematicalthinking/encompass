@@ -139,9 +139,18 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     return this.get('response.createdBy.id') === this.get('currentUser.id');
    }.property('response.createdBy.id', 'currentUser.id'),
 
+   isDisplayMentorReplyYours: function() {
+    let reply = this.get('mentorReplyDisplayResponse');
+    if (!reply) {
+      return false;
+    }
+    let creatorId = this.get('utils').getBelongsToId(reply, 'createdBy');
+    return creatorId === this.get('currentUser.id');
+   }.property('mentorReplyDisplayResponse'),
+
   isOwnMentorReply: function() {
-    return this.get('isOwnResponse') && this.get('primaryResponseType') === 'mentor';
-   }.property('isOwnResponse', 'primaryResponseType'),
+    return this.get('isDisplayMentorReplyYours');
+   }.property('isDisplayMentorReplyYours'),
 
    isOwnApproverReply: function() {
     return this.get('isOwnResponse') && this.get('primaryResponseType') === 'approver';
@@ -168,17 +177,15 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (this.get('menteeResponse')) {
       return this.get('menteeResponse');
     }
-    if (this.get('isOwnMentorReply')) {
+    if (this.get('primaryResponseType') === 'mentor') {
       return this.get('response');
     }
     if (this.get('reviewedResponse')) {
       return this.get('reviewedResponse');
     }
-    if (this.get('primaryResponseType') === 'mentor') {
-      return this.get('response');
-    }
+
     return null;
-  }.property('menteeResponse', 'responseToApprove', 'isOwnMentorReply', 'reviewedResponse', 'response'),
+  }.property('menteeResponse', 'responseToApprove', 'reviewedResponse', 'response'),
 
   canApprove: function() {
     return this.get('wsPermissions').canApproveFeedback(this.get('workspace'));
