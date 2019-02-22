@@ -155,7 +155,6 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return newSubIds.includes(sub.get('id'));
     });
 
-
   }.property('newNotifications.[]', 'sortedRevisions.[]'),
 
   yourMentorReplies: function() {
@@ -231,7 +230,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   highestPriorityResponse: function() {
     let status = this.get('highestPriorityStatus');
 
-    if (status === 'doesHaveDraft') {
+    if (status === 'hasDraft') {
       return this.get('draftResponses.lastObject');
     }
 
@@ -239,11 +238,11 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return null;
     }
 
-    if (status === 'doesHaveUnmentoredRevision') {
+    if (status === 'hasUnmentoredRevisions') {
       return null;
     }
 
-    if (status === 'doesHaveUnreadReply') {
+    if (status === 'hasUnreadReply') {
       return this.get('unreadResponses.lastObject');
     }
 
@@ -251,7 +250,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return this.get('pendingApprovalResponses.lastObject');
     }
 
-    if (status === 'doesNeedRevisions') {
+    if (status === 'inNeedOfRevisions') {
       return this.get('needsRevisionResponses.lastObject');
     }
 
@@ -268,12 +267,9 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return this.get('newRevisions').sortBy('createDate').get('lastObject');
     }
 
-    if (this.get('doesHaveUnmentoredRevision')) {
+    if (this.get('hasUnmentoredRevisions')) {
       return this.get('unmentoredRevisions.lastObject');
     }
   }.property('highestPriorityStatus'),
-
-
-
 
 });
