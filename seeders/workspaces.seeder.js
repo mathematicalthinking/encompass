@@ -395,10 +395,41 @@ var data = [
     "lastModifiedBy" : "5c6eb45d9852e5710311d633",
     "lastViewed" : "2019-02-21T14:57:14.704Z",
     "doAllowSubmissionUpdates" : true,
-    "permissions" : [],
+    "permissions" : [
+        {
+            "user" : "5c6f4075b1ccdf96abab26fe",
+            "global" : "indirectMentor",
+            "folders" : 2,
+            "selections" : 2,
+            "comments" : 2,
+            "feedback" : "authReq",
+            "submissions" : {
+                "all" : true,
+                "userOnly" : false,
+                "submissionIds" : []
+            }
+        },
+        {
+            "user" : "5c6f4032b1ccdf96abab26fd",
+            "global" : "approver",
+            "folders" : 3,
+            "selections" : 4,
+            "comments" : 4,
+            "feedback" : "approver",
+            "submissions" : {
+                "all" : true,
+                "userOnly" : false,
+                "submissionIds" : []
+            }
+        }
+    ],
     "taggings" : [],
-    "comments" : [],
-    "selections" : [],
+    "comments" : [
+        "5c6f426fb1ccdf96abab2701"
+    ],
+    "selections" : [
+        "5c6f425bb1ccdf96abab2700"
+    ],
     "responses" : [],
     "submissions" : [
         "5c6ebc4a9852e5710311d63e",
@@ -407,31 +438,32 @@ var data = [
     ],
     "submissionSet" : {
         "description" : {
-            "group" : {
-                "name" : "MTG Period 1"
-            },
+            "pdSource" : "default",
+            "firstSubmissionDate" : "2019-02-21T14:57:14.690Z",
+            "lastSubmissionDate" : "2019-02-21T14:57:14.692Z",
             "puzzle" : {
                 "title" : "Seven Congruent Rectangles"
             },
-            "lastSubmissionDate" : "2019-02-21T14:57:14.692Z",
-            "firstSubmissionDate" : "2019-02-21T14:57:14.690Z",
-            "pdSource" : "default"
+            "group" : {
+                "name" : "MTG Period 1"
+            }
         },
         "criteria" : {
-            "puzzle" : {
-                "puzzleId" : "5bac07fcea4c0a230b2c7ab0"
-            },
+            "pdSet" : "default",
             "group" : {
                 "groupId" : "5c6eb4d49852e5710311d637"
             },
-            "pdSet" : "default"
+            "puzzle" : {
+                "puzzleId" : "5bac07fcea4c0a230b2c7ab0"
+            }
         }
     },
     "folders" : [],
     "editors" : [],
-    "lastModifiedDate" : "2019-02-21T14:57:14.704Z",
+    "lastModifiedDate" : "2019-02-22T00:21:46.112Z",
     "isTrashed" : false,
-    "createDate" : "2019-02-21T13:00:49.171Z"
+    "createDate" : "2019-02-21T13:00:49.171Z",
+    "linkedAssignment" : null
 },
 {
     "_id" : "5c6ec5eba89be9751158ce06",

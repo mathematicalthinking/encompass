@@ -920,6 +920,30 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2019-02-21T15:51:53.304Z"
+},
+{
+  "_id" : "5c6f425bb1ccdf96abab2700",
+  "text" : "Interesting strategy..",
+  "coordinates" : "node-4 355 81 134 120",
+  "createdBy" : "5c6f4075b1ccdf96abab26fe",
+  "lastModifiedBy" : null,
+  "submission" : "5c6ebc4a9852e5710311d63f",
+  "workspace" : "5c6ebc4a9852e5710311d641",
+  "relativeSize" : {
+      "widthPct" : 0.204268292682927,
+      "heightPct" : 0.141342756183746
+  },
+  "relativeCoords" : {
+      "tagLeftPct" : 0.541158536585366,
+      "tagTopPct" : 0.0954063604240283
+  },
+  "taggings" : [],
+  "comments" : [
+      "5c6f426fb1ccdf96abab2701"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-02-22T00:29:15.496Z"
 }
 ];
 

@@ -33,7 +33,18 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2019-02-21T00:34:18.678Z"
+},
+{
+  "_id" : "5c6f4032b1ccdf96abab26fc",
+  "name" : "Mentors University",
+  "createdBy" : "5b245760ac75842be3189525",
+  "lastModifiedBy" : null,
+  "recommendedProblems" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-02-22T00:20:02.678Z"
 }
+
 ];
 
 var OrganizationsSeeder = Seeder.extend({

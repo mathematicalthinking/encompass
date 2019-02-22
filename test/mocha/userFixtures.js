@@ -26,7 +26,7 @@ const admin = {
       _id: '5b4e4b48808c7eebc9f9e827',
       username: 'ssmith',
     },
-    accessibleUserCount: 41,
+    accessibleUserCount: 44,
   },
   submissions: {
     accessibleSubmissionCount: 62,
@@ -35,7 +35,7 @@ const admin = {
     },
   },
   comments: {
-    accessibleCommentCount: 9,
+    accessibleCommentCount: 10,
     accessibleComment: {
       _id: "53e12507b48b12793f000b91"
     },
@@ -63,7 +63,7 @@ const admin = {
     accessibleAnswerCount: 7,
   },
   selections: {
-    accessibleSelectionCount: 77,
+    accessibleSelectionCount: 78,
     accessibleSelection: {
       _id: '5bbb9d57c2aa0a1696840ce9'
     },
