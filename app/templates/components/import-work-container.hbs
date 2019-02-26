@@ -60,8 +60,7 @@
         {{/if}}
 
         {{#if showUploadFiles}}
-          {{import-work-step3 store=store uploadedFiles=uploadedFiles selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action
-          "setUploadedFiles")}}
+          {{import-work-step3 store=store selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setUploadedFiles") existingAnswers=answers uploadedFiles=uploadedFiles}}
         {{/if}}
 
         {{#if showMatchStudents}}
