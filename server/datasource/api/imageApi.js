@@ -1,4 +1,4 @@
-/* jshint ignore:start */
+
 /**
   * # Image API
   * @description This is the API for image based requests
@@ -8,6 +8,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
+const sharp = require('sharp');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -15,8 +16,10 @@ const userAuth = require('../../middleware/userAuth');
 const utils    = require('../../middleware/requestHandler');
 const fs = require('fs');
 const PDF2Pic = require('pdf2pic').default;
-require('dotenv').config();
 
+const pdfParse = require('pdf-parse');
+
+require('dotenv').config();
 
 module.exports.get = {};
 module.exports.post = {};
@@ -114,7 +117,7 @@ const postImages = async function(req, res, next) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
 
-  const files = await Promise.all(req.files.map((f) => {
+  const files = await Promise.all(req.files.map(async (f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
     let isPDF = mimeType === 'application/pdf';
@@ -140,17 +143,33 @@ const postImages = async function(req, res, next) {
         size: 1000 // output size in pixels
       });
       let file = img.path;
-      return converter.convertBulk(file)
+
+      let pdfBuffer = await readFilePromise(file);
+      let pdfParsed = await pdfParse(pdfBuffer);
+
+      let pageCount = pdfParsed.numpages;
+
+      let pageOptionsArr = [];
+      let maxPages = 50;
+      for (let i = 1; i <= maxPages; i++) {
+        pageOptionsArr.push(i);
+      }
+
+      let pageOptions = pageCount > maxPages ? pageOptionsArr : -1;
+
+      return converter.convertBulk(file, pageOptions)
         .then(results => {
-          let files = results.map((result) => {
-            return result.path;
-          });
-          return Promise.all(files.map((file) => {
+          return Promise.all(results.map((fileObj) => {
+            let file = fileObj.path;
+            let pageNum = fileObj.page;
+
             let f = {
               createdBy: user,
               createDate: Date.now(),
-              originalname: img.originalname
+              originalname: img.originalname,
+              pdfPageNum: pageNum,
             };
+
             return readFilePromise(file).then((data) => {
               let newImage = new models.Image(f);
               let buffer = Buffer.from(data).toString('base64');
@@ -171,14 +190,20 @@ const postImages = async function(req, res, next) {
           return utils.sendError.InternalError(err, res);
         });
     } else {
-      let str = data.toString('base64');
-      let format = `data:${mimeType};base64,`;
-      let imgData = `${format}${str}`;
+      // let str = data.toString('base64');
+      return sharp(data)
+      .resize({width: 1000})
+      .toBuffer()
+      .then((result) => {
+        let format = `data:${mimeType};base64,`;
+        let str = result.toString('base64');
+        let imgData = `${format}${str}`;
 
-      img.createdBy = user;
-      img.createDate = Date.now();
-      img.imageData = imgData;
-      return Promise.resolve(img);
+        img.createdBy = user;
+        img.createDate = Date.now();
+        img.imageData = imgData;
+        return Promise.resolve(img);
+      });
     }
 
 
@@ -192,6 +217,8 @@ const postImages = async function(req, res, next) {
     const data = {'images': docs};
     return utils.sendResponse(res, data);
   } catch(err) {
+    console.error(`Error postImages: ${err}`);
+    console.trace();
     return utils.sendError.InternalError(err, res);
   }
 
@@ -277,4 +304,3 @@ module.exports.get.image = getImage;
 module.exports.post.images = postImages;
 module.exports.put.image = putImage;
 module.exports.delete.image = deleteImage;
-/* jshint ignore:end */
