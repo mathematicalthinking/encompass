@@ -8,7 +8,6 @@
     <div class="clear"></div>
   </header>
 
-
   <section>
     <nav class="list-box">
       {{#unless currentUser.isStudent}}
@@ -61,6 +60,7 @@
       </ul>
     {{/if}}
 
+    {{#unless currentUser.isStudent}}
     {{#if currentUser.isAdmin}}
       <h2>All Classes</h2>
       <ul class="all-sections">
@@ -71,6 +71,7 @@
         {{/if}}
       </ul>
     {{/if}}
+    {{/unless}}
 
     </nav>
   </section>
