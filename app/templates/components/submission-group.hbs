@@ -1,39 +1,40 @@
 <header id="submission-nav">
-    <!-- this is needed for click events from popup windows -->
-    <ul style="display:none;">
-      {{#each this.submissionThreadHeads as |threadHead|}}
-        <li >
-          {{#link-to 'workspace.submission' threadHead}}
+  <!-- this is needed for click events from popup windows -->
+  <ul style="display:none;">
+    {{#each this.submissionThreadHeads as |threadHead|}}
+      <li >
+        {{#link-to 'workspace.submission' threadHead}}
           <span class="submissionLink {{threadHead.id}}">
-              {{threadHead.studentDisplayName}}
-            </span>
-          {{/link-to}}
-        </li>
-      {{/each}}
-    </ul>
-<div class="selectBox">
-  <div class="selected">
-    <div class="studentItem">
-      {{currentStudentDisplayName}}
-      <span class="selector" {{action 'toggleStudentList'}}></span>
-    </div>
-    {{#if showStudents}}
-    <ul id="studentList">
-    <!-- ENC-391, ENC-392, ENC-409 -->
-    <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
-      {{#each this.submissionThreadHeads as |threadHead|}}
-        <li class="studentItem" {{action 'toggleStudentList'}}>
-          {{#link-to 'workspace.submission' threadHead}}
-            <span>{{threadHead.studentDisplayName}}</span>
-          {{/link-to}}
-        </li>
-      {{/each}}
-   </ul>
-   {{/if}}
-  </div>
-</div>
+            {{threadHead.studentDisplayName}}
+          </span>
+        {{/link-to}}
+      </li>
+    {{/each}}
+  </ul>
 
-{{bread-crumbs items=currentRevisions onSelect=(action "setCurrentSubmission") selectedItem=currentRevision titleTextPath="label"}}
+  <div class="selectBox">
+    <div class="selected">
+      <div class="studentItem">
+        {{currentStudentDisplayName}}
+        <span class="selector" {{action 'toggleStudentList'}}></span>
+      </div>
+      {{#if showStudents}}
+      <ul id="studentList">
+      <!-- ENC-391, ENC-392, ENC-409 -->
+      <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
+        {{#each this.submissionThreadHeads as |threadHead|}}
+          <li class="studentItem" {{action 'toggleStudentList'}}>
+            {{#link-to 'workspace.submission' threadHead}}
+              <span>{{threadHead.studentDisplayName}}</span>
+            {{/link-to}}
+          </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+    </div>
+  </div>
+
+  {{bread-crumbs items=currentRevisions onSelect=(action "setCurrentSubmission") selectedItem=currentRevision titleTextPath="label"}}
 
 	<div class="al_controller">
 		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
@@ -50,8 +51,16 @@
 	</div>
 </header>
 
-{{!outlet submission}}
-{{workspace-submission store=store currentSubmission=submission addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") currentUser=currentUser currentWorkspace=currentWorkspace currentSelection=this.currentSelection switching=switching
-toNewResponse=(action "toNewResponse") canRespond=canRespond
+{{workspace-submission
+  store=store
+  currentSubmission=submission
+  addSelection=(action "addSelection")
+  deleteSelection=(action "deleteSelection")
+  currentWorkspace=currentWorkspace
+  currentSelection=this.currentSelection
+  switching=switching
+  toNewResponse=(action "toNewResponse")
+  canRespond=canRespond
+  selections=selections
 }}
 

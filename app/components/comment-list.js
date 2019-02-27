@@ -14,6 +14,8 @@
 Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,
@@ -51,26 +53,48 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   },
 
   newCommentPlaceholder: function() {
-    var placeholder = this.labels[this.get('newCommentLabel')].placeholder;
+    let newCommentLabel = this.get('newCommentLabel');
+    let path = `labels.${newCommentLabel}.placeholder`;
+    let placeholder = this.get(path);
+
     if(_.isArray(placeholder)) {
       placeholder = placeholder[_.random(0, placeholder.length - 1)];
     }
     return placeholder;
-  }.property('newCommentLabel'),
+  }.property('newCommentLabel', 'labels'),
 
   filteredComments: function() {
-    var filtered = this.comments.filterBy('isTrashed', false);
+    let isOwnOnly = this.get('myCommentsOnly');
+    let isSubOnly = this.get('thisSubmissionOnly');
 
-    if( this.myCommentsOnly ){
-      filtered = filtered.filterBy( 'createdBy.content', this.get('currentUser') );
+    if (!isOwnOnly && !isSubOnly) {
+      return this.get('comments').sortBy('createDate').reverse();
     }
 
-    if (this.thisSubmissionOnly) {
-      filtered = filtered.filterBy('submission.id', this.get('currentSubmission.id'));
-    }
+    let comments = this.get('comments').filter((comment) => {
+      let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
 
-    return filtered.sortBy('createDate').reverse();
-  }.property('comments.@each.isTrashed', 'thisSubmissionOnly', 'myCommentsOnly', 'filterComments', 'commentFilterText', 'currentSubmission.id'),
+      let isYours = creatorId === this.get('currentUser.id');
+
+      let subId = this.get('utils').getBelongsToId(comment, 'submission');
+
+      let doesBelongToSub = subId === this.get('currentSubmission.id');
+
+      if (isOwnOnly) {
+        if (!isYours) {
+          return false;
+        }
+      }
+      if (isSubOnly) {
+        if (!doesBelongToSub) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    return comments.sortBy('createDate').reverse();
+  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id'),
 
   commentSearchResults: function() {
     if (!this.get('isSearching')) {

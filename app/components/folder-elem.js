@@ -17,6 +17,8 @@
  */
 Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Droppable, Encompass.DragNDrop.Draggable, Encompass.ErrorHandlingMixin, Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
   tagName: 'li',
   classNames: ['folderItem'],
   link: null,
@@ -28,51 +30,41 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     this._super(...arguments);
   },
 
+  creatorId: function() {
+    return this.get('utils').getBelongsToId(this.get('model'), 'createdBy');
+  }.property('model.id'),
+
+  isOwnFolder: function() {
+    return this.get('currentUser.id') === this.get('creatorId');
+  }.property('creatorId'),
+
   canDeleteFolder: function() {
-    const creator = this.model.get('createdBy.id');
-    const currentUser = this.get('currentUser.id');
+    return this.get('isOwnFolder') || this.get('canDeleteFolders');
+  }.property('isOwnFolder', 'canDeleteFolders'),
 
-    if (Ember.isEqual(creator, currentUser)) {
-      return true;
-    }
-    return this.get('canDeleteFolders');
-
-  }.property('currentUser.id', 'canDeleteFolders','model.createdBy.id'),
   canEditFolder: function() {
-    const creator = this.model.get('createdBy.id');
-    const currentUser = this.get('currentUser.id');
-
-    if (Ember.isEqual(creator, currentUser)) {
-      return true;
-    }
-    return this.get('canEditFolders');
-  }.property('currentUser.id','model.createdBy.id', 'canEditFolders'),
+    return this.get('isOwnFolder') ||  this.get('canEditFolders');
+  }.property('isOwnFolder', 'canEditFolders'),
 
   containsCurrentSubmission: function(){
-    const submissions = this.model.get('submissions');
-    const currentSubmission = this.get('currentSubmission');
+    const submissions = this.get('model.submissions');
+    const currentSubmissionId = this.get('currentSubmission.id');
 
-    if (Ember.isEmpty(submissions) || Ember.isEmpty(currentSubmission)) {
-      return false;
-    }
-
-    const filtered = submissions.filterBy('id', currentSubmission.id);
-
-    return !Ember.isEmpty(filtered);
+    let foundSubmission = submissions.find((sub) => {
+      return sub.get('id') === currentSubmissionId;
+    });
+    return !this.get('utils').isNullOrUndefined(foundSubmission);
   }.property('model.submissions.[]', 'currentSubmission.id'),
 
   containsCurrentSelection: function() {
-    const selections = this.model.get('taggings').mapBy('selection');
-    const currentSelection = this.get('currentSelection');
+    const selections = this.model.get('taggedSelections');
+    const currentSelectionId = this.get('currentSelection.id');
 
-    if (Ember.isEmpty(selections) || Ember.isEmpty(currentSelection)) {
-      return false;
-    }
-
-    const filtered = selections.filterBy('id', currentSelection.id);
-
-    return !Ember.isEmpty(filtered);
-  }.property('currentSelection.id', 'model.selections.@each.isTrashed'),
+    let foundSelection = selections.find((sel) => {
+      return sel.get('id') === currentSelectionId;
+    });
+    return !this.get('utils').isNullOrUndefined(foundSelection);
+  }.property('currentSelection.id', 'model.taggedSelections.[]'),
 
   /* Drag and drop stuff */
   supportedTypes: {

@@ -18,7 +18,6 @@
       {{/if}}
       <td>
         {{#if currentSubmission.answer}}
-          {{!-- {{#link-to 'problem' currentSubmission.answer.problem.id}}{{currentSubmission.puzzle.title}} <i class="fas fa-external-link-alt"></i>{{/link-to}} --}}
           <a {{action 'openProblem'}} class="problem-link">
             {{currentSubmission.puzzle.title}}
             <i class="fas fa-external-link-alt"></i>
@@ -47,7 +46,17 @@
 <div id="al_submission" class="al_vertical_stretch">
   {{#if showSelectableView}}
     <h3 class="selectable-view-header">Selectable View!</h3>
-    {{#selectable-area model=currentSubmission makingSelection=makingSelection showingSelections=showingSelections addSelection="addSelection"  hideSelections="hideSelections" handleTransition="handleTransition" sels=workspaceSelections trashed=trashedSelections setupResizeHandler=(action "setupResizeHandler")}}
+    {{#selectable-area
+      model=currentSubmission
+      makingSelection=makingSelection
+      showingSelections=showingSelections
+      addSelection="addSelection"
+      hideSelections="hideSelections"
+      handleTransition="handleTransition"
+      sels=workspaceSelections
+      trashed=trashedSelections
+      setupResizeHandler=(action "setupResizeHandler")
+    }}
       <div id="submission_container">
         <div class="submission-short">
           {{#if currentSubmission.answer.answer}}
@@ -105,36 +114,32 @@
   {{/if}}
 </div><!--/al_submission-->
 
-
-  <div id="submission_selections">
-    {{!-- lets leave the help text out
-      <p class="al_small">Below are the selections that have been made.
+<div id="submission_selections">
+  {{#if workspaceSelections}}
+    <h5 class="submission-header selections">Selections</h5>
+  {{/if}}
+  <ul>
+  {{#each workspaceSelections as |selection|}}
+    <li class="selection">
+      {{#unless selection.isTrashed}}
         {{#if canSelect}}
-          You can file them by dragging them to a folder on the left.
-        {{/if}}
-      </p>
-    --}}
-    {{#if this.workspaceSelections}}
-      <h5 class="submission-header selections">Selections</h5>
-    {{/if}}
-    <ul>
-    {{#each this.workspaceSelections as |selection|}}
-      <li class="selection">
-        {{#unless selection.isTrashed}}
-          {{#if canSelect}}
-            {{draggable-selection selection=selection canDeleteSelections=canDeleteSelection deleteSelection=(action "deleteSelection") }}
-          {{else}}
+          {{draggable-selection
+            selection=selection
+            canDeleteSelections=canDeleteSelection
+            deleteSelection=(action "deleteSelection")
+          }}
+        {{else}}
 
-          <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
-          {{/if}}
-        {{/unless}}
-      </li>
-      {{else}}
-        <p class="al_small">No selections have been made yet.
-        {{#if canSelect}}
-          Click "make selection" above and highlight some text in the submission.
+        <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
         {{/if}}
-      </p>
-    {{/each}}
-    </ul>
-  </div>
+      {{/unless}}
+    </li>
+    {{else}}
+      <p class="al_small">No selections have been made yet.
+      {{#if canSelect}}
+        Click "make selection" above and highlight some text in the submission.
+      {{/if}}
+    </p>
+  {{/each}}
+  </ul>
+</div>

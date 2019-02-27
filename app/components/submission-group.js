@@ -6,7 +6,7 @@
  * - currentUser - only used to pass on to submissions
  * - currentWorkspace - only used to pass on to submissions
  */
-Encompass.SubmissionGroupComponent = Ember.Component.extend({
+Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   currentStudent: Ember.computed.alias('submission.student'),
   currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
   firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),
@@ -24,37 +24,27 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend({
 
   //TODO Use the new thread.threadId property on submissions
   submissionThreads: function() {
-    var threads = Ember.Map.create();
-    var comp = this;
+    let threads = Ember.Map.create();
 
-    this.submissions.get('content')
-      .sortBy('student')
-      .getEach('student')
-      .uniq()
-      .forEach(function(student) {
-        if(!threads.has(student)) {
-          var submissions = comp.studentWork(student);
-          /*
-          var thread = {
-            id: submissions.get('lastObject.threadId'),
-            head: submissions.get('lastObject'),
-            student: student,
-            revisions: submissions,
-          };*/
+    let sortedSubs = this.get('submissions').sortBy('student');
 
-          threads.set(student, submissions);
-        }
-      });
+    sortedSubs.forEach((sub) => {
+      let student = sub.get('student');
+
+      let thread = threads.get(student);
+
+      if (!thread) {
+        threads.set(student, this.studentWork(student));
+      }
+    });
 
     return threads;
   }.property('submissions.[]'),
 
   studentWork: function(student) {
-    var submissions = this.get('submissions')
-                    .filterBy('student', student)
-                    .sortBy('createDate');
-
-    return submissions;
+    return this.get('submissions')
+      .filterBy('student', student)
+      .sortBy('createDate');
   },
 
   submissionThreadHeads: function() {
