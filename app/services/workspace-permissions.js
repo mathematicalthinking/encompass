@@ -1,76 +1,43 @@
 Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUserMixin, {
   utils: Ember.inject.service('utility-methods'),
 
-  isAdmin: function() {
-    let accountType = this.get('currentUser').get('accountType');
-    if (accountType === "A") {
-      return true;
-    } else {
-      return false;
-    }
+  isAdmin() {
+    return this.get('currentUser.isAdmin');
   },
 
-  isPdAdmin: function() {
-    let accountType = this.get('currentUser').get('accountType');
-    if (accountType === "P") {
-      return true;
-    } else {
-      return false;
-    }
+  isPdAdmin() {
+    return this.get('currentUser.isPdAdmin');
   },
 
-  isOwner: function (ws) {
-    let currentUserId = this.get('currentUser').get('id');
-    let ownerId = ws.get('owner').get('id');
-    if (currentUserId === ownerId) {
-      return true;
-    } else {
-      return false;
-    }
+  isOwner(ws) {
+    let ownerId = this.get('utils').getBelongsToId(ws, 'owner');
+    return ownerId === this.get('currentUser.id');
   },
 
-  isEditor: function (ws) {
-    let currentUser = this.get('currentUser');
-    let editors = ws.get('editors');
-
-    if (editors.includes(currentUser)) {
-      return true;
-    } else {
-      return false;
-    }
+  isCreator(ws) {
+    let creatorId = this.get('utils').getBelongsToId('ws', 'createdBy');
+    return creatorId === this.get('currentUser.id');
   },
 
-  isCreator: function (ws) {
-    let currentUserId = this.get('currentUser.id');
-    let creatorId = ws.get('createdBy.id');
-    return currentUserId === creatorId;
-  },
-
-  isInPdAdminDomain: function(ws) {
-    let user = this.get('currentUser');
-    let type = user.get('accountType');
-    if (type !== 'P') {
+  isInPdAdminDomain(ws) {
+    if (!this.isPdAdmin) {
       return false;
     }
-    let userOrg = user.get('organization.content');
+
+    let userOrg = this.get('currentUser.organization.content');
     let ownerOrg = ws.get('owner.organization.content');
     return Ember.isEqual(ownerOrg, userOrg);
   },
 
-  canDelete: function(ws) {
-    if (this.isCreator(ws) || this.isOwner(ws) || this.isAdmin()) {
-      return true;
-    } else {
-      return false;
-    }
-  },
-  hasOwnerPrivileges: function(ws) {
-    if (this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws)) {
-      return true;
-    }
+  canDelete(ws) {
+    return this.isAdmin() || this.isCreator(ws) || this.isOwner(ws);
   },
 
-  canCopy: function(ws) {
+  hasOwnerPrivileges(ws) {
+    return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isInPdAdminDomain(ws);
+  },
+
+  canCopy(ws) {
     // let canCopy = ws.get('canCopy');
     // have to add a check is workspace is allowed to be copied
     if (this.canDelete(ws) || this.isPdAdmin() && this.isInPdAdminDomain(ws)) {
@@ -79,7 +46,7 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return false;
     }
   },
-  isFeedbackApprover: function(ws) {
+  isFeedbackApprover(ws) {
     if (!ws) {
       return false;
     }
@@ -88,14 +55,14 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
    return approvers.includes(this.get('currentUser.id'));
   },
 
-  canApproveFeedback: function(ws) {
+  canApproveFeedback(ws) {
     if (!ws) {
       return false;
     }
     return this.isAdmin() || this.isOwner(ws) || this.isCreator(ws) || this.isFeedbackApprover(ws) || this.isInPdAdminDomain(ws);
   },
 
-  canEdit: function (ws, recordType, requiredPermissionLevel) {
+  canEdit(ws, recordType, requiredPermissionLevel) {
     const utils = this.get('utils');
     if (!utils.isNonEmptyObject(ws)) {
       return false;
