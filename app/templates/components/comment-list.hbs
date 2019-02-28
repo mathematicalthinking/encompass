@@ -26,7 +26,6 @@
 		<div class="al_controller">
       {{#if canComment}}
         <span class="meta">
-        {{!-- {{#if newCommentParent}}*{{/if}} --}}
         {{#if doSearch}}+{{/if}}
         {{#if searching}}...{{/if}}
         </span>
@@ -41,26 +40,9 @@
 	<div class="clear"></div>
 </div>
 
-<div>
-        {{!#each comments as |comment|}}
-                <!--
-                <span>{{comment.text}}</span>
-                <br/>
-                -->
-                {{!partial "../comments/comment"}}
-        {{!/each}}
-</div>
-
 {{#if showFilter}}
   <div class="filter-options">
-    {{!-- <p>
-    <label>{{input type="checkbox" checked=isSearching}} Search all comments</label>
-    {{#if isSearching}}
-      {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
-    {{/if}}
-    </p> --}}
     <p>
-    {{!-- <label>{{input type="checkbox" checked=thisWorkspaceOnly}} this workspace only</label> --}}
     <label>{{input type="checkbox" checked=thisSubmissionOnly}} this submission only</label>
     <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
     </p>
@@ -74,8 +56,6 @@
       {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
     </p>
     <p>
-    {{!-- <label>{{input type="checkbox" checked=thisWorkspaceOnly}} this workspace only</label> --}}
-    {{!-- <label>{{input type="checkbox" checked=thisSubmissionOnly}} this submission only</label> --}}
     <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
     </p>
     <p>
@@ -101,7 +81,6 @@
       <ul>
 				{{#each displayList as |comment|}}
           {{workspace-comment comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
-          {{!partial "../comments/comment"}}
           {{else}}
           <p class="placeholder">No comments made yet.</p>
 				{{/each}}
@@ -109,8 +88,5 @@
       {{/if}}
 		</div>
 	</form>
-	<!--div class="al_general" title="Enable to add feedback unassociated with a selection">
-		<input type="checkbox" name="general"> General Comment
-	</div-->
 </div>
 

@@ -12,24 +12,48 @@
   <div class="clear"></div>
 </header>
 
-
 <div id="al_left">
-  {{! outlet folders}}
-  {{folder-list folders=currentWorkspace.folders workspace=currentWorkspace currentUser=currentUser fileSelection="fileSelectionInFolder" currentSubmission=currentSubmission currentSelection=currentSelection store=store }}
+  {{folder-list
+    store=store
+    folders=nonTrashedFolders
+    workspace=currentWorkspace
+    fileSelection="fileSelectionInFolder"
+    currentSubmission=currentSubmission
+    currentSelection=currentSelection
+    taggings=nonTrashedTaggings
+    workspaceSubmissions=currentWorkspace.submissions.content
+    workspaceSelections=nonTrashedSelections
+  }}
 </div>
 
 <!--section class="submissions"-->
 <div id="al_center" class="{{if makingSelection 'al_makeselect'}}">
-  {{!outlet submissions}}
-  {{submission-group canRespond=canRespond submissions=currentWorkspace.submissions submission=model addSelection=(action "addSelection") deleteSelection=(action "deleteSelection") store=store currentUser=currentUser currentWorkspace=currentWorkspace toNewResponse=(action "toNewResponse") toSubmission=(action "toSubmission")
+  {{submission-group
+    store=store
+    canRespond=canRespond
+    submissions=currentWorkspace.submissions.content
+    submission=model
+    addSelection=(action "addSelection")
+    deleteSelection=(action "deleteSelection")
+    currentWorkspace=currentWorkspace
+    toNewResponse=(action "toNewResponse")
+    toSubmission=(action "toSubmission")
+    selections=nonTrashedSelections
   }}
 </div>
 <!--/section-->
 
 <!--section class="right"-->
 <div id="al_right">
-  {{comment-list comments=currentWorkspace.comments  currentWorkspace=currentWorkspace currentSelection=currentSelection currentUser=currentUser currentSubmission=currentSubmission store=store allowedToComment=permittedToComment resetComment=(action "cancelComment")}}
-  {{! outlet comments}}
+  {{comment-list
+    store=store
+    comments=nonTrashedComments
+    currentWorkspace=currentWorkspace
+    currentSelection=currentSelection
+    currentSubmission=currentSubmission
+    allowedToComment=permittedToComment
+    resetComment=(action "cancelComment")
+  }}
 </div>
 <!--/section-->
 

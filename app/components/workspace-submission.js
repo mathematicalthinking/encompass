@@ -6,19 +6,22 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
+
+  utils: Ember.inject.service('utility-methods'),
+  permissions: Ember.inject.service('workspace-permissions'),
+
   makingSelection: false,
   showingSelections: false,
   isTransitioning: false,
   isDirty: false,
   wsSaveErrors: [],
-  permissions: Ember.inject.service('workspace-permissions'),
   wasShowingBeforeResizing: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
-    var making = this.get('makingSelection');
-    var showing = this.get('showingSelections');
-    var transitioning = this.get('isTransitioning');
-    var ws = this.get('currentWorkspace');
+    let making = this.get('makingSelection');
+    let showing = this.get('showingSelections');
+    let transitioning = this.get('isTransitioning');
+    let ws = this.get('currentWorkspace');
     let canSelect = this.get('permissions').canEdit(ws, 'selections', 2);
     return (making || showing) && !transitioning && !this.switching && canSelect;
   }),
@@ -82,36 +85,27 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   /* Next: get selections to show up */
 
   workspaceSelections: function() {
-    var selections = this.currentSubmission.get('selections');
-    var comp = this;
-    var selectionsInWorkspace = null;
+    let subId = this.get('currentSubmission.id');
 
-    if( !Ember.isNone(selections) ) {
-      selectionsInWorkspace = selections.filter( function( selection ){
-        var selectionWs = selection.get('workspace.id');
-        var thisWs = comp.get('currentWorkspace.id');
+    return this.get('selections').filter((sel) => {
+      return subId === this.get('utils').getBelongsToId(sel, 'submission');
+    });
 
-        return (selectionWs === thisWs);
-      });
-    }
-
-    return selectionsInWorkspace;
-  }.property('currentSubmission.selections.[]'),
+  }.property('currentSubmission.id', 'selections.[]'),
 
   trashedSelections: function() {
     return this.get('workspaceSelections').filterBy('isTrashed');
   }.property('workspaceSelections.@each.isTrashed'),
 
   canSelect: function () {
-    var cws = this.get('currentWorkspace');
-    let canEdit = this.get('permissions').canEdit(cws, 'selections', 2);
-    return canEdit;
-  }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'selections', 2);
+  }.property('currentWorkspace.permissions.@each.{global,selections}', 'currentUser.id'),
 
   canDeleteSelection: function() {
     const workspace = this.get('currentWorkspace');
     return this.get('permissions').canEdit(workspace, 'selections', 4);
-  }.property('currentSubmission.id', 'currentWorkspace.id', 'currentUser.id'),
+  }.property('currentWorkspace.permissions.@each.{global,selections}', 'currentUser.id'),
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){

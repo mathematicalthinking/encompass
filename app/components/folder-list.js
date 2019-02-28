@@ -13,6 +13,7 @@
  */
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
   weighting: 1,
   editFolderMode: false,
   sortProperties: ['weight', 'name'],
@@ -22,16 +23,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
 
   canManageFolders: function() {
-    // let workspace = this.workspace;
-    // let owner = workspace.get('owner').get('id');
-    // let editors = workspace.get('editors');
-    // let currentUser = this.get('currentUser');
-    // let accountType = currentUser.get('accountType');
-    // let isAdmin = accountType === "A";
-    // let isOwner = currentUser.get('id') === owner;
-    // let isEditor = editors.includes(currentUser);
-
-    // return isAdmin || isEditor || isOwner;
     return this.get('canCreate') || this.get('canEdit') || this.get('canDelete');
   }.property('canCreate', 'canDelete', 'canEdit'),
 
@@ -54,32 +45,29 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     this._super(...arguments);
   },
 
-  filteredFolders: function() {
-    return this.folders
-      .filterBy('isTrashed', false)
-      .filterBy('parent.content', null);
+  topLevelFolders: function() {
+    return this.get('folders').filter((folder) => {
+      let parentId = this.get('utils').getBelongsToId(folder, 'parent');
 
-    /*
-    var sortedFolders = filteredFolders.sortBy("weight name");
-    var sortedContent = Ember.ArrayProxy.createWithMixins(Ember.SortableMixin,
-      { content: filteredContent, sortProperties: this.sortProperties });
-      */
-    //return filteredFolders;
-  }.property('folders.@each.{isTrashed,parent}'),
+      return this.get('utils').isNullOrUndefined(parentId);
+    });
+  }.property('folders.@each.parent'),
 
-  sortedFolders: Ember.computed.sort('filteredFolders', 'sortProperties'),
+
+  sortedFolders: Ember.computed.sort('topLevelFolders', 'sortProperties'),
 
   siblings: function(folder, above) {
-        //workspace = controller.get('currentWorkspace'),
-    var parentID = (folder.get('parent')) ? folder.get('parent').get('id') : null;
-    // var weight = folder.get('weight');
-    var workspaceFolders = this.folders
-          .filterBy('parent.id', parentID)
-          .sortBy('weight', 'name');
+    let parentId = this.get('utils').getBelongsToId(folder, 'parent');
 
-    var pos = workspaceFolders.indexOf(folder);
-    var siblingsAbove = workspaceFolders.slice(0, pos);
-    var siblingsBelow = workspaceFolders.slice(pos+1, workspaceFolders.length);
+    let siblings = this.get('folders').filter((folder) => {
+      let id = this.get('utils').getBelongsToId(folder, 'parent');
+      return id === parentId;
+    });
+    let sortedSiblings = siblings.sortBy('weight', 'name');
+
+    let pos = sortedSiblings.indexOf(folder);
+    let siblingsAbove = sortedSiblings.slice(0, pos);
+    let siblingsBelow = sortedSiblings.slice(pos + 1, sortedSiblings.length);
 
     return (above) ? siblingsAbove : siblingsBelow;
   },

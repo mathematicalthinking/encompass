@@ -14,7 +14,7 @@ module.exports = {
         count: 0
       },
       org: {
-        count: 3
+        count: 2
       },
       testExample: {
         _id: '5b913e723add43b868ae9804',

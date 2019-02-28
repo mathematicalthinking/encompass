@@ -43,8 +43,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
       let assignedDate = this.assignment.get('assignedDate');
-      this.set('selectedProblem', assignment.get('problem.content'));
-      this.set('selectedSection', assignment.get('section.content'));
+      this.set('selectedProblem', this.get('problem'));
+      this.set('selectedSection', this.get('section'));
 
       this.set('assignmentName', assignment.get('name'));
       this.set('formattedDueDate', moment(dueDate).format(dateFormat));

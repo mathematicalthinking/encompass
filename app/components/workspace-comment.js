@@ -1,24 +1,31 @@
 Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   tagName: 'li',
+
+  permissions: Ember.inject.service('workspace-permissions'),
+  utils: Ember.inject.service('utility-methods'),
+
   currentWorkspace: null,
   classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse' ],
-  permissions: Ember.inject.service('workspace-permissions'),
 
   isForCurrentWorkspace: function() {
-    return Ember.isEqual(this.get('currentWorkspace.id'), this.comment.get('workspace.id'));
-  }.property('currentWorkspace.id', 'comment.workspace.id'),
+    let workspaceId = this.get('utils').getBelongsToId(this.get('comment'), 'workspace');
+    return workspaceId === this.get('currentWorkspace.id');
+  }.property('currentWorkspace.id', 'comment'),
+
+  isOwnComment: function() {
+    let creatorId = this.get('utils').getBelongsToId(this.get('comment'), 'createdBy');
+    return creatorId === this.get('currentUser.id');
+  }.property('comment', 'currentUser.id'),
 
   canDelete: function () {
     let ws = this.get('currentWorkspace');
-    const currentUserId = this.get('currentUser.id');
-    const creatorId = this.get('comment.createdBy.id');
-    return currentUserId === creatorId || this.get('permissions').canEdit(ws, 'comments', 4);
-  }.property('currentWorkspace.id', 'comment.workspace.id'),
+    return this.get('isOwnComment') || this.get('permissions').canEdit(ws, 'comments', 4);
+  }.property('currentWorkspace.permissions.@each.{global,comments}', 'isOwnComment'),
 
   permittedToComment: function () {
     let ws = this.get('currentWorkspace');
     return this.get('permissions').canEdit(ws, 'comments', 2);
-  }.property('currentWorkspace.id', 'comment.workspace.id'),
+  }.property('currentWorkspace.permissions.@each.{global,comments}'),
 
   relevanceClass: function(){
     return 'relevance-' + this.get('comment.relevance');

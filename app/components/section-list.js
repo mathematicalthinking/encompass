@@ -1,72 +1,61 @@
 Encompass.SectionListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'section-list',
 
+  cleanSections: function() {
+    return this.get('sections').rejectBy('isTrashed');
+  }.property('sections.@each.isTrashed'),
+
   // This sorts all the sections in the database and returns only the ones you created
   yourSections: function () {
-    var sections = this.sections.rejectBy('isTrashed');
-    var currentUser = this.get('currentUser');
-    var yourSections = sections.filterBy('createdBy.content', currentUser);
+    let yourSections = this.get('cleanSections').filter((section) => {
+      let creatorId = this.get('utils').getBelongsToId(section, 'createdBy');
+      return creatorId === this.get('currentUser.id');
+    });
     return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
+  }.property('cleanSections.[]', 'currentUser.id'),
+
+  yourTeacherSectionIds: function() {
+    let sections = this.get('currentUser.sections') || [];
+    return sections.filterBy('role', 'teacher').mapBy('sectionId');
+  }.property('currentUser.sections.@each.role'),
+
+  yourStudentSectionIds: function() {
+    let sections = this.get('currentUser.sections') || [];
+    return sections.filterBy('role', 'student').mapBy('sectionId');
+  }.property('currentUser.sections.@each.role'),
 
   // This displays the sections if you are inside the teachers array
   // This works but by default if you create it you are in the teacher's array
   collabSections: function () {
-    var sections = this.sections.rejectBy('isTrashed');
-    var currentUser = this.get('currentUser');
-    var collabSections = sections.filterBy('teachers');
-    var yourCollabSections = collabSections.filter((section) => {
-      let teachers = section.get('teachers');
-      if (teachers.includes(currentUser)) {
-       return section;
-     }
-    });
+    let collabSections = this.get('cleanSections').filter((section) => {
+      let sectionId = section.get('id');
 
-    var yourSections = yourCollabSections.filter((section) => {
-      let content = section.get('createdBy.content');
-      if (content) {
-        return content.id !== currentUser.id;
-      }
+      return this.get('yourTeacherSectionIds').includes(sectionId) && !this.get('yourSections').includes(section);
     });
-
-    return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
+    return collabSections.sortBy('createDate').reverse();
+  }.property('cleanSections.[]', 'yourTeacherSectionIds.[]'),
 
   orgSections: function () {
-    var sections = this.sections.rejectBy('isTrashed');
-    var studentSections = sections.filterBy('organization');
-    return studentSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
+    let sections = this.get('cleanSections').filter((section) => {
+      let orgId = this.get('utils').getBelongsToId(section, 'organization');
+      let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
+
+      return (orgId === userOrgId) && !this.get('yourSections').includes(section) && !this.get('collabSections').includes(section);
+    });
+    return sections.sortBy('createDate').reverse();
+  }.property('cleanSections.@each.organization', 'yourSections.[]', 'collabSections.[]'),
 
   studentSections: function () {
-    var sections = this.sections.rejectBy('isTrashed');
-    var studentSections = sections.filterBy('students');
-    var currentUser = this.get('currentUser');
-
-    var yourSections = studentSections.filter((section) => {
-      let students = section.get('students');
-      if (students.includes(currentUser)) {
-        return section;
-      }
+    let sections = this.get('cleanSections').filter((section) => {
+      return this.get('yourStudentSectionIds').includes(section.get('id'));
     });
-    return yourSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
+    return sections.sortBy('createDate').reverse();
+  }.property('sections.@each.isTrashed', 'yourStudentSectionIds.[]'),
 
   allSections: function () {
-    var sections = this.sections.rejectBy('isTrashed');
-    var currentUser = this.get('currentUser');
-    var allSections = sections.filter((section) => {
-      let content = section.get('createdBy.content');
-      if (content) {
-        return content.id !== currentUser.id;
-      }
+    let sections = this.get('cleanSections').filter((section) => {
+      return !this.get('yourSections').includes(section) && !this.get('collabSections').includes(section);
     });
-    return allSections.sortBy('createDate').reverse();
-  }.property('sections.@each.isTrashed', 'currentUser.isStudent'),
-
+    return sections.sortBy('createDate').reverse();
+  }.property('cleanSections.[]', 'collabSections.[]', 'yourSections.[]'),
 });
-
-// we want to get all the sections that you are in the teachers array but not createdBy
-
-// Your sections should be the ones you created or you are the first teacher
-// Collab sections should be the ones where you are in the teachers array

@@ -4,9 +4,18 @@
   <div class="dropZone" style="height:10px;"></div>
   <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
-      {{folder-elem model=folder store=store currentWorkspace=workspace folderList=this editFolderMode=editFolderMode dropped=(action "fileSelectionInFolder") confirm="askToDelete" currentSubmission=currentSubmission currentSelection=currentSelection
-      canEditFolders=canEdit
-      canDeleteFolders=canDelete
+      {{folder-elem
+        store=store
+        model=folder
+        currentWorkspace=workspace
+        folderList=this
+        editFolderMode=editFolderMode
+        dropped=(action "fileSelectionInFolder")
+        confirm="askToDelete"
+        currentSubmission=currentSubmission
+        currentSelection=currentSelection
+        canEditFolders=canEdit
+        canDeleteFolders=canDelete
       }}
     {{/each}}
   </ul>
@@ -14,26 +23,20 @@
 </div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
-  {{!-- {{#each createRecordErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}}
-  {{#each updateRecordErrors as |error|}}
-    <p class="error-message">{{error}}</p>
-  {{/each}} --}}
-    <div id="al_folders_modify">
-      <table>
-        <tr>
-          <td>
-            <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
-          </td>
-          <td style="border-left:1px solid #d3d3d3;">
-            {{#if editFolderMode}}
-              <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
-            {{else}}
-              <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
-            {{/if}}
-          </td>
-        </tr>
-      </table>
-    </div>
+  <div id="al_folders_modify">
+    <table>
+      <tr>
+        <td>
+          <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
+        </td>
+        <td style="border-left:1px solid #d3d3d3;">
+          {{#if editFolderMode}}
+            <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
+          {{else}}
+            <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
+          {{/if}}
+        </td>
+      </tr>
+    </table>
+  </div>
 {{/if}}

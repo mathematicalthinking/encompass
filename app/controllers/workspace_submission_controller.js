@@ -8,7 +8,8 @@
 */
 Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
   workspace: Ember.inject.controller(),
-  //comments: Ember.inject.controller(),
+  utils: Ember.inject.service('utility-methods'),
+
   workspaceSubmissions: Ember.inject.controller(),
   currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
   currentWorkspace: Ember.computed.alias('workspace.model'),
@@ -17,54 +18,40 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   permissions: Ember.inject.service('workspace-permissions'),
   guider: Ember.inject.service('guiders-create'),
 
-
-  inWorkspace: function() {
-    var controller = this;
-    var selections = this.get('selections');
-
-    if( !Ember.isNone(selections) ) {
-      controller.get('selections').forEach(function(selection) {
-        var selectionWs = selection.get('workspace.id');
-        var thisWs = controller.get('currentWorkspace.id');
-        var belongs = (selectionWs === thisWs);
-
-        selection.set('inWorkspace', belongs);
-      });
-    }
-  }.observes('selections.[]'),
-
   canSelect: function() {
-    var cws = this.get('currentWorkspace');
-    let canEdit = this.get('permissions').canEdit(cws, 'selections', 2);
-    return canEdit;
-  }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'selections', 2);
+  }.property('currentWorkspace.permissions.@each.{global,selections}'),
 
-  canFolder: function() {
-    return Permissions.userCan(
-      this.get('currentUser'),
-      this.get('currentWorkspace'),
-      "FOLDERS"
-    );
-  }.property('currentUser', 'currentWorkspace'),
-
-  //permittedToComment: true,
   permittedToComment: function() {
-    var cws = this.get('currentWorkspace');
-    let canComment = this.get('permissions').canEdit(cws, 'comments', 2);
-    return canComment;
-  }.property('currentUser.username', 'currentWorkspace.owner.username', 'currentWorkspace.editors.[].username'),
-
-  currentDragItem: Ember.computed(function(){
-    return this.findProperty('isDragging', true);
-  }).property('[].isDragging'),
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'comments', 2);
+  }.property('currentWorkspace.permissions.@each.{global,comments}'),
 
   isMyWorkspace: function() {
-    return this.get('currentUser.username') === this.get('currentWorkspace.owner.username');
-  }.property('currentUser.username', 'currentWorkspace.owner.username'),
+    let ownerId = this.get('utils').getBelongsToId(this.get('currentWorkspace'), 'owner');
+    return this.get('currentUser.id') === ownerId;
+  }.property('currentUser.id', 'currentWorkspace.owner'),
 
   canRespond: function() {
     return this.get('permissions').canEdit(this.get('currentWorkspace'), 'feedback', 1);
-  }.property('currentWorkspace.permissions.@each.feedback'),
+  }.property('currentWorkspace.permissions.@each.{global,feedback}'),
+
+  nonTrashedSelections: function() {
+    return this.get('currentWorkspace.selections.content').rejectBy('isTrashed');
+  }.property('currentWorkspace.selections.content.@each.isTrashed'),
+
+  nonTrashedTaggings: function() {
+    return this.get('currentWorkspace.taggings').rejectBy('isTrashed');
+  }.property('currentWorkspace.taggings.@each.isTrashed'),
+
+  nonTrashedFolders: function() {
+    return this.get('currentWorkspace.folders.content').rejectBy('isTrashed');
+  }.property('currentWorkspace.folders.content.@each.isTrashed'),
+
+  nonTrashedComments: function() {
+    return this.get('currentWorkspace.comments.content').rejectBy('isTrashed');
+  }.property('currentWorkspace.comments.content.@each.isTrashed'),
 
   actions: {
     startTour: function () {

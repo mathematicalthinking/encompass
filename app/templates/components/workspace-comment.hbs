@@ -1,8 +1,5 @@
     {{#if permittedToComment}}
-      <a
-          {{! action (action reuseComment comment)}}
-          {{action reuseComment comment}}
-          title="reuse this comment">
+      <a {{action reuseComment comment}} title="reuse this comment">
         {{#if comment.children.length}}
           {{comment.children.length}}
         {{else}}
