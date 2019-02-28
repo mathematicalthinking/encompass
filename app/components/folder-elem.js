@@ -57,7 +57,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   }.property('model.submissions.[]', 'currentSubmission.id'),
 
   containsCurrentSelection: function() {
-    const selections = this.model.get('taggedSelections');
+    const selections = this.get('model.taggedSelections');
     const currentSelectionId = this.get('currentSelection.id');
 
     let foundSelection = selections.find((sel) => {
@@ -86,7 +86,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   dragStart: function(event) {
     var dataTransfer = event.originalEvent.dataTransfer;
-    var folderId = this.model.get('id');
+    var folderId = this.get('model.id');
 
     this._super(event);
     // Get the id of the dragged folder
@@ -122,7 +122,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   putInFolder: function(folder, type, data) {
     var obj = JSON.parse(data);
 
-    if( this.model.hasSelection(obj.id) ) {
+    if( this.get('model').hasSelection(obj.id) ) {
       console.info('folder already has selection');
       return;
     }
@@ -143,12 +143,12 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   },
 
   putFolderInFolder: function(child, parent) {
-    let parentName = this.model.get('name');
+    let parentName = this.get('model.name');
     var droppedFolder = false;
     var parentOfDropped = false;
     var iterator    = parent;
 
-    if (child.id === this.model.get('id')) {
+    if (child.id === this.get('model.id')) {
       // TODO: give user feedback
       // console.info('You cannot drop a folder into itself.');
       return;
