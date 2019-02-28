@@ -10,4 +10,6 @@ Encompass.Assignment = DS.Model.extend(Encompass.Auditable, {
   taskWorkspace: DS.belongsTo('workspace', {inverse: null} ),
   assignmentType: DS.attr('string'),
   linkedWorkspace: DS.belongsTo('workspace'),
+
+  reportDetails: DS.attr(), // for assignment report
 });
