@@ -1,5 +1,5 @@
 <form enctype="multipart/form-data">
-  <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept="image/png,image/jpeg,application/pdf" type="file" class="image-upload"/>
+  <input multiple={{acceptMultiple}} onchange={{action "updateFiles"}} accept={{acceptableFileTypes}} type="file" class="image-upload"/>
 
   {{#unless hideSubmit}}
     {{#if filesToBeUploaded}}
@@ -8,9 +8,21 @@
   {{/unless}}
 </form>
 
-
 {{#if missingFilesError}}
-  <p class="error-message">Please select files to upload.</p>
+  {{error-box error="Please select files to upload" resetError=(action (mut missingFilesError) null) showDismiss=true}}
+{{/if}}
+
+{{#if isOverSizeLimit}}
+  {{#if isOverPdfLimit}}
+    {{error-box error=overPdfLimitMsg showDismiss=true}}
+  {{/if}}
+  {{#if isOverImageLimit}}
+    {{error-box error=overImageLimitMsg showDismiss=true}}
+  {{/if}}
+{{/if}}
+
+{{#if overSizedFileError}}
+  {{error-box error=overSizedFileError showDismiss=true resetError=(action (mut overSizedFileError) null)}}
 {{/if}}
 
 {{#unless uploadResults}}

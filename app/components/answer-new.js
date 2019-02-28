@@ -15,6 +15,10 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   isCreatingAnswer: false,
   showLoadingMessage: false,
 
+  singleFileSizeLimit: 10485760, // 10MB
+
+  explanationLengthLimit: 14680064, // `14MB
+
   constraints: {
     briefSummary: {
       presence: { allowEmpty: false },
@@ -23,9 +27,37 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       }
     },
     explanation: {
-      presence: true
+      presence: true,
+    },
+  },
+
+  returnSizeDisplay(bytes) {
+    if(bytes < 1024) {
+      return bytes + ' bytes';
+    } else if(bytes >= 1024 && bytes < 1048576) {
+      return (bytes/1024).toFixed(1) + 'KB';
+    } else if(bytes >= 1048576) {
+      return (bytes/1048576).toFixed(1) + 'MB';
     }
   },
+
+  totalSizeLimitDisplay: function() {
+    return this.returnSizeDisplay(this.get('explanationLengthLimit'));
+  }.property('explanationLengthLimit'),
+
+  getOverSizedFileMsg(fileSize, fileName) {
+    let limit = this.get('singleFileSizeLimit');
+
+    let actualDisplay = this.returnSizeDisplay(fileSize);
+    let limitDisplay = this.returnSizeDisplay(limit);
+
+    return `The file ${fileName} (${actualDisplay}) was not accepted due to exceeding the size limit of ${limitDisplay}`;
+  },
+
+  tooLargeExplanationMsg: function() {
+    return `The total size of your submission (text and/or images) exceeds the size limit of ${this.get('totalSizeLimitDisplay')}. Please remove or resize any large images and try again.`;
+  }.property('totalSizeLimitDisplay'),
+
   createButtonDisplayText: function() {
     if (this.get('createButtonText')) {
       return this.get('createButtonText');
@@ -72,68 +104,50 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     }
   },
 
-  handleImage: function() {
-    const that = this;
-    return new Promise((resolve, reject) => {
-      if (that.get('existingImageId')) {
-        return resolve(that.get('existingImageId'));
+  handleImages() {
+      if (this.get('existingImageId')) {
+        return Ember.RSVP.resolve(this.get('existingImageId'));
       }
-      if (that.filesToBeUploaded) {
-        const uploadData = that.get('filesToBeUploaded');
-        const formData = new FormData();
-        for(let f of uploadData) {
+
+      let filesToUpload = this.get('filesToBeUploaded');
+
+      if (!filesToUpload) {
+        return Ember.RSVP.resolve(null);
+      }
+
+      const formData = new FormData();
+
+      for ( let f of filesToUpload ) {
+        if (f.size > this.get('singleFileSizeLimit')) {
+          this.set('overSizedFileError', this.getOverSizedFileMsg(f.size, f.name));
+          this.set('filesToBeUploaded', null);
+          return Ember.RSVP.reject('oversizedFile');
+        } else {
           formData.append('photo', f);
         }
+      }
 
-        let firstItem = uploadData[0];
-        let isPDF = firstItem.type === 'application/pdf';
+      let firstItem = filesToUpload[0];
+      let isPDF = firstItem.type === 'application/pdf';
+      let postUrl = isPDF ? '/pdf' : '/image';
+      let resultingImages;
 
-        if (isPDF) {
-          return Ember.$.post({
-            url: '/pdf',
-            processData: false,
-            contentType: false,
-            data: formData
-          }).then(function (res) {
-            that.set('uploadResults', res.images);
-            that.store.findRecord('image', res.images[0]._id).then((image) => {
-              return resolve(image);
-            })
-            .catch((err) => {
-              that.handleErrors(err, 'findRecordErrors');
-            });
-            // currently allowing multiple images to be uploaded but only saving
-            // the first image url as the image in the answer doc
-          })
-          .catch((err) => {
-            that.handleErrors(err, 'uploadErrors');
-            return reject(err);
-          });
-        } else {
-          return Ember.$.post({
-            url: '/image',
-            processData: false,
-            contentType: false,
-            data: formData
-          }).then(function(res){
-            that.set('uploadResults', res.images);
-            that.store.findRecord('image', res.images[0]._id).then((image) => {
-              return resolve(image);
-            }).catch((err) => {
-              that.handleErrors(err, 'findRecordErrors');
-            });
-            // currently allowing multiple images to be uploaded but only saving
-            // the first image url as the image in the answer doc
-          })
-          .catch((err) => {
-            that.handleErrors(err, 'uploadErrors');
-            return reject(err);
-          });
-        }
-    }
+      resultingImages = Ember.$.post({
+        url: postUrl,
+        processData: false,
+        contentType: false,
+        data: formData
+      });
 
-      return resolve(null);
-    });
+      return Ember.RSVP.resolve(resultingImages)
+        .then((results) => {
+          let images = results.images;
+          this.get('store').pushPayload({images});
+          return Ember.RSVP.resolve(images);
+        })
+        .catch((err) => {
+          return Ember.RSVP.reject(err);
+        });
   },
 
   checkMissing: function() {
@@ -160,32 +174,44 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
   createAnswer: function() {
     this.set('isCreatingAnswer', true);
-    const that = this;
-    const answer = that.get('answer');
-    const quillContent = this.$('.ql-editor').html();
-    const explanation = quillContent.replace(/["]/g, "'");
-    const priorAnswer = that.priorAnswer ? that.priorAnswer : null;
-    const students = that.get('contributors');
 
-    return this.handleImage().then((image) => {
-      let imageData;
-      let newImage = '';
-      if (image) {
-        imageData = image.get('imageData');
-        newImage = `<img src='${imageData}'>`;
+    const answer = this.get('answer'); // brief summary
+    const quillContent = this.$('.ql-editor').html();
+    let explanation = quillContent.replace(/["]/g, "'");
+    const priorAnswer = this.priorAnswer ? this.priorAnswer : null;
+    const students = this.get('contributors');
+
+    return this.handleImages()
+    .then((images) => {
+      // json objects, not ember records
+      if (images) {
+        images.forEach((image) => {
+          let imageData = image.imageData;
+          if (imageData) {
+            let tagString = `<img src='${imageData}'>`;
+            explanation += tagString;
+          }
+        });
+      }
+
+      if (explanation.length > this.get('explanationLengthLimit')) {
+        this.set('isExplanationTooLarge', true);
+        this.set('isCreatingAnswer', false);
+
+        return;
       }
 
       const records = students.map((student) => {
-        return that.store.createRecord('answer', {
+        return this.store.createRecord('answer', {
           createdBy: student,
           createDate: new Date(),
           answer: answer,
-          explanation: explanation + newImage,
-          assignment: that.assignment,
+          explanation: explanation,
+          assignment: this.assignment,
           isSubmitted: true,
-          problem: that.problem,
+          problem: this.problem,
           priorAnswer: priorAnswer,
-          section: that.section,
+          section: this.section,
           students: students,
           workspaceToUpdate: this.get('workspaceToUpdateId'),
         });
@@ -193,32 +219,42 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       // additional uploaded image base 64 data was concatenated to explanation
       // so can delete image record
       return Ember.RSVP.all(records.map((rec) => {
-        let uploadedImages = this.get('uploadResults');
-        if (uploadedImages) {
-          uploadedImages.forEach((image) => {
-            //backgroundReload: false so store doesn't try to update a record that is already deleted
-            this.get('store').findRecord('image', image._id, { backgroundReload: false }).then((image) => {
-              image.destroyRecord();
-            });
-          });
-        }
         return rec.save();
       }))
       .then((answers) => {
-        that.set('isCreatingAnswer', false);
-        const userId = that.get('currentUser.id');
-        let yourAnswer = answers.filter((answer) => {
-        return answer.get('createdBy.id') === userId;}).objectAt(0);
-        that.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
-        that.get('handleCreatedAnswer')(yourAnswer);
+        this.set('isCreatingAnswer', false);
+        const userId = this.get('currentUser.id');
+
+        let yourAnswer = answers.find((answer) => {
+          return answer.get('createdBy.id') === userId;
+        });
+
+        // send off requests to delete unnecessary images, but dont wait for them
+
+        if (images) {
+          images.forEach((image) => {
+            let record = this.get('store').peekRecord('image', image._id);
+            if (record) {
+              record.destroyRecord();
+            }
+          });
+        }
+
+        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
+        this.get('handleCreatedAnswer')(yourAnswer);
       })
         .catch((err) => {
-          // do we need to roll back all recs that were created?
-          that.set('isCreatingAnswer', false);
-          that.handleErrors(err, 'createRecordErrors');
+          // do we need to roll back all recs this were created?
+          this.set('isCreatingAnswer', false);
+          this.handleErrors(err, 'createRecordErrors');
         });
+    })
+    .catch((err) => {
+      this.set('isCreatingAnswer', false);
+      console.log('error handling images', err);
     });
   },
+
   // Empty quill editor .html() property returns <p><br></p>
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag

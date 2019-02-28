@@ -24,6 +24,7 @@ var ImageSchema = new Schema({
   imageData: { type: String },
   path: { type: String }, //Not used yet
   relativePath: { type: String }, //Not used yet
+  pdfPageNum: { type: Number },
 }, { versionKey: false });
 
 /**

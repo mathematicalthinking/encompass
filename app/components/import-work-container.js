@@ -1,7 +1,7 @@
 /*global _:false */
 Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.AddableProblemsMixin, {
-    elementId: "import-work-container",
-    alert: Ember.inject.service("sweet-alert"),
+    elementId: 'import-work-container',
+    alert: Ember.inject.service('sweet-alert'),
     utils: Ember.inject.service('utility-methods'),
     selectedProblem: null,
     selectedSection: null,
@@ -29,12 +29,12 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     findRecordErrors: [],
     createAnswerErrors: [],
     postErrors: [],
-    showSelectProblem: Ember.computed.equal("currentStep.value", 1),
-    showSelectClass: Ember.computed.equal("currentStep.value", 2),
-    showUploadFiles: Ember.computed.equal("currentStep.value", 3),
-    showMatchStudents: Ember.computed.equal("currentStep.value", 4),
-    showCreateWs: Ember.computed.equal("currentStep.value", 5),
-    showReview: Ember.computed.equal("currentStep.value", 6),
+    showSelectProblem: Ember.computed.equal('currentStep.value', 1),
+    showSelectClass: Ember.computed.equal('currentStep.value', 2),
+    showUploadFiles: Ember.computed.equal('currentStep.value', 3),
+    showMatchStudents: Ember.computed.equal('currentStep.value', 4),
+    showCreateWs: Ember.computed.equal('currentStep.value', 5),
+    showReview: Ember.computed.equal('currentStep.value', 6),
     currentStep: { value: 1 },
     steps: [
       { value: 0 },
@@ -48,52 +48,57 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
     detailsItems: function() {
       return [
         {
-          label: "Selected Problem",
-          displayValue: this.get("selectedProblem.title"),
-          emptyValue: "No Problem",
-          propName: "selectedProblem",
+          label: 'Selected Problem',
+          displayValue: this.get('selectedProblem.title'),
+          emptyValue: 'No Problem',
+          propName: 'selectedProblem',
           associatedStep: 1
         },
         {
-          label: "Selected Class",
-          displayValue: this.get("selectedSection.name"),
-          emptyValue: "No Class",
-          propName: "selectedSection",
+          label: 'Selected Class',
+          displayValue: this.get('selectedSection.name'),
+          emptyValue: 'No Class',
+          propName: 'selectedSection',
           associatedStep: 2
         },
         {
-          label: "Uploaded Files",
-          displayValue: this.get("uploadedFiles.length"),
-          propName: "uploadedFileCount",
+          label: 'Uploaded Files',
+          displayValue: this.get('uploadedFiles.length'),
+          propName: 'uploadedFileCount',
           associatedStep: 3
         },
         {
-          label: "Created Workspace",
-          displayValue: this.get("workspaceName"),
-          emptyValue: "No Workspace",
-          propName: "workspaceName",
+          label: 'Created Workspace',
+          displayValue: this.get('workspaceName'),
+          emptyValue: 'No Workspace',
+          propName: 'workspaceName',
           associatedStep: 5
         },
         {
-          label: "Created Assignment",
-          displayValue: this.get("assignmentName"),
-          emptyValue: "No Assignment",
-          propName: "assignmentName",
+          label: 'Created Assignment',
+          displayValue: this.get('assignmentName'),
+          emptyValue: 'No Assignment',
+          propName: 'assignmentName',
           associatedStep: 5
         }
       ];
     }.property(
-      "selectedProblem",
-      "selectedSection",
-      "uploadedFiles",
-      "workspaceName",
-      "assignmentName"
+      'selectedProblem',
+      'selectedSection',
+      'uploadedFiles.[]',
+      'workspaceName',
+      'assignmentName'
     ),
 
+    init() {
+      this._super(...arguments);
+      this.set('sections', this.model.sections);
+    },
+
     setIsCompDirty: function() {
-      const problem = this.get("selectedProblem");
-      const section = this.get("selectedSection");
-      const files = this.get("uploadedFiles");
+      const problem = this.get('selectedProblem');
+      const section = this.get('selectedSection');
+      const files = this.get('uploadedFiles');
 
       const ret =
         !Ember.isEmpty(problem) ||
@@ -101,61 +106,36 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         !Ember.isEmpty(files);
 
       if (ret) {
-        this.set("isCompDirty", true);
-        this.sendAction("doConfirmLeaving", true);
+        this.set('isCompDirty', true);
+        this.sendAction('doConfirmLeaving', true);
         return;
       }
-      this.set("isCompDirty", false);
-      this.sendAction("doConfirmLeaving", false);
+      this.set('isCompDirty', false);
+      this.sendAction('doConfirmLeaving', false);
     }.observes(
-      "selectedProblem",
-      "selectedSection",
-      "uploadedFiles",
-      "isUploadingAnswer"
+      'selectedProblem',
+      'selectedSection',
+      'uploadedFiles.[]',
+      'isUploadingAnswer'
     ),
 
-    init: function() {
-      this._super(...arguments);
-      this.set("sections", this.model.sections);
+
+    resetImportDetails() {
+      const opts = ['selectedProblem', 'selectedSection', 'uploadedFiles'];
+      opts.forEach((opt) => {
+        this.set(opt, null);
+      });
     },
 
-    resetImportDetails: function() {
-      const opts = ["selectedProblem", "selectedSection", "uploadedFiles"];
-
-      for (let opt of opts) {
-        if (!Ember.isEmpty(this.get(opt))) {
-          this.set(opt, null);
-        }
-      }
-    },
-
-    willDestroyElement: function() {
+    willDestroyElement() {
       this.resetImportDetails();
     },
 
-    handleAdditionalFiles: function() {
-      const additionalFiles = this.get("additionalFiles");
-      if (Ember.isEmpty(additionalFiles) || !Array.isArray(additionalFiles)) {
-        return;
-      }
-
-      let uploadedFiles = this.get("uploadedFiles");
-
-      if (!uploadedFiles || !Array.isArray(uploadedFiles)) {
-        uploadedFiles = [];
-      }
-
-      let combinedFiles = uploadedFiles.concat(additionalFiles);
-      this.set("uploadedFiles", combinedFiles);
-      this.set("additionalFiles", null);
-      this.set("isAddingMoreFiles", false);
-    }.observes("additionalFiles.[]"),
-
     getSectionStudents(section) {
       if (!section) {
-        return Promise.resolve(this.get("store").findAll("user"));
+        return Ember.RSVP.resolve(this.get('store').findAll('user'));
       }
-      return Promise.resolve(section.get("students"));
+      return Ember.RSVP.resolve(section.get('students'));
     },
     maxSteps: function () {
       return this.get('steps.length') - 1;
@@ -166,12 +146,12 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         if (!stepValue) {
           return;
         }
-        this.set("currentStep", this.get("steps")[stepValue]);
+        this.set('currentStep', this.get('steps')[stepValue]);
       },
 
       changeStep(direction) {
-        let currentStep = this.get("currentStep.value");
-        let maxStep = this.get("maxSteps");
+        let currentStep = this.get('currentStep.value');
+        let maxStep = this.get('maxSteps');
         if (direction === 1) {
           if (currentStep === maxStep) {
             return;
@@ -182,36 +162,36 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           if (currentStep === 1) {
             return;
           }
-          this.set("currentStep", this.get("steps")[currentStep - 1]);
+          this.set('currentStep', this.get('steps')[currentStep - 1]);
         }
       },
 
       setSelectedProblem() {
-        this.set("selectedProblem", this.get("selectedProblem"));
-        this.set("currentStep", this.get("steps")[2]);
+        this.set('selectedProblem', this.get('selectedProblem'));
+        this.set('currentStep', this.get('steps')[2]);
       },
 
       setSelectedSection() {
-        let section = this.get("selectedSection");
+        let section = this.get('selectedSection');
 
         // get section info needed for matching
-        this.set("isFetchingSectionStudents", true);
-        Promise.resolve(this.getSectionStudents(section)).then(students => {
-          this.set("isFetchingSectionStudents", false);
+        this.set('isFetchingSectionStudents', true);
+        Ember.RSVP.resolve(this.getSectionStudents(section)).then(students => {
+          this.set('isFetchingSectionStudents', false);
 
           let asArray = students.toArray();
           let hash = {};
           asArray.forEach(user => {
-            hash[user.get("id")] = user;
+            hash[user.get('id')] = user;
           });
-          this.set("studentMap", hash);
-          this.set("currentStep", this.get("steps")[3]);
+          this.set('studentMap', hash);
+          this.set('currentStep', this.get('steps')[3]);
         });
       },
 
-      setUploadedFiles() {
-        this.set("uploadedFiles", this.get("uploadedFiles"));
-        this.send("loadStudentMatching");
+      setUploadedFiles(files) {
+        this.set('uploadedFiles', files);
+        this.send('loadStudentMatching');
       },
 
       setMatchedStudents() {
@@ -224,74 +204,40 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         });
         //for each answer count how many students or students names
         this.set('submissionCount', submissionCount);
-        this.set("currentStep", this.get("steps")[5]);
+        this.set('currentStep', this.get('steps')[5]);
       },
 
       prepareReview() {
-        this.set("currentStep", this.get("steps")[6]);
-      },
-
-      editImportDetail: function(detailName) {
-        if (!detailName || typeof detailName !== "string") {
-          return;
-        }
-        if (detailName === "additionalFiles") {
-          this.set("isAddingMoreFiles", true);
-          this.set("selectedFiles", null);
-          return;
-        }
-        if (detailName === "uploadedFiles") {
-          let uploadedFiles = this.get("uploadedFiles");
-          uploadedFiles.forEach(image => {
-            this.get("store")
-              .findRecord("image", image._id)
-              .then(image => {
-                image.destroyRecord();
-              });
-          });
-          this.set("selectedFiles", null);
-        }
-        this.set(detailName, null);
+        this.set('currentStep', this.get('steps')[6]);
       },
 
       loadStudentMatching: function() {
-        let images = this.get("uploadedFiles");
-        let answers = [];
+        let images = this.get('uploadedFiles');
+        let answers = images.map((image) => {
+          let record = this.get('store').peekRecord('image', image._id);
 
-        return Promise.all(
-          images.map(image => {
-            let ans = {};
-            let imageId = image._id;
-            // TODO: Determine how to handle groups
-            this.store
-              .findRecord("image", imageId)
-              .then(image => {
-                ans.explanationImage = image;
-                ans.problem = this.get("selectedProblem");
-                ans.section = this.get("selectedSection");
-                ans.isSubmitted = true;
-                answers.push(ans);
-                this.set("answers", answers);
-              })
-              .catch(err => {
-                console.log("error is", err);
-              });
-          })
-        ).then(() => {
-          this.set("currentStep", this.get("steps")[4]);
+          return {
+            explanationImage: record,
+            problem : this.get('selectedProblem'),
+            section : this.get('selectedSection'),
+            isSubmitted : true
+          };
         });
+
+        this.set('answers', answers);
+        this.set('currentStep', this.get('steps')[4]);
       },
 
       reviewSubmissions: function() {
-        this.set("isMatchingStudents", false);
-        this.set("isReviewingSubmissions", true);
+        this.set('isMatchingStudents', false);
+        this.set('isReviewingSubmissions', true);
       },
 
       uploadAnswers: function() {
         //need to post all answers, once they are done, pass them to createSubmissions
         let that = this;
-        this.set("isUploadingAnswer", true);
-        let answers = this.get("answers");
+        this.set('isUploadingAnswer', true);
+        let answers = this.get('answers');
         let assignment;
         if (this.get('createdAssignment')) {
           assignment = this.get('createdAssignment');
@@ -301,10 +247,10 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         return Ember.RSVP.all(answers.map(answer => {
           if (that.get('utils').isNonEmptyArray(answer.students)) {
             return Ember.RSVP.all(answer.students.map((student) => {
-              let ans = that.store.createRecord("answer", answer);
-              ans.set('answer', "See Image");
-              ans.set("section", that.get("selectedSection"));
-              ans.set("problem", that.get("selectedProblem"));
+              let ans = that.store.createRecord('answer', answer);
+              ans.set('answer', 'See Image');
+              ans.set('section', that.get('selectedSection'));
+              ans.set('problem', that.get('selectedProblem'));
               ans.set('assignment', assignment);
               ans.set('createdBy', student);
               return ans.save();
@@ -312,10 +258,10 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           }
           if (that.get('utils').isNonEmptyArray(answer.studentNames)) {
             return Ember.RSVP.all(answer.studentNames.map((student) => {
-              let ans = that.store.createRecord("answer", answer);
-              ans.set('answer', "See Image");
-              ans.set("section", that.get("selectedSection"));
-              ans.set("problem", that.get("selectedProblem"));
+              let ans = that.store.createRecord('answer', answer);
+              ans.set('answer', 'See Image');
+              ans.set('section', that.get('selectedSection'));
+              ans.set('problem', that.get('selectedProblem'));
               ans.set('assignment', assignment);
               ans.set('createdBy', that.get('currentUser'));
               ans.set('studentNames', student);
@@ -328,17 +274,17 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           this.get('alert').showToast('success', `${answers.length} Submissions Created`, 'bottom-end', 3000, false, null);
           this.set('uploadAnswers', true);
           if (this.get('workspaceName')) {
-            this.set("isUploadingAnswer", false);
-            this.set("isCreatingWorkspace", true);
-            this.set("uploadedAnswers", true);
+            this.set('isUploadingAnswer', false);
+            this.set('isCreatingWorkspace', true);
+            this.set('uploadedAnswers', true);
             this.send('createSubmissions', answers);
           } else {
             this.set('isCompDirty', false);
-            this.sendAction("doConfirmLeaving", false);
+            this.sendAction('doConfirmLeaving', false);
           }
         }
         ).catch(err => {
-          this.handleErrors(err, "createAnswerErrors");
+          this.handleErrors(err, 'createAnswerErrors');
         });
       },
 
@@ -352,27 +298,27 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
           };
           const creator = {};
           const teacher = {};
-          const student = ans.get("createdBy");
-          const section = ans.get("section");
-          const problem = ans.get("problem");
+          const student = ans.get('createdBy');
+          const section = ans.get('section');
+          const problem = ans.get('problem');
           const studentNames = ans.get('studentNames');
 
-          publication.puzzle.title = this.get('selectedProblem').get("title");
-          publication.puzzle.problemId = problem.get("problemId");
+          publication.puzzle.title = this.get('selectedProblem').get('title');
+          publication.puzzle.problemId = problem.get('problemId');
 
           if (this.get('utils').isNonEmptyArray(studentNames)) {
             creator.username = studentNames;
           } else {
-            creator.studentId = student.get("userId");
-            creator.username = student.get("username");
+            creator.studentId = student.get('userId');
+            creator.username = student.get('username');
           }
 
           if (this.get('utils').isNonEmptyObject(section.get('content'))) {
-            clazz.sectionId = section.get("sectionId");
-            clazz.name = section.get("name");
-            const teachers = section.get("teachers");
-            const primaryTeacher = teachers.get("firstObject");
-            teacher.id = primaryTeacher.get("userId");
+            clazz.sectionId = section.get('sectionId');
+            clazz.name = section.get('name');
+            const teachers = section.get('teachers');
+            const primaryTeacher = teachers.get('firstObject');
+            teacher.id = primaryTeacher.get('userId');
           }
 
           let sub = {
@@ -389,42 +335,42 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       createWorkspace: function (subs) {
-        this.set("isCreatingWorkspace", true);
-        this.set("isCompDirty", false);
-        this.sendAction("doConfirmLeaving", false);
+        this.set('isCreatingWorkspace', true);
+        this.set('isCompDirty', false);
+        this.sendAction('doConfirmLeaving', false);
         let folderSetId;
-        let folderSet = this.get("folderSet");
+        let folderSet = this.get('folderSet');
         if (folderSet) {
-          folderSetId = folderSet.get("id");
+          folderSetId = folderSet.get('id');
         } else {
-          folderSetId = "";
+          folderSetId = '';
         }
 
         let postData = {
           subs: JSON.stringify(subs),
           doCreateWorkspace: true,
           workspaceOwner: JSON.stringify(this.get('workspaceOwner.id')),
-          requestedName: JSON.stringify(this.get("workspaceName")),
+          requestedName: JSON.stringify(this.get('workspaceName')),
           workspaceMode: JSON.stringify(this.get('workspaceMode')),
           folderSet: JSON.stringify(folderSetId),
         };
         Ember.$.post({
-          url: "api/import",
+          url: 'api/import',
           data: postData
         })
         .then(res => {
-          this.set("isCreatingWorkspace", false);
+          this.set('isCreatingWorkspace', false);
           if (res.workspace) {
-            this.set("createdWorkspace", res.workspace);
+            this.set('createdWorkspace', res.workspace);
             let hasCreatedAssignment = this.get('createdAssignment');
             if (!this.get('utils').isNonEmptyObject(hasCreatedAssignment)) {
-              this.sendAction("toWorkspaces", res.workspace);
+              this.sendAction('toWorkspaces', res.workspace);
             }
-            this.get("alert").showToast("success", "Workspace Created", "bottom-end", 4000, false, null);
+            this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
           }
         })
         .catch(err => {
-          this.handleErrors(err, "postErrors");
+          this.handleErrors(err, 'postErrors');
         });
       },
 
@@ -477,9 +423,9 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
       },
 
       toggleMenu: function() {
-        $("#filter-list-side").toggleClass("collapse");
-        $("#arrow-icon").toggleClass("fa-rotate-180");
-        $("#filter-list-side").addClass("animated slideInLeft");
+        $('#filter-list-side').toggleClass('collapse');
+        $('#arrow-icon').toggleClass('fa-rotate-180');
+        $('#filter-list-side').addClass('animated slideInLeft');
       }
     }
   }

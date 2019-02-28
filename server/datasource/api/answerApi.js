@@ -3,7 +3,7 @@
   * @description This is the API for answer based requests
   * @author Michael McVeigh
 */
-/* jshint ignore:start */
+
 //REQUIRE MODULES
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
@@ -236,13 +236,19 @@ const getAnswer = (req, res, next) => {
     // savedAnswer createdBy, problem, section were populated
     // need just id
 
-    if (savedAnswer.problem._id) {
+    let problemId = _.propertyOf(savedAnswer)(['problem', '_id']);
+    let sectionId = _.propertyOf(savedAnswer)(['section', '_id']);
+    let creatorId = _.propertyOf(savedAnswer)(['createdBy', '_id']);
+
+
+    if (problemId) {
       savedAnswer.problem = savedAnswer.problem._id;
     }
-    if (savedAnswer.section._id) {
+    // answers created from import might not have section
+    if (sectionId) {
       savedAnswer.section = savedAnswer.section._id;
     }
-    if (savedAnswer.createdBy._id) {
+    if (creatorId) {
       savedAnswer.createdBy = savedAnswer.createdBy._id;
     }
     let data = { 'answer': savedAnswer };
@@ -290,20 +296,6 @@ const putAnswer = (req, res, next) => {
       return utils.sendError.NotAuthorizedError('Answer has already been submitted', res);
     }
 
-    // if (doc.isTrashed) {
-    //   models.Problem.findById(answer.problem).exec().then((problem) => {
-    //     if (problem.isUsed) {
-    //       models.Answer.findOne({ isTrashed: false, problem: problem.id }).exec().then((answer) => {
-    //         console.log('answer is', answer);
-    //         if (answer === null) {
-    //           problem.isUsed == false;
-    //           problem.save();
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
-
     // make the updates
     for(let field in req.body.answer) {
       if((field !== '_id') && (field !== undefined)) {
@@ -325,4 +317,3 @@ module.exports.get.answers = getAnswers;
 module.exports.get.answer = getAnswer;
 module.exports.post.answer = postAnswer;
 module.exports.put.answer = putAnswer;
-/* jshint ignore:end */

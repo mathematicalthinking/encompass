@@ -32,7 +32,12 @@
             <button class="edit-image-btn" {{action 'deleteImage'}}>Delete</button>
             <button class="edit-image-btn" {{action 'addImage'}}>Add</button>
             {{else}}
-              {{image-upload filesToBeUploaded = filesToBeUploaded hideSubmit = true}}
+              {{image-upload
+                filesToBeUploaded=filesToBeUploaded
+                hideSubmit=true
+                acceptMultiple=true
+                isPdfOnly=true
+                }}
             {{/if}}
           </div>
           <div class="new-answer-input contributors">
@@ -59,7 +64,13 @@
           {{/if}}
       </fieldset>
       {{#if isMissingRequiredFields}}
-        <p class="error-message">Please provide all required fields.</p>
+        {{error-box error="Please provide all required fields." showDismiss=true resetError=(action (mut isMissingRequiredFields) null)}}
+      {{/if}}
+      {{#if overSizedFileError}}
+        {{error-box error=overSizedFileError showDismiss=true resetError=(action (mut overSizedFileError) null)}}
+      {{/if}}
+      {{#if isExplanationTooLarge}}
+        {{error-box error=tooLargeExplanationMsg showDismiss=true resetError=(action (mut isExplanationTooLarge) null)}}
       {{/if}}
     </form>
   </section>
