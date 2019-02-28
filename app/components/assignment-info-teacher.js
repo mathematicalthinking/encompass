@@ -186,8 +186,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let selectedProblem = this.get('selectedProblem');
       let selectedSection = this.get('selectedSection');
 
-      let currentProblem = assignment.get('problem.content');
-      let currentSection = assignment.get('section.content');
+      let currentProblem = this.get('problem');
+      let currentSection = this.get('section');
 
       let didProblemChange = !Ember.isEqual(selectedProblem, currentProblem);
       let didSectionChange = !Ember.isEqual(selectedSection, currentSection);
