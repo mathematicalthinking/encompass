@@ -11,8 +11,10 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
   dataFetchErrors: [],
   findRecordErrors: [],
   updateRecordErrors: [],
+
   alert: Ember.inject.service('sweet-alert'),
   permissions: Ember.inject.service('assignment-permissions'),
+  utils: Ember.inject.service('utility-methods'),
 
   init: function() {
     this._super(...arguments);
@@ -20,9 +22,15 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
     // only need to get these on init because user won't be creating new sections or problems from this component
     return this.store.findAll('section')
       .then((sections) => {
+        if (this.get('isDestroying') || this.get('isDestroyed')) {
+          return;
+        }
         this.set('sections', sections);
       })
       .catch((err) => {
+        if (this.get('isDestroying') || this.get('isDestroyed')) {
+          return;
+        }
         this.handleErrors(err, 'dataFetchErrors');
       });
   },
@@ -36,9 +44,6 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('isEditing', false);
       this.setAddProblemFunction('addProblemTypeahead');
 
-      if (this.get('showReport')) {
-        this.set('showReport', false);
-      }
 
       let dateFormat = this.get('htmlDateFormat');
       let dueDate = this.assignment.get('dueDate');
@@ -51,38 +56,17 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       this.set('formattedAssignedDate', moment(assignedDate).format(dateFormat));
 
     }
-
-    if (this.get('studentList') && this.get('assignmentAnswers')) {
-      this.prepReport();
-    }
-  },
-
-  prepReport() {
-    this.set('isPreparingReport', true);
-    if (!this.get('studentList') || !this.get('assignmentAnswers')) {
-      this.set('isPreparingReport', false);
-      return;
-    }
-    let sortedAnswers = this.get('assignmentAnswers').sortBy('createdBy.username');
-    this.set('sortedAnswers', sortedAnswers);
-
-    this.get('studentList').forEach((student) => {
-      let ownFiltered = sortedAnswers.filterBy('createdBy.username', student.get('username'));
-      let sortedByDate = ownFiltered.sortBy('createDate').reverse();
-      student.set('filteredAnswers', sortedByDate);
-    });
-    this.set('isPreparingReport', false);
-    this.set('showReport', true);
   },
 
   isYourOwn: function() {
-   return this.get('currentUser.id') === this.get('assignment.createdBy.id');
-  }.property('assignment.id', 'currentUser'),
+    let creatorId = this.get('utils').getBelongsToId(this.get('assignment'), 'createdBy');
+   return this.get('currentUser.id') === creatorId;
+  }.property('assignment.id', 'currentUser.id'),
 
   isDirty: function() {
-    const answers = this.get('sortedAnswers');
-    return !Ember.isEmpty(answers);
-  }.property('sortedAnswers.[]'),
+    let answerIds = this.get('utils').getHasManyIds(this.get('assignment'), 'answers');
+    return this.get('utils').isNonEmptyArray(answerIds);
+  }.property('assignment.answers.[]'),
 
   isClean: Ember.computed.not('isDirty'),
 
@@ -202,8 +186,8 @@ Encompass.AssignmentInfoTeacherComponent = Ember.Component.extend(Encompass.Curr
       let selectedProblem = this.get('selectedProblem');
       let selectedSection = this.get('selectedSection');
 
-      let currentProblem = assignment.get('problem.content');
-      let currentSection = assignment.get('section.content');
+      let currentProblem = this.get('problem');
+      let currentSection = this.get('section');
 
       let didProblemChange = !Ember.isEqual(selectedProblem, currentProblem);
       let didSectionChange = !Ember.isEqual(selectedSection, currentSection);

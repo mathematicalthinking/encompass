@@ -109,16 +109,7 @@
     <p class="error-message">Invalid Date Range</p>
   {{/if}}
 
-  {{!-- {{#if assignmentToDelete}}
-    {{modal-delete itemToDelete=assignmentToDelete onConfirm="deleteAssignment" optionLabelPath = "problem.title"}}
-  {{/if}} --}}
-
-  {{#if showReport}}
-    {{assignment-report assignment=assignment students=studentList }}
-  {{/if}}
-  {{#if isPreparingReport}}
-    <p class="loading-message">Loading Assignment Report... Thank you for your patience.</p>
-  {{/if}}
+  {{assignment-report details=assignment.reportDetails assignment=assignment students=studentList }}
 
 {{#if isEditing}}
 <script>

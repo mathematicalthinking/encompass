@@ -8,9 +8,9 @@
 {{/each}}
 
 {{#if currentUser.isStudent}}
-  {{assignment-info-student assignment=assignment problem=currentProblem section=currentSection answerList=assignmentAnswers store=store}}
+  {{assignment-info-student assignment=assignment problem=currentProblem section=currentSection answerList=assignment.answers.content store=store}}
 {{else}}
-  {{assignment-info-teacher assignment=assignment studentList=assignmentStudents assignmentAnswers=assignmentAnswers store=store section=scurrentSection problem=currentProblem toAssignments="toAssignments" linkedWorkspace=assignment.linkedWorkspace.content}}
+  {{assignment-info-teacher assignment=assignment details=details studentList=assignmentStudents store=store section=currentSection problem=currentProblem toAssignments="toAssignments" linkedWorkspace=assignment.linkedWorkspace.content}}
 {{/if}}
 
 

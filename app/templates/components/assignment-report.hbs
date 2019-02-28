@@ -6,12 +6,12 @@
       <th>Number of Submissions</th>
       <th>Most Recent Revision</th>
     </tr>
-    {{#each students as |student|}}
+    {{#each sortedReportItems as |item| }}
     <tr>
-        <td>{{student.username}}</td>
-        <td>{{student.filteredAnswers.length}}</td>
-        {{#if student.filteredAnswers.length}}
-          <td>{{format-date student.filteredAnswers.[0].createDate "MMM Do YYYY h:mm A"}}</td>
+        <td>{{item.username}}</td>
+        <td>{{item.count}}</td>
+        {{#if item.count}}
+          <td>{{format-date item.latestRevision "MMM Do YYYY h:mm A"}}</td>
         {{else}}
         <td> N/A</td>
         {{/if}}

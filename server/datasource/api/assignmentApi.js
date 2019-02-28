@@ -99,7 +99,7 @@ const getAssignment = async function(req, res, next) {
   }
   let id = req.params.id;
 
-  let assignment = await models.Assignment.findById(id).populate('answers').populate('problem').populate('section').populate('students').exec();
+  let assignment = await models.Assignment.findById(id).populate('answers', 'createdBy createDate').populate('problem').populate('section').populate('students').exec();
   // record not found in db or is trashed
   if (!assignment || assignment.isTrashed) {
     return utils.sendResponse(res, null);
@@ -113,15 +113,34 @@ const getAssignment = async function(req, res, next) {
 
   let data = {};
 
-  if (user.accountType === 'S' || user.actingRole === 'student') {
+  let isStudent = user.accountType === 'S' || user.actingRole === 'student';
+
+  if (isStudent) {
     // only send back student's own answers
     assignment.answers = assignment.answers.filter((answer) => {
       return areObjectIdsEqual(answer.createdBy, user._id);
     });
   }
 
-  if (isNonEmptyArray(assignment.answers)) {
-    data.answers = assignment.answers;
+  let metadata = {};
+
+  if (!isStudent) {
+    assignment.answers.forEach((answer) => {
+      let creatorId = answer.createdBy;
+      if (!metadata[creatorId]) {
+        metadata[creatorId] = {};
+        metadata[creatorId].count = 1;
+        metadata[creatorId].latestRevision = answer.createDate;
+      } else {
+        metadata[creatorId].count += 1;
+        let newDate = answer.createDate;
+        if (newDate > metadata[creatorId].latestRevision) {
+        metadata[creatorId].latestRevision = newDate;
+        }
+      }
+    });
+
+    assignment.reportDetails = metadata;
   }
 
   if (isNonEmptyArray(assignment.students)) {
@@ -133,7 +152,7 @@ const getAssignment = async function(req, res, next) {
   }
 
   if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
-    data.problems = [ assignment.section ];
+    data.sections = [ assignment.section ];
   }
 
   assignment.depopulate('answers');
@@ -141,7 +160,12 @@ const getAssignment = async function(req, res, next) {
   assignment.depopulate('section');
   assignment.depopulate('students');
 
-  data.assignment = assignment;
+  let jsonAssn = assignment.toObject();
+
+  if (!isStudent && metadata) {
+    jsonAssn.reportDetails = metadata;
+  }
+  data.assignment = jsonAssn;
 
   return utils.sendResponse(res, data);
 
