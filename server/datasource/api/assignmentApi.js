@@ -3,7 +3,7 @@
   * @description This is the API for assignment based requests
   * @author Daniel Kelly
 */
-/* jshint ignore:start */
+
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 
@@ -12,7 +12,9 @@ const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access = require('../../middleware/access/assignments');
 
-const { areObjectIdsEqual } = require('../../utils/mongoose');
+const { areObjectIdsEqual, isValidMongoId } = require('../../utils/mongoose');
+
+const { isNonEmptyArray, } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -95,15 +97,7 @@ const getAssignment = async function(req, res, next) {
   if (!user) {
     return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
   }
-
   let id = req.params.id;
-
-  let assignment = await models.Assignment.findById(id);
-
-  // record not found in db or is trashed
-  if (!assignment || assignment.isTrashed) {
-    return utils.sendResponse(res, null);
-  }
 
   let canLoadAssignment = await access.get.assignment(user, id);
 
@@ -112,9 +106,43 @@ const getAssignment = async function(req, res, next) {
     return utils.sendError.NotAuthorizedError('You do not have permission.', res);
   }
 
-  const data = { // user has permission; send back record
-    assignment
-  };
+  let assignment = await models.Assignment.findById(id).populate('answers').populate('problem').populate('section').populate('students').exec();
+  // record not found in db or is trashed
+  if (!assignment || assignment.isTrashed) {
+    return utils.sendResponse(res, null);
+  }
+
+  let data = {};
+
+  if (user.accountType === 'S' || user.actingRole === 'student') {
+    // only send back student's own answers
+    assignment.answers = assignment.answers.filter((answer) => {
+      return areObjectIdsEqual(answer.createdBy, user._id);
+    });
+  }
+
+  if (isNonEmptyArray(assignment.answers)) {
+    data.answers = assignment.answers;
+  }
+
+  if (isNonEmptyArray(assignment.students)) {
+    data.users = assignment.students;
+  }
+
+  if (isValidMongoId(_.propertyOf(assignment)(['problem', '_id']))) {
+    data.problems = [ assignment.problem ];
+  }
+
+  if (isValidMongoId(_.propertyOf(assignment)(['section', '_id']))) {
+    data.problems = [ assignment.section ];
+  }
+
+  assignment.depopulate('answers');
+  assignment.depopulate('problem');
+  assignment.depopulate('section');
+  assignment.depopulate('students');
+
+  data.assignment = assignment;
 
   return utils.sendResponse(res, data);
 
@@ -405,4 +433,3 @@ module.exports.put.assignment.addStudent = addStudent;
 module.exports.put.assignment.removeStudent = removeStudent;
 module.exports.put.assignment.addProblem = addProblem;
 module.exports.put.assignment.removeProblem = removeProblem;
-/* jshint ignore:end */
