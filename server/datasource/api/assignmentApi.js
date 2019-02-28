@@ -99,17 +99,16 @@ const getAssignment = async function(req, res, next) {
   }
   let id = req.params.id;
 
-  let canLoadAssignment = await access.get.assignment(user, id);
-
-
-  if (!canLoadAssignment) { // user does not have permission to access assignment
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  }
-
   let assignment = await models.Assignment.findById(id).populate('answers').populate('problem').populate('section').populate('students').exec();
   // record not found in db or is trashed
   if (!assignment || assignment.isTrashed) {
     return utils.sendResponse(res, null);
+  }
+
+  let canLoadAssignment = await access.get.assignment(user, id);
+
+  if (!canLoadAssignment) { // user does not have permission to access assignment
+    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
   }
 
   let data = {};
