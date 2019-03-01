@@ -17,12 +17,15 @@ Encompass.AssignmentReportComponent = Ember.Component.extend(Encompass.CurrentUs
   reportWithUser: function() {
     let details = this.get('details');
 
-    let results = Ember.Object.create();
+    let results = {};
 
     _.each(details, (val, userId) => {
       let user = this.get('students').findBy('id', userId);
       if (user) {
-        results.set(user.get('username'), val);
+        let username = user.get('username');
+        if (username) {
+          results[username] = val;
+        }
       }
     });
 
