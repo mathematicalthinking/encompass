@@ -104,6 +104,16 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     }
   },
 
+  willDestroyElement() {
+    let propsToClear = ['isCreatingAnswer', 'showLoadingMessage'];
+    propsToClear.forEach((prop) => {
+      if (this.get(prop)) {
+        this.set(prop, false);
+      }
+    });
+    this._super(...arguments);
+  },
+
   handleImages() {
       if (this.get('existingImageId')) {
         return Ember.RSVP.resolve(this.get('existingImageId'));
@@ -120,7 +130,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       for ( let f of filesToUpload ) {
         if (f.size > this.get('singleFileSizeLimit')) {
           this.set('overSizedFileError', this.getOverSizedFileMsg(f.size, f.name));
-          this.set('filesToBeUploaded', null);
           return Ember.RSVP.reject('oversizedFile');
         } else {
           formData.append('photo', f);
@@ -224,12 +233,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return rec.save();
       }))
       .then((answers) => {
-        this.set('isCreatingAnswer', false);
         const userId = this.get('currentUser.id');
 
         let yourAnswer = answers.find((answer) => {
           return answer.get('createdBy.id') === userId;
         });
+
+        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
+
+        this.get('handleCreatedAnswer')(yourAnswer);
 
         // send off requests to delete unnecessary images, but dont wait for them
 
@@ -242,18 +254,22 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           });
         }
 
-        this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
-        this.get('handleCreatedAnswer')(yourAnswer);
       })
         .catch((err) => {
           // do we need to roll back all recs this were created?
-          this.set('isCreatingAnswer', false);
+          if (!this.get('isDestroying') && !this.get('isDestroyed')) {
+            this.set('isCreatingAnswer', false);
+          }
           this.handleErrors(err, 'createRecordErrors');
         });
     })
     .catch((err) => {
-      this.set('isCreatingAnswer', false);
-      console.log('error handling images', err);
+      if (!this.get('isDestroying') && !this.get('isDestroyed')) {
+        this.set('isCreatingAnswer', false);
+      }
+      if (err === 'oversizedFile') {
+        return;
+      }
     });
   },
 

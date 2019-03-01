@@ -95,7 +95,7 @@ const getImage = (req, res, next) => {
 const readFilePromise = function(file) {
   return new Promise((resolve, reject) => {
     if (!file) {
-      return reject(new Error('failure extreme failure'));
+      return reject(new Error('invalid or missing file provided'));
     }
     fs.readFile(file, (err, data) => {
         if (err) {
@@ -190,9 +190,8 @@ const postImages = async function(req, res, next) {
           return utils.sendError.InternalError(err, res);
         });
     } else {
-      // let str = data.toString('base64');
       return sharp(data)
-      .resize({width: 1000})
+      .resize(500)
       .toBuffer()
       .then((result) => {
         let format = `data:${mimeType};base64,`;
