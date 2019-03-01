@@ -65,9 +65,14 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       sum += 100;
     }
     if (this.get('isWaitingForApproval')) {
+      sum += 50;
+    }
+
+    if (this.get('hasUnreadReply')) {
       sum += 10;
     }
-    if (this.get('hasUnreadReply')) {
+
+    if (this.get('inNeedOfRevisions')) {
       sum += 1;
     }
     return sum;
