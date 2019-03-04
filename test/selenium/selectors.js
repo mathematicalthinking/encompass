@@ -396,7 +396,17 @@ module.exports = {
       linkedAssnText: 'div[data-test="linked-assn"]',
     },
     collabs: {
-      container: '#workspace-info-collaborators'
+      container: '#workspace-info-collaborators',
+      addBtn: '#workspace-info-collaborators > div > div.heading > span > i',
+      usernameInput: '#collab-select-selectized',
+      usernameText:'div.selectize-control.single',
+      saveCollab: '#workspace-info-collaborators-new > div > div:nth-child(3) > div > button:nth-child(2)',
+      collabItems: '#workspace-info-collaborators > div > div.card-content > div',
+      permissionsList: {
+        groupInput: 'input["name=globalPermissionValue"]',
+        viewOnly: 'input["value=viewOnly"]'
+      }
+
     },
     stats: {
       container: '#workspace-info-stats'

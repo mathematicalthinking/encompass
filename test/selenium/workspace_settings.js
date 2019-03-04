@@ -34,6 +34,10 @@ let assignmentToLink = {
 
 let wsInfoUrl = `${host}/#/workspaces/${workspaceInfo._id}/info`;
 
+let collabToAdd = {
+  username: 'mtgstudent2',
+};
+
 describe('Workspace info / settings interactions', function() {
   let selectors = css.wsInfo;
 
@@ -159,7 +163,7 @@ describe('Workspace info / settings interactions', function() {
       let input = await helpers.getWebElements(driver, selectors.settings.linkedAssnInput);
       await input[0].sendKeys('MTG');
       await driver.sleep(1000);
-      let active = await helpers.waitForAndClickElement(driver, 'div.option.active');
+      await helpers.waitForAndClickElement(driver, 'div.option.active');
 
       expect(await helpers.findAndGetText(driver, selectors.settings.linkedAssnText)).to.contain(assignmentToLink.name);
       await saveSettings();
@@ -181,10 +185,46 @@ describe('Workspace info / settings interactions', function() {
     });
   });
 
+  let { addBtn, usernameInput, usernameText, saveCollab, collabItems } = css.wsInfo.collabs;
+
+  async function openAddCollabMenu() {
+    await helpers.findAndClickElement(driver, addBtn);
+    await helpers.waitForSelector(driver, usernameInput);
+  }
   describe('Adding / removing collaborators', function() {
     before(async function() {
+      await openAddCollabMenu();
+      let input = await helpers.getWebElements(driver, usernameInput);
+      await input[0].sendKeys(collabToAdd.username);
+      await driver.sleep(1000);
+      await helpers.waitForAndClickElement(driver, 'div.option.active');
+
+      expect(await helpers.findAndGetText(driver, usernameText)).to.eql(collabToAdd.username);
+
+      await helpers.findAndClickElement(driver, saveCollab);
+
+      await helpers.waitForRemoval(driver, saveCollab);
+      // TODO validate all the different inputs
+    });
+    it('should successfully add the user as collab', async function() {
+      let successToast = `${collabToAdd.username} added as collaborator`;
+      // await helpers.saveScreenshot(driver);
+      expect(await helpers.isTextInDom(driver, successToast)).to.eql(true);
+
+      let items = await helpers.getWebElements(driver, collabItems);
+      expect(items).to.have.lengthOf(1);
+      expect(await helpers.findAndGetText(driver, 'div.collab-name')).to.eql(collabToAdd.username);
+    });
+
+    it('should display new collab after page refresh', async function() {
+      await helpers.navigateAndWait(driver, wsInfoUrl, selectors.settings.container);
+      let items = await helpers.getWebElements(driver, collabItems);
+      expect(items).to.have.lengthOf(1);
+      expect(await helpers.isElementVisible(driver, `a[href="#/users/${collabToAdd.username}"]`)).to.eql(true);
 
     });
   });
+
+
 
 });

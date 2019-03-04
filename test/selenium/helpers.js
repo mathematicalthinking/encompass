@@ -1,5 +1,6 @@
 // REQUIRE MODULES
 const { By, until, Key } = require('selenium-webdriver');
+const imgBase64 = require('base64-img');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -372,6 +373,23 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
   }
 };
 
+const saveScreenshot = function(webdriver) {
+  return webdriver.takeScreenshot().
+  then((base64Data) => {
+    console.log('b64', base64Data.slice(0,25));
+     imgBase64.img('data:image/png;base64,' + base64Data, 'test/selenium/screenshots', Date.now(), (err, file) => {
+       if (err) {
+         throw(err);
+      }
+      console.log('file', file);
+      return file;
+     });
+  })
+  .catch((err) => {
+    console.error(`Error save screenshot: ${err}`);
+  });
+};
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -436,3 +454,4 @@ module.exports.waitForRemoval = waitForRemoval;
 module.exports.newSection = newSection;
 module.exports.timeoutTestMsStr = timeoutTestMsStr;
 module.exports.waitForUrlMatch = waitForUrlMatch;
+module.exports.saveScreenshot = saveScreenshot;
