@@ -10,7 +10,7 @@ const htmlparser = require("htmlparser2");
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
- mongoose.connect('mongodb://localhost:27017/encompass');
+//  mongoose.connect('mongodb://localhost:27017/encompass');
 
  let sizeThreshold = 1000000;
  let pngbase64Id = 'data:image/png;base64';
@@ -21,11 +21,9 @@ mongoose.Promise = global.Promise;
 
   let parser = new htmlparser.Parser({
 onopentag: function(name, attr) {
-if (!_.isEmpty(attr)) {
-  result.push('<' + name + ' ');
-} else {
+
   result.push('<' + name);
-}
+
   _.each(attr, (val, key) => {
     result.push(` ${key}="${val}"`);
   });
@@ -36,7 +34,9 @@ ontext: function(text) {
   result.push(text);
 },
 onclosetag: function(tagname) {
+  if (tagname !== 'img') {
     result.push('</' + tagname + '>');
+  }
 },
   }, {decodeEntities: true});
 
@@ -118,4 +118,6 @@ function migrate() {
   });
 }
 
-migrate();
+// migrate();
+
+module.exports.parseImageData = parseImageData;
