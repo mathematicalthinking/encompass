@@ -8,6 +8,8 @@
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 const moment = require('moment');
+const htmlParser = require('htmlparser2');
+const sharp = require('sharp');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -204,6 +206,114 @@ const getAnswer = (req, res, next) => {
   });
 };
 
+function parseExplanation(explanationString) {
+  let result = [];
+
+  let parser = new htmlParser.Parser({
+    onopentag: function(name, attr) {
+      result.push('<' + name);
+
+      _.each(attr, (val, key) => {
+        result.push(` ${key}='${val}'`);
+      });
+      result.push('>');
+    },
+
+    ontext: function(text) {
+      result.push(text);
+    },
+    onclosetag: function(tagname) {
+      let nonClosingTags = ['img', 'br'];
+      if (!nonClosingTags.includes(tagname)) {
+        result.push('</' + tagname + '>');
+      }
+    },
+  }, {decodeEntities: true});
+
+  parser.write(explanationString);
+  parser.end();
+  return result;
+}
+
+ function handleExplanation(parsedExplanation, user) {
+  if (!Array.isArray(parsedExplanation)) {
+    return '';
+  }
+
+  return Promise.all(parsedExplanation.map(async (el) => {
+
+    let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
+
+    let target = 'base64,';
+    let targetIndex = first30Chars.indexOf(target);
+
+    let isImageData = targetIndex !== -1;
+
+
+    if (!isImageData) {
+      return el;
+    }
+    let dataStartIndex = targetIndex + target.length;
+    // does not include last char which is closing quote
+    let imageDataStr = el.slice(dataStartIndex);
+
+    let dataFormatStartIndex = first30Chars.indexOf('data:');
+    let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
+
+    let origBuffer = Buffer.from(imageDataStr, 'base64');
+
+    let originalSharp = sharp(origBuffer);
+
+    let originalMetadata = await originalSharp.metadata();
+    console.log('orginal metadata', originalMetadata);
+    let sizeThreshold = 614400; // 600kb
+    let widthThreshold = 1000; // 1000 pixels wide max
+
+    let { size, width, format, height } = originalMetadata;
+
+    let newImage = new models.Image({
+      originalSize: size,
+      originalWidth: width,
+      originalHeight: height,
+      originalMimetype: `image/${format}`,
+      createdBy: user,
+    });
+
+    let isOverSizeLimit = size > sizeThreshold;
+    let isOverWidthLimit = width > widthThreshold;
+
+    if (!isOverSizeLimit && !isOverWidthLimit) {
+      newImage.imageData = imageDataStrWithFormat;
+      newImage.size = size;
+      newImage.width = width;
+      newImage.height = height;
+    } else {
+      let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
+      let newMetadata = await sharp(resizedBuffer).metadata();
+      console.log('new md', newMetadata);
+      newImage.size = newMetadata.size;
+      newImage.width = newMetadata.width;
+      newImage.height = newMetadata.height;
+      newImage.mimetype = `image/${newMetadata.format}`;
+
+      let newImageDataStr = resizedBuffer.toString('base64');
+
+      newImage.imageData = `data:image/${format};base64,${newImageDataStr}`;
+
+    }
+    await newImage.save();
+
+    let url = `/api/images/file/${newImage._id}`;
+    return ` src='${url}'`;
+  }))
+  .then((arr) => {
+    return arr.join('');
+  })
+  .catch((err) => {
+    console.log('err handle explanation', err);
+  });
+}
+
 /**
   * @public
   * @method postAnswer
@@ -223,6 +333,11 @@ const getAnswer = (req, res, next) => {
     // Add permission checks here
     const answer = new models.Answer(req.body.answer);
 
+    let parsedExplanationEls = parseExplanation(answer.explanation);
+
+    let convertedExplanation = await handleExplanation(parsedExplanationEls, user);
+
+    answer.explanation = convertedExplanation;
     answer.createDate = Date.now();
     let savedAnswer = await answer.save();
     let updatedWorkspaceInfo;
