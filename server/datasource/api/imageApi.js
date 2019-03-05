@@ -82,6 +82,28 @@ const getImage = (req, res, next) => {
   });
 };
 
+const getImageFile = (req, res, next) => {
+  models.Image.findById(req.params.id)
+  .exec((err, image) => {
+    if (err) {
+      logger.error(err);
+      return utils.sendError.InternalError(err, res);
+    }
+    if (!image || image.isTrashed) {
+      return utils.sendResponse(res, null);
+    }
+
+    let imageData = image.imageData;
+    let target = 'base64,';
+    let targetIx = imageData.indexOf(target);
+    let sliced = imageData.slice(targetIx + target.length);
+    let buffer = Buffer.from(sliced, 'base64');
+    res.contentType(image.mimetype);
+    return res.send(buffer);
+
+  });
+};
+
 /**
   * @public
   * @method postImage
@@ -303,3 +325,4 @@ module.exports.get.image = getImage;
 module.exports.post.images = postImages;
 module.exports.put.image = putImage;
 module.exports.delete.image = deleteImage;
+module.exports.get.imageFile = getImageFile;
