@@ -13,19 +13,15 @@ mongoose.Promise = global.Promise;
 //  mongoose.connect('mongodb://localhost:27017/encompass');
 
  let sizeThreshold = 1000000;
- let pngbase64Id = 'data:image/png;base64';
- let jpgbase64Id = 'data:image/jpeg;base64';
-
  function parseImageData(expl) {
    let result = [];
 
   let parser = new htmlparser.Parser({
 onopentag: function(name, attr) {
-
   result.push('<' + name);
 
   _.each(attr, (val, key) => {
-    result.push(` ${key}="${val}"`);
+    result.push(` ${key}='${val}'`);
   });
   result.push('>');
 },
@@ -34,7 +30,8 @@ ontext: function(text) {
   result.push(text);
 },
 onclosetag: function(tagname) {
-  if (tagname !== 'img') {
+  let nonClosingTags = ['img', 'br'];
+  if (!nonClosingTags.includes(tagname)) {
     result.push('</' + tagname + '>');
   }
 },
@@ -63,8 +60,8 @@ onclosetag: function(tagname) {
     let parsedArrays = newAnswers.map((ans) => {
       let parsedExplanationArray = parseImageData(ans.explanation);
       let resizedExplanation = parsedExplanationArray.map(async (el) => {
-        if (typeof el === 'string' && el.slice(0,25).includes('data:image')) {
-          let imageType = el.slice(0,25).includes('png') ? 'png' : 'jpeg';
+        if (typeof el === 'string' && el.slice(0,30).includes('data:image')) {
+          let imageType = el.slice(0,30).includes('png') ? 'png' : 'jpeg';
           console.log('found image to convert!');
 
           let buildDir = 'build';
