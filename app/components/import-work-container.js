@@ -215,8 +215,10 @@ Encompass.ImportWorkContainerComponent = Ember.Component.extend(Encompass.Curren
         let images = this.get('uploadedFiles');
         let answers = images.map((image) => {
           let record = this.get('store').peekRecord('image', image._id);
-
+          let url = `/api/images/file/${image._id}`;
+          let imgStr = `<img src='${url}'>`;
           return {
+            explanation: imgStr,
             explanationImage: record,
             problem : this.get('selectedProblem'),
             section : this.get('selectedSection'),
