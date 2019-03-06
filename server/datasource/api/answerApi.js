@@ -339,7 +339,7 @@ function parseExplanation(explanationString) {
 
     // should always be an explanation
     if (!Array.isArray(parsedExplanationEls)) {
-      return utils.sendError.InternalError('Missing or invalid explanation provided', res);
+      return utils.sendError.InvalidContentError('Missing or invalid explanation provided', res);
     }
     let convertedExplanation = await handleExplanation(parsedExplanationEls, user);
 
