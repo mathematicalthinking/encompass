@@ -211,6 +211,7 @@ server.get('/api/assignments', api.get.assignments);
 server.get('/api/assignments/:id', path.validateId(), api.get.assignment);
 server.get('/api/images', api.get.images);
 server.get('/api/images/:id', path.validateId(), api.get.image);
+server.get('/api/images/file/:id', path.validateId(), api.get.imageFile);
 server.get('/api/stats', api.get.stats);
 server.get('/api/about', api.get.about);
 server.get('/api/notifications', api.get.notifications);

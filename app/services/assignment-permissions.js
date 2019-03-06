@@ -108,7 +108,6 @@ Encompass.AssignmentPermissionsService = Ember.Service.extend({
 
   haveAnswersBeenSubmitted(assignment) {
     let answerIds = this.get('utils').getHasManyIds(assignment, 'answers');
-    console.log('answerIds', answerIds);
     return this.get('utils').isNonEmptyArray(answerIds);
   }
 

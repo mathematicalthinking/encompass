@@ -187,7 +187,6 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
       if (this.get('isLoadingNewPage')) {
         this.set('isLoadingNewPage', false);
       }
-      console.log('result threads meta', meta);
     });
   },
 

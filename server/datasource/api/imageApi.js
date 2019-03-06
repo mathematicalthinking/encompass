@@ -19,6 +19,8 @@ const PDF2Pic = require('pdf2pic').default;
 
 const pdfParse = require('pdf-parse');
 
+const { isNonEmptyString } = require('../../utils/objects');
+
 require('dotenv').config();
 
 module.exports.get = {};
@@ -82,6 +84,55 @@ const getImage = (req, res, next) => {
   });
 };
 
+function getMimetypeFromImageData(imageData) {
+  let first30Chars = typeof imageData === 'string' ? imageData.slice(0,29) : '';
+
+  if (first30Chars.indexOf('png') !== -1) {
+    return 'image/png';
+  }
+  if (first30Chars.indexOf('jpeg') !== -1 || first30Chars.indexOf('jpg') !== -1) {
+    return 'image/jpeg';
+  }
+
+  if (first30Chars.indexOf('gif') !== -1) {
+    return 'image/gif';
+  }
+  return null;
+}
+
+const getImageFile = (req, res, next) => {
+  return models.Image.findById(req.params.id).lean().exec()
+    .then((image) => {
+    if (!image || image.isTrashed || !isNonEmptyString(image.imageData)) {
+      return utils.sendResponse(res, null);
+    }
+
+    let imageData = image.imageData;
+    let target = 'base64,';
+    let targetIx = imageData.indexOf(target);
+    let sliced = imageData.slice(targetIx + target.length);
+    let buffer = Buffer.from(sliced, 'base64');
+
+    let mimetype = image.mimetype;
+
+    if (!isNonEmptyString(mimetype)) {
+      mimetype = getMimetypeFromImageData(imageData);
+      if (mimetype === null) {
+        return utils.sendError.InvalidContentError(`Image contains invalid or unsupported data.`, res);
+      }
+    }
+
+    res.contentType(mimetype);
+    return res.send(buffer);
+
+    })
+    .catch((err) => {
+      console.error(`Error getImageFile: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(null, res);
+  });
+};
+
 /**
   * @public
   * @method postImage
@@ -108,6 +159,7 @@ const readFilePromise = function(file) {
 
 const postImages = async function(req, res, next) {
   const user = userAuth.requireUser(req);
+
   if (!user) {
     return utils.sendError.InvalidCredentialsError('No user logged in!', res);
   }
@@ -117,11 +169,13 @@ const postImages = async function(req, res, next) {
     return utils.sendError.InvalidContentError('No files to upload!', res);
   }
 
+  let sizeThreshold = 614400; // 600kb
+  let widthThreshold = 1000; // 1000 pixels wide max
+
   const files = await Promise.all(req.files.map(async (f) => {
     let data = f.buffer;
     let mimeType = f.mimetype;
     let isPDF = mimeType === 'application/pdf';
-    let img = new models.Image(f);
 
     let buildDir = 'build';
     if (process.env.BUILD_DIR) {
@@ -136,13 +190,13 @@ const postImages = async function(req, res, next) {
 
     if (isPDF) {
       let converter = new PDF2Pic({
-        density: 200, // output pixels per inch
-        savename: img.name, // output file name
+        density: 100, // output pixels per inch
+        savename: f.name, // output file name
         savedir: saveDir, // output file location
-        format: "png", // output file format
-        size: 1000 // output size in pixels
+        format: 'png', // output file format
+        size: 500 // output size in pixels
       });
-      let file = img.path;
+      let file = f.path;
 
       let pdfBuffer = await readFilePromise(file);
       let pdfParsed = await pdfParse(pdfBuffer);
@@ -163,21 +217,23 @@ const postImages = async function(req, res, next) {
             let file = fileObj.path;
             let pageNum = fileObj.page;
 
-            let f = {
+            let newFile = {
               createdBy: user,
               createDate: Date.now(),
-              originalname: img.originalname,
+              originalname: f.originalname,
               pdfPageNum: pageNum,
+              mimetype: 'image/png',
             };
 
             return readFilePromise(file).then((data) => {
-              let newImage = new models.Image(f);
+              let newImage = new models.Image(newFile);
+
               let buffer = Buffer.from(data).toString('base64');
               let format = `data:image/png;base64,`;
               let imgData = `${format}${buffer}`;
+              newImage.imageData = imgData;
+              return newImage;
 
-                newImage.imageData = imgData;
-                return newImage;
             })
             .catch((err) => {
               console.error('error converting', err);
@@ -190,21 +246,56 @@ const postImages = async function(req, res, next) {
           return utils.sendError.InternalError(err, res);
         });
     } else {
-      return sharp(data)
-      .resize(500)
-      .toBuffer()
-      .then((result) => {
-        let format = `data:${mimeType};base64,`;
-        let str = result.toString('base64');
-        let imgData = `${format}${str}`;
+      // not PDF
+      let originalSharp = sharp(data);
+      let metadata = await originalSharp.metadata();
 
-        img.createdBy = user;
-        img.createDate = Date.now();
-        img.imageData = imgData;
-        return Promise.resolve(img);
+      let { width, height, size, format } = metadata;
+
+
+      let img = new models.Image({
+        createdBy: user,
+        createDate: Date.now(),
+        originalname: f.originalname,
+        originalSize: size,
+        originalWidth: width,
+        originalHeight: height,
+        originalMimetype: `image/${format}`,
       });
-    }
 
+      let isOverSizeLimit = size > sizeThreshold;
+      let isOverWidthLimit = width > widthThreshold;
+
+      if (!isOverSizeLimit && !isOverWidthLimit) {
+        img.size = size;
+        img.width = width;
+        img.height = height;
+        img.mimetype = `image/${format}`;
+
+        let imgString = data.toString('base64');
+
+        img.imageData = `data:image/${format};base64,${imgString}`;
+
+        return Promise.resolve(img);
+
+        } else {
+          // resize
+
+          let resizedBuffer = await originalSharp.resize(500).toBuffer();
+          let newMetadata = await sharp(resizedBuffer).metadata();
+
+          img.size = newMetadata.size;
+          img.width = newMetadata.width;
+          img.height = newMetadata.height;
+          img.mimetype = `image/${newMetadata.format}`;
+
+          let imgDataStr = resizedBuffer.toString('base64');
+
+          img.imageData = `data:image/${format};base64,${imgDataStr}`;
+
+          return Promise.resolve(img);
+        }
+    }
 
   }));
   let flattened = _.flatten(files);
@@ -303,3 +394,4 @@ module.exports.get.image = getImage;
 module.exports.post.images = postImages;
 module.exports.put.image = putImage;
 module.exports.delete.image = deleteImage;
+module.exports.get.imageFile = getImageFile;

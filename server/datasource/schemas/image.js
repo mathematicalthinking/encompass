@@ -25,6 +25,13 @@ var ImageSchema = new Schema({
   path: { type: String }, //Not used yet
   relativePath: { type: String }, //Not used yet
   pdfPageNum: { type: Number },
+  originalWidth: {type: Number},
+  originalHeight: { type: Number },
+  originalSize: { type: Number },
+  originalMimetype: {type: String},
+  height: { type: Number },
+  width: { type: Number },
+  size: { type: Number },
 }, { versionKey: false });
 
 /**

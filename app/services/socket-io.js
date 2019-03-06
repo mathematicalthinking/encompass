@@ -16,10 +16,8 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
     }
 
     socket.on('NEW_NOTIFICATION', (data) => {
-      console.log('emitting ntf', data);
      _.each(data, (val, key) => {
       if (val) {
-        console.log('pushing payload', key, val);
         this.get('store').pushPayload(
           {
             [key]: val
@@ -77,7 +75,6 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
       */
       if (this.get('utils').isValidMongoId(data.notificationId)) {
         let peeked = this.get('store').peekRecord('notification', data.notificationId);
-        console.log('clearing ntf', peeked);
         if (!peeked) {
           return;
         }

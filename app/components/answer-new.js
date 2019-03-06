@@ -199,7 +199,8 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         images.forEach((image) => {
           let imageData = image.imageData;
           if (imageData) {
-            let tagString = `<img src='${imageData}'>`;
+            let url = `/api/images/file/${image._id}`;
+            let tagString = `<img src='${url}'>`;
             explanation += tagString;
           }
         });
@@ -244,15 +245,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         this.get('handleCreatedAnswer')(yourAnswer);
 
         // send off requests to delete unnecessary images, but dont wait for them
-
-        if (images) {
-          images.forEach((image) => {
-            let record = this.get('store').peekRecord('image', image._id);
-            if (record) {
-              record.destroyRecord();
-            }
-          });
-        }
 
       })
         .catch((err) => {
