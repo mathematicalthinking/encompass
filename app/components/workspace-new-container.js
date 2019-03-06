@@ -294,7 +294,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       queryParams
     ).then((results) => {
       this.removeMessages('answerLoadErrors');
-      console.log('results', results);
       this.set('answers', results);
 
       this.set('answersMetadata', results.get('meta'));
@@ -336,7 +335,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
       // check if ned to confirm large request
 
     }).catch((err) => {
-      console.log('err', err);
       this.handleErrors(err, 'answerLoadErrors');
       this.set('isFetchingAnswers', false);
 
@@ -385,7 +383,6 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
 
   },
   sortedAnswers: function() {
-    console.log('sortingAnswers!');
     let sortParam = this.get('sortCriterion.sortParam');
     const defaultSorted = this.get('displayAnswers');
     if (!sortParam) {
@@ -417,18 +414,15 @@ Encompass.WorkspaceNewContainerComponent = Ember.Component.extend(Encompass.Curr
         let revisionCount = this.get('submissionThreads').get(student).get('length');
         return revisionCount;
       });
-      console.log('ascending', ascending, direction);
       if (direction === 1) {
         return ascending;
       }
       return ascending.reverse();
     }
     if (field === 'student') {
-      console.log('in student', direction);
       let ascending = defaultSorted.sortBy('student');
       if (direction === 1) {
         return ascending;
-        // return defaultSorted.reverse();
       }
       return ascending.reverse();
     }
