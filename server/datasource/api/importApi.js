@@ -31,7 +31,6 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 
-/* jshint ignore:start */
 const buildSubmissionSet = async function (submissions, user) {
   let submissionSet;
   if (!isNonEmptyArray(submissions)) {
@@ -233,4 +232,3 @@ return utils.sendResponse(res, data);
 
 module.exports.post.import = postImport;
 module.exports.buildSubmissionSet = buildSubmissionSet;
-/* jshint ignore:end */
