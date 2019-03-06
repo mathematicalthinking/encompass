@@ -236,19 +236,13 @@ function parseExplanation(explanationString) {
 }
 
  function handleExplanation(parsedExplanation, user) {
-  if (!Array.isArray(parsedExplanation)) {
-    return '';
-  }
-
   return Promise.all(parsedExplanation.map(async (el) => {
-
     let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
 
     let target = 'base64,';
     let targetIndex = first30Chars.indexOf(target);
 
     let isImageData = targetIndex !== -1;
-
 
     if (!isImageData) {
       return el;
@@ -265,7 +259,6 @@ function parseExplanation(explanationString) {
     let originalSharp = sharp(origBuffer);
 
     let originalMetadata = await originalSharp.metadata();
-    console.log('orginal metadata', originalMetadata);
     let sizeThreshold = 614400; // 600kb
     let widthThreshold = 1000; // 1000 pixels wide max
 
@@ -290,7 +283,7 @@ function parseExplanation(explanationString) {
     } else {
       let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
       let newMetadata = await sharp(resizedBuffer).metadata();
-      console.log('new md', newMetadata);
+
       newImage.size = newMetadata.size;
       newImage.width = newMetadata.width;
       newImage.height = newMetadata.height;
@@ -335,6 +328,10 @@ function parseExplanation(explanationString) {
 
     let parsedExplanationEls = parseExplanation(answer.explanation);
 
+    // should always be an explanation
+    if (!Array.isArray(parsedExplanationEls)) {
+      return utils.sendError.InternalError('Missing or invalid explanation provided', res);
+    }
     let convertedExplanation = await handleExplanation(parsedExplanationEls, user);
 
     answer.explanation = convertedExplanation;
