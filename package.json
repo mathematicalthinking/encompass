@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/mathematicalthinking/encompass#readme",
   "dependencies": {
-    "base64-img": "^1.0.4",
     "bcrypt": "^1.0.3",
     "connect-mongo": "^2.0.1",
     "cookie": "^0.3.1",
