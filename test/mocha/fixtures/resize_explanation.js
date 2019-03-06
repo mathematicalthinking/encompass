@@ -11,11 +11,15 @@ module.exports = {
 
   pWithFmt:{
     description: 'Formatted paragraph',
-    input:'<p><u>testing</u></p><p><br></br></p><p><strong><em>hello</em></strong></p>'
+    input: `<p><u>Hello</u></p><p><br></p><p><strong><u>Maybe</u></strong></p>`
   },
 
   smallGif:{
     description: 'Small gif',
-    input:  `<p class='ql-align-justify'><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>`
+    input:  `<p class='ql-align-justify'><img src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'></p><p><br></p>`
+  },
+  smallGifText: {
+    description: 'Small gif inbetween text',
+    input: `<p><u>Hello</u></p><p><br></p><p><img src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'></p><p><br></p><p><strong><u>Maybe</u></strong></p>`
   }
 };
