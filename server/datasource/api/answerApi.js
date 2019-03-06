@@ -211,21 +211,21 @@ function parseExplanation(explanationString) {
 
   let parser = new htmlParser.Parser({
     onopentag: function(name, attr) {
-      result.push('<' + name);
+      result.push(['openTag', '<' + name]);
 
       _.each(attr, (val, key) => {
-        result.push(` ${key}='${val}'`);
+        result.push([`attr_${key}`, ` ${key}='${val}'`]);
       });
-      result.push('>');
+      result.push(['endOpenTag', '>']);
     },
 
     ontext: function(text) {
-      result.push(text);
+      result.push(['textContent', text]);
     },
     onclosetag: function(tagname) {
       let nonClosingTags = ['img', 'br'];
       if (!nonClosingTags.includes(tagname)) {
-        result.push('</' + tagname + '>');
+        result.push(['closeTag', '</' + tagname + '>']);
       }
     },
   }, {decodeEntities: true});
@@ -236,7 +236,16 @@ function parseExplanation(explanationString) {
 }
 
  function handleExplanation(parsedExplanation, user) {
-  return Promise.all(parsedExplanation.map(async (el) => {
+  return Promise.all(parsedExplanation.map(async (tuple) => {
+
+    let [elType, el] = tuple;
+    // for image src, elType will be attr_src
+    let isImageSrc = elType === 'attr_src';
+
+    if (!isImageSrc) {
+      return el;
+    }
+
     let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
 
     let target = 'base64,';
