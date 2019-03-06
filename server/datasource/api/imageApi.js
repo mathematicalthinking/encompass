@@ -84,6 +84,22 @@ const getImage = (req, res, next) => {
   });
 };
 
+function getMimetypeFromImageData(imageData) {
+  let first30Chars = typeof imageData === 'string' ? imageData.slice(0,29) : '';
+
+  if (first30Chars.indexOf('png') !== -1) {
+    return 'image/png';
+  }
+  if (first30Chars.indexOf('jpeg') !== -1 || first30Chars.indexOf('jpg') !== -1) {
+    return 'image/jpeg';
+  }
+
+  if (first30Chars.indexOf('gif') !== -1) {
+    return 'image/gif';
+  }
+  return null;
+}
+
 const getImageFile = (req, res, next) => {
   return models.Image.findById(req.params.id).lean().exec()
     .then((image) => {
@@ -97,7 +113,16 @@ const getImageFile = (req, res, next) => {
     let sliced = imageData.slice(targetIx + target.length);
     let buffer = Buffer.from(sliced, 'base64');
 
-    res.contentType(image.mimetype);
+    let mimetype = image.mimetype;
+
+    if (!isNonEmptyString(mimetype)) {
+      mimetype = getMimetypeFromImageData(imageData);
+      if (mimetype === null) {
+        return utils.sendError.InvalidContentError(`Image contains invalid or unsupported data.`, res);
+      }
+    }
+
+    res.contentType(mimetype);
     return res.send(buffer);
 
     })
