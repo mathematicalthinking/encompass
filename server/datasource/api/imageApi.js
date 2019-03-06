@@ -19,6 +19,8 @@ const PDF2Pic = require('pdf2pic').default;
 
 const pdfParse = require('pdf-parse');
 
+const { isNonEmptyString } = require('../../utils/objects');
+
 require('dotenv').config();
 
 module.exports.get = {};
@@ -83,13 +85,9 @@ const getImage = (req, res, next) => {
 };
 
 const getImageFile = (req, res, next) => {
-  models.Image.findById(req.params.id)
-  .exec((err, image) => {
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
-    }
-    if (!image || image.isTrashed) {
+  return models.Image.findById(req.params.id).lean().exec()
+    .then((image) => {
+    if (!image || image.isTrashed || !isNonEmptyString(image.imageData)) {
       return utils.sendResponse(res, null);
     }
 
@@ -98,9 +96,15 @@ const getImageFile = (req, res, next) => {
     let targetIx = imageData.indexOf(target);
     let sliced = imageData.slice(targetIx + target.length);
     let buffer = Buffer.from(sliced, 'base64');
+
     res.contentType(image.mimetype);
     return res.send(buffer);
 
+    })
+    .catch((err) => {
+      console.error(`Error getImageFile: ${err}`);
+      console.trace();
+      return utils.sendError.InternalError(null, res);
   });
 };
 

@@ -6,11 +6,10 @@ const fs = require('fs');
 
 const htmlparser = require("htmlparser2");
 
-
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
-//  mongoose.connect('mongodb://localhost:27017/encompass');
+ mongoose.connect('mongodb://localhost:27017/encompass');
 
  let sizeThreshold = 1000000;
  function parseImageData(expl) {
@@ -101,20 +100,109 @@ onclosetag: function(tagname) {
    }
  }
 
+ let newlyCreatedImageIds = [];
+ let modifiedAnswerIds = [];
+
+ async function reformatExplanationImages() {
+  try {
+    let answers = await models.Answer.find({
+      explanation: {$exists: true, $ne: null},
+      $or: [
+        {powsSubmId: {$eq: null} },
+        {powsSubmId: {$exists: false}}
+        ]
+    });
+
+    console.log(`There are ${answers.length} answers that are not old pows submissions`);
+
+    let parsedArrays = answers.map(async (ans) => {
+      let shouldSaveAnswer = false;
+
+      let parsedExplanationArray = parseImageData(ans.explanation);
+
+      let resizedExplanation = await Promise.all(parsedExplanationArray.map(async (el) => {
+        let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
+
+        let target = 'base64,';
+        let targetIndex = first30Chars.indexOf(target);
+
+        let isImageData = targetIndex !== -1;
+
+        if (!isImageData) {
+          return el;
+        }
+        let dataStartIndex = targetIndex + target.length;
+        // does not include last char which is closing quote
+        let imageDataStr = el.slice(dataStartIndex);
+
+        let dataFormatStartIndex = first30Chars.indexOf('data:');
+        let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
+
+        let origBuffer = Buffer.from(imageDataStr, 'base64');
+
+        let originalSharp = sharp(origBuffer);
+
+        let originalMetadata = await originalSharp.metadata();
+
+        let { size, width, format, height } = originalMetadata;
+
+        let newImage = new models.Image({
+          size: size,
+          width: width,
+          height: height,
+          mimetype: `image/${format}`,
+          createdBy: ans.createdBy,
+          imageData: imageDataStrWithFormat,
+        });
+        await newImage.save();
+        newlyCreatedImageIds.push(newImage._id);
+        shouldSaveAnswer = true;
+
+        let url = `/api/images/file/${newImage._id}`;
+        return ` src='${url}'`;
+      }));
+
+      if (shouldSaveAnswer) {
+        let joined = resizedExplanation.join('');
+        ans.explanation = joined;
+        modifiedAnswerIds.push(ans._id);
+        return ans.save();
+      } else {
+        return ans;
+      }
+    });
+    return Promise.all(parsedArrays);
+   }catch(err) {
+     console.error(`Error reformatExplanationImages: ${err}`);
+   }
+ }
+
 
 
 function migrate() {
   return resizeLargeImages().then((res) => {
-  //  console.log(`migrated ${res} editors`);
-  console.log('success', res.length);
-   mongoose.connection.close();
-   console.log('done!');
-  })
-  .catch((err) => {
-    console.log('err', err);
-  });
+    //  console.log(`migrated ${res} editors`);
+    console.log('success', res.length);
+     mongoose.connection.close();
+     console.log('done!');
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
+}
+
+function convertExplanationImages() {
+  return reformatExplanationImages().then((res) => {
+    console.log(`Created: ${newlyCreatedImageIds.length} new Images`);
+    console.log(`Modified ${modifiedAnswerIds.length} answers`);
+     mongoose.connection.close();
+     console.log('done!');
+    })
+    .catch((err) => {
+      console.log('Error convertExplanationImages: ', err);
+    });
 }
 
 // migrate();
-
+// convertExplanationImages();
 module.exports.parseImageData = parseImageData;
