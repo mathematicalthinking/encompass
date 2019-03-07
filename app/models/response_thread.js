@@ -10,7 +10,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   threadType: DS.attr('string'),
   studentDisplay: DS.attr('string'),
   mentors: DS.attr(),
-  isNewThread: DS.attr('boolean', { default: false }),
+  isNewThread: DS.attr('boolean', { defaultValue: false }),
   hasNewRevision: Ember.computed.gt('newRevisions.length', 0),
 
   inNeedOfRevisions: Ember.computed.gt('needsRevisionResponses.length', 0),

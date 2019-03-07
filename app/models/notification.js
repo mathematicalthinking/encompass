@@ -10,5 +10,5 @@ Encompass.Notification = DS.Model.extend(Encompass.Auditable, {
   problem: DS.belongsTo('problem'),
   section: DS.belongsTo('section'),
   organziation: DS.belongsTo('organization'),
-  wasSeen: DS.attr('boolean', { default: false })
+  wasSeen: DS.attr('boolean', { defaultValue: false })
 });
