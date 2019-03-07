@@ -10,7 +10,8 @@
 
 //REQUIRE MODULES
 const LocalStrategy = require('passport-local').Strategy;
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleStrategy = require('@passport-next/passport-google-oauth2').Strategy;
+
 const auth = require('../datasource/api/auth');
 const userAuth = require('../../server/middleware/userAuth');
 const nconf = require('nconf');
@@ -234,7 +235,6 @@ module.exports = (passport) => {
                   auth.getResetToken(20).then((token) => {
                     newUser.confirmEmailToken = token;
                     newUser.confirmEmailExpires = Date.now() + 86400000; //1 day
-
                     newUser.save((err) => {
                       if (err) {
                         next(err);
@@ -244,7 +244,7 @@ module.exports = (passport) => {
 
                       // send email to encompass admins email notifying new user signup
 
-                      if (process.NODE_ENV === 'production') {
+                      if (process.env.NODE_ENV === 'production') {
                         auth.sendEmailsToAdmins(req.headers.host, 'newUserNotification');
                       } else {
                         auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification', null, newUser);
@@ -330,18 +330,18 @@ module.exports = (passport) => {
   if (process.env.NODE_ENV === 'production') {
     callbackURL = process.env.GOOGLE_CALLBACK_URL_PROD;
     emailHost = process.env.EMAIL_HOST_PROD;
-    console.log(`production, ${emailHost}`);
+    console.log(`production email host, ${emailHost}`);
   } else if (process.env.NODE_ENV === 'staging') {
       callbackURL = process.env.GOOGLE_CALLBACK_URL_STAGING;
       emailHost = process.env.EMAIL_HOST_STAGING;
-      console.log(`staging, ${emailHost}`);
-    } else {
+      console.log(`staging email host, ${emailHost}`);
+  } else {
     callbackURL = "/auth/google/callback";
-    if (process.NODE_ENV === 'seed') {
+    if (process.env.NODE_ENV === 'seed') {
       emailHost = `localhost:${nconf.get('testPort')}`;
-    } else {
-      emailHost = `localhost:${nconf.get('port')}`;
-    }
+  } else {
+    emailHost = `localhost:${nconf.get('port')}`;
+  }
     console.log(`other environment`);
   }
   console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
@@ -350,7 +350,8 @@ module.exports = (passport) => {
   passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: callbackURL
+    callbackURL: callbackURL,
+    userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
   }, (accessToken, refreshToken, profile, done) => {
     User.findOne({
       googleId: profile.id
@@ -361,7 +362,6 @@ module.exports = (passport) => {
       if (user) {
         return done(null, user);
       }
-
       const newUser = new User({
         googleId: profile.id,
         name: profile.name.givenName + " " + profile.name.familyName,
@@ -376,7 +376,7 @@ module.exports = (passport) => {
         if (err) {
           return done(err);
         }
-        if (process.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production') {
           auth.sendEmailsToAdmins(emailHost, 'newUserNotification');
         } else {
           auth.sendEmailSMTP(userAuth.getEmailAuth().username, emailHost, 'newUserNotification', null, newUser);
