@@ -13,6 +13,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const auth = require('../datasource/api/auth');
 const userAuth = require('../../server/middleware/userAuth');
+const nconf = require('nconf');
 
 //PASSWORD ENCRYPTION
 const bcrypt = require('bcrypt');
@@ -241,12 +242,14 @@ module.exports = (passport) => {
                       // send email to new user asking to confirm email
                       auth.sendEmailSMTP(newUser.email, req.headers.host, 'confirmEmailAddress', token, newUser);
 
-                      // send email to encompass main email notifying new user signup
-                      auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification', null, newUser);
+                      // send email to encompass admins email notifying new user signup
 
+                      if (process.NODE_ENV === 'production') {
+                        auth.sendEmailsToAdmins(req.headers.host, 'newUserNotification');
+                      } else {
+                        auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification', null, newUser);
+                      }
                       return next(null, newUser);
-
-
                     });
                   })
                 .catch((err) => {
@@ -322,15 +325,23 @@ module.exports = (passport) => {
   *   we already have you in our database
   */
   let callbackURL;
+  let emailHost;
 
   if (process.env.NODE_ENV === 'production') {
     callbackURL = process.env.GOOGLE_CALLBACK_URL_PROD;
-    console.log(`production`);
+    emailHost = process.env.EMAIL_HOST_PROD;
+    console.log(`production, ${emailHost}`);
   } else if (process.env.NODE_ENV === 'staging') {
       callbackURL = process.env.GOOGLE_CALLBACK_URL_STAGING;
-      console.log(`staging`);
+      emailHost = process.env.EMAIL_HOST_STAGING;
+      console.log(`staging, ${emailHost}`);
     } else {
     callbackURL = "/auth/google/callback";
+    if (process.NODE_ENV === 'seed') {
+      emailHost = `localhost:${nconf.get('testPort')}`;
+    } else {
+      emailHost = `localhost:${nconf.get('port')}`;
+    }
     console.log(`other environment`);
   }
   console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
@@ -364,6 +375,11 @@ module.exports = (passport) => {
       newUser.save((err) => {
         if (err) {
           return done(err);
+        }
+        if (process.NODE_ENV === 'production') {
+          auth.sendEmailsToAdmins(emailHost, 'newUserNotification');
+        } else {
+          auth.sendEmailSMTP(userAuth.getEmailAuth().username, emailHost, 'newUserNotification', null, newUser);
         }
         done(null, newUser);
       });
