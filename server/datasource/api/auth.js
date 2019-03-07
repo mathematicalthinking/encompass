@@ -69,9 +69,7 @@ const localSignup = (req, res, next) => {
 
 const googleAuth = (req, res, next) => {
   passport.authenticate('google', {
-     scope:["https://www.googleapis.com/auth/plus.login",
-     "https://www.googleapis.com/auth/plus.profile.emails.read"
-   ]
+     scope:['profile', 'email'],
   })(req,res,next);
 };
 
@@ -128,10 +126,10 @@ const sendEmailsToAdmins = async function(host, template) {
   try {
     let adminCrit = {
       isTrashed: false,
-      email: { $exists: true, $ne: null }
+      accountType: 'A',
+      email: { $exists: true, $ne: null },
     };
     let admins = await User.find(adminCrit).lean().exec();
-
     if (!Array.isArray(admins)) {
       return;
     }
