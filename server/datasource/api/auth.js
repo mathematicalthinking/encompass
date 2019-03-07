@@ -126,10 +126,10 @@ const sendEmailsToAdmins = async function(host, template) {
   try {
     let adminCrit = {
       isTrashed: false,
-      email: { $exists: true, $ne: null }
+      accountType: 'A',
+      email: { $exists: true, $ne: null },
     };
     let admins = await User.find(adminCrit).lean().exec();
-
     if (!Array.isArray(admins)) {
       return;
     }
