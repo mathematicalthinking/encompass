@@ -122,7 +122,7 @@ const sendEmailSMTP = function(recipient, host, template, token=null, userObj) {
   });
 };
 
-const sendEmailsToAdmins = async function(host, template) {
+const sendEmailsToAdmins = async function(host, template, relatedUser) {
   try {
     let adminCrit = {
       isTrashed: false,
@@ -134,9 +134,10 @@ const sendEmailsToAdmins = async function(host, template) {
       return;
     }
 
+    // relatedUser is who the email is about, i.e. if a new user signed up
     admins.forEach((user) => {
       if (user.email) {
-        sendEmailSMTP(user.email, host, template, null, user);
+        sendEmailSMTP(user.email, host, template, null, relatedUser);
       }
     });
 
