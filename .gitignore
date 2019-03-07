@@ -64,3 +64,6 @@ ChromeDriver.exe
 
 #Common core data
 /Common-Core-Data
+
+# test screenshots
+test/selenium/screenshots

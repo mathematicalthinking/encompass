@@ -379,5 +379,37 @@ module.exports = {
   },
   workspace: {
     newResponse: 'button.action_button:nth-child(1)'
+  },
+  wsInfo: {
+    container: '#workspace-info',
+    settings: {
+      container: '#workspace-info-settings',
+      editBtn: '#workspace-info-settings > div > div.heading > span > i',
+      cancelEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button.primary-button.cancel-button',
+      saveEdit: '#workspace-info-settings > div > div.card-content > div.card-row.button-row > button:nth-child(2)',
+      editName: '#edit-name-input',
+      nameText: '#workspace-info-settings > div > div.card-content > div:nth-child(1) > div.row-value',
+      autoUpdateSelect: 'div[data-test="allow-updates"] > #my-select > select',
+      autoUpdateText: 'div[data-test="allow-updates"]',
+      updateSuccessText: 'Workspace Updated',
+      linkedAssnInput: '#linked-assignment-select-selectized',
+      linkedAssnText: 'div[data-test="linked-assn"]',
+    },
+    collabs: {
+      container: '#workspace-info-collaborators',
+      addBtn: '#workspace-info-collaborators > div > div.heading > span > i',
+      usernameInput: '#collab-select-selectized',
+      usernameText:'div.selectize-control.single',
+      saveCollab: '#workspace-info-collaborators-new > div > div:nth-child(3) > div > button:nth-child(2)',
+      collabItems: '#workspace-info-collaborators > div > div.card-content > div',
+      permissionsList: {
+        groupInput: 'input["name=globalPermissionValue"]',
+        viewOnly: 'input["value=viewOnly"]'
+      }
+
+    },
+    stats: {
+      container: '#workspace-info-stats'
+    }
   }
 };

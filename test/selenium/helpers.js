@@ -1,5 +1,7 @@
 // REQUIRE MODULES
 const { By, until, Key } = require('selenium-webdriver');
+const sharp = require('sharp');
+const path = require('path');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -372,6 +374,20 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
   }
 };
 
+const saveScreenshot = function(webdriver) {
+  return webdriver.takeScreenshot().
+  then((base64Data) => {
+    let buffer = Buffer.from(base64Data, 'base64');
+    return sharp(buffer).toFile(path.join(__dirname, 'screenshots', `${Date.now()}.png`))
+    .then((val) => {
+      console.log('screenshot saved: ', val);
+    })
+    .catch((err) => {
+      console.log(`Error saving screenshot: ${err}`);
+    });
+  });
+};
+
 //boilerplate setup for running tests by account type
 // async function runTests(users) {
 //   async function _runTests(user) {
@@ -436,3 +452,4 @@ module.exports.waitForRemoval = waitForRemoval;
 module.exports.newSection = newSection;
 module.exports.timeoutTestMsStr = timeoutTestMsStr;
 module.exports.waitForUrlMatch = waitForUrlMatch;
+module.exports.saveScreenshot = saveScreenshot;

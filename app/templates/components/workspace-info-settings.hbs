@@ -66,7 +66,7 @@
         <div class="row-label">
           Linked Assignment
         </div>
-        <div class="row-value">
+        <div data-test="linked-assn" class="row-value">
           {{#if isEditing}}
             {{selectize-input
             store=store
@@ -99,7 +99,7 @@
       <div class="row-label">
         Allow Automatic Submission Updates
       </div>
-      <div class="row-value">
+      <div data-test="allow-updates" class="row-value">
         {{#if isEditing}}
           {{my-select cannotBeNull=true selectedValue=selectedAutoUpdateSetting content=yesNoMySelect action=(action (mut selectedAutoUpdateSetting))}}
         {{else}}
