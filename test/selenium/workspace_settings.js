@@ -1,7 +1,6 @@
 // REQUIRE MODULES
-const {Builder, By, Key} = require('selenium-webdriver');
+const { Builder, } = require('selenium-webdriver');
 const expect = require('chai').expect;
-const moment = require('moment');
 
 // REQUIRE FILES
 const helpers = require('./helpers');
@@ -208,7 +207,6 @@ describe('Workspace info / settings interactions', function() {
     });
     it('should successfully add the user as collab', async function() {
       let successToast = `${collabToAdd.username} added as collaborator`;
-      // await helpers.saveScreenshot(driver);
       expect(await helpers.isTextInDom(driver, successToast)).to.eql(true);
 
       let items = await helpers.getWebElements(driver, collabItems);

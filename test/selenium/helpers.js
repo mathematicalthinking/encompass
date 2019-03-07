@@ -1,6 +1,7 @@
 // REQUIRE MODULES
 const { By, until, Key } = require('selenium-webdriver');
-const imgBase64 = require('base64-img');
+const sharp = require('sharp');
+const path = require('path');
 
 // REQUIRE FILES
 const config = require('../../server/config');
@@ -376,17 +377,14 @@ const waitForUrlMatch = async function(webDriver, regex, timeout=timeoutMs) {
 const saveScreenshot = function(webdriver) {
   return webdriver.takeScreenshot().
   then((base64Data) => {
-    console.log('b64', base64Data.slice(0,25));
-     imgBase64.img('data:image/png;base64,' + base64Data, 'test/selenium/screenshots', Date.now(), (err, file) => {
-       if (err) {
-         throw(err);
-      }
-      console.log('file', file);
-      return file;
-     });
-  })
-  .catch((err) => {
-    console.error(`Error save screenshot: ${err}`);
+    let buffer = Buffer.from(base64Data, 'base64');
+    return sharp(buffer).toFile(path.join(__dirname, 'screenshots', `${Date.now()}.png`))
+    .then((val) => {
+      console.log('screenshot saved: ', val);
+    })
+    .catch((err) => {
+      console.log(`Error saving screenshot: ${err}`);
+    });
   });
 };
 
