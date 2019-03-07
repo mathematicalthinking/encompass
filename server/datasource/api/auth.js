@@ -69,9 +69,7 @@ const localSignup = (req, res, next) => {
 
 const googleAuth = (req, res, next) => {
   passport.authenticate('google', {
-     scope:["https://www.googleapis.com/auth/plus.login",
-     "https://www.googleapis.com/auth/plus.profile.emails.read"
-   ]
+     scope:['profile', 'email'],
   })(req,res,next);
 };
 
