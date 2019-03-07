@@ -245,7 +245,7 @@ module.exports = (passport) => {
                       // send email to encompass admins email notifying new user signup
 
                       if (process.env.NODE_ENV === 'production') {
-                        auth.sendEmailsToAdmins(req.headers.host, 'newUserNotification');
+                        auth.sendEmailsToAdmins(req.headers.host, 'newUserNotification', newUser);
                       } else {
                         auth.sendEmailSMTP(userAuth.getEmailAuth().username, req.headers.host, 'newUserNotification', null, newUser);
                       }
@@ -377,7 +377,7 @@ module.exports = (passport) => {
           return done(err);
         }
         if (process.env.NODE_ENV === 'production') {
-          auth.sendEmailsToAdmins(emailHost, 'newUserNotification');
+          auth.sendEmailsToAdmins(emailHost, 'newUserNotification', newUser);
         } else {
           auth.sendEmailSMTP(userAuth.getEmailAuth().username, emailHost, 'newUserNotification', null, newUser);
         }
