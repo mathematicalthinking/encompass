@@ -656,9 +656,10 @@ async function putWorkspace(req, res, next) {
 
   if (doOnlyUpdateLastViewed) {
     ws.lastViewed = lastViewed;
+    // set as false so future updates are not interfered with
+    ws.doOnlyUpdateLastViewed = false;
 
     await ws.save();
-
     return utils.sendResponse(res, {
       workspace: ws
     });

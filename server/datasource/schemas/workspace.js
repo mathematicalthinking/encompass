@@ -70,7 +70,8 @@ var WorkspaceSchema = new Schema({
   permissions: [ WorkspacePermissionObjectSchema ],
   sourceWorkspace: { type: ObjectId, ref: 'Workspace' },
   linkedAssignment: { type: ObjectId, ref: 'Assignment' },
-  doAllowSubmissionUpdates: {type: Boolean, default: true },
+  doAllowSubmissionUpdates: { type: Boolean, default: true },
+  doOnlyUpdateLastViewed: { type: Boolean, default: false }
 }, {versionKey: false});
 
 /**
