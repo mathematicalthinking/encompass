@@ -26,7 +26,7 @@ const confirmEmailAddress = function(recipient, host, token, user) {
 
     Once your email address is confirmed, the final step is for an administrator to approve and authorize your account.
 
-    If you did not sign up for an EnCOMPASS account, please contact an administrator at admin@mathematicalthinking.org.`,
+    If you did not sign up for an EnCOMPASS account, please contact an administrator at encompassmath@gmail.com.`,
   };
 };
 
@@ -40,7 +40,7 @@ const newlyAuthorized = function(recipient, host, token, user) {
     subject: 'You have been authorized as an EnCoMPASS user!',
     text: `Congratulations! Your EnCoMPASS account has been authorized. Please visit http://${host}/ to login and begin exploring the software.
 
-    If you did not sign up for an EnCOMPASS account, please contact an administrator at admin@mathematicalthinking.org.`,
+    If you did not sign up for an EnCOMPASS account, please contact an administrator at encompassmath@gmail.com.`,
   };
 };
 

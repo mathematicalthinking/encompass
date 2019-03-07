@@ -5,7 +5,7 @@
  */
 
 //REQUIRE MODULES
-/* jshint ignore:start */
+
 const passport = require('passport');
 const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
@@ -15,7 +15,6 @@ const User = models.User;
 const nodemailer = require('nodemailer');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
-
 
 const localLogin = (req, res, next) => {
   passport.authenticate('local-login', {
@@ -123,6 +122,30 @@ const sendEmailSMTP = function(recipient, host, template, token=null, userObj) {
       return resolve(msg);
     });
   });
+};
+
+const sendEmailsToAdmins = async function(host, template) {
+  try {
+    let adminCrit = {
+      isTrashed: false,
+      email: { $exists: true, $ne: null }
+    };
+    let admins = await User.find(adminCrit).lean().exec();
+
+    if (!Array.isArray(admins)) {
+      return;
+    }
+
+    admins.forEach((user) => {
+      if (user.email) {
+        sendEmailSMTP(user.email, host, template, null, user);
+      }
+    });
+
+  }catch(err) {
+    console.error(`Error sendEmailsToAdmins: ${err}`);
+  }
+
 };
 
 const forgot = async function(req, res, next) {
@@ -340,4 +363,4 @@ module.exports.confirmEmail = confirmEmail;
 module.exports.getResetToken = getResetToken;
 module.exports.sendEmailSMTP = sendEmailSMTP;
 module.exports.resendConfirmationEmail = resendConfirmationEmail;
-/* jshint ignore:end */
+module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
