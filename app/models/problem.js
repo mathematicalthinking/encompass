@@ -20,6 +20,6 @@ Encompass.Problem = DS.Model.extend(Encompass.Auditable, {
   isUsed: DS.attr('boolean'),
   status: DS.attr('string'),
   flagReason: DS.attr(),
-  isForEdit: DS.attr('boolean', { default: false }),
-  isForAssignment: DS.attr('boolean', {default: false})
+  isForEdit: DS.attr('boolean', { defaultValue: false }),
+  isForAssignment: DS.attr('boolean', {defaultValue: false})
 });

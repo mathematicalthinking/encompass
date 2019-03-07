@@ -121,8 +121,8 @@ Encompass.Workspace = DS.Model.extend(Encompass.Auditable, Encompass.Permission,
   }.property('permissions.@each.feedback'),
   sourceWorkspace: DS.attr(),
   linkedAssignment: DS.belongsTo('assignment'),
-  doAllowSubmissionUpdates: DS.attr('boolean', { default: true }),
-  doOnlyUpdateLastViewed: DS.attr('boolean', {default: false}),
+  doAllowSubmissionUpdates: DS.attr('boolean', { defaultValue: true }),
+  doOnlyUpdateLastViewed: DS.attr('boolean', {defaultValue: false}),
 
 //  comments: function() {
 //    var allComments = [];

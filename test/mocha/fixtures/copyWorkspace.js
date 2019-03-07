@@ -131,7 +131,8 @@ module.exports = {
     "doAllowSubmissionUpdates": true,
     "lastModifiedDate" : "2018-11-14T14:52:05.688Z",
     "isTrashed" : false,
-    "createDate" : "2018-11-14T14:30:46.526Z"
+    "createDate" : "2018-11-14T14:30:46.526Z",
+    "doOnlyUpdateLastViewed": false,
 },
 byAnswerIdSubmission: {
     "_id" : "5bec36958c73047613e2f34d",

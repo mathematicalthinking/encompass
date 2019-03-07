@@ -9,7 +9,7 @@ Encompass.EncWorkspaceRequest = DS.Model.extend(Encompass.Auditable, {
   folderSet: DS.belongsTo('folderSet', {  inverse: null }),
   requestedName: DS.attr('string'),
   createdWorkspace: DS.belongsTo('workspace'),
-  isEmptyAnswerSet: DS.attr('boolean', { default: null }),
+  isEmptyAnswerSet: DS.attr('boolean', { defaultValue: null }),
   createWorkspaceError: DS.attr('string'),
   owner: DS.belongsTo('user', { inverse: null }),
   mode: DS.attr('string'),
