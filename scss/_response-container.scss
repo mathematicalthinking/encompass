@@ -148,6 +148,20 @@
   }
 
   #response-mentor-reply {
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      section#mentor-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+
+      }
+    }
     .bread-crumbs-comp {
       float: right;
     }
@@ -510,6 +524,20 @@
     .submit-buttons {
       button {
         margin: 5px;
+      }
+    }
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      section#approver-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+
       }
     }
   }

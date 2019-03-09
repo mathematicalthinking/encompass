@@ -7,11 +7,16 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
+  quillEditorId: 'approver-editor',
+  quillText: '',
+  maxResponseLength: 14680064,
+
+  errorPropsToRemove: ['saveRecordErrors','emptyReplyError', 'quillTooLongError'],
 
   statusIconFill: function () {
     let status = this.get('displayReply.status');
     return this.get('iconFillOptions')[status];
-  }.property('displayReply.status'),
+  }.property('displayReply.status', 'iconFillOptions'),
 
   didReceiveAttrs() {
     if (!this.get('approverReplies.length') > 0 ) {
@@ -42,7 +47,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       }
     });
 
-  }.observes('displayReply', 'responseNotifications.[]'),
+  }.observes('displayReply'),
 
   isDraft: function() {
     return this.get('displayReply.status') === 'draft';
@@ -136,6 +141,39 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     'pendingApproval': 'Pending Approval',
     'superceded': 'Superceded'
   },
+  getQuillErrors() {
+    let errors = [];
+    if (this.get('isQuillEmpty')) {
+      errors.addObject('emptyReplyError');
+    }
+    if (this.get('isQuillTooLong')) {
+      errors.addObject('quillTooLongError');
+    }
+    return errors;
+  },
+
+  returnSizeDisplay(bytes) {
+    if(bytes < 1024) {
+      return bytes + ' bytes';
+    } else if(bytes >= 1024 && bytes < 1048576) {
+      return (bytes/1024).toFixed(1) + 'KB';
+    } else if(bytes >= 1048576) {
+      return (bytes/1048576).toFixed(1) + 'MB';
+    }
+  },
+
+  quillTooLongErrorMsg: function() {
+    let len = this.get('quillText.length');
+    let maxLength = this.get('maxResponseLength');
+    let maxSizeDisplay = this.returnSizeDisplay(maxLength);
+    let actualSizeDisplay = this.returnSizeDisplay(len);
+
+    return `The total size of your response (${actualSizeDisplay}) exceeds the maximum limit of ${maxSizeDisplay}. Please remove or resize any large images and try again.`;
+  }.property('quillText.length', 'maxResponseLength'),
+
+  clearErrorProps() {
+    this.removeMessages(this.get('errorPropsToRemove'));
+  },
 
   actions: {
     composeReply() {
@@ -183,13 +221,17 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveReply(newStatus, isDraft) {
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
-      let text = this.get('editRevisionText');
+      this.clearErrorProps();
 
-      if (typeof text !== 'string' || text.trim().length === 0) {
-        this.set('emptyReplyError', true);
+      let quillErrors = this.getQuillErrors();
+      if (quillErrors.length > 0) {
+        quillErrors.forEach(errorProp => {
+          this.set(errorProp, true);
+        });
         return;
       }
+
+      let text = this.get('quillText');
 
       let trimmed = text.trim();
 
@@ -215,7 +257,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       let hash = {
         newReply: record.save(),
       };
-
 
       if (!isDraft) {
         this.get('responseToApprove').set('status', newStatus);
@@ -263,7 +304,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('isEditingApproverReply', false);
       this.set('editRevisionText', '');
       this.set('editRevisionNote', '');
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
     },
     startRevising() {
       this.set('editRevisionText', this.get('displayReply.text'));
@@ -275,7 +316,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('isRevisingApproverReply', false);
       this.set('editRevisionText', '');
       this.set('editRevisionNote', '');
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
 
     },
     resumeDraft() {
@@ -290,19 +331,23 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('editRevisionText', '');
       this.set('editRevisionNote', '');
 
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
     },
 
     saveDraft(newStatus) {
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
 
-      let oldMessageBody = this.get('displayReply.text');
-      let messageBody = this.get('editRevisionText');
-
-      if (!messageBody || messageBody.length === 0) {
-        this.set('emptyReplyError', true);
+      let quillErrors = this.getQuillErrors();
+      if (quillErrors.length > 0) {
+        quillErrors.forEach(errorProp => {
+          this.set(errorProp, true);
+        });
         return;
       }
+
+      let oldMessageBody = this.get('displayReply.text');
+      let messageBody = this.get('quillText');
+
       // if they clicked Needs Revisions or Approve, there are changes
       if (newStatus === 'draft') {
         if (oldMessageBody === messageBody) {
@@ -369,22 +414,29 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveEdit() {
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
+
+      let quillErrors = this.getQuillErrors();
+
+      if (quillErrors.length > 0) {
+        quillErrors.forEach(errorProp => {
+          this.set(errorProp, true);
+        });
+        return;
+      }
 
       let oldText = this.get('displayReply.text');
-      let newText = this.get('editRevisionText');
+      let newText = this.get('quillText');
 
       let oldNote = this.get('displayReply.note');
       let newNote = this.get('editRevisionNote');
 
       if (oldText === newText && oldNote === newNote) {
+        this.get('alert').showToast('info', 'No changes to save', 'bottom-end', 3000, false, null);
         this.set('isEditingApproverReply', false);
         return;
       }
-      if (!newText || newText.length === 0) {
-        this.set('emptyReplyError', true);
-        return;
-      }
+
       this.get('displayReply').set('text', newText);
       this.get('displayReply').set('note', newNote);
 
@@ -400,20 +452,27 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     },
 
     saveRevision() {
-      this.removeMessages(['saveRecordErrors','emptyReplyError']);
+      this.clearErrorProps();
+
+      let quillErrors = this.getQuillErrors();
+
+      if (quillErrors.length > 0) {
+        quillErrors.forEach(errorProp => {
+          this.set(errorProp, true);
+        });
+        return;
+      }
 
       let oldText = this.get('displayReply.text');
-      let newText = this.get('editRevisionText');
+      let newText = this.get('quillText');
 
       let oldNote = this.get('displayReply.note');
       let newNote = this.get('editRevisionNote');
 
       if (oldText === newText && oldNote === newNote) {
+        this.get('alert').showToast('info', 'No changes to save', 'bottom-end', 3000, false, null);
+
         this.set('isRevisingApproverReply', false);
-        return;
-      }
-      if (!newText || newText.length === 0) {
-        this.set('emptyReplyError', true);
         return;
       }
 
@@ -470,6 +529,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.handleErrors(err, 'recordSaveErrors', response);
         });
 
+    },
+    updateQuillText(content, isEmpty, isOverLengthLimit) {
+      this.set('quillText', content);
+      this.set('isQuillEmpty', isEmpty);
+      this.set('isQuillTooLong', isOverLengthLimit);
     }
   }
 
