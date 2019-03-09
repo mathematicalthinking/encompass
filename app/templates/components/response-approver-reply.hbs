@@ -24,9 +24,12 @@
   <div class="compose-reply-container">
     <p class="info">{{replyHeadingText}}</p>
     <div class="compose-approver-reply">
-      {{textarea name="approver-reply" value=editRevisionText}}
+      {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
       {{#if emptyReplyError}}
         {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+      {{/if}}
+      {{#if quillTooLongError}}
+        {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
       {{/if}}
       {{#each saveRecordErrors as |err|}}
         {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
@@ -102,11 +105,20 @@
     </p>
     {{#if isEditingApproverReply}}
       <div class="reply-revise">
-        {{textarea name="approver-reply" value=editRevisionText}}
+      {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
       </div>
+      {{#if emptyReplyError}}
+        {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
+      {{/if}}
+      {{#if quillTooLongError}}
+        {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+      {{/if}}
+      {{#each saveRecordErrors as |err|}}
+        {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
+      {{/each}}
     {{else}}
       <div class="reply-content">
-        {{displayReply.text}}
+        {{{displayReply.text}}}
       </div>
     {{/if}}
   </div>

@@ -47,15 +47,15 @@
           <p class="response-header">
             Message
             {{#if showEdit}}
-              <i {{action 'startEditing'}} class="far fa-edit"></i>
+              <i {{action "handleComposeAction" "isEditing" true false}} class="far fa-edit"></i>
             {{/if}}
           </p>
           <div class="response-text-container">
             {{#if isComposing}}
-              {{textarea class="edit-response" name="mentor-reply" value=editRevisionText}}
+              {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
             {{else}}
               <div class="response-text">
-                <pre>{{displayResponse.text}}</pre>
+                {{{displayResponse.text}}}
               </div>
             {{/if}}
           </div>
@@ -81,12 +81,15 @@
   {{#if emptyReplyError}}
     {{error-box error="Message body cannot be empty." showDismiss=true resetError=(action (mut emptyReplyError) null)}}
   {{/if}}
+  {{#if quillTooLongError}}
+    {{error-box error=quillTooLongErrorMsg showDismiss=true resetError=(action (mut quillTooLongError) null)}}
+  {{/if}}
   <div class="mentor-reply-actions button-row">
     {{#if showRevise}}
-      <button {{action 'startRevising'}} class="primary-button">Revise</button>
+      <button {{action "handleComposeAction" "isRevising" true false}} class="primary-button">Revise</button>
     {{/if}}
     {{#if showResumeDraft}}
-      <button {{action 'resumeDraft'}} class="primary-button">Resume Draft</button>
+      <button {{action "handleComposeAction" "isFinishingDraft" true false}} class="primary-button">Resume Draft</button>
     {{/if}}
     {{#if showTrash}}
       <i {{action 'confirmTrash' displayResponse}} class="fas fa-trash"></i>
@@ -96,16 +99,16 @@
   {{#if isComposing}}
     <div class="submit-buttons button-row">
       {{#if isEditing}}
-        <button {{action "stopEditing"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "handleComposeAction" "isEditing" false true}} class="primary-button cancel-button">Cancel</button>
         <button {{action "saveEdit"}} class="primary-button">Save</button>
       {{/if}}
       {{#if isRevising}}
-        <button {{action "stopRevising"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "handleComposeAction" "isRevising" false true}} class="primary-button cancel-button">Cancel</button>
         <button {{action "saveRevision" true}} class="primary-button">Save as Draft</button>
         <button {{action "saveRevision"}} class="primary-button">{{sendButtonText}}</button>
       {{/if}}
       {{#if isFinishingDraft}}
-        <button {{action "stopDraft"}} class="primary-button cancel-button">Cancel</button>
+        <button {{action "handleComposeAction" "isFinishingDraft" false true}} class="primary-button cancel-button">Cancel</button>
         <button {{action "saveDraft" true}} class="primary-button">Save as Draft</button>
         <button {{action "saveDraft"}} class="primary-button">{{sendButtonText}}</button>
       {{/if}}
