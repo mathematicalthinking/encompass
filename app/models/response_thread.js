@@ -7,7 +7,7 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   workspaceName: DS.attr('string'),
   problemTitle: DS.attr('string'),
   uniqueIdentifier: DS.attr(),
-  threadType: DS.attr('string'),
+  threadType: DS.attr('string'), // submitter, mentor, approver
   studentDisplay: DS.attr('string'),
   mentors: DS.attr(),
   isNewThread: DS.attr('boolean', { defaultValue: false }),
@@ -116,8 +116,20 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
   },
 
   isActionNeeded: function() {
-    return this.get('hasUnreadReply') || this.get('hasDraft') || this.get('isWaitingForApproval') || this.get('inNeedOfRevisions') || this.get('hasNewRevision');
-  }.property('hasUnreadReply', 'hasDraft', 'isWaitingForApproval', 'inNeedOfRevisions', 'hasNewRevision'),
+    let type = this.get('threadType');
+
+    if (this.get('hasUnreadReply') || this.get('hasDraft')) {
+      return true;
+    }
+    if (type === 'mentor') {
+      return this.get('inNeedOfRevisions') || this.get('hasNewRevision');
+    }
+
+    if (type === 'approver') {
+      return this.get('isWaitingForApproval');
+    }
+
+  }.property('hasUnreadReply', 'hasDraft', 'isWaitingForApproval', 'inNeedOfRevisions', 'hasNewRevision', 'threadType'),
 
   cleanResponses: function() {
     return this.get('responses.content').rejectBy('isTrashed').sortBy('createDate');
