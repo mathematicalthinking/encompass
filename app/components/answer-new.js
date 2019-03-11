@@ -1,22 +1,23 @@
 Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
-  filesToBeUploaded: null,
-  createAnswerError: null,
-  isMissingRequiredFields: null,
+  elementId: 'answer-new',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
 
+  filesToBeUploaded: null,
+  createAnswerError: null,
+  isMissingRequiredFields: null,
   students: [],
   editor: null,
   findRecordErrors: [],
   uploadErrors: [],
   createRecordErrors: [],
-  elementId: 'answer-new',
   contributors: [],
   isCreatingAnswer: false,
   showLoadingMessage: false,
 
+  quillEditorId: 'answer-new-editor',
+  quillText: '',
   singleFileSizeLimit: 10485760, // 10MB
-
   explanationLengthLimit: 14680064, // `14MB
 
   constraints: {
@@ -73,20 +74,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   }.property('mainHeaderText'),
 
   didInsertElement: function() {
-    // initialize quill editor
-    const options = {
-      debug: 'false',
-      modules: {
-        toolbar: [
-        ['bold', 'italic', 'underline'],
-        ['image'],
-        ]
-      },
-      placeholder: 'Explain your ideas and how you figured them out...',
-      theme: 'snow'
-    };
-    // eslint-disable-next-line no-unused-vars
-    const quill = new window.Quill('#editor', options);
 
     if (this.priorAnswer) {
       //prefill form if revising
@@ -94,8 +81,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       this.set('answer', ans.get('answer'));
       let explanation = ans.get('explanation');
 
-      this.$('.ql-editor').html(explanation);
-
+      this.set('explanationText', explanation);
       let students = ans.get('students');
       this.set('contributors', students.map(s => s));
 
@@ -159,11 +145,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         });
   },
 
-  checkMissing: function() {
-    const id = this.get('formId');
-    let isMissing = this.get('validator').isMissingRequiredFields(id);
-    this.set('isMissingRequiredFields', isMissing);
-  },
   handleLoadingMessage: function() {
     const that = this;
     if (this.get('isDestroyed') || this.get('isDestroying')) {
@@ -229,7 +210,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         });
       });
       // additional uploaded image base 64 data was concatenated to explanation
-      // so can delete image record
+
       return Ember.RSVP.all(records.map((rec) => {
         return rec.save();
       }))
@@ -243,9 +224,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         this.get('alert').showToast('success', 'Answer Created', 'bottom-end', 3000, false, null);
 
         this.get('handleCreatedAnswer')(yourAnswer);
-
-        // send off requests to delete unnecessary images, but dont wait for them
-
       })
         .catch((err) => {
           // do we need to roll back all recs this were created?
@@ -265,20 +243,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     });
   },
 
-  // Empty quill editor .html() property returns <p><br></p>
-  // For quill to not be empty, there must either be some text or a student
-  // must have uploaded an img so there must be an img tag
-  isQuillValid: function() {
-    let pText = this.$('.ql-editor p').text();
-    if (pText.length > 0) {
-      return true;
-    }
-    let content = this.$('.ql-editor').html();
-    if (content.includes('<img')) {
-      return true;
-    }
-    return false;
-  },
 
   actions: {
     validate: function() {
@@ -290,7 +254,7 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         }
       }
 
-      let isQuillValid = this.isQuillValid();
+      let isQuillValid = !this.get('isQuillEmpty');
       let briefSummary = this.get('answer');
       let explanation = isQuillValid ? true : null;
 
@@ -341,7 +305,6 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
       students.pushObject(student);
       this.get('alert').showToast('success', 'Student Added', 'bottom-end', 3000, false, null);
-      // this.set('addedStudent', true);
     },
     removeStudent: function(student) {
       if (!student) {
@@ -350,6 +313,11 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       let students = this.get('contributors');
       students.removeObject(student);
       this.get('alert').showToast('success', 'Student Removed', 'bottom-end', 3000, false, null);
+    },
+    updateQuillText(content, isEmpty, isOverLengthLimit) {
+      this.set('quillText', content);
+      this.set('isQuillEmpty', isEmpty);
+      this.set('isQuillTooLong', isOverLengthLimit);
     }
   }
 });
