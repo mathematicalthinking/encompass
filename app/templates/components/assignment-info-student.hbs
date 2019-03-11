@@ -35,7 +35,7 @@
   {{/if}}
 </section>
 {{#each loadAnswerErrors as |error|}}
-    <p class="error-message">{{error}}</p>
+  {{error-box error=error showDismiss=true resetError=(action "removeErrorFromArray" "loadAnswerErrors" error)}}
 {{/each}}
 {{#if isResponding}}
   {{answer-new store=store assignment=assignment toAnswerInfo="toAnswerInfo" cancelResponse=(action "cancelResponse") displayAnswer="displayAnswer"
@@ -72,9 +72,6 @@
         <header class="list-header" id="past-submissions-header">
           <h3>Past Submissions</h3>
         </header>
-        {{#if answerCreated}}
-          <p class="success-message">Successfully created new answer!</p>
-        {{/if}}
         <ol class="submission-list">
           {{#each sortedList as |answer|}}
             <li class={{if (is-equal answer.answerId displayedAnswer.answerId) "highlight"}} {{action "displayAnswer" answer}}>{{format-date answer.createDate 'MMM Do YYYY hh:mm A' }}</li>
