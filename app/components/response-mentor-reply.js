@@ -76,6 +76,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     }
     return this.get('displayResponse');
   }.property('isCreating', 'response', 'displayResponse'),
+
   replyHeadingText: function() {
     if (this.get('isEditing')) {
       return 'Editing Mentor Reply';
@@ -84,9 +85,11 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       return 'New Revision';
     }
   }.property('isEditing', 'isRevising'),
+
   showApproverNoteInput: function() {
-    return this.get('newReplyStatus') !== 'approved';
-  }.property('newReplyStatus'),
+    return this.get('isComposing') && this.get('newReplyStatus') !== 'approved';
+  }.property('newReplyStatus', 'isComposing'),
+
   sortedMentorReplies: function() {
     if (!this.get('mentorReplies')) {
       return [];
@@ -95,13 +98,23 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       .rejectBy('isTrashed')
       .sortBy('createDate');
   }.property('mentorReplies.@each.isTrashed'),
-  showNote: function() {
+
+  showNoteHeader: function() {
+    return this.get('showApproverNoteInput') || this.get('showDisplayNote');
+  }.property('showApproverNoteInput', 'showDisplayNote'),
+
+  showDisplayNote: function() {
+    if (this.get('isComposing')) {
+      return false;
+    }
+
     if (!this.get('isOwnMentorReply') && !this.get('canApprove')) {
       return false;
     }
+
     let note = this.get('displayResponse.note');
     return typeof note === 'string' && note.length > 0;
-  }.property('isOwnMentorReply', 'canApprove', 'displayResponse.note'),
+  }.property('displayResponse.note', 'isOwnMentorReply', 'canApprove', 'isComposing'),
 
   canTrash: function() {
     let status = this.get('displayResponse.status');
