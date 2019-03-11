@@ -474,16 +474,6 @@
     }
     .compose-reply-container {
       margin-bottom: 50px;
-      .compose-approver-reply {
-        textarea {
-          width: 100%;
-          border: 1px solid $input-border;
-          border-radius: 3px;
-          margin: 15px 0;
-          resize: vertical;
-          height: 150px;
-        }
-      }
     }
     .approver-actions {
       margin-bottom: 15px;
@@ -529,6 +519,7 @@
     .quill-container {
       width: 100%;
       min-width: 150px;
+      margin: 15px 0;
       section#approver-editor {
         width: 100%;
         display: inline-block;
