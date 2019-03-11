@@ -8,8 +8,6 @@
 const logger = require('log4js').getLogger('server');
 const _ = require('underscore');
 const moment = require('moment');
-const htmlParser = require('htmlparser2');
-const sharp = require('sharp');
 
 //REQUIRE FILES
 const models = require('../schemas');
@@ -17,6 +15,7 @@ const userAuth = require('../../middleware/userAuth');
 const utils = require('../../middleware/requestHandler');
 const access= require('../../middleware/access/answers');
 const wsApi = require('./workspaceApi');
+const apiUtils = require('./utils');
 
 const mongooseUtils = require('../../utils/mongoose');
 const { cleanObjectIdArray } = mongooseUtils;
@@ -206,116 +205,6 @@ const getAnswer = (req, res, next) => {
   });
 };
 
-function parseExplanation(explanationString) {
-  let result = [];
-
-  let parser = new htmlParser.Parser({
-    onopentag: function(name, attr) {
-      result.push(['openTag', '<' + name]);
-
-      _.each(attr, (val, key) => {
-        result.push([`attr_${key}`, ` ${key}='${val}'`]);
-      });
-      result.push(['endOpenTag', '>']);
-    },
-
-    ontext: function(text) {
-      result.push(['textContent', text]);
-    },
-    onclosetag: function(tagname) {
-      let nonClosingTags = ['img', 'br'];
-      if (!nonClosingTags.includes(tagname)) {
-        result.push(['closeTag', '</' + tagname + '>']);
-      }
-    },
-  }, {decodeEntities: true});
-
-  parser.write(explanationString);
-  parser.end();
-  return result;
-}
-
- function handleExplanation(parsedExplanation, user) {
-  return Promise.all(parsedExplanation.map(async (tuple) => {
-
-    let [elType, el] = tuple;
-    // for image src, elType will be attr_src
-    let isImageSrc = elType === 'attr_src';
-
-    if (!isImageSrc) {
-      return el;
-    }
-
-    let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
-
-    let target = 'base64,';
-    let targetIndex = first30Chars.indexOf(target);
-
-    let isImageData = targetIndex !== -1;
-
-    if (!isImageData) {
-      return el;
-    }
-    let dataStartIndex = targetIndex + target.length;
-    // does not include last char which is closing quote
-    let imageDataStr = el.slice(dataStartIndex);
-
-    let dataFormatStartIndex = first30Chars.indexOf('data:');
-    let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
-
-    let origBuffer = Buffer.from(imageDataStr, 'base64');
-
-    let originalSharp = sharp(origBuffer);
-
-    let originalMetadata = await originalSharp.metadata();
-    let sizeThreshold = 614400; // 600kb
-    let widthThreshold = 1000; // 1000 pixels wide max
-
-    let { size, width, format, height } = originalMetadata;
-
-    let newImage = new models.Image({
-      originalSize: size,
-      originalWidth: width,
-      originalHeight: height,
-      originalMimetype: `image/${format}`,
-      createdBy: user,
-    });
-
-    let isOverSizeLimit = size > sizeThreshold;
-    let isOverWidthLimit = width > widthThreshold;
-
-    if (!isOverSizeLimit && !isOverWidthLimit) {
-      newImage.imageData = imageDataStrWithFormat;
-      newImage.size = size;
-      newImage.width = width;
-      newImage.height = height;
-    } else {
-      let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
-      let newMetadata = await sharp(resizedBuffer).metadata();
-
-      newImage.size = newMetadata.size;
-      newImage.width = newMetadata.width;
-      newImage.height = newMetadata.height;
-      newImage.mimetype = `image/${newMetadata.format}`;
-
-      let newImageDataStr = resizedBuffer.toString('base64');
-
-      newImage.imageData = `data:image/${format};base64,${newImageDataStr}`;
-
-    }
-    await newImage.save();
-
-    let url = `/api/images/file/${newImage._id}`;
-    return ` src='${url}'`;
-  }))
-  .then((arr) => {
-    return arr.join('');
-  })
-  .catch((err) => {
-    console.log('err handle explanation', err);
-  });
-}
-
 /**
   * @public
   * @method postAnswer
@@ -335,13 +224,15 @@ function parseExplanation(explanationString) {
     // Add permission checks here
     const answer = new models.Answer(req.body.answer);
 
-    let parsedExplanationEls = parseExplanation(answer.explanation);
+    let parsedExplanationEls = apiUtils.parseHtmlString(answer.explanation);
 
     // should always be an explanation
     if (!Array.isArray(parsedExplanationEls)) {
       return utils.sendError.InvalidContentError('Missing or invalid explanation provided', res);
     }
-    let convertedExplanation = await handleExplanation(parsedExplanationEls, user);
+
+    // create image record for every base64 image (resize if necessary)
+    let convertedExplanation = await apiUtils.handleBase64Images(parsedExplanationEls, user);
 
     answer.explanation = convertedExplanation;
     answer.createDate = Date.now();
