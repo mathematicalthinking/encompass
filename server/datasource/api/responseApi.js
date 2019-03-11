@@ -18,7 +18,7 @@ const access = require('../../middleware/access/responses');
 const accessUtils = require('../../middleware/access/utils');
 
 const { isNonEmptyArray } = require('../../utils/objects');
-const { isValidMongoId  } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual  } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -46,9 +46,8 @@ module.exports.put = {};
               return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
             }
 
-        // only approvers should see the note field
-        // for now just dont send back to students
-        if (user.accountType === 'S' || user.actingRole === 'student') {
+        if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
+          // recipient of mentor reply should not see note to approver
           delete response.note;
         }
         return utils.sendResponse(res, {response});
@@ -79,6 +78,13 @@ function getResponses(req, res, next) {
   .then((criteria) => {
     models.Response.find(criteria).lean().exec()
       .then((responses) => {
+
+        responses.forEach((response) => {
+          if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
+            // recipient of mentor reply should not see note to approver
+            delete response.note;
+          }
+        });
 
         let data = {'response': responses};
 
