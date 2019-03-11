@@ -43,26 +43,22 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
     if (!this.get('options')) {
       options = this.get('defaultOptions');
     }
+    options.bounds = selector;
 
     $(selector).ready(() => {
       let quill = new window.Quill(selector, options);
       this.set('quillInstance', quill);
 
       quill.on('text-change', (delta, oldDelta, source) => {
-        let htmlContents = this.$('.ql-editor').html();
-        let replaced = htmlContents.replace(/["]/g, "'");
-        let isEmpty = !this.isQuillNonEmpty();
-        this.set('isEmpty', isEmpty);
-
-        let isOverLengthLimit = replaced.length > this.get('lengthLimit');
-        this.set('isOverLengthLimit', isOverLengthLimit);
-
-        this.onTextChange(replaced, isEmpty, isOverLengthLimit );
+        this.handleQuillChange();
       });
 
       if (this.get('startingText')) {
         this.$('.ql-editor').html(this.get('startingText'));
       }
+
+      this.handleQuillChange();
+
     });
     this._super(...arguments);
   },
@@ -90,6 +86,24 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
       return true;
     }
     return false;
+  },
+
+  handleQuillChange() {
+    let editor = this.$('.ql-editor');
+    if (!editor) {
+      return;
+    }
+
+    let htmlContents = editor.html();
+
+    let replaced = htmlContents.replace(/["]/g, "'");
+    let isEmpty = !this.isQuillNonEmpty();
+    this.set('isEmpty', isEmpty);
+
+    let isOverLengthLimit = replaced.length > this.get('lengthLimit');
+    this.set('isOverLengthLimit', isOverLengthLimit);
+
+    this.onTextChange(replaced, isEmpty, isOverLengthLimit );
   },
 
   onTextChange(html, isEmpty, isOverLengthLimit) {
