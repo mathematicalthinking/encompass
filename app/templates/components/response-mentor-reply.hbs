@@ -59,20 +59,19 @@
               </div>
             {{/if}}
           </div>
-          {{#if showNote}}
+          {{#if showNoteHeader}}
             <div class="response-note-container">
               <p class="response-header">Note for Approver</p>
-                {{#if isComposing}}
-                  {{#if showApproverNoteInput}}
-                    {{textarea class="edit-note" name="mentor-approver-note" value=editRevisionNote}}
-                  {{/if}}
-                {{else}}
-                  <div class="response-note">
-                    {{displayResponse.note}}
-                  </div>
-                {{/if}}
+              {{#if showApproverNoteInput}}
+                {{textarea class="edit-note" name="mentor-approver-note" value=editRevisionNote}}
+              {{/if}}
+              {{#if showDisplayNote}}
+                <div class="response-note">
+                  {{displayResponse.note}}
+                </div>
+              {{/if}}
             </div>
-        {{/if}}
+          {{/if}}
         </div>
       {{else}}
         <p>No response to display</p>
