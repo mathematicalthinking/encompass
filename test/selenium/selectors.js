@@ -411,5 +411,13 @@ module.exports = {
     stats: {
       container: '#workspace-info-stats'
     }
+  },
+  assignmentsTeacher: {
+    editAssignment: 'button[data-test="edit-assignment"]',
+    trashBtn: 'button[data-test="trash-assn"]',
+    confirmTrash: 'body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled',
+    sideList: {
+      yours: 'ul.your-assignments'
+    }
   }
 };
