@@ -190,23 +190,58 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     });
   },
 
+  submitterThreadsCount: function() {
+    return this.get('submitterThreads.length');
+  }.property('submitterThreads.[]'),
+
+  mentoringThreadsCount: function() {
+    return this.get('mentoringThreads.length');
+  }.property('mentoringThreads.[]'),
+
+  approvingThreadsCount: function() {
+    return this.get('approvingThreads.length');
+  }.property('approvingThreads.[]'),
+
   displayThreads: function() {
     let val = this.get('currentFilter');
+
+    if (!this.get('areThreads')) {
+      return [];
+    }
+
+    let submitterCount = this.get('submitterThreadsCount');
+    let mentoringCount = this.get('mentoringThreadsCount');
+    let approvingCount = this.get('approvingThreadsCount');
+
     if (val === 'submitter') {
-      return this.get('sortedSubmitterThreads');
+      if (submitterCount > 0) {
+        return this.get('sortedSubmitterThreads');
+      }
+
+      return mentoringCount >= approvingCount ? this.get('sortedMentoringThreads') : this.get('sortedApprovingThreads');
+
     }
     if (val === 'mentoring') {
-      return this.get('sortedMentoringThreads');
+      if (mentoringCount  > 0) {
+        return this.get('sortedMentoringThreads');
+      }
+
+      return approvingCount >= submitterCount ? this.get('sortedApprovingThreads') : this.get('sortedSubmitterThreads');
+
     }
 
     if (val === 'approving') {
-      return this.get('sortedApprovingThreads');
+      if (approvingCount > 0) {
+        return this.get('sortedApprovingThreads');
+      }
+      return mentoringCount >= submitterCount ? this.get('sortedMentoringThreads') : this.get('sortedSubmitterThreads');
+
     }
 
     if (val === 'all') {
       return this.get('allThreads');
     }
-  }.property('currentFilter', 'sortedSubmitterThreads.[]', 'sortedMentoringThreads.[],', 'sortedApprovingThreads.[]'),
+  }.property('currentFilter', 'allThreads.[]', 'sortedSubmitterThreads.[]', 'sortedMentoringThreads.[],', 'sortedApprovingThreads.[]'),
 
   submitterCounter: function() {
     let count = this.get('actionSubmitterThreads.length');
