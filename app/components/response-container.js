@@ -55,7 +55,6 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     draft: '#778899'
   },
 
-
   handleResponseViewAudit() {
     let newSubNotifications = this.findRelatedNtfs('response', this.get('submission'), 'newWorkToMentor', 'submission');
 
@@ -65,7 +64,6 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
         ntf.save();
       }
     });
-
 
     if (this.get('isPrimaryRecipient')) {
       if (!this.get('response.wasReadByRecipient')) {
@@ -79,6 +77,26 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
       }
     }
   },
+  cleanStoreResponses: function() {
+    let responses = this.get('storeResponses') || [];
+    return responses.rejectBy('isTrashed');
+  }.property('storeResponses.@each.isTrashed'),
+
+  newResponses: function() {
+    return this.get('cleanStoreResponses').filter((response) => {
+      let subId = this.get('utils').getBelongsToId(response, 'submission');
+
+      if (subId !== this.get('submission.id')) {
+        return false;
+      }
+      return !this.get('nonTrashedResponses').includes(response);
+    });
+  }.property('cleanStoreResponses.[]', 'nonTrashedResponses.[]', 'submission'),
+
+  combinedResponses: function() {
+    return this.get('nonTrashedResponses').addObjects(this.get('newResponses'));
+  }.property('newResponses.[]', 'nonTrashedResponses.[]'),
+
   studentDescriptor: function() {
     if (this.get('isOwnSubmission')) {
       return 'your';
@@ -109,17 +127,16 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     if (!reviewedResponseId) {
       return [];
     }
-    return this.get('nonTrashedResponses').filter((response) => {
+    return this.get('combinedResponses').filter((response) => {
       let id = response.belongsTo('reviewedResponse').id();
       return response.get('responseType') === 'approver' && reviewedResponseId === id;
     });
 
-  }.property('primaryApproverReply', 'mentorReplyDisplayResponse', 'nonTrashedResponses.[]'),
+  }.property('primaryApproverReply', 'mentorReplyDisplayResponse', 'combinedResponses.[]'),
 
   mentorReplies: function() {
-    return this.get('nonTrashedResponses').filterBy('responseType', 'mentor');
-
-  }.property('nonTrashedResponses.[]',),
+    return this.get('combinedResponses').filterBy('responseType', 'mentor');
+  }.property('combinedResponses.[]',),
 
   responseToApprove: function() {
     if (this.get('primaryResponseType') === 'mentor' && this.get('canApprove') && !this.get('isCreatingNewMentorReply')) {
