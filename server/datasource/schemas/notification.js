@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-depth */
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('underscore');
@@ -159,6 +161,8 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
             .populate('priorRevision')
             .execPopulate();
 
+          let isMentorRecipient = response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id);
+
             if (response.submission) {
               if (ntfData.submissions) {
                 ntfData.submissions.push(response.submission);
@@ -179,10 +183,17 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
             }
 
             if (response.priorRevision) {
-              if (ntfData.responses) {
-                ntfData.responses.push(response.priorRevision);
-              } else {
-                ntfData.responses = [response.priorRevision];
+              let status = _.propertyOf(response.priorRevision)('status');
+              let isNotApproved = status !== 'approved';
+
+              // recipients of mentor replies should not have access to nonapproved replies addressed to them
+              let doNotSendRevision = isNotApproved && isMentorRecipient;
+              if (!doNotSendRevision) {
+                if (ntfData.responses) {
+                  ntfData.responses.push(response.priorRevision);
+                } else {
+                  ntfData.responses = [response.priorRevision];
+                }
               }
             }
             response.depopulate('submission');
