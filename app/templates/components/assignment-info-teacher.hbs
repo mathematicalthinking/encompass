@@ -46,7 +46,7 @@
     </form>
     <button class="action_button" {{action 'updateAssignment'}}>Update Assignment</button>
     <button class="action_button cancel-button" {{action 'stopEditing'}}>Cancel</button>
-    <button class="right" {{action 'showDeleteModal'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+    <button data-test="trash-assn" class="right" {{action 'showDeleteModal'}}><i class="fa fa-trash" aria-hidden="true"></i></button>
   {{/if}}
   {{#if isDisplaying}}
     <section id='assignment-info' class='properForm'>
@@ -88,7 +88,7 @@
       </fieldset>
     </section>
     {{#if showEditButton}}
-      <button class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
+      <button data-test="edit-assignment" class="action_button" {{action 'editAssignment'}}>Edit Assignment</button>
     {{/if}}
   {{/if}}
   </section>
