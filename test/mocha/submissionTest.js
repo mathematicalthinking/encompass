@@ -110,6 +110,83 @@ describe('Submission CRUD operations by account type', async function() {
     });
   }
 
+  if (username !== 'actingstudent') {
+    describe('Requesting submission that contains superceded responses', function() {
+      let submissionId = '5bec36958c73047613e2f34c';
+      let supercedResponseId = '5c87ddf1a2fb212cd72de56a';
+      let description;
+      let expectedResponseCount;
+      let shouldIncludeSuperceded = true;
+
+      if (isStudent) {
+        description = 'Should not return superceded responseId with submission';
+        expectedResponseCount = 2;
+        shouldIncludeSuperceded = false;
+      } else {
+        description = 'Should return superceded responseId with submission';
+
+        // 3rd response was created by ssmith
+        expectedResponseCount = username === 'pdadmin' ? 2 : 3;
+      }
+      it(description, function() {
+        return agent.get(baseUrl + submissionId)
+        .then((results) => {
+          let responses = results.body.submission.responses;
+
+          expect(results).to.have.status(200);
+          expect(responses).to.be.an('array');
+          expect(responses).to.have.lengthOf(expectedResponseCount);
+          expect(responses.includes(supercedResponseId)).to.eql(shouldIncludeSuperceded);
+        })
+        .catch((err) => {
+          throw(err);
+        });
+      });
+
+    });
+
+    describe('Requesting submission that contains superceded responses by query ids', function() {
+      let submissionId = '5bec36958c73047613e2f34c';
+      let supercedResponseId = '5c87ddf1a2fb212cd72de56a';
+      let description;
+      let expectedResponseCount;
+      let shouldIncludeSuperceded = true;
+
+      if (isStudent) {
+        description = 'Should not return superceded responseId with submission';
+        expectedResponseCount = 2;
+        shouldIncludeSuperceded = false;
+      } else {
+        description = 'Should return superceded responseId with submission';
+
+        // 3rd response was created by ssmith
+        expectedResponseCount = username === 'pdadmin' ? 2 : 3;
+      }
+      let url = `/api/submissions?ids=${submissionId}`;
+      it(description, function() {
+        return agent.get(url)
+        .then((results) => {
+          let subs = results.body.submissions;
+          expect(subs).to.be.an('array');
+          expect(subs).to.have.lengthOf(1);
+
+          let responses = subs[0].responses;
+
+          expect(results).to.have.status(200);
+          expect(responses).to.be.an('array');
+
+          expect(responses).to.have.lengthOf(expectedResponseCount);
+          expect(responses.includes(supercedResponseId)).to.eql(shouldIncludeSuperceded);
+        })
+        .catch((err) => {
+          throw(err);
+        });
+      });
+
+    });
+  }
+
+
   });
   }
 
@@ -145,6 +222,7 @@ describe('Submission CRUD operations by account type', async function() {
 //       });
 //     });
 //   });
+
 for (let user of Object.keys(testUsers)) {
   let testUser = testUsers[user];
   // eslint-disable-next-line no-await-in-loop

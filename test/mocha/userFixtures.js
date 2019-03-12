@@ -169,7 +169,7 @@ const admin = {
       }
   },
   responses: {
-    accessibleResponsesCount: 4,
+    accessibleResponsesCount: 6,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },
@@ -401,7 +401,7 @@ const pdAdminDrexel = {
       },
   },
   responses: {
-    accessibleResponsesCount: 1,
+    accessibleResponsesCount: 3,
     accessibleResponse: {
       _id: "5b1aef7ae53645e768926123",
     },
@@ -625,7 +625,7 @@ const teacherMT = {
       },
   },
   responses: {
-    accessibleResponsesCount: 2,
+    accessibleResponsesCount: 4,
     accessibleResponse: {
       _id: "5bec6497aa4a927d50cd5b9b",
     },
@@ -829,7 +829,7 @@ const studentMT = {
       } ,
   },
   responses: {
-    accessibleResponsesCount: 1,
+    accessibleResponsesCount: 2,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },
