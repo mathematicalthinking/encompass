@@ -156,6 +156,7 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
             .populate('submission')
             .populate('createdBy')
             .populate('workspace')
+            .populate('priorRevision')
             .execPopulate();
 
             if (response.submission) {
@@ -176,11 +177,19 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
               let name = response.workspace.name;
               ntfData.workspaceName = name;
             }
+
+            if (response.priorRevision) {
+              if (ntfData.responses) {
+                ntfData.responses.push(response.priorRevision);
+              } else {
+                ntfData.responses = [response.priorRevision];
+              }
+            }
             response.depopulate('submission');
             response.depopulate('createdBy');
             response.depopulate('workspace');
+            response.depopulate('priorRevision');
 
-          // need to send back submission, createdBy
         }
 
         // depopulate ntf
@@ -190,7 +199,6 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
         });
 
         ntfData.notifications = [notification];
-        // find any related records and
         socket.emit('NEW_NOTIFICATION', ntfData);
       }
     }
@@ -200,13 +208,9 @@ async function notifyUser(recipientId, notification, isRemovalOnly) {
 
 /**
   * ## Post-Validation
-  * After saving we must ensure (synchonously) that:
   */
 NotificationSchema.post('save', function (notification) {
-
   if (notification.doAddToRecipient) {
-
-
     if (isValidMongoId(notification.recipient)) {
       notifyUser(notification.recipient, notification);
     }
