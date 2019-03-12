@@ -22,7 +22,6 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
     if (!params.submission_id) {
       return null;
     }
-    let user = this.modelFor('application');
 
     let allResponses = this.get('store').peekAll('response');
 
@@ -63,6 +62,7 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
         submissions: studentSubmissions,
         responses: associatedResponses,
         response: response,
+        allResponses,
       };
 
     });
