@@ -70,7 +70,7 @@ ResponseSchema.pre('save', function (next) {
 
     let didStatusChange = modifiedFields.includes('status');
 
-    let isNewApproved = this.isNew && this.responseType === 'mentor' && this.status === 'approved';
+    let isNewApproved = this.isNew && this.status === 'approved';
     let isNewPending = this.isNew && this.status === 'pendingApproval';
 
     // for when a draft is saved
