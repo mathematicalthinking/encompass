@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const utils = require('./utils');
 const mongooseUtils = require('../../utils/mongoose');
 
@@ -13,7 +14,7 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
       return {};
     }
 
-    const { accountType, actingRole } = user;
+    const { accountType, actingRole, organization } = user;
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -23,10 +24,14 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
       ]
     };
 
+    let workspaceFilter = {};
+
       if (isNonEmptyArray(ids)) {
         filter.$and.push({ _id: { $in : ids } });
+        workspaceFilter.submissions = { $elemMatch: {$in: ids } };
       } else if(isValidMongoId(ids)) {
         filter.$and.push({ _id: ids });
+        workspaceFilter.submissions = ids;
       }
 
       if (isNonEmptyObject(filterBy)) {
@@ -50,6 +55,7 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
 
         if (isValidMongoId(workspace)) {
           filter.$and.push({workspaces: workspace});
+          workspaceFilter._id = workspace;
         }
       }
 
@@ -57,63 +63,59 @@ const accessibleSubmissionsQuery = async function(user, ids, filterBy) {
         return filter;
       }
 
-    const accessibleWorkspaceIds = await utils.getAccessibleWorkspaceIds(user);
+      let responseCriteria = {
+        isTrashed: false,
+        responseType: 'mentor',
+        status: 'approved',
+        recipient: user._id
+      };
+
+      if (isNonEmptyArray(ids)) {
+        responseCriteria.submission = { $in: ids };
+      }
+
+      if (isValidMongoId(ids)) {
+        responseCriteria.submission = ids;
+      }
+
+      let promises = [
+        utils.getAccessibleWorkspaceIds(user, workspaceFilter),
+        utils.getModelIds('Response', responseCriteria),
+        utils.getRestrictedWorkspaceData(user, 'submissions'),
+      ];
+
+      if (accountType === 'P' && isValidMongoId(organization)) {
+        promises.push(utils.getModelIds('User', { organization }));
+      }
+
+      let [ accessibleWorkspaceIds, approvedMentorReplies, restrictedRecords, orgUserIds ] = await Promise.all(promises);
 
     // everyone should have access to all submissions that belong to a workspace that they have access to
     const orFilter = { $or: [] };
+
     orFilter.$or.push({ createdBy: user._id });
-    orFilter.$or.push({workspaces : { $elemMatch: { $in: accessibleWorkspaceIds} }});
+
+    if (isNonEmptyArray(accessibleWorkspaceIds)) {
+      orFilter.$or.push({ workspaces : { $elemMatch: { $in: accessibleWorkspaceIds } } });
+    }
 
     // everyone should have access to submissions related to approved mentor replies addressed to them
-
-    let approvedMentorReplies = await utils.getModelIds('Response', {
-      isTrashed: false,
-      responseType: 'mentor',
-      status: 'approved',
-      recipient: user._id
-    });
 
     if (isNonEmptyArray(approvedMentorReplies)) {
       orFilter.$or.push({ responses: { $elemMatch: { $in: approvedMentorReplies } } } );
     }
 
-    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'submissions');
-
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }
 
-    if (isStudent) {
-      filter.$and.push(orFilter);
-      return filter;
+    if (isNonEmptyArray(orgUserIds)) {
+      orFilter.$or.push({createdBy : { $in : orgUserIds } });
     }
 
-    // will only reach here if admins/pdadmins are in actingRole teacher
-    //should have access to all submissions that you created
-    // in case they are not in a workspace
+    filter.$and.push(orFilter);
+    return filter;
 
-    if (accountType === 'P') {
-      // PDamins can get any submissions created by someone from their organization
-      const userOrg = user.organization;
-
-      const userIds = await utils.getModelIds('User', {organization: userOrg});
-      userIds.push(user._id);
-
-      orFilter.$or.push({createdBy : {$in : userIds}});
-      filter.$and.push(orFilter);
-      return filter;
-    }
-
-    if (accountType === 'T') {
-    // teachers can get any submissions where they are the primary teacher or in the teachers array?
-    // should teachers be able to get all submissions from organization?
-
-
-      // filter.$or.push({ 'teacher.id': user.id });
-      // filter.$or.push({ teachers : user.id });
-      filter.$and.push(orFilter);
-      return filter;
-    }
 
   }catch(err) {
     console.log('err asq', err);

@@ -20,7 +20,7 @@ const access   = require('../../middleware/access/submissions');
 const responseAccess = require('../../middleware/access/responses');
 
 const { areObjectIdsEqual } = require('../../utils/mongoose');
-const { isNonEmptyArray } = require('../../utils/objects');
+const { isNonEmptyArray, } = require('../../utils/objects');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -115,9 +115,8 @@ async function getSubmissions(req, res, next) {
     let criteriaPromises = [ access.get.submissions(user, req.query.ids, req.query.filterBy) ];
 
     if (doFilterResponses) {
-      criteriaPromises.push(responseAccess.get.responses(user));
+      criteriaPromises.push(responseAccess.get.responses(user, null, null, { submissions: req.query.ids }));
     }
-
   let [ submissionCriteria, responseCriteria ] = await Promise.all(criteriaPromises);
 
   let recordPromises = [ models.Submission.find(submissionCriteria).lean().exec() ];
@@ -130,7 +129,8 @@ async function getSubmissions(req, res, next) {
 
   if (doFilterResponses) {
     submissions.forEach((submission) => {
-      submission.responses = submission.responses.filter((response) => {
+      let base = submission.responses || [];
+      submission.responses = base.filter((response) => {
         return _.find(responses, (responseObj) => {
           return areObjectIdsEqual(responseObj._id, response);
         });
