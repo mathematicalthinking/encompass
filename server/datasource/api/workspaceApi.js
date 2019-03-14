@@ -491,6 +491,7 @@ async function sendWorkspace(req, res, next) {
       .populate('folders')
       .populate('taggings')
       .populate('responses')
+      .populate('comments')
       .lean().exec(),
 
       accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
@@ -572,6 +573,7 @@ async function sendWorkspace(req, res, next) {
         folders: 'folder',
         taggings: 'tagging',
         responses: 'response',
+        comments: 'comment',
       };
 
       let relatedData = {
@@ -580,6 +582,7 @@ async function sendWorkspace(req, res, next) {
         folders: [],
         taggings: [],
         responses: [],
+        comments: [],
   //      'workspace': {},
   //      'createdBy': {}
       };
