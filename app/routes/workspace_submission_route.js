@@ -8,6 +8,7 @@
   */
 /*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
+  alert: Ember.inject.service('sweet-alert'),
 
   model(params) {
     let submissions = this.modelFor('workspace.submissions');
@@ -62,37 +63,25 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       });
     },
     fileSelectionInFolder: function(selectionId, folder){
-      var store = this.get('store');
-      var currentUser = this.get('currentUser');
+      let selection = this.get('store').peekRecord('selection', selectionId);
+      let workspace = this.modelFor('workspace');
 
-      // find folder from store to ensure data is updated
-
-      store.findRecord('folder', folder.get('id')).then((folder) => {
-        folder.get('workspace')
-        .then(function(workspace) {
-          workspace.get('selections')
-            .then(function(selections) {
-              var selection = selections.filterBy('id', selectionId).get('firstObject');
-              var tagging = store.createRecord('tagging', {
-                workspace: workspace,
-                folder: folder,
-                selection: selection,
-                createdBy: currentUser,
-              });
-
-              tagging.save().then(function(obj) {
-                selection.get('taggings').then(function(taggings){
-                  taggings.pushObject(tagging);
-                });
-                folder.get('taggings').then(function(taggings){
-                  taggings.pushObject(tagging);
-                });
-              });
-            });
-        });
+      if (!selection) {
+        return;
+      }
+      let tagging = this.get('store').createRecord('tagging', {
+        workspace,
+        selection,
+        folder,
+        createdBy: this.get('currentUser')
       });
-
-
+      tagging.save()
+        .then((savedTagging) => {
+          this.get('alert').showToast('success', 'Selection Filed', 'bottom-end', 3000, false, null);
+        })
+        .catch((err) => {
+          console.log('err save tagging', err);
+        });
     }
   }
 });
