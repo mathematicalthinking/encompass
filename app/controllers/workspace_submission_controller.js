@@ -53,6 +53,10 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     return this.get('currentWorkspace.comments.content').rejectBy('isTrashed');
   }.property('currentWorkspace.comments.content.@each.isTrashed'),
 
+  nonTrashedResponses: function() {
+    return this.get('currentWorkspace.responses.content').rejectBy('isTrashed');
+  }.property('currentWorkspace.responses.content.@each.isTrashed'),
+
   actions: {
     startTour: function () {
       this.get('guider').createGuider(
