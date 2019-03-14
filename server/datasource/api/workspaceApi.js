@@ -118,10 +118,11 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
         if (comments === 0) {
           dataMap.comments = [];
         } else {
-          const selComments = _.chain(subSels)
-          .map(sel => sel.comments)
-          .flatten()
-          .value();
+          const selIds = _.map(subSels, sel => sel._id.toString());
+          const selComments = _.chain(ws.comments)
+            .filter(comment => _.contains(selIds, comment.selection.toString()))
+            .flatten()
+            .value();
            dataMap.comments = selComments;
         }
 
@@ -493,8 +494,8 @@ async function sendWorkspace(req, res, next) {
       .populate('responses')
       .populate('comments')
       .lean().exec(),
-
       accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
+
 
       if (isNil(ws) || ws.isTrashed) {
         return utils.sendResponse(res, null);
