@@ -9,20 +9,13 @@
 /*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
 
-  /*
-  model: function(params){
-    console.log("W-S Route model hook for: " + params.submission_id );
-    this.get('store').findRecord('submission', params.submission_id );
+  model(params) {
+    let submissions = this.modelFor('workspace.submissions');
+    return submissions.findBy('id', params.submission_id);
   },
-  */
 
   setupController: function(controller, model) {
     this._super(controller, model);
-    var currentWs = controller.get('currentWorkspace');
-    currentWs.set('owner', currentWs.get('owner'));
-  },
-
-  afterModel: function( model, transition ){
   },
 
   activate: function() {
@@ -34,55 +27,13 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   },
 
   renderTemplate: function(controller, model) {
-    var route = this;
+    this.render();
 
-    var foldersController = route.controllerFor('folders');
-    // var commentsController = route.controllerFor('comments');
-    // var workspaceController = route.controllerFor('workspace.submissions');
+    let user = this.modelFor('application');
 
-    var workspace = this.modelFor('workspace');
-    foldersController.set('model', workspace.get('folders'));
-
-    route.render();
-
-    /*
-    this.render('folders', {
-      into: 'workspace.submission',
-      outlet: 'folders',
-      controller: foldersController
-    });
-    */
-
-    /*
-    this.render('submissions', {
-      into: 'workspace.submission',
-      outlet: 'submissions',
-      controller: workspaceController
-    });
-    */
-
-      /*
-    this.render('comments', {
-      into: 'workspace.submission',
-      outlet: 'comments'
-    });
-    */
-
-
-    /*
-    route.render('submission', {
-      into: 'submissions',
-      outlet: 'submission'
-    });
-    */
-
-    var user = this.modelFor('application');
-
-    Ember.run.schedule('afterRender', function() {
+    Ember.run.schedule('afterRender', () => {
       if(!user.get('seenTour')) {
-        //user.set('seenTour', new Date());
-        //user.save();
-        route.controller.send('startTour', 'workspace');
+        this.controller.send('startTour', 'workspace');
       }
     });
   },

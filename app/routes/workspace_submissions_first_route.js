@@ -8,14 +8,7 @@ Encompass.WorkspaceSubmissionsFirstRoute = Ember.Route.extend({
   utils: Ember.inject.service('utility-methods'),
 
   model: function(){
-    let workspace = this.modelFor('workspace');
-    // if workspace submissions are already loaded, just return those (should always be loaded)
-    // if not loaded, fetch
-    let submissions = workspace.hasMany('submissions').value();
-      if (submissions !== null) {
-        return submissions;
-      }
-      return workspace.get('submissions');
+    return this.modelFor('workspace.submissions');
   },
 
   afterModel: function(submissions, transition) {
