@@ -1,7 +1,7 @@
     {{#if permittedToComment}}
       <a {{action reuseComment comment}} title="reuse this comment">
-        {{#if comment.children.length}}
-          {{comment.children.length}}
+        {{#if childrenLength}}
+          {{childrenLength}}
         {{else}}
           <i class="fas fa-plus"></i>
         {{/if}}
