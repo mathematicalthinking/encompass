@@ -267,16 +267,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     },
 
     updateTaggings: function() {
-      let tags = this.model.get('taggings');
-      let tagIds = tags.mapBy('id');
-
-      this.store.query('tagging', {
-        ids: tagIds
-      }).then((tags) => {
-        this.model.set('taggings', tags);
-      }).catch((err) => {
-        this.handleErrors(err, 'queryErrors');
-      });
+      this.get('currentWorkspace').reload();
     }
   }
 });
