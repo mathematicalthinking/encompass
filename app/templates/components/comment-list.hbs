@@ -80,7 +80,7 @@
       {{else}}
       <ul>
 				{{#each displayList as |comment|}}
-          {{workspace-comment comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
+          {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
           {{else}}
           <p class="placeholder">No comments made yet.</p>
 				{{/each}}
