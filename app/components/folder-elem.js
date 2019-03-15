@@ -26,35 +26,9 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   queryErrors: [],
   //editFolderMode: true, // (from folder controller)
 
-  init: function() {
-    this._super(...arguments);
-  },
 
-  getChildSelections(folder, wsTaggings) {
-    let children = folder.get('cleanChildren');
-    let taggings = wsTaggings.filter((tag) => {
-      let folderTagIds = folder.hasMany('taggings').ids();
-      return folderTagIds.includes(tag.get('id'));
-    });
 
-    let selections = taggings.mapBy('selection.content').compact();
 
-    if (folder.get('hasChildren')) {
-      let childSelections = children.map((child) => {
-        return this.getChildSelections(child, wsTaggings);
-      });
-      childSelections.forEach((sels) => {
-        selections.addObjects(sels);
-      });
-
-    }
-    return selections.uniqBy('id');
-
-  },
-
-  childSelections: function() {
-    return this.getChildSelections(this.get('model'), this.get('wsTaggings'));
-  }.property('wsTaggings.[]', 'model'),
 
   creatorId: function() {
     return this.get('utils').getBelongsToId(this.get('model'), 'createdBy');
