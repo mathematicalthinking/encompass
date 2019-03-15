@@ -33,10 +33,7 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
   permissions: Ember.inject.service('workspace-permissions'),
 
   canEdit: function() {
-    // var user = this.get('currentUser'),
-    //     ws   = this.get('currentWorkspace');
 
-    // return Permissions.userCan(user, ws, "SELECTIONS");
     const workspace = this.get('currentWorkspace');
     return this.get('permissions').canEdit(workspace, 'selections', 3);
   }.property('currentUser', 'currentWorkspace'),
@@ -45,8 +42,8 @@ Encompass.FoldersEditController = Ember.Controller.extend(Encompass.CurrentUserM
     if(this.get('includeSubfolders')){
       return this.model.get('_selections');
     }
-    return this.model.get('selections');
-  }.property('model.id', 'model.selections.[]', 'model._selections.[]', 'includeSubfolders', 'model.selections.taggings.@each.isTrashed', 'model.childSelections.[]'),
+    return this.model.get('cleanSelections');
+  }.property('model.id', 'model.cleanSelections.[]', 'model._selections.[]', 'includeSubfolders'),
 
   selectedSubmissions: function() {
     if(this.get('includeSubfolders')){
