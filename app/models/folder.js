@@ -18,6 +18,10 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
     .compact();
   }.property('cleanTaggings.[]'),
 
+  cleanSelections: function() {
+    return this.get('taggedSelections').rejectBy('isTrashed');
+  }.property('taggedSelections.@each.isTrashed'),
+
   cleanChildren: function() {
     return this.get('children.content').rejectBy('isTrashed');
   }.property('children.content.@each.isTrashed'),
@@ -27,43 +31,51 @@ Encompass.Folder = DS.Model.extend(Encompass.Auditable, {
   }.property('cleanChildren.[]'),
 
   childSelections: function(){
-    let selections = this.get('taggedSelections');
+    let selections = this.get('cleanSelections');
+
+    let results = [];
+
+    results.addObjects(selections);
+
     let children = this.get('cleanChildren');
 
     if (this.get('hasChildren')) {
       children
       .getEach('_selections')
       .forEach(function(childSelections) {
-        selections.pushObjects(childSelections);
+        results.pushObjects(childSelections);
       });
     }
-    return selections.uniqBy('id');
-  }.property('cleanChildren.[]', 'taggedSelections.[]'),
+    return results.uniqBy('id');
+  }.property('children.@each._selections', 'cleanSelections.[]'),
 
   _selections: function() {
     return this.get('childSelections');
-  }.property('childrenSelections.@each._selections', 'childSelections.@each.isTrashed'),
+  }.property('childSelections.@each.isTrashed'),
 
   submissions: function() {
-    return this.get('taggedSelections')
-      .getEach('submission.content')
+    return this.get('cleanSelections')
+      .mapBy('submission.content')
       .uniqBy('id');
-  }.property('taggedSelections.[]'),
+  }.property('cleanSelections.@each.submission'),
 
   _submissions: function() {
     let submissions = this.get('submissions');
 
+    let results = [];
+    results.addObjects(submissions);
+
     this.get('cleanChildren')
       .getEach('_submissions')
       .forEach(function(childSubmissions) {
-        submissions.pushObjects(childSubmissions);
+        results.pushObjects(childSubmissions);
       });
-    // seems like you cannot use.uniq on objects after using.toArray()
-    return submissions.uniqBy('id');
-  }.property('submissions.[]','cleanChildren.[]'),
+
+    return results.uniqBy('id');
+  }.property('cleanChildren.[]', 'submissions.[]','children.@each._submissions' ),
 
   hasSelection: function(selectionId) {
-    return this.get('taggedSelections').find((sel) => {
+    return this.get('cleanSelections').find((sel) => {
       return sel.get('id') === selectionId;
     });
   },
