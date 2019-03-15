@@ -89,43 +89,43 @@ TaggingSchema.pre('save', true, function (next, done) {
   */
 TaggingSchema.post('save', function (tagging) {
   /* + If deleted, all references are updated */
+  let taggingIdObj = mongoose.Types.ObjectId( tagging._id );
+
   if( tagging.isTrashed ) {
-
-    var taggingIdObj = mongoose.Types.ObjectId( tagging._id );
-    mongoose.models.Workspace.update({'taggings': tagging.workspace},
-      {$pull: {"taggings": taggingIdObj}},
+    mongoose.models.Workspace.update({_id: tagging.workspace},
+      {$pull: { taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
 
-    mongoose.models.Folder.update({'_id': tagging.folder},
-      {$pull: {"taggings": taggingIdObj}},
+    mongoose.models.Folder.update({_id: tagging.folder},
+      {$pull: { taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
 
-    mongoose.models.Selection.update({'_id': tagging.selection},
-      {$pull: {"taggings": taggingIdObj}},
+    mongoose.models.Selection.update({_id: tagging.selection},
+      {$pull: { taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
   }
   else { /* If added, references are added everywhere necessary */
 
-    mongoose.models.Workspace.update({'taggings': tagging.workspace},
-      {$addToSet: {"taggings": tagging}},
+    mongoose.models.Workspace.update({_id: tagging.workspace},
+      {$addToSet: { taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
 
-    mongoose.models.Folder.update({'_id': tagging.folder},
-      {$addToSet: {"taggings": tagging}},
+    mongoose.models.Folder.update({_id: tagging.folder},
+      {$addToSet: { taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
 
-    mongoose.models.Selection.update({'_id': tagging.selection},
-      {$addToSet: {"taggings": tagging}},
+    mongoose.models.Selection.update({_id: tagging.selection},
+      {$addToSet: {taggings: taggingIdObj}},
       function(err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
