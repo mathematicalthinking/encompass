@@ -94,10 +94,12 @@ FolderSchema.pre('save', function (next) {
 
 FolderSchema.post('save', function (folder) {
   /* If deleted, all references are also deleted */
+
+  let folderIdObj = mongoose.Types.ObjectId( folder._id );
+
   if( folder.isTrashed ) {
-    var folderIdObj = mongoose.Types.ObjectId( folder._id );
-    mongoose.models.Workspace.update({'_id': folder.workspace},
-      {$pull: {'folders': folderIdObj}},
+    mongoose.models.Workspace.update({_id: folder.workspace},
+      {$pull: { folders: folderIdObj}},
       function (err, affected, result) {
         if (err) { throw new Error(err.message); }
       });
@@ -122,14 +124,14 @@ FolderSchema.post('save', function (folder) {
   }
   else { /* If added, references are added everywhere necessary */
     mongoose.models.Workspace.update({_id: folder.workspace},
-      {$addToSet: {'folders': folder}},
+      {$addToSet: { folders: folderIdObj }},
       function (err, affected, results) {
         if (err) { throw new Error(err.message); }
       });
 
     if (folder.parent) {
       mongoose.models.Folder.findByIdAndUpdate(folder.parent,
-        {$addToSet: {'children': folder}},
+        {$addToSet: { children : folderIdObj}},
         function (err, affected, results) {
           if (err) { throw new Error(err.message); }
         });
