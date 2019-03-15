@@ -24,8 +24,6 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
-const responseAccess = require('../../middleware/access/responses');
-
 const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
 const mongooseUtils = require('../../utils/mongoose');
@@ -410,6 +408,7 @@ function filterRequestedWorkspaceData(user, results) {
         .populate('owner')
         .populate('createdBy')
         .populate('responses')
+        .populate('comments')
         .lean().exec();
       }
       return fetchedWs
