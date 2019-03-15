@@ -96,8 +96,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
       }
     let [ collabWorkspaceIds, restrictedRecords, orgUserIds ] = await Promise.all(promises);
 
-    let approverWorkspaceIds = collabWorkspaceIds[0];
-
+    let approverWorkspaceIds = collabWorkspaceIds[1];
     if (isNonEmptyArray(approverWorkspaceIds)) {
       orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
     }
