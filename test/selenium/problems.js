@@ -181,6 +181,7 @@ describe('Problems', async function () {
                     await helpers.clearElement(driver, '#categories-filter-selectized');
                     await helpers.findInputAndType(driver, '#categories-filter-selectized', '8.EE');
                     await helpers.findAndClickElement(driver, '[data-value="5bb650e1fefbf3cf9e88f675"]');
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
@@ -201,6 +202,7 @@ describe('Problems', async function () {
                     await driver.sleep(500);
                     await helpers.findAndClickElement(driver, 'ul.selected-cat-list li:first-child i');
                     await driver.sleep(500);
+                    await helpers.waitForTextInDom(driver, resultsMsg);
                     expect(await helpers.findAndGetText(driver, css.resultsMesasage)).to.contain(resultsMsg);
                   }
                 });
