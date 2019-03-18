@@ -9,6 +9,7 @@
 Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.CurrentUserMixin, {
   workspace: Ember.inject.controller(),
   utils: Ember.inject.service('utility-methods'),
+  alert: Ember.inject.service('sweet-alert'),
 
   workspaceSubmissions: Ember.inject.controller(),
   currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
@@ -232,14 +233,16 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       var alreadyExists = this.get('model.selections').filterBy('id', selection.id);
 
       if(alreadyExists.length > 0) {
-        // TODO: display message to user
-        // console.error("That selection already exists");
         if (isUpdateOnly) {
           let oldSel = alreadyExists.get('firstObject');
           oldSel.set('relativeSize', selection.relativeSize);
           oldSel.set('relativeCoords', selection.relativeCoords);
           oldSel.save();
+
+          return;
         }
+
+        controller.get('alert').showToast('error', 'That selection already exists', 'bottom-end', 3000, false, null);
         return;
       }
 
@@ -275,9 +278,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
         break;
 
       default:
-        // TODO: display message to user
+        controller.get('alert').showToast('error', 'Invalid selection type', 'bottom-end', 3000, false, null);
 
-        // console.error('Invalid Selection Type');
         return;
       }
 
@@ -291,6 +293,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
             s.addObject(record);
           });
           controller.set('currentSelection', record);
+
+          controller.get('alert').showToast('success', 'Selection Created', 'bottom-end', 3000, false, null);
 
           controller.transitionToRoute('workspace.submission.selection', workspace, submission, newSelection.id);
 
@@ -310,10 +314,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
       selection.set('isTrashed', true);
 
       selection.get('taggings').forEach(function(tag) {
-        //tag.get('workspace').then(function(ws){
         tag.set('isTrashed', true);
         tag.save().then(function(record) { record.deleteRecord(); });
-        //});
       });
 
       /* Ideally we should handle comments within the comments controller */
@@ -324,8 +326,9 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
 
       selection.save().then(function(record) {
         record.deleteRecord(); // Locally delete the object to update UI
-        // TODO: display message to user
-        // console.info('deleted selection: ' + record.get('id'));
+
+        controller.get('alert').showToast('success', 'Selection Deleted', 'bottom-end', 3000, false, null);
+
         controller.transitionToRoute('workspace.submission', controller.get('model'));
       });
     },
