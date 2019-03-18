@@ -229,7 +229,7 @@ ResponseSchema.post('save', function (response) {
     }
   }
 
-  if (response.isNewlySuperceded) {
+  if (response.isNewlySuperceded || response.isTrashed) {
     // clear any notification relevant to this response
     models.Notification.find({
       primaryRecordType: 'response',
@@ -239,7 +239,7 @@ ResponseSchema.post('save', function (response) {
     }).exec()
       .then((ntfs) => {
         ntfs.forEach((ntf) => {
-          ntf.wasSeen = true;
+          ntf.isTrashed = true;
           ntf.save();
         });
       });
