@@ -42,7 +42,7 @@
           <ul class="response-listing">
           {{#each existingResponses as |response|}}
             <li>
-              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{response.shortText}}... {{#link-to 'responses.submission' response.submission.id (query-params responseId=response.id)}} View{{/link-to}}
+              <span class="create-date">{{format-date response.createDate  'l h:mm a'}}</span>  {{{response.shortText}}}... {{#link-to 'responses.submission' submission.id (query-params responseId=response.id)}} View{{/link-to}}
             </li>
           {{/each}}
           </ul>

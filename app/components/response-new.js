@@ -18,7 +18,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   notPersisted: Ember.computed.not('persisted'),
   notDirty: Ember.computed.not('dirty'),
   cantRespond: Ember.computed.not('canRespond'),
-  showHelp: false,
   confirmLeaving: Ember.computed.and('isEditing', 'dirty'),
   alert: Ember.inject.service('sweet-alert'),
   todaysDate: new Date(),
@@ -99,9 +98,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return this.get('canRevise') && !this.get('isRevising');
   }.property('canRevise', 'isRevising'),
 
-  resizeDisplay: function () {
-    Ember.run.next(this, Ember.verticalSizing);
-  }.observes('showDetails', 'isEditing'),
 
   existingResponses: function() {
     let modelId = this.get('model.id');
@@ -115,10 +111,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return this.get('model.text') !== this.get('response');
   }.property('model.text', 'data.text', 'response'),
 
-  toList: function () {
-    return [this.get('student'), 'workspace'];
-  }.property('student'),
-
   canRespond: function () {
     return !this.get('isStatic');
   }.property('isStatic'),
@@ -127,18 +119,6 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return (this.get('filteredSelections.length') === 0 && !this.get('isEditing') && !this.get('isRevising') && !this.get('model.text'));
   }.property('isEditing', 'filteredSelections.[]', 'model.text', 'isRevising'),
 
-  modelChanged: function () {
-    if (!this.get('persisted') && !this.get('model.text')) {
-      this.set('model.text', this.get('response'));
-      this.set('to', this.get('student'));
-    }
-  }.observes('response', 'model.selections.@eachisLoaded', 'model.comments.@each.isLoaded'),
-
-  updateResponse: function () {
-    if (this.get('notEditing') && !this.get('persisted')) {
-      this.set('model.text', this.get('response'));
-    }
-  }.observes('who'),
 
   isToStudent: function () {
     return (this.get('to') === this.get('student'));
@@ -215,21 +195,25 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
         text += `${who} wrote: \n\n${quoteText}`;
 
-      this.get('filteredComments').forEach((comment) => {
-        let selId = this.get('utils').getBelongsToId(comment, 'selection');
-        if (selId === s.get('id')) {
-          let opts = {
-            type: comment.get('label'),
-            usePrefix: true,
-          };
+        this.get('filteredComments').forEach((comment) => {
+          let selId = this.get('utils').getBelongsToId(comment, 'selection');
+          if (selId === s.get('id')) {
+            let opts = {
+              type: comment.get('label'),
+              usePrefix: true,
+            };
 
-          text += this.quote(comment.get('text'), opts);
-        }
+            text += this.quote(comment.get('text'), opts);
+          }
+        });
       });
-    });
-          this.set('replyText', text);
-          this.set('originalText', text);
-      }
+
+      // preserve formatting of default response text
+      let preString = `<pre>${text}</pre>`;
+
+      this.set('replyText', preString);
+      this.set('originalText', preString);
+    }
   },
 
   shortText: function () {

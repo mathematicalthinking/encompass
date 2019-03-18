@@ -12,7 +12,7 @@
     margin-bottom: 20px;
     font-weight: $light-font-weight;
   }
-  a {
+  a.link {
     color: $accent-color;
     cursor: pointer;
     &:hover {
@@ -264,6 +264,9 @@
         word-wrap: break-word;
         overflow-x: auto;
       }
+      a {
+        color: $accent-color;
+      }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -304,6 +307,10 @@
             a {
               color: $accent-color;
               margin-left: 10px;
+            }
+            img {
+              width: 75px;
+              height: 75px;
             }
           }
         }
@@ -452,6 +459,10 @@
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+
+      a {
+        color: $accent-color;
+      }
     }
     .reply-revise {
       textarea {
