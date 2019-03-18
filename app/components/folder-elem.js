@@ -24,11 +24,6 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   link: null,
   updateRecordErrors: [],
   queryErrors: [],
-  //editFolderMode: true, // (from folder controller)
-
-
-
-
 
   creatorId: function() {
     return this.get('utils').getBelongsToId(this.get('model'), 'createdBy');
@@ -123,7 +118,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     var obj = JSON.parse(data);
 
     if( this.get('model').hasSelection(obj.id) ) {
-      console.info('folder already has selection');
+      this.get('alert').showToast('info', 'Selection has already been filed in this folder', 'bottom-end', 3000, false, null);
       return;
     }
 
@@ -134,12 +129,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       this.putFolderInFolder(obj, this.model);
       this.propertyDidChange('model');
     } else {
-      // display error or some kind of message?
-      // console.info("we don't support dropping " + type + " objects in folders");
+      this.get('alert').showToast('error', 'Invalid or unsupported object cannot be filed in folder', 'bottom-end', 3000, false, null);
     }
-  },
-
-  putSelectionInFolder: function(id, folder) {
   },
 
   putFolderInFolder: function(child, parent) {
@@ -149,8 +140,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     var iterator    = parent;
 
     if (child.id === this.get('model.id')) {
-      // TODO: give user feedback
-      // console.info('You cannot drop a folder into itself.');
+      this.get('alert').showToast('error', 'A folder cannot be placed into itself', 'bottom-end', 3000, false, null);
       return;
     }
 
@@ -160,8 +150,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     let childName = droppedFolder.get('name');
 
     if (!droppedFolder) {
-      // TODO: give user feedback
-      // console.info('Could not retrieve the folder\'s model...');
+      this.get('alert').showToast('error', 'Sorry, there was a problem placing the folder', 'bottom-end', 3000, false, null);
+
       return;
     }
 
@@ -170,8 +160,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       iterator = iterator.get('parent');
 
       if (iterator.get('id') === droppedFolder.get('id')) {
-        // TODO: give user feedback
-        // console.info('You cannot drop a folder into one of its subfolders.');
+        this.get('alert').showToast('error', 'A folder cannot be dropped into one if its sub-folders', 'bottom-end', 3000, false, null);
+
         return;
       }
     }
