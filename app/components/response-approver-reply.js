@@ -175,6 +175,12 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     this.removeMessages(this.get('errorPropsToRemove'));
   },
 
+  isOldFormatDisplayResponse: function() {
+    let text = this.get('displayReply.text');
+    let parsed = new DOMParser().parseFromString(text, 'text/html');
+    return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
+  }.property('displayReply.text'),
+
   actions: {
     composeReply() {
       this.set('isComposingReply', true);
