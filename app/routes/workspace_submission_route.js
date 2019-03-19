@@ -8,21 +8,15 @@
   */
 /*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
+  alert: Ember.inject.service('sweet-alert'),
 
-  /*
-  model: function(params){
-    console.log("W-S Route model hook for: " + params.submission_id );
-    this.get('store').findRecord('submission', params.submission_id );
+  model(params) {
+    let submissions = this.modelFor('workspace.submissions');
+    return submissions.findBy('id', params.submission_id);
   },
-  */
 
   setupController: function(controller, model) {
     this._super(controller, model);
-    var currentWs = controller.get('currentWorkspace');
-    currentWs.set('owner', currentWs.get('owner'));
-  },
-
-  afterModel: function( model, transition ){
   },
 
   activate: function() {
@@ -34,55 +28,13 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   },
 
   renderTemplate: function(controller, model) {
-    var route = this;
+    this.render();
 
-    var foldersController = route.controllerFor('folders');
-    // var commentsController = route.controllerFor('comments');
-    // var workspaceController = route.controllerFor('workspace.submissions');
+    let user = this.modelFor('application');
 
-    var workspace = this.modelFor('workspace');
-    foldersController.set('model', workspace.get('folders'));
-
-    route.render();
-
-    /*
-    this.render('folders', {
-      into: 'workspace.submission',
-      outlet: 'folders',
-      controller: foldersController
-    });
-    */
-
-    /*
-    this.render('submissions', {
-      into: 'workspace.submission',
-      outlet: 'submissions',
-      controller: workspaceController
-    });
-    */
-
-      /*
-    this.render('comments', {
-      into: 'workspace.submission',
-      outlet: 'comments'
-    });
-    */
-
-
-    /*
-    route.render('submission', {
-      into: 'submissions',
-      outlet: 'submission'
-    });
-    */
-
-    var user = this.modelFor('application');
-
-    Ember.run.schedule('afterRender', function() {
+    Ember.run.schedule('afterRender', () => {
       if(!user.get('seenTour')) {
-        //user.set('seenTour', new Date());
-        //user.save();
-        route.controller.send('startTour', 'workspace');
+        this.controller.send('startTour', 'workspace');
       }
     });
   },
@@ -111,37 +63,25 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
       });
     },
     fileSelectionInFolder: function(selectionId, folder){
-      var store = this.get('store');
-      var currentUser = this.get('currentUser');
+      let selection = this.get('store').peekRecord('selection', selectionId);
+      let workspace = this.modelFor('workspace');
 
-      // find folder from store to ensure data is updated
-
-      store.findRecord('folder', folder.get('id')).then((folder) => {
-        folder.get('workspace')
-        .then(function(workspace) {
-          workspace.get('selections')
-            .then(function(selections) {
-              var selection = selections.filterBy('id', selectionId).get('firstObject');
-              var tagging = store.createRecord('tagging', {
-                workspace: workspace,
-                folder: folder,
-                selection: selection,
-                createdBy: currentUser,
-              });
-
-              tagging.save().then(function(obj) {
-                selection.get('taggings').then(function(taggings){
-                  taggings.pushObject(tagging);
-                });
-                folder.get('taggings').then(function(taggings){
-                  taggings.pushObject(tagging);
-                });
-              });
-            });
-        });
+      if (!selection) {
+        return;
+      }
+      let tagging = this.get('store').createRecord('tagging', {
+        workspace,
+        selection,
+        folder,
+        createdBy: this.get('currentUser')
       });
-
-
+      tagging.save()
+        .then((savedTagging) => {
+          this.get('alert').showToast('success', 'Selection Filed', 'bottom-end', 3000, false, null);
+        })
+        .catch((err) => {
+          console.log('err save tagging', err);
+        });
     }
   }
 });

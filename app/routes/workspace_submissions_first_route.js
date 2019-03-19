@@ -5,18 +5,18 @@
   * @since 1.0.1
   */
 Encompass.WorkspaceSubmissionsFirstRoute = Ember.Route.extend({
+  utils: Ember.inject.service('utility-methods'),
 
   model: function(){
-    var workspace = this.modelFor('workspace');
-    return workspace.get('submissions');
+    return this.modelFor('workspace.submissions');
   },
 
   afterModel: function(submissions, transition) {
-    var workspace = this.modelFor('workspace');
+    let workspace = this.modelFor('workspace');
     if(submissions.get('length') > 0) {
-      var sorted = submissions.sortBy('student', 'createDate');
-      var firstStudent = sorted.get('firstObject.student');
-      var lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
+      let sorted = submissions.sortBy('student', 'createDate');
+      let firstStudent = sorted.get('firstObject.student');
+      let lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
 
       this.transitionTo('workspace.submission', workspace, sorted.objectAt(lastRevision));
     }

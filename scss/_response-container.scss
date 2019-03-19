@@ -148,6 +148,20 @@
   }
 
   #response-mentor-reply {
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      section#mentor-editor, section#response-new-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+
+      }
+    }
     .bread-crumbs-comp {
       float: right;
     }
@@ -250,6 +264,9 @@
         word-wrap: break-word;
         overflow-x: auto;
       }
+      a {
+        color: $accent-color;
+      }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -290,6 +307,10 @@
             a {
               color: $accent-color;
               margin-left: 10px;
+            }
+            img {
+              width: 75px;
+              height: 75px;
             }
           }
         }
@@ -438,6 +459,10 @@
       border: .5px solid $input-border;
       border-radius: 3px;
       padding: 20px;
+
+      a {
+        color: $accent-color;
+      }
     }
     .reply-revise {
       textarea {
@@ -460,16 +485,6 @@
     }
     .compose-reply-container {
       margin-bottom: 50px;
-      .compose-approver-reply {
-        textarea {
-          width: 100%;
-          border: 1px solid $input-border;
-          border-radius: 3px;
-          margin: 15px 0;
-          resize: vertical;
-          height: 150px;
-        }
-      }
     }
     .approver-actions {
       margin-bottom: 15px;
@@ -510,6 +525,21 @@
     .submit-buttons {
       button {
         margin: 5px;
+      }
+    }
+    .quill-container {
+      width: 100%;
+      min-width: 150px;
+      margin: 15px 0;
+      section#approver-editor {
+        width: 100%;
+        display: inline-block;
+        min-height: 150px;
+        .ql-editor {
+          width: 100%;
+          display: inline-block;
+        }
+
       }
     }
   }

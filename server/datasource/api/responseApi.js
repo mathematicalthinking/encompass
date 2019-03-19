@@ -16,9 +16,10 @@ const models   = require('../schemas');
 const wsAccess = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/responses');
 const accessUtils = require('../../middleware/access/utils');
+const apiUtils = require('./utils');
 
 const { isNonEmptyArray } = require('../../utils/objects');
-const { isValidMongoId  } = require('../../utils/mongoose');
+const { isValidMongoId, areObjectIdsEqual  } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -46,9 +47,8 @@ module.exports.put = {};
               return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
             }
 
-        // only approvers should see the note field
-        // for now just dont send back to students
-        if (user.accountType === 'S' || user.actingRole === 'student') {
+        if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
+          // recipient of mentor reply should not see note to approver
           delete response.note;
         }
         return utils.sendResponse(res, {response});
@@ -80,6 +80,13 @@ function getResponses(req, res, next) {
     models.Response.find(criteria).lean().exec()
       .then((responses) => {
 
+        responses.forEach((response) => {
+          if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
+            // recipient of mentor reply should not see note to approver
+            delete response.note;
+          }
+        });
+
         let data = {'response': responses};
 
         return utils.sendResponse(res, data );
@@ -101,36 +108,45 @@ function getResponses(req, res, next) {
   * @throws {InternalError} Data saving failed
   * @throws {RestError} Something? went wrong
   */
-function postResponse(req, res, next) {
+async function postResponse(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.response.workspace;
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    let workspaceId = req.body.response.workspace;
+
+    let popWs = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('createdBy').exec();
+
+    if (!wsAccess.canModify(user, popWs, 'feedback')) {
+      return utils.sendError.NotAuthorizedError('You are not authorized to create responses for this workspace.', res);
     }
-    if(wsAccess.canModify(user, ws, 'feedback')) {
 
-      var response = new models.Response(req.body.response);
-      response.createdBy = user;
-      response.createDate = Date.now();
+    let response = new models.Response(req.body.response);
 
-      response.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
+    let parsedResponseTextEls = await apiUtils.parseHtmlString(response.text);
 
-        var data = {'response': doc};
-        utils.sendResponse(res, data);
-        next();
-      });
-    } else {
-      logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+    // should always be text
+    if (!Array.isArray(parsedResponseTextEls)) {
+      return utils.sendError.InvalidContentError('Missing or invalid response text provided', res);
     }
-  });
+
+    // create image record for every base64 image (resize if necessary)
+    let convertedResponseText = await apiUtils.handleBase64Images(parsedResponseTextEls, user);
+
+    response.text = convertedResponseText;
+
+    response.createdBy = user;
+    response.createDate = Date.now();
+
+    let savedResponse = await response.save();
+
+    let data = { response: savedResponse };
+    return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error postResponse: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
 }
 
 
@@ -178,8 +194,9 @@ function getSubmitterThreads(user, limit, skip) {
     isTrashed: false,
     status: 'approved',
     responseType: 'mentor',
-    recipient: user._id
+    recipient: userId
   });
+
   return responseIds
     .then((responseIds) => {
       if (!isNonEmptyArray(responseIds)) {
@@ -280,8 +297,6 @@ function getSubmitterThreads(user, limit, skip) {
             }
           ]
         }},
-
-
       ]).exec();
     })
     .catch((err) => {

@@ -4,11 +4,17 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.1
   */
+
+  // Is this route necessary?
+  // workspace submissions are being sideloaded when workspace is fetched
 Encompass.WorkspaceSubmissionsRoute = Ember.Route.extend({
+  model() {
+    let workspace = this.modelFor('workspace');
 
-  model: function() {
-    var workspace = this.modelFor('workspace');
-    return workspace.get('submissions');
-  },
-
+    let submissions = workspace.hasMany('submissions').value();
+      if (submissions !== null) {
+        return submissions;
+      }
+      return workspace.get('submissions');
+  }
 });

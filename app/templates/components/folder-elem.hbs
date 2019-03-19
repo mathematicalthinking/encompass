@@ -19,11 +19,11 @@
     		<p class="error-message">{{error}}</p>
   		{{/each}}
 		{{else}}
-      <span class="toggle-icon {{if model.filteredChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
+      <span class="toggle-icon {{if model.sortedChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
         {{#if model.isExpanded}}
 					<span class="folder_sprites icon expanded"></span>
         {{else}}
-				  {{#if model.filteredChildren.length}}
+				  {{#if model.sortedChildren.length}}
 					<span class="folder_sprites icon expandable"></span>
 				  {{else}}
 					<span class="folder_sprites icon"></span>
@@ -65,6 +65,7 @@
         {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped
 				canEditFolders=canEditFolders
       	canDeleteFolders=canDeleteFolders
+				wsTaggings=wsTaggings
 				}}
       {{/each}}
     </ul>

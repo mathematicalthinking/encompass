@@ -24,8 +24,6 @@ const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
 
-const responseAccess = require('../../middleware/access/responses');
-
 const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
 const mongooseUtils = require('../../utils/mongoose');
@@ -118,10 +116,11 @@ function getRestrictedDataMap(user, permissions, ws, isBasicStudentAccess) {
         if (comments === 0) {
           dataMap.comments = [];
         } else {
-          const selComments = _.chain(subSels)
-          .map(sel => sel.comments)
-          .flatten()
-          .value();
+          const selIds = _.map(subSels, sel => sel._id.toString());
+          const selComments = _.chain(ws.comments)
+            .filter(comment => _.contains(selIds, comment.selection.toString()))
+            .flatten()
+            .value();
            dataMap.comments = selComments;
         }
 
@@ -409,6 +408,7 @@ function filterRequestedWorkspaceData(user, results) {
         .populate('owner')
         .populate('createdBy')
         .populate('responses')
+        .populate('comments')
         .lean().exec();
       }
       return fetchedWs
@@ -491,9 +491,10 @@ async function sendWorkspace(req, res, next) {
       .populate('folders')
       .populate('taggings')
       .populate('responses')
+      .populate('comments')
       .lean().exec(),
-
       accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
+
 
       if (isNil(ws) || ws.isTrashed) {
         return utils.sendResponse(res, null);
@@ -572,6 +573,7 @@ async function sendWorkspace(req, res, next) {
         folders: 'folder',
         taggings: 'tagging',
         responses: 'response',
+        comments: 'comment',
       };
 
       let relatedData = {
@@ -580,6 +582,7 @@ async function sendWorkspace(req, res, next) {
         folders: [],
         taggings: [],
         responses: [],
+        comments: [],
   //      'workspace': {},
   //      'createdBy': {}
       };

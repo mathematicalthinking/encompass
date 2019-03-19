@@ -17,9 +17,8 @@
         {{/each}}
         <div class="new-answer-input explanation">
           <label for="explanation">Explain your ideas and how you figured them out <span class="required-star">*</span></label>
-          <div class="quill-container">
-            <section id="editor"></section>
-          </div>
+
+          {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=explanationText}}
         </div>
         {{#each explanationErrors as |error|}}
           {{error-box error=error resetError=(action (mut explanationErrors) null) showDismiss=true}}

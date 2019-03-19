@@ -105,6 +105,73 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2019-02-21T15:57:43.792Z"
+},
+{
+  "_id" : "5c87ddf1a2fb212cd72de56a",
+  "text" : "<p>Hi Tracy,</p><p><br></p><p>This is a test response.</p>",
+  "original" : null,
+  "source" : "submission",
+  "responseType" : "mentor",
+  "note" : null,
+  "status" : "superceded",
+  "createdBy" : "5b7321ee59a672806ec903d5",
+  "lastModifiedBy" : null,
+  "recipient" : "5b914a102ecaf7c30dd47492",
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "priorRevision" : null,
+  "reviewedResponse" : null,
+  "approvedBy" : null,
+  "isNewlySuperceded" : true,
+  "isNewlyNeedsRevisions" : false,
+  "isNewPending" : false,
+  "isNewApproved" : false,
+  "isNewlyApproved" : false,
+  "isApproverNoteOnly" : false,
+  "wasReadByApprover" : false,
+  "wasReadByRecipient" : false,
+  "comments" : [
+      "5bec375d8c73047613e2f35e",
+      "5bec37708c73047613e2f35f"
+  ],
+  "selections" : [
+      "5bec373d8c73047613e2f35c",
+      "5bec37408c73047613e2f35d"
+  ],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-03-12T16:27:29.288Z"
+},
+
+{
+  "_id" : "5c87de03a2fb212cd72de56c",
+  "text" : "<p>Hi Tracy,</p><p><br></p><p>This is revised test response</p>",
+  "original" : null,
+  "source" : "submission",
+  "responseType" : "mentor",
+  "note" : null,
+  "status" : "approved",
+  "createdBy" : "5b7321ee59a672806ec903d5",
+  "lastModifiedBy" : null,
+  "recipient" : "5b914a102ecaf7c30dd47492",
+  "submission" : "5bec36958c73047613e2f34c",
+  "workspace" : "5bec36958c73047613e2f34e",
+  "priorRevision" : "5c87ddf1a2fb212cd72de56a",
+  "reviewedResponse" : null,
+  "approvedBy" : "5b4e4b48808c7eebc9f9e827",
+  "isNewlySuperceded" : false,
+  "isNewlyNeedsRevisions" : false,
+  "isNewPending" : false,
+  "isNewApproved" : false,
+  "isNewlyApproved" : true,
+  "isApproverNoteOnly" : false,
+  "wasReadByApprover" : true,
+  "wasReadByRecipient" : false,
+  "comments" : [],
+  "selections" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-03-12T16:27:47.826Z"
 }
 ];
 

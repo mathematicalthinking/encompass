@@ -12,6 +12,11 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
     return workspaceId === this.get('currentWorkspace.id');
   }.property('currentWorkspace.id', 'comment'),
 
+  childrenLength: function() {
+    let childrenIds = this.get('utils').getHasManyIds(this.get('comment'), 'children');
+    return childrenIds.get('length');
+  }.property('comment.children.[]'),
+
   isOwnComment: function() {
     let creatorId = this.get('utils').getBelongsToId(this.get('comment'), 'createdBy');
     return creatorId === this.get('currentUser.id');

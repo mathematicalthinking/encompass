@@ -174,6 +174,8 @@ function putTagging(req, res, next) {
               doc[field] = req.body.tagging[field];
             }
           }
+          doc.lastModifiedBy = user._id;
+          doc.lastModifiedDate = Date.now();
 
           doc.save(function (err, tagging) {
             if(err) {

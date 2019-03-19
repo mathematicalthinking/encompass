@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const utils = require('./utils');
 const _ = require('underscore');
 const mongooseUtils = require('../../utils/mongoose');
@@ -14,7 +15,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
       return;
     }
 
-    const { accountType, actingRole } = user;
+    const { accountType, actingRole, organization } = user;
 
     const isStudent = accountType === 'S' || actingRole === 'student';
 
@@ -23,6 +24,9 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
         { isTrashed: false }
       ]
     };
+
+    // used to narrow down search when looking up approver workspaces
+    let workspaceFilter = {};
 
     if (isNonEmptyArray(ids)) {
       filter.$and.push({ _id: { $in : ids } });
@@ -37,23 +41,36 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
         createdBy: true,
         recipient: true,
         responseType: true,
-        status: true
+        status: true,
+        submissions: true,
       };
       _.each(filterBy, (val, key) => {
         if (allowedKeyHash[key]) {
-          filter.$and.push({[key]: val});
+          if (key === 'submissions') {
+            if (isNonEmptyArray(val)) {
+              filter.$and.push({
+                submission: { $in: val }
+              });
+              workspaceFilter.submissions = { $elemMatch: {$in: val } };
+            }
+          } else {
+            filter.$and.push({[key]: val});
+          }
         }
       });
     }
 
     if (isValidMongoId(workspace)) {
       filter.$and.push({workspace});
+      workspaceFilter.workspace = workspace;
     }
     let isAdmin = accountType === 'A' && !isStudent && !isAdminActingPd;
 
     if (isAdmin) {
       return filter;
     }
+
+    let isPdAdmin = accountType === 'P' || (isAdminActingPd === 'true' || isAdminActingPd === true);
 
     const orFilter = { $or: [] };
 
@@ -69,51 +86,32 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
 
       orFilter.$or.push({ createdBy: user._id });
 
-      let [mentorWorkspaceIds, approverWorkspaceIds ] = await utils.getCollabFeedbackWorkspaceIds(user);
+      let promises = [
+        utils.getCollabFeedbackWorkspaceIds(user, workspaceFilter),
+        utils.getRestrictedWorkspaceData(user, 'responses')
+      ];
 
-      if (isNonEmptyArray(approverWorkspaceIds)) {
-        orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
+      if (isPdAdmin && isValidMongoId(organization)) {
+        promises.push(utils.getModelIds('User', { organization }));
       }
+    let [ collabWorkspaceIds, restrictedRecords, orgUserIds ] = await Promise.all(promises);
 
-    const restrictedRecords = await utils.getRestrictedWorkspaceData(user, 'responses');
+    let approverWorkspaceIds = collabWorkspaceIds[1];
+    if (isNonEmptyArray(approverWorkspaceIds)) {
+      orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
+    }
+
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }
 
-    if (isStudent) {
-      filter.$and.push(orFilter);
-      return filter;
+    if (isNonEmptyArray(orgUserIds)) {
+      orFilter.$or.push({createdBy : {$in : orgUserIds}});
+      orFilter.$or.push({$and: [ {recipient: {$ne: user._id }}, {recipient: {$in: orgUserIds}} ]});
     }
 
-    //should have access to all responses that you created
-    // in case they are not in a workspace
-
-    if (accountType === 'P' || (isAdminActingPd === 'true' || isAdminActingPd === true)) {
-      // PDamins can get any responses created by someone from their organization
-      const userOrg = user.organization;
-
-      //const userIds = await getOrgUsers(userOrg);
-      if (isValidMongoId(userOrg)) {
-        const userIds = await utils.getModelIds('User', {organization: userOrg});
-
-        orFilter.$or.push({createdBy : {$in : userIds}});
-        // shouldn't be seeing drafts addressed to their own account
-        orFilter.$or.push({$and: [ {recipient: {$ne: user._id }}, {recipient: {$in: userIds}} ]});
-      }
-
-      filter.$and.push(orFilter);
-
-      return filter;
-    }
-
-    if (accountType === 'T') {
-    // teachers can get any responses where they are the primary teacher or in the teachers array
-    // should teachers be able to get all responses from organization?
-    // get ids of all students? or unneccessary because responses are always tied to submissions?
-      filter.$and.push(orFilter);
-
-      return filter;
-    }
+    filter.$and.push(orFilter);
+    return filter;
 
   }catch(err) {
     console.trace();

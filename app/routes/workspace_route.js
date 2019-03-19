@@ -1,3 +1,4 @@
+/*global _:false */
 /** # Workspace Route
   * @description base route for the workspace
   * @author Amir Tahvildaran <amir@mathforum.org>, Damola Mabogunje <damola@mathforum.org>
@@ -5,6 +6,26 @@
   */
 Encompass.WorkspaceRoute = Ember.Route.extend({
   needs: 'application',
+  /*
+  using regular ajax request because sideloaded  data was not being pushed in to store soon enough
+  when using ember data, which was causing unnecessary api requests being made
+  */
+
+  model: function(params) {
+    let url = `/api/workspaces/${params.workspace_id}`;
+
+    return Ember.$.get({url})
+      .then((results) => {
+        _.each(results, (val, key) => {
+          if (val) {
+            this.get('store').pushPayload({
+              [key]: val
+            });
+          }
+        });
+        return this.get('store').peekRecord('workspace', params.workspace_id);
+      });
+  },
 
   actions: {
     tour: function(){
@@ -13,19 +34,5 @@ Encompass.WorkspaceRoute = Ember.Route.extend({
       user.set('seenTour', null);
       this.send('startTour', 'workspace');
     },
-    //error: function(error, transition) {
-    //  console.log("Error in workspace route: " + JSON.stringify(error) );
-      //console.trace();
-
-      /*
-      if(error.status === 403) {
-        window.alert("Looks like you don't have permission for that workspace");
-        this.transitionTo('workspaces');
-      }
-      */
-    //},
-    //tagSelection: function(selection, tags){
-    //}
-
   }
 });

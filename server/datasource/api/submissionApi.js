@@ -17,12 +17,14 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const spaces   = require('./workspaceApi');
 const access   = require('../../middleware/access/submissions');
+const responseAccess = require('../../middleware/access/responses');
 
-const asyncWrapper = utils.asyncWrapper;
+const { areObjectIdsEqual } = require('../../utils/mongoose');
+const { isNonEmptyArray, } = require('../../utils/objects');
 
-    module.exports.get = {};
-    module.exports.post = {};
-    module.exports.put = {};
+module.exports.get = {};
+module.exports.post = {};
+module.exports.put = {};
 
 /**
   * @public
@@ -103,24 +105,46 @@ function toPDSubmission(obj, index, arr) {
   * @throws {RestError} Something? went wrong
   */
 async function getSubmissions(req, res, next) {
-  var user = userAuth.getUser(req);
+  let user = userAuth.getUser(req);
   try {
 
-  let criteria = await access.get.submissions(user, req.query.ids, req.query.filterBy);
+    let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
 
-  models.Submission.find(criteria)
-    .exec(function(err, submissions) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+    let doFilterResponses = !isAdmin;
 
-      var data = {'submissions': submissions};
-      logger.debug('Get Submissions found: ' + submissions.length );
-      utils.sendResponse(res, data);
+    let criteriaPromises = [ access.get.submissions(user, req.query.ids, req.query.filterBy) ];
+
+    if (doFilterResponses) {
+      criteriaPromises.push(responseAccess.get.responses(user, null, null, { submissions: req.query.ids }));
+    }
+  let [ submissionCriteria, responseCriteria ] = await Promise.all(criteriaPromises);
+
+  let recordPromises = [ models.Submission.find(submissionCriteria).lean().exec() ];
+
+  if (responseCriteria) {
+    recordPromises.push(models.Response.find(responseCriteria, {_id: 1}).lean().exec());
+  }
+
+  let [ submissions, responses ] = await Promise.all(recordPromises);
+
+  if (doFilterResponses) {
+    submissions.forEach((submission) => {
+      let base = submission.responses || [];
+      submission.responses = base.filter((response) => {
+        return _.find(responses, (responseObj) => {
+          return areObjectIdsEqual(responseObj._id, response);
+        });
+      });
     });
+  }
+
+  let data = { submissions };
+  logger.debug('Get Submissions found: ' + submissions.length );
+  return utils.sendResponse(res, data);
+
   }catch(err) {
     console.error('caught error getSubmissions', err);
+    console.trace();
     return utils.sendError.InternalError(null, res);
   }
 
@@ -207,48 +231,64 @@ function getPDSets(req, res, next) {
   * @throws {RestError} Something? went wrong
   */
 async function getSubmission(req, res, next) {
-  const user = userAuth.requireUser(req);
+  try {
+    const user = userAuth.requireUser(req);
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
-  }
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('You must be logged in.', res);
+    }
 
-  let err;
-  let canLoadSubmission;
-  let submission;
+    let isAdmin = user.accountType === 'A' && user.actingRole !== 'student';
 
-  let id = req.params.id;
+    let doFilterResponses = !isAdmin;
 
-  [ err, submission ] = await asyncWrapper(models.Submission.findById(id));
 
-  if (err) {
-    console.error(`Error finding submission by id: ${err}`);
-    console.trace();
-    return utils.sendError.InternalError(null, res);
-  }
+    let canLoadSubmission;
+    let submission;
 
-  if (!submission || submission.isTrashed) { // record not found in db
-    return utils.sendResponse(res, null);
-  }
+    let id = req.params.id;
 
-  [ err, canLoadSubmission ] = await asyncWrapper(access.get.submission(user, id));
+    submission = await models.Submission.findById(id).lean().exec();
 
-  if (err) {
+    if (!submission || submission.isTrashed) { // record not found in db
+      return utils.sendResponse(res, null);
+    }
+
+    canLoadSubmission = await access.get.submission(user, id);
+
+    if (!canLoadSubmission) { // user does not have permission to access submission
+      return utils.sendError.NotAuthorizedError('You do not have permission.', res);
+    }
+
+    // filter responses
+
+    if (doFilterResponses) {
+      let responseIds = submission.responses;
+      let responseCriteria;
+
+      if (isNonEmptyArray(responseIds)) {
+        responseCriteria = await responseAccess.get.responses(user, responseIds);
+        let responses = await models.Response.find(responseCriteria, { _id: 1 }).lean().exec();
+
+        submission.responses = submission.responses.filter((response) => {
+          return _.find(responses, (responseObj) => {
+            return areObjectIdsEqual(responseObj._id, response);
+          });
+        });
+      }
+    }
+
+    const data = { // user has permission; send back record
+      submission
+    };
+
+    return utils.sendResponse(res, data);
+  }catch(err) {
     console.error(`Error getSubmission: ${err}`);
     console.trace();
     return utils.sendError.InternalError(null, res);
+
   }
-
-  if (!canLoadSubmission) { // user does not have permission to access submission
-    return utils.sendError.NotAuthorizedError('You do not have permission.', res);
-  }
-
-  const data = { // user has permission; send back record
-    submission
-  };
-
-  return utils.sendResponse(res, data);
-
 }
 
 

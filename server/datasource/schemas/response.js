@@ -70,7 +70,7 @@ ResponseSchema.pre('save', function (next) {
 
     let didStatusChange = modifiedFields.includes('status');
 
-    let isNewApproved = this.isNew && this.responseType === 'mentor' && this.status === 'approved';
+    let isNewApproved = this.isNew && this.status === 'approved';
     let isNewPending = this.isNew && this.status === 'pendingApproval';
 
     // for when a draft is saved
@@ -229,7 +229,7 @@ ResponseSchema.post('save', function (response) {
     }
   }
 
-  if (response.isNewlySuperceded) {
+  if (response.isNewlySuperceded || response.isTrashed) {
     // clear any notification relevant to this response
     models.Notification.find({
       primaryRecordType: 'response',
@@ -239,7 +239,7 @@ ResponseSchema.post('save', function (response) {
     }).exec()
       .then((ntfs) => {
         ntfs.forEach((ntf) => {
-          ntf.wasSeen = true;
+          ntf.isTrashed = true;
           ntf.save();
         });
       });

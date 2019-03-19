@@ -46,6 +46,7 @@ describe(`Copy Workspace operations by account type`, function () {
 
       const originalWs = fixtures.originalWorkspace;
       const isStudent = accountType === 'S' || actingRole === 'student';
+      // const isPdAdmin = username === 'pdadmin';
       // let baseWsId = originalWs._id;
       let newWsName = "New Cloned Workspace";
       // let newWsOwner = "5b9149552ecaf7c30dd4748e";
@@ -620,6 +621,9 @@ describe(`Copy Workspace operations by account type`, function () {
               comments: originalWs.comments.length,
               responses: originalWs.responses.length
             };
+            // if (isPdAdmin) {
+            //   expectedLengths.responses =
+            // }
             describe('Creating New Folder Set', function() {
               let settings = {
                 newOwnerId: _id,
@@ -755,8 +759,11 @@ describe(`Copy Workspace operations by account type`, function () {
               taggings: 2,
               selections: 2,
               comments: 2,
-              responses: 1
+              responses: 3
             };
+            // if (isPdAdmin) {
+            //   expectedLengths.responses = 2;
+            // }
             describe('Current user as owner', function () {
               let settings = {
                 newOwnerId: _id,
@@ -822,8 +829,12 @@ describe(`Copy Workspace operations by account type`, function () {
               taggings: 0,
               selections: 2,
               comments: 2,
-              responses: 1
+              responses: 3
             };
+
+            // if (isPdAdmin) {
+            //   expectedLengths.responses = 2;
+            // }
             describe('Current user as owner', function () {
               let settings = {
                 newOwnerId: _id,

@@ -93,20 +93,21 @@ SelectionSchema.pre('save', true, function (next, done) {
   * After saving we must ensure (synchonously) that:
   */
 SelectionSchema.post('save', function (selection) {
+  let selectionIdObj = mongoose.Types.ObjectId( selection._id );
+
   /* + If deleted, all references are also deleted */
   if( selection.isTrashed )
   {
-    var selectionIdObj = mongoose.Types.ObjectId( selection._id );
-    mongoose.models.Workspace.update({'_id': selection.workspace},
-      {$pull: {'selections': selectionIdObj}},
+    mongoose.models.Workspace.update({_id: selection.workspace},
+      {$pull: { selections : selectionIdObj }},
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }
       });
 
-    mongoose.models.Submission.update({'_id': selection.submission},
-      {$pull: {'selections': selectionIdObj}},
+    mongoose.models.Submission.update({_id: selection.submission},
+      {$pull: { selections : selectionIdObj }},
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
@@ -132,16 +133,16 @@ SelectionSchema.post('save', function (selection) {
     });
   }
   else { /* + If added, references are added everywhere necessary */
-    mongoose.models.Workspace.update({'_id': selection.workspace},
-      {$addToSet: {'selections': selection}},
+    mongoose.models.Workspace.update({_id: selection.workspace},
+      {$addToSet: { selections : selectionIdObj}},
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);
         }
       });
 
-    mongoose.models.Submission.update({'_id': selection.submission},
-      {$addToSet: {'selections': selection}},
+    mongoose.models.Submission.update({_id: selection.submission},
+      {$addToSet: { selections : selectionIdObj }},
       function (err, affected, result) {
         if (err) {
           throw new Error(err.message);

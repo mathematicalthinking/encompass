@@ -29,9 +29,9 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
     return folders.uniq();
   }.property('selections.[].folders'),
 
-  selectedComments: function () {
-    return this.get('comments').filterBy('useForResponse', true);
-  }.property('comments.[].useForResponse'),
+  // selectedComments: function () {
+  //   return this.get('comments').filterBy('useForResponse', true);
+  // }.property('comments.[].useForResponse'),
 
   puzzle: function () {
     return this.get('publication.puzzle');

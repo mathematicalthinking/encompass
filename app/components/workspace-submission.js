@@ -30,9 +30,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('makingSelection');
   }),
 
-  init: function() {
-    this._super(...arguments);
-  },
 
   didRender: function() {
     if(this.get('switching')) {
@@ -40,31 +37,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
-  didReceiveAttrs() {
-    if (this.get('currentSubmission.id')) {
-      this.fetchSubmissionResponses();
-    }
-    this._super(...arguments);
-  },
 
-  fetchSubmissionResponses() {
-    if (!this.get('currentSubmission')) {
-      return;
-    }
-    this.get('store').query('response', {
-      filterBy: {
-        submission: this.get('currentSubmission.id')
-      }
-    })
-    .then((responses) => {
-      if (!this.get('isDestroying') && !this.get('isDestroyed')) {
-        this.set('submissionResponses', responses.toArray());
-      }
-    })
-    .catch((err) => {
-      this.handleErrors(err, 'dataFetchErr');
-    });
-  },
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
@@ -106,6 +79,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     const workspace = this.get('currentWorkspace');
     return this.get('permissions').canEdit(workspace, 'selections', 4);
   }.property('currentWorkspace.permissions.@each.{global,selections}', 'currentUser.id'),
+
+  submissionResponses: function() {
+    return this.get('responses').filter((response) => {
+      let subId = this.get('utils').getBelongsToId(response, 'submission');
+      return subId === this.get('currentSubmission.id');
+    });
+  }.property('currentSubmission.id', 'responses.[]'),
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){

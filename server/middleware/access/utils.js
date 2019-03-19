@@ -268,12 +268,12 @@ function getTeacherUsers(user) {
   }
 }
 
-async function getAccessibleWorkspaceIds(user) {
+async function getAccessibleWorkspaceIds(user, filterBy) {
   if (!user) {
     return;
   }
   try {
-    const criteria = await wsAuth.get.workspaces(user, null);
+    const criteria = await wsAuth.get.workspaces(user, null, filterBy);
     const ids = await getModelIds('Workspace', criteria);
     return ids;
 
@@ -431,9 +431,9 @@ function getRestrictedWorkspaceData(user, requestedModel) {
       .populate('folders')
       .populate('taggings')
       .populate('owner')
-      .populate('editors')
       .populate('createdBy')
       .populate('responses')
+      .populate('comments')
       .lean().exec()
       .then((populatedWs) => {
         // eslint-disable-next-line no-unused-vars
@@ -493,7 +493,7 @@ function getRestrictedWorkspaceData(user, requestedModel) {
   .then(_.flatten);
 }
 
-function getCollabFeedbackWorkspaceIds(user) {
+function getCollabFeedbackWorkspaceIds(user, wsFilter) {
   if (!isNonEmptyObject(user)) {
     return [];
   }
@@ -501,7 +501,7 @@ function getCollabFeedbackWorkspaceIds(user) {
   let mentorWorkspaceIds = [];
   let approverWorkspaceIds = [];
 
-  return wsAuth.get.workspaces(user)
+  return wsAuth.get.workspaces(user, null, wsFilter)
     .then((criteria) => {
       return models.Workspace.find(criteria, {permissions: 1, createdBy: 1, owner: 1, organization: 1}).lean().exec();
     })

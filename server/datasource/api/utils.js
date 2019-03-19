@@ -1,6 +1,8 @@
 const _ = require('underscore');
 const models = require('../schemas');
 const mongoose = require('mongoose');
+const sharp = require('sharp');
+const htmlParser = require('htmlparser2');
 
 const mongooseUtils = require('../../utils/mongoose');
 const objectUtils = require('../../utils/objects');
@@ -466,6 +468,115 @@ function isRecordUniqueByStringProp(model, requestedValue, uniqueProp, optionsHa
   });
 }
 
+function parseHtmlString(htmlString) {
+  let result = [];
+
+  let parser = new htmlParser.Parser({
+    onopentag: function(name, attr) {
+      result.push(['openTag', '<' + name]);
+
+      _.each(attr, (val, key) => {
+        result.push([`attr_${key}`, ` ${key}='${val}'`]);
+      });
+      result.push(['endOpenTag', '>']);
+    },
+
+    ontext: function(text) {
+      result.push(['textContent', text]);
+    },
+    onclosetag: function(tagname) {
+      let nonClosingTags = ['img', 'br'];
+      if (!nonClosingTags.includes(tagname)) {
+        result.push(['closeTag', '</' + tagname + '>']);
+      }
+    },
+  }, {decodeEntities: true});
+
+  parser.write(htmlString);
+  parser.end();
+  return result;
+}
+
+ function handleBase64Images(parsedHtmlEls, user) {
+  return Promise.all(parsedHtmlEls.map(async (tuple) => {
+    let [elType, el] = tuple;
+    // for image src, elType will be attr_src
+    let isImageSrc = elType === 'attr_src';
+
+    if (!isImageSrc) {
+      return el;
+    }
+
+    let first30Chars = typeof el === 'string' ? el.slice(0,29) : '';
+
+    let target = 'base64,';
+    let targetIndex = first30Chars.indexOf(target);
+
+    let isImageData = targetIndex !== -1;
+
+    if (!isImageData) {
+      return el;
+    }
+    let dataStartIndex = targetIndex + target.length;
+    // does not include last char which is closing quote
+    let imageDataStr = el.slice(dataStartIndex);
+
+    let dataFormatStartIndex = first30Chars.indexOf('data:');
+    let imageDataStrWithFormat = el.slice(dataFormatStartIndex);
+
+    let origBuffer = Buffer.from(imageDataStr, 'base64');
+
+    let originalSharp = sharp(origBuffer);
+
+    let originalMetadata = await originalSharp.metadata();
+    let sizeThreshold = 614400; // 600kb
+    let widthThreshold = 1000; // 1000 pixels wide max
+
+    let { size, width, format, height } = originalMetadata;
+
+    let newImage = new models.Image({
+      originalSize: size,
+      originalWidth: width,
+      originalHeight: height,
+      originalMimetype: `image/${format}`,
+      createdBy: user,
+    });
+
+    let isOverSizeLimit = size > sizeThreshold;
+    let isOverWidthLimit = width > widthThreshold;
+
+    if (!isOverSizeLimit && !isOverWidthLimit) {
+      newImage.imageData = imageDataStrWithFormat;
+      newImage.size = size;
+      newImage.width = width;
+      newImage.height = height;
+    } else {
+      let resizedBuffer = await sharp(origBuffer).resize(500).toBuffer();
+      let newMetadata = await sharp(resizedBuffer).metadata();
+
+      newImage.size = newMetadata.size;
+      newImage.width = newMetadata.width;
+      newImage.height = newMetadata.height;
+      newImage.mimetype = `image/${newMetadata.format}`;
+
+      let newImageDataStr = resizedBuffer.toString('base64');
+
+      newImage.imageData = `data:image/${format};base64,${newImageDataStr}`;
+
+    }
+    await newImage.save();
+
+    let url = `/api/images/file/${newImage._id}`;
+    return ` src='${url}'`;
+  }))
+  .then((arr) => {
+    return arr.join('');
+  })
+  .catch((err) => {
+    console.log('err handleBase64Images', err);
+  });
+}
+
 module.exports.filterByForeignRef = filterByForeignRef;
 module.exports.filterByForeignRefArray = filterByForeignRefArray;
 module.exports.findAndReturnIds = findAndReturnIds;
@@ -476,3 +587,5 @@ module.exports.cloneDocuments = cloneDocuments;
 module.exports.mapObjectsToIds = mapObjectsToIds;
 module.exports.sortAnswersByLength = sortAnswersByLength;
 module.exports.isRecordUniqueByStringProp = isRecordUniqueByStringProp;
+module.exports.parseHtmlString = parseHtmlString;
+module.exports.handleBase64Images = handleBase64Images;
