@@ -726,7 +726,7 @@ describe('Problems', async function () {
                     it("problem more button should only show report", async function() {
                       let selectors = ["#problem-list-ul li:first-child .item-section.more", '#container > div.item-section.more > span > ul > li > label > span'];
                       await helpers.findAndClickElement(driver, selectors[0]);
-                      await helpers.waitForSelector(driver, selectors[1]);
+                      // await helpers.waitForSelector(driver, selectors[1]);
                       expect(await helpers.findAndGetText(driver, selectors[1])).to.contain('Report');
                     });
                     if (isPdadmin) {
