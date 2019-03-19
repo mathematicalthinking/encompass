@@ -117,7 +117,7 @@
         {{error-box error=err showDismiss=true resetError=(action (mut recordCreateErrors) null)}}
       {{/each}}
     {{else}}
-      <div class="reply-content">
+      <div class="reply-content {{if isOldFormatDisplayResponse "old-format"}}">
         {{{displayReply.text}}}
       </div>
     {{/if}}

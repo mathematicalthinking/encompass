@@ -308,6 +308,9 @@
         list-style-position: inside;
         margin-left: 15px;
      }
+     &.old-format {
+       white-space: pre-line;
+     }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -521,6 +524,9 @@
         list-style-type: lower-latin;
         list-style-position: inside;
         margin-left: 15px;
+     }
+     &.old-format {
+       white-space: pre-line;
      }
     }
     .reply-revise {

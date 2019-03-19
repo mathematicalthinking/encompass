@@ -54,7 +54,7 @@
             {{#if isComposing}}
               {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}
             {{else}}
-              <div class="response-text">
+              <div class="response-text {{if isOldFormatDisplayResponse "old-format"}}">
                 {{{displayResponse.text}}}
               </div>
             {{/if}}

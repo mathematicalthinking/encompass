@@ -65,6 +65,7 @@ describe('Sections', async function () {
             await helpers.findAndClickElement(driver, sectionLink);
           });
           it('should display the section details', async function () {
+            await helpers.waitForSelector(driver, '#sectioninfo > fieldset > div.section-info-detail.name');
             expect(await helpers.isTextInDom(driver, sectionDetails.name)).to.be.true;
             // expect(await helpers.isTextInDom(driver, sectionDetails.teachers)).to.be.true;
           });
@@ -78,6 +79,7 @@ describe('Sections', async function () {
               let usernameLinkSelector = `a[href="#/users/${hash[username][2]}"]`;
               let userToAddSelector = `[data-value="${hash[username][1]}"]`;
               it('clicking on edit students should bring up menus', async function() {
+                expect(await helpers.isElementVisible(driver, css.sectionInfo.editButtons.students)).to.eql(true);
 
                 await helpers.findAndClickElement(driver, css.sectionInfo.editButtons.students);
 
@@ -176,7 +178,7 @@ describe('Sections', async function () {
               it(`should display new section form`, async function() {
                 try {
                   await driver.wait(until.urlIs(url));
-                  expect(await helpers.waitForSelector(driver, css.newSection.form)).to.be.true;
+                  expect(await helpers.isElementVisible(driver, css.newSection.form)).to.be.true;
                 }catch(err) {
                   console.log(err);
                 }

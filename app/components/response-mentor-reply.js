@@ -175,15 +175,6 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
   }.property('displayResponse.text'),
 
-  displayText: function() {
-    let text = this.get('displayResponse.text');
-
-    if (this.get('isOldFormatDisplayResponse')) {
-      return `<pre>${text}</pre>`;
-    }
-    return text;
-  }.property('displayResponse.text', 'isOldFormatDisplayResponse'),
-
   actions: {
     onSaveSuccess(submission, response) {
       this.get('onSaveSuccess')(submission, response);
