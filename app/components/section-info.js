@@ -89,11 +89,12 @@ Encompass.SectionInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return true;
     }
 
-    if (this.get('isPdAdmin')) {
+    if (this.get('currentUser.isPdAdmin')) {
       let sectionOrgId = this.get('utils').getBelongsToId(this.get('section'), 'organization');
       let userOrgId = this.get('utils').getBelongsToId(this.get('currentUser'), 'organization');
       return sectionOrgId === userOrgId;
     }
+    return false;
 
   }.property('currentUser.actingRole', 'currentUser.accountType', 'section.teachers', 'section.organization'),
 
