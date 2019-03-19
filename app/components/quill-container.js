@@ -75,14 +75,19 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
   isQuillNonEmpty() {
-    let pText = this.$('.ql-editor p').text();
+    let editor = this.$('.ql-editor');
 
-    let trimmed = typeof pText === 'string' ? pText.trim() : '';
+    if (!editor) {
+      return false;
+    }
+    let editorText = editor.text();
+    let trimmed = typeof editorText === 'string' ? editorText.trim() : '';
+
     if (trimmed.length > 0) {
       return true;
     }
 
-    let content = this.$('.ql-editor').html();
+    let content = editor.html();
     if (content.includes('<img')) {
       return true;
     }
