@@ -23,6 +23,7 @@
       &.active-crumb {
         font-weight: $bold-font-weight;
         color: $accent-color;
+        text-decoration: underline;
       }
     }
   }
