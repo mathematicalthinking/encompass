@@ -208,11 +208,8 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
         });
       });
 
-      // preserve formatting of default response text
-      let preString = `<pre>${text}</pre>`;
-
-      this.set('replyText', preString);
-      this.set('originalText', preString);
+      this.set('replyText', text);
+      this.set('originalText', text);
     }
   },
 

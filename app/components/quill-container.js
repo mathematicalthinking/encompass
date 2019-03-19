@@ -81,14 +81,6 @@ Encompass.QuillContainerComponent = Ember.Component.extend({
     if (trimmed.length > 0) {
       return true;
     }
-    // pre tag is inserted when using auto-generated text from selections/comments
-
-    let preText = this.$('.ql-editor pre').text();
-    let trimmedPre = typeof preText === 'string' ? preText.trim(): '';
-
-    if (trimmedPre.length > 0) {
-      return true;
-    }
 
     let content = this.$('.ql-editor').html();
     if (content.includes('<img')) {
