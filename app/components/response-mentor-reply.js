@@ -169,6 +169,21 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     this.removeMessages(this.get('errorPropsToRemove'));
   },
 
+  isOldFormatDisplayResponse: function() {
+    let text = this.get('displayResponse.text');
+    let parsed = new DOMParser().parseFromString(text, 'text/html');
+    return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
+  }.property('displayResponse.text'),
+
+  displayText: function() {
+    let text = this.get('displayResponse.text');
+
+    if (this.get('isOldFormatDisplayResponse')) {
+      return `<pre>${text}</pre>`;
+    }
+    return text;
+  }.property('displayResponse.text', 'isOldFormatDisplayResponse'),
+
   actions: {
     onSaveSuccess(submission, response) {
       this.get('onSaveSuccess')(submission, response);

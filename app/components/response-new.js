@@ -148,17 +148,20 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let prefix = defaultPrefix;
     let str = '';
 
+    let doWrapStringInBlockQuote = true;
+
     if (opts && opts.hasOwnProperty('type')) {
+      doWrapStringInBlockQuote = false;
       if (opts.usePrefix) {
         switch (opts.type) {
           case 'notice':
-            prefix = '     ...and I noticed that...\n\n\t\t';
+            prefix = '...and I noticed that...';
             break;
           case 'wonder':
-            prefix = '     ...and I wondered about...\n\n\t\t';
+            prefix = '...and I wondered about...';
             break;
           case 'feedback':
-            prefix = '     ...and I thought...\n\n\t\t';
+            prefix = '...and I thought...';
             break;
           default:
             prefix = defaultPrefix;
@@ -167,33 +170,27 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
     }
 
-    let max = (100 - prefix.length); //magic number?
-    while (string.length > 0) {
-      if (string.length < max) {
-        str += prefix + string.trim();
-        string = '';
-      } else {
-        let candidate = string.substring(0, max) + "\n"; //regardless of spaces
-        let brk = candidate.lastIndexOf(' '); //find the last space
-        str += prefix + string.substring(0, brk).trim() + "\n";
-        string = string.substring(brk, string.length).trim();
-        str += defaultPrefix + string.trim();
-        string = '';
-      }
+    if (doWrapStringInBlockQuote) {
+      str += `<blockquote class="pf-response-text">${string}</blockquote><br>`;
+    } else {
+      str += `<p>${prefix}</p><br>`;
+      str += `<p class="pf-response-text">${string}</p><br>`;
     }
-    return str + "\n\n";
+
+    return str;
   },
 
   preFormatText: function () {
     let greeting = this.get('greeting');
-    let text = `${greeting}\n\n`;
+    let text = `<p>${greeting}</p><br>`;
 
     if (this.get('filteredSelections.length') > 0) {
       this.get('filteredSelections').forEach((s) => {
         let who = this.get('who');
         let quoteText = this.quote(s.get('text'));
 
-        text += `${who} wrote: \n\n${quoteText}`;
+        text += `<p>${who} wrote:</p><br>`;
+        text += quoteText;
 
         this.get('filteredComments').forEach((comment) => {
           let selId = this.get('utils').getBelongsToId(comment, 'selection');
