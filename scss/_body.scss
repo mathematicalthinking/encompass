@@ -192,3 +192,9 @@ sub {
 sup {
   top: -0.5em;
 }
+blockquote {
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding-left: 16px;
+}

@@ -121,6 +121,25 @@
         padding: 20px;
         border-radius: 3px;
         font-size: .9em;
+
+        ul {
+          list-style-type: disc;
+          list-style-position: inside;
+       }
+       ol {
+          list-style-type: decimal;
+          list-style-position: inside;
+       }
+       ul ul, ol ul {
+          list-style-type: circle;
+          list-style-position: inside;
+          margin-left: 15px;
+       }
+       ol ol, ul ol {
+          list-style-type: lower-latin;
+          list-style-position: inside;
+          margin-left: 15px;
+       }
       }
       textarea {
         width: 100%;
@@ -267,6 +286,24 @@
       a {
         color: $accent-color;
       }
+      ul {
+        list-style-type: disc;
+        list-style-position: inside;
+     }
+     ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+     }
+     ul ul, ol ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        margin-left: 15px;
+     }
+     ol ol, ul ol {
+        list-style-type: lower-latin;
+        list-style-position: inside;
+        margin-left: 15px;
+     }
     }
     .edit-response {
       border: 1px solid $input-border;
@@ -463,6 +500,24 @@
       a {
         color: $accent-color;
       }
+      ul {
+        list-style-type: disc;
+        list-style-position: inside;
+     }
+     ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+     }
+     ul ul, ol ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        margin-left: 15px;
+     }
+     ol ol, ul ol {
+        list-style-type: lower-latin;
+        list-style-position: inside;
+        margin-left: 15px;
+     }
     }
     .reply-revise {
       textarea {
