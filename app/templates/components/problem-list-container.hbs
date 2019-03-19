@@ -119,12 +119,12 @@
           <div class="sort-bar-item more"></div>
         </div>
         {{#if showList}}
-          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toProblemInfo="toProblemInfo"
+          {{problem-list isSearching=isSearchingProblems problems=displayProblems metadata=problemsMetadata isList=true isGrid=false moreMenuOptions=moreMenuOptions store=store toProblemInfo="toProblemInfo" refreshList=(action "refreshList")
           }}
         {{/if}}
         {{#if showGrid}}
           {{problem-list isSearching=isSearchingProblems store=store problems=displayProblems metadata=problemsMetadata isList=false isGrid=true moreMenuOptions=moreMenuOptions
-          toProblemInfo="toProblemInfo"
+          toProblemInfo="toProblemInfo" refreshList=(action "refreshList")
           }}
         {{/if}}
 

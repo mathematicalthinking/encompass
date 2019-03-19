@@ -18,6 +18,9 @@ Encompass.ProblemListComponent = Ember.Component.extend( {
   actions: {
     toProblemInfo(problem) {
       this.sendAction("toProblemInfo", problem);
+    },
+    refreshList() {
+      this.get('refreshList')();
     }
   }
 
