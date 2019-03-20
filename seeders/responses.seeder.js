@@ -172,6 +172,36 @@ var data = [
   "lastModifiedDate" : null,
   "isTrashed" : false,
   "createDate" : "2019-03-12T16:27:47.826Z"
+},
+{
+  "_id" : "5c9262343fd67ae4f1f924c3",
+  "text" : "<p>This is a test response with no selections or comments.</p>",
+  "original" : null,
+  "source" : "submission",
+  "responseType" : "mentor",
+  "note" : null,
+  "status" : "approved",
+  "createdBy" : "5c6eb49c9852e5710311d634",
+  "lastModifiedBy" : null,
+  "recipient" : "5c6eb4c19852e5710311d636",
+  "submission" : "5c6ec5eba89be9751158ce09",
+  "workspace" : "5c6ec5eba89be9751158ce06",
+  "priorRevision" : null,
+  "reviewedResponse" : null,
+  "approvedBy" : null,
+  "isNewlySuperceded" : false,
+  "isNewlyNeedsRevisions" : false,
+  "isNewPending" : false,
+  "isNewApproved" : false,
+  "isNewlyApproved" : false,
+  "isApproverNoteOnly" : false,
+  "wasReadByApprover" : false,
+  "wasReadByRecipient" : true,
+  "comments" : [],
+  "selections" : [],
+  "lastModifiedDate" : null,
+  "isTrashed" : false,
+  "createDate" : "2019-03-20T15:54:28.606Z"
 }
 ];
 
