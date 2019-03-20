@@ -6,7 +6,7 @@ const _ = require('underscore');
 
 const objectUtils = require('../../utils/objects');
 const { isNil, isNonEmptyObject, isNonEmptyArray, } = objectUtils;
-const { areObjectIdsEqual } = mongooseUtils;
+const { areObjectIdsEqual, isValidMongoId } = mongooseUtils;
 
 module.exports.get = {};
 
@@ -254,26 +254,24 @@ const accessibleWorkspacesQuery = async function(user, ids, filterBy, searchBy, 
 
 // currently used to check if users can select, comment, create taggings, or create responses in workspaces
 function canModify(user, ws, recordType, requiredPermissionLevel) {
-  if (!user || !ws) {
-    return false;
+  let workspaceOwnerId = _.propertyOf(ws)(['owner', '_id']);
+  let workspaceCreatorId = _.propertyOf(ws)(['createdBy', '_id']);
+  let userId = _.propertyOf(user)('_id');
+
+  for (let id of ([workspaceOwnerId, workspaceCreatorId, userId])) {
+    if (!isValidMongoId(id)) {
+      return false;
+    }
   }
 
-  if (!isNonEmptyObject(ws.owner) || !isNonEmptyObject(ws.createdBy)) {
-    return false;
-  }
-
-  if (isNil(ws.owner._id) || isNil(ws.createdBy._id)) {
-    return false;
-  }
-
-  const actingRole = user.actingRole;
-
-  const isOwner = areObjectIdsEqual(user._id, ws.owner._id);
-  const isCreator = areObjectIdsEqual(user._id, ws.createdBy._id);
+  const isOwner = areObjectIdsEqual(userId, workspaceOwnerId);
+  const isCreator = areObjectIdsEqual(userId, workspaceCreatorId);
 
   if (isOwner || isCreator) {
     return true;
   }
+
+  const actingRole = user.actingRole;
 
   const isAdmin = user.accountType === 'A';
 
@@ -288,9 +286,12 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
     let pdOrg = user.organization;
     let ownerOrg = ws.owner.organization;
     let creatorOrg = ws.createdBy.organization;
+    let wsOrg = ws.organization;
 
-    if (areObjectIdsEqual(pdOrg, ownerOrg) || areObjectIdsEqual(pdOrg, creatorOrg)) {
-      return true;
+    for (let orgId of [ownerOrg, creatorOrg, wsOrg]) {
+      if (areObjectIdsEqual(pdOrg, orgId)) {
+        return true;
+      }
     }
   }
 
@@ -317,7 +318,18 @@ function canModify(user, ws, recordType, requiredPermissionLevel) {
   }
 
   if (recordType === 'feedback') {
-    return permissionLevel !== 'none';
+    // to determine if user can respond at all
+    if (requiredPermissionLevel === 1) {
+      return permissionLevel !== 'none';
+    }
+    // to determine if user has direct send privileges
+    if (requiredPermissionLevel === 2) {
+      return permissionLevel === 'preAuth' || permissionLevel === 'approver';
+    }
+    // to determine if user can approve feedback
+    if (requiredPermissionLevel === 3) {
+      return permissionLevel === 'approver';
+    }
   }
 
   return false;
