@@ -203,10 +203,13 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
     let mentoredRevisionIds = this.get('yourMentorReplies').map((response) => {
       return this.get('utils').getBelongsToId(response, 'submission');
     }).compact().uniq();
+
+    let latestReplyDate = this.get('yourLatestMentorReply.createDate');
+
    return this.get('sortedRevisions').filter((submission) => {
-      return !mentoredRevisionIds.includes(submission.get('id'));
+      return !mentoredRevisionIds.includes(submission.get('id')) && submission.get('createDate') > latestReplyDate;
    });
- }.property('yourMentorReplies.[]', 'sortedRevisions.[]', 'threadType'),
+ }.property('yourMentorReplies.[]', 'sortedRevisions.@each.createDate', 'threadType', 'yourLatestMentorReply.createDate'),
 
   latestRevision: function() {
     return this.get('sortedRevisions.lastObject');
@@ -288,5 +291,9 @@ Encompass.ResponseThread = DS.Model.extend(Encompass.CurrentUserMixin, {
       return this.get('unmentoredRevisions.lastObject');
     }
   }.property('highestPriorityStatus'),
+
+  yourLatestMentorReply: function() {
+    return this.get('yourMentorReplies').sortBy('createDate').get('lastObject');
+  }.property('yourMentorReplies.@each.createDate'),
 
 });
