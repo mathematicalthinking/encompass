@@ -149,41 +149,55 @@ async function postResponse(req, res, next) {
   }
 }
 
+async function putResponse(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-function putResponse(req, res, next) {
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
 
-  var user = userAuth.requireUser(req);
+    let existingResponse = await models.Response.findById(req.params.id)
+      .populate({path: 'workspace', populate: [
+        { path: 'owner' }, { path: 'createdBy' }
+      ]}).exec();
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-
-  models.Response.findById(req.params.id,
-    function (err, doc) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
+      if (!existingResponse || existingResponse.isTrashed) {
+        return utils.sendResponse(res, null);
       }
+        //TODO permissions check
 
-      //TODO permissions check
+      let { status } = req.body.response;
+
+      let originalStatus = existingResponse.status;
+
+      let isRead = existingResponse.wasReadByRecipient;
+
+      let didStatusChange = status !== originalStatus;
+
+      if (didStatusChange && isRead) {
+        // cannot change status once response has been read
+        let errorMsg = 'A response\'s status cannot be changed once it has been read by its recipient';
+        return utils.sendError.ValidationError(errorMsg, 'status', res);
+      }
 
       for(var field in req.body.response) {
         if((field !== '_id') && (field !== undefined)) {
-          doc[field] = req.body.response[field];
+          existingResponse[field] = req.body.response[field];
         }
       }
 
-      doc.save(function (err, response) {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'response': response};
-        utils.sendResponse(res, data);
-        next();
-      });
-    }
-  );
+      let savedResponse = await existingResponse.save();
+
+      let data = {response: savedResponse};
+      return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error putResponse: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
 }
 
 function getSubmitterThreads(user, limit, skip) {
