@@ -116,7 +116,7 @@ async function postResponse(req, res, next) {
 
     let popWs = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('createdBy').exec();
 
-    if (!wsAccess.canModify(user, popWs, 'feedback')) {
+    if (!wsAccess.canModify(user, popWs, 'feedback', 1)) {
       return utils.sendError.NotAuthorizedError('You are not authorized to create responses for this workspace.', res);
     }
 
