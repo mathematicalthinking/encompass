@@ -1,4 +1,7 @@
 Encompass.ErrorHandlingMixin = Ember.Mixin.create({
+
+  alert: Ember.inject.service('sweet-alert'),
+
   isAdapterError: function(err) {
     if (!err) {
       return;
@@ -71,6 +74,35 @@ Encompass.ErrorHandlingMixin = Ember.Mixin.create({
         this.set(err, null);
       }
     }
+  },
+
+  // extracts first error detail from errors array and uses
+  // sweet-alert to display toast
+  displayErrorToast(err, recordsToRollback) {
+    if (!err) {
+      return;
+    }
+    let msg;
+
+    let errors = err.errors;
+
+    if (Array.isArray(errors) && errors.length > 0) {
+      let firstError = errors[0];
+      if (firstError) {
+        msg = errors[0].detail || 'Unknown Error';
+      }
+    }
+
+    let records = Array.isArray(recordsToRollback) ? recordsToRollback : [recordsToRollback];
+
+    records.forEach((rec) => {
+      if (this.isRecordInvalid(rec)) {
+        rec.rollbackAttributes();
+      }
+    });
+
+    this.get('alert').showToast('error', msg, 'bottom-end', 5000, false, null);
+
   }
 
 });
