@@ -5,6 +5,13 @@ Encompass.BreadCrumbsItemComponent = Ember.Component.extend({
     return _.isEqual(this.get('item'), this.get('selectedItem'));
   }.property('selectedItem'),
 
+  doShowStar: function() {
+    // isStarredItem is function
+    if (this.get('isStarredItem')) {
+      return this.get('isStarredItem')(this.get('item'));
+    }
+  }.property('isStarredItem', 'item'),
+
   titleText: function() {
     if (_.isString(this.get('itemTitleText'))) {
       return this.get('itemTitleText');

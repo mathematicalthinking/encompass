@@ -1,4 +1,7 @@
 Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+
+  utils: Ember.inject.service('utility-methods'),
+
   elementId: 'response-submission-view',
   isShortExpanded: true,
   isLongExpanded: true,
@@ -11,6 +14,8 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
 
   didReceiveAttrs() {
     this._super(...arguments);
+
+    this.set('isStarredItem', this.hasSubmissionBeenMentored.bind(this));
 
     if (this.get('submission.id') !== this.get('currentSubmissionId')) {
       this.set('currentSubmissionId', this.get('submission.id'));
@@ -49,6 +54,21 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   sortedStudentSubmissions: function() {
     return this.get('submissionList').sortBy('createDate');
   }.property('submissionList.[]'),
+
+  yourMentorReplies: function() {
+    let base = this.get('mentorReplies') || [];
+    return base.filter((response) => {
+      return this.get('utils').getBelongsToId(response, 'createdBy') === this.get('currentUser.id');
+    });
+  }.property('mentorReplies.[]', 'currentUser'),
+
+  hasSubmissionBeenMentored(submission) {
+    let responseIds = this.get('utils').getHasManyIds(submission, 'responses');
+
+    return this.get('yourMentorReplies').find((response) => {
+      return responseIds.includes(response.get('id'));
+    });
+  },
 
   actions: {
     openProblem() {

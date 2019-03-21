@@ -1,6 +1,6 @@
 {{#if displaySubmission}}
  <div class="student-submissions">
-      {{bread-crumbs items=sortedStudentSubmissions onSelect=(action "setDisplaySubmission") selectedItem=displaySubmission}}
+      {{bread-crumbs items=sortedStudentSubmissions onSelect=(action "setDisplaySubmission") selectedItem=displaySubmission isStarredItem=isStarredItem}}
   </div>
   <div class="submission-container">
     <div class="workspace-name">
