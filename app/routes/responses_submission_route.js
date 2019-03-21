@@ -18,6 +18,14 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
       this.set('response', null);
     }
   },
+  resolveSubmission(submissionId) {
+    let peeked = this.get('store').peekRecord('submission', submissionId);
+    if (peeked) {
+      return Ember.RSVP.resolve(peeked);
+    }
+    return this.get('store').findRecord('submission', submissionId);
+  },
+
   model(params) {
     if (!params.submission_id) {
       return null;
@@ -25,7 +33,7 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
 
     let allResponses = this.get('store').peekAll('response');
 
-    return this.get('store').findRecord('submission', params.submission_id)
+   return this.resolveSubmission(params.submission_id)
     .then((submission) => {
       let wsIds = submission.hasMany('workspaces').ids();
       let wsId = wsIds.get('firstObject');
