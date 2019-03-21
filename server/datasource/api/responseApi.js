@@ -6,7 +6,6 @@
   */
 
 //REQUIRE MODULES
-const logger   = require('log4js').getLogger('server');
 const _ = require('underscore');
 
 //REQUIRE FILES
@@ -35,28 +34,36 @@ module.exports.put = {};
  function getResponse(req, res, next) {
   let user = userAuth.requireUser(req);
 
-    return models.Response.findById(req.params.id).lean().exec()
+    return models.Response.findById(req.params.id)
+      .populate('createdBy')
+      .populate('recipient')
+      .populate({path: 'workspace', populate: [
+        { path: 'owner' }, { path: 'createdBy' }
+      ]}).exec()
       .then((response) => {
         if (!response || response.isTrashed) {
           return utils.sendResponse(res, null);
         }
 
-        return access.get.response(user, req.params.id)
-          .then((canGet) => {
-            if (!canGet) {
-              return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
-            }
+        let canGet = access.get.response(user, response);
+
+        if (!canGet) {
+          return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
+        }
 
         if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
           // recipient of mentor reply should not see note to approver
           delete response.note;
         }
+        response.depopulate('createdBy');
+        response.depopulate('recipient');
+        response.depopulate('workspace');
+
         return utils.sendResponse(res, {response});
-      });
-  })
-  .catch((err) => {
-    console.error(`Error getResponse: ${err}`);
-    return utils.sendError.InternalError(null, res);
+      })
+    .catch((err) => {
+      console.error(`Error getResponse: ${err}`);
+      return utils.sendError.InternalError(null, res);
   });
 }
 
@@ -180,6 +187,7 @@ async function putResponse(req, res, next) {
         let errorMsg = 'A response\'s status cannot be changed once it has been read by its recipient';
         return utils.sendError.ValidationError(errorMsg, 'status', res);
       }
+      existingResponse.depopulate('workspace');
 
       for(var field in req.body.response) {
         if((field !== '_id') && (field !== undefined)) {
@@ -188,7 +196,6 @@ async function putResponse(req, res, next) {
       }
 
       let savedResponse = await existingResponse.save();
-
       let data = {response: savedResponse};
       return utils.sendResponse(res, data);
 
