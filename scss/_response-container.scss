@@ -65,6 +65,7 @@
   pre {
     word-wrap: break-word;
     font-family: $primary-font;
+    white-space: pre-wrap;
   }
 
   #response-submission-view {
