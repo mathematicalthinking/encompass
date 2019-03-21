@@ -11,6 +11,8 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
 
   setupListeners() {
     const socket = this.get('socket');
+    const utils = this.get('utils');
+
     if (!socket) {
       return;
     }
@@ -92,6 +94,48 @@ Encompass.SocketIoService = Ember.Service.extend(Encompass.CurrentUserMixin, {
           peeked.set('wasSeen', true);
         }
         peeked.save();
+      }
+    });
+
+    socket.on('CLEAR_RECORD', (data) => {
+      if (!utils.isNonEmptyObject(data)) {
+        return;
+      }
+      let { recordIdToClear, recordType } = data;
+
+      if (!utils.isValidMongoId(recordIdToClear) || !utils.isNonEmptyString(recordType)) {
+        return;
+      }
+
+      let peeked = this.get('store').peekRecord(data.recordType, data.recordIdToClear);
+
+      if (!peeked) {
+        return;
+      }
+
+      if (recordType === 'response') {
+        this.get('store').peekAll('response-thread').forEach((thread) => {
+          let responseIds = utils.getHasManyIds(thread, 'responses');
+          let doesContainResponse = responseIds.includes(peeked.get('id'));
+
+          if (doesContainResponse && responseIds.get('length') === 1) {
+            // thread will be empty after unloading record, so trash thread
+            thread.set('isTrashed', true);
+          }
+        });
+      }
+
+      this.get('store').unloadRecord(peeked);
+
+
+    });
+    socket.on('UPDATED_RECORD', (data) => {
+      if (data) {
+        let recordType = data.recordType;
+
+        this.get('store').pushPayload({
+          [recordType]: data.updatedRecord
+        });
       }
     });
   },
