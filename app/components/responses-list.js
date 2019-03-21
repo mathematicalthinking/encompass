@@ -72,8 +72,8 @@ Encompass.ResponsesListComponent = Ember.Component.extend(Encompass.CurrentUserM
     newThreads.forEach((thread) => {
       threads.addObject(thread);
     });
-    return threads;
-  }.property('threads.[]', 'newThreads.[]'),
+    return threads.rejectBy('isTrashed');
+  }.property('threads.@each.isTrashed', 'newThreads.@each.isTrashed'),
 
   mentoringThreads: function() {
     return this.get('allThreads').filterBy('threadType', 'mentor');
