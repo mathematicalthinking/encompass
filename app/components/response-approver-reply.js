@@ -75,7 +75,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     } else {
       return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
     }
-  }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
+  }.property('isOwnMentorReply', 'canApprove', 'showReplyInput', 'isEditingApproverReply'),
 
   showNoActionsMessage: function() {
     return this.get('responseToApprove.status') === 'approved' && !this.get('showUndoApproval');
@@ -208,6 +208,10 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
     return results;
   }.property('displayReply.wasReadByRecipient'),
+
+  showRecipientReadUnread: function() {
+    return !this.get('isDisplayReplyToYou') && this.get('displayReply.status') !== 'draft';
+  }.property('isDisplayReplyToYou', 'displayReply.status'),
 
   actions: {
     composeReply() {

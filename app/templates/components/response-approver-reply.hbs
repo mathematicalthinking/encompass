@@ -88,9 +88,9 @@
       <p>
         <span class="reply-label">To:</span>
         <span class="reply-value recipient">{{displayReply.recipient.username}}</span>
-        {{#unless isDisplayReplyToYou}}
+        {{#if showRecipientReadUnread}}
           <span class="reply-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
-        {{/unless}}
+        {{/if}}
 
       </p>
     </div>
