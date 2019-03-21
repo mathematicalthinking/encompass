@@ -1,9 +1,11 @@
+/* eslint-disable complexity */
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('underscore');
 const ObjectId = Schema.ObjectId;
 
 const models = require('../schemas');
+const sockets = require('../../socketInit');
 
 const { isValidMongoId } = require('../../utils/mongoose');
 
@@ -34,6 +36,7 @@ var ResponseSchema = new Schema({
     reviewedResponse: {type: ObjectId, ref: 'Response'}, // mentor reply that was source of approver reply
     note: {type: String },
     approvedBy: { type: ObjectId, ref: 'User' },
+    unapprovedBy: { type: ObjectId, ref: 'User' },
     wasReadByRecipient: { type: Boolean, default: false },
     wasReadByApprover: { type: Boolean, default: false },
     isApproverNoteOnly: { type: Boolean, default: false },
@@ -42,6 +45,8 @@ var ResponseSchema = new Schema({
     isNewPending: { type: Boolean, default: false },
     isNewlyNeedsRevisions: { type: Boolean, default: false },
     isNewlySuperceded: { type: Boolean, default: false},
+    isNewlyRead: { type: Boolean, default: false},
+    wasUnapproved: {type: Boolean, default: false},
     powsRecipient: { type: String },
   }, {versionKey: false});
 
@@ -68,9 +73,15 @@ ResponseSchema.pre('save', function (next) {
     let isNew = this.isNew;
     let modifiedFields = this.modifiedPaths();
 
+    let isApproved = this.status === 'approved';
+
+    if (isApproved && isValidMongoId(this.unapprovedBy)) {
+      this.unapprovedBy = null;
+    }
     let didStatusChange = modifiedFields.includes('status');
 
-    let isNewApproved = this.isNew && this.status === 'approved';
+    let isNewlyRead = !isNew && (modifiedFields.includes('wasReadByRecipient') && this.wasReadByRecipient);
+    let isNewApproved = this.isNew && isApproved;
     let isNewPending = this.isNew && this.status === 'pendingApproval';
 
     // for when a draft is saved
@@ -81,15 +92,22 @@ ResponseSchema.pre('save', function (next) {
     let wasApproved = isValidMongoId(this.approvedBy);
 
     // not newly approved if user saved one of their drafts
-    let isNewlyApproved = !isNew && (this.status === 'approved' && didStatusChange && wasApproved);
+    let isNewlyApproved = !isNew && (isApproved && didStatusChange && wasApproved);
 
     let isNewlySuperceded = !isNew && this.status === 'superceded' && didStatusChange;
+
+    // when a response is unapproved, approvedBy is set to null && unapprovedBy is set
+    let didUnapprovedByChange = modifiedFields.includes('unapprovedBy');
+    let wasUnapproved = didUnapprovedByChange && isValidMongoId(this.unapprovedBy) && didStatusChange && !isApproved;
+
     // send ntf to recipient after save
     this.isNewApproved = isNewApproved;
     this.isNewlyApproved = isNewlyApproved;
-    this.isNewPending = isNewPending || statusChangedToPending;
+    this.isNewPending = isNewPending || ( statusChangedToPending && !wasUnapproved);
     this.isNewlyNeedsRevisions = isNewlyNeedsRevisions;
     this.isNewlySuperceded = isNewlySuperceded;
+    this.isNewlyRead = isNewlyRead;
+    this.wasUnapproved = wasUnapproved;
 
     next();
   }
@@ -109,7 +127,6 @@ ResponseSchema.post('save', function (response) {
     /* + If deleted, all references are also deleted */
     update = { $pull: { 'responses': responseIdObj } };
   }
-
   if(response.workspace){
     mongoose.models.Workspace.update({'_id': response.workspace},
       update,
@@ -229,7 +246,7 @@ ResponseSchema.post('save', function (response) {
     }
   }
 
-  if (response.isNewlySuperceded || response.isTrashed) {
+  if (response.isNewlySuperceded || response.isTrashed || response.isNewlyRead || response.wasUnapproved) {
     // clear any notification relevant to this response
     models.Notification.find({
       primaryRecordType: 'response',
@@ -240,9 +257,53 @@ ResponseSchema.post('save', function (response) {
       .then((ntfs) => {
         ntfs.forEach((ntf) => {
           ntf.isTrashed = true;
+          if (response.isNewlyRead) {
+            ntf.wasSeen = true;
+          }
           ntf.save();
         });
       });
+
+      if (response.wasUnapproved) {
+        // emit CLEAR_RECORD event to recipient
+        models.User.findById(response.recipient).exec()
+          .then((recipient) => {
+            if (recipient) {
+              let socketId = recipient.socketId;
+              if (socketId) {
+                let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+                if (socket) {
+
+                  let data = {
+                    recordIdToClear: response._id,
+                    recordType: 'response'
+                  };
+                  socket.emit('CLEAR_RECORD', data);
+                }
+              }
+            }
+
+          });
+
+          // emit UPDATED_RECORD event to creator of response
+          models.User.findById(response.createdBy).exec()
+            .then((creator) => {
+              if (creator) {
+                let socketId = creator.socketId;
+                if (socketId) {
+                  let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+                  if (socket) {
+                    let data = {
+                      updatedRecord: response,
+                      recordType: 'response'
+                    };
+                    socket.emit('UPDATED_RECORD', data);
+                  }
+                }
+              }
+
+            });
+      }
   }
 
 });
