@@ -23,6 +23,7 @@ const answerAccess = require('../../middleware/access/answers');
 const accessUtils = require('../../middleware/access/utils');
 const importApi = require('./importApi');
 const apiUtils = require('./utils');
+const responseAccess = require('../../middleware/access/responses');
 
 const objectUtils = require('../../utils/objects');
 const stringUtils = require('../../utils/strings');
@@ -483,23 +484,20 @@ async function sendWorkspace(req, res, next) {
   try {
     let user = userAuth.requireUser(req);
 
-    let [ ws, accessibleResponseIds] = await Promise.all([models.Workspace.findById(req.params.id)
+    let ws = await models.Workspace.findById(req.params.id)
       .populate('owner')
       .populate('createdBy')
       .populate('selections')
-      .populate('submissions')
+      .populate({path: 'submissions', populate: {path: 'answer', select: 'createdBy', populate: {path: 'createdBy'}}})
       .populate('folders')
       .populate('taggings')
-      .populate('responses')
+      .populate({ path: 'responses', populate: [ {path: 'recipient'}, {path: 'createdBy'}]})
       .populate('comments')
-      .lean().exec(),
-      accessUtils.getAccessibleResponseIds(user, null, req.params.id)]);
-
+      .lean().exec();
 
       if (isNil(ws) || ws.isTrashed) {
         return utils.sendResponse(res, null);
       }
-
       let isBasicStudentAccess = false;
       let isLinkedAssignmentTeacher = false;
 
@@ -549,9 +547,7 @@ async function sendWorkspace(req, res, next) {
 
       if (Array.isArray(ws.responses)) {
         ws.responses = ws.responses.filter((response) => {
-          return _.find(accessibleResponseIds, (accId) => {
-            return areObjectIdsEqual(response._id, accId);
-          });
+          return responseAccess.get.response(user, response, ws);
         });
       }
 
@@ -586,6 +582,16 @@ async function sendWorkspace(req, res, next) {
   //      'workspace': {},
   //      'createdBy': {}
       };
+      let submissionUsers = {};
+
+      ws.submissions.forEach((sub) => {
+        let user = _.propertyOf(sub)(['answer', 'createdBy']);
+        if (isNonEmptyObject(user) && user.username !== 'old_pows_user' && !submissionUsers[user._id]) {
+         submissionUsers[user._id] = user;
+        }
+      });
+
+      data.user = Object.values(submissionUsers);
 
       //this would probably be better done as an aggregate?
       //we're just massaging the data into an ember friendly format for side-loading
@@ -593,6 +599,22 @@ async function sendWorkspace(req, res, next) {
         if(ws[key]){ //array
           var idBag = [];
           ws[key].forEach(function(item){
+            if (key === 'submissions') {
+              // depopulate answer
+              if (item.answer) {
+                item.answer = item.answer._id;
+              }
+            }
+
+            if (key === 'responses') {
+              // depopulate response
+              if (item.recipient) {
+                item.recipient = item.recipient._id;
+              }
+              if (item.createdBy) {
+                item.createdBy = item.createdBy._id;
+              }
+            }
             relatedData[key].push(item);//[ws[key]._id] = comment[key];
             idBag.push(item._id);
           });
@@ -2939,7 +2961,6 @@ async function addAnswerToWorkspace(user, answer) {
     let obj = submissionJSON[0];
     obj.createDate = Date.now();
 
-    console.log('sub obj updateWorkspace', obj);
     let creatorId;
 
     let encUserId = _.propertyOf(obj)(['creator', 'studentId']);
@@ -2952,7 +2973,6 @@ async function addAnswerToWorkspace(user, answer) {
     } else {
       creatorId = user._id;
     }
-    console.log('creatorId', creatorId);
     obj.createdBy = creatorId;
     // obj.createdBy = user._id;
 

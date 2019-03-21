@@ -119,7 +119,8 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
   }
 };
 
-const canGetResponse = function(user, response) {
+// popWs is passed in when this function is called from workspace api
+const canGetResponse = function(user, response, popWs) {
   try {
     if (!isNonEmptyObject(user) || !isNonEmptyObject(response)) {
       return false;
@@ -186,7 +187,9 @@ const canGetResponse = function(user, response) {
 
     // check if user has approver permissions for workspace
 
-   return wsAccess.canModify(user, workspace, 'feedback', 3);
+    let workspaceArg = popWs ? popWs : workspace;
+
+   return wsAccess.canModify(user, workspaceArg, 'feedback', 3);
 
   } catch(err) {
     console.error(`Error canGetResponse: ${err}`);
