@@ -62,7 +62,7 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
 
     if (isValidMongoId(workspace)) {
       filter.$and.push({workspace});
-      workspaceFilter.workspace = workspace;
+      workspaceFilter._id = workspace;
     }
     let isAdmin = accountType === 'A' && !isStudent && !isAdminActingPd;
 
