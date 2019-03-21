@@ -175,6 +175,25 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
   }.property('displayResponse.text'),
 
+  recipientReadUnreadIcon: function() {
+    let results = {};
+    if (this.get('displayResponse.wasReadByRecipient')) {
+      results.className = 'far fa-envelope-open';
+      results.title = 'Recipient has seen message';
+    } else {
+      results.className = 'far fa-envelope';
+      results.title = 'Recipient has not seen message';
+    }
+    return results;
+  }.property('displayResponse.wasReadByRecipient'),
+
+  showRecipientReadUnread: function() {
+    let status = this.get('displayResponse.status');
+
+    return status === 'approved' && !this.get('isMentorRecipient');
+  }.property('isMentorRecipient', 'displayResponse.status'),
+
+
   actions: {
     onSaveSuccess(submission, response) {
       this.get('onSaveSuccess')(submission, response);
