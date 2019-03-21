@@ -26,6 +26,15 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
     return this.get('store').findRecord('submission', submissionId);
   },
 
+  resolveWorkspace(workspaceId) {
+    let peeked = this.get('store').peekRecord('workspace', workspaceId);
+    if (peeked) {
+      return Ember.RSVP.resolve(peeked);
+    }
+    return this.get('store').findRecord('workspace', workspaceId);
+
+  },
+
   model(params) {
     if (!params.submission_id) {
       return null;
@@ -39,7 +48,7 @@ Encompass.ResponsesSubmissionRoute = Encompass.AuthenticatedRoute.extend({
       let wsId = wsIds.get('firstObject');
       return Ember.RSVP.hash({
         submission,
-        workspace: this.get('store').findRecord('workspace', wsId),
+        workspace: this.resolveWorkspace(wsId),
       });
     })
     .then((hash) => {
