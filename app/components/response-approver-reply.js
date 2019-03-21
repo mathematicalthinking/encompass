@@ -3,8 +3,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
 
-  showNoActionsMessage: Ember.computed.equal('responseToApprove.status', 'approved'),
-
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
   quillEditorId: 'approver-editor',
@@ -22,9 +20,32 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     if (!this.get('approverReplies.length') > 0 ) {
       this.set('replyToView', null);
     }
-    this.set('replyToView', this.get('primaryReply') || null);
+    let primaryReply = this.get('primaryReply');
+
+    let responseToSet;
+
+    if (primaryReply) {
+      responseToSet = primaryReply;
+    } else if (this.get('sortedApproverReplies.lastObject')) {
+      responseToSet = this.get('sortedApproverReplies.lastObject');
+    } else {
+      responseToSet = null;
+    }
+    if (responseToSet) {
+      this.handleRecipientRead(responseToSet);
+    }
+
+    this.set('replyToView', responseToSet);
 
     this._super(...arguments);
+  },
+
+  handleRecipientRead(response) {
+    let recipId = this.get('utils').getBelongsToId(response, 'recipient');
+    if (recipId === this.get('currentUser.id') && !response.get('wasReadByRecipient')) {
+        response.set('wasReadByRecipient', true);
+        response.save();
+    }
   },
 
   displayReply: function() {
@@ -34,20 +55,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
-
-  checkReplyNtf: function() {
-    if (!this.get('displayReply')) {
-      return;
-    }
-    let relatedNtfs = this.findRelatedNtfs('response', this.get('displayReply'));
-    relatedNtfs.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-    });
-
-  }.observes('displayReply'),
 
   isDraft: function() {
     return this.get('displayReply.status') === 'draft';
@@ -111,6 +118,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   isOwnDisplayReply: function() {
     return this.get('currentUser.id') === this.get('displayReply.createdBy.id');
   }.property('currentUser', 'displayReply'),
+
+  isDisplayReplyToYou: function() {
+    let recipientId = this.get('utils').getBelongsToId(this.get('displayReply'), 'recipient');
+    return this.get('currentUser.id') === recipientId;
+  }.property('currentUser', 'displayReply.recipient'),
 
   showReplyInput: function() {
     return this.get('isEditingApproverReply') || this.get('isRevisingApproverReply') || this.get('isComposingReply') || this.get('isFinishingDraft');
@@ -184,6 +196,18 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     let parsed = new DOMParser().parseFromString(text, 'text/html');
     return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
   }.property('displayReply.text'),
+
+  recipientReadUnreadIcon: function() {
+    let results = {};
+    if (this.get('displayReply.wasReadByRecipient')) {
+      results.className = 'far fa-envelope-open';
+      results.title = 'Recipient has seen message';
+    } else {
+      results.className = 'far fa-envelope';
+      results.title = 'Recipient has not seen message';
+    }
+    return results;
+  }.property('displayReply.wasReadByRecipient'),
 
   actions: {
     composeReply() {
@@ -301,6 +325,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.set(prop, false);
         }
       });
+      this.handleRecipientRead(response);
 
       this.set('replyToView', response);
     },
