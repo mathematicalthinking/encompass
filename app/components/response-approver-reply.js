@@ -70,6 +70,10 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     }
   }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
 
+  showNoActionsMessage: function() {
+    return this.get('responseToApprove.status') === 'approved' && !this.get('showUndoApproval');
+  }.property('responseToApprove.status', 'showUndoApproval'),
+
   showApprove: function() {
     return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
@@ -78,9 +82,9 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
 
-  showEdit: function() {
-    return this.get('responseToApprove.status') === 'pendingApproval';
-  }.property('responseToApprove.status'),
+  showUndoApproval: function() {
+    return this.get('responseToApprove.status') === 'approved' && !this.get('responseToApprove.wasReadByRecipient');
+  }.property('responseToApprove.status', 'responseToApprove.wasReadByRecipient'),
 
   canEditApproverReply: function() {
     if (!this.get('displayReply')) {
@@ -540,6 +544,26 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('quillText', content);
       this.set('isQuillEmpty', isEmpty);
       this.set('isQuillTooLong', isOverLengthLimit);
+    },
+    undoApproval() {
+      this.get('alert').showModal('question', 'Are you sure you want to unapprove this mentor reply?', 'The new status will be "Pending Approval"', 'Unapprove')
+      .then((result) => {
+        if (result.value) {
+          this.get('responseToApprove').set('status', 'pendingApproval');
+          this.get('responseToApprove').set('approvedBy', null);
+          this.get('responseToApprove').set('unapprovedBy', this.get('currentUser'));
+
+          return this.get('responseToApprove').save();
+        }
+      })
+      .then((saved) => {
+        if (saved) {
+          this.get('alert').showToast('success', 'Feedback Unapproved', 'bottom-end', 3000, false, null);
+        }
+      })
+      .catch((err) => {
+        this.displayErrorToast(err, this.get('responseToApprove'));
+      });
     }
   }
 
