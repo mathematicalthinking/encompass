@@ -15,8 +15,6 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set('isStarredItem', this.hasSubmissionBeenMentored.bind(this));
-
     if (this.get('submission.id') !== this.get('currentSubmissionId')) {
       this.set('currentSubmissionId', this.get('submission.id'));
       this.set('isRevising', false);
@@ -55,20 +53,17 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
     return this.get('submissionList').sortBy('createDate');
   }.property('submissionList.[]'),
 
-  yourMentorReplies: function() {
-    let base = this.get('mentorReplies') || [];
-    return base.filter((response) => {
-      return this.get('utils').getBelongsToId(response, 'createdBy') === this.get('currentUser.id');
-    });
-  }.property('mentorReplies.[]', 'currentUser'),
+  mentoredRevisions: function() {
+    return this.get('submissionList').filter((sub) => {
+      let responseIds = this.get('utils').getHasManyIds(sub, 'responses');
 
-  hasSubmissionBeenMentored(submission) {
-    let responseIds = this.get('utils').getHasManyIds(submission, 'responses');
-
-    return this.get('yourMentorReplies').find((response) => {
-      return responseIds.includes(response.get('id'));
+      return this.get('wsResponses').find((response) => {
+        return responseIds.includes(response.get('id'));
+      });
     });
-  },
+  }.property('wsResponses.[]', 'submissionList.[]'),
+
+  revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
   actions: {
     openProblem() {
