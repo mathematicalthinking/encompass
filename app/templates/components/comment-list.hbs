@@ -29,8 +29,10 @@
         {{#if doSearch}}+{{/if}}
         {{#if searching}}...{{/if}}
         </span>
-        <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
-        <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
+        {{#if onSelection}}
+          <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
+          <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
+        {{/if}}
       {{/if}}
 		</div>
 	</form>
