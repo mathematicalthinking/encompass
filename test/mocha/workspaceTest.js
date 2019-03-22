@@ -5,10 +5,12 @@ const chaiHttp = require('chai-http');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const userFixtures = require('./userFixtures');
+const _ = require('underscore');
 
 const expect = chai.expect;
 const host = helpers.host;
 const baseUrl = "/api/workspaces/";
+
 
 chai.use(chaiHttp);
 
@@ -87,6 +89,16 @@ describe('Workspace CRUD operations by account type', async function() {
           arraysToCheck.forEach((prop) => {
             expect(res.body.workspace[prop]).to.have.members(accessibleWorkspace[prop]);
           });
+
+          let sideSubmissions = res.body.submission;
+
+          let sideResponses = _.chain(sideSubmissions)
+            .map(s => s.responses)
+            .flatten()
+            .uniq()
+            .value();
+          expect(sideResponses).to.have.members(accessibleWorkspace.responses);
+
           done();
         });
       });

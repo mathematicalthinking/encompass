@@ -545,6 +545,7 @@ async function sendWorkspace(req, res, next) {
         }
       });
 
+      // filter out inaccessible responses from workspace
       if (Array.isArray(ws.responses)) {
         ws.responses = ws.responses.filter((response) => {
           return responseAccess.get.response(user, response, ws);
@@ -589,6 +590,15 @@ async function sendWorkspace(req, res, next) {
         if (isNonEmptyObject(user) && user.username !== 'old_pows_user' && !submissionUsers[user._id]) {
          submissionUsers[user._id] = user;
         }
+
+         // filter out inaccessible responses from workspace submissions
+         // sub.responses is array of object ids
+        let responses = sub.responses || [];
+        sub.responses = responses.filter((response) => {
+          return _.find(ws.responses, (wsResponse) => {
+            return areObjectIdsEqual(response, wsResponse._id);
+          });
+        });
       });
 
       data.user = Object.values(submissionUsers);
