@@ -34,7 +34,15 @@
     </div>
   </div>
 
-  {{bread-crumbs items=currentRevisions onSelect=(action "setCurrentSubmission") selectedItem=currentRevision titleTextPath="label"}}
+  {{bread-crumbs
+    items=currentRevisions
+    onSelect=(action "setCurrentSubmission")
+    selectedItem=currentRevision
+    titleTextPath="label"
+    starredItems=mentoredRevisions
+    infoToolTipText=revisionsToolTip
+    infoToolTipPosition="right"
+  }}
 
 	<div class="al_controller">
 		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
