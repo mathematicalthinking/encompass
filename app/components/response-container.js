@@ -259,6 +259,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   },
 
+  cleanWorkspaceResponses: function() {
+    return this.get('cleanStoreResponses').filter((response) => {
+      return this.get('utils').getBelongsToId(response, 'workspace') === this.get('workspace.id');
+    });
+  }.property('cleanStoreResponses.[]'),
   actions: {
     onSaveSuccess(submission, response) {
       let responseId = !response ? null : response.get('id');
