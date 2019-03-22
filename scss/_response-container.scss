@@ -23,6 +23,9 @@
   .pf-response-text {
     margin-left: 25px;
   }
+  i.far.fa-envelope, i.far.fa-envelope-open, i.fas.fa-user {
+    cursor: default;
+  }
 }
 .response-flex-item {
   background-color: white;

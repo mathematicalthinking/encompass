@@ -30,5 +30,8 @@
   span.info-text-tip {
     margin-right: 2px;
     top: -2px;
+    i {
+      cursor: default;
+    }
   }
 }
