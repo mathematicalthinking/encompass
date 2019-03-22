@@ -3,6 +3,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
   elementId: 'response-new',
 
   utils: Ember.inject.service('utility-methods'),
+  loading: Ember.inject.service('loading-display'),
 
   isEditing: false,
   isCreating: false,
@@ -310,13 +311,19 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
         note: this.get('replyNote')
       });
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       response.save()
         .then((savedResponse) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
           this.get('handleResponseThread')(savedResponse, 'mentor');
           this.get('onSaveSuccess')(this.get('submission'), savedResponse);
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.handleErrors(err, 'recordSaveErrors', response);
         });
       },

@@ -2,6 +2,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
   elementId: 'response-mentor-reply',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
+  loading: Ember.inject.service('loading-display'),
 
   isRevising: false,
   isFinishingDraft: false,
@@ -262,13 +263,19 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       if (doSetSuperceded) {
         hash.priorRevision = this.get('priorMentorRevision').save();
       }
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       Ember.RSVP.hash(hash)
         .then((hash) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
           this.set('isFinishingDraft', false);
           this.set('editRevisionText', '');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.handleErrors(err, 'saveRecordErrors', this.get('displayResponse'));
         });
     },
@@ -299,13 +306,19 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
       this.get('displayResponse').set('text', newText);
       this.get('displayResponse').set('note', newNote);
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       this.get('displayResponse').save()
         .then((saved) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', 'Response Updated', 'bottom-end', 3000, false, null);
           this.set('isEditing', false);
           this.set('editRevisionText', '');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.handleErrors(err, 'saveRecordErrors');
         });
     },
@@ -386,8 +399,12 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
           };
         }
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       Ember.RSVP.hash(hash)
         .then((hash) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
           this.set('isRevising', false);
           this.set('editRevisionText', '');
@@ -397,6 +414,8 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
           this.get('handleResponseThread')(hash.revision, 'mentor');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.handleErrors(err, 'saveRecordErrors', null, [revision, this.get('displayResponse')]);
         });
     },

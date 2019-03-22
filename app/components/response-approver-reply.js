@@ -2,6 +2,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   elementId: 'response-approver-reply',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
+  loading: Ember.inject.service('loading-display'),
 
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
@@ -306,8 +307,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         }
         hash.updatedReply = this.get('responseToApprove').save();
       }
+
+    this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
     return Ember.RSVP.hash(hash)
     .then((hash) => {
+      this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
       if (!hash) {
         return;
       }
@@ -319,6 +323,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('handleResponseThread')(hash.newReply, 'approver');
     })
     .catch((err) => {
+      this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
       this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('responseToApprove')]);
     });
   },
@@ -442,14 +447,18 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       if (!isDraft && responseToUpdate) {
         hash.updatedResponse = responseToUpdate.save();
       }
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
 
     Ember.RSVP.hash(hash)
       .then((hash) => {
+        this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
         this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
         this.set('isFinishingDraft', false);
         this.set('editRevisionText', '');
       })
       .catch((err) => {
+         this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
         this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
       });
     },
@@ -481,13 +490,17 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('displayReply').set('text', newText);
       this.get('displayReply').set('note', newNote);
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       this.get('displayReply').save()
         .then((saved) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.get('alert').showToast('success', 'Response Updated', 'bottom-end', 3000, false, null);
           this.set('isEditingApproverReply', false);
           this.set('editRevisionText', '');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
         });
     },
@@ -536,8 +549,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       revision.set('recipient', this.get('displayReply.recipient.content'));
       revision.set('reviewedResponse', this.get('reviewedResponses') || this.get('responseToApprove'));
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
       revision.save()
         .then((saved) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
           this.set('isRevisingApproverReply', false);
           this.set('editRevisionText', '');
@@ -545,6 +561,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.get('handleResponseThread')(saved, 'approver');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.handleErrors(err, 'saveRecordErrors', revision);
         });
     },

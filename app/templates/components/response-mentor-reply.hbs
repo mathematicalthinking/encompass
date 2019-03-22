@@ -105,6 +105,9 @@
     {{/if}}
   </div>
 
+  {{#if doShowLoadingMessage}}
+    {{loading-elem}}
+  {{/if}}
   {{#if isComposing}}
     <div class="submit-buttons button-row">
       {{#if isEditing}}
