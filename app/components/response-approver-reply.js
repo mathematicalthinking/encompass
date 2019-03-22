@@ -213,6 +213,8 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     return !this.get('isDisplayReplyToYou') && this.get('displayReply.status') !== 'draft';
   }.property('isDisplayReplyToYou', 'displayReply.status'),
 
+  revisionsToolTip: 'Replies are sorted from oldest to newest, left to right.',
+
   actions: {
     composeReply() {
       this.set('isComposingReply', true);

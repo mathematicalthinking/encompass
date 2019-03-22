@@ -15,7 +15,13 @@
 {{else}}
   {{#if sortedMentorReplies}}
     <div class="mentor-replies">
-      {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+      {{bread-crumbs
+        items=sortedMentorReplies
+        onSelect=(action "setDisplayMentorReply")
+        titleTextPath="shortText"
+        selectedItem=displayResponse
+        infoToolTipText=revisionsToolTip
+      }}
     </div>
         <div class="response-info">
       {{#if displayResponse}}

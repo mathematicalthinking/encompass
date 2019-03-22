@@ -76,8 +76,13 @@
         <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
       </p>
       {{#if sortedApproverReplies}}
-        {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText"
-      selectedItem=displayReply}}
+        {{bread-crumbs
+          items=sortedApproverReplies
+          onSelect=(action "setReplyToView")
+          titleTextPath="shortText"
+          selectedItem=displayReply
+          infoToolTipText=revisionsToolTip
+          }}
       {{/if}}
     </div>
     <div class="reply-users">

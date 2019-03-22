@@ -193,6 +193,7 @@ Encompass.ResponseMentorReplyComponent = Ember.Component.extend(Encompass.Curren
     return status === 'approved' && !this.get('isMentorRecipient');
   }.property('isMentorRecipient', 'displayResponse.status'),
 
+  revisionsToolTip: 'Replies are sorted from oldest to newest, left to right.',
 
   actions: {
     onSaveSuccess(submission, response) {
