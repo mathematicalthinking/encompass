@@ -17,5 +17,7 @@ Encompass.Selection = DS.Model.extend(Encompass.Auditable, {
       '/selections/' + this.get('id');
     //https://github.com/emberjs/ember.js/pull/4718
     //ENC-526
-  }.property('workspace', 'submission', 'id')
+  }.property('workspace', 'submission', 'id'),
+  imageSrc: DS.attr('string'),
+  imageTagLink: DS.attr('string'),
 });

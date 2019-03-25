@@ -30,7 +30,9 @@ var SelectionSchema = new Schema({
     relativeSize: {
       widthPct: Number,
       heightPct: Number
-    }
+    },
+    imageTagLink: { type: String }, // for image-tag selections; link to image
+    imageSrc: { type: String}, // either base-64 for old images, or link to image record
   }, {versionKey: false});
 
 

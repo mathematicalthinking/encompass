@@ -7,6 +7,7 @@
 
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
+const sharp = require('sharp');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -14,6 +15,8 @@ const userAuth = require('../../middleware/userAuth');
 const models   = require('../schemas');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access = require('../../middleware/access/selections');
+
+const { isValidMongoId } = require('../../utils/mongoose');
 
 
 module.exports.get = {};
@@ -102,6 +105,55 @@ async function getSelection(req, res, next) {
   }
 }
 
+function getImageData(src) {
+  if (typeof src !== 'string') {
+    return;
+  }
+
+  let first30Chars = typeof src === 'string' ? src.slice(0,29) : '';
+
+  let target = 'base64,';
+  let targetIndex = first30Chars.indexOf(target);
+
+  // src was base64 image data so just return that
+  if (targetIndex !== -1) {
+    let dataStartIndex = targetIndex + target.length;
+    // does not include last char which is closing quote
+    let imageDataStr = src.slice(dataStartIndex);
+
+    // let dataFormatStartIndex = first30Chars.indexOf('data:');
+    // let imageDataStrWithFormat = src.slice(dataFormatStartIndex);
+    return imageDataStr;
+  }
+
+  // /api/images/file/IMAGE_ID
+
+  let lastSlashIx = src.lastIndexOf('/');
+
+  if (lastSlashIx === -1) {
+    return;
+  }
+
+  let imageId = src.slice(lastSlashIx + 1);
+
+  if (!isValidMongoId(imageId)) {
+    return;
+  }
+
+  return models.Image.findById(imageId).lean().exec()
+    .then((image) => {
+      if (image) {
+        let imageData = image.imageData;
+        let target = 'base64,';
+        let targetIx = imageData.indexOf(target);
+        if (targetIx !== -1) {
+          return imageData.slice(targetIx + target.length);
+        }
+      }
+    });
+
+}
+
 /**
   * @public
   * @method postSelection
@@ -110,35 +162,92 @@ async function getSelection(req, res, next) {
   * @throws {InternalError} Data retrieval failed
   * @throws {RestError} Something? went wrong
   */
-function postSelection(req, res, next) {
+async function postSelection(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
+    let workspaceId = req.body.selection.workspace;
 
-  var user = userAuth.requireUser(req);
-  var workspaceId = req.body.selection.workspace;
+    let ws = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').lean().exec();
 
-  models.Workspace.findById(workspaceId).lean().populate('owner').populate('editors').populate('createdBy').exec(function(err, ws){
-    if (err) {
-      logger.error(err);
-      return utils.sendError.InternalError(err, res);
+    if (!wsAccess.canModify(user, ws, 'selections', 2)) {
+      return utils.sendError.NotAuthorizedError('You don\'t have permission for this workspace', res);
     }
-    if (wsAccess.canModify(user, ws, 'selections', 2)) {
-      var selection = new models.Selection(req.body.selection);
-      selection.createdBy = user;
-      selection.createDate = Date.now();
 
-      selection.save(function(err, doc) {
-        if(err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
+    let selection = new models.Selection(req.body.selection);
 
-        var data = {'selection': doc};
-        utils.sendResponse(res, data);
-      });
-    } else {
-      logger.info("permission denied");
-      res.send(403, "You don't have permission for this workspace");
+    selection.createdBy = user;
+    selection.createDate = Date.now();
+
+
+    let coordinates = selection.coordinates;
+    let splitCoords = coordinates.split(' ');
+
+    let selectionType = splitCoords.length === 5 ? 'image' : 'text';
+
+    if (selectionType === 'image') {
+      // crop image based on selection and create thumbnail
+      let imageSrc = selection.imageSrc;
+
+      let imageData = await getImageData(imageSrc);
+      console.log('imageSrc selection api', imageData.slice(0,100));
+
+      if (imageData) {
+        let bytes = Buffer.from(imageData, 'base64');
+
+        let sharpInstance = sharp(bytes);
+
+        let sharpMetadata = await sharpInstance.metadata();
+
+        let { width, height } = sharpMetadata;
+
+        let { relativeSize, relativeCoords } = selection;
+
+        let croppedLeft = Math.floor(relativeCoords.tagLeftPct * width);
+        let croppedTop = Math.floor(relativeCoords.tagTopPct * height);
+
+        let croppedWidth = Math.floor(relativeSize.widthPct * width);
+        let croppedHeight = Math.floor(relativeSize.heightPct * height);
+
+        let extraction = await sharp(bytes)
+          .extract({left: croppedLeft, top: croppedTop, width: croppedWidth, height: croppedHeight })
+          .toBuffer();
+
+        let newMetadata = await sharp(extraction).metadata();
+        console.log('new tag metadata', newMetadata);
+        let croppedImageData = extraction.toString('base64');
+
+        let croppedImage = new models.Image({
+          size: newMetadata.size,
+          width: newMetadata.width,
+          height: newMetadata.height,
+          mimetype: `image/${newMetadata.format}`,
+          imageData: `data:image/${newMetadata.format};base64,${croppedImageData}`,
+          createdBy: user,
+          createDate: Date.now()
+        });
+
+        await croppedImage.save();
+
+        let url = `/api/images/file/${croppedImage._id}`;
+
+        selection.imageTagLink = url;
+      }
+
     }
-  });
+
+    let savedSelection = await selection.save();
+
+    let data = {'selection': savedSelection};
+
+    return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error postSelection: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(err, res);
+
+  }
+
 }
 
 /**

@@ -1634,6 +1634,7 @@ NoteInput = function() {
     let imageWidth = parseInt(image.width, 10);
     let imageHeight = parseInt(image.height, 10);
 
+    let imageSrc = image.getAttribute('src');
 
     // Center the tag around the mouse
     tagWidth = _styleAsInt(selection, 'width');
@@ -1656,7 +1657,8 @@ NoteInput = function() {
         relativeSize: { widthPct, heightPct },
         note: 'Click here to add text',
         comments: [],
-        isDirty: true
+        isDirty: true,
+        imageSrc,
       };
     _tags[id] = newTag;
     tagging.editTag(id);
