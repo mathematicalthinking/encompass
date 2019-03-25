@@ -41,7 +41,7 @@ Encompass.BreadCrumbsComponent = Ember.Component.extend({
   }.property('infoToolTipText'),
 
   toolTipClassNames: function() {
-    let position = this.get('infoToolTipPosition') || 'left';
+    let position = this.get('infoToolTipPosition') || 'bottom';
     return `info-text-tip simptip-position-${position} simptip-multiline simptip-smooth`;
   }.property('infoToolTipPosition'),
 

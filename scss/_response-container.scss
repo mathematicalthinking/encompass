@@ -46,6 +46,9 @@
     &.third {
       @include flex-item(1, flex-start, 1 1 auto);
       width: 20%;
+      .simptip-position-bottom:after {
+        max-width: 150px;
+      }
     }
   }
   .response-flex-item.mentor {
@@ -54,12 +57,18 @@
     &.third {
       @include flex-item(2, flex-start, 1 1 auto);
       width: 20%;
+      .simptip-position-bottom:after {
+        max-width: 150px;
+      }
     }
 
   }
   .response-flex-item.approver.third {
     @include flex-item(3, flex-start, 1 1 auto);
     width: 20%;
+    .simptip-position-bottom:after {
+      max-width: 150px;
+    }
   }
 
   .cancel-button {
