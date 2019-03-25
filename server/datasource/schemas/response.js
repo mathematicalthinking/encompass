@@ -116,6 +116,46 @@ ResponseSchema.pre('save', function (next) {
   }
 });
 
+// emit event to creator of response and approvedBy if exits
+async function emitResponseReadEvent(response) {
+  if (!response) {
+    return;
+  }
+
+  let userIds = [];
+
+  if (isValidMongoId(response.createdBy)) {
+      userIds.push(response.createdBy);
+  }
+
+  if (isValidMongoId(response.approvedBy)) {
+    userIds.push(response.approvedBy);
+  }
+
+  if (userIds.length === 0) {
+    return;
+  }
+
+  let users = await models.User.find({_id: {$in: userIds}, isTrashed: false}, {socketId: 1}).lean().exec();
+
+  users.forEach((user) => {
+    let socketId = user.socketId;
+
+    if (socketId) {
+      let socket = _.propertyOf(sockets)(['io', 'sockets', 'sockets', socketId]);
+
+      if (socket) {
+        let data = {
+          updatedRecord: response,
+          recordType: 'response'
+        };
+        socket.emit('UPDATED_RECORD', data);
+      }
+    }
+  });
+
+}
+
 /**
   * ## Post-Validation
   * After saving we must ensure (synchonously) that:
@@ -246,7 +286,12 @@ ResponseSchema.post('save', function (response) {
     }
   }
 
-  if (response.isNewlySuperceded || response.isTrashed || response.isNewlyRead || response.wasUnapproved) {
+  // update status of response being read to creator and approvedBy (if exists)
+  if (response.isNewlyRead) {
+    emitResponseReadEvent(response);
+  }
+
+  if (response.isNewlySuperceded || response.isTrashed || response.wasUnapproved) {
     // clear any notification relevant to this response
     models.Notification.find({
       primaryRecordType: 'response',
@@ -257,9 +302,6 @@ ResponseSchema.post('save', function (response) {
       .then((ntfs) => {
         ntfs.forEach((ntf) => {
           ntf.isTrashed = true;
-          if (response.isNewlyRead) {
-            ntf.wasSeen = true;
-          }
           ntf.save();
         });
       });

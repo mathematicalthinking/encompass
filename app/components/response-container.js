@@ -17,8 +17,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     let relatedNtfs = this.findRelatedNtfs('response', this.get('response'));
 
     relatedNtfs.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
+      let isClean = !ntf.get('wasSeen') && !ntf.get('isTrashed');
+
+      if (isClean) {
         ntf.set('wasSeen', true);
+        ntf.set('isTrashed', true);
         ntf.save();
       }
     });
@@ -59,7 +62,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     let newSubNotifications = this.findRelatedNtfs('response', this.get('submission'), 'newWorkToMentor', 'submission');
 
     newSubNotifications.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
+      if (!ntf.get('wasSeen') && !ntf.get('isTrashed')) {
         ntf.set('wasSeen', true);
         ntf.save();
       }
