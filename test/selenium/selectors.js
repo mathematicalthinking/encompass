@@ -147,8 +147,9 @@ module.exports = {
     div: ".error-page"
   },
   sectionInfo: {
+    container: 'form[data-test="section-info-form"]',
     details: {
-      name: "div.section-info-detail.name p",
+      name: 'p[data-test="section-name-display"]',
       assignments: "div.section-info-detail.assignments ul",
       teachers: "div.section-info-detail.teachers ul",
       students: "div.section-info-detail.students ul"

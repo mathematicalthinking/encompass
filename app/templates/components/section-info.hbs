@@ -6,7 +6,7 @@
 {{#each dataLoadErrors as |error|}}
   <p class="error-message">{{error}}</p>
 {{/each}}
-<form id="sectioninfo">
+<form data-test="section-info-form" id="sectioninfo">
   <fieldset>
     <div class="section-info-detail name">
       <label for="name">Class Name
@@ -22,7 +22,7 @@
       {{#if isEditingName}}
         {{input name="name" id="name" type="text" value=currentSection.name}}
       {{else}}
-        <p class="section-info">{{section.name}}</p>
+        <p data-test="section-name-display" class="section-info">{{section.name}}</p>
       {{/if}}
     </div>
       <div class="section-info-detail assignments">

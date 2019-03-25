@@ -63,11 +63,11 @@ describe('Sections', async function () {
         describe(`Visiting ${sectionDetails.name}`, function () {
           before(async function () {
             await helpers.findAndClickElement(driver, sectionLink);
-            await helpers.waitForSelector(driver, '#sectioninfo > fieldset > div.section-info-detail.name');
+            await helpers.waitForSelector(driver, css.sectionInfo.container);
           });
           it('should display the section details', async function () {
-            expect(await helpers.isTextInDom(driver, sectionDetails.name)).to.be.true;
-            // expect(await helpers.isTextInDom(driver, sectionDetails.teachers)).to.be.true;
+            await helpers.waitForSelector(driver, css.sectionInfo.details.name);
+            expect(await helpers.findAndGetText(driver, css.sectionInfo.details.name)).to.eql(sectionDetails.name);
           });
           if (!isStudent) {
             describe('adding a student to class', function() {
