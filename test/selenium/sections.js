@@ -63,14 +63,18 @@ describe('Sections', async function () {
         describe(`Visiting ${sectionDetails.name}`, function () {
           before(async function () {
             await helpers.findAndClickElement(driver, sectionLink);
+            await helpers.waitForSelector(driver, '#sectioninfo > fieldset > div.section-info-detail.name');
           });
           it('should display the section details', async function () {
-            await helpers.waitForSelector(driver, '#sectioninfo > fieldset > div.section-info-detail.name');
             expect(await helpers.isTextInDom(driver, sectionDetails.name)).to.be.true;
             // expect(await helpers.isTextInDom(driver, sectionDetails.teachers)).to.be.true;
           });
           if (!isStudent) {
             describe('adding a student to class', function() {
+              before(async function() {
+                await helpers.waitForSelector(driver, css.sectionInfo.editButtons.students);
+              });
+
               let hash = {
                 ssmith: ['teachertaylor','5b914a802ecaf7c30dd47493', 'teachertaylor'],
                 rick: ['p','5b7321ee59a672806ec903d5', 'pdadmin'],
@@ -132,8 +136,6 @@ describe('Sections', async function () {
               } else {
                 // eslint-disable-next-line no-loop-func
                 it(`${input} field should be visible`, async function() {
-                  const thisUrl = await helpers.getCurrentUrl(driver);
-                  console.log('url', thisUrl);
                   expect(await helpers.isElementVisible(driver, inputs[input])).to.be.true;
                 });
               }
@@ -154,7 +156,7 @@ describe('Sections', async function () {
                   await helpers.waitForSelector(driver, css.newSection.form);
 
                 }catch(err) {
-                  console.log(err);
+                  throw(err);
                 }
               });
 
@@ -166,7 +168,7 @@ describe('Sections', async function () {
               try {
                 await driver.get(url);
               }catch(err) {
-                console.log(err);
+                throw(err);
               }
             });
             if (isStudent) {
@@ -180,7 +182,7 @@ describe('Sections', async function () {
                   await driver.wait(until.urlIs(url));
                   expect(await helpers.isElementVisible(driver, css.newSection.form)).to.be.true;
                 }catch(err) {
-                  console.log(err);
+                  throw(err);
                 }
               });
             }
@@ -202,7 +204,7 @@ describe('Sections', async function () {
                     // eslint-disable-next-line no-await-in-loop
                     await helpers.findInputAndType(driver, inputs[detail], details[detail]);
                   }catch(err) {
-                    console.log(err);
+                    throw(err);
                   }
                 }
                 await helpers.findAndClickElement(driver, css.newSection.create);
@@ -220,10 +222,7 @@ describe('Sections', async function () {
               describe('submitting valid form', function() {
                 it('should redirect to section-info page after creating', async function () {
                   await submitSection(details);
-                  // await helpers.waitForSelector(driver, 'div.section-info-detail.name p', 10000);
                   await helpers.waitForUrlMatch(driver, /sections\/[a-z0-9]{24}/, 10000);
-                  console.log('after url match');
-                  // expect(await helpers.isTextInDom(driver, details.name)).to.be.true;
 
                   let teacher;
                   if (accountType === 'T') {

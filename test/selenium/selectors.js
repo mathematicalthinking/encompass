@@ -155,7 +155,7 @@ module.exports = {
     },
     newSectionButton: "#new-section-link",
     editButtons: {
-      students: 'div.section-info-detail.students i.far.fa-edit'
+      students: '#sectioninfo > fieldset > div.section-info-detail.students > label > i.far.fa-edit'
     }
   },
 
