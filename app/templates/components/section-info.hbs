@@ -118,7 +118,7 @@
             {{#if isEditingStudents}}
               <i title="Done" {{action (mut isEditingStudents) false}} class="fa fa-check"></i>
             {{else}}
-              <i title="Edit" {{action (mut isEditingStudents) true}} class="far fa-edit"></i>
+              <i data-test="edit-students" title="Edit" {{action (mut isEditingStudents) true}} class="far fa-edit"></i>
             {{/if}}
           {{/unless}}
         </label>
