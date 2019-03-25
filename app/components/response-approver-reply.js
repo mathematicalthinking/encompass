@@ -2,8 +2,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   elementId: 'response-approver-reply',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
-
-  showNoActionsMessage: Ember.computed.equal('responseToApprove.status', 'approved'),
+  loading: Ember.inject.service('loading-display'),
 
   showNoPreviousRepliesMsg: Ember.computed.equal('approverReplies.length', 0),
   replyToView: null,
@@ -22,9 +21,32 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     if (!this.get('approverReplies.length') > 0 ) {
       this.set('replyToView', null);
     }
-    this.set('replyToView', this.get('primaryReply') || null);
+    let primaryReply = this.get('primaryReply');
+
+    let responseToSet;
+
+    if (primaryReply) {
+      responseToSet = primaryReply;
+    } else if (this.get('sortedApproverReplies.lastObject')) {
+      responseToSet = this.get('sortedApproverReplies.lastObject');
+    } else {
+      responseToSet = null;
+    }
+    if (responseToSet) {
+      this.handleRecipientRead(responseToSet);
+    }
+
+    this.set('replyToView', responseToSet);
 
     this._super(...arguments);
+  },
+
+  handleRecipientRead(response) {
+    let recipId = this.get('utils').getBelongsToId(response, 'recipient');
+    if (recipId === this.get('currentUser.id') && !response.get('wasReadByRecipient')) {
+        response.set('wasReadByRecipient', true);
+        response.save();
+    }
   },
 
   displayReply: function() {
@@ -34,20 +56,6 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
 
     return this.get('sortedApproverReplies.lastObject') || null;
   }.property('replyToView', 'sortedApproverReplies.[]'),
-
-  checkReplyNtf: function() {
-    if (!this.get('displayReply')) {
-      return;
-    }
-    let relatedNtfs = this.findRelatedNtfs('response', this.get('displayReply'));
-    relatedNtfs.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
-        ntf.set('wasSeen', true);
-        ntf.save();
-      }
-    });
-
-  }.observes('displayReply'),
 
   isDraft: function() {
     return this.get('displayReply.status') === 'draft';
@@ -68,7 +76,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     } else {
       return this.get('canApprove') && !this.get('isOwnMentorReply') && !this.get('showReplyInput');
     }
-  }.property('isOwnMentorReply', 'canApprove', 'showReplyInput'),
+  }.property('isOwnMentorReply', 'canApprove', 'showReplyInput', 'isEditingApproverReply'),
+
+  showNoActionsMessage: function() {
+    return this.get('responseToApprove.status') === 'approved' && !this.get('showUndoApproval');
+  }.property('responseToApprove.status', 'showUndoApproval'),
 
   showApprove: function() {
     return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
@@ -78,9 +90,9 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     return this.get('responseToApprove.status') !== 'approved' && this.get('responseToApprove.status') !== 'superceded';
   }.property('responseToApprove.status'),
 
-  showEdit: function() {
-    return this.get('responseToApprove.status') === 'pendingApproval';
-  }.property('responseToApprove.status'),
+  showUndoApproval: function() {
+    return this.get('responseToApprove.status') === 'approved' && !this.get('responseToApprove.wasReadByRecipient');
+  }.property('responseToApprove.status', 'responseToApprove.wasReadByRecipient'),
 
   canEditApproverReply: function() {
     if (!this.get('displayReply')) {
@@ -107,6 +119,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
   isOwnDisplayReply: function() {
     return this.get('currentUser.id') === this.get('displayReply.createdBy.id');
   }.property('currentUser', 'displayReply'),
+
+  isDisplayReplyToYou: function() {
+    let recipientId = this.get('utils').getBelongsToId(this.get('displayReply'), 'recipient');
+    return this.get('currentUser.id') === recipientId;
+  }.property('currentUser', 'displayReply.recipient'),
 
   showReplyInput: function() {
     return this.get('isEditingApproverReply') || this.get('isRevisingApproverReply') || this.get('isComposingReply') || this.get('isFinishingDraft');
@@ -180,6 +197,24 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
     let parsed = new DOMParser().parseFromString(text, 'text/html');
     return !Array.from(parsed.body.childNodes).some(node => node.nodeType === 1);
   }.property('displayReply.text'),
+
+  recipientReadUnreadIcon: function() {
+    let results = {};
+    if (this.get('displayReply.wasReadByRecipient')) {
+      results.className = 'far fa-envelope-open';
+      results.title = 'Recipient has seen message';
+    } else {
+      results.className = 'far fa-envelope';
+      results.title = 'Recipient has not seen message';
+    }
+    return results;
+  }.property('displayReply.wasReadByRecipient'),
+
+  showRecipientReadUnread: function() {
+    return !this.get('isDisplayReplyToYou') && this.get('displayReply.status') !== 'draft';
+  }.property('isDisplayReplyToYou', 'displayReply.status'),
+
+  revisionsToolTip: 'Replies are sorted from oldest to newest, left to right.',
 
   actions: {
     composeReply() {
@@ -272,8 +307,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
         }
         hash.updatedReply = this.get('responseToApprove').save();
       }
+
+    this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
     return Ember.RSVP.hash(hash)
     .then((hash) => {
+      this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
       if (!hash) {
         return;
       }
@@ -285,6 +323,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('handleResponseThread')(hash.newReply, 'approver');
     })
     .catch((err) => {
+      this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
       this.handleErrors(err, 'saveRecordErrors', null, [record, this.get('responseToApprove')]);
     });
   },
@@ -297,6 +336,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.set(prop, false);
         }
       });
+      this.handleRecipientRead(response);
 
       this.set('replyToView', response);
     },
@@ -407,14 +447,18 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       if (!isDraft && responseToUpdate) {
         hash.updatedResponse = responseToUpdate.save();
       }
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
 
     Ember.RSVP.hash(hash)
       .then((hash) => {
+        this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
         this.get('alert').showToast('success', toastMessage, 'bottom-end', 3000, false, null);
         this.set('isFinishingDraft', false);
         this.set('editRevisionText', '');
       })
       .catch((err) => {
+         this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
         this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
       });
     },
@@ -446,13 +490,17 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.get('displayReply').set('text', newText);
       this.get('displayReply').set('note', newNote);
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
+
       this.get('displayReply').save()
         .then((saved) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.get('alert').showToast('success', 'Response Updated', 'bottom-end', 3000, false, null);
           this.set('isEditingApproverReply', false);
           this.set('editRevisionText', '');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.handleErrors(err, 'saveRecordErrors', this.get('displayReply'));
         });
     },
@@ -501,8 +549,11 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       revision.set('recipient', this.get('displayReply.recipient.content'));
       revision.set('reviewedResponse', this.get('reviewedResponses') || this.get('responseToApprove'));
 
+      this.get('loading').handleLoadingMessage(this, 'start', 'isReplySending', 'doShowLoadingMessage');
       revision.save()
         .then((saved) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
+
           this.get('alert').showToast('success', 'Revision Sent', 'bottom-end', 3000, false, null);
           this.set('isRevisingApproverReply', false);
           this.set('editRevisionText', '');
@@ -510,6 +561,7 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
           this.get('handleResponseThread')(saved, 'approver');
         })
         .catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isReplySending', 'doShowLoadingMessage');
           this.handleErrors(err, 'saveRecordErrors', revision);
         });
     },
@@ -540,6 +592,26 @@ Encompass.ResponseApproverReplyComponent = Ember.Component.extend(Encompass.Curr
       this.set('quillText', content);
       this.set('isQuillEmpty', isEmpty);
       this.set('isQuillTooLong', isOverLengthLimit);
+    },
+    undoApproval() {
+      this.get('alert').showModal('question', 'Are you sure you want to unapprove this mentor reply?', 'The new status will be "Pending Approval"', 'Unapprove')
+      .then((result) => {
+        if (result.value) {
+          this.get('responseToApprove').set('status', 'pendingApproval');
+          this.get('responseToApprove').set('approvedBy', null);
+          this.get('responseToApprove').set('unapprovedBy', this.get('currentUser'));
+
+          return this.get('responseToApprove').save();
+        }
+      })
+      .then((saved) => {
+        if (saved) {
+          this.get('alert').showToast('success', 'Feedback Unapproved', 'bottom-end', 3000, false, null);
+        }
+      })
+      .catch((err) => {
+        this.displayErrorToast(err, this.get('responseToApprove'));
+      });
     }
   }
 

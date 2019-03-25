@@ -145,6 +145,20 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     this.set('switching', true);
   }.observes('submission'),
 
+  mentoredRevisions: function() {
+    return this.get('currentRevisions').filter((revisionObj) => {
+      let sub = revisionObj.revision;
+
+      let responseIds = this.get('utils').getHasManyIds(sub, 'responses');
+
+      return this.get('responses').find((response) => {
+        return responseIds.includes(response.get('id'));
+      });
+    });
+  }.property('responses.[]', 'currentRevisions.@each.submission'),
+
+  revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+
   actions: {
     toggleStudentList: function() {
       this.set('showStudents', !this.get('showStudents'));

@@ -17,8 +17,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     let relatedNtfs = this.findRelatedNtfs('response', this.get('response'));
 
     relatedNtfs.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
+      let isClean = !ntf.get('wasSeen') && !ntf.get('isTrashed');
+
+      if (isClean) {
         ntf.set('wasSeen', true);
+        ntf.set('isTrashed', true);
         ntf.save();
       }
     });
@@ -35,7 +38,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
         });
       }
 
-    if (this.get('primaryResponseType') === 'mentor') {
+    if (!this.get('isMentorRecipient') && this.get('primaryResponseType') === 'mentor') {
       return this.get('response.priorRevision')
       .then((revision) => {
         if (!this.get('isDestroying') && !this.get('isDestroyed')) {
@@ -59,7 +62,7 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
     let newSubNotifications = this.findRelatedNtfs('response', this.get('submission'), 'newWorkToMentor', 'submission');
 
     newSubNotifications.forEach((ntf) => {
-      if (!ntf.get('wasSeen')) {
+      if (!ntf.get('wasSeen') && !ntf.get('isTrashed')) {
         ntf.set('wasSeen', true);
         ntf.save();
       }
@@ -259,6 +262,11 @@ Encompass.ResponseContainerComponent = Ember.Component.extend(Encompass.CurrentU
 
   },
 
+  cleanWorkspaceResponses: function() {
+    return this.get('cleanStoreResponses').filter((response) => {
+      return this.get('utils').getBelongsToId(response, 'workspace') === this.get('workspace.id');
+    });
+  }.property('cleanStoreResponses.[]'),
   actions: {
     onSaveSuccess(submission, response) {
       let responseId = !response ? null : response.get('id');

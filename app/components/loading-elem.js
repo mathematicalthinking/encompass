@@ -1,8 +1,10 @@
 Encompass.LoadingElemComponent = Ember.Component.extend({
-  content: null,
+  classNames: 'loading-elem',
 
-  actions: {
-    selectChange: function () {
-    }
-  }
+  defaultMessage: 'Request in progress. Thank you for your patience!',
+
+  loadingText: function() {
+    return this.get('loadingMessage') || this.get('defaultMessage');
+  }.property('loadingMessage', 'defaultMessage'),
+
 });

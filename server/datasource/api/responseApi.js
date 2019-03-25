@@ -6,7 +6,6 @@
   */
 
 //REQUIRE MODULES
-const logger   = require('log4js').getLogger('server');
 const _ = require('underscore');
 
 //REQUIRE FILES
@@ -35,28 +34,36 @@ module.exports.put = {};
  function getResponse(req, res, next) {
   let user = userAuth.requireUser(req);
 
-    return models.Response.findById(req.params.id).lean().exec()
+    return models.Response.findById(req.params.id)
+      .populate('createdBy')
+      .populate('recipient')
+      .populate({path: 'workspace', populate: [
+        { path: 'owner' }, { path: 'createdBy' }
+      ]}).exec()
       .then((response) => {
         if (!response || response.isTrashed) {
           return utils.sendResponse(res, null);
         }
 
-        return access.get.response(user, req.params.id)
-          .then((canGet) => {
-            if (!canGet) {
-              return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
-            }
+        let canGet = access.get.response(user, response);
+
+        if (!canGet) {
+          return utils.sendError.NotAuthorizedError('You do not have permission to access this response.', res);
+        }
 
         if (response.responseType === 'mentor' && areObjectIdsEqual(response.recipient, user._id)) {
           // recipient of mentor reply should not see note to approver
           delete response.note;
         }
+        response.depopulate('createdBy');
+        response.depopulate('recipient');
+        response.depopulate('workspace');
+
         return utils.sendResponse(res, {response});
-      });
-  })
-  .catch((err) => {
-    console.error(`Error getResponse: ${err}`);
-    return utils.sendError.InternalError(null, res);
+      })
+    .catch((err) => {
+      console.error(`Error getResponse: ${err}`);
+      return utils.sendError.InternalError(null, res);
   });
 }
 
@@ -116,7 +123,7 @@ async function postResponse(req, res, next) {
 
     let popWs = await models.Workspace.findById(workspaceId).lean().populate('owner').populate('createdBy').exec();
 
-    if (!wsAccess.canModify(user, popWs, 'feedback')) {
+    if (!wsAccess.canModify(user, popWs, 'feedback', 1)) {
       return utils.sendError.NotAuthorizedError('You are not authorized to create responses for this workspace.', res);
     }
 
@@ -149,41 +156,55 @@ async function postResponse(req, res, next) {
   }
 }
 
+async function putResponse(req, res, next) {
+  try {
+    let user = userAuth.requireUser(req);
 
-function putResponse(req, res, next) {
+    if (!user) {
+      return utils.sendError.InvalidCredentialsError('No user logged in!', res);
+    }
 
-  var user = userAuth.requireUser(req);
+    let existingResponse = await models.Response.findById(req.params.id)
+      .populate({path: 'workspace', populate: [
+        { path: 'owner' }, { path: 'createdBy' }
+      ]}).exec();
 
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError('No user logged in!', res);
-  }
-
-  models.Response.findById(req.params.id,
-    function (err, doc) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
+      if (!existingResponse || existingResponse.isTrashed) {
+        return utils.sendResponse(res, null);
       }
+        //TODO permissions check
 
-      //TODO permissions check
+      let { status } = req.body.response;
+
+      let originalStatus = existingResponse.status;
+
+      let isRead = existingResponse.wasReadByRecipient;
+
+      let didStatusChange = status !== originalStatus;
+
+      if (didStatusChange && isRead) {
+        // cannot change status once response has been read
+        let errorMsg = 'A response\'s status cannot be changed once it has been read by its recipient';
+        return utils.sendError.ValidationError(errorMsg, 'status', res);
+      }
+      existingResponse.depopulate('workspace');
 
       for(var field in req.body.response) {
         if((field !== '_id') && (field !== undefined)) {
-          doc[field] = req.body.response[field];
+          existingResponse[field] = req.body.response[field];
         }
       }
 
-      doc.save(function (err, response) {
-        if (err) {
-          logger.error(err);
-          return utils.sendError.InternalError(err, res);
-        }
-        var data = {'response': response};
-        utils.sendResponse(res, data);
-        next();
-      });
-    }
-  );
+      let savedResponse = await existingResponse.save();
+      let data = {response: savedResponse};
+      return utils.sendResponse(res, data);
+
+  }catch(err) {
+    console.error(`Error putResponse: ${err}`);
+    console.trace();
+    return utils.sendError.InternalError(null, res);
+  }
+
 }
 
 function getSubmitterThreads(user, limit, skip) {

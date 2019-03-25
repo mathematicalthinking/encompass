@@ -3,8 +3,9 @@ const utils = require('./utils');
 const _ = require('underscore');
 const mongooseUtils = require('../../utils/mongoose');
 const objectUtils = require('../../utils/objects');
+const wsAccess = require('./workspaces');
 
-const { isValidMongoId } = mongooseUtils;
+const { isValidMongoId, areObjectIdsEqual } = mongooseUtils;
 const { isNonEmptyObject, isNonEmptyArray, } = objectUtils;
 
 module.exports.get = {};
@@ -100,7 +101,6 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
     if (isNonEmptyArray(approverWorkspaceIds)) {
       orFilter.$or.push({workspace: {$in: approverWorkspaceIds}, status: { $ne: 'draft'} });
     }
-
     if (isNonEmptyArray(restrictedRecords)) {
       filter.$and.push({ _id: { $nin: restrictedRecords } });
     }
@@ -119,22 +119,78 @@ const accessibleResponsesQuery = async function(user, ids, workspace, filterBy, 
   }
 };
 
-const canGetResponse = async function(user, responseId) {
+// popWs is passed in when this function is called from workspace api
+const canGetResponse = function(user, response, popWs) {
   try {
-    if (!isNonEmptyObject(user)) {
+    if (!isNonEmptyObject(user) || !isNonEmptyObject(response)) {
       return false;
     }
+    // workspace is populated, workspace.owner and workspace.createdBy are populated
+    // createdBy is populated
+    // recipient is populated
 
-    const { accountType, actingRole } = user;
-    const isStudent = accountType === 'S' || actingRole === 'student';
+    let { accountType, actingRole } = user;
 
-    if (accountType === 'A' && !isStudent) {
+    let userOrg = user.organization;
+
+    let isAdmin = accountType === 'A' && actingRole !== 'student';
+
+    if (isAdmin) {
       return true; // admins currently can get all responses
     }
 
-    let criteria = await accessibleResponsesQuery(user, responseId);
 
-    return utils.doesRecordExist('Response', criteria);
+    let { status, workspace, approvedBy } = response;
+
+    let creatorId = _.propertyOf(response)(['createdBy', '_id']);
+    let recipientId = _.propertyOf(response)(['recipient', '_id']);
+
+    let creatorOrgId = _.propertyOf(response)(['createdBy', 'organization']);
+    let recipientOrgId = _.propertyOf(response)(['recipient', 'organization']);
+
+    let isApproved = status === 'approved';
+    let isDraft = status === 'draft';
+
+    let isRecipient = areObjectIdsEqual(user._id, recipientId);
+
+    // recipient of approved response
+    if (isApproved && isRecipient) {
+      return true;
+    }
+    // creator of response
+    if (areObjectIdsEqual(user._id, creatorId)) {
+      return true;
+    }
+    // approver of response
+    if (areObjectIdsEqual(user._id, approvedBy)) {
+      return true;
+    }
+
+    if (isDraft) {
+      return false;
+    }
+
+    // only creators and admins can access drafts
+
+    let isPdAdmin = accountType === 'P' && actingRole !== 'student';
+
+    if (isPdAdmin) {
+      // pdAdmins can access any responses addressed to members of their org or responses
+      // created by members
+      if (areObjectIdsEqual(creatorOrgId, userOrg)) {
+        return true;
+      }
+      if (!isRecipient && areObjectIdsEqual(recipientOrgId, userOrg)) {
+        return true;
+      }
+    }
+
+    // check if user has approver permissions for workspace
+
+    let workspaceArg = popWs ? popWs : workspace;
+
+   return wsAccess.canModify(user, workspaceArg, 'feedback', 3);
+
   } catch(err) {
     console.error(`Error canGetResponse: ${err}`);
   }

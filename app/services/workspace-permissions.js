@@ -113,6 +113,10 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       if (requiredPermissionLevel === 2) {
         return permissionLevel === 'preAuth' || permissionLevel === 'approver';
       }
+
+      if (requiredPermissionLevel === 3) {
+        return permissionLevel === 'approver';
+      }
     }
 
     return permissionLevel >= requiredPermissionLevel;

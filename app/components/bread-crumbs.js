@@ -27,6 +27,24 @@ Encompass.BreadCrumbsComponent = Ember.Component.extend({
     return this.get('doTruncate') && this.get('areManyItems');
   }.property('areManyItems', 'doTruncate'),
 
+  starredItemsList: function() {
+    return this.get('starredItems') || [];
+  }.property('starredItems.[]'),
+
+  itemsLabelText: function() {
+    return this.get('labelText') || 'Rev.';
+  }.property('labelText'),
+
+  showInfoToolTip: function() {
+    let text = this.get('infoToolTipText');
+    return typeof text === 'string' && text.length > 0;
+  }.property('infoToolTipText'),
+
+  toolTipClassNames: function() {
+    let position = this.get('infoToolTipPosition') || 'bottom';
+    return `info-text-tip simptip-position-${position} simptip-multiline simptip-smooth`;
+  }.property('infoToolTipPosition'),
+
   actions: {
     onItemSelect: function(item) {
       if (!item) {

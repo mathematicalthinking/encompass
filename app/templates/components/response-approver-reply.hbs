@@ -2,6 +2,7 @@
 {{#if showApproverActions}}
 <div class="action-container">
   <h2 class="sub-heading">Manage Mentor Reply</h2>
+
   <div class="approver-actions button-row">
     {{#if showNoActionsMessage}}
       <p class="info">
@@ -10,6 +11,9 @@
     {{else}}
       {{#if showApprove}}
         <button class="approve-button" {{action "confirmApproval"}}>Approve <i class="fas fa-check"></i></button>
+      {{/if}}
+      {{#if showUndoApproval}}
+        <button class="primary-button undo-approval" {{action "undoApproval"}}>Undo Approval</button>
       {{/if}}
       {{#if showCompose}}
         <button class="primary-button" {{action "composeReply"}}>Reply <i class="fas fa-reply"></i></button>
@@ -65,7 +69,9 @@
     <p class="info">It looks like there are no existing approver replies for this Mentor Reply.</p>
     <img src="/images/no-message.svg" alt="No Replies">
   {{/if}}
-
+{{#if doShowLoadingMessage}}
+  {{loading-elem}}
+{{/if}}
 {{#if displayReply}}
   <div class="display-approver-reply">
     <div class="top-row">
@@ -73,8 +79,13 @@
         <span class="reply-time">{{format-date displayReply.createDate 'h:mm a'}}</span>
       </p>
       {{#if sortedApproverReplies}}
-        {{bread-crumbs items=sortedApproverReplies onSelect=(action "setReplyToView") titleTextPath="shortText"
-      selectedItem=displayReply}}
+        {{bread-crumbs
+          items=sortedApproverReplies
+          onSelect=(action "setReplyToView")
+          titleTextPath="shortText"
+          selectedItem=displayReply
+          infoToolTipText=revisionsToolTip
+          }}
       {{/if}}
     </div>
     <div class="reply-users">
@@ -85,6 +96,10 @@
       <p>
         <span class="reply-label">To:</span>
         <span class="reply-value recipient">{{displayReply.recipient.username}}</span>
+        {{#if showRecipientReadUnread}}
+          <span class="reply-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
+        {{/if}}
+
       </p>
     </div>
     {{#if isDraft}}
@@ -103,6 +118,7 @@
         <i {{action 'startEditing'}} class="far fa-edit"></i>
       {{/if}}
     </p>
+
     {{#if isEditingApproverReply}}
       <div class="reply-revise">
       {{quill-container onEditorChange=(action "updateQuillText") attrSectionId=quillEditorId startingText=editRevisionText}}

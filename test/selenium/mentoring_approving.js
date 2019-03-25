@@ -151,7 +151,7 @@ describe('Mentoring / Approving Interactions', function() {
       let mentoringTabs = await helpers.getWebElements(driver, css.responsesList.mentoringTab);
 
       expect(mentoringTabs).to.have.lengthOf(1);
-      expect(await mentoringTabs[0].getText()).to.eql('Mentoring (1)');
+      expect(await mentoringTabs[0].getText()).to.eql('Mentoring');
     });
 
     it('should not display submitter tab', async function() {

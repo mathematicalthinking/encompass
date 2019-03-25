@@ -169,7 +169,7 @@ const admin = {
       }
   },
   responses: {
-    accessibleResponsesCount: 6,
+    accessibleResponsesCount: 7,
     accessibleResponse: {
       _id: "5bec64f7aa4a927d50cd5ba0",
     },

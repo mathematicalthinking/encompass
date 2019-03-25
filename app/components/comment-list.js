@@ -28,6 +28,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   queryErrors: [],
   createRecordErrors: [],
   uploadRecordErrors: [],
+  showFilter: true,
+
   labels: {
     notice: {
       placeholder: 'I notice...'
@@ -149,7 +151,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('newComment'),
 
   onSelection: function() {
-    return !!this.get('currentSelection');
+    return this.get('utils').isNonEmptyObject(this.get('currentSelection'));
   }.property('currentSelection'),
 
   canComment: function() {

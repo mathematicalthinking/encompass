@@ -1,9 +1,14 @@
 /*global _:false */
 Encompass.BreadCrumbsItemComponent = Ember.Component.extend({
   classNames: ['bread-crumbs-item'],
+
   isSelected: function() {
     return _.isEqual(this.get('item'), this.get('selectedItem'));
   }.property('selectedItem'),
+
+  isStarredItem: function() {
+    return this.get('starredItemsList').includes(this.get('item'));
+  }.property('starredItemsList.[]', 'item'),
 
   titleText: function() {
     if (_.isString(this.get('itemTitleText'))) {

@@ -15,7 +15,13 @@
 {{else}}
   {{#if sortedMentorReplies}}
     <div class="mentor-replies">
-      {{bread-crumbs items=sortedMentorReplies onSelect=(action "setDisplayMentorReply") titleTextPath="shortText" selectedItem=displayResponse}}
+      {{bread-crumbs
+        items=sortedMentorReplies
+        onSelect=(action "setDisplayMentorReply")
+        titleTextPath="shortText"
+        selectedItem=displayResponse
+        infoToolTipText=revisionsToolTip
+      }}
     </div>
         <div class="response-info">
       {{#if displayResponse}}
@@ -26,7 +32,11 @@
         <div class="response-users">
           <p>
             <span class="response-label">To:</span>
-            <span class="response-value recipient">{{displayResponse.recipient.username}}</span>
+            <span class="response-value recipient">{{displayResponse.recipient.username}}
+            </span>
+            {{#if showRecipientReadUnread}}
+              <span class="response-read-unread"><i title={{recipientReadUnreadIcon.title}} class={{recipientReadUnreadIcon.className}}></i></span>
+            {{/if}}
           </p>
           <p>
             <span class="response-label">From:</span>
@@ -95,6 +105,9 @@
     {{/if}}
   </div>
 
+  {{#if doShowLoadingMessage}}
+    {{loading-elem}}
+  {{/if}}
   {{#if isComposing}}
     <div class="submit-buttons button-row">
       {{#if isEditing}}

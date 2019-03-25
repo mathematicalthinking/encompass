@@ -1,4 +1,7 @@
 Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+
+  utils: Ember.inject.service('utility-methods'),
+
   elementId: 'response-submission-view',
   isShortExpanded: true,
   isLongExpanded: true,
@@ -49,6 +52,18 @@ Encompass.ResponseSubmissionViewComponent = Ember.Component.extend(Encompass.Cur
   sortedStudentSubmissions: function() {
     return this.get('submissionList').sortBy('createDate');
   }.property('submissionList.[]'),
+
+  mentoredRevisions: function() {
+    return this.get('submissionList').filter((sub) => {
+      let responseIds = this.get('utils').getHasManyIds(sub, 'responses');
+
+      return this.get('wsResponses').find((response) => {
+        return responseIds.includes(response.get('id'));
+      });
+    });
+  }.property('wsResponses.[]', 'submissionList.[]'),
+
+  revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
   actions: {
     openProblem() {
