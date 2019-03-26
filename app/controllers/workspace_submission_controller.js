@@ -11,8 +11,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
 
-  workspaceSubmissions: Ember.inject.controller(),
-  currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
+  // workspaceSubmissions: Ember.inject.controller(),
+  // currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
   currentWorkspace: Ember.computed.alias('workspace.model'),
   currentSelection: Ember.computed.alias('workspace.currentSelection'),
   workspaceOwner: Ember.computed.alias('currentWorkspace.owner'),
