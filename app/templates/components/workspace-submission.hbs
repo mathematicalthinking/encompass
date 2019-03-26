@@ -69,9 +69,6 @@
           {{#if currentSubmission.answer.explanation}}
             {{{currentSubmission.answer.explanation}}}
           {{/if}}
-          {{!-- {{#if currentSubmission.answer.explanationImage}}
-            <img src="{{currentSubmission.answer.explanationImage.imageData}}" alt="">
-          {{/if}} --}}
           {{#if currentSubmission.longAnswer}}
             {{{currentSubmission.longAnswer}}}
           {{/if}}
@@ -92,19 +89,11 @@
       {{#if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}
       {{/if}}
-      {{!-- {{#if currentSubmission.answer.explanationImage}}
-        <img src="{{currentSubmission.answer.explanationImage.imageData}}" alt="">
-      {{/if}} --}}
       {{#if currentSubmission.longAnswer}}
         {{{currentSubmission.longAnswer}}}
       {{/if}}
     </div>
   {{/if}}
-    {{!-- <div id="tags-list">
-      <p class="al_small">Below is a list of image tags. Hover over a tag
-        to view the selection, or click to edit the tag.
-      </p>
-    </div> --}}
   {{#if currentSubmission.uploadedFile.savedFileName}}
   <div id="submission_images">
     <a target="_blank" href="{{unbound currentSubmission.imageUrl}}">
@@ -129,8 +118,13 @@
             deleteSelection=(action "deleteSelection")
           }}
         {{else}}
-
-        <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
+        <span class="selection_text selectionLink {{selection.id}}">
+          {{#if selection.imageTagLink}}
+            <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
+          {{else}}
+            {{selection.text}}
+          {{/if}}
+        </span>
         {{/if}}
       {{/unless}}
     </li>

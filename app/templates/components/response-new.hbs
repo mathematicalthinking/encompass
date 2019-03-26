@@ -63,7 +63,13 @@
             <ul class="selections-list">
             {{#each filteredSelections as |selection|}}
               <li class="selections-list-item">
-                {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}{{selection.text}}{{/link-to}}
+                {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection}}
+                  {{#if selection.imageTagLink}}
+                    <img src={{selection.imageTagLink}} alt={{selection.text}}>
+                  {{else}}
+                    {{selection.text}}
+                  {{/if}}
+                {{/link-to}}
               </li>
             {{/each}}
             </ul>

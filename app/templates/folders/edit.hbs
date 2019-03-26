@@ -153,7 +153,11 @@
                 <td>
                   {{!-- {{draggable-selection selection=sel}} --}}
                   <a class="selection-text" {{action 'changeSelection' sel}}>
-                    {{sel.text}}
+                   {{#if sel.imageTagLink}}
+                      <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
+                    {{else}}
+                      {{sel.text}}
+                    {{/if}}
                   </a>
                   <br/>
                 </td>
@@ -221,7 +225,11 @@
         <td>
           {{!-- {{draggable-selection selection=sel}} --}}
           <a class="selection-text" {{action 'changeSelection' sel}}>
-            {{sel.text}}
+            {{#if sel.imageTagLink}}
+              <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
+            {{else}}
+              {{sel.text}}
+            {{/if}}
           </a>
         </td>
         {{#if showSelectionSubmission}}

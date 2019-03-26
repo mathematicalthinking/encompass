@@ -1,8 +1,12 @@
 {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames="selection_text"}}
-  {{!bind-attr class=":selectionLink selection.id:"}}
-  <span class="selectionLink">{{selection.text}}</span>
+  <span class="selectionLink">
+  {{#if selection.imageTagLink}}
+    <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
+  {{else}}
+    {{selection.text}}
+  {{/if}}
+  </span>
   {{/link-to}}
 {{#if canDelete}}
   <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
 {{/if}}
-
