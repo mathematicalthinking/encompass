@@ -5,13 +5,10 @@
  * - showingSelections
  */
 Encompass.SelectableAreaComponent = Ember.Component.extend({
-  //classNameBindings: ['id'],
   elementId: 'selectable-area',
 
   init: function() {
     this._super(...arguments);
-    this.set('trashedSelections', this.trashed);
-
     this.setupTagging();
   },
 
@@ -19,11 +16,10 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this.set('currSubId', this.get('model.id'));
     this.set('selecting', this.get('makingSelection'));
     this.set('showing', this.get('showingSelections'));
-    var comp = this;
-    var containerId = 'submission_container';
-    var scrollableContainer = 'al_submission';
-    var container = document.getElementById(containerId);
-    //var tagsListContainer = 'tags-list';
+
+    let containerId = 'submission_container';
+    let scrollableContainer = 'al_submission';
+    let container = document.getElementById(containerId);
 
     if (!container) {
       return;
@@ -34,89 +30,110 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     }
 
     // set up the SelectionHighlighting object
-    comp.selectionHighlighting = new SelectionHighlighting({
+    this.selectionHighlighting = new SelectionHighlighting({
       selectableContainerId: containerId
     });
-    comp.selectionHighlighting.init(function(id) {
-      var selection = comp.selectionHighlighting.getSelection(id);
+    this.selectionHighlighting.init((id) => {
+      let selection = this.selectionHighlighting.getSelection(id);
       selection.selectionType = 'selection';
-      comp.sendAction('addSelection', selection);
+      this.sendAction('addSelection', selection);
     });
 
     // set up the ImageTagging object
-    comp.imageTagging = new window.ImageTagging({
+    this.imageTagging = new window.ImageTagging({
       targetContainer: containerId,
-      isCompSelectionMode: this.makingSelection,
+      isCompSelectionMode: this.get('makingSelection'),
       scrollableContainer: scrollableContainer,
-      //tagsListContainer: tagsListContainer
     });
-    comp.imageTagging.onSave(function(id, isUpdateOnly) {
-      var tag = comp.imageTagging.getTag(id);
+    this.imageTagging.onSave((id, isUpdateOnly) => {
+      let tag = this.imageTagging.getTag(id);
       tag.selectionType = 'image-tag';
-      comp.sendAction('addSelection', tag, isUpdateOnly);
+      this.sendAction('addSelection', tag, isUpdateOnly);
     });
 
-    comp.selectionHighlighting.loadSelections(comp.get('selections'));
-    comp.imageTagging.loadTags(comp.get('imgTags'));
-    //comp.myPropertyDidChange();
-    if (comp.showingSelections) {
-      comp.selectionHighlighting.highlightAllSelections();
-      comp.imageTagging.showAllTags();
+    this.selectionHighlighting.loadSelections(this.get('selections'));
+    this.imageTagging.loadTags(this.get('imgTags'));
+
+    if (this.get('showingSelections')) {
+      this.selectionHighlighting.highlightAllSelections();
+      this.imageTagging.showAllTags();
     }
-    if (!comp.makingSelection) {
-      comp.selectionHighlighting.disableSelection();
-      comp.imageTagging.disable();
+    if (!this.get('makingSelection')) {
+      this.selectionHighlighting.disableSelection();
+      this.imageTagging.disable();
     }
     this.get('setupResizeHandler')();
 
   },
 
-  didUpdateAttrs: function() {
-    var highlighting = this.selectionHighlighting;
-    var tagging = this.imageTagging;
+  didReceiveAttrs() {
+    let selections = this.get('sels');
+    let currentSelections = this.get('currentSelections');
+    if (!currentSelections) {
+      this.set('currentSelections', selections);
+    }
+    this._super(...arguments);
+  },
 
+  didUpdateAttrs: function() {
+    let highlighting = this.selectionHighlighting;
+    let tagging = this.imageTagging;
+
+    let currentSelsLength = this.get('currentSelections.length');
+    let attrSelsLength = this.get('sels.length');
+
+    if (attrSelsLength !== currentSelsLength) {
+      this.set('currentSelections', this.get('sels'));
+    }
+
+    let wasSelRemoved = currentSelsLength > attrSelsLength;
+
+    //submission was changed
     if (this.get('currSubId') !== this.get('model.id')) {
       this.imageTagging.removeAllTags();
       this.set('makingSelection', false);
       this.set('showingSelections', false);
-    return this.sendAction('handleTransition', true);
+      return this.sendAction('handleTransition', true);
     }
-    if (this.trashed.get('length') > this.get('trashedSelections.length')) {
-      this.set('trashedSelections', this.trashed);
+    if (wasSelRemoved) {
       tagging.removeAllTags();
       highlighting.removeAllHighlights();
     }
-    //tagging.removeAllTags();
     this.setupTagging();
 
     highlighting.loadSelections(this.get('selections'));
 
-    //tagging.removeAllTags();
     tagging.loadTags(this.get('imgTags'));
 
-    var isSelecting = this.makingSelection;
-    var isShowing = this.showingSelections;
+    let isSelecting = this.get('makingSelection');
+    let isShowing = this.get('showingSelections');
+
     if (isSelecting !== this.get('selecting')) {
+      // toggled from NOT selecting to now selecting
       if (isSelecting) {
         this.set('selecting', true);
-      highlighting.enableSelection();
-      tagging.enable();
+        highlighting.enableSelection();
+        tagging.enable();
       }
+
+      // component is destroyed when toggling to not selecting
     }
 
     if (isShowing !== this.get('showing')) {
       if (isShowing) {
+        // toggled from NOT showing selections to now showing selections
         this.set('showing', true);
         highlighting.highlightAllSelections();
         tagging.showAllTags();
-
       } else {
+        // toggled from showing selections to now NOT showing selections
         this.set('showing', false);
         highlighting.removeAllHighlights();
         tagging.removeAllTags();
 
       }
     } else if(isShowing) {
+      // for when switching between submissions while showing selections
       highlighting.highlightAllSelections();
       tagging.showAllTags();
     }

@@ -30,14 +30,11 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('makingSelection');
   }),
 
-
   didRender: function() {
     if(this.get('switching')) {
       this.set('switching', false);
     }
   },
-
-
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
@@ -106,7 +103,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       this.set('showingSelections', false);
     },
     toggleSelecting: function() {
-      var selecting = this.get('makingSelection');
+      let selecting = this.get('makingSelection');
       this.set('makingSelection', !selecting);
     },
     handleTransition: function(isBeginning) {
@@ -125,8 +122,8 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       let problem = answer.get('problem');
       let problemId = problem.get('id');
 
-      var getUrl = window.location;
-      var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+      let getUrl = window.location;
+      let baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 
       window.open(`${baseUrl}#/problems/${problemId}`, 'newwindow', 'width=1200, height=700');
     },

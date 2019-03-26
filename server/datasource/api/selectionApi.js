@@ -109,8 +109,7 @@ function getImageData(src) {
   if (typeof src !== 'string') {
     return;
   }
-
-  let first30Chars = typeof src === 'string' ? src.slice(0,29) : '';
+  let first30Chars = src.slice(0,29);
 
   let target = 'base64,';
   let targetIndex = first30Chars.indexOf(target);
