@@ -68,7 +68,7 @@ var ImageTagging = function(args) {
     _currentlyMakingSelection = false,
     _currentlyConfirmingSelection = false,
     _currentlySavingTag = false,
-    _allowNotes = true,
+    _allowNotes = false,
     _disabled = false,
     _onSave = function() { /* empty until a function is provided */ },
     targetImages,
@@ -1492,6 +1492,7 @@ NoteInput = function() {
     _enforceImageBoundaries(image, tag, false);
 
     if (_tagListContainer) {
+
       container = document.getElementById(_tagListContainer);
       if (container) {
         item = document.getElementById(_tagListIdPrefix + id);
@@ -1661,10 +1662,11 @@ NoteInput = function() {
         imageSrc,
       };
     _tags[id] = newTag;
-    tagging.editTag(id);
+    // tagging.editTag(id);
 
     newTag.isDirty = true; // guarantee the new tag gets saved
 
+    _onSave(newTag.id);
     return tagging;
   };
 
