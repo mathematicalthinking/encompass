@@ -151,8 +151,7 @@
               {{#each evidence as |sel|}}
               <tr>
                 <td>
-                  {{!-- {{draggable-selection selection=sel}} --}}
-                  <a class="selection-text" {{action 'changeSelection' sel}}>
+                  <a class="selection-text {{if sel.imageTagLink "selection-image"}} " {{action 'changeSelection' sel}}>
                    {{#if sel.imageTagLink}}
                       <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
                     {{else}}
@@ -223,8 +222,7 @@
       {{#each evidence as |sel|}}
       <tr>
         <td>
-          {{!-- {{draggable-selection selection=sel}} --}}
-          <a class="selection-text" {{action 'changeSelection' sel}}>
+          <a class="selection-text {{if sel.imageTagLink "selection-image"}}" {{action 'changeSelection' sel}}>
             {{#if sel.imageTagLink}}
               <img class="img-tag-thmb" src={{sel.imageTagLink}} alt={{sel.text}}>
             {{else}}

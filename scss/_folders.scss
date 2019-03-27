@@ -5,6 +5,9 @@
 #folder_contents {
   a {
     cursor: pointer;
+    &.selection-image {
+      border: none;
+    }
   }
 }
 
