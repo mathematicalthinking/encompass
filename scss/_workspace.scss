@@ -441,6 +441,36 @@ span.meta.response-count.existing {
       margin-left: 15px;
    }
   }
+  .full-image {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.262);
+    z-index: 9998;
+    transition: .5s ease;
+    i {
+      position: absolute;
+      right: 50px;
+      top: 50px;
+      color: white;
+      z-index: 9999;
+      font-size: 2em;
+    }
+    img {
+      position: absolute;
+      width: auto;
+      height: auto;
+      max-height: 90vh;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+  }
 }
 #selectable-area {
   #submission_container {
@@ -485,4 +515,3 @@ span.meta.response-count.existing {
     max-width: 100%;
   }
 }
-

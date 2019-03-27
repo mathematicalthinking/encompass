@@ -1,6 +1,9 @@
 require('app/components/Draggable');
 
 Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDrop.Draggable, Encompass.CurrentUserMixin, {
+  alert: Ember.inject.service('sweet-alert'),
+  isExpanded: false,
+
   dragStart: function(event) {
     this._super(event);
     var dataTransfer = event.originalEvent.dataTransfer;
@@ -10,20 +13,6 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
     dataTransfer.setData('application/json', dataWithId );
     dataTransfer.setData('text/plain', 'selection');
 
-    /*
-    controller.get('model').get('selections').forEach(function(selection) {
-       console.log("get selection id 1");
-      if (selection.get('id') === selectionId) {
-        selection = JSON.parse(JSON.stringify(selection));
-        selection.id = selectionId;
-        selection.workspace = controller.get('currentWorkspace.id'); //this might not be necessary
-        dataTransfer.setData('application/json', JSON.stringify(selection));
-        return;
-      }
-    });
-    */
-    //controller.set('makingSelection', false); ENC-452
-    //controller.transitionToRoute('workspace.submission.selection', controller.get('currentSelection')); ENC-461
   },
   dragEnd: function(event) {
     // Let the controller know this view is done dragging
@@ -36,9 +25,28 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
     return currentUserId === creatorId || this.get('canDeleteSelections');
   }.property('canDeleteSelections', 'selection.createdBy.id', 'currentUser.id'),
 
+  isImage: function() {
+    return this.get('selection.imageTagLink.length') > 0;
+  }.property('selection.imageTagLink'),
+
+  linkToClassName: function() {
+    if (this.get('isImage')) {
+      return 'selection-image';
+    }
+    return 'selection_text';
+  }.property('isImage'),
+
   actions: {
-    deleteSelection: function( selection ){
-      this.sendAction( 'deleteSelection', selection );
+    deleteSelection(selection) {
+      this.get('alert').showModal('warning', 'Are you sure you want to delete this selection?', null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          this.sendAction( 'deleteSelection', selection );
+        }
+      });
+    },
+    expandImage() {
+      this.set('isExpanded', !this.get('isExpanded'));
     }
   }
 });

@@ -118,13 +118,7 @@
             deleteSelection=(action "deleteSelection")
           }}
         {{else}}
-        <span class="selection_text selectionLink {{selection.id}}">
-          {{#if selection.imageTagLink}}
-            <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
-          {{else}}
-            {{selection.text}}
-          {{/if}}
-        </span>
+          {{undraggable-selection selection=selection }}
         {{/if}}
       {{/unless}}
     </li>
