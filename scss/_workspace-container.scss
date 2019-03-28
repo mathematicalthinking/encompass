@@ -1,0 +1,15 @@
+@import "variables";
+@import "mixins";
+@import "responsive-font-size";
+
+#workspace-container {
+  background-color: $filter-list-background-color;
+  height: calc(100vh - 75px);
+
+  .workspace-header {
+    position: relative;
+    top: 20px;
+    margin-bottom: 20px;
+  }
+
+}
