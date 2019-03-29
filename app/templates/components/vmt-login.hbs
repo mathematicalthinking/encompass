@@ -1,0 +1,29 @@
+<form class="form-signin">
+    <div class="auth-form-input">
+      {{#if missingCredentials}}
+        {{error-box error="Incorrect username or password" showDismiss=true resetError=(action (mut missingCredentials) null)}}
+      {{/if}}
+
+      <label for="username">Username:</label>
+      {{input class="form-control" name="username" id="username" required=true type="text" value=username action="resetErrors" on="key-down"}}
+
+      {{#if incorrectUsername}}
+        {{error-box error="Incorrect Username" showDismiss=true}}
+      {{/if}}
+    </div>
+
+    <div class="auth-form-input">
+      <label for="password">Password:</label>
+      {{input class="form-control" name="password" id="password" required=true type="password" value=password action="resetErrors" on="key-down"}}
+
+      {{#if incorrectPassword}}
+        {{error-box error="Incorrect Password" showDismiss=true}}
+      {{/if}}
+
+    </div>
+
+    <button class="auth-button" type="submit" {{action 'login'}}>Log In</button>
+    {{#each postErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+  </form>
