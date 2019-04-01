@@ -4,11 +4,11 @@ Encompass.VmtHostMixin = Ember.Mixin.create({
     let vmtUrl;
 
     if (hostname === 'localhost') {
-      vmtUrl = 'localhost:3000';
+      vmtUrl = 'http://localhost:3001';
     } else if (hostname === 'enc-test.mathematicalthinking.org') {
-      vmtUrl = 'vmt-test.mathematicalthinking.org';
+      vmtUrl = 'https://vmt-test.mathematicalthinking.org';
     } else if (hostname === 'encompass.mathematicalthinking.org') {
-      vmtUrl = 'vmt.mathematicalthinking.org';
+      vmtUrl = 'https://vmt.mathematicalthinking.org';
     } else {
       return;
     }
