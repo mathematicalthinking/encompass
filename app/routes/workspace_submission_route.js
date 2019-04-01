@@ -12,7 +12,12 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
 
   model(params) {
     let submissions = this.modelFor('workspace.submissions');
-    return submissions.findBy('id', params.submission_id);
+    let submission = submissions.findBy('id', params.submission_id);
+
+    if (submission.get('vmtRoomId')) {
+      window.vmtRoomId = submission.get('vmtRoomId');
+    }
+    return submission;
   },
 
   setupController: function(controller, model) {

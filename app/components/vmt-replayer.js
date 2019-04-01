@@ -13,16 +13,8 @@ Encompass.VmtReplayerComponent = Ember.Component.extend(Encompass.VmtHostMixin,{
     }
 
     let replayerUrl = `${vmtUrl}/enc/replayer/js`;
+    $('body').append(`<script src=${replayerUrl}></script>`);
 
-    Ember.$.get({
-      url: replayerUrl
-    })
-    .then((results) => {
-      console.log('replayer results', results);
-    })
-    .catch((err) => {
-      console.log('error fetching replayer', err);
-    });
 
   },
 
@@ -34,15 +26,6 @@ Encompass.VmtReplayerComponent = Ember.Component.extend(Encompass.VmtHostMixin,{
     }
 
     let cssUrl = `${vmtUrl}/enc/replayer/css`;
-
-    Ember.$.get({
-      url: cssUrl
-    })
-    .then((results) => {
-      console.log('css results', results);
-    })
-    .catch((err) => {
-      console.log('error fetching css', err);
-    });
+    $('head').append(`<link href=${cssUrl} rel="stylesheet">`);
   }
 });
