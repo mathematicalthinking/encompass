@@ -20,6 +20,7 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   comments: DS.hasMany('comment', { async: true }),
   workspaces: DS.hasMany('workspace', { async: true }),
   responses: DS.hasMany('response', { async: true }),
+  vmtRoomId: DS.attr('string'),
 
   folders: function () {
     var folders = [];

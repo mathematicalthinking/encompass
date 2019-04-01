@@ -29,6 +29,7 @@ var AnswerSchema = new Schema({
   notes: { type: String },
   powsSubmId: { type: Number }, // old POWs submission ID,
   workspacesToUpdate: [{ type: ObjectId, ref: 'Workspace' }],
+  vmtRoomId: {type: String },
 }, { versionKey: false });
 
 /**
