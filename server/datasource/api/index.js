@@ -36,7 +36,8 @@ exports.delete = {};
  "importApi",
  "organizationApi",
  "assignmentApi",
- "notificationApi"
+ "notificationApi",
+ "vmtApi"
 ].forEach(function (path) {
     var module = require('./' + path);
 

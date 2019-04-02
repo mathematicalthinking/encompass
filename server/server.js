@@ -155,6 +155,9 @@ server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 server.post('/auth/newMtUser', auth.insertNewMtUser);
 server.put('/auth/sso/user/:id', auth.ssoUpdateUser);
 
+// VMT
+server.get('/api/vmt/rooms/:id', path.validateId(), api.get.vmtRoom);
+
 //API CALLS
 //ALL GET REQUESTS
 server.get('/api/users', api.get.users);
