@@ -1,0 +1,18 @@
+
+{{#if isVerified}}
+  <p class="input-label">You have been verified as VMT user {{currentUser.vmtUserInfo.username}}. If you are not the owner or do not have permission to use this account, please click "Unsync."</p>
+
+  <button {{action 'logout'}} class="primary-button cancel-button">Unsync</button>
+{{/if}}
+
+{{#if isUnverified}}
+  {{vmt-login handleLoginResults=(action "handleLoginResults") tokenError=tokenError}}
+{{/if}}
+
+{{#if verificationError}}
+  {{error-box error=verificationError resetError=(action (mut verificationError) null) showDismiss=true}}
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="primary-button" {{action "next"}}>Next</button>
+</div>
