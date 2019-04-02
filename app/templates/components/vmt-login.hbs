@@ -26,4 +26,7 @@
     {{#each postErrors as |error|}}
       {{error-box error=error showDismiss=true}}
     {{/each}}
+    {{#if tokenError}}
+      {{error-box error=tokenError showDismiss=true resetError=(action (mut tokenError) null)}}
+    {{/if}}
   </form>

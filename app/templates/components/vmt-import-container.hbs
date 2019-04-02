@@ -1,10 +1,32 @@
-{{#if currentUserToken}}
-  <p class="info">We have succesfully authenticated your credentials for the vmt account {{vmtUsername}}.
-    You can now search for vmt rooms / activities that you own, and then choose which rooms you would like to import
-    into EnCoMPass.
-  </p>
 
-  {{vmt-search username=vmtUsername token=currentUserToken}}
+  {{#if currentUserToken}}
+    <p class="info">Search VMT for Activities / Rooms</p>
+
+    {{vmt-search username=vmtUsername token=currentUserToken handleSearchResults=(action "handleSearchResults")}}
+
+    {{#if searchResults}}
+      VMT Rooms
+      <ul>
+      {{#each searchResults.rooms as |room|}}
+        {{room.name}}
+        {{else}}
+        No rooms found.
+      {{/each}}
+
+      </ul>
+
+      VMT Activities
+      <ul>
+      {{#each searchResults.activities as |activity|}}
+        {{activity.name}}
+        {{else}}
+        No activities found.
+      {{/each}}
+      </ul>
+    {{/if}}
+
 {{else}}
-  {{vmt-login handleLoginResults=(action "handleLoginResults")}}
+  {{vmt-login handleLoginResults=(action "handleLoginResults") tokenError=tokenError}}
 {{/if}}
+
+

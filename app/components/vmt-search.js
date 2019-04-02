@@ -10,10 +10,9 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return;
       }
       let vmtHost = this.getVmtHost();
-      let username = this.get('username');
       let token = this.get('token');
 
-      let url = `${vmtHost}/enc/search?username=${username}&resourceName=${trimmed}`;
+      let url = `${vmtHost}/enc/search?resourceName=${trimmed}`;
 
       let headers = {
         "Authorization" : token
@@ -29,7 +28,6 @@ Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin
           rooms: [],
         }
         */
-        console.log('vmt search results', results);
         if (this.get('handleSearchResults')) {
           this.get('handleSearchResults')(results);
         }

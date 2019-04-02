@@ -9,7 +9,6 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
 
   actions: {
     handleLoginResults(results) {
-      // what format?
       /*
       user: {
         token,
@@ -17,13 +16,12 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
         _id: vmt userId
       }
       */
-     console.log('results in hlr', results);
+
       if (!results || !results.user) {
         return;
       }
       let { username, _id, token } = results.user;
 
-      // this.set('vmtToken', token);
       this.set('vmtUsername', username);
       this.set('vmtUserId', _id);
 
@@ -32,6 +30,16 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
     },
 
     handleSearchResults(results) {
+      let { isInvalidToken } = results;
+
+      if (isInvalidToken) {
+        this.set('tokenError', 'Please reenter your VMT credentials');
+        this.get('currentUser').set('vmtToken', null);
+        this.get('currentUser').save();
+        return;
+      }
+
+      this.set('searchResults', results);
 
     }
   }

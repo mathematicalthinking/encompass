@@ -36,10 +36,9 @@ Encompass.VmtLoginComponent = Ember.Component.extend(Encompass.VmtHostMixin, Enc
         data,
       })
       .then((res) => {
-        console.log('vmt auth results', res);
-        if (res.message === 'Incorrect password') {
+        if (res.errorMessage === 'Incorrect password') {
           this.set('incorrectPassword', true);
-        }else if(res.message === 'Incorrect username') {
+        }else if(res.errorMessage === 'Incorrect username') {
           this.set('incorrectUsername', true);
         } else  {
           // handle token

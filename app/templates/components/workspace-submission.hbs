@@ -81,13 +81,13 @@
     </div>
     <h5 class="submission-header explanation">Explanation</h5>
     <div class="submission long">
-      {{vmt-replayer}}
-      {{!-- {{#if currentSubmission.answer.explanation}}
+      {{#if currentSubmission.vmtRoomId}}
+        {{vmt-replayer}}
+      {{else if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}
-      {{/if}}
-      {{#if currentSubmission.longAnswer}}
+      {{else if currentSubmission.longAnswer}}
         {{{currentSubmission.longAnswer}}}
-      {{/if}} --}}
+      {{/if}}
     </div>
   {{/if}}
   {{#if currentSubmission.uploadedFile.savedFileName}}
