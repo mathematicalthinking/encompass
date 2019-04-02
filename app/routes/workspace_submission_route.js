@@ -9,15 +9,23 @@
 /*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  queryParams: {
+    vmtRoomId: {
+      replace: true
+    }
+  },
 
   model(params) {
     let submissions = this.modelFor('workspace.submissions');
     let submission = submissions.findBy('id', params.submission_id);
 
-    if (submission.get('vmtRoomId')) {
-      window.vmtRoomId = submission.get('vmtRoomId');
-    }
     return submission;
+  },
+
+  afterModel(submission, transition) {
+    if (submission.get('vmtRoomId')) {
+      this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId: submission.get('vmtRoomId')}});
+    }
   },
 
   setupController: function(controller, model) {
