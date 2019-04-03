@@ -1,0 +1,24 @@
+
+{{log 'selectedRooms vmt-i-s2' selectedRooms}}
+{{vmt-search token=currentUser.vmtUserInfo.token handleSearchResults=(action "handleSearchResults")}}
+
+ {{#if showList}}
+      <p class="sub-input-label">VMT Rooms</p>
+      {{vmt-room-list
+        selectedRoomIds=selectedRoomIds
+        rooms=displayResults.rooms
+        onItemSelect=(action "onRoomSelect")
+      }}
+      <p class="sub-input-label">VMT Activities</p>
+      <ul>
+      {{#each displayResults.activities as |activity|}}
+        {{activity.name}}
+        {{else}}
+        No activities found.
+      {{/each}}
+      </ul>
+{{/if}}
+
+<div class="nav-btn-container">
+  <button class="primary-button" {{action "next"}}>Next</button>
+</div>
