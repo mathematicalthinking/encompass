@@ -1,3 +1,7 @@
-<label for="vmt-room-search"></label>
-{{input type="text" value=searchText id="vmt-room-search" placeholder="Search for vmt rooms or activities by name"}}
-<button {{action "submitSearch"}}>Search</button>
+<label class="input-label">Search for VMT Rooms / Activities</label>
+{{search-bar
+  onSearch=(action "submitSearch")
+  basePlaceholder="Search for vmt rooms or activities by name"
+  inputValue=searchText
+  clearSearchResults=(action "clearSearchResults")
+}}
