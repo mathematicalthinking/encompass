@@ -1,32 +1,104 @@
-
-  {{#if currentUserToken}}
-    <p class="info">Search VMT for Activities / Rooms</p>
-
-    {{vmt-search username=vmtUsername token=currentUserToken handleSearchResults=(action "handleSearchResults")}}
-
-    {{#if searchResults}}
-      VMT Rooms
-      <ul>
-      {{#each searchResults.rooms as |room|}}
-        {{room.name}}
-        {{else}}
-        No rooms found.
-      {{/each}}
-
+<div class="flex-container-full">
+  <div class="flex-item-full filter-options collapse" id="filter-list-side">
+    <div class="filter-items">
+      <h2>Summary</h2>
+      <ul class="primary-filter-list">
+        {{#each detailsItems as |item|}}
+          {{details-list-item
+          label = item.label
+          displayValue = item.displayValue
+          emptyValue = item.emptyValue
+          propName = item.propName
+          children = item.children
+          isArray = item.isArray
+          editValue = (action "goToStep")
+          associatedStep=item.associatedStep
+          currentStep=currentStep.value
+          }}
+        {{/each}}
       </ul>
+    </div>
+  </div>
+  <div class="flex-item-full list-view">
+    <div class="results-list">
+      <div class="header">
+        <h1>Import VMT Work</h1>
+      </div>
 
-      VMT Activities
-      <ul>
-      {{#each searchResults.activities as |activity|}}
-        {{activity.name}}
-        {{else}}
-        No activities found.
-      {{/each}}
-      </ul>
-    {{/if}}
+      <div class="step-display">
+        <div class="container">
+          <ul class="progressbar">
+            <li class="step-1 active-step">
+              <span>Provide VMT Credentials</span>
+            </li>
+            <li class="step-2 {{if (greater-equal currentStep.value 2) 'active-step'}}">
+              <span>Select Rooms</span>
+            </li>
+            {{!-- <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
+              <span>Upload Files</span>
+            </li>
+            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
+              <span>Match Students</span>
+            </li> --}}
+            <li class="step-3 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+              <span>Create Workspace</span>
+            </li>
+            <li class="step-4 {{if (greater-equal currentStep.value 6) 'active-step'}}">
+              <span>Review</span>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-{{else}}
-  {{vmt-login handleLoginResults=(action "handleLoginResults") tokenError=tokenError}}
-{{/if}}
+      <div class="step-content">
+        {{#if showProvideCredentials}}
+          {{vmt-import-step1 store=store onProceed=(action "setVmtUserInfo") tokenError=tokenError}}
+        {{/if}}
+
+        {{#if showSelectRooms}}
+          {{vmt-import-step2
+            store=store
+            onBack=(action "changeStep")
+            onProceed=(action "setSelectedRooms")
+            handleInvalidToken=(action "handleInvalidToken")
+            existingSelectedRooms=selectedRooms
+            previousResults=mostRecentSearchResults
+          }}
+        {{/if}}
+
+        {{!-- {{#if showUploadFiles}}
+          {{import-work-step3 store=store selectedProblem=selectedProblem selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setUploadedFiles") existingAnswers=answers uploadedFiles=uploadedFiles}}
+        {{/if}}
+
+        {{#if showMatchStudents}}
+          {{import-work-step4  store=store uploadedFiles=uploadedFiles answers=answers selectedProblem=selectedProblem studentMap=studentMap selectedSection=selectedSection onBack=(action "changeStep") onProceed=(action "setMatchedStudents")}}
+        {{/if}} --}}
+
+        {{#if showCreateWs}}
+          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store answers=answers workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet onBack=(action "changeStep") onProceed=(action "prepareReview")}}
+        {{/if}}
+
+        {{#if showReview}}
+          {{import-work-step6 store=store answers=answers submissionCount=submissionCount workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace onBack=(action "changeStep") onProceed=(action "importWork")}}
+        {{/if}}
+      </div>
+
+    {{#each findRecordErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each postErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    {{#each createAnswerErrors as |error|}}
+      {{error-box error=error showDismiss=true}}
+    {{/each}}
+    </div>
+  </div>
+</div>
+
+<div class="toggle-filter-menu">
+  <button {{action 'toggleMenu'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+</div>
+
 
 

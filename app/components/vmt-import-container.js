@@ -1,47 +1,119 @@
 Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'vmt-import-container',
 
   vmtUsername: null,
   vmtUserId: null,
 
-  currentUserToken: function() {
-    return this.get('currentUser.vmtToken');
-  }.property('currentUser.vmtToken'),
+  steps: [
+    { value: 0 },
+    { value: 1 },
+    { value: 2 },
+    { value: 3 },
+    { value: 4 },
+  ],
+
+  currentStep: { value: 1 },
+
+  showProvideCredentials: Ember.computed.equal('currentStep.value', 1),
+  showSelectRooms: Ember.computed.equal('currentStep.value', 2),
+  showCreateWs: Ember.computed.equal('currentStep.value', 3),
+  showReview: Ember.computed.equal('currentStep.value', 4),
+
+  selectedRooms: null,
+  mostRecentSearchResults: null,
+
+  maxSteps: function () {
+    return this.get('steps.length') - 1;
+  }.property('steps'),
+
+  detailsItems: function() {
+    return [
+      {
+        label: 'VMT Username',
+        displayValue: this.get('currentUser.vmtUserInfo.username'),
+        emptyValue: 'Unverified',
+        propName: 'currentUser.vmtUserInfo.username',
+        associatedStep: 1
+      },
+      {
+        label: 'Selected Rooms',
+        displayValue: this.get('selectedRooms.length'),
+        emptyValue: 'No Rooms',
+        propName: 'selectedRooms.length',
+        associatedStep: 2
+      },
+      {
+        label: 'Created Workspace',
+        displayValue: this.get('workspaceName'),
+        emptyValue: 'No Workspace',
+        propName: 'workspaceName',
+        associatedStep: 3
+      },
+    ];
+  }.property(
+    'currentUser.vmtUserInfo.username',
+    'selectedRooms.[]',
+    'workspaceName',
+  ),
 
   actions: {
-    handleLoginResults(results) {
-      /*
-      user: {
-        token,
-        username,
-        _id: vmt userId
-      }
-      */
-
-      if (!results || !results.user) {
+    goToStep(stepValue) {
+      if (!stepValue) {
         return;
       }
-      let { username, _id, token } = results.user;
 
-      this.set('vmtUsername', username);
-      this.set('vmtUserId', _id);
-
-      this.get('currentUser').set('vmtToken', token);
-      this.get('currentUser').save();
+      this.set('currentStep', this.get('steps')[stepValue]);
     },
 
-    handleSearchResults(results) {
-      let { isInvalidToken } = results;
-
-      if (isInvalidToken) {
-        this.set('tokenError', 'Please reenter your VMT credentials');
-        this.get('currentUser').set('vmtToken', null);
-        this.get('currentUser').save();
+    changeStep(direction) {
+      let currentStep = this.get('currentStep.value');
+      let maxStep = this.get('maxSteps');
+      if (direction === 1) {
+        if (currentStep === maxStep) {
+          return;
+        }
         return;
       }
+      if (direction === -1) {
+        if (currentStep === 1) {
+          return;
+        }
+        this.set('currentStep', this.get('steps')[currentStep - 1]);
+      }
+    },
 
-      this.set('searchResults', results);
+    setVmtUserInfo() {
+      this.set('vmtUserInfo', this.get('currentUser.vmtUserInfo'));
+      this.set('currentStep', this.get('steps')[2]);
+    },
 
-    }
+    setSelectedRooms(rooms, searchResults) {
+      this.set('selectedRooms', rooms);
+      this.set('mostRecentSearchResults', searchResults);
+      this.set('currentStep', this.get('steps')[3]);
+    },
+
+    handleInvalidToken() {
+      this.get('currentUser').set('vmtUserInfo', {});
+      this.get('currentUser').save()
+        .then(() => {
+          this.set('tokenError', 'Please reenter your VMT credentials');
+          this.set('currentStep', this.get('steps')[1]);
+        });
+    },
+
+    toggleMenu: function() {
+      $('#filter-list-side').toggleClass('collapse');
+      $('#arrow-icon').toggleClass('fa-rotate-180');
+      $('#filter-list-side').addClass('animated slideInLeft');
+    },
+    setPreviousSearchResults(results) {
+      this.set('mostRecentSearchResults', results);
+    },
+    prepareReview() {
+      this.set('currentStep', this.get('steps')[4]);
+    },
+
   }
 
 });
