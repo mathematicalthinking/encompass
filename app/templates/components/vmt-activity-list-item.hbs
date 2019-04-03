@@ -1,0 +1,26 @@
+
+{{#each activity.rooms as |rooms|}}
+  {{vmt-room-list rooms=rooms}}
+
+{{/each}}
+
+<div class="card-container">
+  <div class="card-title">
+    <p class="card-heading">{{activity.name}}</p>
+  </div>
+  <div class="card-image" style="background: url({{activity.image}}) no-repeat scroll center">
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
+  </div>
+</div>
+{{#if doShowRooms}}
+  {{vmt-room-list rooms=activity.rooms}}
+{{/if}}
+
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src="{{{activity.image}}}" alt={{activity.name}}>
+  </div>
+{{/if}}

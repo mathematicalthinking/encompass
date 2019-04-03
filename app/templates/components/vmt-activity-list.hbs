@@ -1,0 +1,9 @@
+<ul>
+  {{#each activities as |activity|}}
+    <li>
+      {{vmt-activity-list-item activity=activity}}
+    </li>
+  {{else}}
+    <li> No activities</li>
+  {{/each}}
+</ul>
