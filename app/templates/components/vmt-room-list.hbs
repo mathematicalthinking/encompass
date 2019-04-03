@@ -1,0 +1,14 @@
+<ul>
+  {{#each rooms as |room|}}
+    <li>
+      {{vmt-room-list-item
+        room=room
+        selectedRoomIds=selectedRoomIds
+        showCheckbox=true
+        onSelect=(action "onItemSelect")
+      }}
+    </li>
+  {{else}}
+    <li> No rooms</li>
+  {{/each}}
+</ul>
