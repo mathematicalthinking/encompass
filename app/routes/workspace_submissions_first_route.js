@@ -18,7 +18,7 @@ Encompass.WorkspaceSubmissionsFirstRoute = Ember.Route.extend({
       let firstStudent = sorted.get('firstObject.student');
       let lastRevision = sorted.getEach('student').lastIndexOf(firstStudent);
 
-      this.transitionTo('workspace.submission', workspace, sorted.objectAt(lastRevision));
+      this.transitionTo('workspace.submission', workspace, sorted.objectAt(lastRevision).get('id'));
     }
   }
 
