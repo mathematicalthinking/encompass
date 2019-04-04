@@ -9,6 +9,10 @@
 /*global _:false */
 Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
+
+  doTransitionVmt: true,
+
   queryParams: {
     vmtRoomId: {
       replace: true
@@ -16,16 +20,30 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   },
 
   model(params) {
+
+    let { submission_id, vmtRoomId } = params;
+
+    if (this.get('utils').isValidMongoId(vmtRoomId)) {
+      // do not need to transition again
+      this.set('doTransitionVmt', false);
+    }
+
     let submissions = this.modelFor('workspace.submissions');
-    let submission = submissions.findBy('id', params.submission_id);
+    let submission = submissions.findBy('id', submission_id);
 
     return submission;
   },
 
   afterModel(submission, transition) {
-    if (submission.get('vmtRoomId')) {
-      this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId: submission.get('vmtRoomId')}});
-    }
+    return this.resolveVmtRoom(submission)
+      .then((room) => {
+        if (!room) {
+          return;
+        }
+        if (this.get('doTransitionVmt')) {
+          this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId: room._id}});
+        }
+      });
   },
 
   setupController: function(controller, model) {
@@ -50,6 +68,84 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         this.controller.send('startTour', 'workspace');
       }
     });
+  },
+
+  resolveVmtRoom(submission) {
+    let roomId = submission.get('vmtRoomId');
+    let utils = this.get('utils');
+
+    if (!utils.isValidMongoId(roomId)) {
+      return Ember.RSVP.resolve(null);
+    }
+
+    let cachedRoom = this.extractVmtRoom(roomId);
+
+    if (cachedRoom) {
+      return Ember.RSVP.resolve(cachedRoom);
+    }
+
+      return Ember.$.get({
+        url: `/api/vmt/rooms/${roomId}`
+      })
+      .then((data) => {
+
+        if (!data || !data.room) {
+          return null;
+        }
+        // put room on window if necessary
+
+        this.handleRoomForVmt(data.room);
+        this.combineVmtRoomEvents(data.room);
+
+        return data.room;
+      });
+
+  },
+
+  handleRoomForVmt(room) {
+    let utils = this.get('utils');
+
+    if (!utils.isNonEmptyObject(window.vmtRooms)) {
+      window.vmtRooms = {};
+    }
+    if (window.vmtRooms[room._id]) {
+      // room is already on
+      return;
+    }
+    window.vmtRooms[room._id] = room;
+  },
+
+  extractVmtRoom(roomId) {
+    if (!this.get('utils').isNonEmptyObject(window.vmtRooms)) {
+      return null;
+    }
+
+    return window.vmtRooms[roomId];
+  },
+
+  combineVmtRoomEvents(room) {
+    if (!Array.isArray(room.tabs)) {
+      return;
+    }
+    let allEvents = [];
+
+    room.tabs.forEach(tab => {
+      allEvents = allEvents.concat(tab.events);
+    });
+    allEvents = allEvents
+      .concat(room.chat)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .filter((entry, i, arr) => {
+        if (arr[i - 1]) {
+          if (entry.description) {
+            return entry.description !== arr[i - 1].description;
+          } else {
+            return true;
+          }
+        }
+        return true;
+      });
+    room.log = allEvents;
   },
 
   actions: {

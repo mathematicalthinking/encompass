@@ -50,7 +50,8 @@ const getVmtRoom = async (req, res, next) => {
     if (!room) {
       return utils.sendResponse(res, null);
     }
-    return res.json({result: room});
+    let data = { room };
+    return utils.sendResponse(res, data);
 
   }catch(err) {
     console.error(`Error getVmtRoom: ${err}`);
