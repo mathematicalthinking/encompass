@@ -268,6 +268,7 @@ server.post({
 
 server.post('/api/import', api.post.import);
 server.post('/api/importRequests', api.post.importSubmissionsRequest);
+server.post('/api/vmtImportRequests', api.post.vmtImportRequests);
 
 // error handler
 server.use(function (err, req, res, next) {

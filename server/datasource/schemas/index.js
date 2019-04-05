@@ -29,7 +29,8 @@
   "folderSet",
   "copyWorkspaceRequest",
   "updateWorkspaceRequest",
-  "notification"
+  "notification",
+  "vmtImportRequest",
 ].forEach(function (path) {
   var module = require('./' + path);
 
