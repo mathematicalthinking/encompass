@@ -1,7 +1,14 @@
 <ul>
   {{#each activities as |activity|}}
     <li>
-      {{vmt-activity-list-item activity=activity}}
+      {{vmt-activity-list-item
+        activity=activity
+        onSelect=(action "onActivitySelect")
+        showCheckbox=showCheckbox
+        onRoomSelect=(action "onRoomSelect")
+        selectedRoomIds=selectedRoomIds
+        selectedActivityIds=selectedActivityIds
+      }}
     </li>
   {{else}}
     <li> No activities</li>

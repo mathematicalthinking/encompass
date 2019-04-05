@@ -72,13 +72,33 @@
   .search-bar-comp {
     justify-content: flex-start;
   }
+  .vmt-room-list {
+    &.sub-list {
+      width: 100%;
+      margin-left: 25px;
+      margin-top: 25px;
+    }
+  }
   .vmt-room-list-item {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     .card-container {
       margin-left: 3px;
     }
   }
+
+
+
+  .vmt-activity-list-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .card-container {
+      margin-left: 3px;
+    }
+  }
+
   .progressbar li {
     list-style-type: none;
     width: 16.66%;

@@ -8,6 +8,13 @@ Encompass.VmtRoomListItemComponent = Ember.Component.extend({
     return ids.includes(this.get('room._id'));
   }.property('selectedRoomIds.[]', 'room._id'),
 
+  encodedImageUri: function() {
+    if (!this.get('room.image')) {
+      return '';
+    }
+    return encodeURI(this.get('room.image'));
+   }.property('room.image'),
+
   actions: {
     expandImage() {
       this.set('isExpanded', !this.get('isExpanded'));
