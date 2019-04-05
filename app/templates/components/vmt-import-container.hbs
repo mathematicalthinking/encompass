@@ -40,10 +40,10 @@
             <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
               <span>Match Students</span>
             </li> --}}
-            <li class="step-3 {{if (greater-equal currentStep.value 5) 'active-step'}}">
+            <li class="step-3 {{if (greater-equal currentStep.value 3) 'active-step'}}">
               <span>Create Workspace</span>
             </li>
-            <li class="step-4 {{if (greater-equal currentStep.value 6) 'active-step'}}">
+            <li class="step-4 {{if (greater-equal currentStep.value 4) 'active-step'}}">
               <span>Review</span>
             </li>
           </ul>
@@ -76,11 +76,11 @@
         {{/if}} --}}
 
         {{#if showCreateWs}}
-          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store answers=answers workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet onBack=(action "changeStep") onProceed=(action "prepareReview")}}
+          {{import-work-step5 users=users selectedOwner=selectedOwner selectedFolderSet=selectedFolderSet doCreateWs=doCreateWs selectedMode=selectedMode folderSets=folderSets store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet onBack=(action "changeStep") onProceed=(action "prepareReview")}}
         {{/if}}
 
         {{#if showReview}}
-          {{import-work-step6 store=store answers=answers submissionCount=submissionCount workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace onBack=(action "changeStep") onProceed=(action "importWork")}}
+          {{vmt-import-step4 store=store answers=selectedRooms workspaceName=workspaceName workspaceOwner=workspaceOwner workspaceMode=workspaceMode folderSet=folderSet isUploadingAnswer=isUploadingAnswer isCreatingWorkspace=isCreatingWorkspace uploadedAnswers=uploadedAnswers createdWorkspace=createdWorkspace onBack=(action "changeStep") onProceed=(action "importWork")}}
         {{/if}}
       </div>
 

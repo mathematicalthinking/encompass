@@ -81,7 +81,7 @@
     </div>
     <h5 class="submission-header explanation">Explanation</h5>
     <div class="submission long">
-      {{#if currentSubmission.vmtRoomId}}
+      {{#if currentSubmission.vmtRoomInfo.roomId}}
         {{vmt-replayer}}
       {{else if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}

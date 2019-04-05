@@ -80,7 +80,13 @@ var encompassSubmission = _.extend({}, baseSubmission, {
   comments: [{type: ObjectId, ref: 'Comment'}],
   workspaces: [{type: ObjectId, ref: 'Workspace'}],
   responses:  [{type: ObjectId, ref: 'Response'}],
-  vmtRoomId: { type: String }
+  vmtRoomInfo: {
+    roomId: { type: String }, // object id from vmt
+    imageUrl: { type: String }, //
+    roomName: {type: String },
+    facilitators: [ { type: String } ], // just usernames for now,
+    participants: [ { type: String } ] // just usernames for now,
+  }
 });
 
 var PDSubmissionSchema = new Schema(pdSubmission, {versionKey: false});

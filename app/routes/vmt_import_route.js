@@ -9,8 +9,9 @@ Encompass.VmtImportRoute = Encompass.AuthenticatedRoute.extend({
   },
 
   actions: {
-    toWorkspaces: function(workspace) {
-      window.location.href = `#/workspaces/${workspace._id}/submissions/${workspace.submissions[0]}`;
+    toWorkspaces: function(workspaceId) {
+      this.transitionTo('workspace.work', workspaceId);
+      // window.location.href = `#/workspaces/${workspace._id}/submissions/${workspace.submissions[0]}`;
     }
   },
 

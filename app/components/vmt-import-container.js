@@ -1,5 +1,8 @@
+/*global _:false */
 Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'vmt-import-container',
+
+  alert: Ember.inject.service('sweet-alert'),
 
   vmtUsername: null,
   vmtUserId: null,
@@ -112,6 +115,48 @@ Encompass.VmtImportContainerComponent = Ember.Component.extend(Encompass.Current
     },
     prepareReview() {
       this.set('currentStep', this.get('steps')[4]);
+    },
+    uploadAnswers() {
+      this.set('isUploadingAnswer', true);
+      let rooms = this.get('selectedRooms');
+
+      if (!rooms) {
+        return this.set('invalidRoomsError', 'At least one room must be selected');
+      }
+      let importRequest = this.get('store').createRecord('vmt-import-request', {
+        workspaceOwner: this.get('workspaceOwner'),
+        workspaceName: this.get('workspaceName'),
+        workspaceMode: this.get('workspaceMode'),
+        folderSet: this.get('folderSet'),
+        doCreateWorkspace: this.get('doCreateWs'),
+        vmtRooms: rooms,
+        permissionObjects: this.get('permissionObjects') || [],
+      });
+      importRequest.save()
+        .then((results) => {
+
+          this.set('isUploadingAnswer', false);
+          if (results.get('createdWorkspace')) {
+            this.set('createdWorkspace', results.get('createWorkspace'));
+            this.sendAction('toWorkspaces', results.get('createdWorkspace'));
+
+            this.get('alert').showToast('success', 'Workspace Created', 'bottom-end', 4000, false, null);
+            return;
+          }
+          this.set('uploadedAnswers', results.createdAnswers);
+        })
+      .catch((err) => {
+        this.set('isUploadingAnswer', false);
+        console.log('error post vmt import: ', err);
+      });
+    },
+
+    importWork: function () {
+      if (this.get('assignmentName')) {
+        this.send('createAssignment');
+      } else {
+        this.send('uploadAnswers');
+      }
     },
 
   }

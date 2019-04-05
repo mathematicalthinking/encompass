@@ -11,6 +11,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
 
+  queryParams: ['vmtRoomId'],
+
   // workspaceSubmissions: Ember.inject.controller(),
   // currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
   currentWorkspace: Ember.computed.alias('workspace.model'),
