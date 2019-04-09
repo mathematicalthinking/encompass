@@ -648,18 +648,6 @@ Encompass.ProblemInfoComponent = Ember.Component.extend(Encompass.CurrentUserMix
     toAssignmentInfo: function (assignment) {
       this.sendAction('toAssignmentInfo', assignment);
     },
-    insertQuillContent: function(selector, options) {
-      const isEditing = this.get('isEditing');
-      if (!isEditing) {
-        return;
-      }
-      // eslint-disable-next-line no-unused-vars
-      const quill = new window.Quill(selector, options);
-      let problem = this.get('problem');
-      let text = problem.get('text');
-
-      this.$('.ql-editor').html(text);
-    },
 
     showAssignment: function () {
       this.set('showAssignment', true);

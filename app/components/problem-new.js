@@ -299,25 +299,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.sendAction('toProblemList');
     },
 
-    insertQuillContent: function (selector, options) {
-      $('#editor').ready(() => {
-        let options = {
-          debug: 'false',
-          modules: {
-            toolbar: [
-              ['bold', 'italic', 'underline'],
-              ['image'],
-            ]
-          },
-          placeholder: 'Problem Statement',
-          theme: 'snow'
-        };
-        let quill = new window.Quill(selector, options); // eslint-disable-line no-unused-vars
-        let statement = this.get('problemStatement');
-        this.$('.ql-editor').html(statement);
-      });
-    },
-
     confirmCreatePublic: function () {
       this.get('alert').showModal('question', 'Are you sure you want to create a public problem?', 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used', 'Yes')
         .then((result) => {
