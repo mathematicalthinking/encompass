@@ -63,15 +63,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
   isQuillValid: function() {
-    let pText = this.$('.ql-editor p').text();
-    if (pText.length > 0) {
-      return true;
-    }
-    let content = this.$('.ql-editor').html();
-    if (content.includes('<img')) {
-      return true;
-    }
-    return false;
+    return !this.get('isQuillEmpty') && !this.get('isQuillTooLong');
   },
 
   createProblem: function() {
@@ -400,6 +392,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         return;
       }
       keywords.addObject(val);
+  },
+  updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.set('quillText', content);
+    this.set('isQuillEmpty', isEmpty);
+    this.set('isQuillTooLong', isOverLengthLimit);
   }
 }
 });

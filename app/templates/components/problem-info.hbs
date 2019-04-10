@@ -43,7 +43,7 @@
         <p class="info-content-label">Problem Statement</p>
         <div class="info-content-block statement large-content">
           {{#if isEditing}}
-            {{quill-container startingText=problem.text}}
+            {{quill-container onEditorChange=(action "updateQuillText") startingText=problem.text}}
           {{else}}
             {{{problem.text}}}
           {{/if}}
