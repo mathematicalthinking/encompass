@@ -63,15 +63,7 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   // For quill to not be empty, there must either be some text or a student
   // must have uploaded an img so there must be an img tag
   isQuillValid: function() {
-    let pText = this.$('.ql-editor p').text();
-    if (pText.length > 0) {
-      return true;
-    }
-    let content = this.$('.ql-editor').html();
-    if (content.includes('<img')) {
-      return true;
-    }
-    return false;
+    return !this.get('isQuillEmpty') && !this.get('isQuillTooLong');
   },
 
   createProblem: function() {
@@ -299,25 +291,6 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
       this.sendAction('toProblemList');
     },
 
-    insertQuillContent: function (selector, options) {
-      $('#editor').ready(() => {
-        let options = {
-          debug: 'false',
-          modules: {
-            toolbar: [
-              ['bold', 'italic', 'underline'],
-              ['image'],
-            ]
-          },
-          placeholder: 'Problem Statement',
-          theme: 'snow'
-        };
-        let quill = new window.Quill(selector, options); // eslint-disable-line no-unused-vars
-        let statement = this.get('problemStatement');
-        this.$('.ql-editor').html(statement);
-      });
-    },
-
     confirmCreatePublic: function () {
       this.get('alert').showModal('question', 'Are you sure you want to create a public problem?', 'Creating a public problem means it will be accessible to all EnCoMPASS users. You will not be able to make any changes once this problem has been used', 'Yes')
         .then((result) => {
@@ -419,6 +392,11 @@ Encompass.ProblemNewComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         return;
       }
       keywords.addObject(val);
+  },
+  updateQuillText(content, isEmpty, isOverLengthLimit) {
+    this.set('quillText', content);
+    this.set('isQuillEmpty', isEmpty);
+    this.set('isQuillTooLong', isOverLengthLimit);
   }
 }
 });
