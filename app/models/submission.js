@@ -53,9 +53,13 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   }.property(),
 
   student: function () {
-    var safeName = this.get('creator.safeName');
-    var fullName = this.get('creator.fullName');
-    var username = this.get('creator.username');
+    let safeName = this.get('creator.safeName');
+    let fullName = this.get('creator.fullName');
+    let username = this.get('creator.username');
+
+    if (this.get('vmtDisplayName')) {
+      return this.get('vmtDisplayName');
+    }
 
     if (fullName) {
       return fullName;
@@ -64,17 +68,21 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
       return safeName;
     }
     return username;
-  }.property('creator.safeName', 'creator.username', 'creator.fullName'),
+  }.property('creator.safeName', 'creator.username', 'creator.fullName', 'vmtDisplayName'),
 
   studentDisplayName: function() {
-    var safeName = this.get('creator.safeName');
-    var username = this.get('creator.username');
+    if (this.get('vmtDisplayName')) {
+      return this.get('vmtDisplayName');
+    }
 
-    var name = safeName ? safeName : username;
+    let safeName = this.get('creator.safeName');
+    let username = this.get('creator.username');
+
+    let name = safeName ? safeName : username;
 
     return name;
 
-  }.property('creator.safeName', 'creator.username'),
+  }.property('creator.safeName', 'creator.username', 'vmtDisplayName'),
 
   label: function () {
     var label = this.get('student');
@@ -102,4 +110,15 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
     return this.get('creator.safeName');
 
   }.property('creator.username', 'creator.studentId'),
+
+  firstVmtParticipant: function() {
+    return this.get('vmtRoomInfo.participants.firstObject');
+  }.property('vmtRoomInfo.participants.[]'),
+  firstVmtFacilitator: function() {
+    return this.get('vmtRoomInfo.facilitators.firstObject');
+  }.property('vmtRoomInfo.facilitators.firstObject'),
+  vmtDisplayName: function() {
+    return this.get('firstVmtParticipant') || this.get('firstVmtFacilitator') || 'Unknown User';
+  }.property('firstVmtParticipant', 'firstVmtFacilitator'),
+
 });
