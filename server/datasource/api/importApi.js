@@ -253,11 +253,11 @@ const convertVmtRoomsToAnswers = function(rooms, currentUser) {
    let members = room.members || [];
     let facilitators = members
       .filter(m => m.role === 'facilitator')
-      .map(f => f.username);
+      .map(f => _.propertyOf(f)(['user', 'username'] || 'Unknown User'));
 
     let participants = members
       .filter(m => m.role === 'participant')
-      .map(p => p.username);
+      .map(p => _.propertyOf(p)(['user', 'username'] || 'Unknown User'));
 
     let partialRoom = {
       roomId: room._id.toString(),
