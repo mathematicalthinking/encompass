@@ -11,22 +11,12 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
 
-  // doTransitionVmt: true,
-
-  // queryParams: {
-  //   vmtRoomId: {
-  //     replace: true
-  //   }
-  // },
+  queryParams: 'vmtRoomId',
 
   model(params) {
 
-    let { submission_id, vmtRoomId } = params;
+    let { submission_id} = params;
 
-    // if (this.get('utils').isValidMongoId(vmtRoomId)) {
-    //   // do not need to transition again
-    //   this.set('doTransitionVmt', false);
-    // }
 
     let submissions = this.modelFor('workspace.submissions');
     let submission = submissions.findBy('id', submission_id);
@@ -42,23 +32,9 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         return;
       }
       let vmtRoomId = room._id;
-      let workspace = this.modelFor('workspace');
-      this.transitionTo(`/workspaces/${workspace.get('id')}/submissions/${submission.get('id')}?vmtRoomId=${vmtRoomId}`);
+      this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId}});
     });
   },
-
-  // redirect(submission, transition) {
-  //   return this.resolveVmtRoom(submission)
-  //   .then((room) => {
-  //     console.log('rd', room, submission);
-  //     if (!room) {
-  //       return;
-  //     }
-  //     let vmtRoomId = room._id;
-  //     let workspace = this.modelFor('workspace');
-  //     this.transitionTo('workspace.submission', workspace, submission, {queryParams: {vmtRoomId}} );
-  //   });
-  // },
 
   setupController: function(controller, model) {
     this._super(controller, model);
