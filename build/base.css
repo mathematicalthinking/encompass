@@ -519,7 +519,7 @@ table.cols td {
 
 #submission_images { height:200px; width:100%; display:block; }
 #submission_images img { width: 99%; padding: 2px; }
-#submission_selections { z-index:11; position:absolute; left:0px; bottom:0px; height:100px; width:100%; border-top:1px solid #d3d3d3; display:block; overflow-y: auto }
+/* #submission_selections { z-index:11; position:absolute; left:0px; bottom:0px; height:100px; width:100%; border-top:1px solid #d3d3d3; display:block; overflow-y: auto } */
 #submission_selections h2 { font-weight: bold }
 #submission_selections p { padding: 0px 4px }
 #submission_selections li { display: inline-block; line-height: 1em; margin: 2px 0px; }

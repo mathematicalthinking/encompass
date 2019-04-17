@@ -1,22 +1,21 @@
-<aside>
-  <table>
-    <tr>
-      <td>
+<aside class="submission-row">
+      <div class="submission-row-item toggle-show">
         {{#if showingSelections}}
-          <span {{action 'hideSelections'}} class="al_sprite al_hide_selections"></span>
-        {{else}}
-          <span {{action 'showSelections'}} class="al_sprite al_show_selections"></span>
-        {{/if}}
-      </td>
+            <span {{action 'hideSelections'}} class="al_sprite al_hide_selections"></span>
+          {{else}}
+            <span {{action 'showSelections'}} class="al_sprite al_show_selections"></span>
+          {{/if}}
+      </div>
+
       {{#if this.canSelect}}
-        <td>
+        <div class="submission-row-item  toggle-selecting">
           <label class="makingSelection">
             {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
             <span class="al_sprite al_makeselections"></span>
           </label>
-        </td>
+        </div>
       {{/if}}
-      <td>
+      <div class="submission-row-item  problem-link">
         {{#if currentSubmission.answer}}
           <a {{action 'openProblem'}} class="problem-link">
             {{currentSubmission.puzzle.title}}
@@ -28,22 +27,20 @@
             <i class="fas fa-external-link-alt"></i>
           </a>
         {{/if}}
-      </td>
+      </div>
       {{#if canRespond}}
-      <td>
+      <div class="submission-row-item  new-response">
         <button class="action_button new-response" {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>Respond</button>
         {{#if submissionResponses.length}}
           <span class="meta response-count existing" title="existing response count">
             ({{submissionResponses.length}})
           </span>
         {{/if}}
-      </td>
+      </div>
       {{/if}}
-    </tr>
-  </table>
 </aside>
 
-<div id="al_submission" class="al_vertical_stretch">
+<div id="al_submission">
   {{#if showSelectableView}}
     <h3 class="selectable-view-header">Selectable View!</h3>
     {{#selectable-area

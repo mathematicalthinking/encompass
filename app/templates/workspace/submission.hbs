@@ -1,4 +1,5 @@
-<header class="{{makingSelection}}">
+<div id="workspace-container">
+<header class="{{makingSelection}} ws-header">
   <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
   <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
   <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
@@ -12,7 +13,8 @@
   <div class="clear"></div>
 </header>
 
-<div id="al_left">
+<div class="workspace-flex-container">
+{{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
   {{folder-list
     store=store
     folders=nonTrashedFolders
@@ -24,10 +26,10 @@
     workspaceSubmissions=currentWorkspace.submissions.content
     workspaceSelections=nonTrashedSelections
   }}
-</div>
+{{!-- </div> --}}
 
 <!--section class="submissions"-->
-<div id="al_center" class="{{if makingSelection 'al_makeselect'}}">
+{{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}} workspace-flex-item submission"> --}}
   {{submission-group
     store=store
     canRespond=canRespond
@@ -41,11 +43,11 @@
     selections=nonTrashedSelections
     responses=nonTrashedResponses
   }}
-</div>
+{{!-- </div> --}}
 <!--/section-->
 
 <!--section class="right"-->
-<div id="al_right">
+{{!-- <div id="al_right"> --}}
   {{comment-list
     store=store
     comments=nonTrashedComments
@@ -55,9 +57,11 @@
     allowedToComment=permittedToComment
     resetComment=(action "cancelComment")
   }}
+{{!-- </div> --}}
 </div>
-<!--/section-->
 
+<!--/section-->
+</div>
 {{#if showOverlay}}
 <div class="clear"></div>
 <div {{action 'popupMaskClicked'}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>

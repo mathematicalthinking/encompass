@@ -1,4 +1,4 @@
-<header id="submission-nav">
+<header id="submission-nav" class="submission-row nav">
   <!-- this is needed for click events from popup windows -->
   <ul style="display:none;">
     {{#each this.submissionThreadHeads as |threadHead|}}
@@ -12,7 +12,7 @@
     {{/each}}
   </ul>
 
-  <div class="selectBox">
+  <div class="selectBox submission-row-item students">
     <div class="selected">
       <div class="studentItem">
         {{currentStudentDisplayName}}
@@ -33,7 +33,7 @@
     {{/if}}
     </div>
   </div>
-
+  <div class="submission-row-item revisions">
   {{bread-crumbs
     items=currentRevisions
     onSelect=(action "setCurrentSubmission")
@@ -43,8 +43,9 @@
     infoToolTipText=revisionsToolTip
     infoToolTipPosition="top"
   }}
+  </div>
 
-	<div class="al_controller">
+	<div class="al_controller submission-row-item arrows">
 		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
 		<span class="al_number">
       <span class="submission_index">
