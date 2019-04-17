@@ -16,6 +16,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
 
+  classNames: ['workspace-flex-item', 'comments'],
+
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
   // thisWorkspaceOnly: true,

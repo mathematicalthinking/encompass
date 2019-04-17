@@ -7,6 +7,12 @@
  * - currentWorkspace - only used to pass on to submissions
  */
 Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'submission-group',
+
+  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden'],
+  classNames: ['workspace-flex-item', 'submission'],
+  isHidden: false,
+
   currentStudent: Ember.computed.alias('submission.student'),
   currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
   firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),

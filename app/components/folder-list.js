@@ -12,6 +12,8 @@
  * - openModal action to add a new folder
  */
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  elementId: 'folder-list',
+  classNames: ['workspace-flex-item', 'folders'],
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
   weighting: 1,
