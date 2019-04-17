@@ -3,7 +3,8 @@
 @import "responsive-font-size";
 
 #comment-list {
-  table {
+  header.labels {
+    @include flex-container(null, null, row, nowrap, center, flex-start, flex-start);
     img {
       width: 25px;
       display: inline-block;
@@ -11,7 +12,15 @@
       margin-right: 5px;
       margin-top: -2px;
     }
+    .label-list {
+      min-width: fit-content;
+        margin: 0 10px;
+        &.notice {
+          margin-left: 0;
+        }
+    }
   }
+
   textarea {
     border-radius: 3px;
     padding: 10px;
@@ -66,6 +75,10 @@
         width: 90%;
       }
     }
+  }
+  .display-list {
+    height: calc(65% - 15px);
+    overflow-y: auto;
   }
   .comment-text {
     color: black;

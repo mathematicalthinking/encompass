@@ -1,15 +1,10 @@
-<header class="{{newCommentLabel}} {{if canComment can-comment}}">
-	<table>
-		<tr>
-			<td id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</td>
-			<td id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</td>
-			<td id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</td>
-		</tr>
-	</table>
+<header class="{{newCommentLabel}} labels">
+  <div id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</div>
+  <div id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</div>
+  <div id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</div>
 </header>
 
 <div id="al_comments">
-	<form id="newForm">
     {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
     {{else}}
@@ -35,7 +30,6 @@
         {{/if}}
       {{/if}}
 		</div>
-	</form>
   {{#each createRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
@@ -67,28 +61,24 @@
   </div>
 {{/if}}
 
-<div>
-	<form>
-		<div id="al_feedback_display" class="al_vertical_stretch">
-			{{#each queryErrors as |error|}}
-        <p class="error-message">{{error}}</p>
-      {{/each}}
-      {{#each updateRecordErrors as |error|}}
-        <p class="error-message">{{error}}</p>
-      {{/each}}
+  <div id="al_feedback_display" class="display-list">
+    {{#each queryErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
+    {{#each updateRecordErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
 
-      {{#if showLoadingMessage}}
-        Searching for comments. Thank you for your patience.
-      {{else}}
-      <ul>
-				{{#each displayList as |comment|}}
-          {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
-          {{else}}
-          <p class="placeholder">No comments made yet.</p>
-				{{/each}}
-			</ul>
-      {{/if}}
-		</div>
-	</form>
-</div>
+    {{#if showLoadingMessage}}
+      Searching for comments. Thank you for your patience.
+    {{else}}
+    <ul>
+      {{#each displayList as |comment|}}
+        {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
+        {{else}}
+        <p class="placeholder">No comments made yet.</p>
+      {{/each}}
+    </ul>
+    {{/if}}
+  </div>
 
