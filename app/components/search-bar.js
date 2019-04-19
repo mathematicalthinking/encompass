@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.SearchBarComponent = Ember.Component.extend({
   classNames: ["search-bar-comp"],
   searchQuery: Ember.computed.alias("parentView.searchQuery"),
@@ -5,9 +6,19 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   defaultConstraints: {
     query: {
       length: {
-        minimum: 1,
+        minimum: 0,
         maximum: 500
       }
+    }
+  },
+
+  init() {
+    this._super(...arguments);
+
+    let doDebounce = this.get('doDebounce') || true;
+    let debounceTime = this.get('debounceTime') || 300;
+    if (doDebounce) {
+      this.set('debouncedSearch', _.debounce(this.onChangeSearch, debounceTime));
     }
   },
 
@@ -59,6 +70,10 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     this.get("onSearch")(val, criterion);
   },
 
+  onChangeSearch: function() {
+    this.send('validate');
+  },
+
   actions: {
     clearResults: function() {
       // let textVal = this.get("inputValue");
@@ -98,6 +113,14 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     },
     searchAction: function() {
       this.send("validate");
+    },
+    onInputChange() {
+      if (this.get('doSearchOnInputChange')) {
+        if (this.get('debouncedSearch')) {
+          return this.debouncedSearch();
+        }
+        this.send('validate');
+      }
     }
   }
 });
