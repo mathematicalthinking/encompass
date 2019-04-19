@@ -15,14 +15,15 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
+  loading: Ember.inject.service('loading-display'),
 
   classNames: ['workspace-flex-item', 'comments'],
-  classNameBindings: ['canComment:can-comment'],
+  classNameBindings: ['canComment:can-comment', 'isHidden:hidden'],
 
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
-  // thisWorkspaceOnly: true,
   thisSubmissionOnly: true,
+  thisWorkspaceOnly: true,
   commentFilterText: '',
   filterComments: false,
   newComment: '',
@@ -49,10 +50,9 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
   init: function() {
     this._super(...arguments);
-    const htmlFormat = 'YYYY-MM-DD';
     let oneYearAgo = moment().subtract(365, 'days').calendar();
     let oneYearAgoDate = new Date(oneYearAgo);
-    let htmlDate = moment(oneYearAgoDate).format(htmlFormat);
+    let htmlDate = moment(oneYearAgoDate).format('L');
 
     this.set('sinceDate', htmlDate);
   },
@@ -69,67 +69,64 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('newCommentLabel', 'labels'),
 
   filteredComments: function() {
+    let results;
+
     let isOwnOnly = this.get('myCommentsOnly');
     let isSubOnly = this.get('thisSubmissionOnly');
+    let isWsOnly = this.get('thisWorkspaceOnly');
 
-    if (!isOwnOnly && !isSubOnly) {
-      return this.get('comments').sortBy('createDate').reverse();
-    }
 
-    let comments = this.get('comments').filter((comment) => {
-      let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
 
-      let isYours = creatorId === this.get('currentUser.id');
+    let isSearchQuery = this.get('commentFilterText.length') > 0;
 
-      let subId = this.get('utils').getBelongsToId(comment, 'submission');
+    let doFilter = isSubOnly || isWsOnly;
 
-      let doesBelongToSub = subId === this.get('currentSubmission.id');
+    if (doFilter) {
+      results = this.get('comments').filter((comment) => {
+        let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
 
-      if (isOwnOnly) {
-        if (!isYours) {
-          return false;
+        let isYours = creatorId === this.get('currentUser.id');
+
+        let subId = this.get('utils').getBelongsToId(comment, 'submission');
+
+        let doesBelongToSub = subId === this.get('currentSubmission.id');
+
+        let workspaceId = this.get('utils').getBelongsToId(comment, 'workspace');
+
+        let doesBelongToWs = workspaceId === this.get('currentWorkspace.id');
+
+        if (isWsOnly) {
+          if (!doesBelongToWs) {
+            return false;
+          }
         }
-      }
-      if (isSubOnly) {
-        if (!doesBelongToSub) {
-          return false;
+
+        if (isOwnOnly) {
+          if (!isYours) {
+            return false;
+          }
         }
-      }
-      return true;
-    });
+        if (isSubOnly) {
+          if (!doesBelongToSub) {
+            return false;
+          }
+        }
 
-    return comments.sortBy('createDate').reverse();
-  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id'),
-
-  commentSearchResults: function() {
-    if (!this.get('isSearching')) {
-      return;
+        if (isSearchQuery) {
+          let text = this.get('commentFilterText');
+          return comment.get('label').includes(text) || comment.get('text').includes(text);
+        }
+        return true;
+      });
+    } else {
+      return this.get('searchResults') || [];
     }
-    let searchText = this.get('commentFilterText');
-    if (searchText.length < 5) {
-      return [];
-    }
-    this.set('isLoadingSearchResults', true);
-    return this.get('store').query('comment', {
-      text: searchText,
-      myCommentsOnly: this.get('myCommentsOnly'),
-      since: this.get('sinceDate')
-    }).then((comments) => {
-      this.set('searchResults', comments);
-      this.set('isLoadingSearchResults', false);
-    }).catch((err) => {
-      this.set('isLoadingSearchResults', false);
-      this.handleErrors(err, 'queryErrors');
-    });
-  }.observes('commentFilterText', 'myCommentsOnly', 'sinceDate'),
+    return results.sortBy('createDate').reverse();
+  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id', 'thisWorkspaceOnly', 'currentWorkspace.id', 'searchResults.[]'),
 
   displayList: function() {
-    if (this.get('isSearching')) {
-      return this.get('searchResults');
-    }
-
     return this.get('filteredComments');
-  }.property('isSearching', 'searchResults.[]', 'filteredComments.[]'),
+  }.property('filteredComments.[]'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {
@@ -162,19 +159,116 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return this.get('permissions').canEdit(ws, 'comments', 2);
   }.property('onSelection', 'allowedToComment'),
 
-  handleLoadingMessage: function() {
-    const that = this;
-    if (!this.get('isLoadingSearchResults')) {
-      this.set('showLoadingMessage', false);
-      return;
+  toggleDisplayText: function() {
+    if (this.get('isHidden')) {
+      return 'Show Comments';
     }
-    Ember.run.later(function() {
-      if (that.isDestroyed || that.isDestroying || !that.get('isLoadingSearchResults')) {
-        return;
+    return 'Hide Comments';
+  }.property('isHidden'),
+
+  filterOptions: {
+    thisWorkspaceOnly: {
+      label: 'This Workspace Only',
+      relatedProp: 'thisWorkspaceOnly',
+      isChecked: true,
+    },
+    thisSubmissionOnly: {
+      label: 'This Submission Only',
+      relatedProp: 'thisSubmissionOnly',
+      isChecked: true,
+    },
+    myCommentsOnly: {
+      label: 'My Comments Only',
+      relatedProp: 'myCommentsOnly',
+      isChecked: true,
+    },
+
+  },
+
+  emptyResultsMessage: function() {
+    if (this.get('commentFilterText')) {
+      return `No results found for "${this.get('commentFilterText')}" `;
+    }
+    return 'No comments to display';
+  }.property('commentFilterText'),
+
+  resultsDescription: function() {
+    let query = this.get('commentFilterText');
+
+    let displayCount = this.get('displayList.length');
+
+    let resultsModifier = displayCount > 1 ? 'comments' : 'comment';
+
+    if (this.get('commentsMetadata')) {
+
+      let { total, } = this.get('commentsMetadata');
+
+      let base = `Found ${total} ${resultsModifier}`;
+
+      if (this.get('myCommentsOnly')) {
+        base += ' created by you';
       }
-      that.set('showLoadingMessage', true);
-    }, 500);
-  }.observes('isLoadingSearchResults'),
+
+      if (query) {
+        base += ` for "${query}"`;
+      }
+      return base;
+    }
+
+    let base = 'Displaying';
+
+    if (this.get('myCommentsOnly')) {
+      base += ' only your';
+    }
+
+    if (this.get('thisSubmissionOnly')) {
+      return base + ` comments for current submission`;
+    }
+
+    if (this.get('thisWorkspaceOnly')) {
+      return base + ` comments for current workspace`;
+    }
+
+  }.property('commentFilterText', 'thisWorkspaceOnly', 'thisSubmissionOnly', 'myCommentsOnly', 'commentsMetadata'),
+
+  showResultsDescription: function() {
+    return !this.get('doShowLoadingMessage') && this.get('displayList.length') > 0;
+  }.property('displayList.[]', 'doShowLoadingMessage'),
+
+  isSinceDateValid: function() {
+    let input = this.get('sinceDate');
+    if (typeof input !== 'string' || !input.length > 0) {
+      return false;
+    }
+    let split = input.split('/');
+
+    if (split.length !== 3) {
+      return false;
+    }
+    let month = split[0];
+    let monthInt = parseInt(month, 10);
+    if (_.isNaN(monthInt) || monthInt > 12 || monthInt < 1) {
+      return false;
+    }
+    let day = split[1];
+    let dayInt = parseInt(day, 10);
+
+    if (_.isNaN(dayInt) || dayInt < 1 || dayInt > 31) {
+      return false;
+    }
+
+    let year = split[2];
+    let yearInt = parseInt(year, 10);
+
+    if (_.isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) {
+      return false;
+    }
+    return true;
+  }.property('sinceDate'),
+
+  showApplyDate: function() {
+    return this.get('doUseSinceDate') && this.get('isSinceDateValid');
+  }.property('isSinceDateValid', 'doUseSinceDate'),
 
   actions: {
     cancelComment: function() {
@@ -192,18 +286,16 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     createComment: function() {
-      var currentUser = this.get('currentUser');
-      var label = this.get('newCommentLabel');
-      var text = this.get('newComment');
-      var useForResponse = this.labels[label].useForResponse;
-      //var controller = this;
+      let currentUser = this.get('currentUser');
+      let label = this.get('newCommentLabel');
+      let text = this.get('newComment');
+      let useForResponse = this.labels[label].useForResponse;
       if (!text || !text.trim()) { return; }
 
-      //var selection = this.currentWorkspace.get('currentSelection');
-      var selection = this.currentSelection;
-      var currentSubmission = this.get('currentSubmission');
+      let selection = this.get('currentSelection');
+      let currentSubmission = this.get('currentSubmission');
 
-      var data = {
+      let data = {
         text: text,
         label: label,
         selection: selection,
@@ -213,7 +305,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         useForResponse: !!useForResponse,
         createdBy: currentUser,
       };
-      var comment = this.get('store').createRecord('comment', data);
+      let comment = this.get('store').createRecord('comment', data);
 
       //TODO push comment onto origin's derivatives
 
@@ -299,6 +391,63 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       if (this.get('isSearching') && this.get('showFilter')) {
         this.set('showFilter', false);
       }
+    },
+    hideComments() {
+      this.get('hideComments')();
+    },
+    updateFilter(prop) {
+      this.toggleProperty(prop);
+      this.send('searchComments');
+    },
+    searchComments(query, page) {
+      // no need to fetch
+      if (this.get('thisSubmissionOnly') || this.get('thisWorkspaceOnly')) {
+        return;
+      }
+
+      this.get('loading').handleLoadingMessage(this, 'start', 'isLoadingSearchResults', 'doShowLoadingMessage');
+
+      let options = {
+        text: query || '',
+      };
+
+      if (this.get('thisWorkspaceOnly')) {
+        options.workspace = this.get('currentWorkspace.id');
+      }
+      if (this.get('thisSubmissionOnly')) {
+        options.submission = this.get('currentSubmission.id');
+      }
+      if (this.get('myCommentsOnly')) {
+        options.createdBy = this.get('currentUser.id');
+      }
+
+      options.page = page || 1;
+
+      if (this.get('doUseSinceDate')) {
+        let dateInput = this.get('sinceDate');
+        let parsedDate = Date.parse(dateInput);
+
+        if (_.isNaN(parsedDate)) {
+          return this.set('invalidDateError', 'Please enter a valid date');
+        }
+        options.sinceDate = dateInput;
+      }
+      return this.get('store').query('comment', options)
+        .then((comments) => {
+          this.set('searchResults', comments.toArray());
+          this.set('commentsMetadata', comments.get('meta'));
+          this.get('loading').handleLoadingMessage(this, 'end', 'isLoadingSearchResults', 'doShowLoadingMessage');
+        }).catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isLoadingSearchResults', 'doShowLoadingMessage');
+          this.handleErrors(err, 'queryErrors');
+        });
+    },
+    initiatePageChange(page) {
+      this.set('isChangingPage', true);
+      this.send('searchComments', this.get('commentFilterText'), page);
+    },
+    applySinceDate() {
+      this.send('searchComments', this.get('commentFilterText'));
     }
   }
 });

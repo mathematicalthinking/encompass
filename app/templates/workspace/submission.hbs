@@ -1,11 +1,13 @@
 <div id="workspace-container">
 <header class="{{makingSelection}} ws-header">
-  <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
-  <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
-  <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
-{{/link-to}}</span>
+  <div class="ws-meta">
+    <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
+    <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
+    <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
+  {{/link-to}}</span>
+</div>
   <aside>
-  <a id="takeTour" {{action 'startTour'}}>Take Tour</a>
+  <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>
     {{! this needs to be here so the GuideJS can click it when done
         we don't have a better way to propagate actions }}
     <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
@@ -15,6 +17,11 @@
 
 <div class="workspace-flex-container">
 {{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
+  {{#if areFoldersHidden}}
+  <div title="Show Folders" class="toggle-display">
+    <button {{action 'toggleFolderDisplay'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+  </div>
+  {{/if}}
   {{folder-list
     store=store
     folders=nonTrashedFolders
@@ -25,6 +32,8 @@
     taggings=nonTrashedTaggings
     workspaceSubmissions=currentWorkspace.submissions.content
     workspaceSelections=nonTrashedSelections
+    hideFolders=(action "toggleFolderDisplay")
+    isHidden=areFoldersHidden
   }}
 {{!-- </div> --}}
 
@@ -48,6 +57,11 @@
 
 <!--section class="right"-->
 {{!-- <div id="al_right"> --}}
+   {{#if areCommentsHidden}}
+  <div title="Show Comments" class="toggle-display comments">
+    <button {{action 'toggleCommentDisplay'}}><i id="arrow-icon" class="fas fa-chevron-left"></i></button>
+  </div>
+  {{/if}}
   {{comment-list
     store=store
     comments=nonTrashedComments
@@ -56,6 +70,8 @@
     currentSubmission=currentSubmission
     allowedToComment=permittedToComment
     resetComment=(action "cancelComment")
+    isHidden=areCommentsHidden
+    hideComments=(action "toggleCommentDisplay")
   }}
 {{!-- </div> --}}
 </div>

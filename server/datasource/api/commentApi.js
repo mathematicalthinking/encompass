@@ -8,6 +8,7 @@
 //REQUIRE MODULES
 const _ = require('underscore');
 const logger = require('log4js').getLogger('server');
+const moment = require('moment');
 
 //REQUIRE FILES
 const models   = require('../schemas');
@@ -16,6 +17,8 @@ const utils    = require('../../middleware/requestHandler');
 const wsAccess   = require('../../middleware/access/workspaces');
 const access   = require('../../middleware/access/comments');
 const asyncWrapper = utils.asyncWrapper;
+
+const { isValidMongoId } = require('../../utils/mongoose');
 
 module.exports.get = {};
 module.exports.post = {};
@@ -31,10 +34,11 @@ module.exports.put = {};
   * @throws {RestError} Something? went wrong
   */
 async function getComments(req, res, next) {
-  var user = userAuth.requireUser(req);
-  var criteria;
+  let user = userAuth.requireUser(req);
+  let criteria;
 
-  var ids = req.query.ids;
+  let { ids, page, createdBy, workspace, submission } = req.query;
+
   try {
     if (ids) {
       criteria = await access.get.comments(user, ids);
@@ -46,26 +50,38 @@ async function getComments(req, res, next) {
     console.trace();
   }
 
-  var textSearch = req.query.text;
+  let textSearch = req.query.text;
+  let byRelevance = false;
 
   // Determine what comments can be searched
   if(textSearch) {
-    var regExp = new RegExp(textSearch, 'i');
-    criteria.text = regExp;
+    byRelevance = true;
+    criteria.$text = {
+      $search: textSearch
+    };
   }
 
-  var myCommentsOnly = (req.query.myCommentsOnly === 'true');
-  if(myCommentsOnly) {
-    criteria.createdBy = user._id;
+  if(isValidMongoId(createdBy)) {
+    criteria.createdBy = createdBy;
   }
 
-  var sinceDate = req.query.since;
+  if (isValidMongoId(workspace)) {
+    criteria.workspace = workspace;
+  }
+
+  if (isValidMongoId(submission)) {
+    criteria.submission = submission;
+  }
+
+  let sinceDate = req.query.sinceDate;
   if (sinceDate) {
-    let isoDate = new Date(sinceDate);
-    criteria.createDate = {$gte: isoDate};
+    let startMoment = moment(sinceDate, 'L').startOf('day');
+    let startDateObj = new Date(startMoment);
+
+    criteria.createDate = {$gte: startDateObj};
   }
 
-  var workspaces = req.query.workspaces;
+  let workspaces = req.query.workspaces;
 
   if(workspaces) {
     criteria.workspace = {$in: req.query.workspaces};
@@ -78,51 +94,87 @@ async function getComments(req, res, next) {
   //  searchCriteria.$or.push({text: regExp});
   //}
 
-  models.Comment.find(criteria)
-    .populate('selection')
-    .populate('submission')
-    // .populate('workspace')
-    .populate('createdBy')
-    .lean()
-    .exec(function(err, comments) {
-      if(err) {
-        logger.error(err);
-        return utils.sendError.InternalError(err, res);
-      }
+  let results, itemCount;
 
-      var data = {'comments': []};
-      var dataMap = {'createdBy': 'user'};
-      var relatedData = {
-        'selection': {},
-        'submission': {},
-        // 'workspace': {},
-        'createdBy': {}
+  let sortParam = { createDate: 1 };
+
+
+  if (byRelevance) {
+    sortParam = { score: { $meta: "textScore" } };
+
+    [ results, itemCount ] = await Promise.all([
+      models.Comment.find(criteria, { score: {$meta: "textScore"}})
+        .sort(sortParam)
+        .limit(req.query.limit)
+        .skip(req.skip)
+        .populate('selection')
+        .populate('submission')
+        .populate('createdBy')
+        .populate('workspace')
+        .lean().exec(),
+      models.Comment.count(criteria)
+    ]);
+  } else {
+    [ results, itemCount ] = await Promise.all([
+      models.Comment.find(criteria).sort(sortParam).limit(req.query.limit).skip(req.skip).populate('selection')
+      .populate('submission')
+      .populate('workspace')
+      .populate('createdBy').lean().exec(),
+      models.Comment.count(criteria)
+    ]);
+  }
+  const pageCount = Math.ceil(itemCount / req.query.limit);
+  let currentPage = page;
+  if (!currentPage) {
+    currentPage = 1;
+  }
+     let data = {
+       comments: [],
+       meta: {
+        total: itemCount,
+        pageCount,
+        currentPage
+      }
+    };
+     let dataMap = {createdBy: 'user'};
+     let relatedData = {
+        selection: {},
+        submission: {},
+        workspace: {},
+        createdBy: {}
       };
 
       //this would probably be better done as an aggregate?
       //we're just massaging the data into an ember friendly format for side-loading
-      comments.forEach(function(comment) {
+      results.forEach((comment) => {
+        let hasMissingRelationship = false;
+
         _.keys(relatedData).forEach(function(key){
           if(comment[key]){
             relatedData[key][comment[key]._id] = comment[key];
             comment[key] = comment[key]._id;
           } else {
+            hasMissingRelationship = true;
+
             logger.error('comment ' + comment._id + ' missing ' + key);
             delete comment[key];
           }
         });
-        data.comments.push(comment);
+        if (!hasMissingRelationship) {
+          data.comments.push(comment);
+        }
       });
 
       _.keys(relatedData).forEach(function(key){
-        var modelName = key;
+        let modelName = key;
         if(dataMap[key]) {
           modelName = dataMap[key];
         }
         data[modelName] = _.values(relatedData[key]);
       });
+
       utils.sendResponse(res, data);
-    });
+
 }
 
 /**

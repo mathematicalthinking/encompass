@@ -1,23 +1,61 @@
-<header class="{{newCommentLabel}} labels">
+<header>
+  <h2>Comments</h2>
+  <span {{action "hideComments"}}><i title="Hide Comments"class="far fa-eye-slash"></i></span>
+</header>
+
+<div class="{{newCommentLabel}} labels">
   <div id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</div>
   <div id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</div>
   <div id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</div>
-</header>
+</div>
 
 <div id="al_comments">
-    {{#if canComment}}
-      {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
-    {{else}}
-      <p class="error-message">You do not have permisssion to make comments for this workspace</p>
-    {{/if}}
-    <div class="filterControl meta">
-      <a class="filter" {{action 'toggleFilter'}}>
-        <i class="fas fa-filter"></i> filter
-      </a>
-      <a class="search" {{action 'toggleSearch'}}>
-        <i class="fas fa-search"></i> search
-      </a>
+  {{#if canComment}}
+    {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+  {{else}}
+    <p class="error-message">You do not have permisssion to make comments for this workspace</p>
+  {{/if}}
+  <div class="comment-flex-row">
+    <div class="comment-flex-item filter">
+      Filter<i class="fas fa-filter"></i>
+      <span class="hover-menu checkbox">
+        <ul>
+          {{#each-in filterOptions as  |option values|}}
+            <li>
+              <label>
+                <input type="checkbox" checked={{values.isChecked}} name={{option}} onclick={{action "updateFilter" option}}>
+                <span>
+                  <span class="radio-text">{{values.label}}</span>
+                </span>
+              </label>
+            </li>
+          {{/each-in}}
+          <li>
+            <label>
+              <input type="checkbox" checked={{doUseSinceDate}} name="doUseSinceDate" onclick={{action "updateFilter" "doUseSinceDate"}}>
+              <span>
+                <span class="radio-text">Since</span>
+                {{input type="text" placeholder="mm/dd/yyyy" value=sinceDate}}
+                {{#if showApplyDate}}
+                  <button {{action "applySinceDate"}}>Apply</button>
+                {{/if}}
+              </span>
+            </label>
+          </li>
+        </ul>
+      </span>
     </div>
+    <div class="comment-flex-item search">
+  {{search-bar
+    onSearch=(action "searchComments")
+    basePlaceholder="Search all comments"
+    inputValue=commentFilterText
+    doSearchOnInputChange=true
+  }}
+</div>
+  </div>
+
+
 		<div class="al_controller">
       {{#if canComment}}
         <span class="meta">
@@ -36,31 +74,11 @@
 	<div class="clear"></div>
 </div>
 
-{{#if showFilter}}
-  <div class="filter-options">
-    <p>
-    <label>{{input type="checkbox" checked=thisSubmissionOnly}} this submission only</label>
-    <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
-    </p>
+{{#if showResultsDescription}}
+  <div class="results-message">
+    {{resultsDescription}}
   </div>
 {{/if}}
-
-{{#if isSearching}}
-  <div class="search-options">
-    <p>
-      <label>Search comments</label>
-      {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
-    </p>
-    <p>
-    <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
-    </p>
-    <p>
-      <label>Since</label>
-    {{input type="date" id="sinceDate" value=sinceDate classNames ="noborder no padding"}}
-    </p>
-  </div>
-{{/if}}
-
   <div id="al_feedback_display" class="display-list">
     {{#each queryErrors as |error|}}
       <p class="error-message">{{error}}</p>
@@ -68,7 +86,10 @@
     {{#each updateRecordErrors as |error|}}
       <p class="error-message">{{error}}</p>
     {{/each}}
-
+    {{#if invalidDateError}}
+      {{error-box error=invalidDateError showDismiss=true resetError=(action (mut invalidDateError) null)}}
+    {{/if}}
+  {{log 'showLoadingMessage' showLoadingMessage}}
     {{#if showLoadingMessage}}
       Searching for comments. Thank you for your patience.
     {{else}}
@@ -76,9 +97,11 @@
       {{#each displayList as |comment|}}
         {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
         {{else}}
-        <p class="placeholder">No comments made yet.</p>
+        <p class="placeholder">{{emptyResultsMessage}}</p>
       {{/each}}
     </ul>
+    {{pagination-control details=commentsMetadata initiatePageChange=(action "initiatePageChange")}}
+
     {{/if}}
   </div>
 
