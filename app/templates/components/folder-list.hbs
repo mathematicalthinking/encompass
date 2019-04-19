@@ -1,6 +1,9 @@
 {{! TODO: restore the functionlaity of the view WorkspaceFolderDropTarget stuff, see the old ../folders.hbs}}
+<header>
+  <h2>Folders</h2>
+  <span {{action "hideFolders"}}><i title="Hide Folders"class="far fa-eye-slash"></i></span>
+</header>
 {{#workspace-folder-drop folders=folders}}
-<div class="al_vertical_stretch">
   <div class="dropZone" style="height:10px;"></div>
   <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
@@ -21,7 +24,6 @@
     {{/each}}
   </ul>
   <div class="dropZone" style="height:10px;"></div>
-</div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
   <div id="al_folders_modify">

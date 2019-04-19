@@ -14,6 +14,7 @@
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'folder-list',
   classNames: ['workspace-flex-item', 'folders'],
+  classNameBindings: ['isHidden:hidden'],
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
   weighting: 1,
@@ -73,6 +74,13 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     return (above) ? siblingsAbove : siblingsBelow;
   },
+
+  toggleDisplayText: function() {
+    if (this.get('isHidden')) {
+      return 'Show Folders';
+    }
+    return 'Hide Folders';
+  }.property('isHidden'),
 
   actions: {
     openModal: function(){
@@ -229,6 +237,9 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
         }
       }
     },
+    hideFolders() {
+      this.get('hideFolders')();
+    }
   }
 });
 

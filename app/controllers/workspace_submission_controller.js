@@ -19,6 +19,9 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   permissions: Ember.inject.service('workspace-permissions'),
   guider: Ember.inject.service('guiders-create'),
 
+  areFoldersHidden: false,
+  areCommentsHidden: false,
+
   canSelect: function() {
     let cws = this.get('currentWorkspace');
     return this.get('permissions').canEdit(cws, 'selections', 2);
@@ -339,6 +342,12 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     },
     toSubmission(submission) {
       this.transitionToRoute('workspace.submission', submission);
+    },
+    toggleFolderDisplay() {
+      this.toggleProperty('areFoldersHidden');
+    },
+    toggleCommentDisplay() {
+      this.toggleProperty('areCommentsHidden');
     }
   }
 });
