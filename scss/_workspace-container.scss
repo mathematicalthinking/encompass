@@ -28,17 +28,53 @@
   background-color: $filter-list-background-color;
   height: calc(100vh - 75px);
 
-  .ws-header {
+  .toggle-display {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+    z-index: 205;
+    display: unset;
+    .hidden {
+      display: none;
+    }
+    button {
+      height: 50px;
+      background-color: $filter-list-background-color;
+      position: fixed;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      color: lighten($primary-font-color, 20%);
+      &:focus {
+        outline: none;
+      }
+    }
+    &.comments {
+      left: calc(100% - 35px);
+    }
+  }
 
+  .ws-header {
+    @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
     position: relative;
     top: 20px;
-    margin-bottom: 20px;
+    margin: 20px;
     border: 2px solid yellow;
     line-height: normal;
 
     h2 {
       display: inline-block;
+      font-weight: 300;
+      font-size: 1.5em;
     }
+
+    .ws-meta {
+      order: 1;
+    }
+    aside {
+      order: 2;
+      margin-left: auto;
+    }
+
   }
 
   .workspace-flex-container {
@@ -54,7 +90,7 @@
       box-shadow: $box-shadow;
       border-radius: 3px;
       margin: 20px;
-      padding: 30px 35px;
+      padding: 15px 17px;
       height: calc(100vh - 215px);
     }
 
@@ -94,21 +130,29 @@
           // @include flex-item(1, flex-start, 0.3 0 auto);
           margin-left: 0;
         }
-        &.revisions {
-          // @include flex-item(2, flex-start, 0.3 0 auto);
-        }
-        &.arrows {
-          // @include flex-item(3, flex-end, 0.2 0 auto);
-        }
       }
      }
 
   }
 
   #folder-list {
+    @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+    h2 {
+      display: inline-block;
+      font-size: 1.4em;
+    }
+
+    &.hidden {
+      display: none;
+    }
+    .dropTarget {
+      height: calc(100% - 50px);
+      width: 100%;
+    }
     #al_folders_modify {
       position: relative;
     }
+
   }
 
   #submission-group {
@@ -125,12 +169,12 @@
     }
     #submission_selections {
       position: relative;
-      border: 2px solid purple;
+      // border: 2px solid purple;
       overflow-y: auto;
-      height: 100px;
+      height: 125px;
       bottom: 0px;
       margin-top: 15px;
-      // border-top:1px solid #d3d3d3;
+      border-top:1px solid #d3d3d3;
     }
   }
 

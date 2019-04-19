@@ -3,7 +3,24 @@
 @import "responsive-font-size";
 
 #comment-list {
-  header.labels {
+  h2 {
+    display: inline-block;
+    font-size: 1.4em;
+  }
+
+  .seperator {
+    font-size: 1.5em;
+    margin: 0 8px;
+  }
+  .single-text-input {
+    height: 10px;
+    font-size: .8em;
+    padding-left: 10px;
+    font-weight: $light-font-weight;
+    max-width: 115px;
+  }
+
+  .labels {
     @include flex-container(null, null, row, nowrap, center, flex-start, flex-start);
     img {
       width: 25px;
@@ -44,27 +61,41 @@
     background-color: white;
     border-radius: 3px;
   }
-  .filterControl {
-    margin: 12px 0 0 8px;
-    font-size: 1em;
-    .filter {
-      cursor: pointer;
-      margin-right: 10px;
+  .comment-flex-row {
+    @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
+    margin: 20px 0;
+    line-height: 25px;
+  }
+  .comment-flex-item {
+    &.filter {
+      @include flex-item(1, flex-start, 0.1 0 auto);
+      &:hover {
+        cursor: pointer;
+        color: black;
+        .hover-menu {
+          display: inline;
+        }
+      }
     }
-    .search {
-      cursor: pointer;
-      margin-left: 10px;
+    &.search {
+      @include flex-item (2, flex-start, 0.9 1 auto);
+      .search-bar-comp {
+        margin: auto;
+        height: 25px;
+        input [type=text] {
+          height: 25px;
+        }
+      }
     }
   }
-  .filter-options {
+
+  .comment-filter-options {
     margin: 0 0px 10px 10px;
     label {
       margin: 0 5px;
     }
   }
   .search-options {
-    margin: 0 0px 10px 10px;
-    p {
       margin: 5px 0;
       input[type=text] {
         padding: 10px 5px;
@@ -74,7 +105,7 @@
         text-indent: 5px;
         width: 90%;
       }
-    }
+
   }
   .display-list {
     height: calc(65% - 15px);
