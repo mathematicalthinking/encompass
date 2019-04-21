@@ -47,6 +47,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       useForResponse: true
     }
   },
+  labelOptions: ['notice', 'wonder', 'feedback'],
 
   init: function() {
     this._super(...arguments);
@@ -125,8 +126,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id', 'thisWorkspaceOnly', 'currentWorkspace.id', 'searchResults.[]'),
 
   displayList: function() {
-    return this.get('filteredComments');
-  }.property('filteredComments.[]'),
+    return this.get('filteredComments').rejectBy('isTrashed');
+  }.property('filteredComments.@each.isTrashed'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {

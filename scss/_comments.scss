@@ -20,21 +20,53 @@
     max-width: 115px;
   }
 
-  .labels {
-    @include flex-container(null, null, row, nowrap, center, flex-start, flex-start);
-    img {
-      width: 25px;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 5px;
-      margin-top: -2px;
-    }
-    .label-list {
-      min-width: fit-content;
-        margin: 0 10px;
-        &.notice {
-          margin-left: 0;
+  .label-select {
+    font-size: 1.1em;
+    #my-select {
+      width: 100%;
+      margin-right: 30px;
+      select {
+        height: 30px;
+        font-size: 1em;
+        border: none;
+        text-indent: 5px;
+        background: none;
+        width: 100%;
+        max-width: 130px;
+        text-align-last: left;
+        margin: 0 auto;
+        text-transform: capitalize;
+        color: black;
+        background: url(/images/caret-down.svg) no-repeat right;
+        background-size: 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        &:focus {
+          outline: none;
         }
+      }
+    }
+    &.notice {
+      #my-select:before {
+        content: "N";
+        font-weight: $bolder-font-weight;
+        color: #DD9327;
+      }
+    }
+    &.wonder {
+      #my-select:before {
+        content: "W";
+        font-weight: $bolder-font-weight;
+        color: #72CCC6;
+      }
+    }
+    &.feedback {
+      #my-select:before {
+        content: "F";
+        font-weight: $bolder-font-weight;
+        color: #BE4699;
+
+      }
     }
   }
 
@@ -54,12 +86,6 @@
   }
   button {
     font-size: 1em;
-  }
-  .cancel-button {
-    font-size: 1em;
-    padding: 10px 10px;
-    background-color: white;
-    border-radius: 3px;
   }
   .comment-flex-row {
     @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
@@ -87,6 +113,28 @@
         }
       }
     }
+
+    &.text {
+      @include flex-item (1, flex-start, auto);
+      @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+    }
+    &.actions {
+      @include flex-item(2, center, initial);
+      @include flex-container(null, null, row, nowrap, space-between, flex-start, center);
+      margin-left: auto;
+
+      a {
+        display: inline-block;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .submit-buttons {
+    @include flex-container(null, null, row, wrap, flex-end, flex-start, center);
+    .save {
+      margin-left: 15px;
+    }
   }
 
   .comment-filter-options {
@@ -95,25 +143,43 @@
       margin: 0 5px;
     }
   }
-  .search-options {
-      margin: 5px 0;
-      input[type=text] {
-        padding: 10px 5px;
-        background-color: white;
-        border: .5px solid $input-border;
-        border-radius: 3px;
-        text-indent: 5px;
-        width: 90%;
-      }
 
-  }
   .display-list {
     height: calc(65% - 15px);
     overflow-y: auto;
+    margin-top: 15px;
+
+    li {
+      @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+    }
+    li:before {
+      font-weight: $bolder-font-weight;
+      font-size: 2em;
+      margin-right: 10px;
+    }
+
+    .notice:before {
+      content: "N";
+      color: #DD9327;
+    }
+    .wonder:before {
+      content: "W";
+      font-weight: $bolder-font-weight;
+      color: #72CCC6;
+      font-size: 2em;
+    }
+    .feedback:before {
+      content: "F";
+      font-weight: $bolder-font-weight;
+      color: #BE4699;
+      font-size: 2em;
+    }
   }
+
   .comment-text {
     color: black;
     margin-bottom: 2px;
+    font-size: 0.9em;
   }
   .label-list {
     cursor: pointer;
@@ -122,25 +188,5 @@
     background-color: $background-color;
     padding: 2px 5px;
     border-radius: 3px;
-  }
-  .delete_button {
-    position: absolute;
-    top: 50%;
-    right: 45px;
-    margin-top: -6px;
-  }
-  .fa-plus {
-    position: absolute;
-    top: 30%;
-    left: 15px;
-  }
-  .comment-label {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    margin-top: -9px;
-    img {
-      width: 20px;
-    }
   }
 }

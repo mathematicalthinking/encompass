@@ -116,10 +116,10 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_right header table td:last-child { border-right:none; }
 #al_right .al_controller { float:right; text-align:right; }
 /* */
-#al_feedback_display { width:97%; background:#fff; border:1px solid #d3d3d3; margin:0 auto; }
+#al_feedback_display {background:#fff; border:1px solid #d3d3d3; margin:0 auto; }
 .modal #al_feedback_display { width:400px; margin:15px 0; }
 .modal #al_feedback_display li { padding:10px 0; font-size:13px; }
-#al_feedback_display li { position:relative; padding:10px 45px 10px 5px; border-bottom:1px solid #d3d3d3; }
+#al_feedback_display li { position:relative; padding:10px 10px 10px 5px; border-bottom:1px solid #d3d3d3; }
 .modal #al_feedback_display li { padding-right:10px; }
 #al_feedback_display li:last-child { border-bottom:none; padding-bottom:0; }
 #al_feedback_display li .al_sprite.comment_label { position:absolute; top:50%; right:20px; margin-top:-6px; width:13px; height:12px; }

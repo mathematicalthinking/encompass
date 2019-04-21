@@ -1,29 +1,31 @@
-    {{#if permittedToComment}}
-      <a {{action reuseComment comment}} title="reuse this comment">
-        {{#if childrenLength}}
-          {{childrenLength}}
-        {{else}}
-          <i class="fas fa-plus"></i>
-        {{/if}}
-      </a>
-  	{{/if}}
-    {{#if canDelete}}
-  	  <span {{action deleteComment comment}} class="delete_button"><i class="fas fa-minus-circle"></i></span>
+<div class="comment-flex-item text">
+  <p>
+    {{#if isForCurrentWorkspace}}
+      {{#link-to 'workspace.submission.selection' comment.selection.submission comment.selection classNames="comment comment-text"}}
+        {{comment.text}}
+      {{/link-to}}
+    {{else}}
+    <a class="newWindow comment-text" target="_blank" href="{{comment.selection.link}}">{{comment.text}}</a>
     {{/if}}
-  	<p>
-      {{#if isForCurrentWorkspace}}
-        {{#link-to 'workspace.submission.selection' comment.selection.submission comment.selection classNames="comment comment-text"}}
-          {{comment.text}}
-        {{/link-to}}
-      {{else}}
-      <a class="newWindow comment-text" target="_blank" href="{{comment.selection.link}}">{{comment.text}}</a>
-      {{/if}}
+  </p>
+    <p class="meta">
+      by <span class="creator">{{comment.createdBy.username}}</span>
+      in <span class="workspace">{{comment.workspace.name}}</span>
     </p>
-      <p class="meta">
-        by <span class="creator">{{comment.createdBy.username}}</span>
-        in <span class="workspace">{{comment.workspace.name}}</span>
-      </p>
-  	<span class="comment-label">
-      <img src="/images/{{comment.label}}.svg" alt="{{comment.label}}">
-    </span>
-  	<div class="clear"></div>
+</div>
+<div class="comment-flex-item actions">
+  {{#if canDelete}}
+    <span {{action deleteComment comment}} class="delete_button"><i class="fas fa-minus-circle"></i></span>
+  {{/if}}
+  {{#if permittedToComment}}
+    <a {{action reuseComment comment}} title="reuse this comment">
+      {{#if childrenLength}}
+        {{childrenLength}}
+      {{else}}
+        <i class="fas fa-plus"></i>
+      {{/if}}
+    </a>
+  {{/if}}
+</div>
+
+<div class="clear"></div>

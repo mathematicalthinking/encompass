@@ -3,17 +3,20 @@
   <span {{action "hideComments"}}><i title="Hide Comments"class="far fa-eye-slash"></i></span>
 </header>
 
-<div class="{{newCommentLabel}} labels">
-  <div id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</div>
-  <div id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</div>
-  <div id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</div>
+<div class="label-select {{newCommentLabel}}">
+  {{my-select content=labelOptions cannotBeNull=true selectedValue=newCommentLabel action=(action (mut newCommentLabel))}}
 </div>
-
 <div id="al_comments">
   {{#if canComment}}
     {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
   {{else}}
     <p class="error-message">You do not have permisssion to make comments for this workspace</p>
+  {{/if}}
+  {{#if onSelection}}
+    <div class="submit-buttons">
+      <button class="primary-button cancel-button" {{action "cancelComment"}}>Cancel</button>
+      <button class="primary-button save" {{action "madeSelection"}}>Save</button>
+    </div>
   {{/if}}
   <div class="comment-flex-row">
     <div class="comment-flex-item filter">
@@ -56,18 +59,6 @@
   </div>
 
 
-		<div class="al_controller">
-      {{#if canComment}}
-        <span class="meta">
-        {{#if doSearch}}+{{/if}}
-        {{#if searching}}...{{/if}}
-        </span>
-        {{#if onSelection}}
-          <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
-          <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
-        {{/if}}
-      {{/if}}
-		</div>
   {{#each createRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
@@ -89,7 +80,6 @@
     {{#if invalidDateError}}
       {{error-box error=invalidDateError showDismiss=true resetError=(action (mut invalidDateError) null)}}
     {{/if}}
-  {{log 'showLoadingMessage' showLoadingMessage}}
     {{#if showLoadingMessage}}
       Searching for comments. Thank you for your patience.
     {{else}}

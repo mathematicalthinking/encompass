@@ -5,6 +5,7 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
   utils: Ember.inject.service('utility-methods'),
 
   currentWorkspace: null,
+  classNames: ['ws-comment-comp'],
   classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse' ],
 
   isForCurrentWorkspace: function() {
