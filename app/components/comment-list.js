@@ -301,7 +301,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         label: label,
         selection: selection,
         submission: currentSubmission,
-        workspace: this.currentWorkspace,
+        workspace: this.get('currentWorkspace'),
         parent: this.get('newCommentParent'),
         useForResponse: !!useForResponse,
         createdBy: currentUser,
