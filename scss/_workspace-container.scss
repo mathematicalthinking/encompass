@@ -95,21 +95,21 @@
     }
 
     .workspace-flex-item.folders{
-      @include flex-item(1, flex-start, 0 1 auto);
+      @include flex-item(1, flex-start, 1 1 auto);
       width: 17%;
       min-width: 230px;
       border: 2px solid green;
 
     }
     .workspace-flex-item.submission{
-      @include flex-item(2, flex-start, 1 1 auto);
+      @include flex-item(2, flex-start, 4 1 auto);
       width: 40%;
       min-width: 447px;
       border: 2px solid red;
 
     }
     .workspace-flex-item.comments{
-      @include flex-item(3, flex-start, 0 1 auto);
+      @include flex-item(3, flex-start, 2 1 auto);
       width: 23%;
       min-width: 320px;
       border: 2px solid purple;
