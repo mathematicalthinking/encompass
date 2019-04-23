@@ -18,7 +18,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   loading: Ember.inject.service('loading-display'),
 
   classNames: ['workspace-flex-item', 'comments'],
-  classNameBindings: ['canComment:can-comment', 'isHidden:hidden'],
+  classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection'],
 
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,

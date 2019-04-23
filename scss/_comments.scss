@@ -22,6 +22,8 @@
 
   .label-select {
     font-size: 1.1em;
+    margin-bottom: 10px;
+    margin-left: 15px;
     #my-select {
       width: 100%;
       margin-right: 30px;
@@ -72,7 +74,6 @@
 
   textarea {
     border-radius: 3px;
-    padding: 10px;
     height: 50px;
     transition-property: height;
     transition-duration: .2s;
@@ -81,14 +82,13 @@
     //   height: 60px;
     // }
     font-size:13px;
-    padding:5px;
     border:1px solid #b4b4b4;
-    width:94%;
+    width:100%;
     display:block;
     resize:none;
     position:relative;
-    // margin: 10px 10px auto 0px;
     margin: 15px 15px 15px auto;
+    text-indent: 5px;
 
     &.has-text {
       height: 50px;
@@ -106,13 +106,14 @@
   }
   .comment-flex-row {
     @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
-    margin: 15px 15px 15px auto;
     line-height: 25px;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    margin-left: 15px;
   }
   .comment-flex-item {
     &.filter {
       @include flex-item(1, flex-start, initial);
-      margin-right: 25px;
       padding-bottom: 20px;
       &:hover {
         cursor: pointer;
@@ -177,18 +178,24 @@
   }
 
   .display-list {
-    height: calc(100% - 270px);
+    height: calc(100% - 242px);
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: 15px;
-    margin-left: 15px;
+    border: 1px solid purple;
 
     ul {
-      margin-top: 5px;
+      margin-left: 15px;
+    }
+
+    .results-message {
+      margin-left: 15px;
+      margin-bottom: 10px;
     }
 
     li {
       @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+      background-color: white;
+      margin-bottom: 5px;
     }
     li:before {
       font-weight: $bolder-font-weight;
@@ -237,8 +244,22 @@
       height: 75px;
     }
     .display-list {
-      height: calc(100% - 345px);
+      height: calc(100% - 316px);
     }
   }
 
 }
+
+#al_feedback_display {border:1px solid #d3d3d3; }
+.modal #al_feedback_display { width:400px; margin:15px 0; }
+.modal #al_feedback_display li { padding:10px 0; font-size:13px; }
+#al_feedback_display li { position:relative; padding:10px 10px 10px 5px; border-bottom:1px solid #d3d3d3; }
+.modal #al_feedback_display li { padding-right:10px; }
+/* #al_feedback_display li:last-child { border-bottom:none; padding-bottom:0; } */
+#al_feedback_display li.al_reply { text-align:center; }
+#al_popup_content #al_feedback_display li .al_sprite  { left:10px; right:auto; }
+#al_feedback_display ul { margin-bottom:10px; }
+#al_feedback_display ul p { float:right; width:90%; }
+/* */
+// #al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
+// #al_comments textarea.has-text { height: 50px; }

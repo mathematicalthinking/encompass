@@ -116,13 +116,13 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_right header table td:last-child { border-right:none; }
 #al_right .al_controller { float:right; text-align:right; }
 /* */
-#al_feedback_display {background:#fff; border:1px solid #d3d3d3; margin:0 auto; }
+/* #al_feedback_display {background:#fff; border:1px solid #d3d3d3; margin:0 auto; }
 .modal #al_feedback_display { width:400px; margin:15px 0; }
 .modal #al_feedback_display li { padding:10px 0; font-size:13px; }
 #al_feedback_display li { position:relative; padding:10px 10px 10px 5px; border-bottom:1px solid #d3d3d3; }
-.modal #al_feedback_display li { padding-right:10px; }
-#al_feedback_display li:last-child { border-bottom:none; padding-bottom:0; }
-#al_feedback_display li .al_sprite.comment_label { position:absolute; top:50%; right:20px; margin-top:-6px; width:13px; height:12px; }
+.modal #al_feedback_display li { padding-right:10px; } */
+/* #al_feedback_display li:last-child { border-bottom:none; padding-bottom:0; } */
+/* #al_feedback_display li .al_sprite.comment_label { position:absolute; top:50%; right:20px; margin-top:-6px; width:13px; height:12px; }
 #al_feedback_display li .al_sprite.delete_button { position:absolute; top:50%; right:40px; margin-top:-6px; }
 #al_feedback_display li.al_reply { text-align:center; }
 #al_feedback_display li.al_reply .al_sprite { position:relative; margin:0 auto; right:auto; width:125px; height:17px; display:inline-block; zoom:1; background-position:-101px -88px; }
@@ -134,12 +134,12 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
 #al_feedback_display ul input { position:absolute; top:50%; margin-top:-4px; vertical-align:middle; float:left; }
 #al_feedback_display ul p { float:right; width:90%; }
 #al_right .al_general { position:absolute; bottom:130px; float:left; padding-left:5px; width:45%; }
-#al_right .al_controller { float:right; padding-right:5px; width:45%; text-align:right; }
+#al_right .al_controller { float:right; padding-right:5px; width:45%; text-align:right; } */
 /* */
-#al_comments { padding-bottom: 2px; }
+/* #al_comments { padding-bottom: 2px; }
 .al_enabled #al_comments { display:block; }
 #al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
-#al_comments textarea.has-text { height: 50px; }
+#al_comments textarea.has-text { height: 50px; } */
 /* */
 #al_workspace { width:100%; position:absolute; bottom:0px; border-top:1px solid #d3d3d3; line-height:16px; text-indent:10px; padding:5px 0; }
 #al_workspace ul { font-size:11px; margin-top:4px; }

@@ -7,18 +7,20 @@
 <div class="label-select {{newCommentLabel}}">
   {{my-select content=labelOptions cannotBeNull=true selectedValue=newCommentLabel action=(action (mut newCommentLabel))}}
 </div>
-<div id="al_comments">
+<div class="compose-comment">
   {{#if canComment}}
-    {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
-  {{else}}
-    <p class="error-message">You do not have permisssion to make comments for this workspace</p>
-  {{/if}}
-  {{#if onSelection}}
-    <div class="submit-buttons">
-      <button class="primary-button cancel-button" {{action "cancelComment"}}>Cancel</button>
-      <button class="primary-button save" {{action "madeSelection"}}>Save</button>
-    </div>
-  {{/if}}
+      {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    {{else}}
+      <p class="error-message">You do not have permisssion to make comments for this workspace</p>
+    {{/if}}
+    {{#if onSelection}}
+      <div class="submit-buttons">
+        <button class="primary-button cancel-button" {{action "cancelComment"}}>Cancel</button>
+        <button class="primary-button save" {{action "madeSelection"}}>Save</button>
+      </div>
+    {{/if}}
+</div>
+
   <div class="comment-flex-row">
     <div class="comment-flex-item filter">
       <span class="filter-label">Filter</span><i class="fas fa-filter"></i>
@@ -64,7 +66,7 @@
     <p class="error-message">{{error}}</p>
   {{/each}}
 	<div class="clear"></div>
-</div>
+
 </div>
 
   <div id="al_feedback_display" class="display-list">
