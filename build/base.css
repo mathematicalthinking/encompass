@@ -64,17 +64,17 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_left header .al_sprite { margin-right:6px; }
 #al_left .al_vertical_stretch { margin-bottom:50px; position:relative; }
 
-#al_folders>li { border-bottom:1px solid #d3d3d3; }
+/* #al_folders>li { border-bottom:1px solid #d3d3d3; }
 #al_folders li { line-height:50px; font-size:13px; padding-left:5px; }
-#al_folders li>div { cursor:pointer; padding-right:98px; position:relative; white-space:nowrap; display:block; zoom:1; text-overflow:ellipsis; overflow:hidden; }
-#al_folders li aside { position:absolute; right:0px; top:50%; margin-top:-20px; height:41px; }
+#al_folders li>div { cursor:pointer; padding-right:98px; position:relative; white-space:nowrap; display:block; zoom:1; text-overflow:ellipsis; overflow:hidden; } */
+/* #al_folders li aside { position:absolute; right:0px; top:50%; margin-top:-20px; height:41px; }
 #al_folders li aside div.al_indicator { position:relative; display:inline-block; zoom:1; border-left:1px solid #d3d3d3; }
 #al_folders li aside div.al_indicator:nth-child(2n) { padding:0 5px; }
 #al_folders li aside div.al_indicator .al_number { position:absolute; z-index:5; top:-2px; left:11px; width:25px; text-align:center; }
 #al_folders li aside span.al_folder_ct { display:block; height:41px; width:41px; }
 #al_folders li aside span.al_selection_ct { display:block; height:41px; width:41px; }
 #al_folders li aside div.al_indicator .al_number.al_selection { left:6px; }
-#al_folders li aside span.al_empty { display:block; height:41px; width:41px; }
+#al_folders li aside span.al_empty { display:block; height:41px; width:41px; } */
 #al_folders_modify { z-index:10; position:absolute; left:0px; bottom:0px; height:50px; width:100%; border-top:1px solid #d3d3d3; display:block; }
 #al_folders .subfolders { list-style-position: inside; margin-left:5px; }
 
@@ -116,7 +116,7 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_right header table td:last-child { border-right:none; }
 #al_right .al_controller { float:right; text-align:right; }
 /* */
-#al_feedback_display {background:#fff; border:1px solid #d3d3d3; margin:0 auto; }
+/* #al_feedback_display {background:#fff; border:1px solid #d3d3d3; margin:0 auto; } */
 .modal #al_feedback_display { width:400px; margin:15px 0; }
 .modal #al_feedback_display li { padding:10px 0; font-size:13px; }
 #al_feedback_display li { position:relative; padding:10px 10px 10px 5px; border-bottom:1px solid #d3d3d3; }
@@ -136,10 +136,9 @@ li.notice .al_sprite.comment_label { background-position:-425px -71px; }
 #al_right .al_general { position:absolute; bottom:130px; float:left; padding-left:5px; width:45%; }
 #al_right .al_controller { float:right; padding-right:5px; width:45%; text-align:right; }
 /* */
-#al_comments { padding-bottom: 2px; }
 .al_enabled #al_comments { display:block; }
-#al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
-#al_comments textarea.has-text { height: 50px; }
+/* #al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
+#al_comments textarea.has-text { height: 50px; } */
 /* */
 #al_workspace { width:100%; position:absolute; bottom:0px; border-top:1px solid #d3d3d3; line-height:16px; text-indent:10px; padding:5px 0; }
 #al_workspace ul { font-size:11px; margin-top:4px; }
