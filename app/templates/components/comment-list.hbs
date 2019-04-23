@@ -1,3 +1,4 @@
+<div class="comments-group-1">
 <header>
   <h2>Comments</h2>
   <span {{action "hideComments"}}><i title="Hide Comments"class="far fa-eye-slash"></i></span>
@@ -8,7 +9,7 @@
 </div>
 <div id="al_comments">
   {{#if canComment}}
-    {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+    {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
   {{else}}
     <p class="error-message">You do not have permisssion to make comments for this workspace</p>
   {{/if}}
@@ -20,7 +21,7 @@
   {{/if}}
   <div class="comment-flex-row">
     <div class="comment-flex-item filter">
-      Filter<i class="fas fa-filter"></i>
+      <span class="filter-label">Filter</span><i class="fas fa-filter"></i>
       <span class="hover-menu checkbox">
         <ul>
           {{#each-in filterOptions as  |option values|}}
@@ -64,12 +65,8 @@
   {{/each}}
 	<div class="clear"></div>
 </div>
+</div>
 
-{{#if showResultsDescription}}
-  <div class="results-message">
-    {{resultsDescription}}
-  </div>
-{{/if}}
   <div id="al_feedback_display" class="display-list">
     {{#each queryErrors as |error|}}
       <p class="error-message">{{error}}</p>
@@ -83,11 +80,16 @@
     {{#if showLoadingMessage}}
       Searching for comments. Thank you for your patience.
     {{else}}
+      {{#if showResultsDescription}}
+    <div class="results-message">
+      {{resultsDescription}}
+    </div>
+{{/if}}
     <ul>
       {{#each displayList as |comment|}}
         {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
         {{else}}
-        <p class="placeholder">{{emptyResultsMessage}}</p>
+        <p class="info">{{emptyResultsMessage}}</p>
       {{/each}}
     </ul>
     {{pagination-control details=commentsMetadata initiatePageChange=(action "initiatePageChange")}}

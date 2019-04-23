@@ -80,6 +80,23 @@
     // &:focus {
     //   height: 60px;
     // }
+    font-size:13px;
+    padding:5px;
+    border:1px solid #b4b4b4;
+    width:94%;
+    display:block;
+    resize:none;
+    position:relative;
+    // margin: 10px 10px auto 0px;
+    margin: 15px 15px 15px auto;
+
+    &.has-text {
+      height: 50px;
+    }
+    &.on-selection {
+      height: 75px;
+    }
+
   }
   .error-message {
     text-align: center;
@@ -89,22 +106,27 @@
   }
   .comment-flex-row {
     @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
-    margin: 20px 0;
+    margin: 15px 15px 15px auto;
     line-height: 25px;
   }
   .comment-flex-item {
     &.filter {
-      @include flex-item(1, flex-start, 0.1 0 auto);
+      @include flex-item(1, flex-start, initial);
+      margin-right: 25px;
+      padding-bottom: 20px;
       &:hover {
         cursor: pointer;
         color: black;
         .hover-menu {
           display: inline;
+          &:after {
+            right: 32%;
+          }
         }
       }
     }
     &.search {
-      @include flex-item (2, flex-start, 0.9 1 auto);
+      @include flex-item (2, flex-start, auto);
       .search-bar-comp {
         margin: auto;
         height: 25px;
@@ -134,8 +156,16 @@
 
   .submit-buttons {
     @include flex-container(null, null, row, wrap, flex-end, flex-start, center);
+    margin: 15px 15px 15px auto;
+    button {
+      padding: 8px 18px;
+    }
+
     .save {
       margin-left: 15px;
+    }
+    .cancel-button {
+      background: white;
     }
   }
 
@@ -147,9 +177,15 @@
   }
 
   .display-list {
-    height: calc(65% - 15px);
+    height: calc(100% - 270px);
     overflow-y: auto;
+    overflow-x: hidden;
     margin-top: 15px;
+    margin-left: 15px;
+
+    ul {
+      margin-top: 5px;
+    }
 
     li {
       @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
@@ -191,4 +227,18 @@
     padding: 2px 5px;
     border-radius: 3px;
   }
+  #al_comments {
+    margin-left: 15px;
+    padding-bottom: 2px;
+  }
+
+  &.on-selection {
+    textarea {
+      height: 75px;
+    }
+    .display-list {
+      height: calc(100% - 345px);
+    }
+  }
+
 }

@@ -113,16 +113,33 @@
     }
     .workspace-flex-item.submission{
       @include flex-item(2, flex-start, 4 1 auto);
+      @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+
       width: 40%;
       min-width: 447px;
-      border: 2px solid red;
+      // border: 2px solid red;
+      .submission-header {
+        padding: 5px 0;
+        font-size: 1.1em;
+        color: black;
+        font-weight: 300;
+        margin-left: 10px;
+      }
 
     }
     .workspace-flex-item.comments{
       @include flex-item(3, flex-start, 2 1 auto);
+
+      background-color: $filter-list-background-color;
+      header {
+        background-color: darken($filter-list-background-color, 10);
+        text-indent: 10px;
+        margin-bottom: 10px;
+      }
+
       width: 23%;
-      min-width: 320px;
-      border: 2px solid purple;
+      min-width: 300px;
+      // border: 2px solid purple;
 
     }
 
@@ -237,7 +254,6 @@
       aside {
         @include flex-item(2,flex-end, initial);
         align-self: center;
-        // margin-left: auto;
         margin-left: 5px;
         .show-folder {
           background: radial-gradient( 5px -9px, circle, white 8%, $pale-accent 26px );
@@ -282,7 +298,7 @@
         &.edit {
           @include flex-item(2, center, auto);
 
-  }
+        }
       }
 
     }
@@ -292,20 +308,21 @@
 
   #submission-group {
     #workspace-submission-comp {
-      height: calc(90% - 100px);
-
-
+      @include flex-item(2, flex-start, auto);
+      width: 100%;
+      height: calc(100% - 50px);
+      background-color: $filter-list-background-color;
     }
     #al_submission {
       margin-bottom: 0;
-      border: 2px solid yellow;
-      height: calc(90% - 100px);
-      overflow: auto;
+      height: calc(100% - 210px);
+      overflow-y: auto;
     }
     #submission_selections {
       position: relative;
       // border: 2px solid purple;
       overflow-y: auto;
+      overflow-x: hidden;
       height: 125px;
       bottom: 0px;
       margin-top: 15px;
