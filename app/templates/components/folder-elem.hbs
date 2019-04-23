@@ -21,13 +21,9 @@
 		{{else}}
       <span class="toggle-icon {{if model.sortedChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
         {{#if model.isExpanded}}
-					<span class="folder_sprites icon expanded"></span>
+					<span class="folder-expanded"><i class="far fa-folder-open"></i></span>
         {{else}}
-				  {{#if model.sortedChildren.length}}
-					<span class="folder_sprites icon expandable"></span>
-				  {{else}}
-					<span class="folder_sprites icon"></span>
-				  {{/if}}
+					<span class="folder-closed"><i class="far fa-folder"></i></span>
         {{/if}}
 				{{model.name}}
 			</span>
@@ -36,25 +32,9 @@
 				{{#each queryErrors as |error|}}
 					<p class="error-message">{{error}}</p>
 				{{/each}}
-				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
-				<a {{action 'openLink'}}>
-					<span class="al_sprite al_folder_ct"></span>
-					<span class="al_number">{{model._submissions.length}}</span>
-				</a>
-				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
-					<span class="al_sprite al_folder_ct"></span>
-					<span class="al_number">{{model._submissions.length}}</span>
-				{{/link-to}} --}}
-				</div>
-				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
-				<a {{action 'openLink'}}>
-					<span class="al_sprite al_selection_ct"></span>
-					<span class="al_number al_selection">{{model.childSelections.length}}</span>
-				</a>
-				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
-					<span class="al_sprite al_selection_ct"></span>
-					<span class="al_number al_selection">{{model.childSelections.length}}</span>
-				{{/link-to}} --}}
+
+				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
+					{{model.childSelections.length}}
 				</div>
 		  </aside>
 		{{/if}}

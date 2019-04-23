@@ -26,20 +26,14 @@
   <div class="dropZone" style="height:10px;"></div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
-  <div id="al_folders_modify">
-    <table>
-      <tr>
-        <td>
-          <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
-        </td>
-        <td style="border-left:1px solid #d3d3d3;">
-          {{#if editFolderMode}}
-            <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
-          {{else}}
-            <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
-          {{/if}}
-        </td>
-      </tr>
-    </table>
+<div class="folders-modify">
+  <div class= "folders-modify-item add">
+    <span {{action "openModal" "folderNew" }}>Add <img class="icon-add-folder" src="/images/folder-add.svg" alt="Add Folder">
+    </span>
   </div>
+  <div class= "folders-modify-item edit">
+    <span {{action "toggleEditMode"}}>{{editFolderText}} <img class="icon-add-folder" src="/images/{{editFolderIcon}}.svg" alt={{editFolderAlt}}>
+    </span>
+  </div>
+</div>
 {{/if}}

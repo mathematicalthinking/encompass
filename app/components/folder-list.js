@@ -82,6 +82,16 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     return 'Hide Folders';
   }.property('isHidden'),
 
+  editFolderText: function() {
+    return this.get('editFolderMode') ? 'Done' : 'Edit';
+  }.property('editFolderMode'),
+  editFolderIcon: function() {
+    return this.get('editFolderMode') ? 'folder-checked' : 'folder-info';
+  }.property('editFolderMode'),
+  toggleEditAlt: function() {
+    return this.get('editFolderMode') ? 'Save Changes' : 'Edit Folders';
+  }.property('editFolderMode'),
+
   actions: {
     openModal: function(){
       this.get('alert').showPrompt('text', 'Create New Folder', null, 'Save').then((result) => {
@@ -146,6 +156,9 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     cancelEditFolderMode: function() {
       this.set('editFolderMode', false);
+    },
+    toggleEditMode: function() {
+      this.toggleProperty('editFolderMode');
     },
 
     moveOut: function(folder) {

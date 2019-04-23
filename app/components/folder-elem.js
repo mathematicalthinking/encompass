@@ -21,6 +21,7 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   tagName: 'li',
   classNames: ['folderItem'],
+  classNameBindings: ['model.sortedChildren.length:has-children', 'containsCurrentSelection:contains-current-selection', 'containsCurrentSubmission:contains-current-submission'],
   link: null,
   updateRecordErrors: [],
   queryErrors: [],
