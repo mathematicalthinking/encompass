@@ -115,25 +115,11 @@
       @include flex-item(2, flex-start, 4 1 auto);
       width: 40%;
       min-width: 447px;
-      .submission-header {
-        padding: 5px 0;
-        font-size: 1.1em;
-        color: black;
-        font-weight: 300;
-        margin-left: 10px;
-      }
+      border: 2px solid red;
 
-      &.is-first-child {
-        margin-left: 25px;
-      }
-      &.is-last-child {
-        margin-right: 25px;
-      }
     }
     .workspace-flex-item.comments{
       @include flex-item(3, flex-start, 2 1 auto);
-      background-color: $filter-list-background-color;
-      header {
       width: 23%;
       min-width: 320px;
       border: 2px solid purple;
@@ -306,7 +292,9 @@
 
   #submission-group {
     #workspace-submission-comp {
-      background-color: $filter-list-background-color;
+      height: calc(90% - 100px);
+
+
     }
     #al_submission {
       margin-bottom: 0;
@@ -317,11 +305,10 @@
     #submission_selections {
       position: relative;
       // border: 2px solid purple;
-      background: white;
       overflow-y: auto;
       height: 125px;
       bottom: 0px;
-      // margin-top: 15px;
+      margin-top: 15px;
       border-top:1px solid #d3d3d3;
     }
   }

@@ -18,7 +18,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   loading: Ember.inject.service('loading-display'),
 
   classNames: ['workspace-flex-item', 'comments'],
-  classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection'],
+  classNameBindings: ['canComment:can-comment', 'isHidden:hidden'],
 
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
@@ -57,6 +57,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     this.set('sinceDate', htmlDate);
   },
+
   newCommentPlaceholder: function() {
     let newCommentLabel = this.get('newCommentLabel');
     let path = `labels.${newCommentLabel}.placeholder`;

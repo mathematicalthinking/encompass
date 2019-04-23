@@ -22,8 +22,6 @@
 
   .label-select {
     font-size: 1.1em;
-    margin-left: 15px;
-    margin-bottom: 10px;
     #my-select {
       width: 100%;
       margin-right: 30px;
@@ -53,8 +51,6 @@
         content: "N";
         font-weight: $bolder-font-weight;
         color: #DD9327;
-        font-size: 1.2em;
-        vertical-align: middle;
       }
     }
     &.wonder {
@@ -62,8 +58,6 @@
         content: "W";
         font-weight: $bolder-font-weight;
         color: #72CCC6;
-        font-size: 1.2em;
-        vertical-align: middle;
       }
     }
     &.feedback {
@@ -71,8 +65,7 @@
         content: "F";
         font-weight: $bolder-font-weight;
         color: #BE4699;
-        font-size: 1.2em;
-        vertical-align: middle;
+
       }
     }
   }
@@ -160,14 +153,11 @@
 
     li {
       @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
-      background-color: white;
     }
     li:before {
       font-weight: $bolder-font-weight;
       font-size: 2em;
       margin-right: 10px;
-      width: 28px;
-      text-align: center;
     }
 
     .notice:before {
@@ -176,12 +166,15 @@
     }
     .wonder:before {
       content: "W";
+      font-weight: $bolder-font-weight;
       color: #72CCC6;
+      font-size: 2em;
     }
     .feedback:before {
       content: "F";
       font-weight: $bolder-font-weight;
       color: #BE4699;
+      font-size: 2em;
     }
   }
 
