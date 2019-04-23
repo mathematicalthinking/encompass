@@ -61,6 +61,22 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     return this.get('currentWorkspace.responses.content').rejectBy('isTrashed');
   }.property('currentWorkspace.responses.content.@each.isTrashed'),
 
+  containerLayoutClass: function() {
+    let areFoldersHidden = this.get('areFoldersHidden');
+    let areCommentsHidden = this.get('areCommentsHidden');
+
+    if (areFoldersHidden && areCommentsHidden) {
+      return 'hsh';
+    }
+    if (areFoldersHidden) {
+      return 'hsc';
+    }
+    if (areCommentsHidden) {
+      return 'fsh';
+    }
+    return 'fsc';
+  }.property('areFoldersHidden', 'areCommentsHidden'),
+
   actions: {
     startTour: function () {
       this.get('guider').createGuider(

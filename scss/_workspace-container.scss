@@ -4,21 +4,28 @@
 
 
 
-// @media screen and (min-width: $screen-xs-min) and (max-width: 1401px) {
-//   #workspace-container {
-//     .sort-bar-item, .item-section {
-//       &.responses {
-//         display: none;
-//       }
-//     }
-//   }
-// }
+@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
+  #workspace-container {
+    .comment-flex-item {
+      &.filter {
+        .filter-label {
+          display: none;
+        }
+      }
+    }
+  }
+}
 
-@media screen and (min-width: $screen-xs-min) and (max-width: $screen-md-min) {
+@media screen and (min-width: $screen-xs-min) and (max-width: 1099px) {
   #workspace-container {
     .submission-row-item  {
       &.students {
         width: 10em;
+      }
+      &.toggle-show {
+        .showing-label {
+          display: none;
+        }
       }
     }
   }
@@ -49,7 +56,7 @@
       }
     }
     &.comments {
-      left: calc(100% - 35px);
+      left: calc(100% - 23px);
     }
   }
 
@@ -60,6 +67,7 @@
     margin: 20px;
     border: 2px solid yellow;
     line-height: normal;
+    background-color: $filter-list-background-color;
 
     h2 {
       display: inline-block;
@@ -85,6 +93,10 @@
       display: none;
     }
 
+    &:first-child {
+      margin-left: 20px;
+    }
+
     .workspace-flex-item {
       background-color: white;
       box-shadow: $box-shadow;
@@ -92,14 +104,14 @@
       margin: 20px;
       padding: 15px 17px;
       height: calc(100vh - 215px);
+
     }
 
     .workspace-flex-item.folders{
       @include flex-item(1, flex-start, 1 1 auto);
+      background-color: darken($filter-list-background-color, 10);
       width: 17%;
       min-width: 230px;
-      border: 2px solid green;
-
     }
     .workspace-flex-item.submission{
       @include flex-item(2, flex-start, 4 1 auto);
@@ -119,16 +131,59 @@
     .submission-row {
       @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
 
+      &.nav {
+        @include flex-item(1, flex-start, initial);
+        @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+        width: 100%;
+        border-bottom: 1px solid #d3d3d3;
+      }
+
+      &.selection-controls {
+        @include flex-container(null, null, row, nowrap, space-around, flex-start, center);
+        border-bottom: 1px solid #d3d3d3;
+        background-color: white;
+      }
+
       .submission-row-item {
         min-width: fit-content;
         margin: 0 10px;
-        &.toggle-show {
-          margin-left: 0;
+
+        &.students-revisions {
+          @include flex-item(1, center, auto);
         }
 
         &.students {
-          // @include flex-item(1, flex-start, 0.3 0 auto);
-          margin-left: 0;
+          @include flex-item(1, flex-start, initial);
+          // margin-left: 0;
+        }
+
+        &.revisions {
+          @include flex-item(2, flex-start, auto);
+          display: inline-block;
+        }
+
+        &.arrows {
+          @include flex-item(2, center, initial);
+
+         a {
+          background: none;
+         }
+          margin-left: auto;
+        }
+
+        &.selection-toggles {
+          @include flex-item(1, center, initial);
+          @include flex-container(null, null, row, nowrap, flex-start, flex-start, center)
+        }
+        &.problem-link {
+          @include flex-item(2, center, auto);
+          text-align: center;
+          a {
+            color: $accent-color;
+          }
+        }
+        &.new-response {
+          @include flex-item(3, center, 0 1 auto)
         }
       }
      }
@@ -137,6 +192,11 @@
 
   #folder-list {
     @include flex-container(null, null, column, nowrap, flex-start, flex-start, flex-start);
+    header {
+      @include flex-item(1, flex-start, initial);
+      text-indent: 10px;
+      width: 100%;
+    }
     h2 {
       display: inline-block;
       font-size: 1.4em;
@@ -146,12 +206,89 @@
       display: none;
     }
     .dropTarget {
+      @include flex-item(2, flex-start, auto);
+      text-indent: 10px;
+      background-color: $filter-list-background-color;
       height: calc(100% - 50px);
       width: 100%;
     }
     #al_folders_modify {
       position: relative;
     }
+
+    .folderItem {
+      // border-bottom:1px solid #d3d3d3;
+      line-height: 50px;
+    }
+
+    .folder.draggable {
+      @include flex-container(null, null, row, nowrap, flex-start, flex-start, flex-start);
+
+      .toggle-icon {
+        @include flex-item(1,flex-end, auto);
+        align-self: center;
+        i {
+          font-size: x-large;
+          margin-right: 15px;
+        }
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      aside {
+        @include flex-item(2,flex-end, initial);
+        align-self: center;
+        // margin-left: auto;
+        margin-left: 5px;
+        .show-folder {
+          background: radial-gradient( 5px -9px, circle, white 8%, $pale-accent 26px );
+          background-color: $pale-accent;
+          border: 1px solid white;
+          border-radius: 12px; /* one half of ( (border * 2) + height + padding ) */
+          font: $main-font-weight 15px/13px $primary-font;
+          color: $primary-font-color;
+          font-size: 1em;
+          height: 18px;
+          min-width: 16px;
+          padding: 4px 3px 0 3px;
+          text-align: center;
+          cursor: pointer;
+          text-indent: 0;
+          margin-right: 5px;
+        }
+      }
+    }
+
+
+    .folders-modify {
+      @include flex-item(3, flex-start, initial);
+      @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+      background: linear-gradient(#d3d3d3, #d3d3d3) no-repeat center/1px 100%;
+      background-color: lighten($filter-list-background-color, 5);
+      height: 50px;
+      border-top:1px solid #d3d3d3;
+      width: 100%;
+      img {
+        width: 25px;
+        height: 25px;
+        display: inline-block;
+        margin-left: 5px;
+      }
+      .folders-modify-item {
+        text-align: center;
+        &.add {
+          @include flex-item(1, center, auto);
+        }
+
+        &.edit {
+          @include flex-item(2, center, auto);
+
+  }
+      }
+
+    }
+
 
   }
 
@@ -179,6 +316,8 @@
   }
 
 }
+
+#al_folders .subfolders { list-style-position: inside; margin-left:15px; }
 
 @media screen and (min-width: $screen-xs-min) and (max-width: 460px) {
   #workspace-container {

@@ -1,21 +1,20 @@
-<aside class="submission-row">
-      <div class="submission-row-item toggle-show">
-        {{#if showingSelections}}
-            <span {{action 'hideSelections'}} class="al_sprite al_hide_selections"></span>
-          {{else}}
-            <span {{action 'showSelections'}} class="al_sprite al_show_selections"></span>
-          {{/if}}
+<aside class="submission-row selection-controls">
+  <div class="submission-row-item selection-toggles">
+    <div class="submission-row-item toggle-show">
+      <span class="showing-label">{{showSelectionsInfo.text}}</span>
+      <span {{action 'toggleShow'}}><i title={{showSelectionsInfo.title}} class={{showSelectionsInfo.icon}}></i></span>
+    </div>
+    {{#if this.canSelect}}
+      <div class="submission-row-item  toggle-selecting">
+        <label class="makingSelection">
+          {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
+          Selecting
+        </label>
       </div>
+    {{/if}}
+  </div>
 
-      {{#if this.canSelect}}
-        <div class="submission-row-item  toggle-selecting">
-          <label class="makingSelection">
-            {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
-            <span class="al_sprite al_makeselections"></span>
-          </label>
-        </div>
-      {{/if}}
-      <div class="submission-row-item  problem-link">
+      <div title="open problem in new window" class="submission-row-item  problem-link">
         {{#if currentSubmission.answer}}
           <a {{action 'openProblem'}} class="problem-link">
             {{currentSubmission.puzzle.title}}
@@ -99,11 +98,8 @@
   </div>
   {{/if}}
 </div><!--/al_submission-->
-
+<h5 class="submission-header selections">Selections</h5>
 <div id="submission_selections">
-  {{#if workspaceSelections}}
-    <h5 class="submission-header selections">Selections</h5>
-  {{/if}}
   <ul>
   {{#each workspaceSelections as |selection|}}
     <li class="selection">
@@ -120,7 +116,7 @@
       {{/unless}}
     </li>
     {{else}}
-      <p class="al_small">No selections have been made yet.
+      <p class="info">No selections have been made yet.
       {{#if canSelect}}
         Click "make selection" above and highlight some text in the submission.
       {{/if}}

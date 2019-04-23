@@ -84,6 +84,23 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     });
   }.property('currentSubmission.id', 'responses.[]'),
 
+  showSelectionsInfo: function() {
+    if (this.get('showingSelections')) {
+      return {
+        text: 'Hide Selections',
+        icon: 'far fa-eye-slash',
+        title: 'Hide Selections'
+      };
+    }
+
+    return {
+      text: 'Show Selections',
+      icon: 'far fa-eye' ,
+      title: 'Show Selections'
+    };
+
+  }.property('showingSelections'),
+
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
@@ -101,6 +118,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
     hideSelections: function() {
       this.set('showingSelections', false);
+    },
+    toggleShow: function() {
+      this.toggleProperty('showingSelections');
     },
     toggleSelecting: function() {
       let selecting = this.get('makingSelection');

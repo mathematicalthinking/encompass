@@ -11,42 +11,43 @@
       </li>
     {{/each}}
   </ul>
-
-  <div class="selectBox submission-row-item students">
-    <div class="selected">
-      <div class="studentItem">
-        {{currentStudentDisplayName}}
-        <span class="selector" {{action 'toggleStudentList'}}></span>
-      </div>
-      {{#if showStudents}}
-      <ul id="studentList">
-      <!-- ENC-391, ENC-392, ENC-409 -->
-      <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
-        {{#each this.submissionThreadHeads as |threadHead|}}
-          <li class="studentItem" {{action 'toggleStudentList'}}>
-            {{#link-to 'workspace.submission' threadHead}}
-              <span>{{threadHead.studentDisplayName}}</span>
-            {{/link-to}}
-          </li>
-        {{/each}}
-    </ul>
-    {{/if}}
+  <div class="submission-row-item students-revisions">
+    <div class="selectBox submission-row-item students">
+        <div class="selected">
+          <div class="studentItem">
+            {{currentStudentDisplayName}}
+            <span class="selector" {{action 'toggleStudentList'}}></span>
+          </div>
+          {{#if showStudents}}
+          <ul id="studentList">
+          <!-- ENC-391, ENC-392, ENC-409 -->
+          <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
+            {{#each this.submissionThreadHeads as |threadHead|}}
+              <li class="studentItem" {{action 'toggleStudentList'}}>
+                {{#link-to 'workspace.submission' threadHead}}
+                  <span>{{threadHead.studentDisplayName}}</span>
+                {{/link-to}}
+              </li>
+            {{/each}}
+        </ul>
+        {{/if}}
+        </div>
     </div>
-  </div>
-  <div class="submission-row-item revisions">
-  {{bread-crumbs
-    items=currentRevisions
-    onSelect=(action "setCurrentSubmission")
-    selectedItem=currentRevision
-    titleTextPath="label"
-    starredItems=mentoredRevisions
-    infoToolTipText=revisionsToolTip
-    infoToolTipPosition="top"
-  }}
+    <div class="submission-row-item revisions">
+      {{bread-crumbs
+        items=currentRevisions
+        onSelect=(action "setCurrentSubmission")
+        selectedItem=currentRevision
+        titleTextPath="label"
+        starredItems=mentoredRevisions
+        infoToolTipText=revisionsToolTip
+        infoToolTipPosition="top"
+      }}
+    </div>
   </div>
 
 	<div class="al_controller submission-row-item arrows">
-		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
+		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
 		<span class="al_number">
       <span class="submission_index">
         {{currentSubmissionIndex}}
@@ -56,7 +57,7 @@
         {{submissions.length}}
       </span>
     </span>
-		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow" class="al_sprite al_arrow_right"></span>{{/link-to}}
+		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow"> <i class="fas fa-arrow-right"></i></span>{{/link-to}}
 	</div>
 </header>
 

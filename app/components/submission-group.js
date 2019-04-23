@@ -9,7 +9,7 @@
 Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'submission-group',
 
-  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden'],
+  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild'],
   classNames: ['workspace-flex-item', 'submission'],
   isHidden: false,
 
@@ -164,6 +164,18 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
   }.property('responses.[]', 'currentRevisions.@each.submission'),
 
   revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
+
+  isFirstChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'hsh' || classname === 'hsc';
+  }.property('containerLayoutClass'),
+
+  isLastChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'hsh' || classname === 'fsh';
+  }.property('containerLayoutClass'),
+
+  isOnlyChild: Ember.computed.and('isFirstChild', 'isLastChild'),
 
   actions: {
     toggleStudentList: function() {
