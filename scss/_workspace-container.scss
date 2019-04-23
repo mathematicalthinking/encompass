@@ -65,7 +65,6 @@
     position: relative;
     top: 20px;
     margin: 20px;
-    border: 2px solid yellow;
     line-height: normal;
     background-color: $filter-list-background-color;
 
@@ -88,7 +87,6 @@
   .workspace-flex-container {
     @include flex-container(null, null, row, wrap, center, flex-start, flex-start);
     width: 100%;
-
     .hidden {
       display: none;
     }
@@ -99,10 +97,10 @@
 
     .workspace-flex-item {
       background-color: white;
-      box-shadow: $box-shadow;
-      border-radius: 3px;
-      margin: 20px;
-      padding: 15px 17px;
+      // box-shadow: $box-shadow;
+      // border-radius: 3px;
+      // margin: 20px;
+      // padding: 0px 17px;
       height: calc(100vh - 215px);
 
     }
