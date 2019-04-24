@@ -122,6 +122,51 @@
       }
     }  }
 }
+
+.workspace-flex-item.bi-paneled {
+  // one per row
+  @media screen and (min-width: $screen-xs-min) and (max-width: 810px) {
+    &.comments {
+      margin-bottom: 50px;
+      .display-list li {
+        margin-right: 15px;
+      }
+    }
+
+    &.folders {
+      margin-bottom: 50px;
+      border: 1px solid black;
+    }
+
+    &.submission {
+      margin-bottom: 50px;
+      border: 1px solid black;
+
+      &.is-last-child {
+        margin-left: 25px;
+      }
+
+      &.is-first-child {
+        margin-right: 25px;
+      }
+
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 .workspace-flex-item.submission.is-only-child {
   @media screen and (min-width: $screen-xs-min) and (max-width: 799px) {
     .submission-row-item  {
@@ -299,7 +344,7 @@
       }
 
       &.selection-controls {
-        @include flex-container(null, null, row, nowrap, space-around, flex-start, center);
+        @include flex-container(null, null, row, wrap, space-around, flex-start, center);
         border-bottom: 1px solid #d3d3d3;
         background-color: white;
       }
@@ -496,8 +541,10 @@
   #workspace-container {
     .workspace-flex-container {
       .workspace-flex-item.submission {
-        min-width: 230px;
-        max-width: 230px;
+        min-width: 350px;
+      }
+      .workspace-flex-item.folders {
+        max-width: 350px;
       }
     }
   }
