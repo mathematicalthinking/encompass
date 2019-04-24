@@ -2,7 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-.workspace-flex-item.submission.tri-paneled {
+.workspace-flex-item.tri-paneled {
   // fitting all 3
   @media screen and (min-width: 1260px) and (max-width: 1322px) {
     .submission-row-item  {
@@ -14,7 +14,7 @@
     }
   }
   // fitting all 3
-  @media screen and (min-width: 1016px) and (max-width: 1259px) {
+  @media screen and (min-width: 1015px) and (max-width: 1259px) {
     .submission-row-item  {
       &.students {
         width: 10em;
@@ -29,6 +29,19 @@
       }
     }
   }
+
+  @media screen and (min-width: $screen-xs-min) and (max-width: 1031px) {
+    &.submission {
+      margin-bottom: 25px;
+    }
+    &.folders {
+      margin-bottom: 25px;
+    }
+    &.comments {
+      margin: 50px;
+    }
+  }
+
 // only fitting folders and submission
   @media screen and (min-width: $screen-xs-min) and (max-width: 815px) {
     .submission-row-item  {
@@ -43,6 +56,21 @@
       .problem-link-text {
         display: none;
       }
+    }
+  }
+  // only fitting folders
+  @media screen and (min-width: $screen-xs-min) and (max-width: 691px) {
+    &.submission {
+      margin: 10px;
+      border: 1px solid black;
+    }
+    &.folders {
+      margin-bottom: 25px;
+      border: 1px solid black;
+    }
+    &.comments {
+      margin: 10px;
+      padding-right: 15px;
     }
   }
 }
@@ -209,6 +237,7 @@
       background-color: darken($filter-list-background-color, 10);
       width: 17%;
       min-width: 230px;
+      max-width: 500px;
     }
     .workspace-flex-item.submission{
       @include flex-item(2, flex-start, 4 1 auto);
@@ -255,7 +284,7 @@
 
       width: 23%;
       min-width: 320px;
-      // border: 2px solid purple;
+      max-width: 500px;
 
     }
 

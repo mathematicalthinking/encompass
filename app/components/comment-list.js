@@ -18,7 +18,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   loading: Ember.inject.service('loading-display'),
 
   classNames: ['workspace-flex-item', 'comments'],
-  classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection'],
+  classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
 
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
@@ -48,6 +48,10 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     }
   },
   labelOptions: ['notice', 'wonder', 'feedback'],
+
+  isBipaneled: Ember.computed.equal('containerLayoutClass', 'hsc'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
+
 
   init: function() {
     this._super(...arguments);

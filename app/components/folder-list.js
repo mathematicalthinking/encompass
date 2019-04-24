@@ -14,7 +14,7 @@
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'folder-list',
   classNames: ['workspace-flex-item', 'folders'],
-  classNameBindings: ['isHidden:hidden'],
+  classNameBindings: ['isHidden:hidden', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
   weighting: 1,
@@ -23,6 +23,9 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   createRecordErrors: [],
   updateRecordErrors: [],
   permissions: Ember.inject.service('workspace-permissions'),
+
+  isBipaneled: Ember.computed.equal('containerLayoutClass', 'fsh'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
 
 
   canManageFolders: function() {
