@@ -2,9 +2,11 @@
 <header class="{{makingSelection}} ws-header">
   <div class="ws-meta">
     <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
+    <span class="info-link">{{#link-to 'workspace.info' workspace}}<i class="fa fa-info-circle" aria-hidden="true"></i>
+      {{/link-to}}
+    </span>
     <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
-    <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
-  {{/link-to}}</span>
+
 </div>
   <aside>
   <a id="takeTour" class="action_button" {{action 'startTour'}}>Take Tour</a>

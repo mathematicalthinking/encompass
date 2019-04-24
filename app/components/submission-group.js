@@ -9,7 +9,7 @@
 Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'submission-group',
 
-  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild'],
+  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
   classNames: ['workspace-flex-item', 'submission'],
   isHidden: false,
 
@@ -167,15 +167,21 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
 
   isFirstChild: function() {
     let classname = this.get('containerLayoutClass');
-    return classname === 'hsh' || classname === 'hsc';
+    return classname === 'hsc';
   }.property('containerLayoutClass'),
 
   isLastChild: function() {
     let classname = this.get('containerLayoutClass');
-    return classname === 'hsh' || classname === 'fsh';
+    return classname === 'fsh';
   }.property('containerLayoutClass'),
 
-  isOnlyChild: Ember.computed.and('isFirstChild', 'isLastChild'),
+  isOnlyChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'hsh';
+  }.property('containerLayoutClass'),
+
+  isBipaneled: Ember.computed.or('isFirstChild', 'isLastChild'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
 
   actions: {
     toggleStudentList: function() {

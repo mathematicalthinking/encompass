@@ -17,13 +17,12 @@
       <div title="open problem in new window" class="submission-row-item  problem-link">
         {{#if currentSubmission.answer}}
           <a {{action 'openProblem'}} class="problem-link">
-            {{currentSubmission.puzzle.title}}
+            <span class="problem-link-text">{{currentSubmission.puzzle.title}}</span>
             <i class="fas fa-external-link-alt"></i>
           </a>
         {{else}}
           <a class='puzzle' target="_blank" href="{{currentSubmission.puzzleUrl}}">
-            {{currentSubmission.puzzle.title}}
-            <i class="fas fa-external-link-alt"></i>
+            <span class="problem-link-text">{{currentSubmission.puzzle.title}}</span>            <i class="fas fa-external-link-alt"></i>
           </a>
         {{/if}}
       </div>

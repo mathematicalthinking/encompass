@@ -2,22 +2,100 @@
 @import "mixins";
 @import "responsive-font-size";
 
-
-
-@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
-  #workspace-container {
-    .comment-flex-item {
-      &.filter {
-        .filter-label {
+.workspace-flex-item.submission.tri-paneled {
+  // fitting all 3
+  @media screen and (min-width: 1260px) and (max-width: 1322px) {
+    .submission-row-item  {
+      &.toggle-show {
+        .showing-label {
           display: none;
         }
       }
     }
   }
+  // fitting all 3
+  @media screen and (min-width: 1016px) and (max-width: 1259px) {
+    .submission-row-item  {
+      &.students {
+        width: 10em;
+      }
+      &.toggle-show {
+        .showing-label {
+          display: none;
+        }
+      }
+      .problem-link-text {
+        display: none;
+      }
+    }
+  }
+// only fitting folders and submission
+  @media screen and (min-width: $screen-xs-min) and (max-width: 815px) {
+    .submission-row-item  {
+      &.students {
+        width: 10em;
+      }
+      &.toggle-show {
+        .showing-label {
+          display: none;
+        }
+      }
+      .problem-link-text {
+        display: none;
+      }
+    }
+  }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 1099px) {
-  #workspace-container {
+.workspace-flex-item.submission.bi-paneled {
+  // folders hidden
+  &.is-first-child {
+    @media screen and (min-width: 811px) and (max-width: 1099px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+
+    @media screen and (min-width: 811px) and (max-width: 920px) {
+      .submission-row-item  {
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+  }
+  // comments hidden
+  &.is-last-child {
+    @media screen and (min-width: 717px) and (max-width: 947px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+
+    @media screen and (min-width: 717px) and (max-width: 836px) {
+      .submission-row-item  {
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }  }
+}
+.workspace-flex-item.submission.is-only-child {
+  @media screen and (min-width: $screen-xs-min) and (max-width: 799px) {
     .submission-row-item  {
       &.students {
         width: 10em;
@@ -29,13 +107,24 @@
       }
     }
   }
+  @media screen and (min-width: $screen-xs-min) and (max-width: 621px) {
+    .submission-row-item  {
+      .problem-link-text {
+        display: none;
+      }
+    }
+  }
 }
 
-@media screen and (min-width: $screen-xs-min) and (max-width: 925px) {
+// TODO add paneled class for comments, folders
+// only need to hide text for tripaneled
+@media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
   #workspace-container {
-    .workspace-flex-item {
-      &.submission {
-
+    .comment-flex-item {
+      &.filter {
+        .filter-label {
+          display: none;
+        }
       }
     }
   }
@@ -140,6 +229,11 @@
         margin-left: 25px;
       }
       &.is-last-child {
+        margin-right: 25px;
+      }
+
+      &.is-only-child {
+        margin-left: 25px;
         margin-right: 25px;
       }
 
@@ -367,6 +461,17 @@
       .workspace-flex-item.submission {
         min-width: 230px;
         max-width: 230px;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xs-min) and (max-width: 682px) {
+  #workspace-container {
+    .ws-header {
+      aside {
+        margin-left: 0;
+        display: inline-block;
       }
     }
   }
