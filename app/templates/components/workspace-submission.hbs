@@ -14,7 +14,7 @@
     {{/if}}
   </div>
 
-      <div title="open problem in new window" class="submission-row-item  problem-link">
+      <div title={{currentSubmission.puzzle.title}} class="submission-row-item  problem-link">
         {{#if currentSubmission.answer}}
           <a {{action 'openProblem'}} class="problem-link">
             <span class="problem-link-text">{{currentSubmission.puzzle.title}}</span>
@@ -98,7 +98,7 @@
   {{/if}}
 </div><!--/al_submission-->
 <h5 class="submission-header selections">Selections</h5>
-<div id="submission_selections">
+<div id="submission_selections" class={{if areNoSelections "no-selections"}}>
   <ul>
   {{#each workspaceSelections as |selection|}}
     <li class="selection">

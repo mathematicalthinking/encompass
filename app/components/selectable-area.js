@@ -192,7 +192,7 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
     this.sendAction('handleTransition', false);
     this.selectionHighlighting.destroy();
     this.imageTagging.destroy();
-    $(window).off('resize');
+    $(window).off('resize.selectableArea');
     this._super(...arguments);
   },
 

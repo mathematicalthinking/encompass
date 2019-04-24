@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-
+  classNameBindings: ['areNoSelections:no-selections'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -29,6 +29,10 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   shouldCheck: Ember.computed('makingSelection', function() {
     return this.get('makingSelection');
   }),
+
+  areNoSelections: function() {
+    return !this.get('workspaceSelections.length') > 0;
+  }.property('workspaceSelections'),
 
   didRender: function() {
     if(this.get('switching')) {
@@ -181,7 +185,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
         }
       };
 
-      $(window).on('resize', handleResize);
+      $(window).on('resize.selectableArea', handleResize);
     }
   }
 });

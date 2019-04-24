@@ -9,7 +9,7 @@
 Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   elementId: 'submission-group',
 
-  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
+  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled', 'isNavMultiLine:multi-line-nav'],
   classNames: ['workspace-flex-item', 'submission'],
   isHidden: false,
 
@@ -20,6 +20,23 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
   manyRevisions: Ember.computed.gte('currentRevisions.length', 10),
   showStudents: false,
   switching: false,
+
+  init() {
+    this.set('onNavResize', this.get('handleNavHeight').bind(this));
+    this._super(...arguments);
+  },
+
+  didInsertElement() {
+    let revisionsNavHeight = this.$('#submission-nav').height();
+    this.set('isNavMultiLine', revisionsNavHeight > 52);
+
+    $(window).on('resize', this.get('onNavResize'));
+
+  },
+
+  willDestroyElement() {
+    $(window).off('resize', this.get('onNavResize'));
+  },
 
   currentRevision: function() {
     if (!this.get('currentRevisions') || !this.get('currentRevisionIndex')) {
@@ -182,6 +199,17 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
 
   isBipaneled: Ember.computed.or('isFirstChild', 'isLastChild'),
   isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
+
+  handleNavHeight() {
+    let height = this.$('#submission-nav').height();
+
+    let isNowMultiLine = height > 52;
+    let wasMultiLine = this.get('isNavMultiLine');
+
+    if (isNowMultiLine !== wasMultiLine) {
+      this.set('isNavMultiLine', isNowMultiLine);
+    }
+  },
 
   actions: {
     toggleStudentList: function() {
