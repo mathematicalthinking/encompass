@@ -530,10 +530,10 @@ li.selection a.active {
   border-bottom: 1px solid grey;
 }
 
-label.makingSelection>input {
+/* label.makingSelection>input {
   vertical-align: 3px;
   margin: 0px;
-}
+} */
 
 .strike {
   text-decoration: line-through;

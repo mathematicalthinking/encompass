@@ -114,15 +114,12 @@
   .comment-flex-item {
     &.filter {
       @include flex-item(1, flex-start, initial);
-      padding-bottom: 20px;
+      padding: 0 5px 30px 5px;
       &:hover {
         cursor: pointer;
         color: black;
         .hover-menu {
           display: inline;
-          &:after {
-            right: 32%;
-          }
         }
       }
     }
@@ -178,10 +175,9 @@
   }
 
   .display-list {
-    height: calc(100% - 242px);
+    height: calc(100% - 246px);
     overflow-y: auto;
     overflow-x: hidden;
-    border: 1px solid purple;
 
     ul {
       margin-left: 15px;
@@ -244,22 +240,17 @@
       height: 75px;
     }
     .display-list {
-      height: calc(100% - 316px);
+      height: calc(100% - 320px);
     }
   }
 
 }
 
-#al_feedback_display {border:1px solid #d3d3d3; }
 .modal #al_feedback_display { width:400px; margin:15px 0; }
 .modal #al_feedback_display li { padding:10px 0; font-size:13px; }
 #al_feedback_display li { position:relative; padding:10px 10px 10px 5px; border-bottom:1px solid #d3d3d3; }
 .modal #al_feedback_display li { padding-right:10px; }
-/* #al_feedback_display li:last-child { border-bottom:none; padding-bottom:0; } */
 #al_feedback_display li.al_reply { text-align:center; }
 #al_popup_content #al_feedback_display li .al_sprite  { left:10px; right:auto; }
 #al_feedback_display ul { margin-bottom:10px; }
 #al_feedback_display ul p { float:right; width:90%; }
-/* */
-// #al_comments textarea { height:25px; font-size:13px; padding:5px; border:1px solid #b4b4b4; width:94%; position:relative; display:block; margin:6px auto 10px; resize:none; }
-// #al_comments textarea.has-text { height: 50px; }

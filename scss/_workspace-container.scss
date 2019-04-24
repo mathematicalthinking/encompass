@@ -240,16 +240,11 @@
     }
     .workspace-flex-item.comments{
       @include flex-item(3, flex-start, 2 1 auto);
-      border: 2px solid green;
       background-color: $filter-list-background-color;
       header {
         background-color: darken($filter-list-background-color, 10);
         text-indent: 10px;
         margin-bottom: 10px;
-      }
-
-      .comments-group-1 {
-        border: 1px solid pink;
       }
 
       .compose-comment {
@@ -269,7 +264,7 @@
 
       &.nav {
         @include flex-item(1, flex-start, initial);
-        @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
         width: 100%;
         border-bottom: 1px solid #d3d3d3;
       }
@@ -400,7 +395,7 @@
       @include flex-item(3, flex-start, initial);
       @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
       background: linear-gradient(#d3d3d3, #d3d3d3) no-repeat center/1px 100%;
-      background-color: lighten($filter-list-background-color, 5);
+      background-color: ($filter-list-background-color);
       height: 50px;
       border-top:1px solid #d3d3d3;
       width: 100%;
@@ -431,23 +426,36 @@
     #workspace-submission-comp {
       @include flex-item(2, flex-start, auto);
       width: 100%;
-      height: calc(100% - 50px);
+      height: calc(100% - 52px);
       background-color: $filter-list-background-color;
     }
     #al_submission {
       margin-bottom: 0;
-      height: calc(100% - 210px);
+      height: calc(100% - 211px);
       overflow-y: auto;
     }
     #submission_selections {
-      position: relative;
-      // border: 2px solid purple;
       overflow-y: auto;
       overflow-x: hidden;
       height: 125px;
-      bottom: 0px;
-      margin-top: 15px;
       border-top:1px solid #d3d3d3;
+      background: white;
+
+      &.no-selections {
+        height: 75px;
+      }
+    }
+
+    #workspace-submission-comp.no-selections {
+      #al_submission {
+        height: calc(100% - 161px)
+      }
+    }
+  }
+
+  #submission-group.multi-line-nav {
+    #workspace-submission-comp {
+      height:calc(100% - 102px);
     }
   }
 
