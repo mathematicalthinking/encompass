@@ -12,26 +12,16 @@
     {{/each}}
   </ul>
   <div class="submission-row-item students-revisions">
-    <div class="selectBox submission-row-item students">
-        <div class="selected">
-          <div class="studentItem">
-            {{currentStudentDisplayName}}
-            <span class="selector" {{action 'toggleStudentList'}}></span>
-          </div>
-          {{#if showStudents}}
-          <ul id="studentList">
-          <!-- ENC-391, ENC-392, ENC-409 -->
-          <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
-            {{#each this.submissionThreadHeads as |threadHead|}}
-              <li class="studentItem" {{action 'toggleStudentList'}}>
-                {{#link-to 'workspace.submission' threadHead}}
-                  <span>{{threadHead.studentDisplayName}}</span>
-                {{/link-to}}
-              </li>
-            {{/each}}
-        </ul>
-        {{/if}}
-        </div>
+    <div class="submission-row-item students">
+      {{selectize-input
+      inputId="student-select"
+      initialOptions=studentSelectOptions
+      initialItems=initialStudentItem
+      onItemAdd=(action "onStudentSelect")
+      maxItems=1
+      labelField="name"
+      valueField="id"
+      }}
     </div>
     <div class="submission-row-item revisions">
       {{bread-crumbs

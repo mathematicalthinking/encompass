@@ -2,210 +2,7 @@
 @import "mixins";
 @import "responsive-font-size";
 
-.workspace-flex-item.tri-paneled {
-  // fitting all 3
-  @media screen and (min-width: 1260px) and (max-width: 1322px) {
-    .submission-row-item  {
-      &.toggle-show {
-        .showing-label {
-          display: none;
-        }
-      }
-    }
-  }
-  // fitting all 3
-  @media screen and (min-width: 1032px) and (max-width: 1259px) {
-    .submission-row-item  {
-      &.students {
-        width: 10em;
-      }
-      &.toggle-show {
-        .showing-label {
-          display: none;
-        }
-      }
-      .problem-link-text {
-        display: none;
-      }
-    }
-  }
 
-  @media screen and (min-width: $screen-xs-min) and (max-width: 1031px) {
-    &.submission {
-      margin-bottom: 25px;
-    }
-    &.folders {
-      margin-bottom: 25px;
-    }
-    &.comments {
-      margin: 50px;
-    }
-
-    .submission-row-item  {
-      &.toggle-show {
-        .showing-label {
-          display: none;
-        }
-      }
-    }
-  }
-
-// only fitting folders and submission
-  @media screen and (min-width: $screen-xs-min) and (max-width: 815px) {
-    .submission-row-item  {
-      &.students {
-        width: 10em;
-      }
-      .problem-link-text {
-        display: none;
-      }
-    }
-  }
-  // only fitting folders
-  @media screen and (min-width: $screen-xs-min) and (max-width: 691px) {
-    &.submission {
-      margin: 10px;
-      border: 1px solid black;
-    }
-    &.folders {
-      margin-bottom: 25px;
-      border: 1px solid black;
-    }
-    &.comments {
-      margin: 10px;
-      padding-right: 15px;
-    }
-  }
-}
-
-.workspace-flex-item.submission.bi-paneled {
-  // folders hidden
-  &.is-first-child {
-    @media screen and (min-width: 811px) and (max-width: 1099px) {
-      .submission-row-item  {
-        &.students {
-          width: 10em;
-        }
-        &.toggle-show {
-          .showing-label {
-            display: none;
-          }
-        }
-      }
-    }
-
-    @media screen and (min-width: 811px) and (max-width: 920px) {
-      .submission-row-item  {
-        .problem-link-text {
-          display: none;
-        }
-      }
-    }
-  }
-  // comments hidden
-  &.is-last-child {
-    @media screen and (min-width: 717px) and (max-width: 947px) {
-      .submission-row-item  {
-        &.students {
-          width: 10em;
-        }
-        &.toggle-show {
-          .showing-label {
-            display: none;
-          }
-        }
-      }
-    }
-
-    @media screen and (min-width: 717px) and (max-width: 836px) {
-      .submission-row-item  {
-        .problem-link-text {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-.workspace-flex-item.bi-paneled {
-  // one per row
-  // folders hidden
-  @media screen and (min-width: $screen-xs-min) and (max-width: 810px) {
-    &.comments {
-      margin-bottom: 50px;
-      .display-list li {
-        margin-right: 15px;
-      }
-    }
-    &.submission.is-first-child {
-      margin-bottom: 50px;
-      border: 1px solid black;
-      margin-right: 25px;
-        .submission-row-item  {
-          &.students {
-            width: 10em;
-          }
-          &.toggle-show {
-            .showing-label {
-              display: none;
-            }
-          }
-          .problem-link-text {
-            display: none;
-          }
-        }
-    }
-  }
-  // comments hidden
-  @media screen and (min-width: $screen-xs-min) and (max-width: 745px) {
-    &.folders {
-      margin-bottom: 50px;
-      border: 1px solid black;
-    }
-
-    &.submission.is-last-child {
-      margin-left: 25px;
-      margin-bottom: 50px;
-      border: 1px solid black;
-
-      .submission-row-item  {
-        &.students {
-          width: 10em;
-        }
-        &.toggle-show {
-          .showing-label {
-            display: none;
-          }
-        }
-        .problem-link-text {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-.workspace-flex-item.submission.is-only-child {
-  @media screen and (min-width: $screen-xs-min) and (max-width: 799px) {
-    .submission-row-item  {
-      &.students {
-        width: 10em;
-      }
-      &.toggle-show {
-        .showing-label {
-          display: none;
-        }
-      }
-    }
-  }
-  @media screen and (min-width: $screen-xs-min) and (max-width: 621px) {
-    .submission-row-item  {
-      .problem-link-text {
-        display: none;
-      }
-    }
-  }
-}
 
 // is this necessary?
 @media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
@@ -375,7 +172,37 @@
 
         &.students {
           @include flex-item(1, flex-start, initial);
-          // margin-left: 0;
+          position: relative;
+          margin: 2px;
+          width: 15em;
+          line-height: 2em;
+          display:inline-block;
+          vertical-align: middle;
+          .selectize-comp {
+            display: inline-block;
+            width: 100%;
+          }
+          .selectize-input {
+            position: relative;
+            background: none;
+            box-shadow: none;
+            font-weight: $main-font-weight;
+            font-size: .8em;
+            color: black;
+            vertical-align: middle;
+            padding: 4px 4px;
+
+            .item {
+              max-width:80%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+          .selectize-dropdown-content {
+            .option {
+              text-overflow: ellipsis;
+            }
+          }
         }
 
         &.revisions {
@@ -589,3 +416,211 @@
     }
   }
 }
+
+#workspace-container {
+  .workspace-flex-item.tri-paneled {
+    // fitting all 3
+    @media screen and (min-width: 1260px) and (max-width: 1322px) {
+      .submission-row-item  {
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+    // fitting all 3
+    @media screen and (min-width: 1032px) and (max-width: 1259px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+
+    @media screen and (min-width: $screen-xs-min) and (max-width: 1031px) {
+      &.submission {
+        margin-bottom: 25px;
+      }
+      &.folders {
+        margin-bottom: 25px;
+      }
+      &.comments {
+        margin: 50px;
+      }
+
+      .submission-row-item  {
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+
+  // only fitting folders and submission
+    @media screen and (min-width: $screen-xs-min) and (max-width: 815px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+    // only fitting folders
+    @media screen and (min-width: $screen-xs-min) and (max-width: 691px) {
+      &.submission {
+        margin: 10px;
+        border: 1px solid black;
+      }
+      &.folders {
+        margin-bottom: 25px;
+        border: 1px solid black;
+      }
+      &.comments {
+        margin: 10px;
+        padding-right: 15px;
+      }
+    }
+  }
+
+  .workspace-flex-item.submission.bi-paneled {
+    // folders hidden
+    &.is-first-child {
+      @media screen and (min-width: 811px) and (max-width: 1099px) {
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+        }
+      }
+
+      @media screen and (min-width: 811px) and (max-width: 920px) {
+        .submission-row-item  {
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+    // comments hidden
+    &.is-last-child {
+      @media screen and (min-width: 717px) and (max-width: 947px) {
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+        }
+      }
+
+      @media screen and (min-width: 717px) and (max-width: 836px) {
+        .submission-row-item  {
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .workspace-flex-item.bi-paneled {
+    // one per row
+    // folders hidden
+    @media screen and (min-width: $screen-xs-min) and (max-width: 810px) {
+      &.comments {
+        margin-bottom: 50px;
+        .display-list li {
+          margin-right: 15px;
+        }
+      }
+      &.submission.is-first-child {
+        margin-bottom: 50px;
+        border: 1px solid black;
+        margin-right: 25px;
+          .submission-row-item  {
+            &.students {
+              width: 10em;
+            }
+            &.toggle-show {
+              .showing-label {
+                display: none;
+              }
+            }
+            .problem-link-text {
+              display: none;
+            }
+          }
+      }
+    }
+    // comments hidden
+    @media screen and (min-width: $screen-xs-min) and (max-width: 745px) {
+      &.folders {
+        margin-bottom: 50px;
+        border: 1px solid black;
+      }
+
+      &.submission.is-last-child {
+        margin-left: 25px;
+        margin-bottom: 50px;
+        border: 1px solid black;
+
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+          .problem-link-text {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .workspace-flex-item.submission.is-only-child {
+    @media screen and (min-width: $screen-xs-min) and (max-width: 799px) {
+      .submission-row-item  {
+        &.students {
+          width: 10em;
+        }
+        &.toggle-show {
+          .showing-label {
+            display: none;
+          }
+        }
+      }
+    }
+    @media screen and (min-width: $screen-xs-min) and (max-width: 621px) {
+      .submission-row-item  {
+        .problem-link-text {
+          display: none;
+        }
+      }
+    }
+  }
+}
+

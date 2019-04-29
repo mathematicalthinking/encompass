@@ -34,6 +34,18 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
 
   },
 
+  didUpdateAttrs() {
+    let studentSelectize = this.$('#student-select')[0];
+    if (studentSelectize) {
+      let currentValue = studentSelectize.selectize.getValue();
+
+      let currentSubmissionId = this.get('initialStudentItem.firstObject');
+      if (this.get('initialStudentItem.firstObject') !== currentValue) {
+        studentSelectize.selectize.setValue([currentSubmissionId], true);
+      }
+    }
+  },
+
   willDestroyElement() {
     $(window).off('resize', this.get('onNavResize'));
   },
@@ -210,6 +222,19 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
       this.set('isNavMultiLine', isNowMultiLine);
     }
   },
+  studentSelectOptions: function() {
+    return this.get('submissionThreadHeads').map((sub) => {
+      return {
+        name: sub.get('studentDisplayName'),
+        id: sub.get('id'),
+      };
+    });
+  }.property('submissionThreadHeads'),
+  initialStudentItem: function() {
+    let currentStudent = this.get('submission.student');
+    let threadHead = this.get('submissionThreadHeads').findBy('student', currentStudent);
+    return [threadHead.get('id')];
+  }.property('submission', 'submissionThreadHeads.[]'),
 
   actions: {
     toggleStudentList: function() {
@@ -240,6 +265,10 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
       if (!submission) {
         return;
       }
+      this.get('toSubmission')(submission);
+    },
+    onStudentSelect(submissionId) {
+      let submission = this.get('submissionThreadHeads').findBy('id', submissionId);
       this.get('toSubmission')(submission);
     }
   }
