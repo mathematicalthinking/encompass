@@ -14,7 +14,7 @@
     }
   }
   // fitting all 3
-  @media screen and (min-width: 1015px) and (max-width: 1259px) {
+  @media screen and (min-width: 1032px) and (max-width: 1259px) {
     .submission-row-item  {
       &.students {
         width: 10em;
@@ -40,6 +40,14 @@
     &.comments {
       margin: 50px;
     }
+
+    .submission-row-item  {
+      &.toggle-show {
+        .showing-label {
+          display: none;
+        }
+      }
+    }
   }
 
 // only fitting folders and submission
@@ -47,11 +55,6 @@
     .submission-row-item  {
       &.students {
         width: 10em;
-      }
-      &.toggle-show {
-        .showing-label {
-          display: none;
-        }
       }
       .problem-link-text {
         display: none;
@@ -120,11 +123,13 @@
           display: none;
         }
       }
-    }  }
+    }
+  }
 }
 
 .workspace-flex-item.bi-paneled {
   // one per row
+  // folders hidden
   @media screen and (min-width: $screen-xs-min) and (max-width: 810px) {
     &.comments {
       margin-bottom: 50px;
@@ -132,23 +137,36 @@
         margin-right: 15px;
       }
     }
-
+    &.submission.is-first-child {
+      margin-bottom: 50px;
+      border: 1px solid black;
+      margin-right: 25px;
+        .submission-row-item  {
+          &.students {
+            width: 10em;
+          }
+          &.toggle-show {
+            .showing-label {
+              display: none;
+            }
+          }
+          .problem-link-text {
+            display: none;
+          }
+        }
+    }
+  }
+  // comments hidden
+  @media screen and (min-width: $screen-xs-min) and (max-width: 745px) {
     &.folders {
       margin-bottom: 50px;
       border: 1px solid black;
     }
 
-    &.submission {
+    &.submission.is-last-child {
+      margin-left: 25px;
       margin-bottom: 50px;
       border: 1px solid black;
-
-      &.is-last-child {
-        margin-left: 25px;
-      }
-
-      &.is-first-child {
-        margin-right: 25px;
-      }
 
       .submission-row-item  {
         &.students {
@@ -189,11 +207,10 @@
   }
 }
 
-// TODO add paneled class for comments, folders
-// only need to hide text for tripaneled
+// is this necessary?
 @media screen and (min-width: $screen-xs-min) and (max-width: 1200px) {
   #workspace-container {
-    .comment-flex-item {
+    .comment-flex-item.tri-paneled {
       &.filter {
         .filter-label {
           display: none;
@@ -344,13 +361,12 @@
       }
 
       &.selection-controls {
-        @include flex-container(null, null, row, wrap, space-around, flex-start, center);
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
         border-bottom: 1px solid #d3d3d3;
         background-color: white;
       }
 
       .submission-row-item {
-        min-width: fit-content;
         margin: 0 10px;
 
         &.students-revisions {
@@ -377,18 +393,20 @@
         }
 
         &.selection-toggles {
-          @include flex-item(1, center, initial);
+          @include flex-item(1, center, 0 1 auto);
           @include flex-container(null, null, row, nowrap, flex-start, flex-start, center)
         }
         &.problem-link {
           @include flex-item(2, center, auto);
+          max-width: 35%;
           text-align: center;
           a {
             color: $accent-color;
           }
         }
         &.new-response {
-          @include flex-item(3, center, 0 1 auto)
+          @include flex-item(3, center, 0 1 auto);
+          margin: auto;
         }
       }
      }
@@ -427,10 +445,13 @@
     }
 
     .folder.draggable {
-      @include flex-container(null, null, row, nowrap, flex-start, flex-start, flex-start);
+      border: 1px solid green;
+      @include flex-container(null, null, row, nowrap, flex-start, center, flex-start);
 
       .toggle-icon {
-        @include flex-item(1,flex-end, auto);
+        border: 1px solid red;
+        @include flex-item(1,flex-start, auto);
+
         align-self: center;
         i {
           font-size: x-large;
@@ -439,6 +460,14 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+
+        .folder-expanded, .folder-closed {
+          border: 1px solid purple;
+        }
+
+        .folder-name {
+          border: 1px solid brown;
+        }
       }
 
       aside {

@@ -64,17 +64,17 @@ table { border-collapse:collapse; border-spacing:0; } img { vertical-align:botto
 #al_left header .al_sprite { margin-right:6px; }
 #al_left .al_vertical_stretch { margin-bottom:50px; position:relative; }
 
-#al_folders>li { border-bottom:1px solid #d3d3d3; }
+/* #al_folders>li { border-bottom:1px solid #d3d3d3; } */
 #al_folders li { line-height:50px; font-size:13px; padding-left:5px; }
-#al_folders li>div { cursor:pointer; padding-right:98px; position:relative; white-space:nowrap; display:block; zoom:1; text-overflow:ellipsis; overflow:hidden; }
-#al_folders li aside { position:absolute; right:0px; top:50%; margin-top:-20px; height:41px; }
+#al_folders li>div { cursor:pointer; position:relative; white-space:nowrap; display:block; zoom:1; text-overflow:ellipsis; overflow:hidden; }
+/* #al_folders li aside { position:absolute; right:0px; top:50%; margin-top:-20px; height:41px; }
 #al_folders li aside div.al_indicator { position:relative; display:inline-block; zoom:1; border-left:1px solid #d3d3d3; }
 #al_folders li aside div.al_indicator:nth-child(2n) { padding:0 5px; }
 #al_folders li aside div.al_indicator .al_number { position:absolute; z-index:5; top:-2px; left:11px; width:25px; text-align:center; }
 #al_folders li aside span.al_folder_ct { display:block; height:41px; width:41px; }
 #al_folders li aside span.al_selection_ct { display:block; height:41px; width:41px; }
 #al_folders li aside div.al_indicator .al_number.al_selection { left:6px; }
-#al_folders li aside span.al_empty { display:block; height:41px; width:41px; }
+#al_folders li aside span.al_empty { display:block; height:41px; width:41px; } */
 #al_folders_modify { z-index:10; position:absolute; left:0px; bottom:0px; height:50px; width:100%; border-top:1px solid #d3d3d3; display:block; }
 #al_folders .subfolders { list-style-position: inside; margin-left:5px; }
 

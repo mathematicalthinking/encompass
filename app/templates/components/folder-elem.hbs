@@ -25,7 +25,7 @@
         {{else}}
 					<span class="folder-closed"><i class="far fa-folder"></i></span>
         {{/if}}
-				{{model.name}}
+				<span class="folder-name">{{model.name}}</span>
 			</span>
 		  <aside>
 				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
