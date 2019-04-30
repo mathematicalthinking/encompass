@@ -21,7 +21,7 @@
 {{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
   {{#if areFoldersHidden}}
   <div title="Show Folders" class="toggle-display">
-    <button {{action 'toggleFolderDisplay'}}><i id="arrow-icon" class="fas fa-chevron-right"></i></button>
+    <button {{action 'toggleFolderDisplay'}}><img src="/images/chevrons-right.svg"></button>
   </div>
   {{/if}}
   {{folder-list
@@ -63,7 +63,7 @@
 {{!-- <div id="al_right"> --}}
    {{#if areCommentsHidden}}
   <div title="Show Comments" class="toggle-display comments">
-    <button {{action 'toggleCommentDisplay'}}><i id="arrow-icon" class="fas fa-chevron-left"></i></button>
+    <button {{action 'toggleCommentDisplay'}}><img src="/images/chevrons-left.svg"></button>
   </div>
   {{/if}}
   {{comment-list

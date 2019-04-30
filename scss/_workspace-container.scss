@@ -32,6 +32,7 @@
     }
     button {
       height: 50px;
+      width: 25px;
       background-color: $filter-list-background-color;
       position: fixed;
       border: none;
@@ -40,9 +41,16 @@
       &:focus {
         outline: none;
       }
+      padding-left: 3px;
+      cursor: pointer;
     }
     &.comments {
       left: calc(100% - 23px);
+    }
+    img {
+      height: 20px;
+      width: 20px;
+      color: black;
     }
   }
 
