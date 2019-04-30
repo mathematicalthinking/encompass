@@ -3,6 +3,7 @@ require('app/components/Draggable');
 Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDrop.Draggable, Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
   isExpanded: false,
+  classNames: ['draggable-selection'],
 
   dragStart: function(event) {
     this._super(event);

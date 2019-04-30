@@ -267,16 +267,13 @@
     }
 
     .folderItem {
-      // border-bottom:1px solid #d3d3d3;
       line-height: 50px;
     }
 
     .folder.draggable {
-      border: 1px solid green;
       @include flex-container(null, null, row, nowrap, flex-start, center, flex-start);
 
       .toggle-icon {
-        border: 1px solid red;
         @include flex-item(1,flex-start, auto);
 
         align-self: center;
@@ -287,14 +284,6 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-
-        .folder-expanded, .folder-closed {
-          border: 1px solid purple;
-        }
-
-        .folder-name {
-          border: 1px solid brown;
-        }
       }
 
       aside {
@@ -334,6 +323,7 @@
         height: 25px;
         display: inline-block;
         margin-left: 5px;
+        cursor: pointer;
       }
       .folders-modify-item {
         text-align: center;
@@ -373,6 +363,26 @@
 
       &.no-selections {
         height: 75px;
+      }
+
+      .draggable-selection {
+        @include flex-container(null, null, row, wrap, flex-start, flex-start, flex-start);
+
+      }
+
+      .selectionLink {
+        @include flex-item(1, flex-start, auto);
+        display: inline-block;
+      }
+
+      .selection-actions {
+        @include flex-item(2, flex-start, auto);
+        display: inline-block;
+        width: 20px;
+        align-self: flex-end;
+        i {
+          display: block;
+        }
       }
     }
 
