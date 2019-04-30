@@ -299,19 +299,15 @@
         align-self: center;
         margin-left: 5px;
         .show-folder {
-          background: radial-gradient( 5px -9px, circle, white 8%, $pale-accent 26px );
           background-color: $pale-accent;
-          border: 1px solid white;
-          border-radius: 12px; /* one half of ( (border * 2) + height + padding ) */
-          font: $main-font-weight 15px/13px $primary-font;
-          color: $primary-font-color;
-          font-size: 1em;
-          height: 18px;
-          min-width: 16px;
-          padding: 4px 3px 0 3px;
+          width: 35px;
+          line-height: 35px;
+          border-radius: 50%;
           text-align: center;
-          cursor: pointer;
-          text-indent: 0;
+          text-indent: initial;
+          font-size: 1em;
+          color: $primary-font-color;
+          border: 1px solid white;
           margin-right: 5px;
         }
       }
