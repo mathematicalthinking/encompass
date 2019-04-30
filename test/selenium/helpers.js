@@ -18,7 +18,7 @@ const host = `http://localhost:${port}`;
 const loginUrl = `${host}/#/auth/login`;
 
 const admin = {
-  username: 'rick',
+  username: 'Rick', // case insensitive
   password: 'sanchez',
   name: 'Rick Sanchez'
 };

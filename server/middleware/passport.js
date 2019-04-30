@@ -48,8 +48,9 @@ module.exports = (passport) => {
   * If they don't then it returns incorrect password
   */
   passport.use('local-login', new LocalStrategy((username, password, next) => {
+    let usernameLower = typeof username === 'string' ? username.toLowerCase() : '';
     User.findOne({
-      username: username
+      username: usernameLower
     }, (err, user) => {
       if (err) {
         return next(err);
@@ -132,9 +133,10 @@ module.exports = (passport) => {
         }
 
         // let isStudent = req.body.accountType === 'S';
+        let usernameLower = typeof username === 'string' ? username.toLowerCase() : '';
 
         User.findOne({
-          'username': username
+          username: usernameLower
         }, (err, user) => {
           if (err) {
             return next(err);
@@ -217,7 +219,7 @@ module.exports = (passport) => {
                     organization,
                     organizationRequest,
                     location,
-                    username,
+                    username: usernameLower,
                     password: hashPass,
                     isAuthorized,
                     requestReason,
@@ -292,7 +294,7 @@ module.exports = (passport) => {
                     organization,
                     organizationRequest,
                     location,
-                    username,
+                    username: usernameLower,
                     password: hashPass,
                     isAuthorized,
                     requestReason,
