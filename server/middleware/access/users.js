@@ -46,7 +46,7 @@ const accessibleUsersQuery = async function(user, ids, usernames, regex, filterB
     if (isNonEmptyArray(usernames)) {
       filter.username = { $in: usernames };
     } else if (_.isString(usernames)) {
-      filter.username = usernames;
+      filter.username = usernames.toLowerCase();
     }
   }
 
