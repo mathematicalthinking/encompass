@@ -52,6 +52,14 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   isBipaneled: Ember.computed.equal('containerLayoutClass', 'hsc'),
   isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
 
+  searchConstraints: {
+    query: {
+      length: {
+        minimum: 0,
+        maximum: 500
+      }
+    }
+  },
 
   init: function() {
     this._super(...arguments);

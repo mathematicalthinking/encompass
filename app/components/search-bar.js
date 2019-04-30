@@ -6,7 +6,7 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   defaultConstraints: {
     query: {
       length: {
-        minimum: 0,
+        minimum: 1,
         maximum: 500
       }
     }
@@ -15,7 +15,7 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   init() {
     this._super(...arguments);
 
-    let doDebounce = this.get('doDebounce') || true;
+    let doDebounce = this.get('doDebounce') || false;
     let debounceTime = this.get('debounceTime') || 300;
     if (doDebounce) {
       this.set('debouncedSearch', _.debounce(this.onChangeSearch, debounceTime));
