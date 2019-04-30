@@ -97,8 +97,16 @@
   </div>
   {{/if}}
 </div><!--/al_submission-->
-<h5 class="submission-header selections">Selections</h5>
-<div id="submission_selections" class={{if areNoSelections "no-selections"}}>
+<h5 class="submission-header selections">
+  Selections
+  {{#unless areNoSelections}}
+    <div class="expand-selections">
+      <img title={{toggleSelectionInfo.title}} {{action "toggleSelectionBox"}} class={{toggleSelectionInfo.className}} src="/images/{{toggleSelectionInfo.imgName}}" alt={{toggleSelectionInfo.alt}}>
+    </div>
+  {{/unless}}
+</h5>
+
+<div id="submission_selections" class="{{selectionBoxClass}}">
   <ul>
   {{#each workspaceSelections as |selection|}}
     <li class="selection">

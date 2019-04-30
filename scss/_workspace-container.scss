@@ -356,11 +356,29 @@
       width: 100%;
       height: calc(100% - 52px);
       background-color: $filter-list-background-color;
+
+      &.expanded-selections {
+        #submission_selections {
+          height: calc(100% - 40% - 35px - 56px);
+        }
+
+        #al_submission {
+          height: calc(40%);
+        }
+      }
     }
     #al_submission {
       margin-bottom: 0;
       height: calc(100% - 211px);
       overflow-y: auto;
+    }
+    .expand-selections {
+      display: inline-block;
+      img {
+        height: 25px;
+        width: 25px;
+        cursor: pointer;
+      }
     }
     #submission_selections {
       overflow-y: auto;

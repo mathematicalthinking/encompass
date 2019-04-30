@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-  classNameBindings: ['areNoSelections:no-selections'],
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -16,6 +16,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   isDirty: false,
   wsSaveErrors: [],
   wasShowingBeforeResizing: false,
+  isSelectionsBoxExpanded: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     let making = this.get('makingSelection');
@@ -105,6 +106,34 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
 
   }.property('showingSelections'),
 
+  selectionBoxClass: function() {
+    if (this.get('areNoSelections')) {
+      return 'no-selections';
+    }
+    if (this.get('isSelectionBoxExpanded')) {
+      return 'expanded';
+    }
+
+    return '';
+  }.property('areNoSelections', 'isSelectionBoxExpanded'),
+
+  toggleSelectionInfo: function() {
+    if (this.get('isSelectionsBoxExpanded')) {
+      return {
+        imgName: 'chevrons-down.svg',
+        className: 'shrink-selection-box',
+        title: 'collapse',
+        alt: 'Collapse'
+      };
+    }
+    return {
+      imgName: 'chevrons-up.svg',
+      className: 'expand-selection-box',
+      title: 'expand',
+      alt: 'Expand'
+    };
+  }.property('isSelectionsBoxExpanded'),
+
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
@@ -186,7 +215,10 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       };
 
       $(window).on('resize.selectableArea', handleResize);
-    }
+    },
+    toggleSelectionBox() {
+      this.toggleProperty('isSelectionsBoxExpanded');
+    },
   }
 });
 
