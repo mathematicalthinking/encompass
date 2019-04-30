@@ -382,7 +382,10 @@ module.exports = {
     }
   },
   workspace: {
-    newResponse: 'button.action_button:nth-child(1)'
+    newResponse: 'button.action_button:nth-child(1)',
+    studentsSelect: '.submission-row-item.students > .selectize-comp',
+    studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
+    dropdownContent: '.selectize-dropdown-content',
   },
   wsInfo: {
     container: '#workspace-info',

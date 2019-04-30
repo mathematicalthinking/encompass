@@ -66,9 +66,9 @@ describe('Visiting Workspaces', function() {
     });
 
     it('should display a select box for students', async function() {
-      expect(await helpers.isElementVisible(driver, 'div.selectBox')).to.eql(true);
-      expect(await helpers.findAndGetText(driver, 'div.studentItem')).to.contain('Andrew S.');
-      expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
+      expect(await helpers.isElementVisible(driver, css.workspace.studentsSelect)).to.eql(true);
+      expect(await helpers.findAndGetText(driver, css.workspace.studentItem)).to.contain('Andrew S.');
+      // expect(await helpers.isElementVisible(driver, '#studentList')).to.be.false;
     });
 
 
@@ -114,9 +114,9 @@ describe('Visiting Workspaces', function() {
       let studentList;
       before(async function() {
         try {
-          selectBox = await driver.findElement(By.css('div.selectBox span.selector'));
+          selectBox = await driver.findElement(By.css(css.workspace.studentsSelect));
           await selectBox.click();
-          studentList = await helpers.waitForSelector(driver, '#studentList');
+          studentList = await helpers.waitForSelector(driver, css.workspace.dropdownContent);
         }catch(err) {
           console.log(err);
         }
@@ -125,7 +125,7 @@ describe('Visiting Workspaces', function() {
       it('should display a bunch of students', async function() {
         let students;
         try {
-          students = await studentList.findElements(By.css('li.studentItem'));
+          students = await studentList.findElements(By.css('div.option'));
           names = await Promise.all(students.map((el) => {
             return el.getText();
           }));
@@ -159,11 +159,11 @@ describe('Visiting Workspaces', function() {
         try {
           let leftArrow = await driver.wait(until.elementLocated(By.id('leftArrow')), 3000);
           await leftArrow.click();
-          afterLeftClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
+          afterLeftClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
 
           let rightArrow = await driver.wait(until.elementLocated(By.id('rightArrow')), 3000);
           await rightArrow.click();
-          afterRightClick = await driver.wait(until.elementLocated(By.css('div.studentItem')), 3000).getText();
+          afterRightClick = await driver.wait(until.elementLocated(By.css(css.workspace.studentItem)), 3000).getText();
         }catch(err) {
           console.log(err);
         }
