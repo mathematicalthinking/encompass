@@ -1,10 +1,9 @@
 (function() {
 var SelectionHighlighting = function(args) {
-  'use strict';
 
   // Don't let an instance be created without a valid selectable container
-  if (!args || !args.selectableContainerId
-      || !document.getElementById(args.selectableContainerId)
+  if (!args || !args.selectableContainerId ||
+      !document.getElementById(args.selectableContainerId)
   ) {
     console.log('The id for the selectable container must be supplied to this object.');
     console.log('Please try again with: new SelectionHighlighting({ selectableContainerId: "theID" });');
@@ -148,12 +147,12 @@ var SelectionHighlighting = function(args) {
 
       // increment num until an unused id can be produced
       while (document.getElementById('node-' + num)) {
-        num = num + 1;
+        num += 1;
       }
 
       // give the element its new id and increment num
       node.setAttribute('id', 'node-' + num);
-      num = num + 1;
+      num += 1;
     }
 
     // loop through all the element's children
@@ -228,7 +227,7 @@ var SelectionHighlighting = function(args) {
         } else if (childNode.nodeName.toLowerCase() === 'img') {
           nodeCoords[nodeCoords.length] = (node.id + ' ' + i);
           textCoords[textCoords.length] = textCoord;
-          textCoord = textCoord + 1;
+          textCoord += 1;
         } else if (childNode.nodeType === ELEMENT_NODE) {
           mapRangeCoordToTextCoordRecursive(childNode);
         }
@@ -477,7 +476,7 @@ var SelectionHighlighting = function(args) {
     for (i = 0; i < selectionsLength; i += 1) {
       if (selections[i]) {
         coords[counter] = selections[i].coords;
-        counter = counter + 1;
+        counter += 1;
       }
     }
     }
@@ -566,13 +565,13 @@ var SelectionHighlighting = function(args) {
         }
       }
     }
-    x = x + (document.body.scrollLeft || document.documentElement.scrollLeft);
-    y = y + (document.body.scrollTop || document.documentElement.scrollTop);
+    x += (document.body.scrollLeft || document.documentElement.scrollLeft);
+    y += (document.body.scrollTop || document.documentElement.scrollTop);
 
     ele = selectableContainer;
     while (ele !== document.body) {
-      x = x + ele.scrollLeft;
-      y = y + ele.scrollTop;
+      x += ele.scrollLeft;
+      y += ele.scrollTop;
       ele = ele.parentNode;
     }
 
@@ -628,8 +627,8 @@ var SelectionHighlighting = function(args) {
 
     if (selectableContainer.style.position !== 'absolute') {
       selectableContainer.style.position = 'relative';
-      coords.x = coords.x - findPosX(selectableContainer);
-      coords.y = coords.y - findPosY(selectableContainer);
+      coords.x -= findPosX(selectableContainer);
+      coords.y -= findPosY(selectableContainer);
     } else {
       zIndex = getZIndex(selectableContainer);
     }
@@ -741,7 +740,7 @@ var SelectionHighlighting = function(args) {
       highlighting.selectCoords(getRangeCoordFromTextCoord(currentTextCoord, currentTextCoord + 1));
       coordsArray[coordsArray.length] = getSelectionPixelCoords();
       highlighting.removeAllRanges();
-      currentTextCoord = currentTextCoord + 1;
+      currentTextCoord += 1;
     }
 
     normalizedCoords = [];
@@ -834,6 +833,8 @@ var SelectionHighlighting = function(args) {
     // set the container's mouseup to create a new selection, if necessary
     if (automaticallyRegisterEvent) {
       selectableContainer.addEventListener('mouseup', selectableMouseup, false);
+      // selection was empty by time mouseup firing for touchscreen
+      selectableContainer.addEventListener('touchend', selectableMouseup, false);
     }
 
     highlighting.setOnCreateSelection(onCreate);
@@ -1225,7 +1226,7 @@ var SelectionHighlighting = function(args) {
     child = cstart;
     do {
       if (child.previousSibling !== null) {
-        s = s + 1;
+        s += 1;
         child = child.previousSibling;
       }
     } while (child.previousSibling !== null);
@@ -1234,7 +1235,7 @@ var SelectionHighlighting = function(args) {
     child = cend;
     do {
       if (child.previousSibling !== null) {
-        e = e + 1;
+        e += 1;
         child = child.previousSibling;
       }
     } while (child.previousSibling !== null);
@@ -1290,7 +1291,7 @@ var SelectionHighlighting = function(args) {
         if (heat[j] === undefined) {
           heat[j] = 1;
         } else {
-          heat[j] = heat[j] + 1;
+          heat[j] += 1;
         }
       }
     }
@@ -1321,7 +1322,7 @@ var SelectionHighlighting = function(args) {
     heatRatio = [];
     arrSelections = [];
     tmpHighlightId = highlightIdPrefix;
-    highlightIdPrefix = highlightIdPrefix + heatIdPrefix;
+    highlightIdPrefix += heatIdPrefix;
 
     for (i = 0; i < heatLength; i += 1) {
       if (heat[i] !== undefined) {
@@ -1333,7 +1334,7 @@ var SelectionHighlighting = function(args) {
             arrSelections[count] = { id: count, coords: getRangeCoordFromTextCoord(i, j + 1) };
             heatRatio[count] = 1 - ((heat[i] - minHeat) / (maxHeat - minHeat));
             i = j;
-            count = count + 1;
+            count += 1;
             break;
           }
         }
@@ -1516,4 +1517,4 @@ SelectionHighlighting.getTextAt = function(coords) {
 };
 
 window.SelectionHighlighting = SelectionHighlighting;
-})();
+}());

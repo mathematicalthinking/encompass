@@ -204,6 +204,10 @@ NoteInput = function() {
       _currentlyConfirmingSelection = true;
       window.removeEventListener('mouseup', _handleMouseUp, false);
       window.removeEventListener('mousemove', _handleMouseMove, false);
+
+      window.removeEventListener('touchend', _handleMouseUp, false);
+      window.removeEventListener('touchmove', _handleMouseMove, false);
+
       tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
     }
@@ -246,8 +250,8 @@ NoteInput = function() {
     var boxBorderWidth = _styleAsInt(box, 'borderWidth');
     // var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
     // var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
-    var buttonsWidth = 30;
-    var buttonsHeight = 12;
+    var buttonsWidth = 44;
+    var buttonsHeight = 21;
     var buttons = [confirm, cancel];
 
 
@@ -293,7 +297,7 @@ NoteInput = function() {
     confirm.innerText = 'Save';
 
     cancel.setAttribute('id', _cancelButtonId);
-    cancel.innerText = 'Trash';
+    cancel.innerText = 'Cancel';
 
     return [confirm, cancel];
   }
@@ -354,6 +358,9 @@ NoteInput = function() {
     _currentlyMakingSelection = true;
     window.addEventListener('mouseup', _handleMouseUp, false);
     window.addEventListener('mousemove', _handleMouseMove, false);
+
+    window.addEventListener('touchend', _handleMouseUp, false);
+    window.addEventListener('touchmove', _handleMouseMove, false);
 
     tagging.currentTargetImage = event.target;
     tagging.createSelectionBox(event);
@@ -642,6 +649,7 @@ NoteInput = function() {
       }
       targetImages[targetImages.length] = img;
       img.addEventListener('mousedown', _initiateSelection, false);
+      img.addEventListener('touchstart', _initiateSelection, false);
     }
   }());
 
@@ -855,6 +863,7 @@ NoteInput = function() {
     if (event.target.id !== _tagIdPrefix + tmpId) {
       if (_currentlyResizingOrPlacing) {
         window.removeEventListener('mousemove', _mouseMove, true);
+        window.removeEventListener('touchmove', _mouseMove , true);
         _currentlyResizingOrPlacing = false;
         return;
       }
@@ -863,6 +872,8 @@ NoteInput = function() {
     }
 
     window.removeEventListener('mouseup', _stopEditing, false);
+    window.removeEventListener('touchend', _stopEditing, false);
+
     _currentlyEditing = -1;
 
     if (_allowNotes) {
@@ -1206,6 +1217,8 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = true;
 
     window.addEventListener('mousemove', _mouseMove, true);
+    window.addEventListener('touchmove', _mouseMove, true);
+
 
     event.preventDefault();
     event.stopPropagation();
@@ -1222,6 +1235,8 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = false;
 
     window.removeEventListener('mousemove', _mouseMove, true);
+    window.removeEventListener('touchmove', _mouseMove, true);
+
     event.stopPropagation();
   }
 
@@ -1740,6 +1755,8 @@ NoteInput = function() {
     tagging.removeAllTags();
     for (i = 0; i < targetImages.length; i++) {
       targetImages[i].removeEventListener('mousedown', _createTagOnEvent, false);
+      targetImages[i].removeEventListener('touchstart', _createTagOnEvent, false);
+
     }
   };
 };
