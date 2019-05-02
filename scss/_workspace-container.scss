@@ -105,6 +105,10 @@
       width: 17%;
       min-width: 230px;
       max-width: 500px;
+
+      &.is-editing {
+        width: 50%;
+      }
     }
     .workspace-flex-item.submission{
       @include flex-item(2, flex-start, 4 1 auto);
@@ -314,12 +318,27 @@
           margin-right: 5px;
         }
       }
-    }
 
+      .move-folder {
+        @include flex-item(1, flex-start, initial);
+      }
+
+      .delete-folder {
+        @include flex-item(2, flex-start, initial);
+      }
+
+      .edit-folder-name {
+        @include flex-item(3, flex-start, auto);
+        input {
+          width: 80%;
+        }
+      }
+
+    }
 
     .folders-modify {
       @include flex-item(3, flex-start, initial);
-      @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
+      @include flex-container(null, null, row, wrap, flex-start, flex-start, center);
       background: linear-gradient(#d3d3d3, #d3d3d3) no-repeat center/1px 100%;
       background-color: ($filter-list-background-color);
       height: 50px;
@@ -330,6 +349,7 @@
       }
       .folders-modify-item {
         text-align: center;
+        line-height: 50px;
         &.add {
           @include flex-item(1, center, auto);
         }

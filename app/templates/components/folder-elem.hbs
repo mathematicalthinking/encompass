@@ -2,18 +2,23 @@
 <div class="folder draggable">
 		{{#if this.editFolderMode}}
 		  {{#if canEditFolders}}
-				{{#if model.parent}}
-        	<span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
-      	{{/if}}
-		  <span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
-		  <span {{action 'moveDown' model target=folderList}} class="al_wtf move_down"></span>
-                              {{! Need to send askToDelete action to folder-list to confirm deletion }}
+				<div class="move-folder">
+						{{#if model.parent}}
+							<span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
+						{{/if}}
+					<span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
+					<span {{action 'moveDown' model target=folderList}} class="al_wtf move_down"></span>
+				</div>
 			{{/if}}
 			{{#if canDeleteFolder}}
-				<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
+				<div class="delete-folder">
+					<span {{action 'confirmDelete'}}><i class="fas fa-trash"></i></span>
+				</div>
 			{{/if}}
 			{{#if canEditFolder}}
-      	{{input value=model.name focus-out='editFolderName' size=10}}
+				<div class="edit-folder-name">
+					{{input value=model.name focus-out='editFolderName'}}
+				</div>
 			{{/if}}
 			{{#each updateRecordErrors as |error|}}
     		<p class="error-message">{{error}}</p>

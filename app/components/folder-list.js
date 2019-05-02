@@ -14,7 +14,7 @@
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'folder-list',
   classNames: ['workspace-flex-item', 'folders'],
-  classNameBindings: ['isHidden:hidden', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
+  classNameBindings: ['isHidden:hidden', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled', 'editFolderMode:is-editing'],
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
   weighting: 1,
@@ -157,7 +157,8 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     cancelEditFolderMode: function() {
       this.set('editFolderMode', false);
     },
-    toggleEditMode: function() {
+    toggleEditMode: function(currentMode) {
+      this.send('hideComments', currentMode);
       this.toggleProperty('editFolderMode');
     },
 
@@ -252,7 +253,26 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     },
     hideFolders() {
       this.get('hideFolders')();
-    }
+    },
+    hideComments(currentMode) {
+      if (currentMode === false) {
+        // switching not editing to editing
+        if (!this.get('areCommentsHidden')) {
+          this.set('didHideComments', true);
+          this.get('hideComments')();
+        }
+        return;
+      }
+      // switching from editing to not editing
+      if (this.get('didHideComments')) {
+        this.set('didHideComments', false);
+
+        if (this.get('areCommentsHidden')) {
+          // only toggle if comments are still hidden
+          this.get('hideComments')();
+        }
+      }
+    },
   }
 });
 
