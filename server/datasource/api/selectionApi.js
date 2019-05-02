@@ -8,6 +8,7 @@
 //REQUIRE MODULES
 const logger   = require('log4js').getLogger('server');
 const sharp = require('sharp');
+const axios = require('axios');
 
 //REQUIRE FILES
 const utils    = require('../../middleware/requestHandler');
@@ -136,9 +137,18 @@ function getImageData(src) {
   let imageId = src.slice(lastSlashIx + 1);
 
   if (!isValidMongoId(imageId)) {
-    return;
+    // try getting data from src url
+    try {
+      return axios.get(src, {responseType: 'stream'})
+      .then((results) => {
+        const converter = sharp();
+        return results.data.pipe(converter);
+      });
+    } catch(err) {
+      console.log('sharp err: ', err);
+      return;
+    }
   }
-
   return models.Image.findById(imageId).lean().exec()
     .then((image) => {
       if (image) {
@@ -188,12 +198,20 @@ async function postSelection(req, res, next) {
       let imageSrc = selection.imageSrc;
 
       let imageData = await getImageData(imageSrc);
-      console.log('imageSrc selection api', imageData.slice(0,100));
 
       if (imageData) {
-        let bytes = Buffer.from(imageData, 'base64');
+        let bytes;
+        let sharpInstance;
 
-        let sharpInstance = sharp(bytes);
+        if (imageData instanceof sharp) {
+          // sharp instance
+          bytes = await imageData.toBuffer();
+          sharpInstance = imageData;
+        } else {
+          bytes = Buffer.from(imageData, 'base64');
+
+          sharpInstance = sharp(bytes);
+        }
 
         let sharpMetadata = await sharpInstance.metadata();
 
@@ -230,6 +248,9 @@ async function postSelection(req, res, next) {
         let url = `/api/images/file/${croppedImage._id}`;
 
         selection.imageTagLink = url;
+      } else {
+        // something went wrong
+        return utils.sendError.InvalidContentError(null, res);
       }
 
     }
