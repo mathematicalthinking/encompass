@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections'],
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -134,6 +134,23 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     };
   }.property('isSelectionsBoxExpanded'),
 
+  hideShowSelectionInfo: function() {
+    if (this.get('areSelectionsHidden')) {
+      return {
+        className: 'far fa-eye',
+        title: 'show selections',
+      };
+    }
+    return {
+      className: 'far fa-eye-slash',
+      title: 'hide selections',
+    };
+  }.property('areSelectionsHidden'),
+
+  showExpandSelections: function() {
+    return !this.get('areNoSelections') && !this.get('areSelectionsHidden');
+  }.property('areNoSelections', 'areSelectionsHidden'),
+
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
@@ -218,6 +235,10 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     },
     toggleSelectionBox() {
       this.toggleProperty('isSelectionsBoxExpanded');
+    },
+
+    hideShowSelections() {
+      this.toggleProperty('areSelectionsHidden');
     },
   }
 });

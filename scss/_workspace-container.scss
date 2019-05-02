@@ -361,6 +361,15 @@
           height: calc(40%);
         }
       }
+
+      &.selections-hidden {
+        #submission_selections {
+         display: none;
+        }
+        #al_submission {
+          height: calc(100% - 56px - 28px - 27px);
+        }
+      }
     }
     #al_submission {
       margin-bottom: 0;
@@ -374,6 +383,9 @@
         width: 25px;
         cursor: pointer;
       }
+    }
+    .hide-show-selections {
+      display: inline-block;
     }
     #submission_selections {
       overflow-y: auto;

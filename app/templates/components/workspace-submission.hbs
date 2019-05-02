@@ -99,11 +99,14 @@
 </div><!--/al_submission-->
 <h5 class="submission-header selections">
   Selections
-  {{#unless areNoSelections}}
+  {{#if showExpandSelections}}
     <div class="expand-selections">
       <img title={{toggleSelectionInfo.title}} {{action "toggleSelectionBox"}} class={{toggleSelectionInfo.className}} src="/images/{{toggleSelectionInfo.imgName}}" alt={{toggleSelectionInfo.alt}}>
     </div>
-  {{/unless}}
+  {{/if}}
+  <div class="hide-show-selections">
+    <i {{action "hideShowSelections"}} class={{hideShowSelectionInfo.className}} title={{hideShowSelectionInfo.title}}></i>
+  </div>
 </h5>
 
 <div id="submission_selections" class="{{selectionBoxClass}}">
