@@ -47,9 +47,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     return this.get('permissions').canEdit(ws, 'folders', 3);
   }.property('workspace.id', 'currentUser.id'),
 
-  init: function() {
-    this._super(...arguments);
-  },
 
   topLevelFolders: function() {
     return this.get('folders').filter((folder) => {
@@ -89,7 +86,7 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     return this.get('editFolderMode') ? 'Done' : 'Edit';
   }.property('editFolderMode'),
   editFolderIcon: function() {
-    return this.get('editFolderMode') ? 'folder-checked' : 'folder-info';
+    return this.get('editFolderMode') ? 'fas fa-check' : 'fas fa-pencil-alt';
   }.property('editFolderMode'),
   toggleEditAlt: function() {
     return this.get('editFolderMode') ? 'Save Changes' : 'Edit Folders';

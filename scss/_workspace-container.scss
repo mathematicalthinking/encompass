@@ -270,6 +270,8 @@
       background-color: $filter-list-background-color;
       height: calc(100% - 50px);
       width: 100%;
+      overflow: hidden;
+      overflow-y: auto;
     }
     #al_folders_modify {
       position: relative;
@@ -323,12 +325,8 @@
       height: 50px;
       border-top:1px solid #d3d3d3;
       width: 100%;
-      img {
-        width: 25px;
-        height: 25px;
-        display: inline-block;
+      i {
         margin-left: 5px;
-        cursor: pointer;
       }
       .folders-modify-item {
         text-align: center;

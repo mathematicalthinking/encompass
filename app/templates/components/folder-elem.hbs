@@ -25,7 +25,7 @@
         {{else}}
 					<span class="folder-closed"><i class="far fa-folder"></i></span>
         {{/if}}
-				<span class="folder-name">{{model.name}}</span>
+				<span title={{model.name}} class="folder-name">{{model.name}}</span>
 			</span>
 		  <aside>
 				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
@@ -33,7 +33,7 @@
 					<p class="error-message">{{error}}</p>
 				{{/each}}
 
-				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
+				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}}" title="number selections filed in this folder">
 					{{model.childSelections.length}}
 				</div>
 		  </aside>

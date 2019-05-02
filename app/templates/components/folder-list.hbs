@@ -28,11 +28,13 @@
 {{#if canManageFolders}}
 <div class="folders-modify">
   <div class= "folders-modify-item add">
-    <span {{action "openModal" "folderNew" }}>Add <img class="icon-add-folder" src="/images/folder-add.svg" alt="Add Folder">
+    <span {{action "openModal" "folderNew" }}>Add
+      <i class="fas fa-plus"></i>
     </span>
   </div>
   <div class= "folders-modify-item edit">
-    <span {{action "toggleEditMode"}}>{{editFolderText}} <img class="icon-add-folder" src="/images/{{editFolderIcon}}.svg" alt={{editFolderAlt}}>
+    <span {{action "toggleEditMode"}}>{{editFolderText}}
+      <i class={{editFolderIcon}}></i>
     </span>
   </div>
 </div>
