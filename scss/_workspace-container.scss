@@ -223,6 +223,7 @@
 
          a {
           background: none;
+          padding: 5px;
          }
           margin-left: auto;
         }
@@ -395,6 +396,10 @@
       .selectionLink {
         @include flex-item(1, flex-start, auto);
         display: inline-block;
+
+        span {
+          padding: 2px;
+        }
       }
 
       .selection-actions {
@@ -402,6 +407,11 @@
         display: inline-block;
         width: 20px;
         align-self: flex-end;
+
+        span {
+          padding: 0px 1px;
+        }
+
         i {
           display: block;
         }
