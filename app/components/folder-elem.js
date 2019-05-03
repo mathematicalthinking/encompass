@@ -192,6 +192,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
     });
   },
 
+  hasManyTaggings: Ember.computed.gt('model.childSelections.length', 99),
+
   actions: {
     toggle: function() {
       this.set('model.isExpanded', !this.get('model.isExpanded'));

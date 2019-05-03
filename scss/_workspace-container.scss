@@ -307,8 +307,8 @@
         margin-left: 5px;
         .show-folder {
           background-color: $pale-accent;
-          width: 35px;
-          line-height: 35px;
+          width: 30px;
+          line-height: 30px;
           border-radius: 50%;
           text-align: center;
           text-indent: initial;
@@ -316,6 +316,10 @@
           color: $primary-font-color;
           border: 1px solid white;
           margin-right: 5px;
+
+          &.many-taggings {
+            font-size: 0.9em;
+          }
         }
       }
 
@@ -361,8 +365,6 @@
       }
 
     }
-
-
   }
 
   #submission-group {
@@ -395,6 +397,14 @@
       margin-bottom: 0;
       height: calc(100% - 211px);
       overflow-y: auto;
+    }
+
+    #confirm-text-sel {
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     .expand-selections {
       display: inline-block;
