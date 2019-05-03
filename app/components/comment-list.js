@@ -353,23 +353,27 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     deleteComment: function(comment) {
-      comment.get('submission').then((submission) => {
-        comment.set('isTrashed', true);
-        this.set('alerting', this.get('alert'));
-        comment.save()
-        .then(() => {
-          this.get('alerting').showToast('success', 'Comment Deleted', 'bottom-end', 3000, true, 'Undo').then((result) => {
-            if (result.value) {
-              comment.set('isTrashed', false);
-              comment.save().then(() => {
-                this.get('alerting').showToast('success', 'Comment Restored', 'bottom-end', 2000, false, null);
+      return this.get('alert').showModal('warning', 'Are you sure you want to delete this comment?', null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          comment.get('submission').then((submission) => {
+            comment.set('isTrashed', true);
+            comment.save()
+            .then(() => {
+              this.get('alert').showToast('success', 'Comment Deleted', 'bottom-end', 3000, true, 'Undo').then((result) => {
+                if (result.value) {
+                  comment.set('isTrashed', false);
+                  comment.save().then(() => {
+                    this.get('alert').showToast('success', 'Comment Restored', 'bottom-end', 2000, false, null);
+                  });
+                }
               });
-            }
+              // this.set('commentDeleteSuccess', true);
+            }).catch((err) => {
+              this.handleErrors(err, 'updateRecordErrors');
+            });
           });
-          // this.set('commentDeleteSuccess', true);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors');
-        });
+        }
       });
     },
 
