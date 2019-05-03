@@ -7,6 +7,10 @@
 Encompass.SelectableAreaComponent = Ember.Component.extend({
   elementId: 'selectable-area',
 
+  application: Ember.inject.controller(),
+
+  isTouchScreen: Ember.computed.alias('application.isTouchScreen'),
+
   init: function() {
     this._super(...arguments);
     this.setupTagging();
@@ -31,7 +35,8 @@ Encompass.SelectableAreaComponent = Ember.Component.extend({
 
     // set up the SelectionHighlighting object
     this.selectionHighlighting = new SelectionHighlighting({
-      selectableContainerId: containerId
+      selectableContainerId: containerId,
+      automaticEvent: !this.get('isTouchScreen'),
     });
     this.selectionHighlighting.init((id) => {
       let selection = this.selectionHighlighting.getSelection(id);

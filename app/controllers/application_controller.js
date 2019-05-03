@@ -8,6 +8,7 @@ Encompass.ApplicationController = Ember.Controller.extend({
   showCategoryList: false,
   isHidden: false,
   selectedCategories: [],
+  isTouchScreen: false,
 
   currentUser: function() {
     return this.get('model');
@@ -27,6 +28,9 @@ Encompass.ApplicationController = Ember.Controller.extend({
     },
     searchCategory: function(category) {
       this.get('selectedCategories').pushObject(category);
+    },
+    handleFirstTouch() {
+      this.set('isTouchScreen', true);
     }
   }
 });

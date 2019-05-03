@@ -38,7 +38,7 @@
 					<p class="error-message">{{error}}</p>
 				{{/each}}
 
-				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}}" title="number selections filed in this folder">
+				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}} {{if hasManyTaggings "many-taggings"}}" title="number selections filed in this folder">
 					{{model.childSelections.length}}
 				</div>
 		  </aside>
