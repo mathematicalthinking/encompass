@@ -174,18 +174,18 @@
     }
   }
 
+  .results-message {
+    margin-left: 15px;
+    margin-bottom: 10px;
+  }
+
   .display-list {
-    height: calc(100% - 246px);
+    height: calc(100% - 246px - 16px);
     overflow-y: auto;
     overflow-x: hidden;
 
     ul {
       margin-left: 15px;
-    }
-
-    .results-message {
-      margin-left: 15px;
-      margin-bottom: 10px;
     }
 
     li {

@@ -68,9 +68,12 @@
     <p class="error-message">{{error}}</p>
   {{/each}}
 	<div class="clear"></div>
-
+ {{#if showResultsDescription}}
+    <div class="results-message">
+      {{resultsDescription}}
+    </div>
+{{/if}}
 </div>
-
   <div id="al_feedback_display" class="display-list">
     {{#each queryErrors as |error|}}
       <p class="error-message">{{error}}</p>
@@ -84,11 +87,6 @@
     {{#if showLoadingMessage}}
       Searching for comments. Thank you for your patience.
     {{else}}
-      {{#if showResultsDescription}}
-    <div class="results-message">
-      {{resultsDescription}}
-    </div>
-{{/if}}
     <ul>
       {{#each displayList as |comment|}}
         {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
