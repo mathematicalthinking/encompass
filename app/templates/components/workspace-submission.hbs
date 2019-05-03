@@ -40,7 +40,7 @@
 
 <div id="al_submission">
   {{#if showSelectableView}}
-    <h3 class="selectable-view-header">Selectable View!</h3>
+    <h3 id="sel-view-header" class="selectable-view-header">Selectable View!</h3>
     {{#selectable-area
       model=currentSubmission
       makingSelection=makingSelection
@@ -97,7 +97,7 @@
   </div>
   {{/if}}
 </div><!--/al_submission-->
-<h5 class="submission-header selections">
+<h5 id ="selections-header" class="submission-header selections">
   Selections
   {{#if showExpandSelections}}
     <div class="expand-selections">

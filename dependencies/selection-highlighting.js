@@ -50,6 +50,42 @@ var SelectionHighlighting = function(args) {
       highlighting.createSelection(highlighting.getId(), event, true);
     },
 
+    handleConfirmButton = function(selectionObject) {
+      let confirm = document.getElementById('confirm-text-sel');
+      let coords = highlighting.getSelectionContainerCoords();
+      let text;
+
+      if (selectionObject) {
+        text = selectionObject.toString();
+      }
+
+      if (coords === undefined || !text) {
+        if (confirm) {
+          confirm.remove();
+        }
+
+        return;
+      }
+
+      // there is text selected
+      if (!confirm) {
+        // create confirm button
+        confirm = document.createElement('button');
+        confirm.id = 'confirm-text-sel';
+        confirm.innerText = 'Save Selection';
+        confirm.className='primary-button ';
+        confirm.style.zIndex = '200';
+
+        confirm.addEventListener('click', function() {
+          highlighting.createSelection(highlighting.getId(), event, true);
+          confirm.remove();
+        });
+
+        let header = document.getElementById('selections-header');
+        header.appendChild(confirm);
+      }
+    },
+
     /*
      * Constants used throughout the library
      */
@@ -834,7 +870,12 @@ var SelectionHighlighting = function(args) {
     if (automaticallyRegisterEvent) {
       selectableContainer.addEventListener('mouseup', selectableMouseup, false);
       // selection was empty by time mouseup firing for touchscreen
-      selectableContainer.addEventListener('touchend', selectableMouseup, false);
+
+    } else {
+      // user must confirm selection when using touch screen
+      document.addEventListener('selectionchange', function() {
+        handleConfirmButton(window.getSelection());
+      }, false);
     }
 
     highlighting.setOnCreateSelection(onCreate);
@@ -866,7 +907,7 @@ var SelectionHighlighting = function(args) {
     if (automaticallyRegisterEvent) {
       selectableContainer.removeEventListener('mouseup', selectableMouseup, false);
     }
-
+    selectableContainer.removeEventListener('selectionchange');
     highlighting = null;
   };
 /*
@@ -1167,9 +1208,11 @@ var SelectionHighlighting = function(args) {
   this.getSelectedTextAndCoords = function(event) {
     var coords, text, nodes;
 
-    // return if not a left click (can't select text with right click)
-    if (event !== undefined && highlighting.getMouseButton(event) !== 'LEFT') {
-      return;
+    // return if not a left click (can't select text with right click) unless touch screen
+    if (automaticallyRegisterEvent) {
+      if (event !== undefined && highlighting.getMouseButton(event) !== 'LEFT') {
+        return;
+      }
     }
 
     coords = highlighting.getSelectionContainerCoords();
