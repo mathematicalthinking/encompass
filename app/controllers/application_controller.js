@@ -15,9 +15,9 @@ Encompass.ApplicationController = Ember.Controller.extend({
   }.property('model'),
 
 
-  resizeDisplay: function() {
-    Ember.run.next(this, Ember.verticalSizing);
-  }.observes('isSmallHeader'),
+  // resizeDisplay: function() {
+  //   Ember.run.next(this, Ember.verticalSizing);
+  // }.observes('isSmallHeader'),
 
   actions: {
     toHome: function() {

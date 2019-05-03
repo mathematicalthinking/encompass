@@ -12,10 +12,7 @@ Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't 
 
   beforeModel: function() {
     let that = this;
-    console.log('that', that);
     window.addEventListener('touchstart', function onFirstTouch() {
-      console.log('touch detected');
-      // that.sendAction('handleFirstTouch');
       that.controller.set('isTouchScreen', true);
       window.removeEventListener('touchstart', onFirstTouch, false);
     }, false);
