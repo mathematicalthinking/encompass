@@ -270,6 +270,19 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
     onStudentSelect(submissionId) {
       let submission = this.get('submissionThreadHeads').findBy('id', submissionId);
       this.get('toSubmission')(submission);
+    },
+
+    onStudentBlur() {
+      let studentSelectize = this.$('#student-select')[0];
+
+      if (studentSelectize) {
+      let currentValue = studentSelectize.selectize.getValue();
+
+      let currentSubmissionId = this.get('initialStudentItem.firstObject');
+      if (this.get('initialStudentItem.firstObject') !== currentValue) {
+        studentSelectize.selectize.setValue([currentSubmissionId], true);
+      }
+    }
     }
   }
 });
