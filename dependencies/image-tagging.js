@@ -98,6 +98,53 @@ NoteInput = function() {
     return '';
   }
 
+  /**
+   * Private function _stopEditing()
+   * Causes the active tag to no longer be able to be changed
+   */
+  function _stopEditing(event) {
+    if (_currentlyEditing === -1) {
+      return;
+    }
+
+    var tmpId = _currentlyEditing,
+      tagListItem,
+      note;
+      // window.event tends to be undefined in firefox
+      // is this line necessary if we are always passing in event?
+      event = event || window.event;
+
+    if (event.target.id !== _tagIdPrefix + tmpId) {
+      if (_currentlyResizingOrPlacing) {
+        window.removeEventListener('mousemove', _mouseMove, true);
+        window.removeEventListener('touchmove', _mouseMove , true);
+        _currentlyResizingOrPlacing = false;
+        return;
+      }
+    } else {
+      _currentlyResizingOrPlacing = false;
+    }
+
+    window.removeEventListener('mouseup', _stopEditing, false);
+    window.removeEventListener('touchend', _stopEditing, false);
+
+    _currentlyEditing = -1;
+
+    if (_allowNotes) {
+      note = _notes[tmpId];
+
+      if (_tagListContainer) {
+        tagListItem = document.getElementById(_tagListIdPrefix + tmpId);
+        // make sure we set the text, not the innerHTML, to prevent any code being injected
+        tagListItem.childNodes[0].nodeValue = note.getValue();
+      }
+      _tags[tmpId].note = note.getValue();
+      note.preventEdit();
+    }
+
+    tagging.removeTag(tmpId);
+  }
+
   function _textKeyPress(event) {
     var charCode;
 
@@ -195,6 +242,14 @@ NoteInput = function() {
     tagging.eventCreateTag(event);
   }
 
+  function _handleMouseMove(event) {
+    event.preventDefault();
+    if (_currentlyMakingSelection) {
+      tagging.createSelectionBox(event);
+    }
+    event.stopPropagation();
+  }
+
   function _handleMouseUp(event) {
     if (!_currentlyMakingSelection) {
       return;
@@ -211,6 +266,25 @@ NoteInput = function() {
       tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
     }
+  }
+
+  /**
+   * Private function _findPosition()
+   * Returns the x and y coordinates of a node within the page
+   */
+  function _findPosition(node) {
+    var posX = 0, posY = 0;
+    if (node.offsetParent) {
+      while (node.offsetParent) {
+        posX += node.offsetLeft;
+        posY += node.offsetTop;
+        node = node.offsetParent;
+      }
+    } else if (node.x) {
+      posX = node.x;
+      posY = node.y;
+    }
+    return [ posX, posY ];
   }
 
   function _removeElsFromDom(els) {
@@ -241,15 +315,15 @@ NoteInput = function() {
   function _confirmSelectionInputs(box, targetImage, visibleImage, scrollableContainer) {
     var confirm = document.createElement('button');
     var cancel = document.createElement('button');
+    confirm.className = "primary-button ";
+    cancel.className="primary-button cancel-button ";
     var boxLeft = _styleAsInt(box, 'left');
     var boxTop = _styleAsInt(box, 'top');
     var boxHeight = _styleAsInt(box, 'height');
     var boxWidth = _styleAsInt(box, 'width');
-    var boxBottom = boxTop + boxHeight;
-    var boxRight = boxLeft + boxWidth;
+    // var boxBottom = boxTop + boxHeight;
+    // var boxRight = boxLeft + boxWidth;
     var boxBorderWidth = _styleAsInt(box, 'borderWidth');
-    // var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
-    // var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
     var buttonsWidth = 44;
     var buttonsHeight = 21;
     var buttons = [confirm, cancel];
@@ -275,11 +349,15 @@ NoteInput = function() {
     var imgBottom = imgY + targetImage.height;
     var overflow = imgBottom - visibleImage.bottomEdge;
 
-    if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
-
-      diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
-      document.getElementById(scrollableContainer).scrollTop -= diff;
-    }
+    // if (!selBoxRect.bottom > buttonsHeight) {
+    //   // buttons will not be visible; scroll
+    // }
+    // scroll if buttons not visible
+    // if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
+    //   console.log('buttons not visible, scrolling');
+    //   diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
+    //   document.getElementById(scrollableContainer).scrollTop -= diff;
+    // }
 
     buttons.forEach((button) => {
       button.style.position = 'absolute';
@@ -301,6 +379,100 @@ NoteInput = function() {
 
     return [confirm, cancel];
   }
+
+  /**
+   * Private function _findScrollPosition()
+   * Returns the scroll offset of the node
+   */
+  function _findScrollPosition(node) {
+    var scrollX = node.scrollLeft,
+      scrollY = node.scrollTop;
+    while (node.parentElement) {
+      node = node.parentElement;
+      if (node === document.body) {
+        break;
+      }
+      scrollX += node.scrollLeft;
+      scrollY += node.scrollTop;
+    }
+    scrollX += document.documentElement.scrollLeft;
+    scrollY += document.documentElement.scrollTop;
+    return [ scrollX, scrollY ];
+  }
+
+  function _getVisibleImageBoundaries(event, scrollDiv, img) {
+    var container = document.getElementById(scrollDiv);
+
+    var [containerX, containerY] = _findPosition(container);
+    var root = document.documentElement;
+
+    var scrollRangeY = container.scrollHeight - container.clientHeight;
+    var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
+    var overflowTop = Math.floor(container.scrollTop);
+
+    var scrollRangeX = root.scrollWidth - root.clientWidth;
+    var overflowLeft = Math.floor(root.scrollLeft);
+    var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
+
+    var [imgX, imgY] = _findPosition(img);
+    var imgScrollPosition = _findScrollPosition(img);
+
+    var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
+    var diffTop = imgY + _styleAsInt(img, 'borderWidth') - containerY;
+    var diffLeft = imgX;
+    var diffRight = root.scrollWidth - imgX - img.width;
+
+    var imgOverflowLeft;
+    var imgOverflowRight;
+    var imgOverflowTop;
+    var imgOverflowBottom;
+
+    if (overflowLeft <= diffLeft) {
+      imgOverflowLeft = 0;
+    } else {
+      imgOverflowLeft = overflowLeft - diffLeft;
+    }
+
+    if (overflowRight <= diffRight) {
+      imgOverflowRight = 0;
+    } else {
+      imgOverflowRight = overflowRight - diffRight;
+    }
+
+    if (overflowTop <= diffTop) {
+      imgOverflowTop = 0;
+    } else {
+      imgOverflowTop = overflowTop - diffTop;
+    }
+
+    if (overflowBottom <= diffBottom) {
+      imgOverflowBottom = 0;
+    } else {
+      imgOverflowBottom = overflowBottom - diffBottom;
+    }
+    return {
+      topEdge: imgY + imgOverflowTop,
+      bottomEdge: imgY + img.clientHeight - imgOverflowBottom,
+      leftEdge : imgX + imgOverflowLeft,
+      rightEdge:  imgX + img.width - imgOverflowRight
+    };
+  }
+
+  /**
+   * Private function _imageTrueCoords()
+   * Returns the x and y coordinates of an image within its parent
+   * taking into account scroll position of all ancestors
+   */
+  function _imageTrueCoords(image) {
+    var imageCoords = _findPosition(image),
+      containerCoords = _findPosition(taggingContainer),
+      scrollCoords = _findScrollPosition(image),
+      imageLeft = imageCoords[0] - containerCoords[0],
+      imageTop = imageCoords[1] - containerCoords[1],
+      coords = {left: imageLeft, top: imageTop};
+    return coords;
+  }
+
   this.confirmSelectionArea = function(event) {
     var selectionBox;
     var targetImage;
@@ -368,63 +540,7 @@ NoteInput = function() {
     event.stopPropagation();
   }
 
-  function _getVisibleImageBoundaries(event, scrollDiv, img) {
-    var container = document.getElementById(scrollDiv);
 
-    var [containerX, containerY] = _findPosition(container);
-    var root = document.documentElement;
-
-    var scrollRangeY = container.scrollHeight - container.clientHeight;
-    var overflowBottom = scrollRangeY - Math.floor(container.scrollTop);
-    var overflowTop = Math.floor(container.scrollTop);
-
-    var scrollRangeX = root.scrollWidth - root.clientWidth;
-    var overflowLeft = Math.floor(root.scrollLeft);
-    var overflowRight = scrollRangeX - Math.floor(root.scrollLeft);
-
-    var [imgX, imgY] = _findPosition(img);
-    var imgScrollPosition = _findScrollPosition(img);
-
-    var diffBottom = (containerY + container.scrollHeight) - (imgY + img.scrollHeight);
-    var diffTop = imgY + _styleAsInt(img, 'borderWidth') - containerY;
-    var diffLeft = imgX;
-    var diffRight = root.scrollWidth - imgX - img.width;
-
-    var imgOverflowLeft;
-    var imgOverflowRight;
-    var imgOverflowTop;
-    var imgOverflowBottom;
-
-    if (overflowLeft <= diffLeft) {
-      imgOverflowLeft = 0;
-    } else {
-      imgOverflowLeft = overflowLeft - diffLeft;
-    }
-
-    if (overflowRight <= diffRight) {
-      imgOverflowRight = 0;
-    } else {
-      imgOverflowRight = overflowRight - diffRight;
-    }
-
-    if (overflowTop <= diffTop) {
-      imgOverflowTop = 0;
-    } else {
-      imgOverflowTop = overflowTop - diffTop;
-    }
-
-    if (overflowBottom <= diffBottom) {
-      imgOverflowBottom = 0;
-    } else {
-      imgOverflowBottom = overflowBottom - diffBottom;
-    }
-    return {
-      topEdge: imgY + imgOverflowTop,
-      bottomEdge: imgY + img.clientHeight - imgOverflowBottom,
-      leftEdge : imgX + imgOverflowLeft,
-      rightEdge:  imgX + img.width - imgOverflowRight
-    };
-  }
   // TODO: Refactor into smaller, reusable functions
   function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
@@ -621,13 +737,6 @@ NoteInput = function() {
     tagging.prevCoords = eventCoords;
   };
 
-  function _handleMouseMove(event) {
-    event.preventDefault();
-    if (_currentlyMakingSelection) {
-      tagging.createSelectionBox(event);
-    }
-    event.stopPropagation();
-  }
 
   // set up the event handlers immediately
   (function() {
@@ -653,44 +762,8 @@ NoteInput = function() {
     }
   }());
 
-  /**
-   * Private function _findPosition()
-   * Returns the x and y coordinates of a node within the page
-   */
-  function _findPosition(node) {
-    var posX = 0, posY = 0;
-    if (node.offsetParent) {
-      while (node.offsetParent) {
-        posX += node.offsetLeft;
-        posY += node.offsetTop;
-        node = node.offsetParent;
-      }
-    } else if (node.x) {
-      posX = node.x;
-      posY = node.y;
-    }
-    return [ posX, posY ];
-  }
 
-  /**
-   * Private function _findScrollPosition()
-   * Returns the scroll offset of the node
-   */
-  function _findScrollPosition(node) {
-    var scrollX = node.scrollLeft,
-      scrollY = node.scrollTop;
-    while (node.parentElement) {
-      node = node.parentElement;
-      if (node === document.body) {
-        break;
-      }
-      scrollX += node.scrollLeft;
-      scrollY += node.scrollTop;
-    }
-    scrollX += document.documentElement.scrollLeft;
-    scrollY += document.documentElement.scrollTop;
-    return [ scrollX, scrollY ];
-  }
+
 
   /**
    * Private function _getCoordinates()
@@ -719,20 +792,6 @@ NoteInput = function() {
     return [posX, posY];
   }
 
-  /**
-   * Private function _imageTrueCoords()
-   * Returns the x and y coordinates of an image within its parent
-   * taking into account scroll position of all ancestors
-   */
-  function _imageTrueCoords(image) {
-    var imageCoords = _findPosition(image),
-      containerCoords = _findPosition(taggingContainer),
-      scrollCoords = _findScrollPosition(image),
-      imageLeft = imageCoords[0] - containerCoords[0],
-      imageTop = imageCoords[1] - containerCoords[1],
-      coords = {left: imageLeft, top: imageTop};
-    return coords;
-  }
 
   /**
    * Private function _getTagId()
@@ -844,52 +903,7 @@ NoteInput = function() {
     return changed;
   }
 
-  /**
-   * Private function _stopEditing()
-   * Causes the active tag to no longer be able to be changed
-   */
-  function _stopEditing(event) {
-    if (_currentlyEditing === -1) {
-      return;
-    }
 
-    var tmpId = _currentlyEditing,
-      tagListItem,
-      note;
-      // window.event tends to be undefined in firefox
-      // is this line necessary if we are always passing in event?
-      event = event || window.event;
-
-    if (event.target.id !== _tagIdPrefix + tmpId) {
-      if (_currentlyResizingOrPlacing) {
-        window.removeEventListener('mousemove', _mouseMove, true);
-        window.removeEventListener('touchmove', _mouseMove , true);
-        _currentlyResizingOrPlacing = false;
-        return;
-      }
-    } else {
-      _currentlyResizingOrPlacing = false;
-    }
-
-    window.removeEventListener('mouseup', _stopEditing, false);
-    window.removeEventListener('touchend', _stopEditing, false);
-
-    _currentlyEditing = -1;
-
-    if (_allowNotes) {
-      note = _notes[tmpId];
-
-      if (_tagListContainer) {
-        tagListItem = document.getElementById(_tagListIdPrefix + tmpId);
-        // make sure we set the text, not the innerHTML, to prevent any code being injected
-        tagListItem.childNodes[0].nodeValue = note.getValue();
-      }
-      _tags[tmpId].note = note.getValue();
-      note.preventEdit();
-    }
-
-    tagging.removeTag(tmpId);
-  }
 
   /**
    * Private function _drag()
