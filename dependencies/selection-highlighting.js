@@ -86,6 +86,10 @@ var SelectionHighlighting = function(args) {
       }
     },
 
+    handleSelectionChange = function() {
+      handleConfirmButton(window.getSelection());
+    },
+
     /*
      * Constants used throughout the library
      */
@@ -873,9 +877,7 @@ var SelectionHighlighting = function(args) {
 
     } else {
       // user must confirm selection when using touch screen
-      document.addEventListener('selectionchange', function() {
-        handleConfirmButton(window.getSelection());
-      }, false);
+      document.addEventListener('selectionchange', handleSelectionChange, false);
     }
 
     highlighting.setOnCreateSelection(onCreate);
@@ -907,7 +909,8 @@ var SelectionHighlighting = function(args) {
     if (automaticallyRegisterEvent) {
       selectableContainer.removeEventListener('mouseup', selectableMouseup, false);
     }
-    selectableContainer.removeEventListener('selectionchange');
+    selectableContainer.removeEventListener('selectionchange', handleSelectionChange, false);
+
     highlighting = null;
   };
 /*
@@ -1244,7 +1247,6 @@ var SelectionHighlighting = function(args) {
   this.getSelectionContainerCoords = function() {
     var oRng, cstart, cend, startOffset, endOffset,
       s, child, e, ret, txtCoords;
-
     oRng = highlighting.getRange();
     if (!oRng || oRng.isCollapsed) {
       return;
