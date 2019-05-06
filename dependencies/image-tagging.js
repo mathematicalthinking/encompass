@@ -524,7 +524,7 @@ NoteInput = function() {
 
   function _initiateSelection(event) {
     event.preventDefault();
-    if (_currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
+    if (_disabled || _currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
       return;
     }
     _currentlyMakingSelection = true;
@@ -740,17 +740,6 @@ NoteInput = function() {
 
   // set up the event handlers immediately
   (function() {
-    var images, i;
-    targetImages = [];
-    if (args.targetContainer) {
-      taggingContainer = document.getElementById(args.targetContainer);
-      images = taggingContainer.getElementsByTagName('img');
-      for (i = 0; i < images.length; i++) {
-        addEventListener(images[i]);
-        images[i].setAttribute('draggable', false);
-        images[i].style.border = _taggingContainerBorder;
-      }
-    }
 
     function addEventListener(img) {
       if (!img.id) {
@@ -760,10 +749,20 @@ NoteInput = function() {
       img.addEventListener('mousedown', _initiateSelection, false);
       img.addEventListener('touchstart', _initiateSelection, false);
     }
+
+    var images, i;
+    targetImages = [];
+
+    if (args.targetContainer) {
+      taggingContainer = document.getElementById(args.targetContainer);
+      images = taggingContainer.getElementsByTagName('img');
+      for (i = 0; i < images.length; i++) {
+        addEventListener(images[i]);
+        images[i].setAttribute('draggable', false);
+        images[i].style.border = _taggingContainerBorder;
+      }
+    }
   }());
-
-
-
 
   /**
    * Private function _getCoordinates()

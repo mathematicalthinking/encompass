@@ -87,6 +87,10 @@ var SelectionHighlighting = function(args) {
     },
 
     handleSelectionChange = function() {
+      if (selectionDisabled) {
+        return;
+      }
+
       handleConfirmButton(window.getSelection());
     },
 
