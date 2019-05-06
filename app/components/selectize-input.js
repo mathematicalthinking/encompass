@@ -131,9 +131,14 @@ Encompass.SelectizeInputComponent = Ember.Component.extend({
       };
     }
 
+    if (this.onBlur) {
+      hash.onBlur = this.onBlur;
+    }
+
     if (this.isAsync) {
       hash.load = this.get('addItemsSelectize').bind(this);
     }
+
     return hash;
 
   },
