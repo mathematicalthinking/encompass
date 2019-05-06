@@ -424,6 +424,20 @@
       border-top:1px solid #d3d3d3;
       background: white;
 
+      .selection_text {
+        background-color: $pale-accent;
+      }
+
+      a.active {
+        border-bottom: 1px solid grey;
+      }
+
+      li {
+        display: inline-block;
+        line-height: 1em;
+        margin: 2px 0px;
+      }
+
       &.no-selections {
         height: 75px;
       }

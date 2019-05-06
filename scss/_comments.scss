@@ -122,6 +122,10 @@
           display: inline;
         }
       }
+
+      .filter-label {
+        margin-right: 5px;
+      }
     }
     &.search {
       @include flex-item (2, flex-start, auto);
