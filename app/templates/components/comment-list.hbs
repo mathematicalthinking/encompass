@@ -98,4 +98,25 @@
 
     {{/if}}
   </div>
+  <div class="scroll-icon">
+    {{#if scrollBottom}}
+      <i class="fas fa-chevron-circle-down" {{action 'superScroll'}}></i>
+    {{else}}
+      <i class="fas fa-chevron-circle-up" {{action 'superScroll'}}></i>
+    {{/if}}
+  </div>
+<script>
+  $('.display-list').scroll(function () {
+    let y = $(this).scrollTop();
+    let max = this.scrollHeight;
+    let height = $(this).height();
 
+    let threshold = Math.floor(0.75 * height);
+
+    if (y > threshold) {
+      $('.scroll-icon').fadeIn();
+    } else {
+      $('.scroll-icon').fadeOut();
+    }
+  });
+</script>

@@ -33,6 +33,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   createRecordErrors: [],
   uploadRecordErrors: [],
   showFilter: true,
+  scrollBottom: true,
 
   labels: {
     notice: {
@@ -68,6 +69,19 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let htmlDate = moment(oneYearAgoDate).format('L');
 
     this.set('sinceDate', htmlDate);
+  },
+
+  didInsertElement() {
+    $(window).on('resize.commentScroll', function() {
+      this.$('.scroll-icon:visible').hide();
+    });
+
+    this._super(...arguments);
+  },
+
+  willDestroyElement() {
+    $(window).off('resize.commentScroll');
+    this._super(...arguments);
   },
 
   newCommentPlaceholder: function() {
@@ -465,7 +479,22 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
     applySinceDate() {
       this.send('searchComments', this.get('commentFilterText'));
-    }
+    },
+    superScroll: function (direction) {
+      //should only show scroll option after the user scrolls a little
+      let maxScroll = this.$('.display-list')[0].scrollHeight;
+
+      if (!this.get('scrollBottom')) {
+        $('.display-list').animate({
+          scrollTop: 0
+        });
+      } else {
+        $('.display-list').animate({
+          scrollTop: maxScroll
+        });
+      }
+      this.set('scrollBottom', !this.get('scrollBottom'));
+    },
   }
 });
 

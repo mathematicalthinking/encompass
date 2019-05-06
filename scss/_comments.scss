@@ -8,6 +8,17 @@
     font-size: 1.4em;
   }
 
+  .scroll-icon {
+    font-size: 3em;
+    display: none;
+    color: $accent-color;
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    background-color: white;
+    border-radius: 50%;
+  }
+
   .seperator {
     font-size: 1.5em;
     margin: 0 8px;
