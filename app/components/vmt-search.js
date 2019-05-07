@@ -1,5 +1,15 @@
 Encompass.VmtSearchComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.VmtHostMixin, {
   classNames: ['vmt-search'],
+
+  searchConstraints: {
+    query: {
+      length: {
+        minimum: 0,
+        maximum: 500
+      }
+    }
+  },
+
   actions: {
     submitSearch() {
       let searchText = this.get('searchText');
