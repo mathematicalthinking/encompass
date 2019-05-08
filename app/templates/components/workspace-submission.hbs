@@ -61,12 +61,13 @@
           {{/if}}
         </div>
         <div class="submission-long">
-          {{#if currentSubmission.answer.explanation}}
-            {{{currentSubmission.answer.explanation}}}
-          {{/if}}
-          {{#if currentSubmission.longAnswer}}
-            {{{currentSubmission.longAnswer}}}
-          {{/if}}
+          {{#if vmtScreenshot}}
+        <img src={{vmtScreenshot}} alt="vmt screenshot">
+      {{else if currentSubmission.answer.explanation}}
+        {{{currentSubmission.answer.explanation}}}
+      {{else if currentSubmission.longAnswer}}
+        {{{currentSubmission.longAnswer}}}
+      {{/if}}
         </div>
       </div>
     {{/selectable-area}}

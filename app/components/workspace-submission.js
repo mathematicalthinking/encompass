@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden'],
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden', 'isMakingVmtSelection:vmt-selecting'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -164,6 +164,28 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   handleNavChanges: function() {
     this.setOwnHeight();
   }.observes('isNavMultiLine', 'parentHeight'),
+  isVmt: function() {
+    return this.get('utils').isValidMongoId(this.get('currentSubmission.vmtRoomInfo.roomId'));
+  }.property('currentSubmission.vmtRoomInfo.roomId'),
+
+  takeVmtScreenshot() {
+    let canvases = this.$('canvas');
+    let canvas;
+
+    if (canvases.length > 1) {
+      // geogebra
+      canvas = canvases.filter('.cursor_hit')[0];
+    } else {
+      // desmos
+      canvas = canvases[0];
+    }
+    let imgSrc = canvas.toDataURL();
+    return imgSrc;
+  },
+
+  isMakingVmtSelection: function() {
+    return this.get('isVmt') && this.get('makingSelection');
+  },
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){
@@ -187,8 +209,16 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       this.toggleProperty('showingSelections');
     },
     toggleSelecting: function() {
-      let selecting = this.get('makingSelection');
-      this.set('makingSelection', !selecting);
+      if (this.get('isVmt') && !this.get('makingSelection')) {
+        // take screen shot of current replayer first
+        let imgSrc = this.takeVmtScreenshot();
+
+        this.set('vmtScreenshot', imgSrc);
+        this.toggleProperty('makingSelection');
+
+      } else {
+        this.toggleProperty('makingSelection');
+      }
     },
     handleTransition: function(isBeginning) {
       this.get('showSelectableView');

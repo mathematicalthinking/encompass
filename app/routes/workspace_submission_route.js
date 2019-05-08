@@ -32,7 +32,11 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         return;
       }
       let vmtRoomId = room._id;
-      this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId}});
+
+      // so links to selections still work
+      if (transition.intent.name === 'workspace.submission') {
+        this.transitionTo('workspace.submission', submission, {queryParams: {vmtRoomId}});
+      }
     });
   },
 
