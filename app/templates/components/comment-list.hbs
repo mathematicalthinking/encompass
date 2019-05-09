@@ -89,7 +89,14 @@
     {{else}}
     <ul>
       {{#each displayList as |comment|}}
-        {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
+        {{workspace-comment
+          wsComments=comments
+          comment=comment
+          currentWorkspace=currentWorkspace
+          reuseComment=(action "reuseComment")
+          deleteComment=(action "deleteComment")
+          currentSelection=currentSelection
+          }}
         {{else}}
         <p class="info">{{emptyResultsMessage}}</p>
       {{/each}}

@@ -207,6 +207,15 @@
       @include flex-container(null, null, row, nowrap, flex-start, flex-start, center);
       background-color: white;
       margin-bottom: 5px;
+
+      a {
+        background: none;
+      }
+
+      &.is-for-cs {
+        font-weight: $bolder-font-weight;
+        box-shadow: $box-shadow;
+      }
     }
     li:before {
       font-weight: $bolder-font-weight;
@@ -238,11 +247,11 @@
   .label-list {
     cursor: pointer;
   }
-  .active {
-    background-color: $background-color;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
+  // .active {
+  //   background-color: $background-color;
+  //   padding: 2px 5px;
+  //   border-radius: 3px;
+  // }
   #al_comments {
     margin-left: 15px;
     padding-bottom: 2px;

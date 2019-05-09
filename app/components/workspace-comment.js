@@ -6,7 +6,7 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
 
   currentWorkspace: null,
   classNames: ['ws-comment-comp'],
-  classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse' ],
+  classNameBindings: ['comment.label', 'relevanceClass', 'comment.inReuse', 'isFromCurrentSelection:is-for-cs',],
 
   isForCurrentWorkspace: function() {
     let workspaceId = this.get('utils').getBelongsToId(this.get('comment'), 'workspace');
@@ -36,6 +36,10 @@ Encompass.WorkspaceCommentComponent = Ember.Component.extend(Encompass.CurrentUs
   relevanceClass: function(){
     return 'relevance-' + this.get('comment.relevance');
   }.property('comment.relevance'),
+
+  isFromCurrentSelection: function() {
+    return this.get('utils').getBelongsToId(this.get('comment'), 'selection') === this.get('currentSelection.id');
+  }.property('currentSelection', 'comment.selection'),
 
   actions: {
     deleteComment: function( comment ){
