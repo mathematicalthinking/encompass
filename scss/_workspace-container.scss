@@ -108,6 +108,10 @@
             @include flex-container(null, null, row, wrap, center, center, center);
             padding: 10px;
 
+            .problem-link {
+              max-width: 80%;
+            }
+
             .problem-link-text {
               display: inline;
             }
@@ -129,6 +133,10 @@
         }
         #submission_selections {
           display: none;
+        }
+
+        #al_submission {
+          height: calc(100% - 38px);
         }
       }
 
