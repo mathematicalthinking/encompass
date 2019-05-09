@@ -215,6 +215,9 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
   handleNavHeight() {
     let height = this.$('#submission-nav').height();
 
+    let ownHeight = this.$().height();
+    this.set('ownHeight', ownHeight);
+
     let isNowMultiLine = height > 52;
     let wasMultiLine = this.get('isNavMultiLine');
 

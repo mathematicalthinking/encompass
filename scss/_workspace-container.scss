@@ -380,7 +380,7 @@
     #workspace-submission-comp {
       @include flex-item(2, flex-start, auto);
       width: 100%;
-      height: calc(100% - 52px);
+      // height: calc(100% - 52px);
       background-color: $filter-list-background-color;
 
       &.expanded-selections {
@@ -488,11 +488,13 @@
     }
   }
 
-  #submission-group.multi-line-nav {
-    #workspace-submission-comp {
-      height:calc(100% - 102px);
-    }
-  }
+  // #submission-group.multi-line-nav {
+  //   #workspace-submission-comp {
+  //     height:calc(100% - 102px);
+  //   }
+  // }
+
+
 
 }
 

@@ -41,6 +41,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
+  didInsertElement() {
+    // height should be 100% - the height of the revisions nav
+    this.setOwnHeight();
+
+    this._super(...arguments);
+  },
+
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
 
@@ -150,6 +157,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   showExpandSelections: function() {
     return !this.get('areNoSelections') && !this.get('areSelectionsHidden');
   }.property('areNoSelections', 'areSelectionsHidden'),
+
+  setOwnHeight() {
+    let revisionsNavHeight = $('#submission-nav').height();
+    this.$().css('height', '100%').css('height', `-=${revisionsNavHeight}px`);
+  },
+
+  handleNavChanges: function() {
+    this.setOwnHeight();
+  }.observes('isNavMultiLine', 'parentHeight'),
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){
