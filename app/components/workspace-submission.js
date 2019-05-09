@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden', 'isMakingVmtSelection:vmt-selecting'],
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden', 'isMakingVmtSelection:vmt-selecting','makingSelection:is-selecting'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 

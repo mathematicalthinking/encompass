@@ -445,6 +445,12 @@
       // height: calc(100% - 52px);
       background-color: $filter-list-background-color;
 
+      &.is-selecting {
+        .non-selectable-sub {
+          display: none;
+        }
+      }
+
       &.expanded-selections {
         #submission_selections {
           height: calc(100% - 40% - 35px - 56px);

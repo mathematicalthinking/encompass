@@ -71,26 +71,28 @@
         </div>
       </div>
     {{/selectable-area}}
-  {{else}}
-    <h5 class="submission-header summary">Brief Summary</h5>
-    <div class="submission short">
-      {{#if currentSubmission.answer.answer}}
-        {{{currentSubmission.answer.answer}}}
-      {{else}}
-        {{{currentSubmission.shortAnswer}}}
-      {{/if}}
+    {{/if}}
+    <div class="non-selectable-sub">
+      <h5 class="submission-header summary">Brief Summary</h5>
+      <div class="submission short">
+        {{#if currentSubmission.answer.answer}}
+          {{{currentSubmission.answer.answer}}}
+        {{else}}
+          {{{currentSubmission.shortAnswer}}}
+        {{/if}}
+      </div>
+      <h5 class="submission-header explanation">Explanation</h5>
+      <div class="submission long">
+        {{#if currentSubmission.vmtRoomInfo.roomId}}
+          {{vmt-replayer}}
+        {{else if currentSubmission.answer.explanation}}
+          {{{currentSubmission.answer.explanation}}}
+        {{else if currentSubmission.longAnswer}}
+          {{{currentSubmission.longAnswer}}}
+        {{/if}}
+      </div>
     </div>
-    <h5 class="submission-header explanation">Explanation</h5>
-    <div class="submission long">
-      {{#if currentSubmission.vmtRoomInfo.roomId}}
-        {{vmt-replayer}}
-      {{else if currentSubmission.answer.explanation}}
-        {{{currentSubmission.answer.explanation}}}
-      {{else if currentSubmission.longAnswer}}
-        {{{currentSubmission.longAnswer}}}
-      {{/if}}
-    </div>
-  {{/if}}
+
   {{#if currentSubmission.uploadedFile.savedFileName}}
   <div id="submission_images">
     <a target="_blank" href="{{unbound currentSubmission.imageUrl}}">
