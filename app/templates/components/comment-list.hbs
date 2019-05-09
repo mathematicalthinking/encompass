@@ -4,9 +4,11 @@
   <span {{action "hideComments"}}><i title="Hide Comments"class="far fa-eye-slash"></i></span>
 </header>
 
-<div class="label-select {{newCommentLabel}}">
-  {{my-select content=labelOptions cannotBeNull=true selectedValue=newCommentLabel action=(action (mut newCommentLabel))}}
-</div>
+{{#if canComment}}
+  <div class="label-select {{newCommentLabel}}">
+    {{my-select content=labelOptions cannotBeNull=true selectedValue=newCommentLabel action=(action (mut newCommentLabel))}}
+  </div>
+{{/if}}
 <div class="compose-comment">
   {{#if canComment}}
       {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
