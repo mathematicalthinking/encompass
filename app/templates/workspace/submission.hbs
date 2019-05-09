@@ -17,9 +17,9 @@
   <div class="clear"></div>
 </header>
 
-<div class="workspace-flex-container">
+<div class="workspace-flex-container {{if cannotSeeFolders 'no-folders'}} {{if cannotSeeComments 'no-comments'}} {{if cannotSeeSelections 'no-selections'}} {{if cannotSeeResponses 'no-responses'}}">
 {{!-- <div id="al_left" class="workspace-flex-item folders"> --}}
-  {{#if areFoldersHidden}}
+  {{#if showFoldersToggle}}
   <div title="Show Folders" class="toggle-display">
     <button {{action 'toggleFolderDisplay'}}><img src="/images/chevrons-right.svg"></button>
   </div>
@@ -57,13 +57,14 @@
     selections=nonTrashedSelections
     responses=nonTrashedResponses
     containerLayoutClass=containerLayoutClass
+    canSeeSelections=canSeeSelections
   }}
 {{!-- </div> --}}
 <!--/section-->
 
 <!--section class="right"-->
 {{!-- <div id="al_right"> --}}
-   {{#if areCommentsHidden}}
+   {{#if showCommentsToggle}}
   <div title="Show Comments" class="toggle-display comments">
     <button {{action 'toggleCommentDisplay'}}><img src="/images/chevrons-left.svg"></button>
   </div>

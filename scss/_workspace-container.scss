@@ -89,6 +89,51 @@
       margin-left: 20px;
     }
 
+    &.no-folders {
+      #folder-list {
+        display: none;
+      }
+    }
+
+    &.no-comments {
+      #comment-list {
+        display: none;
+      }
+    }
+
+    &.no-selections {
+      &.no-responses {
+        #workspace-submission-comp {
+          .selection-controls {
+            @include flex-container(null, null, row, wrap, center, center, center);
+            padding: 10px;
+
+            .problem-link-text {
+              display: inline;
+            }
+          }
+        }
+      }
+
+      #workspace-submission-comp {
+        .selection-controls {
+          @include flex-container(null, null, row, wrap, center, center, center);
+        }
+        .submission-row-item {
+          &.selection-toggles {
+            display: none;
+          }
+        }
+        #selections-header {
+          display: none;
+        }
+        #submission_selections {
+          display: none;
+        }
+      }
+
+    }
+
     .workspace-flex-item {
       background-color: white;
       // box-shadow: $box-shadow;

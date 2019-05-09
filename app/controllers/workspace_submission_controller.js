@@ -62,8 +62,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   }.property('currentWorkspace.responses.content.@each.isTrashed'),
 
   containerLayoutClass: function() {
-    let areFoldersHidden = this.get('areFoldersHidden');
-    let areCommentsHidden = this.get('areCommentsHidden');
+    let areFoldersHidden = this.get('areFoldersHidden') || this.get('cannotSeeFolders');
+    let areCommentsHidden = this.get('areCommentsHidden') || this.get('cannotSeeComments');
 
     if (areFoldersHidden && areCommentsHidden) {
       return 'hsh';
@@ -76,6 +76,43 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     }
     return 'fsc';
   }.property('areFoldersHidden', 'areCommentsHidden'),
+
+  canSeeFolders: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'folders', 1);
+  }.property('currentWorkspace.permissions.@each.{global,folders}'),
+
+  cannotSeeFolders: Ember.computed.not('canSeeFolders'),
+
+  canSeeComments: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'comments', 1);
+  }.property('currentWorkspace.permissions.@each.{global,comments}'),
+
+  cannotSeeComments: Ember.computed.not('canSeeComments'),
+
+  showFoldersToggle: function() {
+    return this.get('areFoldersHidden') && this.get('canSeeFolders');
+  }.property('areFoldersHidden', 'canSeeFolders'),
+
+  showCommentsToggle: function() {
+    return this.get('areCommentsHidden') && this.get('canSeeComments');
+  }.property('areCommentsHidden', 'canSeeComments'),
+
+  canSeeSelections: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'selections', 1);
+  }.property('currentWorkspace.permissions.@each.{global,selections}'),
+
+  cannotSeeSelections: Ember.computed.not('canSeeSelections'),
+
+  canSeeResponses: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'feedback', 1);
+
+  }.property('currentWorkspace.permissions.@each.{global,feedback}'),
+
+  cannotSeeResponses: Ember.computed.not('canSeeResponses'),
 
   actions: {
     startTour: function () {
