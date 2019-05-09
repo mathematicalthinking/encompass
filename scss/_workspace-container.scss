@@ -101,13 +101,19 @@
       }
     }
 
+    &.no-responses {
+      #workspace-submission-comp {
+        .selection-controls {
+          padding: 10px;
+        }
+      }
+    }
+
     &.no-selections {
       &.no-responses {
         #workspace-submission-comp {
           .selection-controls {
             @include flex-container(null, null, row, wrap, center, center, center);
-            padding: 10px;
-
             .problem-link {
               max-width: 80%;
             }
@@ -483,6 +489,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       height: 125px;
+      width: 100%;
       border-top:1px solid #d3d3d3;
       background: white;
 
