@@ -30,7 +30,7 @@
         {{else}}
 					<span class="folder-closed"><i class="far fa-folder"></i></span>
         {{/if}}
-				<span title={{model.name}} class="folder-name">{{model.name}}</span>
+				<span  title={{model.name}} class="folder-name {{if containsCurrentSubmission 'bolder'}}">{{model.name}}</span>
 			</span>
 		  <aside>
 				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
@@ -38,7 +38,7 @@
 					<p class="error-message">{{error}}</p>
 				{{/each}}
 
-				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSelection 'contains-current-selection'}} {{if hasManyTaggings "many-taggings"}}" title="number selections filed in this folder">
+				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSubmission 'contains-current-submission'}} {{if hasManyTaggings "many-taggings"}}" title={{selectionsTitle}}>
 					{{model.childSelections.length}}
 				</div>
 		  </aside>
@@ -47,10 +47,19 @@
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped
-				canEditFolders=canEditFolders
-      	canDeleteFolders=canDeleteFolders
-				wsTaggings=wsTaggings
+        {{folder-elem
+					store=store
+					model=folder
+					currentWorkspace=currentWorkspace
+					folderList=folderList
+					editFolderMode=editFolderMode
+					putInFolder=putInFolder
+					dropped=dropped
+					canEditFolders=canEditFolders
+      		canDeleteFolders=canDeleteFolders
+					wsTaggings=wsTaggings
+					currentSubmission=currentSubmission
+					currentSelection=currentSelection
 				}}
       {{/each}}
     </ul>

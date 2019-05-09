@@ -299,6 +299,10 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+
+        .folder-name.bolder {
+          font-weight: $bolder-font-weight;
+        }
       }
 
       aside {
@@ -319,6 +323,11 @@
 
           &.many-taggings {
             font-size: 0.9em;
+          }
+
+          &.contains-current-submission {
+            background-color: darken($pale-accent, 5%);
+            font-weight: $bolder-font-weight;
           }
         }
       }

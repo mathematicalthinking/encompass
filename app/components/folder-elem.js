@@ -43,24 +43,33 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   }.property('isOwnFolder', 'canEditFolders'),
 
   containsCurrentSubmission: function(){
-    const submissions = this.get('model.submissions');
+    let allSubmissions = this.get('model._submissions');
+    let ownSubmissions = this.get('model.submissions');
+    let isExpanded = this.get('model.isExpanded');
+
     const currentSubmissionId = this.get('currentSubmission.id');
 
+    let submissions = isExpanded ? ownSubmissions : allSubmissions;
     let foundSubmission = submissions.find((sub) => {
       return sub.get('id') === currentSubmissionId;
     });
     return !this.get('utils').isNullOrUndefined(foundSubmission);
-  }.property('model.submissions.[]', 'currentSubmission.id'),
+  }.property('model.submissions', 'currentSubmission.id', 'model.isExpanded', 'model._submissions.[]',),
 
   containsCurrentSelection: function() {
-    const selections = this.get('model.taggedSelections');
+    let allSelections = this.get('model._selections');
+    let ownSelections = this.get('model.taggedSelections');
+    let isExpanded = this.get('model.isExpanded');
+
     const currentSelectionId = this.get('currentSelection.id');
+
+    let selections = isExpanded ? ownSelections : allSelections;
 
     let foundSelection = selections.find((sel) => {
       return sel.get('id') === currentSelectionId;
     });
     return !this.get('utils').isNullOrUndefined(foundSelection);
-  }.property('currentSelection.id', 'model.taggedSelections.[]'),
+  }.property('currentSelection.id', 'model.taggedSelections', 'model._selections.[]', 'model.isExpanded', ),
 
   /* Drag and drop stuff */
   supportedTypes: {
@@ -109,6 +118,8 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
       Ember.run.next(this, function() {
         this.putInFolder(this.model, dropType, dropObject);
       });
+
+      document.getElementById(this.elementId).style.backgroundColor = 'transparent';
     }
 
     document.getElementById(this.elementId).parentNode.style.backgroundColor = 'transparent';
@@ -193,6 +204,17 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
   },
 
   hasManyTaggings: Ember.computed.gt('model.childSelections.length', 99),
+
+  selectionsTitle: function() {
+    let selectionsCount = this.get('model.childSelections.length');
+    let submissionsCount = this.get('model.submissions.length');
+
+    let selectionNoun = selectionsCount > 1 ? 'selections' : 'selection';
+    let submissionsNoun = submissionsCount > 1 ? 'submissions' : 'submission';
+
+    return `${selectionsCount} ${selectionNoun} from ${submissionsCount} ${submissionsNoun}`;
+
+  }.property('model.childSelections.length', 'model.submissions.length'),
 
   actions: {
     toggle: function() {
