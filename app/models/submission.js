@@ -71,7 +71,7 @@ Encompass.Submission = DS.Model.extend(Encompass.Auditable, {
   }.property('creator.safeName', 'creator.username', 'creator.fullName', 'vmtDisplayName'),
 
   studentDisplayName: function() {
-    if (this.get('vmtDisplayName')) {
+    if (this.get('vmtRoomInfo.roomId')) {
       return this.get('vmtDisplayName');
     }
 
