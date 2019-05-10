@@ -61,7 +61,7 @@ const getVmtRoom = async (req, res, next) => {
     const SALT_ROUNDS = 12;
     let hash = await bcrypt.hash(secret, SALT_ROUNDS);
 
-    let url = `${getVmtUrl()}/api/rooms/${roomId}?events=true`;
+    let url = `${getVmtUrl()}/api/rooms/${roomId}/populated?events=true`;
     let headers = {
       'Authorization': hash
     };
@@ -71,7 +71,7 @@ const getVmtRoom = async (req, res, next) => {
     if (!room) {
       return utils.sendResponse(res, null);
     }
-    let data = { room };
+    let data = { 'room': room };
     return utils.sendResponse(res, data);
 
   }catch(err) {
