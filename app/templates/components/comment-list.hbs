@@ -103,8 +103,9 @@
         <p class="info">{{emptyResultsMessage}}</p>
       {{/each}}
     </ul>
-    {{pagination-control details=commentsMetadata initiatePageChange=(action "initiatePageChange")}}
-
+    {{#if showPaginationControl}}
+      {{pagination-control details=commentsMetadata initiatePageChange=(action "initiatePageChange")}}
+    {{/if}}
     {{/if}}
   </div>
   <div class="scroll-icon">

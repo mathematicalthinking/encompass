@@ -107,7 +107,6 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     let isSearchQuery = this.get('commentFilterText.length') > 0;
 
     let doFilter = isSubOnly || isWsOnly;
-
     if (doFilter) {
       results = this.get('comments').filter((comment) => {
         let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
@@ -237,7 +236,10 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
 
     let resultsModifier = displayCount > 1 ? 'comments' : 'comment';
 
-    if (this.get('commentsMetadata')) {
+    let isWsOnly = this.get('thisWorkspaceOnly');
+    let isSubOnly = this.get('thisSubmissionOnly');
+
+    if (!isWsOnly && !isSubOnly && this.get('commentsMetadata')) {
 
       let { total, } = this.get('commentsMetadata');
 
@@ -327,6 +329,10 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       return 0;
     });
   }.property('displayList.[]', 'currentSelection'),
+
+  showPaginationControl: function() {
+    return !this.get('thisWorkspaceOnly') && !this.get('thisSubmissionOnly');
+  }.property('thisWorkspaceOnly', 'thisSubmissionOnly'),
 
   actions: {
     cancelComment: function() {
