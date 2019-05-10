@@ -108,7 +108,6 @@
     <i {{action "hideShowSelections"}} class={{hideShowSelectionInfo.className}} title={{hideShowSelectionInfo.title}}></i>
   </div>
 </h5>
-
 <div id="submission_selections" class="{{selectionBoxClass}}">
   <ul>
   {{#each workspaceSelections as |selection|}}
@@ -119,9 +118,10 @@
             selection=selection
             canDeleteSelections=canDeleteSelection
             deleteSelection=(action "deleteSelection")
+            currentSelection=currentSelection
           }}
         {{else}}
-          {{undraggable-selection selection=selection }}
+          {{undraggable-selection selection=selection currentSelection=currentSelection }}
         {{/if}}
       {{/unless}}
     </li>

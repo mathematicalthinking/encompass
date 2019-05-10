@@ -4,6 +4,7 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
   alert: Ember.inject.service('sweet-alert'),
   isExpanded: false,
   classNames: ['draggable-selection'],
+  classNameBindings:['isSelected:is-selected'],
 
   dragStart: function(event) {
     this._super(event);
@@ -36,6 +37,10 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
     }
     return 'selection_text';
   }.property('isImage'),
+
+  isSelected: function() {
+    return this.get('selection.id') === this.get('currentSelection.id');
+  }.property('selection', 'currentSelection'),
 
   actions: {
     deleteSelection(selection) {

@@ -498,7 +498,7 @@
       }
 
       a.active {
-        border-bottom: 1px solid grey;
+       background: none;
       }
 
       li {
@@ -535,6 +535,12 @@
         &.image-tag {
           position: relative;
           z-index: 1;
+
+          &.is-selected {
+            border: 1px solid $filter-list-border-color;
+            box-shadow: $box-shadow;
+          }
+
           &:hover .overlay {
             opacity: .2;
           }
