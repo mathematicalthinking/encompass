@@ -1,6 +1,5 @@
 Encompass.UndraggableSelectionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
   classNames: ['undraggable-selection'],
-  classNameBindings: ['isSelected:is-selected'],
   isExpanded: false,
 
   isImage: function() {
