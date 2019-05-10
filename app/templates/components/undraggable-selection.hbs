@@ -1,7 +1,17 @@
-<span class="{{linkToClassName}} selectionLink {{selection.id}}">
+<span class="{{linkToClassName}} selectionLink {{selection.id}} {{if isImage 'image-tag'}}">
   {{#if selection.imageTagLink}}
     <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
+    <div class="overlay">
+      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+    </div>
   {{else}}
     {{selection.text}}
   {{/if}}
 </span>
+
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src={{selection.imageTagLink}} alt={{selection.text}}>
+  </div>
+{{/if}}
