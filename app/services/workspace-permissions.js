@@ -74,6 +74,15 @@ Encompass.WorkspacePermissionsService = Ember.Service.extend(Encompass.CurrentUs
       return true;
     }
 
+    let wsMode = ws.get('mode');
+
+    let isPublic = wsMode === 'public' || wsMode === 'internet';
+
+    // any user can at least view public workspaces
+    if (isPublic && requiredPermissionLevel <= 1) {
+      return true;
+    }
+
     // check ws permissions
 
     const wsPermissions = ws.get('permissions');
