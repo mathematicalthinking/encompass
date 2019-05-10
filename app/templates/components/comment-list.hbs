@@ -90,7 +90,7 @@
       Searching for comments. Thank you for your patience.
     {{else}}
     <ul>
-      {{#each displayList as |comment|}}
+      {{#each sortedDisplayList as |comment|}}
         {{workspace-comment
           wsComments=comments
           comment=comment

@@ -146,10 +146,21 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
         return true;
       });
     } else {
-      return this.get('searchResults') || [];
+      // check store to see if comments related to current selection are available
+      let currentSelectionComments = this.get('store')
+        .peekAll('comment')
+        .filter((comment) => {
+          let selId = this.get('utils').getBelongsToId(comment, 'selection');
+
+          return selId === this.get('currentSelection.id');
+        });
+
+        let searchResults = this.get('searchResults') || [];
+
+      return searchResults.concat(currentSelectionComments);
     }
     return results.sortBy('createDate').reverse();
-  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id', 'thisWorkspaceOnly', 'currentWorkspace.id', 'searchResults.[]'),
+  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id', 'thisWorkspaceOnly', 'currentWorkspace.id', 'searchResults.[]', 'currentSelection'),
 
   displayList: function() {
     return this.get('filteredComments').rejectBy('isTrashed');
@@ -296,6 +307,26 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   showApplyDate: function() {
     return this.get('doUseSinceDate') && this.get('isSinceDateValid');
   }.property('isSinceDateValid', 'doUseSinceDate'),
+
+  sortedDisplayList: function() {
+    return this.get('displayList').sort((a, b) => {
+      let currentSelectionId = this.get('currentSelection.id');
+
+      let aSelectionId = this.get('utils').getBelongsToId(a, 'selection');
+      let bSelectionId = this.get('utils').getBelongsToId(b, 'selection');
+
+      let isAForCurrentSelection = aSelectionId === currentSelectionId;
+      let isBForCurrentSelection = bSelectionId === currentSelectionId;
+
+      if (isAForCurrentSelection && !isBForCurrentSelection) {
+        return -1;
+      }
+      if (isBForCurrentSelection && !isAForCurrentSelection) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('displayList.[]', 'currentSelection'),
 
   actions: {
     cancelComment: function() {
