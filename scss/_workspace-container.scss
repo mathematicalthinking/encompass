@@ -495,10 +495,9 @@
 
       .selection_text {
         background-color: $pale-accent;
-      }
-
-      a.active {
-       background: none;
+        &.active {
+          border-bottom: 1px solid $filter-list-border-color;
+         }
       }
 
       li {
@@ -535,6 +534,10 @@
         &.image-tag {
           position: relative;
           z-index: 1;
+
+          a.active {
+            background: none;
+           }
 
           &.is-selected {
             border: 1px solid $filter-list-border-color;
