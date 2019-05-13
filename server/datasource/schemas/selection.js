@@ -32,7 +32,11 @@ var SelectionSchema = new Schema({
       heightPct: Number
     },
     imageTagLink: { type: String }, // for image-tag selections; link to image
-    imageSrc: { type: String}, // either base-64 for old images, or link to image record
+    imageSrc: { type: String}, // either base-64 for old images, or link to image record,
+    vmtInfo: {
+      startTime: { type: Number },
+      endTime: { type: Number }
+    }
   }, {versionKey: false});
 
 
