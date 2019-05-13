@@ -115,7 +115,7 @@
 <div id="submission_selections" class="{{selectionBoxClass}}">
   <ul>
   {{#each workspaceSelections as |selection|}}
-    <li class="selection">
+    <li {{action "onSelectionSelect"}} class="selection">
       {{#unless selection.isTrashed}}
         {{#if canSelect}}
           {{draggable-selection

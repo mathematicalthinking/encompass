@@ -4,7 +4,7 @@
  *
  * selections come from this.currentSubmission.selections
  */
-Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, Encompass.VmtHostMixin, {
   elementId: 'workspace-submission-comp',
   classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden', 'isMakingVmtSelection:vmt-selecting','makingSelection:is-selecting'],
   utils: Ember.inject.service('utility-methods'),
@@ -17,6 +17,7 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   wsSaveErrors: [],
   wasShowingBeforeResizing: false,
   isSelectionsBoxExpanded: false,
+  isMessageListenerAttached: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     let making = this.get('makingSelection');
@@ -39,14 +40,28 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
+  didReceiveAttrs() {
+    if (this.get('isVmt') && !this.get('isMessageListenerAttached')) {
+      window.addEventListener('message', this.onVmtMessage.bind(this), false);
+      this.set('isMessageListenerAttached', true);
+    }
+
+    if (!this.get('isVmt') && this.get('isMessageListenerAttached')) {
+      window.removeEventListener('message');
+      this.set('isMessageListenerAttached', false);
+    }
+    this._super(...arguments);
+  },
+
   didInsertElement() {
     // height should be 100% - the height of the revisions nav
     this.setOwnHeight();
-
     this._super(...arguments);
   },
 
   willDestroyElement: function() {
+    window.removeEventListener('message');
+
     let workspace = this.get('currentWorkspace');
 
     let doOnlyUpdateLastViewed = true;
@@ -169,6 +184,13 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   }.property('currentSubmission.vmtRoomInfo.roomId'),
 
   takeVmtScreenshot() {
+    // Need to pause replayer if playing
+    let messageData = {
+      messageType: 'VMT_PAUSE_REPLAYER',
+    };
+
+    window.postMessage(messageData);
+
     let canvases = this.$('canvas');
     let canvas;
 
@@ -187,9 +209,114 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return this.get('isVmt') && this.get('makingSelection');
   },
 
+  currentReplayerTime: function() {
+    let ms = this.get('vmtReplayerInfo.timeElapsed');
+
+    if (typeof ms !== 'number') {
+      return 0;
+    }
+
+    return Math.floor(ms * 0.001);
+  }.property('vmtReplayerInfo.timeElapsed'),
+
+  maxReplayerTime: function() {
+    let ms = this.get('vmtReplayerInfo.totalDuration');
+
+    if (typeof ms !== 'number') {
+      return 0;
+    }
+
+    return Math.floor(ms * 0.001);
+  }.property('vmtReplayerInfo.totalDuration'),
+
+  setVmtReplayerTime(vmtStartTime) {
+    let messageData = {
+      messageType: 'VMT_GO_TO_TIME',
+      timeElapsed: vmtStartTime
+    };
+
+    window.postMessage(messageData);
+  },
+
+  onVmtMessage(event) {
+    let allowedOrigin = window.location.origin;
+
+    let { origin, data } = event;
+
+    if (allowedOrigin !== origin) {
+      return;
+    }
+
+    let { messageType } = data;
+
+    if (messageType === "VMT_ON_REPLAYER_LOAD") {
+      // set replayer to current selection start time if applicable
+      let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
+      if (vmtStartTime >= 0) {
+        this.setVmtReplayerTime(vmtStartTime);
+
+      }
+    }
+  },
+
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
+
+      let currentReplayerTime = this.get('currentReplayerTime');
+      let maxReplayerTime = this.get('maxReplayerTime');
+
+      if (this.get('isVmt')) {
+        return window.swal({
+          title: 'Provide a start and end time for this selection.',
+          html:
+          `
+          <input id="swal-input-vmt-start" value=${currentReplayerTime} placeholder="Start Time" name="vmt-selection-start" class="swal2-input vmt-selection">
+          To
+          <input id="swal-input-vmt-end" value=${currentReplayerTime} class="swal2-input vmt-selection" placeholder="End Time" name="vmt-selection-end">`,
+          focusConfirm : false,
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          preConfirm: () => {
+            let [start, end ] = [
+              document.getElementById('swal-input-vmt-start').value,
+              document.getElementById('swal-input-vmt-end').value
+            ];
+
+            let startNum = parseInt(start, 10);
+            let endNum = parseInt(end, 10);
+
+            let areValidNums = (startNum >= 0 && endNum >= 0);
+            if (!areValidNums) {
+               return window.swal.showValidationMessage('Please enter a non-negative number for both start and end times.');
+            }
+
+            let isInvalidRange = startNum > endNum;
+
+            if (isInvalidRange) {
+              return window.swal.showValidationMessage('Start time cannot be greater than end time.');
+            }
+
+            if (end > maxReplayerTime) {
+              end = maxReplayerTime;
+            }
+
+            return [start, end];
+          }
+        })
+        .then((result) => {
+          if (result.value) {
+            let [ startTime, endTime ] = result.value;
+            selection.vmtInfo =  {
+              startTime : startTime * 1000,
+              endTime: endTime * 1000,
+            };
+
+            return this.sendAction( 'addSelection', selection, isUpdateOnly );
+
+          }
+        });
+      }
       this.sendAction( 'addSelection', selection, isUpdateOnly );
     },
 
@@ -214,6 +341,8 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
         let imgSrc = this.takeVmtScreenshot();
 
         this.set('vmtScreenshot', imgSrc);
+        this.set('vmtReplayerInfo', window.vmtReplayerInfo);
+
         this.toggleProperty('makingSelection');
 
       } else {
@@ -284,6 +413,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     hideShowSelections() {
       this.toggleProperty('areSelectionsHidden');
     },
+
+    onSelectionSelect() {
+      if (this.get('isVmt')) {
+        let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
+        if (vmtStartTime >= 0) {
+          this.setVmtReplayerTime(vmtStartTime);
+      }
+    }
   }
+}
 });
 

@@ -332,7 +332,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
           createdBy: user,
           relativeCoords: selection.relativeCoords,
           relativeSize: selection.relativeSize,
-          imageSrc: selection.imageSrc
+          imageSrc: selection.imageSrc,
+          vmtInfo: selection.vmtInfo
         });
         break;
 
