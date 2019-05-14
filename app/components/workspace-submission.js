@@ -238,15 +238,20 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       return;
     }
 
-    let { messageType } = data;
+    let { messageType, vmtReplayerInfo } = data;
 
     if (messageType === "VMT_ON_REPLAYER_LOAD") {
       // set replayer to current selection start time if applicable
       let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
       if (vmtStartTime >= 0) {
+        this.set('vmtReplayerInfo', vmtReplayerInfo);
         this.setVmtReplayerTime(vmtStartTime);
 
       }
+    }
+
+    if (messageType === 'VMT_UPDATE_REPLAYER') {
+      this.set('vmtReplayerInfo', vmtReplayerInfo );
     }
   },
 
@@ -335,7 +340,6 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
         let imgSrc = this.takeVmtScreenshot();
 
         this.set('vmtScreenshot', imgSrc);
-        this.set('vmtReplayerInfo', window.vmtReplayerInfo);
 
         this.toggleProperty('makingSelection');
 
