@@ -212,21 +212,12 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   currentReplayerTime: function() {
     let ms = this.get('vmtReplayerInfo.timeElapsed');
 
-    if (typeof ms !== 'number') {
-      return 0;
-    }
-
-    return Math.floor(ms * 0.001);
+    return this.get('utils').getTimeStringFromMs(ms);
   }.property('vmtReplayerInfo.timeElapsed'),
 
   maxReplayerTime: function() {
     let ms = this.get('vmtReplayerInfo.totalDuration');
-
-    if (typeof ms !== 'number') {
-      return 0;
-    }
-
-    return Math.floor(ms * 0.001);
+    return ms > 0 ? ms : 0;
   }.property('vmtReplayerInfo.totalDuration'),
 
   setVmtReplayerTime(vmtStartTime) {
@@ -266,14 +257,16 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       let currentReplayerTime = this.get('currentReplayerTime');
       let maxReplayerTime = this.get('maxReplayerTime');
 
+      let placeholder = 'hh:mm:ss';
+
       if (this.get('isVmt')) {
         return window.swal({
           title: 'Provide a start and end time for this selection.',
           html:
           `
-          <input id="swal-input-vmt-start" value=${currentReplayerTime} placeholder="Start Time" name="vmt-selection-start" class="swal2-input vmt-selection">
+          <input id="swal-input-vmt-start" value=${currentReplayerTime} placeholder=${placeholder} name="vmt-selection-start" class="swal2-input vmt-selection">
           To
-          <input id="swal-input-vmt-end" value=${currentReplayerTime} class="swal2-input vmt-selection" placeholder="End Time" name="vmt-selection-end">`,
+          <input id="swal-input-vmt-end" value=${currentReplayerTime} class="swal2-input vmt-selection" placeholder=${placeholder} name="vmt-selection-end">`,
           focusConfirm : false,
           showCancelButton: true,
           cancelButtonText: 'Cancel',
@@ -283,33 +276,34 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
               document.getElementById('swal-input-vmt-end').value
             ];
 
-            let startNum = parseInt(start, 10);
-            let endNum = parseInt(end, 10);
+            let startNum = this.get('utils').extractMsFromTimeString(start);
+            let endNum = this.get('utils').extractMsFromTimeString(end);
 
             let areValidNums = (startNum >= 0 && endNum >= 0);
             if (!areValidNums) {
-               return window.swal.showValidationMessage('Please enter a non-negative number for both start and end times.');
+               return window.swal.showValidationMessage('Please enter timestamps in format of hh:mm:ss');
             }
 
             let isInvalidRange = startNum > endNum;
 
             if (isInvalidRange) {
-              return window.swal.showValidationMessage('Start time cannot be greater than end time.');
+              return window.swal.showValidationMessage('Start time cannot be after end time.');
             }
 
-            if (end > maxReplayerTime) {
-              end = maxReplayerTime;
+            if (endNum > maxReplayerTime) {
+              endNum = maxReplayerTime;
             }
 
-            return [start, end];
+            return [startNum, endNum];
           }
         })
         .then((result) => {
           if (result.value) {
+            // startTime, endTime in ms
             let [ startTime, endTime ] = result.value;
             selection.vmtInfo =  {
-              startTime : startTime * 1000,
-              endTime: endTime * 1000,
+              startTime : startTime,
+              endTime: endTime,
             };
 
             return this.sendAction( 'addSelection', selection, isUpdateOnly );
