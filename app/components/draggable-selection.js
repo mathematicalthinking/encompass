@@ -2,6 +2,7 @@ require('app/components/Draggable');
 
 Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDrop.Draggable, Encompass.CurrentUserMixin, {
   alert: Ember.inject.service('sweet-alert'),
+  utils: Ember.inject.service('utility-methods'),
   isExpanded: false,
   classNames: ['draggable-selection'],
   classNameBindings:['isSelected:is-selected'],
@@ -41,6 +42,18 @@ Encompass.DraggableSelectionComponent = Ember.Component.extend(Encompass.DragNDr
   isSelected: function() {
     return this.get('selection.id') === this.get('currentSelection.id');
   }.property('selection', 'currentSelection'),
+  titleText: function() {
+    let startTime = this.get('selection.vmtInfo.startTime');
+    let endTime = this.get('selection.vmtInfo.endTime');
+
+    if (startTime && endTime) {
+      return `${this.get('utils').getTimeStringFromMs(startTime)} - ${this.get('utils').getTimeStringFromMs(endTime)}`;
+    }
+    let createDate = this.get('selection.createDate');
+
+    let displayDate = moment(createDate).format('l h:mm');
+    return `Created ${displayDate}`;
+  }.property('vmtInfo.{startTime,endTime}', 'createDate'),
 
   actions: {
     deleteSelection(selection) {

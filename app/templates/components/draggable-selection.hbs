@@ -1,4 +1,4 @@
-<div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}}">
+<div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}}" title={{titleText}}>
   {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames=linkToClassName}}
     {{#if isImage}}
       <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
