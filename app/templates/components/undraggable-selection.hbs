@@ -2,7 +2,7 @@
   {{#if selection.imageTagLink}}
     <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
     <div class="overlay">
-      <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+      <button {{action 'expandImage'}}><i class={{overlayIcon}}></i></button>
     </div>
   {{else}}
     {{selection.text}}
