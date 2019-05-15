@@ -41,14 +41,11 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   },
 
   didReceiveAttrs() {
-    if (this.get('isVmt') && !this.get('isMessageListenerAttached')) {
-      window.addEventListener('message', this.onVmtMessage.bind(this), false);
-      this.set('isMessageListenerAttached', true);
-    }
+    let listener = this.onVmtMessage.bind(this);
 
-    if (!this.get('isVmt') && this.get('isMessageListenerAttached')) {
-      window.removeEventListener('message');
-      this.set('isMessageListenerAttached', false);
+    if (this.get('isVmt')) {
+      this.set('vmtListener', listener);
+      window.addEventListener('message', listener);
     }
     this._super(...arguments);
   },
@@ -60,7 +57,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   },
 
   willDestroyElement: function() {
-    window.removeEventListener('message');
+    if (this.get('vmtListener')) {
+      window.removeEventListener('message', this.get('vmtListener'));
+    }
 
     let workspace = this.get('currentWorkspace');
 
@@ -220,10 +219,12 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     return ms > 0 ? ms : 0;
   }.property('vmtReplayerInfo.totalDuration'),
 
-  setVmtReplayerTime(vmtStartTime) {
+  setVmtReplayerTime(vmtStartTime, doAutoPlay, stopTime) {
     let messageData = {
       messageType: 'VMT_GO_TO_TIME',
-      timeElapsed: vmtStartTime
+      timeElapsed: vmtStartTime,
+      doAutoPlay,
+      stopTime,
     };
 
     window.postMessage(messageData);
@@ -238,22 +239,38 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       return;
     }
 
+    let canSet = !this.get('isDestroying') && !this.get('isDestroyed');
+
     let { messageType, vmtReplayerInfo } = data;
 
     if (messageType === "VMT_ON_REPLAYER_LOAD") {
       // set replayer to current selection start time if applicable
       let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
-      if (vmtStartTime >= 0) {
+      if (vmtStartTime >= 0 && canSet) {
+
         this.set('vmtReplayerInfo', vmtReplayerInfo);
-        this.setVmtReplayerTime(vmtStartTime);
+        // set replayer to start point but do not auto play
+        this.setVmtReplayerTime(vmtStartTime, false, null);
 
       }
     }
 
-    if (messageType === 'VMT_UPDATE_REPLAYER') {
+    if (messageType === 'VMT_UPDATE_REPLAYER' && canSet) {
       this.set('vmtReplayerInfo', vmtReplayerInfo );
     }
   },
+
+  isOnVmtSelection: function() {
+    return this.get('currentSelection.vmtInfo.startTime') >= 0 &&
+    this.get('currentSelection.vmtInfo.endTime') >= 0;
+  }.property('currentSelection.vmtInfo.{startTime,endTime}'),
+
+  currentClipStartTime: function() {
+    return this.get('currentSelection.vmtInfo.startTime');
+  }.property('currentSelection.vmtInfo.startTime'),
+  currentClipEndTime: function() {
+    return this.get('currentSelection.vmtInfo.endTime');
+  }.property('currentSelection.vmtInfo.endTime'),
 
   actions: {
     addSelection: function( selection, isUpdateOnly ){
@@ -416,7 +433,9 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       if (this.get('isVmt')) {
         let vmtStartTime = this.get('currentSelection.vmtInfo.startTime');
         if (vmtStartTime >= 0) {
-          this.setVmtReplayerTime(vmtStartTime);
+          let endTime = this.get('currentSelection.vmtInfo.endTime');
+          this.setVmtReplayerTime(vmtStartTime, true, endTime);
+          this.set('makingSelections', false);
       }
     }
   }
