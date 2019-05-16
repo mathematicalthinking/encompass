@@ -474,18 +474,13 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
       // clear current selection
       this.send('cancelComment');
+
       this.get('loading').handleLoadingMessage(this, 'start', 'isLoadingSearchResults', 'doShowLoadingMessage');
 
       let options = {
         text: query || '',
       };
 
-      if (this.get('thisWorkspaceOnly')) {
-        options.workspace = this.get('currentWorkspace.id');
-      }
-      if (this.get('thisSubmissionOnly')) {
-        options.submission = this.get('currentSubmission.id');
-      }
       if (this.get('myCommentsOnly')) {
         options.createdBy = this.get('currentUser.id');
       }
@@ -533,6 +528,9 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       }
       this.set('scrollBottom', !this.get('scrollBottom'));
     },
+    clearSearchResults() {
+      this.send('searchComments');
+    }
   }
 });
 

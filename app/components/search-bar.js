@@ -26,12 +26,12 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     let hasSearchQuery = this.get('searchQuery');
     let hasSearchInputValue = this.get('searchInputValue');
 
-    if (hasSearchQuery || hasSearchInputValue) {
+    if (hasSearchQuery || hasSearchInputValue || (this.get('doSearchOnInputChange') && this.get('inputValue'))) {
       return true;
     } else {
       return false;
     }
-  }.property('searchQuery', 'searchInputValue'),
+  }.property('searchQuery', 'searchInputValue', 'doSearchOnInputChange', 'inputValue'),
 
   placeholder: function() {
     let base = this.get("basePlaceholder");
