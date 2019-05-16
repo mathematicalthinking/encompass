@@ -472,7 +472,8 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       if (this.get('thisSubmissionOnly') || this.get('thisWorkspaceOnly')) {
         return;
       }
-
+      // clear current selection
+      this.send('cancelComment');
       this.get('loading').handleLoadingMessage(this, 'start', 'isLoadingSearchResults', 'doShowLoadingMessage');
 
       let options = {
