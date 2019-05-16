@@ -74,8 +74,31 @@
     {{/if}}
     <div class="non-selectable-sub">
       <h5 class="submission-header summary">Brief Summary</h5>
-      <div class="submission short">
-        {{#if currentSubmission.answer.answer}}
+      <div class="submission short {{if isVmt "vmt-summary"}}">
+        {{#if isVmt}}
+          {{#with currentSubmission.vmtRoomInfo as |room|}}
+            <p>Room Name: {{room.roomName}}</p>
+            <p>Activity Name:
+              {{#if room.activityName}}
+                {{room.activityName}}
+              {{else}}
+                N/A
+              {{/if}}
+            </p>
+            <p>Participants</p>
+            <ul>
+              {{#each room.participants as |username| }}
+                <li>{{username}}</li>
+              {{/each}}
+            </ul>
+            <p>Facilitators</p>
+            <ul>
+              {{#each room.facilitators as |username| }}
+                <li>{{username}}</li>
+              {{/each}}
+            </ul>
+          {{/with}}
+        {{else if currentSubmission.answer.answer}}
           {{{currentSubmission.answer.answer}}}
         {{else}}
           {{{currentSubmission.shortAnswer}}}
@@ -83,7 +106,7 @@
       </div>
       <h5 class="submission-header explanation">Explanation</h5>
       <div class="submission long">
-        {{#if currentSubmission.vmtRoomInfo.roomId}}
+        {{#if isVmt}}
           {{vmt-replayer}}
         {{else if currentSubmission.answer.explanation}}
           {{{currentSubmission.answer.explanation}}}
