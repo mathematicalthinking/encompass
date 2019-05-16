@@ -207,6 +207,10 @@ Encompass.FolderElemComponent = Ember.Component.extend(Encompass.DragNDrop.Dropp
 
   selectionsTitle: function() {
     let selectionsCount = this.get('model.childSelections.length');
+
+    if (selectionsCount === 0) {
+      return '0 Selections';
+    }
     let submissionsCount = this.get('model.submissions.length');
 
     let selectionNoun = selectionsCount > 1 ? 'selections' : 'selection';

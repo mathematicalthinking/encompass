@@ -361,6 +361,7 @@
 
         .folder-name.bolder {
           font-weight: $bolder-font-weight;
+          font-size: 1.1em;
         }
       }
 
@@ -369,7 +370,7 @@
         align-self: center;
         margin-left: 5px;
         .show-folder {
-          background-color: $pale-accent;
+          background-color: $soft-yellow;
           width: 30px;
           line-height: 30px;
           border-radius: 50%;
@@ -377,7 +378,7 @@
           text-indent: initial;
           font-size: 1em;
           color: $primary-font-color;
-          border: 1px solid white;
+          border: 1px solid $filter-list-border-color;
           margin-right: 5px;
 
           &.many-taggings {
@@ -385,8 +386,10 @@
           }
 
           &.contains-current-submission {
-            background-color: darken($pale-accent, 5%);
             font-weight: $bolder-font-weight;
+          }
+          &.contains-current-selection {
+            background-color: $pale-accent;
           }
         }
       }
@@ -494,9 +497,10 @@
       background: white;
 
       .selection_text {
-        background-color: $pale-accent;
+        background-color: $soft-yellow;
         &.active {
           border-bottom: 1px solid $filter-list-border-color;
+          background-color: $pale-accent;
          }
       }
 
