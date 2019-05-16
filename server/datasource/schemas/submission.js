@@ -84,8 +84,9 @@ var encompassSubmission = _.extend({}, baseSubmission, {
     roomId: { type: String }, // object id from vmt
     imageUrl: { type: String }, //
     roomName: {type: String },
-    facilitators: [ { type: String } ], // just usernames for now,
-    participants: [ { type: String } ] // just usernames for now,
+    facilitators: [ { type: String } ], // just usernames for now
+    participants: [ { type: String } ], // just usernames for now
+    activityName: { type: String },
   }
 });
 

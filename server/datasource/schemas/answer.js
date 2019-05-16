@@ -32,7 +32,8 @@ var AnswerSchema = new Schema({
   vmtRoomInfo: {
     roomId: { type: String }, // object id from vmt
     imageUrl: { type: String }, //
-    roomName: {type: String },
+    roomName: { type: String },
+    activityName: { type: String },
     facilitators: [ { type: String } ], // just usernames for now,
     participants: [ { type: String } ] // just usernames for now,
   }

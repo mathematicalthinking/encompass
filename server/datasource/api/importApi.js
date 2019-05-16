@@ -259,19 +259,27 @@ const convertVmtRoomsToAnswers = function(rooms, currentUser) {
       .filter(m => m.role === 'participant')
       .map(p => _.propertyOf(p)(['user', 'username'] || 'Unknown User'));
 
+    let activityName = _.propertyOf(room)(['activity', 'name']) || null;
+
     let partialRoom = {
       roomId: room._id.toString(),
       imageUrl: room.image,
       roomName: room.name,
       facilitators: facilitators,
-      participants: participants
+      participants: participants,
+      activityName
     };
 
+    let description = `VMT Replayer for room "${room.name}"`;
+
+    if (activityName) {
+      description += ` from activity "${activityName}"`;
+    }
 
     let answer = new models.Answer({
       createdBy: currentUser,
       createDate: Date.now(), // or vmt date of activity or creation?
-      answer: 'See VMT replayer.',
+      answer: description,
       explanation: '',
       vmtRoomInfo: partialRoom, // currently only contains _id, image, members
       studentNames: participants,
