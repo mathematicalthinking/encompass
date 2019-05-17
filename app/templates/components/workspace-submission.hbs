@@ -53,12 +53,39 @@
       setupResizeHandler=(action "setupResizeHandler")
     }}
       <div id="submission_container">
-        <div class="submission-short">
-          {{#if currentSubmission.answer.answer}}
-            {{{currentSubmission.answer.answer}}}
-          {{else}}
-            {{{currentSubmission.shortAnswer}}}
-          {{/if}}
+        <div class="submission-short {{if isVmt "vmt-summary"}}">
+         {{#if isVmt}}
+          {{#with currentSubmission.vmtRoomInfo as |room|}}
+            <p>Room Name: {{room.roomName}}</p>
+            <p>Activity Name:
+              {{#if room.activityName}}
+                {{room.activityName}}
+              {{else}}
+                N/A
+              {{/if}}
+            </p>
+            <p>Participants</p>
+            <ul>
+              {{#each room.participants as |username| }}
+                <li>{{username}}</li>
+              {{else}}
+                N/A
+              {{/each}}
+            </ul>
+            <p>Facilitators</p>
+            <ul>
+              {{#each room.facilitators as |username| }}
+                <li>{{username}}</li>
+              {{else}}
+                N/A
+              {{/each}}
+            </ul>
+          {{/with}}
+        {{else if currentSubmission.answer.answer}}
+          {{{currentSubmission.answer.answer}}}
+        {{else}}
+          {{{currentSubmission.shortAnswer}}}
+        {{/if}}
         </div>
         <div class="submission-long">
           {{#if vmtScreenshot}}
@@ -89,12 +116,16 @@
             <ul>
               {{#each room.participants as |username| }}
                 <li>{{username}}</li>
+              {{else}}
+                N/A
               {{/each}}
             </ul>
             <p>Facilitators</p>
             <ul>
               {{#each room.facilitators as |username| }}
                 <li>{{username}}</li>
+              {{else}}
+                N/A
               {{/each}}
             </ul>
           {{/with}}
