@@ -40,14 +40,6 @@
             propToUpdate="selectedAssignment"
             placeholder="Search assignments by name"
         }}
-        {{!-- {{log 'sel teacher section ids' selectedTeacherSectionIds}}
-        {{log 'sel teacher assn' selectedTeacherAssignments}}
-        {{log 'sel prob assn' selectedProblemAssignments}}
-        {{log 'assignmentOptions' assignmentOptions}}
-        {{log 'teacherPoolOptions' teacherPoolOptions}}
-        {{log 'selectedStudesntsSections' selectedStudentsSections}}
-        {{log 'selectedStudesntsSectionIds' selectedStudentSectionIds}}
-        {{log 'selectedStudentAssign' selectedStudentsAssignments}} --}}
 
       {{#each assignmentFormErrors as |error|}}
         <p class="error-message">{{error}}</p>
@@ -124,7 +116,6 @@
     <li>
       <label>Date Range</label>
       <div class="single-text-input-container">
-        {{!-- {{input class="single-text-input" id="dateRange" name="daterange" type="text" value=dateRange}} --}}
         {{input class="single-text-input" id="startDate" name="startDate" type="text" value=startDate}}
         <span class="seperator"> - </span>
         {{input class="single-text-input" id="endDate" name="endDate" type="text" value=endDate}}
@@ -134,6 +125,26 @@
       {{input type="checkbox" checked=doIncludeOldPows name="doIncludeOldPows"}}
       <label>Include Old Pows Work</label>
     </li>
+
+    <h3 {{action 'toggleVmtFilters'}} class="vmt-header">
+      <i class="fas {{if showVmtFilters 'fa-chevron-down'}}{{unless showVmtFilters 'fa-chevron-right'}}"></i> Vmt
+    </h3>
+
+  {{#if showVmtFilters}}
+  <ul class="vmt-filter-list">
+    <li class="vmt-only-input">
+      {{input type="checkbox" checked=isVmtOnly name="isVmtOnly"}}
+      <label>Include Only VMT Work</label>
+    </li>
+    <li>
+      <div class="vmt-search">
+      <label>Search by room, activity, or username</label>
+      {{input class="single-text-input vmt-search" name="vmt-search" type="text" value=vmtSearchText}}
+      </div>
+    </li>
+  </ul>
+  {{/if}}
+
 
     {{#if isMissingCriteria}}
       {{error-box error=missingCriteriaMessage showDismiss=true resetError=(action (mut isMissingCriteria) null) }}

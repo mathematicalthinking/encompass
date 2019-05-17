@@ -16,7 +16,17 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
   workspacesToUpdate: DS.attr(''),
   vmtRoomInfo: DS.attr(),
 
+  isVmt: function() {
+    let id = this.get('vmtRoomInfo.roomId');
+    let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+
+    return checkForHexRegExp.test(id);
+  }.property('vmtRoomInfo.roomId'),
+
   student: function() {
+    if (this.get('isVmt')) {
+      return this.get('vmtRoomInfo.participants.firstObject') || 'Unknown';
+    }
     const creatorUsername = this.get('createdBy.username');
     if (creatorUsername && creatorUsername !== 'old_pows_user') {
       return creatorUsername;
@@ -34,5 +44,5 @@ Encompass.Answer = DS.Model.extend(Encompass.Auditable, {
         return firstStringName.trim();
       }
     }
-  }.property('createdBy.username', 'studentNames.[]', 'studentName'),
+  }.property('createdBy.username', 'studentNames.[]', 'studentName', 'isVmt','vmtRoomInfo.participants.[]'),
 });

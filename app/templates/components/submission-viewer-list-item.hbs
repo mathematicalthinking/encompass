@@ -9,7 +9,36 @@
     {{revisionCount}}
   </div>
   <div class="item-section explanation">
+    {{#if isVmt}}
+      {{#with answer.vmtRoomInfo as |room|}}
+        <p>Room Name: {{room.roomName}}</p>
+        <p>Activity Name:
+          {{#if room.activityName}}
+            {{room.activityName}}
+          {{else}}
+            N/A
+          {{/if}}
+        </p>
+        <p>Participants</p>
+        <ul>
+          {{#each room.participants as |username| }}
+            <li>{{username}}</li>
+          {{else}}
+            N/A
+          {{/each}}
+        </ul>
+        <p>Facilitators</p>
+        <ul>
+          {{#each room.facilitators as |username| }}
+            <li>{{username}}</li>
+          {{else}}
+            N/A
+          {{/each}}
+        </ul>
+      {{/with}}
+    {{else}}
       {{{answer.explanation}}}
+    {{/if}}
   </div>
   <div class="item-section section">
     {{#if answer.section.name}}
