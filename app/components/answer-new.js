@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'answer-new',
   alert: Ember.inject.service('sweet-alert'),
@@ -173,6 +174,15 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
     const priorAnswer = this.priorAnswer ? this.priorAnswer : null;
     const students = this.get('contributors');
 
+    if (priorAnswer) {
+      // if revising, check to see that there were changes made from original
+      // to avoid lots of duplicate answers
+      if (!this.isRevisionDifferent(priorAnswer, answer, explanation, students)) {
+        this.set('isCreatingAnswer', false);
+        return this.get('alert').showToast('info', 'Revison cannot be exact duplicate of original', 'bottom-end', 3000, false, null);
+      }
+    }
+
     return this.handleImages()
     .then((images) => {
       // json objects, not ember records
@@ -241,6 +251,30 @@ Encompass.AnswerNewComponent = Ember.Component.extend(Encompass.CurrentUserMixin
         return;
       }
     });
+  },
+
+  isRevisionDifferent(original, newSummary,newExplanation, newContributors) {
+    let originalSummary = original.get('answer');
+
+    if (originalSummary !== newSummary) {
+      return true;
+    }
+
+    if (original.get('explanation') !== newExplanation) {
+      return true;
+    }
+    if (original.get('students.length') !== newContributors.get('length')) {
+      return true;
+    }
+
+    let originalContribIds = original.get('students').mapBy('id');
+
+    let newContribIds = newContributors.mapBy('id');
+
+    let didContribsChange = !_.isEqual(originalContribIds, newContribIds);
+
+    return didContribsChange;
+
   },
 
 
