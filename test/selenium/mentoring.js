@@ -148,6 +148,7 @@ describe('Mentoring Interactions', function() {
   });
 
   describe('Viewing response in paneled view', function() {
+    let submitterCss = css.responseInfo.submissionView;
     before(async function() {
       await helpers.findAndClickElement(driver, css.responsesList.threadItemContainer);
       let subId = responseInfo.submission._id;
@@ -158,13 +159,29 @@ describe('Mentoring Interactions', function() {
     });
 
     it('should display submission view', async function() {
-      expect(await helpers.findAndGetText(driver, css.responseInfo.submissionView.studentIndicator)).to.eql(feedbackReceiver.username);
+      expect(await helpers.findAndGetText(driver, submitterCss.studentIndicator)).to.eql(feedbackReceiver.username);
     });
 
     it('should display mentor reply view', async function() {
       expect(await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.recipient)).to.eql(feedbackReceiver.username);
 
       expect( await helpers.findAndGetText(driver, css.responseInfo.mentorReplyView.sender)).to.eql(mentorInfo.username);
+    });
+
+    it('should show revise button', async function() {
+      expect(await helpers.isElementVisible(driver, submitterCss.reviseBtn)).to.eql(true);
+      await helpers.findAndClickElement(driver, submitterCss.reviseBtn);
+      await helpers.waitForSelector(driver, submitterCss.submitRevision);
+    });
+
+    it('should not submit revision if no changes are made', async function() {
+      let text = css.assignmentsStudent.newAnswerForm.errors.duplicateRevisionText;
+      let submitBtnClass = css.assignmentsStudent.newAnswerForm.createBtn;
+      await helpers.findAndClickElement(driver, submitBtnClass);
+      await helpers.waitForTextInDom(driver, text);
+      expect(await helpers.isTextInDom(driver, text)).to.eql(true);
+      expect(await helpers.isElementVisible(driver, submitBtnClass)).to.eql(true);
+
     });
   });
 

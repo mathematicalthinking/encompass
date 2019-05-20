@@ -328,7 +328,7 @@ module.exports = {
       },
       createBtn: 'button.primary-button.create',
      errors: {
-
+      duplicateRevisionText: 'Revison cannot be exact duplicate of original'
      }
     },
     answerInfo: {
@@ -368,7 +368,9 @@ module.exports = {
   },
   responseInfo: {
     submissionView: {
-      studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span'
+      studentIndicator: '#response-submission-view > div.submission-container > div.submission-student > span',
+      reviseBtn: 'button[data-test="submitter-revise"]',
+      submitRevision: 'button[data-test="submit-revision"]',
     },
     mentorReplyView: {
       recipient: '.response-value.recipient',
