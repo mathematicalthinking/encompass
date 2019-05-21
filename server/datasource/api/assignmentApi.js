@@ -124,20 +124,30 @@ const getAssignment = async function(req, res, next) {
 
   let metadata = {};
 
-  if (!isStudent) {
+  // put all students in assignment report even if not
+  // submitted yet
+
+  if (!isStudent && Array.isArray(assignment.students)) {
+    assignment.students.forEach((student) => {
+      if (!metadata[student._id]) {
+        metadata[student._id] = {
+          count: 0,
+          latestRevision: null,
+        };
+      }
+    });
+
     assignment.answers.forEach((answer) => {
       let creatorId = answer.createdBy;
-      if (!metadata[creatorId]) {
-        metadata[creatorId] = {};
-        metadata[creatorId].count = 1;
-        metadata[creatorId].latestRevision = answer.createDate;
-      } else {
-        metadata[creatorId].count += 1;
-        let newDate = answer.createDate;
-        if (newDate > metadata[creatorId].latestRevision) {
+      let latestRev = metadata[creatorId].latestRevision;
+
+      metadata[creatorId].count += 1;
+      let newDate = answer.createDate;
+
+      if (latestRev === null || (newDate > latestRev)) {
         metadata[creatorId].latestRevision = newDate;
-        }
       }
+
     });
 
     assignment.reportDetails = metadata;
