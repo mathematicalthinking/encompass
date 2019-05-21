@@ -2,18 +2,23 @@
 <div class="folder draggable">
 		{{#if this.editFolderMode}}
 		  {{#if canEditFolders}}
-				{{#if model.parent}}
-        	<span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
-      	{{/if}}
-		  <span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
-		  <span {{action 'moveDown' model target=folderList}} class="al_wtf move_down"></span>
-                              {{! Need to send askToDelete action to folder-list to confirm deletion }}
+				<div class="move-folder">
+						{{#if model.parent}}
+							<span {{action 'moveOut' model target=folderList}} class="al_wtf move_left"></span>
+						{{/if}}
+					<span {{action 'moveUp' model target=folderList}} class="al_wtf move_up"></span>
+					<span {{action 'moveDown' model target=folderList}} class="al_wtf move_down"></span>
+				</div>
 			{{/if}}
 			{{#if canDeleteFolder}}
-				<span {{action 'confirmDelete'}} class="al_sprite al_folder al_remove"></span>
+				<div class="delete-folder">
+					<span {{action 'confirmDelete'}}><i class="fas fa-trash"></i></span>
+				</div>
 			{{/if}}
 			{{#if canEditFolder}}
-      	{{input value=model.name focus-out='editFolderName' size=10}}
+				<div class="edit-folder-name">
+					{{input value=model.name focus-out='editFolderName'}}
+				</div>
 			{{/if}}
 			{{#each updateRecordErrors as |error|}}
     		<p class="error-message">{{error}}</p>
@@ -21,40 +26,20 @@
 		{{else}}
       <span class="toggle-icon {{if model.sortedChildren.length 'branch' 'leaf'}}" {{action 'toggle'}}>
         {{#if model.isExpanded}}
-					<span class="folder_sprites icon expanded"></span>
+					<span class="folder-expanded"><i class="far fa-folder-open"></i></span>
         {{else}}
-				  {{#if model.sortedChildren.length}}
-					<span class="folder_sprites icon expandable"></span>
-				  {{else}}
-					<span class="folder_sprites icon"></span>
-				  {{/if}}
+					<span class="folder-closed"><i class="far fa-folder"></i></span>
         {{/if}}
-				{{model.name}}
+				<span  title={{model.name}} class="folder-name {{if containsCurrentSubmission 'bolder'}}">{{model.name}}</span>
 			</span>
 		  <aside>
 				<button style="display:none" id="updateTaggings{{this.model.id}}" {{action 'updateTaggings'}}></button>
 				{{#each queryErrors as |error|}}
 					<p class="error-message">{{error}}</p>
 				{{/each}}
-				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSubmission 'contains-current-submission'}}" title="number of submissions filed in this folder">
-				<a {{action 'openLink'}}>
-					<span class="al_sprite al_folder_ct"></span>
-					<span class="al_number">{{model._submissions.length}}</span>
-				</a>
-				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
-					<span class="al_sprite al_folder_ct"></span>
-					<span class="al_number">{{model._submissions.length}}</span>
-				{{/link-to}} --}}
-				</div>
-				<div {{action 'showFolder'}} class="al_indicator {{if containsCurrentSelection 'contains-current-selection'}}" title="number of selections filed in this folder">
-				<a {{action 'openLink'}}>
-					<span class="al_sprite al_selection_ct"></span>
-					<span class="al_number al_selection">{{model.childSelections.length}}</span>
-				</a>
-				{{!-- {{#link-to 'workspace.folder' currentWorkspace model titleBinding='model.name'}}
-					<span class="al_sprite al_selection_ct"></span>
-					<span class="al_number al_selection">{{model.childSelections.length}}</span>
-				{{/link-to}} --}}
+
+				<div class="show-folder"{{action 'openLink'}} class="{{if containsCurrentSubmission 'contains-current-submission'}} {{if hasManyTaggings "many-taggings"}} {{if containsCurrentSelection "contains-current-selection"}}" title={{selectionsTitle}}>
+					{{model.childSelections.length}}
 				</div>
 		  </aside>
 		{{/if}}
@@ -62,10 +47,19 @@
 {{#if model.isExpanded}}
     <ul class="subfolders">
       {{#each model.sortedChildren as |folder|}}
-        {{folder-elem store=store model=folder currentWorkspace=currentWorkspace folderList=folderList editFolderMode=editFolderMode putInFolder=putInFolder dropped=dropped
-				canEditFolders=canEditFolders
-      	canDeleteFolders=canDeleteFolders
-				wsTaggings=wsTaggings
+        {{folder-elem
+					store=store
+					model=folder
+					currentWorkspace=currentWorkspace
+					folderList=folderList
+					editFolderMode=editFolderMode
+					putInFolder=putInFolder
+					dropped=dropped
+					canEditFolders=canEditFolders
+      		canDeleteFolders=canDeleteFolders
+					wsTaggings=wsTaggings
+					currentSubmission=currentSubmission
+					currentSelection=currentSelection
 				}}
       {{/each}}
     </ul>

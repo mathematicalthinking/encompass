@@ -68,7 +68,7 @@ var ImageTagging = function(args) {
     _currentlyMakingSelection = false,
     _currentlyConfirmingSelection = false,
     _currentlySavingTag = false,
-    _allowNotes = true,
+    _allowNotes = false,
     _disabled = false,
     _onSave = function() { /* empty until a function is provided */ },
     targetImages,
@@ -96,6 +96,53 @@ NoteInput = function() {
       }
     }
     return '';
+  }
+
+  /**
+   * Private function _stopEditing()
+   * Causes the active tag to no longer be able to be changed
+   */
+  function _stopEditing(event) {
+    if (_currentlyEditing === -1) {
+      return;
+    }
+
+    var tmpId = _currentlyEditing,
+      tagListItem,
+      note;
+      // window.event tends to be undefined in firefox
+      // is this line necessary if we are always passing in event?
+      event = event || window.event;
+
+    if (event.target.id !== _tagIdPrefix + tmpId) {
+      if (_currentlyResizingOrPlacing) {
+        window.removeEventListener('mousemove', _mouseMove, true);
+        window.removeEventListener('touchmove', _mouseMove , true);
+        _currentlyResizingOrPlacing = false;
+        return;
+      }
+    } else {
+      _currentlyResizingOrPlacing = false;
+    }
+
+    window.removeEventListener('mouseup', _stopEditing, false);
+    window.removeEventListener('touchend', _stopEditing, false);
+
+    _currentlyEditing = -1;
+
+    if (_allowNotes) {
+      note = _notes[tmpId];
+
+      if (_tagListContainer) {
+        tagListItem = document.getElementById(_tagListIdPrefix + tmpId);
+        // make sure we set the text, not the innerHTML, to prevent any code being injected
+        tagListItem.childNodes[0].nodeValue = note.getValue();
+      }
+      _tags[tmpId].note = note.getValue();
+      note.preventEdit();
+    }
+
+    tagging.removeTag(tmpId);
   }
 
   function _textKeyPress(event) {
@@ -195,6 +242,14 @@ NoteInput = function() {
     tagging.eventCreateTag(event);
   }
 
+  function _handleMouseMove(event) {
+    event.preventDefault();
+    if (_currentlyMakingSelection) {
+      tagging.createSelectionBox(event);
+    }
+    event.stopPropagation();
+  }
+
   function _handleMouseUp(event) {
     if (!_currentlyMakingSelection) {
       return;
@@ -204,9 +259,32 @@ NoteInput = function() {
       _currentlyConfirmingSelection = true;
       window.removeEventListener('mouseup', _handleMouseUp, false);
       window.removeEventListener('mousemove', _handleMouseMove, false);
+
+      window.removeEventListener('touchend', _handleMouseUp, false);
+      window.removeEventListener('touchmove', _handleMouseMove, false);
+
       tagging.selectionOrigin = null;
       tagging.confirmSelectionArea(event);
     }
+  }
+
+  /**
+   * Private function _findPosition()
+   * Returns the x and y coordinates of a node within the page
+   */
+  function _findPosition(node) {
+    var posX = 0, posY = 0;
+    if (node.offsetParent) {
+      while (node.offsetParent) {
+        posX += node.offsetLeft;
+        posY += node.offsetTop;
+        node = node.offsetParent;
+      }
+    } else if (node.x) {
+      posX = node.x;
+      posY = node.y;
+    }
+    return [ posX, posY ];
   }
 
   function _removeElsFromDom(els) {
@@ -237,17 +315,17 @@ NoteInput = function() {
   function _confirmSelectionInputs(box, targetImage, visibleImage, scrollableContainer) {
     var confirm = document.createElement('button');
     var cancel = document.createElement('button');
+    confirm.className = "primary-button ";
+    cancel.className="primary-button cancel-button ";
     var boxLeft = _styleAsInt(box, 'left');
     var boxTop = _styleAsInt(box, 'top');
     var boxHeight = _styleAsInt(box, 'height');
     var boxWidth = _styleAsInt(box, 'width');
-    var boxBottom = boxTop + boxHeight;
-    var boxRight = boxLeft + boxWidth;
+    // var boxBottom = boxTop + boxHeight;
+    // var boxRight = boxLeft + boxWidth;
     var boxBorderWidth = _styleAsInt(box, 'borderWidth');
-    // var buttonsWidth = boxWidth > 100 ? boxWidth * 0.25 : 25;
-    // var buttonsHeight = boxWidth > 100 ? boxWidth * 0.1 : 10;
-    var buttonsWidth = 30;
-    var buttonsHeight = 12;
+    var buttonsWidth = 44;
+    var buttonsHeight = 21;
     var buttons = [confirm, cancel];
 
 
@@ -271,11 +349,15 @@ NoteInput = function() {
     var imgBottom = imgY + targetImage.height;
     var overflow = imgBottom - visibleImage.bottomEdge;
 
-    if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
-
-      diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
-      document.getElementById(scrollableContainer).scrollTop -= diff;
-    }
+    // if (!selBoxRect.bottom > buttonsHeight) {
+    //   // buttons will not be visible; scroll
+    // }
+    // scroll if buttons not visible
+    // if (boxBottom + buttonsHeight + imgY - overflow  > visibleImage.bottomEdge) {
+    //   console.log('buttons not visible, scrolling');
+    //   diff = boxBottom + buttonsHeight - visibleImage.bottomEdge;
+    //   document.getElementById(scrollableContainer).scrollTop -= diff;
+    // }
 
     buttons.forEach((button) => {
       button.style.position = 'absolute';
@@ -293,72 +375,29 @@ NoteInput = function() {
     confirm.innerText = 'Save';
 
     cancel.setAttribute('id', _cancelButtonId);
-    cancel.innerText = 'Trash';
+    cancel.innerText = 'Cancel';
 
     return [confirm, cancel];
   }
-  this.confirmSelectionArea = function(event) {
-    var selectionBox;
-    var targetImage;
-    event = event || window.event;
 
-    selectionBox = document.getElementById(_selectionBoxId);
-
-    if (selectionBox === null) {
-      _currentlyConfirmingSelection = false;
-      return;
+  /**
+   * Private function _findScrollPosition()
+   * Returns the scroll offset of the node
+   */
+  function _findScrollPosition(node) {
+    var scrollX = node.scrollLeft,
+      scrollY = node.scrollTop;
+    while (node.parentElement) {
+      node = node.parentElement;
+      if (node === document.body) {
+        break;
+      }
+      scrollX += node.scrollLeft;
+      scrollY += node.scrollTop;
     }
-
-    var selectionWidth = _styleAsInt(selectionBox, 'width');
-    var selectionHeight = _styleAsInt(selectionBox, 'height');
-
-    if (selectionHeight <= 1 || selectionWidth <= 1) {
-      _currentlyConfirmingSelection = false;
-      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
-      return;
-    }
-    targetImage = tagging.currentTargetImage;
-    // if (targetImages.indexOf(event.target) >= 0) {
-    //   targetImage = event.target;
-    // } else if (event.target.id === _selectionBoxId) {
-    //   targetImage = event.target.previousElementSibling.firstElementChild;
-    // } else {
-    //   targetImage = selectionBox.previousElementSibling.firstElementChild;
-    // }
-
-    var visibleImage = _getVisibleImageBoundaries(event, _scrollableContainer, targetImage);
-
-    var buttons = _confirmSelectionInputs(selectionBox, targetImage, visibleImage, _scrollableContainer);
-
-    var confirm = buttons[0];
-    var cancel = buttons[1];
-
-    confirm.addEventListener('click', function() {
-      var id = tagging.getId();
-      var imageCoords = _imageTrueCoords(targetImage);
-      var relativeCoords = [_styleAsInt(selectionBox, 'left') - imageCoords.left, _styleAsInt(selectionBox, 'top') - imageCoords.top];
-      tagging.createTag(id, targetImage.id, relativeCoords, selectionBox);
-      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
-    });
-    cancel.addEventListener('click', _cancelSelection);
-
-    taggingContainer.appendChild(confirm);
-    taggingContainer.appendChild(cancel);
-  };
-
-  function _initiateSelection(event) {
-    event.preventDefault();
-    if (_currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
-      return;
-    }
-    _currentlyMakingSelection = true;
-    window.addEventListener('mouseup', _handleMouseUp, false);
-    window.addEventListener('mousemove', _handleMouseMove, false);
-
-    tagging.currentTargetImage = event.target;
-    tagging.createSelectionBox(event);
-
-    event.stopPropagation();
+    scrollX += document.documentElement.scrollLeft;
+    scrollY += document.documentElement.scrollTop;
+    return [ scrollX, scrollY ];
   }
 
   function _getVisibleImageBoundaries(event, scrollDiv, img) {
@@ -418,6 +457,90 @@ NoteInput = function() {
       rightEdge:  imgX + img.width - imgOverflowRight
     };
   }
+
+  /**
+   * Private function _imageTrueCoords()
+   * Returns the x and y coordinates of an image within its parent
+   * taking into account scroll position of all ancestors
+   */
+  function _imageTrueCoords(image) {
+    var imageCoords = _findPosition(image),
+      containerCoords = _findPosition(taggingContainer),
+      scrollCoords = _findScrollPosition(image),
+      imageLeft = imageCoords[0] - containerCoords[0],
+      imageTop = imageCoords[1] - containerCoords[1],
+      coords = {left: imageLeft, top: imageTop};
+    return coords;
+  }
+
+  this.confirmSelectionArea = function(event) {
+    var selectionBox;
+    var targetImage;
+    event = event || window.event;
+
+    selectionBox = document.getElementById(_selectionBoxId);
+
+    if (selectionBox === null) {
+      _currentlyConfirmingSelection = false;
+      return;
+    }
+
+    var selectionWidth = _styleAsInt(selectionBox, 'width');
+    var selectionHeight = _styleAsInt(selectionBox, 'height');
+
+    if (selectionHeight <= 1 || selectionWidth <= 1) {
+      _currentlyConfirmingSelection = false;
+      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
+      return;
+    }
+    targetImage = tagging.currentTargetImage;
+    // if (targetImages.indexOf(event.target) >= 0) {
+    //   targetImage = event.target;
+    // } else if (event.target.id === _selectionBoxId) {
+    //   targetImage = event.target.previousElementSibling.firstElementChild;
+    // } else {
+    //   targetImage = selectionBox.previousElementSibling.firstElementChild;
+    // }
+
+    var visibleImage = _getVisibleImageBoundaries(event, _scrollableContainer, targetImage);
+
+    var buttons = _confirmSelectionInputs(selectionBox, targetImage, visibleImage, _scrollableContainer);
+
+    var confirm = buttons[0];
+    var cancel = buttons[1];
+
+    confirm.addEventListener('click', function() {
+      var id = tagging.getId();
+      var imageCoords = _imageTrueCoords(targetImage);
+      var relativeCoords = [_styleAsInt(selectionBox, 'left') - imageCoords.left, _styleAsInt(selectionBox, 'top') - imageCoords.top];
+      tagging.createTag(id, targetImage.id, relativeCoords, selectionBox);
+      _removeElsFromDom([_selectionBoxId, _confirmButtonId, _cancelButtonId]);
+    });
+    cancel.addEventListener('click', _cancelSelection);
+
+    taggingContainer.appendChild(confirm);
+    taggingContainer.appendChild(cancel);
+  };
+
+  function _initiateSelection(event) {
+    event.preventDefault();
+    if (_disabled || _currentlyMakingSelection || _currentlyConfirmingSelection || _currentlyEditing !== -1) {
+      return;
+    }
+    _currentlyMakingSelection = true;
+    window.addEventListener('mouseup', _handleMouseUp, false);
+    window.addEventListener('mousemove', _handleMouseMove, false);
+
+    window.addEventListener('touchend', _handleMouseUp, false);
+    window.addEventListener('touchmove', _handleMouseMove, false);
+
+    tagging.currentTargetImage = event.target;
+    tagging.createSelectionBox(event);
+
+    event.stopPropagation();
+  }
+
+
   // TODO: Refactor into smaller, reusable functions
   function _scrollIfNeeded(event, scrollDiv, img, selection, dragDirection) {
     var container = document.getElementById(scrollDiv);
@@ -614,18 +737,22 @@ NoteInput = function() {
     tagging.prevCoords = eventCoords;
   };
 
-  function _handleMouseMove(event) {
-    event.preventDefault();
-    if (_currentlyMakingSelection) {
-      tagging.createSelectionBox(event);
-    }
-    event.stopPropagation();
-  }
 
   // set up the event handlers immediately
   (function() {
+
+    function addEventListener(img) {
+      if (!img.id) {
+        return;
+      }
+      targetImages[targetImages.length] = img;
+      img.addEventListener('mousedown', _initiateSelection, false);
+      img.addEventListener('touchstart', _initiateSelection, false);
+    }
+
     var images, i;
     targetImages = [];
+
     if (args.targetContainer) {
       taggingContainer = document.getElementById(args.targetContainer);
       images = taggingContainer.getElementsByTagName('img');
@@ -635,54 +762,7 @@ NoteInput = function() {
         images[i].style.border = _taggingContainerBorder;
       }
     }
-
-    function addEventListener(img) {
-      if (!img.id) {
-        return;
-      }
-      targetImages[targetImages.length] = img;
-      img.addEventListener('mousedown', _initiateSelection, false);
-    }
   }());
-
-  /**
-   * Private function _findPosition()
-   * Returns the x and y coordinates of a node within the page
-   */
-  function _findPosition(node) {
-    var posX = 0, posY = 0;
-    if (node.offsetParent) {
-      while (node.offsetParent) {
-        posX += node.offsetLeft;
-        posY += node.offsetTop;
-        node = node.offsetParent;
-      }
-    } else if (node.x) {
-      posX = node.x;
-      posY = node.y;
-    }
-    return [ posX, posY ];
-  }
-
-  /**
-   * Private function _findScrollPosition()
-   * Returns the scroll offset of the node
-   */
-  function _findScrollPosition(node) {
-    var scrollX = node.scrollLeft,
-      scrollY = node.scrollTop;
-    while (node.parentElement) {
-      node = node.parentElement;
-      if (node === document.body) {
-        break;
-      }
-      scrollX += node.scrollLeft;
-      scrollY += node.scrollTop;
-    }
-    scrollX += document.documentElement.scrollLeft;
-    scrollY += document.documentElement.scrollTop;
-    return [ scrollX, scrollY ];
-  }
 
   /**
    * Private function _getCoordinates()
@@ -711,20 +791,6 @@ NoteInput = function() {
     return [posX, posY];
   }
 
-  /**
-   * Private function _imageTrueCoords()
-   * Returns the x and y coordinates of an image within its parent
-   * taking into account scroll position of all ancestors
-   */
-  function _imageTrueCoords(image) {
-    var imageCoords = _findPosition(image),
-      containerCoords = _findPosition(taggingContainer),
-      scrollCoords = _findScrollPosition(image),
-      imageLeft = imageCoords[0] - containerCoords[0],
-      imageTop = imageCoords[1] - containerCoords[1],
-      coords = {left: imageLeft, top: imageTop};
-    return coords;
-  }
 
   /**
    * Private function _getTagId()
@@ -836,49 +902,7 @@ NoteInput = function() {
     return changed;
   }
 
-  /**
-   * Private function _stopEditing()
-   * Causes the active tag to no longer be able to be changed
-   */
-  function _stopEditing(event) {
-    if (_currentlyEditing === -1) {
-      return;
-    }
 
-    var tmpId = _currentlyEditing,
-      tagListItem,
-      note;
-      // window.event tends to be undefined in firefox
-      // is this line necessary if we are always passing in event?
-      event = event || window.event;
-
-    if (event.target.id !== _tagIdPrefix + tmpId) {
-      if (_currentlyResizingOrPlacing) {
-        window.removeEventListener('mousemove', _mouseMove, true);
-        _currentlyResizingOrPlacing = false;
-        return;
-      }
-    } else {
-      _currentlyResizingOrPlacing = false;
-    }
-
-    window.removeEventListener('mouseup', _stopEditing, false);
-    _currentlyEditing = -1;
-
-    if (_allowNotes) {
-      note = _notes[tmpId];
-
-      if (_tagListContainer) {
-        tagListItem = document.getElementById(_tagListIdPrefix + tmpId);
-        // make sure we set the text, not the innerHTML, to prevent any code being injected
-        tagListItem.childNodes[0].nodeValue = note.getValue();
-      }
-      _tags[tmpId].note = note.getValue();
-      note.preventEdit();
-    }
-
-    tagging.removeTag(tmpId);
-  }
 
   /**
    * Private function _drag()
@@ -1206,6 +1230,8 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = true;
 
     window.addEventListener('mousemove', _mouseMove, true);
+    window.addEventListener('touchmove', _mouseMove, true);
+
 
     event.preventDefault();
     event.stopPropagation();
@@ -1222,6 +1248,8 @@ NoteInput = function() {
     _currentlyResizingOrPlacing = false;
 
     window.removeEventListener('mousemove', _mouseMove, true);
+    window.removeEventListener('touchmove', _mouseMove, true);
+
     event.stopPropagation();
   }
 
@@ -1492,6 +1520,7 @@ NoteInput = function() {
     _enforceImageBoundaries(image, tag, false);
 
     if (_tagListContainer) {
+
       container = document.getElementById(_tagListContainer);
       if (container) {
         item = document.getElementById(_tagListIdPrefix + id);
@@ -1634,6 +1663,7 @@ NoteInput = function() {
     let imageWidth = parseInt(image.width, 10);
     let imageHeight = parseInt(image.height, 10);
 
+    let imageSrc = image.getAttribute('src');
 
     // Center the tag around the mouse
     tagWidth = _styleAsInt(selection, 'width');
@@ -1656,13 +1686,15 @@ NoteInput = function() {
         relativeSize: { widthPct, heightPct },
         note: 'Click here to add text',
         comments: [],
-        isDirty: true
+        isDirty: true,
+        imageSrc,
       };
     _tags[id] = newTag;
-    tagging.editTag(id);
+    // tagging.editTag(id);
 
     newTag.isDirty = true; // guarantee the new tag gets saved
 
+    _onSave(newTag.id);
     return tagging;
   };
 
@@ -1736,6 +1768,8 @@ NoteInput = function() {
     tagging.removeAllTags();
     for (i = 0; i < targetImages.length; i++) {
       targetImages[i].removeEventListener('mousedown', _createTagOnEvent, false);
+      targetImages[i].removeEventListener('touchstart', _createTagOnEvent, false);
+
     }
   };
 };

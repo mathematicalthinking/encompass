@@ -15,11 +15,15 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   elementId: 'comment-list',
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
+  loading: Ember.inject.service('loading-display'),
+
+  classNames: ['workspace-flex-item', 'comments'],
+  classNameBindings: ['canComment:can-comment', 'isHidden:hidden', 'onSelection:on-selection', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled'],
 
   permissions: Ember.inject.service('workspace-permissions'),
   myCommentsOnly: true,
-  // thisWorkspaceOnly: true,
   thisSubmissionOnly: true,
+  thisWorkspaceOnly: true,
   commentFilterText: '',
   filterComments: false,
   newComment: '',
@@ -29,6 +33,7 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   createRecordErrors: [],
   uploadRecordErrors: [],
   showFilter: true,
+  scrollBottom: true,
 
   labels: {
     notice: {
@@ -43,15 +48,40 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       useForResponse: true
     }
   },
+  labelOptions: ['notice', 'wonder', 'feedback'],
+
+  isBipaneled: Ember.computed.equal('containerLayoutClass', 'hsc'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
+
+  searchConstraints: {
+    query: {
+      length: {
+        minimum: 0,
+        maximum: 500
+      }
+    }
+  },
 
   init: function() {
     this._super(...arguments);
-    const htmlFormat = 'YYYY-MM-DD';
     let oneYearAgo = moment().subtract(365, 'days').calendar();
     let oneYearAgoDate = new Date(oneYearAgo);
-    let htmlDate = moment(oneYearAgoDate).format(htmlFormat);
+    let htmlDate = moment(oneYearAgoDate).format('L');
 
     this.set('sinceDate', htmlDate);
+  },
+
+  didInsertElement() {
+    $(window).on('resize.commentScroll', function() {
+      this.$('.scroll-icon:visible').hide();
+    });
+
+    this._super(...arguments);
+  },
+
+  willDestroyElement() {
+    $(window).off('resize.commentScroll');
+    this._super(...arguments);
   },
 
   newCommentPlaceholder: function() {
@@ -66,67 +96,74 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
   }.property('newCommentLabel', 'labels'),
 
   filteredComments: function() {
+    let results;
+
     let isOwnOnly = this.get('myCommentsOnly');
     let isSubOnly = this.get('thisSubmissionOnly');
+    let isWsOnly = this.get('thisWorkspaceOnly');
 
-    if (!isOwnOnly && !isSubOnly) {
-      return this.get('comments').sortBy('createDate').reverse();
-    }
 
-    let comments = this.get('comments').filter((comment) => {
-      let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
 
-      let isYours = creatorId === this.get('currentUser.id');
+    let isSearchQuery = this.get('commentFilterText.length') > 0;
 
-      let subId = this.get('utils').getBelongsToId(comment, 'submission');
+    let doFilter = isSubOnly || isWsOnly;
+    if (doFilter) {
+      results = this.get('comments').filter((comment) => {
+        let creatorId = this.get('utils').getBelongsToId(comment, 'createdBy');
 
-      let doesBelongToSub = subId === this.get('currentSubmission.id');
+        let isYours = creatorId === this.get('currentUser.id');
 
-      if (isOwnOnly) {
-        if (!isYours) {
-          return false;
+        let subId = this.get('utils').getBelongsToId(comment, 'submission');
+
+        let doesBelongToSub = subId === this.get('currentSubmission.id');
+
+        let workspaceId = this.get('utils').getBelongsToId(comment, 'workspace');
+
+        let doesBelongToWs = workspaceId === this.get('currentWorkspace.id');
+
+        if (isWsOnly) {
+          if (!doesBelongToWs) {
+            return false;
+          }
         }
-      }
-      if (isSubOnly) {
-        if (!doesBelongToSub) {
-          return false;
+
+        if (isOwnOnly) {
+          if (!isYours) {
+            return false;
+          }
         }
-      }
-      return true;
-    });
+        if (isSubOnly) {
+          if (!doesBelongToSub) {
+            return false;
+          }
+        }
 
-    return comments.sortBy('createDate').reverse();
-  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id'),
+        if (isSearchQuery) {
+          let text = this.get('commentFilterText');
+          return comment.get('label').includes(text) || comment.get('text').includes(text);
+        }
+        return true;
+      });
+    } else {
+      // check store to see if comments related to current selection are available
+      let currentSelectionComments = this.get('store')
+        .peekAll('comment')
+        .filter((comment) => {
+          let selId = this.get('utils').getBelongsToId(comment, 'selection');
 
-  commentSearchResults: function() {
-    if (!this.get('isSearching')) {
-      return;
+          return selId === this.get('currentSelection.id');
+        });
+
+        let searchResults = this.get('searchResults') || [];
+
+      return searchResults.concat(currentSelectionComments);
     }
-    let searchText = this.get('commentFilterText');
-    if (searchText.length < 5) {
-      return [];
-    }
-    this.set('isLoadingSearchResults', true);
-    return this.get('store').query('comment', {
-      text: searchText,
-      myCommentsOnly: this.get('myCommentsOnly'),
-      since: this.get('sinceDate')
-    }).then((comments) => {
-      this.set('searchResults', comments);
-      this.set('isLoadingSearchResults', false);
-    }).catch((err) => {
-      this.set('isLoadingSearchResults', false);
-      this.handleErrors(err, 'queryErrors');
-    });
-  }.observes('commentFilterText', 'myCommentsOnly', 'sinceDate'),
+    return results.sortBy('createDate').reverse();
+  }.property('comments.[]', 'thisSubmissionOnly', 'myCommentsOnly', 'commentFilterText', 'currentSubmission.id', 'thisWorkspaceOnly', 'currentWorkspace.id', 'searchResults.[]', 'currentSelection'),
 
   displayList: function() {
-    if (this.get('isSearching')) {
-      return this.get('searchResults');
-    }
-
-    return this.get('filteredComments');
-  }.property('isSearching', 'searchResults.[]', 'filteredComments.[]'),
+    return this.get('filteredComments').rejectBy('isTrashed');
+  }.property('filteredComments.@each.isTrashed'),
 
   clearCommentParent: function() {
     if(this.get('newCommentParent')) {
@@ -159,19 +196,143 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return this.get('permissions').canEdit(ws, 'comments', 2);
   }.property('onSelection', 'allowedToComment'),
 
-  handleLoadingMessage: function() {
-    const that = this;
-    if (!this.get('isLoadingSearchResults')) {
-      this.set('showLoadingMessage', false);
-      return;
+  toggleDisplayText: function() {
+    if (this.get('isHidden')) {
+      return 'Show Comments';
     }
-    Ember.run.later(function() {
-      if (that.isDestroyed || that.isDestroying || !that.get('isLoadingSearchResults')) {
-        return;
+    return 'Hide Comments';
+  }.property('isHidden'),
+
+  filterOptions: {
+    thisWorkspaceOnly: {
+      label: 'This Workspace Only',
+      relatedProp: 'thisWorkspaceOnly',
+      isChecked: true,
+    },
+    thisSubmissionOnly: {
+      label: 'This Submission Only',
+      relatedProp: 'thisSubmissionOnly',
+      isChecked: true,
+    },
+    myCommentsOnly: {
+      label: 'My Comments Only',
+      relatedProp: 'myCommentsOnly',
+      isChecked: true,
+    },
+
+  },
+
+  emptyResultsMessage: function() {
+    if (this.get('commentFilterText')) {
+      return `No results found for "${this.get('commentFilterText')}" `;
+    }
+    return 'No comments to display';
+  }.property('commentFilterText'),
+
+  resultsDescription: function() {
+    let query = this.get('commentFilterText');
+
+    let displayCount = this.get('displayList.length');
+
+    let resultsModifier = displayCount > 1 ? 'comments' : 'comment';
+
+    let isWsOnly = this.get('thisWorkspaceOnly');
+    let isSubOnly = this.get('thisSubmissionOnly');
+
+    if (!isWsOnly && !isSubOnly && this.get('commentsMetadata')) {
+
+      let { total, } = this.get('commentsMetadata');
+
+      let base = `Found ${total} ${resultsModifier}`;
+
+      if (this.get('myCommentsOnly')) {
+        base += ' created by you';
       }
-      that.set('showLoadingMessage', true);
-    }, 500);
-  }.observes('isLoadingSearchResults'),
+
+      if (query) {
+        base += ` for "${query}"`;
+      }
+      return base;
+    }
+
+    let base = 'Displaying';
+
+    if (this.get('myCommentsOnly')) {
+      base += ' only your';
+    }
+
+    if (this.get('thisSubmissionOnly')) {
+      return base + ` comments for current submission`;
+    }
+
+    if (this.get('thisWorkspaceOnly')) {
+      return base + ` comments for current workspace`;
+    }
+
+  }.property('commentFilterText', 'thisWorkspaceOnly', 'thisSubmissionOnly', 'myCommentsOnly', 'commentsMetadata'),
+
+  showResultsDescription: function() {
+    return !this.get('doShowLoadingMessage') && this.get('displayList.length') > 0;
+  }.property('displayList.[]', 'doShowLoadingMessage'),
+
+  isSinceDateValid: function() {
+    let input = this.get('sinceDate');
+    if (typeof input !== 'string' || !input.length > 0) {
+      return false;
+    }
+    let split = input.split('/');
+
+    if (split.length !== 3) {
+      return false;
+    }
+    let month = split[0];
+    let monthInt = parseInt(month, 10);
+    if (_.isNaN(monthInt) || monthInt > 12 || monthInt < 1) {
+      return false;
+    }
+    let day = split[1];
+    let dayInt = parseInt(day, 10);
+
+    if (_.isNaN(dayInt) || dayInt < 1 || dayInt > 31) {
+      return false;
+    }
+
+    let year = split[2];
+    let yearInt = parseInt(year, 10);
+
+    if (_.isNaN(yearInt) || yearInt < 1000 || yearInt > 9999) {
+      return false;
+    }
+    return true;
+  }.property('sinceDate'),
+
+  showApplyDate: function() {
+    return this.get('doUseSinceDate') && this.get('isSinceDateValid');
+  }.property('isSinceDateValid', 'doUseSinceDate'),
+
+  sortedDisplayList: function() {
+    return this.get('displayList').sort((a, b) => {
+      let currentSelectionId = this.get('currentSelection.id');
+
+      let aSelectionId = this.get('utils').getBelongsToId(a, 'selection');
+      let bSelectionId = this.get('utils').getBelongsToId(b, 'selection');
+
+      let isAForCurrentSelection = aSelectionId === currentSelectionId;
+      let isBForCurrentSelection = bSelectionId === currentSelectionId;
+
+      if (isAForCurrentSelection && !isBForCurrentSelection) {
+        return -1;
+      }
+      if (isBForCurrentSelection && !isAForCurrentSelection) {
+        return 1;
+      }
+      return 0;
+    });
+  }.property('displayList.[]', 'currentSelection'),
+
+  showPaginationControl: function() {
+    return !this.get('thisWorkspaceOnly') && !this.get('thisSubmissionOnly');
+  }.property('thisWorkspaceOnly', 'thisSubmissionOnly'),
 
   actions: {
     cancelComment: function() {
@@ -189,28 +350,26 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     createComment: function() {
-      var currentUser = this.get('currentUser');
-      var label = this.get('newCommentLabel');
-      var text = this.get('newComment');
-      var useForResponse = this.labels[label].useForResponse;
-      //var controller = this;
+      let currentUser = this.get('currentUser');
+      let label = this.get('newCommentLabel');
+      let text = this.get('newComment');
+      let useForResponse = this.labels[label].useForResponse;
       if (!text || !text.trim()) { return; }
 
-      //var selection = this.currentWorkspace.get('currentSelection');
-      var selection = this.currentSelection;
-      var currentSubmission = this.get('currentSubmission');
+      let selection = this.get('currentSelection');
+      let currentSubmission = this.get('currentSubmission');
 
-      var data = {
+      let data = {
         text: text,
         label: label,
         selection: selection,
         submission: currentSubmission,
-        workspace: this.currentWorkspace,
+        workspace: this.get('currentWorkspace'),
         parent: this.get('newCommentParent'),
         useForResponse: !!useForResponse,
         createdBy: currentUser,
       };
-      var comment = this.get('store').createRecord('comment', data);
+      let comment = this.get('store').createRecord('comment', data);
 
       //TODO push comment onto origin's derivatives
 
@@ -245,23 +404,27 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
     },
 
     deleteComment: function(comment) {
-      comment.get('submission').then((submission) => {
-        comment.set('isTrashed', true);
-        this.set('alerting', this.get('alert'));
-        comment.save()
-        .then(() => {
-          this.get('alerting').showToast('success', 'Comment Deleted', 'bottom-end', 3000, true, 'Undo').then((result) => {
-            if (result.value) {
-              comment.set('isTrashed', false);
-              comment.save().then(() => {
-                this.get('alerting').showToast('success', 'Comment Restored', 'bottom-end', 2000, false, null);
+      return this.get('alert').showModal('warning', 'Are you sure you want to delete this comment?', null, 'Yes, delete it')
+      .then((result) => {
+        if (result.value) {
+          comment.get('submission').then((submission) => {
+            comment.set('isTrashed', true);
+            comment.save()
+            .then(() => {
+              this.get('alert').showToast('success', 'Comment Deleted', 'bottom-end', 3000, true, 'Undo').then((result) => {
+                if (result.value) {
+                  comment.set('isTrashed', false);
+                  comment.save().then(() => {
+                    this.get('alert').showToast('success', 'Comment Restored', 'bottom-end', 2000, false, null);
+                  });
+                }
               });
-            }
+              // this.set('commentDeleteSuccess', true);
+            }).catch((err) => {
+              this.handleErrors(err, 'updateRecordErrors');
+            });
           });
-          // this.set('commentDeleteSuccess', true);
-        }).catch((err) => {
-          this.handleErrors(err, 'updateRecordErrors');
-        });
+        }
       });
     },
 
@@ -296,6 +459,77 @@ Encompass.CommentListComponent = Ember.Component.extend(Encompass.CurrentUserMix
       if (this.get('isSearching') && this.get('showFilter')) {
         this.set('showFilter', false);
       }
+    },
+    hideComments() {
+      this.get('hideComments')();
+    },
+    updateFilter(prop) {
+      this.toggleProperty(prop);
+      this.send('searchComments');
+    },
+    searchComments(query, page) {
+      // no need to fetch
+      if (this.get('thisSubmissionOnly') || this.get('thisWorkspaceOnly')) {
+        return;
+      }
+      // clear current selection
+      this.send('cancelComment');
+
+      this.get('loading').handleLoadingMessage(this, 'start', 'isLoadingSearchResults', 'doShowLoadingMessage');
+
+      let options = {
+        text: query || '',
+      };
+
+      if (this.get('myCommentsOnly')) {
+        options.createdBy = this.get('currentUser.id');
+      }
+
+      options.page = page || 1;
+
+      if (this.get('doUseSinceDate')) {
+        let dateInput = this.get('sinceDate');
+        let parsedDate = Date.parse(dateInput);
+
+        if (_.isNaN(parsedDate)) {
+          return this.set('invalidDateError', 'Please enter a valid date');
+        }
+        options.sinceDate = dateInput;
+      }
+      return this.get('store').query('comment', options)
+        .then((comments) => {
+          this.set('searchResults', comments.toArray());
+          this.set('commentsMetadata', comments.get('meta'));
+          this.get('loading').handleLoadingMessage(this, 'end', 'isLoadingSearchResults', 'doShowLoadingMessage');
+        }).catch((err) => {
+          this.get('loading').handleLoadingMessage(this, 'end', 'isLoadingSearchResults', 'doShowLoadingMessage');
+          this.handleErrors(err, 'queryErrors');
+        });
+    },
+    initiatePageChange(page) {
+      this.set('isChangingPage', true);
+      this.send('searchComments', this.get('commentFilterText'), page);
+    },
+    applySinceDate() {
+      this.send('searchComments', this.get('commentFilterText'));
+    },
+    superScroll: function (direction) {
+      //should only show scroll option after the user scrolls a little
+      let maxScroll = this.$('.display-list')[0].scrollHeight;
+
+      if (!this.get('scrollBottom')) {
+        $('.display-list').animate({
+          scrollTop: 0
+        });
+      } else {
+        $('.display-list').animate({
+          scrollTop: maxScroll
+        });
+      }
+      this.set('scrollBottom', !this.get('scrollBottom'));
+    },
+    clearSearchResults() {
+      this.send('searchComments');
     }
   }
 });

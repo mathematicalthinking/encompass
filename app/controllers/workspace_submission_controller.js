@@ -11,13 +11,16 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   utils: Ember.inject.service('utility-methods'),
   alert: Ember.inject.service('sweet-alert'),
 
-  workspaceSubmissions: Ember.inject.controller(),
-  currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
+  // workspaceSubmissions: Ember.inject.controller(),
+  // currentSubmission: Ember.computed.alias('workspaceSubmissions.currentSubmission'),
   currentWorkspace: Ember.computed.alias('workspace.model'),
   currentSelection: Ember.computed.alias('workspace.currentSelection'),
   workspaceOwner: Ember.computed.alias('currentWorkspace.owner'),
   permissions: Ember.inject.service('workspace-permissions'),
   guider: Ember.inject.service('guiders-create'),
+
+  areFoldersHidden: false,
+  areCommentsHidden: false,
 
   canSelect: function() {
     let cws = this.get('currentWorkspace');
@@ -57,6 +60,59 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
   nonTrashedResponses: function() {
     return this.get('currentWorkspace.responses.content').rejectBy('isTrashed');
   }.property('currentWorkspace.responses.content.@each.isTrashed'),
+
+  containerLayoutClass: function() {
+    let areFoldersHidden = this.get('areFoldersHidden') || this.get('cannotSeeFolders');
+    let areCommentsHidden = this.get('areCommentsHidden') || this.get('cannotSeeComments');
+
+    if (areFoldersHidden && areCommentsHidden) {
+      return 'hsh';
+    }
+    if (areFoldersHidden) {
+      return 'hsc';
+    }
+    if (areCommentsHidden) {
+      return 'fsh';
+    }
+    return 'fsc';
+  }.property('areFoldersHidden', 'areCommentsHidden'),
+
+  canSeeFolders: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'folders', 1);
+  }.property('currentWorkspace.permissions.@each.{global,folders}'),
+
+  cannotSeeFolders: Ember.computed.not('canSeeFolders'),
+
+  canSeeComments: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'comments', 1);
+  }.property('currentWorkspace.permissions.@each.{global,comments}'),
+
+  cannotSeeComments: Ember.computed.not('canSeeComments'),
+
+  showFoldersToggle: function() {
+    return this.get('areFoldersHidden') && this.get('canSeeFolders');
+  }.property('areFoldersHidden', 'canSeeFolders'),
+
+  showCommentsToggle: function() {
+    return this.get('areCommentsHidden') && this.get('canSeeComments');
+  }.property('areCommentsHidden', 'canSeeComments'),
+
+  canSeeSelections: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'selections', 1);
+  }.property('currentWorkspace.permissions.@each.{global,selections}'),
+
+  cannotSeeSelections: Ember.computed.not('canSeeSelections'),
+
+  canSeeResponses: function() {
+    let cws = this.get('currentWorkspace');
+    return this.get('permissions').canEdit(cws, 'feedback', 1);
+
+  }.property('currentWorkspace.permissions.@each.{global,feedback}'),
+
+  cannotSeeResponses: Ember.computed.not('canSeeResponses'),
 
   actions: {
     startTour: function () {
@@ -273,7 +329,8 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
           workspace: workspace,
           createdBy: user,
           relativeCoords: selection.relativeCoords,
-          relativeSize: selection.relativeSize
+          relativeSize: selection.relativeSize,
+          imageSrc: selection.imageSrc
         });
         break;
 
@@ -338,6 +395,12 @@ Encompass.WorkspaceSubmissionController = Ember.Controller.extend(Encompass.Curr
     },
     toSubmission(submission) {
       this.transitionToRoute('workspace.submission', submission);
+    },
+    toggleFolderDisplay() {
+      this.toggleProperty('areFoldersHidden');
+    },
+    toggleCommentDisplay() {
+      this.toggleProperty('areCommentsHidden');
     }
   }
 });

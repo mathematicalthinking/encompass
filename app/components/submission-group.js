@@ -7,6 +7,12 @@
  * - currentWorkspace - only used to pass on to submissions
  */
 Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUserMixin, {
+  elementId: 'submission-group',
+
+  classNameBindings: ['makingSelection:al_makeselect', 'isHidden:hidden', 'isFirstChild:is-first-child', 'isLastChild:is-last-child', 'isOnlyChild', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled', 'isNavMultiLine:multi-line-nav'],
+  classNames: ['workspace-flex-item', 'submission'],
+  isHidden: false,
+
   currentStudent: Ember.computed.alias('submission.student'),
   currentStudentDisplayName: Ember.computed.alias('submission.studentDisplayName'),
   firstThread: Ember.computed.alias('submissionThreadHeads.firstObject'),
@@ -14,6 +20,35 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
   manyRevisions: Ember.computed.gte('currentRevisions.length', 10),
   showStudents: false,
   switching: false,
+
+  init() {
+    this.set('onNavResize', this.get('handleNavHeight').bind(this));
+    this._super(...arguments);
+  },
+
+  didInsertElement() {
+    let revisionsNavHeight = this.$('#submission-nav').height();
+    this.set('isNavMultiLine', revisionsNavHeight > 52);
+
+    $(window).on('resize', this.get('onNavResize'));
+
+  },
+
+  didUpdateAttrs() {
+    let studentSelectize = this.$('#student-select')[0];
+    if (studentSelectize) {
+      let currentValue = studentSelectize.selectize.getValue();
+
+      let currentSubmissionId = this.get('initialStudentItem.firstObject');
+      if (this.get('initialStudentItem.firstObject') !== currentValue) {
+        studentSelectize.selectize.setValue([currentSubmissionId], true);
+      }
+    }
+  },
+
+  willDestroyElement() {
+    $(window).off('resize', this.get('onNavResize'));
+  },
 
   currentRevision: function() {
     if (!this.get('currentRevisions') || !this.get('currentRevisionIndex')) {
@@ -159,6 +194,51 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
 
   revisionsToolTip: 'Revisions are sorted from oldest to newest, left to right. Star indicates that a revision has been mentored (or you have saved a draft)',
 
+  isFirstChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'hsc';
+  }.property('containerLayoutClass'),
+
+  isLastChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'fsh';
+  }.property('containerLayoutClass'),
+
+  isOnlyChild: function() {
+    let classname = this.get('containerLayoutClass');
+    return classname === 'hsh';
+  }.property('containerLayoutClass'),
+
+  isBipaneled: Ember.computed.or('isFirstChild', 'isLastChild'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
+
+  handleNavHeight() {
+    let height = this.$('#submission-nav').height();
+
+    let ownHeight = this.$().height();
+    this.set('ownHeight', ownHeight);
+
+    let isNowMultiLine = height > 52;
+    let wasMultiLine = this.get('isNavMultiLine');
+
+    if (isNowMultiLine !== wasMultiLine) {
+      this.set('isNavMultiLine', isNowMultiLine);
+    }
+  },
+  studentSelectOptions: function() {
+    return this.get('submissionThreadHeads').map((sub) => {
+      return {
+        name: sub.get('studentDisplayName'),
+        id: sub.get('id'),
+      };
+    });
+  }.property('submissionThreadHeads'),
+  initialStudentItem: function() {
+    let currentStudent = this.get('submission.student');
+    let threadHead = this.get('submissionThreadHeads').findBy('student', currentStudent);
+    return [threadHead.get('id')];
+  }.property('submission', 'submissionThreadHeads.[]'),
+
   actions: {
     toggleStudentList: function() {
       this.set('showStudents', !this.get('showStudents'));
@@ -189,6 +269,23 @@ Encompass.SubmissionGroupComponent = Ember.Component.extend(Encompass.CurrentUse
         return;
       }
       this.get('toSubmission')(submission);
+    },
+    onStudentSelect(submissionId) {
+      let submission = this.get('submissionThreadHeads').findBy('id', submissionId);
+      this.get('toSubmission')(submission);
+    },
+
+    onStudentBlur() {
+      let studentSelectize = this.$('#student-select')[0];
+
+      if (studentSelectize) {
+      let currentValue = studentSelectize.selectize.getValue();
+
+      let currentSubmissionId = this.get('initialStudentItem.firstObject');
+      if (this.get('initialStudentItem.firstObject') !== currentValue) {
+        studentSelectize.selectize.setValue([currentSubmissionId], true);
+      }
+    }
     }
   }
 });

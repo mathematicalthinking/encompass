@@ -4,7 +4,7 @@
 </div>
 {{/if}}
   <span class="clear-field" >
-  {{input class="search-field" type="text" key-press=(action "clearErrors") insert-newline='searchAction' value=inputValue placeholder=placeholder}}
+  {{input class="search-field" type="text" key-press=(action "clearErrors") insert-newline='searchAction' value=inputValue placeholder=placeholder key-up=(action "onInputChange")}}
     {{#if showClear}}
     <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" class="clear" {{action 'clearResults'}}>
       <switch>
@@ -14,9 +14,11 @@
     </svg>
     {{/if}}
   </span>
-<div class="submit">
-  <i class="fa fa-search" aria-hidden="true" {{action "validate"}}></i>
-</div>
+{{#unless doSearchOnInputChange}}
+  <div class="submit">
+    <i class="fa fa-search" aria-hidden="true" {{action "validate"}}></i>
+  </div>
+{{/unless}}
 
 <div class="error-messages">
   {{#each queryErrors as |error|}}

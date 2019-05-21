@@ -1,51 +1,46 @@
-<aside>
-  <table>
-    <tr>
-      <td>
-        {{#if showingSelections}}
-          <span {{action 'hideSelections'}} class="al_sprite al_hide_selections"></span>
-        {{else}}
-          <span {{action 'showSelections'}} class="al_sprite al_show_selections"></span>
-        {{/if}}
-      </td>
-      {{#if this.canSelect}}
-        <td>
-          <label class="makingSelection">
-            {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
-            <span class="al_sprite al_makeselections"></span>
-          </label>
-        </td>
-      {{/if}}
-      <td>
+<aside class="submission-row selection-controls">
+  <div class="submission-row-item selection-toggles">
+    <div class="submission-row-item toggle-show">
+      <span class="showing-label">{{showSelectionsInfo.text}}</span>
+      <span {{action 'toggleShow'}}><i title={{showSelectionsInfo.title}} class={{showSelectionsInfo.icon}}></i></span>
+    </div>
+    {{#if this.canSelect}}
+      <div class="submission-row-item  toggle-selecting">
+        <label class="makingSelection">
+          {{input type="checkbox" checked=shouldCheck click=(action "toggleSelecting")}}
+          Selecting
+        </label>
+      </div>
+    {{/if}}
+  </div>
+
+      <div title={{currentSubmission.puzzle.title}} class="submission-row-item  problem-link">
         {{#if currentSubmission.answer}}
           <a {{action 'openProblem'}} class="problem-link">
-            {{currentSubmission.puzzle.title}}
+            <span class="problem-link-text">{{currentSubmission.puzzle.title}}</span>
             <i class="fas fa-external-link-alt"></i>
           </a>
         {{else}}
           <a class='puzzle' target="_blank" href="{{currentSubmission.puzzleUrl}}">
-            {{currentSubmission.puzzle.title}}
-            <i class="fas fa-external-link-alt"></i>
+            <span class="problem-link-text">{{currentSubmission.puzzle.title}}</span>            <i class="fas fa-external-link-alt"></i>
           </a>
         {{/if}}
-      </td>
+      </div>
       {{#if canRespond}}
-      <td>
+      <div class="submission-row-item  new-response">
         <button class="action_button new-response" {{action 'toNewResponse' currentSubmission.id currentWorkspace.id}}>Respond</button>
         {{#if submissionResponses.length}}
           <span class="meta response-count existing" title="existing response count">
             ({{submissionResponses.length}})
           </span>
         {{/if}}
-      </td>
+      </div>
       {{/if}}
-    </tr>
-  </table>
 </aside>
 
-<div id="al_submission" class="al_vertical_stretch">
+<div id="al_submission">
   {{#if showSelectableView}}
-    <h3 class="selectable-view-header">Selectable View!</h3>
+    <h3 id="sel-view-header" class="selectable-view-header">Selectable View!</h3>
     {{#selectable-area
       model=currentSubmission
       makingSelection=makingSelection
@@ -69,9 +64,6 @@
           {{#if currentSubmission.answer.explanation}}
             {{{currentSubmission.answer.explanation}}}
           {{/if}}
-          {{!-- {{#if currentSubmission.answer.explanationImage}}
-            <img src="{{currentSubmission.answer.explanationImage.imageData}}" alt="">
-          {{/if}} --}}
           {{#if currentSubmission.longAnswer}}
             {{{currentSubmission.longAnswer}}}
           {{/if}}
@@ -92,19 +84,11 @@
       {{#if currentSubmission.answer.explanation}}
         {{{currentSubmission.answer.explanation}}}
       {{/if}}
-      {{!-- {{#if currentSubmission.answer.explanationImage}}
-        <img src="{{currentSubmission.answer.explanationImage.imageData}}" alt="">
-      {{/if}} --}}
       {{#if currentSubmission.longAnswer}}
         {{{currentSubmission.longAnswer}}}
       {{/if}}
     </div>
   {{/if}}
-    {{!-- <div id="tags-list">
-      <p class="al_small">Below is a list of image tags. Hover over a tag
-        to view the selection, or click to edit the tag.
-      </p>
-    </div> --}}
   {{#if currentSubmission.uploadedFile.savedFileName}}
   <div id="submission_images">
     <a target="_blank" href="{{unbound currentSubmission.imageUrl}}">
@@ -113,11 +97,18 @@
   </div>
   {{/if}}
 </div><!--/al_submission-->
-
-<div id="submission_selections">
-  {{#if workspaceSelections}}
-    <h5 class="submission-header selections">Selections</h5>
+<h5 id ="selections-header" class="submission-header selections">
+  Selections
+  {{#if showExpandSelections}}
+    <div class="expand-selections">
+      <img title={{toggleSelectionInfo.title}} {{action "toggleSelectionBox"}} class={{toggleSelectionInfo.className}} src="/images/{{toggleSelectionInfo.imgName}}" alt={{toggleSelectionInfo.alt}}>
+    </div>
   {{/if}}
+  <div class="hide-show-selections">
+    <i {{action "hideShowSelections"}} class={{hideShowSelectionInfo.className}} title={{hideShowSelectionInfo.title}}></i>
+  </div>
+</h5>
+<div id="submission_selections" class="{{selectionBoxClass}}">
   <ul>
   {{#each workspaceSelections as |selection|}}
     <li class="selection">
@@ -127,15 +118,15 @@
             selection=selection
             canDeleteSelections=canDeleteSelection
             deleteSelection=(action "deleteSelection")
+            currentSelection=currentSelection
           }}
         {{else}}
-
-        <span class="selection_text selectionLink {{selection.id}}">{{selection.text}}</span>
+          {{undraggable-selection selection=selection currentSelection=currentSelection }}
         {{/if}}
       {{/unless}}
     </li>
     {{else}}
-      <p class="al_small">No selections have been made yet.
+      <p class="info">No selections have been made yet.
       {{#if canSelect}}
         Click "make selection" above and highlight some text in the submission.
       {{/if}}

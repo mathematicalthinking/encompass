@@ -1,3 +1,4 @@
+/*global _:false */
 Encompass.SearchBarComponent = Ember.Component.extend({
   classNames: ["search-bar-comp"],
   searchQuery: Ember.computed.alias("parentView.searchQuery"),
@@ -11,16 +12,26 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     }
   },
 
+  init() {
+    this._super(...arguments);
+
+    let doDebounce = this.get('doDebounce') || false;
+    let debounceTime = this.get('debounceTime') || 300;
+    if (doDebounce) {
+      this.set('debouncedSearch', _.debounce(this.onChangeSearch, debounceTime));
+    }
+  },
+
   showClear: function() {
     let hasSearchQuery = this.get('searchQuery');
     let hasSearchInputValue = this.get('searchInputValue');
 
-    if (hasSearchQuery || hasSearchInputValue) {
+    if (hasSearchQuery || hasSearchInputValue || (this.get('doSearchOnInputChange') && this.get('inputValue'))) {
       return true;
     } else {
       return false;
     }
-  }.property('searchQuery', 'searchInputValue'),
+  }.property('searchQuery', 'searchInputValue', 'doSearchOnInputChange', 'inputValue'),
 
   placeholder: function() {
     let base = this.get("basePlaceholder");
@@ -57,6 +68,10 @@ Encompass.SearchBarComponent = Ember.Component.extend({
   initiateSearch: function(val) {
     let criterion = this.get("selectedCriterion");
     this.get("onSearch")(val, criterion);
+  },
+
+  onChangeSearch: function() {
+    this.send('validate');
   },
 
   actions: {
@@ -98,6 +113,14 @@ Encompass.SearchBarComponent = Ember.Component.extend({
     },
     searchAction: function() {
       this.send("validate");
+    },
+    onInputChange() {
+      if (this.get('doSearchOnInputChange')) {
+        if (this.get('debouncedSearch')) {
+          return this.debouncedSearch();
+        }
+        this.send('validate');
+      }
     }
   }
 });

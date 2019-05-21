@@ -6,7 +6,7 @@
  */
 Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
   elementId: 'workspace-submission-comp',
-
+  classNameBindings: ['areNoSelections:no-selections', 'isSelectionsBoxExpanded:expanded-selections', 'areSelectionsHidden:selections-hidden'],
   utils: Ember.inject.service('utility-methods'),
   permissions: Ember.inject.service('workspace-permissions'),
 
@@ -16,20 +16,22 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
   isDirty: false,
   wsSaveErrors: [],
   wasShowingBeforeResizing: false,
+  isSelectionsBoxExpanded: false,
 
   showSelectableView: Ember.computed('makingSelection', 'showingSelections', 'isTransitioning', function() {
     let making = this.get('makingSelection');
     let showing = this.get('showingSelections');
     let transitioning = this.get('isTransitioning');
-    let ws = this.get('currentWorkspace');
-    let canSelect = this.get('permissions').canEdit(ws, 'selections', 2);
-    return (making || showing) && !transitioning && !this.switching && canSelect;
+    return (making || showing) && !transitioning && !this.switching;
   }),
 
   shouldCheck: Ember.computed('makingSelection', function() {
     return this.get('makingSelection');
   }),
 
+  areNoSelections: function() {
+    return this.get('canSeeSelections') && !this.get('workspaceSelections.length') > 0;
+  }.property('workspaceSelections.[]', 'canSeeSelections'),
 
   didRender: function() {
     if(this.get('switching')) {
@@ -37,7 +39,12 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     }
   },
 
+  didInsertElement() {
+    // height should be 100% - the height of the revisions nav
+    this.setOwnHeight();
 
+    this._super(...arguments);
+  },
 
   willDestroyElement: function() {
     let workspace = this.get('currentWorkspace');
@@ -87,6 +94,77 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     });
   }.property('currentSubmission.id', 'responses.[]'),
 
+  showSelectionsInfo: function() {
+    if (this.get('showingSelections')) {
+      return {
+        text: 'Hide Selections',
+        icon: 'far fa-eye-slash',
+        title: 'Hide Selections'
+      };
+    }
+
+    return {
+      text: 'Show Selections',
+      icon: 'far fa-eye' ,
+      title: 'Show Selections'
+    };
+
+  }.property('showingSelections'),
+
+  selectionBoxClass: function() {
+    if (this.get('areNoSelections')) {
+      return 'no-selections';
+    }
+    if (this.get('isSelectionBoxExpanded')) {
+      return 'expanded';
+    }
+
+    return '';
+  }.property('areNoSelections', 'isSelectionBoxExpanded'),
+
+  toggleSelectionInfo: function() {
+    if (this.get('isSelectionsBoxExpanded')) {
+      return {
+        imgName: 'chevrons-down.svg',
+        className: 'shrink-selection-box',
+        title: 'collapse',
+        alt: 'Collapse'
+      };
+    }
+    return {
+      imgName: 'chevrons-up.svg',
+      className: 'expand-selection-box',
+      title: 'expand',
+      alt: 'Expand'
+    };
+  }.property('isSelectionsBoxExpanded'),
+
+  hideShowSelectionInfo: function() {
+    if (this.get('areSelectionsHidden')) {
+      return {
+        className: 'far fa-eye',
+        title: 'show selections',
+      };
+    }
+    return {
+      className: 'far fa-eye-slash',
+      title: 'hide selections',
+    };
+  }.property('areSelectionsHidden'),
+
+  showExpandSelections: function() {
+    return !this.get('areNoSelections') && !this.get('areSelectionsHidden');
+  }.property('areNoSelections', 'areSelectionsHidden'),
+
+  setOwnHeight() {
+    let revisionsNavHeight = $('#submission-nav').height();
+    this.$().css('height', '100%').css('height', `-=${revisionsNavHeight}px`);
+  },
+
+  handleNavChanges: function() {
+    this.setOwnHeight();
+  }.observes('isNavMultiLine', 'parentHeight'),
+
   actions: {
     addSelection: function( selection, isUpdateOnly ){
       this.set('isDirty', true);
@@ -105,8 +183,11 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
     hideSelections: function() {
       this.set('showingSelections', false);
     },
+    toggleShow: function() {
+      this.toggleProperty('showingSelections');
+    },
     toggleSelecting: function() {
-      var selecting = this.get('makingSelection');
+      let selecting = this.get('makingSelection');
       this.set('makingSelection', !selecting);
     },
     handleTransition: function(isBeginning) {
@@ -125,8 +206,8 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
       let problem = answer.get('problem');
       let problemId = problem.get('id');
 
-      var getUrl = window.location;
-      var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+      let getUrl = window.location;
+      let baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 
       window.open(`${baseUrl}#/problems/${problemId}`, 'newwindow', 'width=1200, height=700');
     },
@@ -164,8 +245,15 @@ Encompass.WorkspaceSubmissionComponent = Ember.Component.extend(Encompass.Curren
         }
       };
 
-      $(window).on('resize', handleResize);
-    }
+      $(window).on('resize.selectableArea', handleResize);
+    },
+    toggleSelectionBox() {
+      this.toggleProperty('isSelectionsBoxExpanded');
+    },
+
+    hideShowSelections() {
+      this.toggleProperty('areSelectionsHidden');
+    },
   }
 });
 

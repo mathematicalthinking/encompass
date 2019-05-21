@@ -30,7 +30,7 @@ describe('Responses', function() {
   describe('Visiting a submission with selections', function() {
     before(async function() {
       let url = `${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38ec9b48b12793f0010e4`;
-      await helpers.navigateAndWait(driver, url, 'span.selectionLink');
+      await helpers.navigateAndWait(driver, url, '.selectionLink');
     });
 
     it('should have a respond link', async function() {

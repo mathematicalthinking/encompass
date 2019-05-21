@@ -8,15 +8,16 @@ Encompass.ApplicationController = Ember.Controller.extend({
   showCategoryList: false,
   isHidden: false,
   selectedCategories: [],
+  isTouchScreen: false,
 
   currentUser: function() {
     return this.get('model');
   }.property('model'),
 
 
-  resizeDisplay: function() {
-    Ember.run.next(this, Ember.verticalSizing);
-  }.observes('isSmallHeader'),
+  // resizeDisplay: function() {
+  //   Ember.run.next(this, Ember.verticalSizing);
+  // }.observes('isSmallHeader'),
 
   actions: {
     toHome: function() {
@@ -27,6 +28,9 @@ Encompass.ApplicationController = Ember.Controller.extend({
     },
     searchCategory: function(category) {
       this.get('selectedCategories').pushObject(category);
+    },
+    handleFirstTouch() {
+      this.set('isTouchScreen', true);
     }
   }
 });

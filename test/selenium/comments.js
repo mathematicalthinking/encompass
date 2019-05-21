@@ -6,8 +6,10 @@ const _ = require('underscore');
 // REQUIRE FILES
 const helpers = require('./helpers');
 const dbSetup = require('../data/restore');
+const css = require('./selectors');
 
 const host = helpers.host;
+let commentsCss = css.wsComments;
 
 describe('Comments', function() {
   this.timeout(helpers.timeoutTestMsStr);
@@ -34,7 +36,7 @@ describe('Comments', function() {
     before(async function() {
       try {
         await driver.get(`${host}#/workspaces/53e36522b48b12793f000d3b/submissions/53e36522729e9ef59ba7f4de/selections/53e38e83b48b12793f0010de`);
-        saveButton = await driver.wait(until.elementLocated(By.css('button.comment.save')), 5000);
+        saveButton = await driver.wait(until.elementLocated(By.css(commentsCss.save)), 5000);
       }catch(err) {
         console.log(err);
       }
@@ -60,7 +62,7 @@ describe('Comments', function() {
       let text;
       let newComment;
       try{
-        let paragraphs = await helpers.getWebElements(driver, 'li.notice>p>a');
+        let paragraphs = await helpers.getWebElements(driver, commentsCss.commentText);
         if (!_.isEmpty(paragraphs)) {
           newComment = paragraphs[paragraphs.length - 1];
           text = await newComment.getText();

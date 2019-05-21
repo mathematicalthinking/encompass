@@ -1,4 +1,4 @@
-<header id="submission-nav">
+<header id="submission-nav" class="submission-row nav">
   <!-- this is needed for click events from popup windows -->
   <ul style="display:none;">
     {{#each this.submissionThreadHeads as |threadHead|}}
@@ -11,41 +11,35 @@
       </li>
     {{/each}}
   </ul>
-
-  <div class="selectBox">
-    <div class="selected">
-      <div class="studentItem">
-        {{currentStudentDisplayName}}
-        <span class="selector" {{action 'toggleStudentList'}}></span>
-      </div>
-      {{#if showStudents}}
-      <ul id="studentList">
-      <!-- ENC-391, ENC-392, ENC-409 -->
-      <!-- Not too crazy about the duplication, but the links need to always exist in the DOM. Hence the hidden version above -->
-        {{#each this.submissionThreadHeads as |threadHead|}}
-          <li class="studentItem" {{action 'toggleStudentList'}}>
-            {{#link-to 'workspace.submission' threadHead}}
-              <span>{{threadHead.studentDisplayName}}</span>
-            {{/link-to}}
-          </li>
-        {{/each}}
-    </ul>
-    {{/if}}
+  <div class="submission-row-item students-revisions">
+    <div class="submission-row-item students">
+      {{selectize-input
+      inputId="student-select"
+      initialOptions=studentSelectOptions
+      initialItems=initialStudentItem
+      onItemAdd=(action "onStudentSelect")
+      maxItems=1
+      labelField="name"
+      valueField="id"
+      searchField="name"
+      onBlur=(action "onStudentBlur")
+      }}
+    </div>
+    <div class="submission-row-item revisions">
+      {{bread-crumbs
+        items=currentRevisions
+        onSelect=(action "setCurrentSubmission")
+        selectedItem=currentRevision
+        titleTextPath="label"
+        starredItems=mentoredRevisions
+        infoToolTipText=revisionsToolTip
+        infoToolTipPosition="top"
+      }}
     </div>
   </div>
 
-  {{bread-crumbs
-    items=currentRevisions
-    onSelect=(action "setCurrentSubmission")
-    selectedItem=currentRevision
-    titleTextPath="label"
-    starredItems=mentoredRevisions
-    infoToolTipText=revisionsToolTip
-    infoToolTipPosition="top"
-  }}
-
-	<div class="al_controller">
-		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow" class="al_sprite al_arrow_left"></span>{{/link-to}}
+	<div class="al_controller submission-row-item arrows">
+		{{#link-to 'workspace.submission' prevThread}}<span id="leftArrow"><i class="fas fa-arrow-left"></i></span>{{/link-to}}
 		<span class="al_number">
       <span class="submission_index">
         {{currentSubmissionIndex}}
@@ -55,7 +49,7 @@
         {{submissions.length}}
       </span>
     </span>
-		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow" class="al_sprite al_arrow_right"></span>{{/link-to}}
+		{{#link-to 'workspace.submission' nextThread}}<span id="rightArrow"> <i class="fas fa-arrow-right"></i></span>{{/link-to}}
 	</div>
 </header>
 
@@ -65,11 +59,14 @@
   addSelection=(action "addSelection")
   deleteSelection=(action "deleteSelection")
   currentWorkspace=currentWorkspace
-  currentSelection=this.currentSelection
+  currentSelection=currentSelection
   switching=switching
   toNewResponse=(action "toNewResponse")
   canRespond=canRespond
   selections=selections
   responses=responses
+  canSeeSelections=canSeeSelections
+  isNavMultiLine=isNavMultiLine
+  parentHeight=ownHeight
 }}
 

@@ -191,7 +191,7 @@ server.get('/api/submissions', api.get.submissions);
 server.get('/api/submissions/:id', path.validateId(), api.get.submission);
 server.get('/api/selections', api.get.selections);
 server.get('/api/selections/:id', path.validateId(), api.get.selection);
-server.get('/api/comments', api.get.comments);
+server.get('/api/comments', paginate.middleware(100,100), api.get.comments);
 server.get('/api/comments/:id', path.validateId(), api.get.comment);
 server.get('/api/responses', api.get.responses);
 server.get('/api/responses/:id', path.validateId(), api.get.response);

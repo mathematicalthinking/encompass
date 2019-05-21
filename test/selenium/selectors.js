@@ -382,7 +382,10 @@ module.exports = {
     }
   },
   workspace: {
-    newResponse: 'button.action_button:nth-child(1)'
+    newResponse: 'button.action_button:nth-child(1)',
+    studentsSelect: '.submission-row-item.students > .selectize-comp',
+    studentItem: 'div.selectize-input.items.full.has-options.has-items > div',
+    dropdownContent: '.selectize-dropdown-content',
   },
   wsInfo: {
     container: '#workspace-info',
@@ -423,5 +426,10 @@ module.exports = {
     sideList: {
       yours: 'ul.your-assignments'
     }
+  },
+  wsComments: {
+    save: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.save',
+    cancel: '#comment-list > div.comments-group-1 > div.compose-comment > div > button.primary-button.cancel-button',
+    commentText: 'div.comment-flex-item.text > p:nth-child(1) > a'
   }
 };

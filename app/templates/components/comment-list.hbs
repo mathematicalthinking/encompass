@@ -1,94 +1,133 @@
-<header class="{{newCommentLabel}} {{if canComment can-comment}}">
-	<table>
-		<tr>
-			<td id="noticeTab" class="notice label-list" {{action "setCommentLabel" 'notice'}}><img src="/images/notice.svg" alt=""> I NOTICE</td>
-			<td id="wonderTab" class="wonder label-list" {{action "setCommentLabel" 'wonder'}}><img src="/images/wonder.svg" alt=""> I WONDER</td>
-			<td id="feedbackTab" class="feedback label-list" {{action "setCommentLabel" 'feedback'}}><img src="/images/feedback.svg" alt=""> FEEDBACK</td>
-		</tr>
-	</table>
+<div class="comments-group-1">
+<header>
+  <h2>Comments</h2>
+  <span {{action "hideComments"}}><i title="Hide Comments"class="far fa-eye-slash"></i></span>
 </header>
 
-<div id="al_comments">
-	<form id="newForm">
-    {{#if canComment}}
-      {{textarea tabindex=1 id="commentTextarea" classBinding="hasText" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
+{{#if canComment}}
+  <div class="label-select {{newCommentLabel}}">
+    {{my-select content=labelOptions cannotBeNull=true selectedValue=newCommentLabel action=(action (mut newCommentLabel))}}
+  </div>
+{{/if}}
+<div class="compose-comment">
+  {{#if canComment}}
+      {{textarea tabindex=1 id="commentTextarea" classBinding="onSelection" placeholder=newCommentPlaceholder value=newComment autofocus="autofocus"}}
     {{else}}
       <p class="error-message">You do not have permisssion to make comments for this workspace</p>
     {{/if}}
-    <div class="filterControl meta">
-      <a class="filter" {{action 'toggleFilter'}}>
-        <i class="fas fa-filter"></i> filter
-      </a>
-      <a class="search" {{action 'toggleSearch'}}>
-        <i class="fas fa-search"></i> search
-      </a>
+    {{#if onSelection}}
+      <div class="submit-buttons">
+        <button class="primary-button cancel-button" {{action "cancelComment"}}>Cancel</button>
+        <button class="primary-button save" {{action "madeSelection"}}>Save</button>
+      </div>
+    {{/if}}
+</div>
+
+  <div class="comment-flex-row">
+    <div class="comment-flex-item filter">
+      <span class="filter-label">Filter</span><i class="fas fa-filter"></i>
+      <span class="hover-menu checkbox">
+        <ul>
+          {{#each-in filterOptions as  |option values|}}
+            <li>
+              <label>
+                <input type="checkbox" checked={{values.isChecked}} name={{option}} onclick={{action "updateFilter" option}}>
+                <span>
+                  <span class="radio-text">{{values.label}}</span>
+                </span>
+              </label>
+            </li>
+          {{/each-in}}
+          <li>
+            <label>
+              <input type="checkbox" checked={{doUseSinceDate}} name="doUseSinceDate" onclick={{action "updateFilter" "doUseSinceDate"}}>
+              <span>
+                <span class="radio-text">Since</span>
+                {{input type="text" placeholder="mm/dd/yyyy" value=sinceDate}}
+                {{#if showApplyDate}}
+                  <button {{action "applySinceDate"}}>Apply</button>
+                {{/if}}
+              </span>
+            </label>
+          </li>
+        </ul>
+      </span>
     </div>
-		<div class="al_controller">
-      {{#if canComment}}
-        <span class="meta">
-        {{#if doSearch}}+{{/if}}
-        {{#if searching}}...{{/if}}
-        </span>
-        {{#if onSelection}}
-          <a class="cancel-button" {{action "cancelComment"}}>Cancel</a>
-          <button class="action_button comment save" tabindex=2 {{action "madeSelection"}}>Save</button>
-        {{/if}}
-      {{/if}}
-		</div>
-	</form>
+    <div class="comment-flex-item search">
+  {{search-bar
+    onSearch=(action "searchComments")
+    basePlaceholder="Search for comments"
+    inputValue=commentFilterText
+    doSearchOnInputChange=true
+    doDebounce=true
+    constraints=searchConstraints
+    clearSearchResults=(action "clearSearchResults")
+  }}
+</div>
+  </div>
+
+
   {{#each createRecordErrors as |error|}}
     <p class="error-message">{{error}}</p>
   {{/each}}
 	<div class="clear"></div>
-</div>
-
-{{#if showFilter}}
-  <div class="filter-options">
-    <p>
-    <label>{{input type="checkbox" checked=thisSubmissionOnly}} this submission only</label>
-    <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
-    </p>
-  </div>
+ {{#if showResultsDescription}}
+    <div class="results-message">
+      {{resultsDescription}}
+    </div>
 {{/if}}
-
-{{#if isSearching}}
-  <div class="search-options">
-    <p>
-      <label>Search comments</label>
-      {{input type="text" value=commentFilterText placeholder="keyword/phrase" classNames="noborder nopadding"}}
-    </p>
-    <p>
-    <label>{{input type="checkbox" checked=myCommentsOnly}} my comments only</label>
-    </p>
-    <p>
-      <label>Since</label>
-    {{input type="date" id="sinceDate" value=sinceDate classNames ="noborder no padding"}}
-    </p>
-  </div>
-{{/if}}
-
-<div>
-	<form>
-		<div id="al_feedback_display" class="al_vertical_stretch">
-			{{#each queryErrors as |error|}}
-        <p class="error-message">{{error}}</p>
-      {{/each}}
-      {{#each updateRecordErrors as |error|}}
-        <p class="error-message">{{error}}</p>
-      {{/each}}
-
-      {{#if showLoadingMessage}}
-        Searching for comments. Thank you for your patience.
-      {{else}}
-      <ul>
-				{{#each displayList as |comment|}}
-          {{workspace-comment wsComments=comments comment=comment currentWorkspace=currentWorkspace reuseComment=(action "reuseComment") deleteComment=(action "deleteComment")}}
-          {{else}}
-          <p class="placeholder">No comments made yet.</p>
-				{{/each}}
-			</ul>
-      {{/if}}
-		</div>
-	</form>
 </div>
+  <div id="al_feedback_display" class="display-list">
+    {{#each queryErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
+    {{#each updateRecordErrors as |error|}}
+      <p class="error-message">{{error}}</p>
+    {{/each}}
+    {{#if invalidDateError}}
+      {{error-box error=invalidDateError showDismiss=true resetError=(action (mut invalidDateError) null)}}
+    {{/if}}
+    {{#if showLoadingMessage}}
+      Searching for comments. Thank you for your patience.
+    {{else}}
+    <ul>
+      {{#each sortedDisplayList as |comment|}}
+        {{workspace-comment
+          wsComments=comments
+          comment=comment
+          currentWorkspace=currentWorkspace
+          reuseComment=(action "reuseComment")
+          deleteComment=(action "deleteComment")
+          currentSelection=currentSelection
+          }}
+        {{else}}
+        <p class="info">{{emptyResultsMessage}}</p>
+      {{/each}}
+    </ul>
+    {{#if showPaginationControl}}
+      {{pagination-control details=commentsMetadata initiatePageChange=(action "initiatePageChange")}}
+    {{/if}}
+    {{/if}}
+  </div>
+  <div class="scroll-icon">
+    {{#if scrollBottom}}
+      <i class="fas fa-chevron-circle-down" {{action 'superScroll'}}></i>
+    {{else}}
+      <i class="fas fa-chevron-circle-up" {{action 'superScroll'}}></i>
+    {{/if}}
+  </div>
+<script>
+  $('.display-list').scroll(function () {
+    let y = $(this).scrollTop();
+    let max = this.scrollHeight;
+    let height = $(this).height();
 
+    let threshold = Math.floor(0.75 * height);
+
+    if (y > threshold) {
+      $('.scroll-icon').fadeIn();
+    } else {
+      $('.scroll-icon').fadeOut();
+    }
+  });
+</script>

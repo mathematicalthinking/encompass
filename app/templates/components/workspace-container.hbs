@@ -1,0 +1,64 @@
+<header class="{{makingSelection}}">
+  <h2 class="workspace-name">{{currentWorkspace.name}}</h2>
+  <span class="info workspaceOwner {{if isMyWorkspace 'isMine' 'notMine'}}">by {{currentWorkspace.owner.displayName}} </span>
+  <span class="info">{{#link-to 'workspace.info' workspace}} | info <i class="fa fa-info-circle" aria-hidden="true"></i>
+{{/link-to}}</span>
+  <aside>
+  <a id="takeTour" {{action 'startTour'}}>Take Tour</a>
+    {{! this needs to be here so the GuideJS can click it when done
+        we don't have a better way to propagate actions }}
+    <a id="doneTour" style="display:none" {{action 'doneTour'}}>Done Tour</a>
+  </aside>
+  <div class="clear"></div>
+</header>
+
+{{!-- <div id="al_left"> --}}
+  {{folder-list
+    store=store
+    folders=nonTrashedFolders
+    workspace=currentWorkspace
+    fileSelection="fileSelectionInFolder"
+    currentSubmission=currentSubmission
+    currentSelection=currentSelection
+    taggings=nonTrashedTaggings
+    workspaceSubmissions=currentWorkspace.submissions.content
+    workspaceSelections=nonTrashedSelections
+  }}
+{{!-- </div> --}}
+
+<!--section class="submissions"-->
+{{!-- <div id="al_center" class="{{if makingSelection 'al_makeselect'}}"> --}}
+  {{submission-group
+    store=store
+    canRespond=canRespond
+    submissions=currentWorkspace.submissions.content
+    submission=model
+    addSelection=(action "addSelection")
+    deleteSelection=(action "deleteSelection")
+    currentWorkspace=currentWorkspace
+    toNewResponse=(action "toNewResponse")
+    toSubmission=(action "toSubmission")
+    selections=nonTrashedSelections
+    responses=nonTrashedResponses
+  }}
+{{!-- </div> --}}
+<!--/section-->
+
+<!--section class="right"-->
+{{!-- <div id="al_right"> --}}
+  {{comment-list
+    store=store
+    comments=nonTrashedComments
+    currentWorkspace=currentWorkspace
+    currentSelection=currentSelection
+    currentSubmission=currentSubmission
+    allowedToComment=permittedToComment
+    resetComment=(action "cancelComment")
+  }}
+{{!-- </div> --}}
+<!--/section-->
+
+{{#if showOverlay}}
+<div class="clear"></div>
+<div {{action 'popupMaskClicked'}} id="al_popup_mask" class="al_popup_close" style="height: 100%; width: 100%; background-color: rgb(0, 0, 0); opacity: 0.5; position: absolute; top: 0px; left: 0px; z-index: 500; display: block; background-position: initial initial; background-repeat: initial initial;"></div>
+{{/if}}

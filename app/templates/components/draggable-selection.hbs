@@ -1,8 +1,30 @@
-{{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames="selection_text"}}
-  {{!bind-attr class=":selectionLink selection.id:"}}
-  <span class="selectionLink">{{selection.text}}</span>
+<div class="selectionLink {{if isImage "image-tag"}} {{if isSelected 'is-selected'}}">
+  {{#link-to 'workspace.submission.selection' selection.workspace selection.submission selection classNames=linkToClassName}}
+    {{#if isImage}}
+      <img class="img-tag-thmb" src={{selection.imageTagLink}} alt={{selection.text}}>
+      <div class="overlay">
+        <button {{action 'expandImage'}}><i class="fas fa-expand"></i></button>
+      </div>
+    {{else}}
+      {{selection.text}}
+    {{/if}}
   {{/link-to}}
-{{#if canDelete}}
-  <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
+  {{#unless isImage}}
+    <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
+  {{/unless}}
+</div>
+{{#if isImage}}
+  <div class="selection-actions">
+    {{!-- <span {{action 'expandImage'}}><i class="fas fa-expand"></i></span> --}}
+    {{#if canDelete}}
+      <span {{action 'deleteSelection' selection}}><i class="fas fa-minus-circle"></i></span>
+    {{/if}}
+  </div>
 {{/if}}
 
+{{#if isExpanded}}
+  <div class="full-image">
+    <i class="fas fa-times" {{action 'expandImage'}}></i>
+    <img src={{selection.imageTagLink}} alt={{selection.text}}>
+  </div>
+{{/if}}

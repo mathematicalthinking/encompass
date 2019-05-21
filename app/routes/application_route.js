@@ -10,6 +10,14 @@
 Encompass.ApplicationRoute = Ember.Route.extend({ //the application route can't require authentication since it's getting the user
   userNtfs: Ember.inject.service('user-ntfs'),
 
+  beforeModel: function() {
+    let that = this;
+    window.addEventListener('touchstart', function onFirstTouch() {
+      that.controller.set('isTouchScreen', true);
+      window.removeEventListener('touchstart', onFirstTouch, false);
+    }, false);
+  },
+
   model: function() {
     return this.get('store').queryRecord('user', {alias: 'current'});
     },

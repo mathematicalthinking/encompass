@@ -12,6 +12,9 @@
  * - openModal action to add a new folder
  */
 Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixin, Encompass.ErrorHandlingMixin, {
+  elementId: 'folder-list',
+  classNames: ['workspace-flex-item', 'folders'],
+  classNameBindings: ['isHidden:hidden', 'isBipaneled:bi-paneled', 'isTripaneled:tri-paneled', 'editFolderMode:is-editing'],
   alert: Ember.inject.service('sweet-alert'),
   utils: Ember.inject.service('utility-methods'),
   weighting: 1,
@@ -20,6 +23,9 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
   createRecordErrors: [],
   updateRecordErrors: [],
   permissions: Ember.inject.service('workspace-permissions'),
+
+  isBipaneled: Ember.computed.equal('containerLayoutClass', 'fsh'),
+  isTripaneled: Ember.computed.equal('containerLayoutClass', 'fsc'),
 
 
   canManageFolders: function() {
@@ -41,9 +47,6 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
     return this.get('permissions').canEdit(ws, 'folders', 3);
   }.property('workspace.id', 'currentUser.id'),
 
-  init: function() {
-    this._super(...arguments);
-  },
 
   topLevelFolders: function() {
     return this.get('folders').filter((folder) => {
@@ -71,6 +74,23 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     return (above) ? siblingsAbove : siblingsBelow;
   },
+
+  toggleDisplayText: function() {
+    if (this.get('isHidden')) {
+      return 'Show Folders';
+    }
+    return 'Hide Folders';
+  }.property('isHidden'),
+
+  editFolderText: function() {
+    return this.get('editFolderMode') ? 'Done' : 'Edit';
+  }.property('editFolderMode'),
+  editFolderIcon: function() {
+    return this.get('editFolderMode') ? 'fas fa-check' : 'fas fa-pencil-alt';
+  }.property('editFolderMode'),
+  toggleEditAlt: function() {
+    return this.get('editFolderMode') ? 'Save Changes' : 'Edit Folders';
+  }.property('editFolderMode'),
 
   actions: {
     openModal: function(){
@@ -136,6 +156,10 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
 
     cancelEditFolderMode: function() {
       this.set('editFolderMode', false);
+    },
+    toggleEditMode: function(currentMode) {
+      this.send('hideComments', currentMode);
+      this.toggleProperty('editFolderMode');
     },
 
     moveOut: function(folder) {
@@ -224,6 +248,28 @@ Encompass.FolderListComponent = Ember.Component.extend(Encompass.CurrentUserMixi
               sibling.save();
             }
           });
+        }
+      }
+    },
+    hideFolders() {
+      this.get('hideFolders')();
+    },
+    hideComments(currentMode) {
+      if (currentMode === false) {
+        // switching not editing to editing
+        if (!this.get('areCommentsHidden')) {
+          this.set('didHideComments', true);
+          this.get('hideComments')();
+        }
+        return;
+      }
+      // switching from editing to not editing
+      if (this.get('didHideComments')) {
+        this.set('didHideComments', false);
+
+        if (this.get('areCommentsHidden')) {
+          // only toggle if comments are still hidden
+          this.get('hideComments')();
         }
       }
     },

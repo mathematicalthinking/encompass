@@ -143,7 +143,7 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     return `Hello ${firstname},`;
   }.property('model.student'),
 
-  quote: function (string, opts) {
+  quote: function (string, opts, isImageTag) {
     string = string.replace(/(\r\n|\n|\r)/gm, " "); //normalize the string: remove new lines
     let defaultPrefix = '         ';
     let prefix = defaultPrefix;
@@ -170,14 +170,20 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
         }
       }
     }
-
     if (doWrapStringInBlockQuote) {
-      str += `<blockquote class="pf-response-text">${string}</blockquote><br>`;
+      if (isImageTag) {
+        str += string;
+      } else {
+        str += `<blockquote class="pf-response-text">${string}</blockquote><br>`;
+      }
     } else {
       str += `<p>${prefix}</p><br>`;
-      str += `<p class="pf-response-text">${string}</p><br>`;
+      if (isImageTag) {
+        str += string;
+      } else {
+        str += `<p class="pf-response-text">${string}</p><br>`;
+      }
     }
-
     return str;
   },
 
@@ -188,7 +194,21 @@ Encompass.ResponseNewComponent = Ember.Component.extend(Encompass.CurrentUserMix
     if (this.get('filteredSelections.length') > 0) {
       this.get('filteredSelections').forEach((s) => {
         let who = this.get('who');
-        let quoteText = this.quote(s.get('text'));
+
+        let quoteInput;
+
+        let selText = s.get('text');
+        let imageTagLink = s.get('imageTagLink');
+        let isImageTag = false;
+
+        if (imageTagLink) {
+          isImageTag = true;
+          quoteInput = `<img src="${imageTagLink}" alt="${selText}"><br>`;
+        } else {
+          quoteInput = selText;
+        }
+
+        let quoteText = this.quote(quoteInput, null, isImageTag);
 
         text += `<p>${who} wrote:</p><br>`;
         text += quoteText;

@@ -1,6 +1,9 @@
 {{! TODO: restore the functionlaity of the view WorkspaceFolderDropTarget stuff, see the old ../folders.hbs}}
+<header>
+  <h2>Folders</h2>
+  <span {{action "hideFolders"}}><i title="Hide Folders"class="far fa-eye-slash"></i></span>
+</header>
 {{#workspace-folder-drop folders=folders}}
-<div class="al_vertical_stretch">
   <div class="dropZone" style="height:10px;"></div>
   <ul id="al_folders">
     {{#each this.sortedFolders as |folder|}}
@@ -21,23 +24,18 @@
     {{/each}}
   </ul>
   <div class="dropZone" style="height:10px;"></div>
-</div>
 {{/workspace-folder-drop}}
 {{#if canManageFolders}}
-  <div id="al_folders_modify">
-    <table>
-      <tr>
-        <td>
-          <span {{action 'openModal' 'folderNew'}} class="al_sprite al_add_folder"></span>
-        </td>
-        <td style="border-left:1px solid #d3d3d3;">
-          {{#if editFolderMode}}
-            <span {{action 'cancelEditFolderMode'}} class="al_sprite al_remove_folder al_cancel"></span>
-          {{else}}
-            <span {{action 'activateEditFolderMode'}} class="al_sprite al_remove_folder"></span>
-          {{/if}}
-        </td>
-      </tr>
-    </table>
+<div class="folders-modify">
+  <div class= "folders-modify-item add">
+    <span {{action "openModal" "folderNew" }}>Add
+      <i class="fas fa-plus"></i>
+    </span>
   </div>
+  <div class= "folders-modify-item edit">
+    <span {{action "toggleEditMode" editFolderMode}}>{{editFolderText}}
+      <i class={{editFolderIcon}}></i>
+    </span>
+  </div>
+</div>
 {{/if}}

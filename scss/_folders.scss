@@ -5,6 +5,12 @@
 #folder_contents {
   a {
     cursor: pointer;
+    &.selection-image {
+      border: none;
+    }
+  }
+  img {
+    max-width: 350px;
   }
 }
 
