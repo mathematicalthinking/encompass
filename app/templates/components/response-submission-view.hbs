@@ -127,7 +127,7 @@
           <button {{action 'cancelRevising'}} class="primary-button cancel-button">Cancel</button>
           <button {{action 'submitRevision'}} class="primary-button">Submit Revision</button>
         {{else}}
-          <button {{action 'startRevising'}} class="primary-button">Revise</button>
+          <button data-test="submitter-revise" {{action 'startRevising'}} class="primary-button">Revise</button>
         {{/if}}
         </div>
       {{/if}}
