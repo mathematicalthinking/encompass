@@ -149,6 +149,7 @@ describe('Mentoring Interactions', function() {
 
   describe('Viewing response in paneled view', function() {
     let submitterCss = css.responseInfo.submissionView;
+    let answerNewCss = css.assignmentsStudent.newAnswerForm;
     before(async function() {
       await helpers.findAndClickElement(driver, css.responsesList.threadItemContainer);
       let subId = responseInfo.submission._id;
@@ -171,18 +172,53 @@ describe('Mentoring Interactions', function() {
     it('should show revise button', async function() {
       expect(await helpers.isElementVisible(driver, submitterCss.reviseBtn)).to.eql(true);
       await helpers.findAndClickElement(driver, submitterCss.reviseBtn);
-      await helpers.waitForSelector(driver, submitterCss.submitRevision);
+      await helpers.waitForSelector(driver, answerNewCss.createBtn);
     });
 
-    it('should not submit revision if no changes are made', async function() {
-      let text = css.assignmentsStudent.newAnswerForm.errors.duplicateRevisionText;
-      let submitBtnClass = css.assignmentsStudent.newAnswerForm.createBtn;
-      await helpers.findAndClickElement(driver, submitBtnClass);
-      await helpers.waitForTextInDom(driver, text);
-      expect(await helpers.isTextInDom(driver, text)).to.eql(true);
-      expect(await helpers.isElementVisible(driver, submitBtnClass)).to.eql(true);
+    describe('Submitting revision from response page', function() {
+      let newExplanation = 'Revised explanation';
+
+      it('should not submit revision if no changes are made', async function() {
+        let text = answerNewCss.errors.duplicateRevisionText;
+        let submitBtnClass = answerNewCss.createBtn;
+        await helpers.findAndClickElement(driver, submitBtnClass);
+        await helpers.waitForTextInDom(driver, text);
+        expect(await helpers.isTextInDom(driver, text)).to.eql(true);
+        expect(await helpers.isElementVisible(driver, submitBtnClass)).to.eql(true);
+
+      });
+
+      it('should successfully create revision', async function () {
+        let toastMsg = 'Answer Created';
+        await helpers.clearElement(driver, answerNewCss.inputs.explanation);
+        await helpers.findInputAndType(driver, answerNewCss.inputs.explanation, newExplanation);
+
+        await helpers.findAndClickElement(driver, answerNewCss.createBtn);
+
+        await helpers.waitForTextInDom(driver, toastMsg);
+
+        let revItems = await helpers.getWebElements(driver, submitterCss.revIndexItem);
+        expect(revItems).to.have.lengthOf(2);
+      });
+
+      it('linked workspace should have been updated', async function() {
+
+        await driver.get(`${host}/#/workspaces/${workspaceInfo._id}/work`);
+        await helpers.waitForSelector(driver, 'span.submission_count');
+
+        // click x button on tour box
+        await helpers.findAndClickElement(driver, 'div.guiders_x_button');
+
+        await helpers.waitForRemoval(driver, 'div#guiders_overlay');
+
+        expect(await helpers.findAndGetText(driver, 'span.submission_count')).to.eql('2');
+
+      });
+
 
     });
+
+
   });
 
 });
