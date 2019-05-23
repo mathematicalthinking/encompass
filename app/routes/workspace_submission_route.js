@@ -186,6 +186,16 @@ Encompass.WorkspaceSubmissionRoute = Ember.Route.extend(Encompass.CurrentUserMix
         .catch((err) => {
           console.log('err save tagging', err);
         });
+    },
+    willTransition(transition) {
+      let currentUrl = window.location.hash;
+      let wasVmt = currentUrl.indexOf('?vmtRoomId=') !== -1;
+      let willBeVmt = this.get('utils').isValidMongoId(transition.queryParams.vmtRoomId);
+      if (wasVmt && !willBeVmt) {
+        window.postMessage({
+          messageType: 'DESTROY_REPLAYER',
+        });
+      }
     }
   }
 });
