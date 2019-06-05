@@ -4,7 +4,7 @@
   * @author Amir Tahvildaran <amir@mathforum.org>
   * @since 1.0.2
   */
-Encompass.AuthenticatedRoute = Ember.Route.extend({
+Encompass.AuthenticatedRoute = Ember.Route.extend(Encompass.MtAuthMixin, {
   beforeModel: function() {
     this._super.apply(this, arguments);
     this.authenticate();
@@ -12,7 +12,7 @@ Encompass.AuthenticatedRoute = Ember.Route.extend({
   authenticate: function() { //not crazy that this is duplicated here and in ApplicationRoute
     var user = this.modelFor('application');
     if(!user.get('isAuthenticated')) {
-      this.transitionTo('auth.login');
+      window.location.href = this.getMtLoginUrlWithRedirect();
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {
