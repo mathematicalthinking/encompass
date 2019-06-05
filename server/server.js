@@ -26,6 +26,7 @@ const configure = require('./middleware/passport');
 const userAuth = require('./middleware/userAuth');
 const path = require('./middleware/path');
 const multerMw = require('./middleware/multer');
+const mtAuth = require('./middleware/mtAuth');
 
 //REQUIRE MODELS
 
@@ -138,9 +139,9 @@ server.use(cookieParser());
 server.use(express.static(expressPath.join(__dirname, 'public')));
 server.use(path.prep());
 server.use(path.processPath());
-server.use(userAuth.fetchUser());
+server.use(mtAuth.prepareMtUser);
+server.use(mtAuth.prepareEncUser);
 server.use(userAuth.protect());
-server.use(userAuth.loadAccessibleWorkspaces());
 server.use(path.validateContent());
 
 const upload = multer({

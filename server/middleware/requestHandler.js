@@ -157,8 +157,8 @@ function buildCriteria(req) {
       ]
     },
   ];
-  if(req.mf.auth.workspaces) {
-    criteria.$and.push({ workspace: { $in: req.mf.auth.workspaces } });
+  if(req.mt.auth.workspaces) {
+    criteria.$and.push({ workspace: { $in: req.mt.auth.workspaces } });
   }
 
   if(req.params.id) {

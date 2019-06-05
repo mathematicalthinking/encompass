@@ -27,15 +27,16 @@ function apiRequest(req) {
   @returns {Array} [0] model [1] id
 */
 function idRequest(req) {
-  var idRegExp = /\/api\/([a-z]*)\/(\S+)/;
+  let idRegExp = /\/api\/([a-z]*)\/(\S+)/;
   return idRegExp.exec(req.path);
 }
 
 function prep(options) {
   function _prep(req, res, next) {
-    _.defaults(req, { mf: {} });
-    _.defaults(req.mf, { path: {} });
-    _.defaults(req.mf, { auth: {} });
+    _.defaults(req, { mt: {} });
+    _.defaults(req.mt, { auth: {} });
+    _.defaults(req.mt, { path: {} });
+
     return next();
   }
 
@@ -49,13 +50,11 @@ function processPath(options) {
     if(!apiRequest(req)) {
       return next();
     }
-    _.defaults(req, { mf: {} });
-    _.defaults(req.mf, { path: {} });
 
-    var pathRegExp = /\/api\/([a-z]*)\/?/;
-    var match = pathRegExp.exec(req.path);
+    let pathRegExp = /\/api\/([a-z]*)\/?/;
+    let match = pathRegExp.exec(req.path);
     if(match) {
-      req.mf.path.model = match[1];
+      req.mt.path.model = match[1];
     }
 
     return (next());
@@ -71,14 +70,14 @@ function processPath(options) {
 */
 function validateId(options) {
   function _validateId(req, res, next) {
-    var match = idRequest(req);
+    let match = idRequest(req);
     if(!match) {
       return next();
     }
 
-    var id = req.params.id;
+    let id = req.params.id;
     //http://stackoverflow.com/questions/11985228/mongodb-node-check-if-objectid-is-valid
-    var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+    let checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
     if(!checkForHexRegExp.test(id)) {
       return utils.sendError.InvalidArgumentError('bad object id', res);
     }
@@ -91,26 +90,26 @@ function validateId(options) {
 
 // when the path is /api/workspaces return 'workspace'
 function getModel(req) {
-  var model = req.mf.path.model;
+  let model = req.mt.path.model;
   if(!model){ return; }
-  var singularModel = model.slice(0, -1);
+  let singularModel = model.slice(0, -1);
   return singularModel;
 }
 
 // when the path is /api/workspaces return 'Workspace'
 function getSchema(req) {
-  var model = getModel(req);
+  let model = getModel(req);
   if(!model){ return; }
-  var schema = model.charAt(0).toUpperCase() + model.slice(1);
+  let schema = model.charAt(0).toUpperCase() + model.slice(1);
   return schema;
 }
 
 function schemaHasWorkspace(schema) {
-  var mSchema = models[schema];
+  let mSchema = models[schema];
   if(!mSchema) {
     return false;
   }
-  var hasWorkspace = !!mSchema.schema.paths.workspace;
+  let hasWorkspace = !!mSchema.schema.paths.workspace;
   return hasWorkspace;
 }
 
@@ -120,20 +119,20 @@ function schemaHasWorkspace(schema) {
 
 function validateContent(options) {
   function _validateContent(req, res, next) {
-    var checkForModRequest = /POST|PUT/;
+    let checkForModRequest = /POST|PUT/;
     // Ignore api requests that don't attempt to modify a value
     if(!apiRequest(req) || !(checkForModRequest.test(req.method) && req.body)) { // Ignore api requests that don't attempt to modify a value
       return next();
     }
 
-    var model = getModel(req),
+    let model = getModel(req),
         schema = getSchema(req),
         data = req.body[model];
     if(models[schema]) {
-      var required = models[schema].schema.requiredPaths();
-      var hasRequiredData = _.every(required, function(x) { return data[x]; });
+      let required = models[schema].schema.requiredPaths();
+      let hasRequiredData = _.every(required, function(x) { return data[x]; });
       if(!hasRequiredData) {
-        var error = 'Model %s is missing post/put data';
+        let error = 'Model %s is missing post/put data';
         return utils.sendError.InvalidContentError(util.format(error, schema), res);
       }
     }
