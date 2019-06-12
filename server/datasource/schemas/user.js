@@ -89,6 +89,8 @@ var UserSchema = new Schema({
   socketId: { type: String },
   seenTour: { type: Date },
   lastSeen: { type: Date },
+  firstName: {type: String, trim: true},
+  lastName: {type: String, trim: true},
   history: [Log] // currently not working
   //sessions: [{key: String, starts: Number, ends: Number}]
 },
