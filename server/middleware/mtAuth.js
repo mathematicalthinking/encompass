@@ -38,6 +38,7 @@ const prepareMtUser = (req, res, next) => {
   })
   .catch((err) => {
     console.log('pmt error', err);
+    next(err);
   });
 };
 
@@ -51,10 +52,17 @@ const prepareEncUser = (req, res, next) => {
 
   return User.findById(mtUserDetails.encUserId).exec()
   .then((user) => {
+    if (user === null) {
+      req.mt.auth.encUser = null;
+      return next();
+    }
     user.lastSeen = new Date();
     user.save();
     req.mt.auth.encUser = user.toObject();
     next();
+  })
+  .catch((err) => {
+    next(err);
   });
 };
 
