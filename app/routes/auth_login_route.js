@@ -1,5 +1,6 @@
 Encompass.AuthLoginRoute = Ember.Route.extend(Encompass.MtAuthMixin,{
-  beforeModel() {
+  beforeModel(transition) {
+    transition.abort();
      window.location.href = this.getMtLoginUrlWithRedirect();
   },
 
