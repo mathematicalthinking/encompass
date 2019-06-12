@@ -72,6 +72,16 @@ const getEncUser = (mtUserDetails) => {
 
 };
 
+module.exports.extractBearerToken = req => {
+  let { authorization } = req.headers;
+
+  if (typeof authorization !== 'string') {
+    return;
+  }
+  return authorization.split(' ')[1];
+};
+
+
 module.exports.getMtUser = getMtUser;
 module.exports.prepareMtUser = prepareMtUser;
 module.exports.getEncUser = getEncUser;
