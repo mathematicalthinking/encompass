@@ -52,7 +52,6 @@ var UserSchema = new Schema({
   /* + Are they otherwise authorized for EnCoMPASS */
   isAuthorized: { type: Boolean, default: false },
   authorizedBy: { type: ObjectId, ref: 'User' },
-  // isStudent: Boolean,
 
   // 'student' or 'teacher' - only used by teacher accounts to determine if they are in teacher mode or student mode
   actingRole: { type: String, enum: ['teacher', 'student'] },
@@ -60,7 +59,6 @@ var UserSchema = new Schema({
   email: { type: String, trim: true },
   avatar: { type: String },
   googleId: { type: String },
-  // key: { type: String },
   password: { type: String, trim: true },
   // forcePwdChg: { type: Boolean },
   resetPasswordToken: { type: String },
@@ -75,7 +73,6 @@ var UserSchema = new Schema({
   // We only use google for external auth, we can use these fields if we use more OAuths
   // authSource: String,
   // authUserId: String,
-  sessionId: String,
   sections: [{ sectionId: { type: ObjectId, ref: 'Section' }, role: String, _id: false}],
   answers: [{ type: ObjectId, ref: 'Answer' }],
   // Migrating from assignments to answers, keeping this in for tests - change apiTest for assinment to answer
@@ -92,7 +89,6 @@ var UserSchema = new Schema({
   firstName: {type: String, trim: true},
   lastName: {type: String, trim: true},
   history: [Log] // currently not working
-  //sessions: [{key: String, starts: Number, ends: Number}]
 },
 {
   versionKey: false,
