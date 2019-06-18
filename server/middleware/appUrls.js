@@ -8,6 +8,10 @@ const getMtSsoUrl = () => {
   if (envName === 'staging') {
     return process.env.MT_SSO_URL_STAGING;
   }
+
+  if (envName === 'seed') {
+    return process.env.MT_SSO_URL_TEST;
+  }
   return process.env.MT_SSO_URL_DEV;
 };
 

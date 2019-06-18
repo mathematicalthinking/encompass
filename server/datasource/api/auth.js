@@ -10,61 +10,63 @@ const passport = require('passport');
 const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
+
 const models = require('../../datasource/schemas');
 const User = models.User;
 const nodemailer = require('nodemailer');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
 
-const localLogin = (req, res, next) => {
-  passport.authenticate('local-login', {
-      // failureRedirect: '/#/auth/login',
-      // failureFlash: true,
-      // passReqToCallback: true,
-      //failwithError: true,
-  },
-function(err, user, info) {
-  if (err) {
-    return next(err);
-  }
+const jwt = require('jsonwebtoken');
 
-  if (!user) {return utils.sendResponse(res, info);}
-  req.logIn(user, function(err) {
-    if (err) { return next(err); }
-    return utils.sendResponse(res, user);
-  });
-}
-)(req, res, next);
+const { extractBearerToken } = require('../../middleware/mtAuth');
+const { getMtSsoUrl } = require('../../middleware/appUrls');
+
+const localLogin = async (req, res, next) => {
+  try {
+    let url = `${getMtSsoUrl()}/login`;
+    let mtLoginResults = await axios.post(url, req.body);
+
+    let { message, mtToken } = mtLoginResults.data;
+    if (message) {
+      return res.json({message});
+    }
+
+    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+
+    res.cookie('mtToken', mtToken);
+
+    // send back user?
+
+    return res.json({message: 'success'});
+  }catch(err) {
+    console.log('err signup', err);
+    return utils.sendError.InternalError(err, res);
+  }
 };
 
-const localSignup = (req, res, next) => {
-  passport.authenticate('local-signup', {
-      // successRedirect: '/',
-      // failureRedirect: '/#/auth/signup',
-  },
-  function (err, user, info) {
-    if (err) {
-      console.error('localSignup error: ', err);
-      console.trace();
-      return next(err);
-    }
+const localSignup = async (req, res, next) => {
 
-    if (!user) {
-      if (info.message && info.user && info.message === 'Can add existing user') {
-        return utils.sendResponse(res, info);
-      }
-      return utils.sendResponse(res, info);
-    }
-    if(!req.user) {
-      req.logIn(user, function(err) {
-        if (err) { return next(err); }
-        //return utils.sendResponse(res, user);
-        return next(null, user);
-      });
-    }
-    return utils.sendResponse(res, user);
+try {
+  let url = `${getMtSsoUrl()}/signup`;
+  let mtSignupResults = await axios.post(url, req.body);
+  let {message, mtToken } = mtSignupResults.data;
+
+  if (message) {
+    return res.json(message);
   }
-)(req, res, next);
+
+  await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+
+  res.cookie('mtToken', mtToken);
+  return res.json({message: 'success'});
+}catch(err) {
+  console.log('err signup', err);
+  return utils.sendError.InternalError(err, res);
+
+}
+
 };
 
 const googleAuth = (req, res, next) => {
@@ -349,6 +351,21 @@ const resendConfirmationEmail = async function(req, res, next) {
   }
 };
 
+const insertNewMtUser = async (req, res, next) => {
+  try {
+    let authToken = extractBearerToken(req);
+
+    await jwt.verify(authToken, process.env.MT_USER_JWT_SECRET);
+
+    let newUser = await User.create(req.body);
+    return utils.sendResponse(res, newUser);
+  }catch(err) {
+    // invalid token
+    console.log('Error insertNewMtUser: ', err);
+    return utils.sendError.InvalidCredentialsError('Unauthorized request', res);
+  }
+};
+
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
@@ -363,3 +380,4 @@ module.exports.getResetToken = getResetToken;
 module.exports.sendEmailSMTP = sendEmailSMTP;
 module.exports.resendConfirmationEmail = resendConfirmationEmail;
 module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
+module.exports.insertNewMtUser = insertNewMtUser;

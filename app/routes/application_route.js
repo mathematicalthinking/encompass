@@ -31,7 +31,7 @@ Encompass.ApplicationRoute = Ember.Route.extend(Encompass.MtAuthMixin, { //the a
     if (user.get('isAuthenticated')) {
       this.get('userNtfs').setupProperties(user);
     }
-    const allowedPaths = ['auth.reset', 'auth.confirm', 'auth.forgot', 'auth.login', 'auth.signup', 'index'];
+    const allowedPaths = ['auth.reset', 'auth.confirm', 'auth.forgot', 'auth.login', 'auth.signup'];
     const targetPath = transition.targetName;
 
     if (allowedPaths.includes(targetPath)) {
@@ -40,8 +40,7 @@ Encompass.ApplicationRoute = Ember.Route.extend(Encompass.MtAuthMixin, { //the a
     //Do we need this check for isAuthenticated here? All routes that should be authenticated
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
-      window.location.href = this.getMtLoginUrlWithRedirect();
-
+      this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {

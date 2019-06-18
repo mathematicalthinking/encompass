@@ -224,7 +224,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
           } else if (res.message === 'There already exists a user with that email address.') {
             that.set('emailExistsError', res.message);
           } else {
-            that.sendAction('toHome');
+            window.location.href= '/';
           }
         })
         .catch((err) => {
@@ -239,7 +239,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
           } else if (res.message === 'There already exists a user with that email address.') {
             that.set('emailExistsError', res.message);
           } else {
-            that.sendAction('toHome');
+            window.location.href = '/';
           }
         })
         .catch((err) => {
