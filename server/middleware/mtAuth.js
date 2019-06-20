@@ -7,6 +7,10 @@ const { isValidMongoId} = require('../utils/mongoose');
 
 const secret = process.env.MT_USER_JWT_SECRET;
 
+const { getEncIssuerId, getMtIssuerId} = require('../middleware/appUrls');
+
+const API_TOKEN_EXPIRY = '5m';
+
 const getMtUser = async (req) => {
   try {
     let mtToken = req.cookies.mtToken;
@@ -87,6 +91,19 @@ module.exports.extractBearerToken = req => {
     return;
   }
   return authorization.split(' ')[1];
+};
+
+module.exports.generateSignedJWT = (payload, secret, options) => {
+  return jwt.sign(payload, secret, options);
+
+};
+
+// used when communicating to MT SSO for forgot/reset password
+module.exports.generateAnonApiToken = (expiration = API_TOKEN_EXPIRY) => {
+  let payload = { iat: Date.now() };
+  let options = { expiresIn: expiration, issuer: getEncIssuerId(), audience: getMtIssuerId() };
+
+  return this.generateSignedJWT(payload, secret, options);
 };
 
 

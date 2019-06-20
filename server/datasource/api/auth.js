@@ -18,6 +18,8 @@ const nodemailer = require('nodemailer');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
 
+const { generateAnonApiToken } = require('../../middleware/mtAuth');
+
 const jwt = require('jsonwebtoken');
 
 const { extractBearerToken } = require('../../middleware/mtAuth');
@@ -150,55 +152,17 @@ const sendEmailsToAdmins = async function(host, template, relatedUser) {
 };
 
 const forgot = async function(req, res, next) {
-  let token;
-  let user;
-
   try {
-    token = await getResetToken(20);
-    let { email, username } = req.body;
+    let ssoUrl = `${getMtSsoUrl()}/forgot/password`;
 
-    if (email) {
-      user = await User.findOne({ email });
-      if (!user) {
-        const msg = {
-          info: 'There is no account associated with that email address',
-          isSuccess: false
-        };
-        return utils.sendResponse(res, msg);
-      }
-    } else if (username) {
-      user = await User.findOne({ username });
-      if (!user) {
-        const msg = {
-          info: 'There is no account associated with that username',
-          isSuccess: false
-        };
-        return utils.sendResponse(res, msg);
-      }
-    }
+    let token = await generateAnonApiToken();
 
+    let config = {
+      headers: { Authorization: 'Bearer ' + token },
+    };
 
-      user.resetPasswordToken = token;
-      user.resetPasswordExpires = Date.now() + 3600000;
-
-      await user.save();
-      // should we assume all users have emails?
-      if (!email) {
-        if (user.email) {
-          email = user.email;
-        } else {
-          const msg = {
-            info: 'You must have an email address associated with your EnCoMPASS account in order to reset your password',
-            isSuccess: false
-          };
-          return utils.sendResponse(res, msg);
-        }
-
-      }
-
-      await sendEmailSMTP(email, req.headers.host, 'resetTokenEmail', token, user);
-
-      return utils.sendResponse(res, {'info': `Password reset email sent to ${email}`, isSuccess: true});
+    let results = await axios.post(ssoUrl, req.body, config);
+    return utils.sendResponse(res, results.data);
   }catch(err) {
     console.error(`Error auth/forgot: ${err}`);
     console.trace();

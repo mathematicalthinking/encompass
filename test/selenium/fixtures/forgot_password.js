@@ -16,8 +16,8 @@ module.exports = {
     errors: {
       missing: 'Missing Required Fields',
       tooMuch: 'Please provide only one of username or password.',
-      noEmail: 'There is no account associated with that email address',
-      noUsername: 'There is no account associated with that username',
+      noEmail: 'There is no EnCoMPASS account associated with that email address',
+      noUsername: 'There is no EnCoMPASS account associated with that username',
       noAssociatedEmail: 'You must have an email address associated with your EnCoMPASS account in order to reset your password'
     },
     success: {
