@@ -64,7 +64,7 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
           if (res.message === 'Username already exists') {
             this.set('usernameExists', true);
             return;
-          } else if (res.message === 'There already exists a user with this email address.') {
+          } else if (res.message === 'There already exists a user with this email address') {
             this.set('emailExistsError', res.message);
             return;
           } else {

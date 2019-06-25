@@ -219,9 +219,9 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'Username already exists') {
+          if (res.message === 'There already exists a user with that username') {
             that.set('usernameExists', true);
-          } else if (res.message === 'There already exists a user with that email address.') {
+          } else if (res.message === 'There already exists a user with that email address') {
             that.set('emailExistsError', res.message);
           } else {
             window.location.href= '/';
@@ -234,9 +234,9 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
         createUserData.organization = organization.id;
         return that.createUser(createUserData)
         .then((res) => {
-          if (res.message === 'Username already exists') {
+          if (res.message === 'There already exists a user with that username') {
             that.set('usernameExists', true);
-          } else if (res.message === 'There already exists a user with that email address.') {
+          } else if (res.message === 'There already exists a user with that email address') {
             that.set('emailExistsError', res.message);
           } else {
             window.location.href = '/';

@@ -106,10 +106,10 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       let newUserData = this.get('newUserData');
       return this.createNewUser(newUserData)
         .then((res) => {
-          if (res.message === 'Can add existing user') {
+          if (res.message === 'There already exists a user with that username') {
             this.set('usernameExists', true);
             return;
-          } else if (res.message === 'There already exists a user with that email address.') {
+          } else if (res.message === 'There already exists a user with that email address') {
             this.set('emailExistsError', res.message);
             return;
           } else {

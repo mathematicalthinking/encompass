@@ -78,10 +78,10 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
       })
       .then((res) => {
         that.removeMessages('createUserErrors');
-        if (res.message === 'Username already exists') {
+        if (res.message === 'There already exists a user with that username') {
           that.set('usernameAlreadyExists', true);
           return;
-        } else if (res.message === 'Can add existing user') {
+        } else if (res.user && res.canAddExistingUser === true) {
           this.set('canAddExistingUser', true);
           this.set('existingUser', res.user);
         } else {
