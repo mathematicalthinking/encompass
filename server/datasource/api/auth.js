@@ -9,7 +9,6 @@
 const passport = require('passport');
 const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
-const bcrypt = require('bcrypt');
 const axios = require('axios');
 
 const models = require('../../datasource/schemas');
@@ -24,10 +23,11 @@ const jwt = require('jsonwebtoken');
 
 const { extractBearerToken } = require('../../middleware/mtAuth');
 const { getMtSsoUrl } = require('../../middleware/appUrls');
+const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 const localLogin = async (req, res, next) => {
   try {
-    let url = `${getMtSsoUrl()}/login`;
+    let url = `${getMtSsoUrl()}/auth/login`;
     let mtLoginResults = await axios.post(url, req.body);
 
     let { message, mtToken } = mtLoginResults.data;
@@ -51,18 +51,80 @@ const localLogin = async (req, res, next) => {
 const localSignup = async (req, res, next) => {
 
 try {
-  let url = `${getMtSsoUrl()}/signup`;
-  let mtSignupResults = await axios.post(url, req.body);
-  let {message, mtToken } = mtSignupResults.data;
+  let reqUser = userAuth.getUser(req);
+  let isFromSignupForm = !reqUser;
 
-  if (message) {
-    return res.json(message);
+  let allowedAccountTypes = [];
+  let requestedAccountType = req.body.accountType;
+
+  if (isFromSignupForm) {
+    allowedAccountTypes = ['T'];
+  } else {
+    let creatorAccountType = reqUser.accountType;
+
+    if (creatorAccountType === 'S') {
+      // students cannot create other users;
+      return utils.sendError.NotAuthorizedError('Your account type is not authorized to create other users');
+    }
+    if (creatorAccountType === 'T' || creatorAccountType === 'P') {
+      allowedAccountTypes = ['S', 'T'];
+    } else if (creatorAccountType === 'A') {
+      allowedAccountTypes = ['S', 'T', 'P', 'A'];
+    }
+
+    let isValidAccountType = allowedAccountTypes.includes(requestedAccountType);
+
+    if (!isValidAccountType) {
+      // default to teacher if not valid account type
+      // should this return error instead?
+      req.body.accountType = 'T';
+    }
   }
 
-  await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+  // TODO: use api token
+  let url = `${getMtSsoUrl()}/auth/signup`;
+  let config = {};
 
-  res.cookie('mtToken', mtToken);
-  return res.json({message: 'success'});
+  if (!isFromSignupForm) {
+    let mtToken = req.cookies.mtToken;
+    config = {
+      headers: { Authorization: 'Bearer ' + mtToken },
+    };
+  }
+  let mtSignupResults = await axios.post(url, req.body, config);
+  let {message, mtToken, encUser, vmtUser, existingUser } = mtSignupResults.data;
+
+  if (message) {
+    if (existingUser && !isFromSignupForm) {
+      // check if can add existing User
+      let existingEncId = existingUser.encUserId;
+
+      let existingEncUser = await User.findById(existingEncId).lean();
+
+      if (existingEncUser === null) {
+        // should never happen
+        return utils.sendError.InternalError(null, res);
+      }
+
+      let canAdd = reqUser.accountType === 'A' || areObjectIdsEqual(reqUser.organization, existingEncUser.organization);
+
+        return res.json({
+          message,
+          user: existingEncUser,
+          canAddExistingUser: canAdd
+        });
+
+    }
+    return res.json({message});
+  }
+
+  if (typeof mtToken === 'string') {
+    // mtToken will be undefined if user was created by an already logged in user
+    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+
+    res.cookie('mtToken', mtToken);
+  }
+  return res.json(encUser);
 }catch(err) {
   console.log('err signup', err);
   return utils.sendError.InternalError(err, res);
@@ -153,7 +215,7 @@ const sendEmailsToAdmins = async function(host, template, relatedUser) {
 
 const forgot = async function(req, res, next) {
   try {
-    let ssoUrl = `${getMtSsoUrl()}/forgot/password`;
+    let ssoUrl = `${getMtSsoUrl()}/auth/forgot/password`;
 
     let token = await generateAnonApiToken();
 
@@ -172,12 +234,16 @@ const forgot = async function(req, res, next) {
 
 const validateResetToken = async function(req, res, next) {
   try {
-    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}});
+    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/${req.params.token}`;
 
-    if (!user) {
-      return utils.sendResponse(res, {info: 'Password reset token is invalid or has expired', isValid: false});
-    }
-    return utils.sendResponse(res, { info: 'valid token', isValid: true });
+    let token = await generateAnonApiToken();
+
+    let config = {
+      headers: { Authorization: 'Bearer ' + token },
+    };
+
+    let results = await axios.get(ssoUrl, config);
+    return utils.sendResponse(res, results.data);
 
   }catch(err) {
     return utils.sendError.InternalError(err, res);
@@ -196,39 +262,16 @@ const resetPasswordById = async function(req, res, next) {
       return utils.sendError.NotAuthorizedError('You are not authorized.', res);
     }
 
-    const { id, password } = req.body;
+    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/user`;
 
-    if (!id || !password) {
-      const err = {
-        info: 'Invalid user id or password'
-      };
-      return utils.sendError.InvalidArgumentError(err, res);
-    }
+    let token = await generateAnonApiToken();
 
-    const user = await User.findOne({ _id: id });
-    if (!user) {
-      return utils.sendResponse(res, {
-        info: 'Cannot find user'
-      });
-    }
+    let config = {
+      headers: { Authorization: 'Bearer ' + token },
+    };
 
-    const hashPass = bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
-    user.password = hashPass;
-    user.lastModifiedBy = reqUser.id;
-    user.lastModifiedDate = Date.now();
-
-    let actingRole = user.actingRole;
-    let accountType = user.accountType;
-
-    if (!actingRole && accountType !== 'S') {
-      user.actingRole = 'teacher';
-    }
-
-    // should we store most recent password and block that password in future? or all past passwords and block all of them?
-
-    await user.save();
-
-    return utils.sendResponse(res, user);
+    let results = await axios.post(ssoUrl, req.body, config);
+    return utils.sendResponse(res, results.data);
 
     }catch(err) {
       return utils.sendError.InternalError(err, res);
@@ -237,27 +280,23 @@ const resetPasswordById = async function(req, res, next) {
 
 const resetPassword = async function(req, res, next) {
   try {
-    const user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } });
-    if (!user) {
-      return utils.sendResponse(res, {
-        info: 'Password reset token is invalid or has expired.'
-      });
-    }
+    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/${req.params.token}`;
 
-    const hashPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(12), null);
-    user.password = hashPass;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    let token = await generateAnonApiToken();
 
-    await user.save();
+    let config = {
+      headers: { Authorization: 'Bearer ' + token },
+    };
 
-    req.logIn(user, (err) => {
-      if (err) {
-        return utils.sendError.InternalError(err, res);
-      }
-      return utils.sendResponse(res, user);
-    });
+    let results = await axios.post(ssoUrl, req.body, config);
 
+    let { user, mtToken } = results.data;
+
+    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+
+    res.cookie('mtToken', mtToken);
+
+    return utils.sendResponse(res, user);
   }catch(err) {
     console.error(`Error resetPassword: ${err}`);
     console.trace();
