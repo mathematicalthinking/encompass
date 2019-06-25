@@ -72,6 +72,7 @@ describe('Users', function() {
         await driver.sleep(500);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '.error-box');
+        await helpers.waitForTextInDom(driver, 'Missing required fields');
         expect(await helpers.findAndGetText(driver, '.error-box')).to.contain('Missing required fields');
       });
 
@@ -89,7 +90,6 @@ describe('Users', function() {
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info', 10000);
-        await driver.sleep(1000);
         expect(await helpers.findAndGetText(driver, 'ul.waiting-auth>li:first-child')).to.contain('muzzy');
       });
 
@@ -173,7 +173,7 @@ describe('Users', function() {
         await helpers.findAndClickElement(driver, 'button.save-user');
         await driver.sleep(500);
         await helpers.waitForSelector(driver, '#user-info');
-        await driver.sleep(1000);
+        await driver.sleep(3000);
         expect(await helpers.findAndGetText(driver, 'ul.admin-users>li:first-child')).to.contain('nope');
       });
     }
@@ -234,8 +234,8 @@ describe('Users', function() {
 
       describe('clicking on your own account', function () {
         before(async function () {
-          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username}"]`);
-          await helpers.waitForSelector(driver, 'div#user-info');
+          await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.admin.username.toLowerCase()}"]`);
+          await helpers.waitForSelector(driver, '#user-info');
         });
         validateUsersPage();
       });
@@ -248,18 +248,18 @@ describe('Users', function() {
         validateNewUserPage();
       });
 
-      describe('authorizing a user', function () {
+      describe('authorizing a user', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/muzzy"]`);
         });
-        changeAuth();
+        await changeAuth();
       });
 
-      describe("changing a user's account type", function () {
+      describe("changing a user's account type", async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/nope"]`);
         });
-        changeAccountType();
+        await changeAccountType();
       });
 
       describe('manually authorize a users email', async function () {
@@ -355,7 +355,6 @@ describe('Users', function() {
         await helpers.clearElement(driver, 'input.user-username');
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findAndClickElement(driver, '#new-user-btn');
-        driver.sleep('1000');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.student-users>li:first-child')).to.contain('beyonce');
       });
@@ -442,25 +441,25 @@ describe('Users', function() {
         validateNewUserPage();
       });
 
-      describe('authorizing a user', function () {
+      describe('authorizing a user', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/bunny"]`);
         });
-        changeAuth();
+        await changeAuth();
       });
 
-     describe("changing a user's account type", function () {
+     describe("changing a user's account type", async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/eeyore"]`);
         });
-        changeAccountType();
+        await changeAccountType();
       });
 
-      describe('manually authorize a user\'s email', function () {
+      describe('manually authorize a user\'s email', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/perryu"]`);
         });
-        confirmEmail();
+        await confirmEmail();
       });
 
     });
@@ -555,30 +554,30 @@ describe('Users', function() {
 
       it('should have a list of users in your org', async function () {
         expect(await helpers.getWebElements(driver, 'ul.org-users>li')).to.have.lengthOf.at.least(8);
-        expect(await helpers.findAndGetText(driver, 'ul.org-users>li:first-child')).to.contain('rick');
+        expect(await helpers.findAndGetText(driver, 'ul.org-users>li:first-child')).to.contain('bunny');
       });
 
-      describe('clicking on your own account', function () {
+      describe('clicking on your own account', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/${helpers.regUser.username}"]`);
           await helpers.waitForSelector(driver, 'div#user-info');
         });
-        validateUsersPage();
+        await validateUsersPage();
       });
 
-      describe('clicking the Create New User link', function () {
+      describe('clicking the Create New User link', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, '#new-user-link');
           await helpers.waitForSelector(driver, 'div#user-new');
         });
-        validateNewUserPage();
+        await validateNewUserPage();
       });
 
-      describe('unauthorizing a user', function () {
+      describe('unauthorizing a user', async function () {
         before(async function () {
           await helpers.findAndClickElement(driver, `a[href$="#/users/mystudent"]`);
         });
-        changeAuth();
+        await changeAuth();
       });
 
     });
