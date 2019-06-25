@@ -9,7 +9,12 @@
     "seed": "grunt serve-seed",
     "test": "grunt tests",
     "mocha": "mocha",
-    "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test"
+    "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test",
+    "seed-vmt": "cd ../vmt && npm run test-mac",
+    "seed-mt": "cd ../mt-login && npm run test",
+    "seed-all": "concurrently \"npm:seed\" \"npm:seed-vmt\" \"npm:seed-mt\"",
+    "restore-mt": "cd ../mt-login && npm run seed",
+    "restore-vmt": "cd ../vmt && npm run seed"
   },
   "repository": {
     "type": "git",
@@ -77,6 +82,7 @@
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "chromedriver": "^2.40.0",
+    "concurrently": "^4.1.0",
     "csvtojson": "^2.0.8",
     "eslint": "^5.16.0",
     "grunt": "^1.0.4",
