@@ -18,11 +18,11 @@ getMtSsoUrl() {
 },
 
 getMtLoginUrlWithRedirect() {
-  return `${this.getMtSsoUrl()}/login?redirectURL=${this.getRedirectUrl()}`;
+  return `${this.getMtSsoUrl()}/auth/login?redirectURL=${this.getRedirectUrl()}`;
 },
 
 getMtSignupUrl() {
-  return `${this.getMtSsoUrl()}/signup?redirectURL=${this.getRedirectUrl()}`;
+  return `${this.getMtSsoUrl()}/auth/signup?redirectURL=${this.getRedirectUrl()}`;
 }
 
 });
