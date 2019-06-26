@@ -23,6 +23,10 @@ getMtLoginUrlWithRedirect() {
 
 getMtSignupUrl() {
   return `${this.getMtSsoUrl()}/auth/signup?redirectURL=${this.getRedirectUrl()}`;
+},
+
+getSsoGoogleUrl() {
+  return `${this.getMtSsoUrl()}/auth/oauth/google?redirectURL=${this.getRedirectUrl()}`;
 }
 
 });
