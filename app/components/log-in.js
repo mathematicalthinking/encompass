@@ -25,7 +25,6 @@ Encompass.LogInComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, 
       var createUserData = {
         username: usernameTrim,
         password: password,
-        lastSeen: new Date()
       };
       Ember.$.post({
         url: '/auth/login',
