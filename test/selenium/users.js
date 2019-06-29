@@ -34,7 +34,7 @@ describe('Users', function() {
 
     function validateUsersPage() {
       it('should show/hide various editable fields', async function () {
-        const inputs = ['input.user-email', 'input.user-name', 'input.user-location'];
+        const inputs = ['input.user-email', 'input.user-first-name', 'input.user-last-name', 'input.user-location'];
         expect(await helpers.isTextInDom(driver, helpers.admin.username)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.edit-user');
@@ -57,7 +57,8 @@ describe('Users', function() {
       it('should show certain fields', async function () {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-first-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-last-name')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-email')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.typeahead')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
@@ -77,14 +78,16 @@ describe('Users', function() {
       });
 
       it('should let you create a new unauthorized pdadmin', async function () {
-        let password = `test`;
-        let name = `Muzzy Doe`;
+        let password = 'test45678!';
+        let firstName = `Muzzy`;
+        let lastName = 'Doe';
         let email = `mdoe@gmail.com`;
         let organization = `Drexel University`;
         let location = `Philadelphia, PA`;
         await helpers.selectOption(driver, 'my-select', 'Pd Admin');
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
+        await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
@@ -95,8 +98,9 @@ describe('Users', function() {
 
       it('should let you create a new authorized teacher', async function () {
         let username = `msmith`;
-        let password = `test`;
-        let name = `John Doe`;
+        let password = 'test45678!';
+        let firstName = `John`;
+        let lastName = 'Doe';
         let oldEmail = `mdoe@gmail.com`;
         let newEmail = `msmith@gmail.com`;
         let organization = `Drexel University`;
@@ -105,7 +109,8 @@ describe('Users', function() {
         await helpers.waitForSelector(driver, 'div#user-new-admin');
         await helpers.findInputAndType(driver, 'input.user-username', username);
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
+        await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', oldEmail);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.findInputAndType(driver, 'input.user-location', location);
@@ -126,14 +131,16 @@ describe('Users', function() {
       it('should let you create a new student without an email', async function () {
         let oldUsername = `student1`;
         let newUsername = `newstudent`;
-        let password = `test`;
-        let name = `Student Doe`;
+        let password = 'test45678!';
+        let firstName = `Student`;
+        let lastName = 'Doe';
         let organization = `Drexel University`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new-admin');
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
+        await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.typeahead', organization);
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
@@ -282,7 +289,7 @@ describe('Users', function() {
 
     function validateUsersPage() {
       it('should show/hide various editable fields', async function () {
-        const inputs = ['input.user-email', 'input.user-name', 'input.user-location'];
+        const inputs = ['input.user-email', 'input.user-first-name', 'input.user-last-name', 'input.user-location'];
         expect(await helpers.isTextInDom(driver, helpers.pdAdmin.username)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.edit-user');
@@ -304,7 +311,8 @@ describe('Users', function() {
       it('should show certain fields', async function () {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-first-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-last-name')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-email')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-location')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'select')).to.be.true;
@@ -322,13 +330,15 @@ describe('Users', function() {
       });
 
       it('should let you create a new unauthorized teacher', async function () {
-        let password = `test`;
-        let name = `Bunny Doe`;
+        let password = 'test45678!';
+        let firstName = `Bunny`;
+        let lastName = 'Doe';
         let email = `bdoe@gmail.com`;
         let location = `Philadelphia, PA`;
         await helpers.selectOption(driver, 'my-select', 'Teacher');
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
+        await helpers.findInputAndType(driver, 'input.user-last-name', lastName);
         await helpers.findInputAndType(driver, 'input.user-email', email);
         await helpers.findInputAndType(driver, 'input.user-location', location);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
@@ -340,14 +350,14 @@ describe('Users', function() {
       it('should let you create a new authorized student', async function () {
         let oldUsername = `bunny`;
         let username = `beyonce`;
-        let password = `test`;
-        let name = `Beyonce`;
+        let password = 'test45678!';
+        let firstName = `Beyonce`;
         await helpers.findAndClickElement(driver, '#new-user-link');
         await helpers.waitForSelector(driver, 'div#user-new');
         await helpers.selectOption(driver, 'my-select', 'Student');
         await helpers.findInputAndType(driver, 'input.user-username', oldUsername);
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', firstName);
         await helpers.findAndClickElement(driver, 'input.user-isAuth');
         await helpers.findAndClickElement(driver, '#new-user-btn');
         await helpers.waitForSelector(driver, '.error-message');
@@ -475,7 +485,7 @@ describe('Users', function() {
 
     function validateUsersPage() {
       it('should show/hide various editable fields', async function () {
-        const inputs = ['input.user-name', 'input.user-location'];
+        const inputs = ['input.user-first-name', 'input.user-last-name', 'input.user-location'];
         expect(await helpers.isTextInDom(driver, helpers.pdAdmin.username)).to.be.true;
 
         await helpers.findAndClickElement(driver, 'button.edit-user');
@@ -497,7 +507,9 @@ describe('Users', function() {
       it('should show certain fields', async function () {
         expect(await helpers.isElementVisible(driver, 'input.user-username')).to.be.true;
         expect(await helpers.isElementVisible(driver, 'input.user-password')).to.be.true;
-        expect(await helpers.isElementVisible(driver, 'input.user-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-first-name')).to.be.true;
+        expect(await helpers.isElementVisible(driver, 'input.user-last-name')).to.be.true;
+
       });
 
       it('should not let you submit form with missing fields', async function () {
@@ -509,10 +521,10 @@ describe('Users', function() {
       });
 
       it('should let you create a new student', async function () {
-        let password = `test`;
+        let password = 'test45678!';
         let name = `mystudent`;
         await helpers.findInputAndType(driver, 'input.user-password', password);
-        await helpers.findInputAndType(driver, 'input.user-name', name);
+        await helpers.findInputAndType(driver, 'input.user-first-name', name);
         await helpers.findAndClickElement(driver, 'button#new-user-btn');
         await helpers.waitForSelector(driver, '#user-info');
         expect(await helpers.findAndGetText(driver, 'ul.your-users>li:first-child')).to.contain('mystudent');

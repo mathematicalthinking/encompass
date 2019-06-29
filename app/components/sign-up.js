@@ -151,7 +151,8 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
   actions: {
     signup: function () {
       var that = this;
-      var name = that.get('name');
+      var firstName = that.get('firstName');
+      var lastName = that.get('lastName');
       var email = that.get('email');
       var confirmEmail = that.get('confirmEmail');
       var organization = that.get('org');
@@ -172,7 +173,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
 
 
 
-      if (!name || !email || (!organization && !orgRequest) || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
+      if (!firstName || !lastName || !email || (!organization && !orgRequest) || !location || !usernameTrim || !password || !requestReason || !confirmEmail || !confirmPassword) {
         that.set('missingCredentials', true);
         return;
       }
@@ -191,14 +192,14 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
       }
 
       var createUserData = {
-        name: name,
-        email: email,
-        location: location,
+        firstName,
+        lastName,
+        email,
+        location,
         username: usernameTrim,
         password: password,
         requestReason: requestReason,
         accountType: 'T',
-        isAuthorized: false,
       };
 
       // make sure user did not type in existing org

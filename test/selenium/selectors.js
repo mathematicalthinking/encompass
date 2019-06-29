@@ -34,7 +34,8 @@ module.exports = {
   signup: {
     form: "form.form-signup",
     inputs: {
-      name: "input[name=name]",
+      firstName: "input[name=first-name]",
+      lastName: "input[name=last-name]",
       email: "input[name=email]",
       confirmEmail: "input[name=confirmEmail]",
       organization: 'div.selectize-input input[type="select-one"]',

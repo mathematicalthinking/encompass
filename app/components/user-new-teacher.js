@@ -5,7 +5,8 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
   errorMessage: null,
   username: '',
   password: '',
-  name: '',
+  firstName: '',
+  lastName: '',
   authorizedBy: '',
   newUserData: {},
   createUserErrors: [],
@@ -33,7 +34,8 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
     newUser: function () {
       var username = this.get('username');
       var password = this.get('password');
-      var name = this.get('name');
+      var firstName = this.get('firstName');
+      var lastName = this.get('lastName');
       var currentUser = this.get('currentUser');
       var currentUserId = currentUser.get('id');
       var organization = currentUser.get('organization.id');
@@ -50,13 +52,13 @@ Encompass.UserNewTeacherComponent = Ember.Component.extend(Encompass.CurrentUser
       var newUserData = {
         username: username,
         password: password,
-        name: name,
+        firstName: firstName,
+        lastName: lastName,
         organization: organization,
         accountType: 'S',
         isAuthorized: true,
         authorizedBy: currentUserId,
         createdBy: currentUserId,
-        createDate: new Date(),
       };
 
       return this.createNewUser(newUserData)

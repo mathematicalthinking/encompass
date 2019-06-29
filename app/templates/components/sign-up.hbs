@@ -4,8 +4,12 @@
 
   <form class="form-signup">
     <div class="auth-form-input">
-      <label for="name">Full Name:</label>
-        {{input class="form-control" type="text" name="name" id="name" value=name action="resetErrors" on="key-down"}}
+      <label for="first-name">First Name:</label>
+        {{input class="form-control" type="text" name="first-name" id="first-name" value=firstName action="resetErrors" on="key-down"}}
+    </div>
+    <div class="auth-form-input">
+      <label for="last-name">Last Name:</label>
+        {{input class="form-control" type="text" name="last-name" id="last-name" value=lastName action="resetErrors" on="key-down"}}
     </div>
     <div class="auth-form-input">
       <label for="email">Email:</label>

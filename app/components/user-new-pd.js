@@ -6,7 +6,8 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
   errorMessage: null,
   username: '',
   password: '',
-  name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   org: null,
   location: '',
@@ -40,7 +41,8 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
       var currentUser = this.get('currentUser');
       var username = this.get('username');
       var password = this.get('password');
-      var name = this.get('name');
+      var firstName = this.get('firstName');
+      var lastName = this.get('lastName');
       var email = this.get('email');
       var organization = currentUser.get('organization');
       var organizationId = organization.get('id');
@@ -67,34 +69,32 @@ Encompass.UserNewPdComponent = Ember.Component.extend(Encompass.CurrentUserMixin
 
       if (isAuthorized) {
         let userData = {
-          username: username,
-          password: password,
-          name: name,
-          email: email,
-          location: location,
+          username,
+          password,
+          firstName,
+          lastName,
+          email,
+          location,
           accountType: accountTypeLetter,
           organization: organizationId,
           isAuthorized: true,
           authorizedBy: currentUserId,
           createdBy: currentUserId,
-          createDate: new Date(),
-          actingRole: this.get('actingRole'),
         };
         this.set('authorizedBy', currentUserId);
         this.set('newUserData', userData);
       } else {
         let userData = {
-          username: username,
-          password: password,
-          name: name,
-          email: email,
-          location: location,
+          username,
+          password,
+          firstName,
+          lastName,
+          email,
+          location,
           accountType: accountTypeLetter,
           organization: organizationId,
           isAuthorized: false,
           createdBy: currentUserId,
-          createDate: new Date(),
-          actingRole: this.get('actingRole'),
         };
         this.set('newUserData', userData);
       }

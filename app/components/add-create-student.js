@@ -10,7 +10,7 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
   alert: Ember.inject.service('sweet-alert'),
 
   clearCreateInputs: function () {
-    let fields = ['username', 'name', 'password'];
+    let fields = ['username', 'firstName', 'lastName', 'password'];
     for (let field of fields) {
       this.set(field, null);
     }
@@ -47,7 +47,8 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     let {
       username,
       password,
-      name
+      firstName,
+      lastName,
     } = info;
 
     let organization = this.get('organization');
@@ -56,14 +57,16 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
     let currentUser = that.get('currentUser');
 
     let createUserData = {
-      name,
+      firstName,
+      lastName,
       username,
       password,
       sectionId,
       sectionRole,
       createdBy: currentUser.id,
       isAuthorized: true,
-      accountType: 'S'
+      accountType: 'S',
+      authorizedBy: currentUser.id
     };
 
     if (organization) {
@@ -188,12 +191,14 @@ Encompass.AddCreateStudentComponent = Ember.Component.extend(Encompass.ErrorHand
         return;
       }
 
-      const name = this.get('name');
+      const firstName = this.get('firstName');
+      const lastName = this.get('lastName');
 
       const ret = {
         username,
         password,
-        name
+        firstName,
+        lastName,
       };
       this.createStudent(ret);
     },
