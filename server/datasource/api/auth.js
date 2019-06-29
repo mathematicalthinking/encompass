@@ -82,7 +82,7 @@ try {
   }
 
   // TODO: use api token
-  let url = `${getMtSsoUrl()}/auth/signup`;
+  let url = `${getMtSsoUrl()}/auth/signup/enc`;
   let config = {};
 
   if (!isFromSignupForm) {
