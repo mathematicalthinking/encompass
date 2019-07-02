@@ -88,7 +88,8 @@ var UserSchema = new Schema({
   lastSeen: { type: Date },
   firstName: {type: String, trim: true},
   lastName: {type: String, trim: true},
-  history: [Log] // currently not working
+  history: [Log], // currently not working,
+  ssoId: {type: ObjectId},
 },
 {
   versionKey: false,
