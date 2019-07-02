@@ -40,6 +40,7 @@ Encompass.ApplicationRoute = Ember.Route.extend(Encompass.MtAuthMixin, { //the a
     //Do we need this check for isAuthenticated here? All routes that should be authenticated
     // should be extending AuthenticatedRoute.
     if(!user.get('isAuthenticated')) {
+      this.get('store').unloadAll();
       this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');

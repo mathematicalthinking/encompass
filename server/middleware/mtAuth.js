@@ -106,6 +106,10 @@ module.exports.generateAnonApiToken = (expiration = API_TOKEN_EXPIRY) => {
   return this.generateSignedJWT(payload, secret, options);
 };
 
+module.exports.setSsoCookie = (res, encodedToken, verifiedTokenPayload)=> {
+  res.cookie('mtToken', encodedToken, { httpOnly: true, maxAge: verifiedTokenPayload.exp });
+};
+
 
 module.exports.getMtUser = getMtUser;
 module.exports.prepareMtUser = prepareMtUser;

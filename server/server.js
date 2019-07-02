@@ -144,7 +144,7 @@ server.post('/pdf', PDFUpload.array('photo', 50), api.post.images);
 // LOCAL AUTHENTICATION CALLS
 server.post('/auth/login', auth.localLogin);
 server.post('/auth/signup', auth.localSignup);
-server.get('/logout', auth.logout);
+server.get('/auth/logout', auth.logout);
 server.post('/auth/forgot', auth.forgot);
 server.get('/auth/reset/:token', auth.validateResetToken);
 server.post('/auth/reset/:token', auth.resetPassword);

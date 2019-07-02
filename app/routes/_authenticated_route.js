@@ -12,7 +12,8 @@ Encompass.AuthenticatedRoute = Ember.Route.extend(Encompass.MtAuthMixin, {
   authenticate: function() { //not crazy that this is duplicated here and in ApplicationRoute
     var user = this.modelFor('application');
     if(!user.get('isAuthenticated')) {
-      window.location.href = this.getMtLoginUrlWithRedirect();
+      this.get('store').unloadAll();
+      this.transitionTo('auth.login');
     }else if (!user.get('isEmailConfirmed') && !user.get('isStudent')) {
       this.transitionTo('unconfirmed');
     }else if(!user.get('isAuthz')) {

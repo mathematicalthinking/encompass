@@ -21,7 +21,7 @@ const { generateAnonApiToken } = require('../../middleware/mtAuth');
 
 const jwt = require('jsonwebtoken');
 
-const { extractBearerToken } = require('../../middleware/mtAuth');
+const { extractBearerToken, setSsoCookie } = require('../../middleware/mtAuth');
 const { getMtSsoUrl } = require('../../middleware/appUrls');
 const { areObjectIdsEqual } = require('../../utils/mongoose');
 
@@ -35,10 +35,9 @@ const localLogin = async (req, res, next) => {
       return res.json({message});
     }
 
-    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
 
-    res.cookie('mtToken', mtToken);
-
+    setSsoCookie(res, mtToken, verifiedToken );
     // send back user?
 
     return res.json({message: 'success'});
@@ -120,9 +119,10 @@ try {
 
   if (typeof mtToken === 'string') {
     // mtToken will be undefined if user was created by an already logged in user
-    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
 
-    res.cookie('mtToken', mtToken);
+    setSsoCookie(res, mtToken, verifiedToken);
+
   }
   return res.json(encUser);
 }catch(err) {
@@ -147,7 +147,7 @@ const googleReturn = (req, res, next) => {
 };
 
 const logout = (req, res, next) => {
-  req.logout();
+  res.cookie('mtToken', '', {httpOnly: true, maxAge: 0});
   res.redirect('/');
 };
 
@@ -292,9 +292,9 @@ const resetPassword = async function(req, res, next) {
 
     let { user, mtToken } = results.data;
 
-    await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
 
-    res.cookie('mtToken', mtToken);
+    setSsoCookie(res, mtToken, verifiedToken );
 
     return utils.sendResponse(res, user);
   }catch(err) {
