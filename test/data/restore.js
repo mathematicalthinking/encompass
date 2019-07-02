@@ -1,7 +1,7 @@
 const exec = require('child_process').exec;
 
 let commands = {
-  enc: 'md-seed run --dropdb',
+  enc: 'npm run seed',
   vmt: 'npm run restore-vmt',
   mt: 'npm run restore-mt'
 };
