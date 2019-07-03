@@ -107,7 +107,7 @@ module.exports.generateAnonApiToken = (expiration = API_TOKEN_EXPIRY) => {
 };
 
 module.exports.setSsoCookie = (res, encodedToken, verifiedTokenPayload)=> {
-  res.cookie('mtToken', encodedToken, { httpOnly: true, maxAge: verifiedTokenPayload.exp });
+  res.cookie('mtToken', encodedToken, { httpOnly: true, expires: verifiedTokenPayload.exp });
 };
 
 
