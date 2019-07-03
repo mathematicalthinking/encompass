@@ -14,6 +14,10 @@ getMtSsoUrl() {
     return 'https://sso-test.mathematicalthinking.org';
   }
 
+  if (hostname === 'localhost:8082') {
+    return 'http://localhost:3003';
+  }
+
   return 'http://localhost:3002';
 },
 
