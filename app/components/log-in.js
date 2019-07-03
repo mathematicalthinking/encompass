@@ -5,6 +5,12 @@ Encompass.LogInComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin, 
   missingCredentials: false,
   postErrors: [],
 
+  oauthErrorMsg: function() {
+    if (this.get('oauthError') === 'emailUnavailable') {
+      return 'The provided email address is already associated with an existing account';
+    }
+  }.property('oauthError'),
+
   actions: {
     login: function () {
       var that = this;
