@@ -154,10 +154,6 @@ server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 
 server.post('/auth/newMtUser', auth.insertNewMtUser);
 
-//  GOOGLE AUTHENTICATION CALLS
-server.get('/auth/google', auth.googleAuth);
-server.get('/auth/google/callback', auth.googleReturn);
-
 //API CALLS
 //ALL GET REQUESTS
 server.get('/api/users', api.get.users);

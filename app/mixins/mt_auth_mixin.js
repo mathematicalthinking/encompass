@@ -4,17 +4,16 @@ getRedirectUrl() {
 },
 
 getMtSsoUrl() {
-  let hostname = window.location.hostname;
-
-  if (hostname === 'encompass.mathematicalthinking.org') {
+  let { host }  = window.location;
+  if (host === 'encompass.mathematicalthinking.org') {
     return `https://sso.mathematicalthinking.org`;
   }
 
-  if (hostname === 'enc-test.mathematicalthinking.org') {
+  if (host === 'enc-test.mathematicalthinking.org') {
     return 'https://sso-test.mathematicalthinking.org';
   }
 
-  if (hostname === 'localhost:8082') {
+  if (host === 'localhost:8082') {
     return 'http://localhost:3003';
   }
 
@@ -30,7 +29,7 @@ getMtSignupUrl() {
 },
 
 getSsoGoogleUrl() {
-  return `${this.getMtSsoUrl()}/auth/oauth/google?redirectURL=${this.getRedirectUrl()}`;
+  return `${this.getMtSsoUrl()}/oauth/google?redirectURL=${this.getRedirectUrl()}`;
 }
 
 });

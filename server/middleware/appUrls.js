@@ -57,7 +57,7 @@ module.exports.getMtIssuerId = () => {
     return process.env.MT_SSO_JWT_ISSUER_ID_STAGING;
   }
 
-  if (envName === 'test') {
+  if (envName === 'seed') {
     return process.env.MT_SSO_JWT_ISSUER_ID_TEST;
   }
 

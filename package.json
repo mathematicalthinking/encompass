@@ -12,7 +12,7 @@
     "drop-testdb": "echo 'db.dropDatabase()' | mongo encompass_test",
     "seed-vmt": "cd ../vmt && npm run test-mac",
     "seed-mt": "cd ../mt-login && npm run test",
-    "seed-all": "concurrently \"npm:seed\" \"npm:seed-vmt\" \"npm:seed-mt\"",
+    "seed-all": "concurrently \"grunt serve-seed\" \"npm:seed-vmt\" \"npm:seed-mt\"",
     "restore-mt": "cd ../mt-login && npm run seed",
     "restore-vmt": "cd ../vmt && npm run seed",
     "dev-vmt": "cd ../vmt && npm run dev",

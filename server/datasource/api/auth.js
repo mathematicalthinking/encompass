@@ -21,34 +21,33 @@ const { generateAnonApiToken } = require('../../middleware/mtAuth');
 
 const jwt = require('jsonwebtoken');
 
-const { extractBearerToken, setSsoCookie } = require('../../middleware/mtAuth');
+const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../../middleware/mtAuth');
 const { getMtSsoUrl } = require('../../middleware/appUrls');
 const { areObjectIdsEqual } = require('../../utils/mongoose');
 
+const ssoService = require('../../services/sso');
+const { accessCookie, refreshCookie } = require('../../constants/sso');
+
 const localLogin = async (req, res, next) => {
   try {
-    let url = `${getMtSsoUrl()}/auth/login`;
-    let mtLoginResults = await axios.post(url, req.body);
-
-    let { message, mtToken } = mtLoginResults.data;
+    let { message, accessToken, refreshToken } = await ssoService.login(req.body);
     if (message) {
       return res.json({message});
     }
 
-    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
-    setSsoCookie(res, mtToken, verifiedToken );
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken);
     // send back user?
 
     return res.json({message: 'success'});
   }catch(err) {
-    console.log('err signup', err);
     return utils.sendError.InternalError(err, res);
   }
 };
 
 const localSignup = async (req, res, next) => {
-
 try {
   let reqUser = userAuth.getUser(req);
   let isFromSignupForm = !reqUser;
@@ -80,18 +79,7 @@ try {
     }
   }
 
-  // TODO: use api token
-  let url = `${getMtSsoUrl()}/auth/signup/enc`;
-  let config = {};
-
-  if (!isFromSignupForm) {
-    let mtToken = req.cookies.mtToken;
-    config = {
-      headers: { Authorization: 'Bearer ' + mtToken },
-    };
-  }
-  let mtSignupResults = await axios.post(url, req.body, config);
-  let {message, mtToken, encUser, vmtUser, existingUser } = mtSignupResults.data;
+  let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body);
 
   if (message) {
     if (existingUser && !isFromSignupForm) {
@@ -117,12 +105,12 @@ try {
     return res.json({message});
   }
 
-  if (typeof mtToken === 'string') {
-    // mtToken will be undefined if user was created by an already logged in user
-    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+  if (typeof accessToken === 'string') {
+    // accessToken will be undefined if user was created by an already logged in user
+    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
-    setSsoCookie(res, mtToken, verifiedToken);
-
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken);
   }
   return res.json(encUser);
 }catch(err) {
@@ -133,21 +121,11 @@ try {
 
 };
 
-const googleAuth = (req, res, next) => {
-  passport.authenticate('google', {
-     scope:['profile', 'email'],
-  })(req,res,next);
-};
-
-const googleReturn = (req, res, next) => {
-  passport.authenticate('google', {
-    failureRedirect: "/#/login",
-    successRedirect: "/"
-  })(req, res, next);
-};
 
 const logout = (req, res, next) => {
-  res.cookie('mtToken', '', {httpOnly: true, maxAge: 0});
+  res.cookie(accessCookie.name, '', {httpOnly: true, maxAge: 0});
+  res.cookie(refreshCookie.name, '', {httpOnly: true, maxAge: 0});
+
   res.redirect('/');
 };
 
@@ -290,11 +268,12 @@ const resetPassword = async function(req, res, next) {
 
     let results = await axios.post(ssoUrl, req.body, config);
 
-    let { user, mtToken } = results.data;
+    let { user, accessToken, refreshToken } = results.data;
 
-    let verifiedToken = await jwt.verify(mtToken, process.env.MT_USER_JWT_SECRET);
+    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
-    setSsoCookie(res, mtToken, verifiedToken );
+    setSsoCookie(res, accessToken);
+    setSsoRefreshCookie(res, refreshToken );
 
     return utils.sendResponse(res, user);
   }catch(err) {
@@ -372,8 +351,6 @@ const insertNewMtUser = async (req, res, next) => {
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
-module.exports.googleAuth = googleAuth;
-module.exports.googleReturn = googleReturn;
 module.exports.forgot = forgot;
 module.exports.validateResetToken = validateResetToken;
 module.exports.resetPassword = resetPassword;
