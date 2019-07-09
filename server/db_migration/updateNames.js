@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-const _ = require('underscore');
-
-
 const models = require('../datasource/schemas');
 mongoose.Promise = global.Promise;
 
@@ -9,17 +6,27 @@ mongoose.connect('mongodb://localhost:27017/encompass');
 
 async function convertToFirstNameLastName() {
   try {
-    let users = await models.User.find({name: {$ne: null}}).exec();
+    let users = await models.User.find({}).exec();
+    let updatedActingRoleCount = 0;
 
     let updatedUsers = users.map((user) => {
-      let name = user.name.trim();
+      let name = user.name;
 
-      if (name.length === 0) {
-        user.firstName = '';
-        user.lastName = '';
+      let actingRole = user.actingRole;
+
+      if (actingRole !== 'student' && actingRole !== 'teacher') {
+        actingRole = user.accountType === 'S' ? 'student' : 'teacher';
+        updatedActingRoleCount++;
+      }
+
+      if (typeof name !== 'string' || name.trim().length === 0) {
+        user.firstName = undefined;
+        user.lastName = undefined;
         return user.save();
       }
-      let split = name.split(' ');
+      let trimmed = name.trim();
+
+      let split = trimmed.split(' ');
 
       let numNames = split.length;
 
@@ -31,8 +38,6 @@ async function convertToFirstNameLastName() {
         firstName = split.slice(0, numNames - 1).join(' ');
       }
       let lastName = numNames <= 1 ? '' : split[numNames - 1];
-      // console.log(name + ' : ');
-      // console.log(firstName + ' ' + lastName);
 
       user.firstName = firstName;
       user.lastName = lastName;
@@ -40,6 +45,7 @@ async function convertToFirstNameLastName() {
 
     });
     await Promise.all(updatedUsers);
+    console.log(`Updated ${updatedActingRoleCount} users who did not have an acting role previously`);
     mongoose.connection.close();
   }catch(err) {
     console.log('error conver names: ', err);
