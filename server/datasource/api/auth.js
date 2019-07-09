@@ -16,6 +16,7 @@ const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
 const utils = require('../../middleware/requestHandler');
 
+const { clearAccessCookie, clearRefreshCookie } = require('../../middleware/mtAuth');
 
 
 const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../../middleware/mtAuth');
@@ -119,9 +120,8 @@ try {
 
 
 const logout = (req, res, next) => {
-  res.cookie(accessCookie.name, '', {httpOnly: true, maxAge: 0});
-  res.cookie(refreshCookie.name, '', {httpOnly: true, maxAge: 0});
-
+  clearAccessCookie(res);
+  clearRefreshCookie(res);
   res.redirect('/');
 };
 

@@ -32,11 +32,21 @@ const setSsoRefreshCookie = (res, encodedToken) => {
 };
 
 const clearAccessCookie = (res) => {
-  res.cookie(accessCookie.name, '', {httpOnly: true, maxAge: 0});
+  let isSecure = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
+  let domain = isSecure ? process.env.SSO_COOKIE_DOMAIN : 'localhost';
+
+  let options = { domain, httpOnly: true, secure: isSecure };
+
+  res.clearCookie(accessCookie.name, options);
+
 };
 
 const clearRefreshCookie = (res) => {
-  res.cookie(refreshCookie.name, '', {httpOnly: true, maxAge: 0});
+  let isSecure = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
+  let domain = isSecure ? process.env.SSO_COOKIE_DOMAIN : 'localhost';
+
+  let options = { domain, httpOnly: true, secure: isSecure };
+  res.clearCookie(refreshCookie.name, options);
 
 };
 
@@ -107,7 +117,7 @@ const prepareMtUser = async (req, res, next) => {
     }
 
     if (req.cookies[refreshCookie.name]) {
-      clearRefreshCookie(res);
+    clearRefreshCookie(res);
     }
 
     next();
@@ -173,3 +183,5 @@ module.exports.prepareEncUser = prepareEncUser;
 module.exports.extractBearerToken = extractBearerToken;
 module.exports.setSsoCookie = setSsoCookie;
 module.exports.setSsoRefreshCookie = setSsoRefreshCookie;
+module.exports.clearAccessCookie = clearAccessCookie;
+module.exports.clearRefreshCookie = clearRefreshCookie;
