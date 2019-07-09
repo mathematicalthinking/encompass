@@ -10,14 +10,24 @@ const setSsoCookie = (res, encodedToken) => {
   let doSetSecure =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
-  res.cookie(accessCookie.name, encodedToken, { httpOnly: true, maxAge: accessCookie.maxAge, secure: doSetSecure });
-};
+  let options = { httpOnly: true, maxAge: accessCookie.maxAge, secure: doSetSecure };
+
+  if (doSetSecure) {
+    options.domain = process.env.SSO_COOKIE_DOMAIN;
+  }
+
+  res.cookie(accessCookie.name, encodedToken, options);};
 
 const setSsoRefreshCookie = (res, encodedToken) => {
   let doSetSecure =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
-  res.cookie(refreshCookie.name, encodedToken, { httpOnly: true,secure: doSetSecure,});
+  let options = { httpOnly: true, secure: doSetSecure };
+  if (doSetSecure) {
+    options.domain = process.env.SSO_COOKIE_DOMAIN;
+  }
+
+  res.cookie(refreshCookie.name, encodedToken, options);
 
 };
 
@@ -92,9 +102,13 @@ const prepareMtUser = async (req, res, next) => {
       return next();
     }
     // clear any invalid cookies
+    if (req.cookies[accessCookie.name]) {
+      clearAccessCookie(res);
+    }
 
-    clearAccessCookie(res);
-    clearRefreshCookie(res);
+    if (req.cookies[refreshCookie.name]) {
+      clearRefreshCookie(res);
+    }
 
     next();
   }catch(err) {
