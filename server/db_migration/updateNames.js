@@ -15,7 +15,7 @@ async function convertToFirstNameLastName() {
       let actingRole = user.actingRole;
 
       if (actingRole !== 'student' && actingRole !== 'teacher') {
-        actingRole = user.accountType === 'S' ? 'student' : 'teacher';
+        user.actingRole = user.accountType === 'S' ? 'student' : 'teacher';
         updatedActingRoleCount++;
       }
 
