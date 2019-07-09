@@ -6,23 +6,19 @@
 
 //REQUIRE MODULES
 
-const passport = require('passport');
-const utils = require('../../middleware/requestHandler');
 const crypto = require('crypto');
-const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 const models = require('../../datasource/schemas');
 const User = models.User;
-const nodemailer = require('nodemailer');
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
+const utils = require('../../middleware/requestHandler');
 
-const { generateAnonApiToken } = require('../../middleware/mtAuth');
 
-const jwt = require('jsonwebtoken');
 
 const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../../middleware/mtAuth');
-const { getMtSsoUrl } = require('../../middleware/appUrls');
 const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 const ssoService = require('../../services/sso');
@@ -193,16 +189,8 @@ const sendEmailsToAdmins = async function(host, template, relatedUser) {
 
 const forgot = async function(req, res, next) {
   try {
-    let ssoUrl = `${getMtSsoUrl()}/auth/forgot/password`;
-
-    let token = await generateAnonApiToken();
-
-    let config = {
-      headers: { Authorization: 'Bearer ' + token },
-    };
-
-    let results = await axios.post(ssoUrl, req.body, config);
-    return utils.sendResponse(res, results.data);
+    let results = await ssoService.forgotPassword(req.body);
+    return utils.sendResponse(res, results);
   }catch(err) {
     console.error(`Error auth/forgot: ${err}`);
     console.trace();
@@ -212,16 +200,8 @@ const forgot = async function(req, res, next) {
 
 const validateResetToken = async function(req, res, next) {
   try {
-    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/${req.params.token}`;
-
-    let token = await generateAnonApiToken();
-
-    let config = {
-      headers: { Authorization: 'Bearer ' + token },
-    };
-
-    let results = await axios.get(ssoUrl, config);
-    return utils.sendResponse(res, results.data);
+    let results = await ssoService.validateResetPasswordToken(req.params.token);
+    return utils.sendResponse(res, results);
 
   }catch(err) {
     return utils.sendError.InternalError(err, res);
@@ -240,16 +220,8 @@ const resetPasswordById = async function(req, res, next) {
       return utils.sendError.NotAuthorizedError('You are not authorized.', res);
     }
 
-    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/user`;
-
-    let token = await generateAnonApiToken();
-
-    let config = {
-      headers: { Authorization: 'Bearer ' + token },
-    };
-
-    let results = await axios.post(ssoUrl, req.body, config);
-    return utils.sendResponse(res, results.data);
+    let results = await ssoService.resetPasswordById(req.body);
+    return utils.sendResponse(res, results);
 
     }catch(err) {
       return utils.sendError.InternalError(err, res);
@@ -258,18 +230,14 @@ const resetPasswordById = async function(req, res, next) {
 
 const resetPassword = async function(req, res, next) {
   try {
-    let ssoUrl = `${getMtSsoUrl()}/auth/reset/password/${req.params.token}`;
 
-    let token = await generateAnonApiToken();
 
-    let config = {
-      headers: { Authorization: 'Bearer ' + token },
-    };
+    let { user, accessToken, refreshToken, message } = await ssoService.resetPassword(req.body, req.params.token);
 
-    let results = await axios.post(ssoUrl, req.body, config);
-
-    let { user, accessToken, refreshToken } = results.data;
-
+    if (message) {
+      res.json(message);
+      return;
+    }
     await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
     setSsoCookie(res, accessToken);

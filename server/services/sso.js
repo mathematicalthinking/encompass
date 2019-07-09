@@ -1,8 +1,18 @@
 const axios = require('axios');
-const { getMtSsoUrl } = require('../middleware/appUrls');
-const { generateAnonApiToken } = require('../middleware/mtAuth');
+const jwt = require('jsonwebtoken');
 
+const { getMtSsoUrl, getEncIssuerId, getMtIssuerId } = require('../middleware/appUrls');
+const { apiToken } = require('../constants/sso');
+
+const secret = process.env.MT_USER_JWT_SECRET;
 const BASE_URL = getMtSsoUrl();
+
+const generateAnonApiToken = (expiration = apiToken.expiresIn) => {
+  let payload = { iat: Date.now() };
+  let options = { expiresIn: expiration, issuer: getEncIssuerId(), audience: getMtIssuerId() };
+
+  return jwt.sign(payload, secret, options);
+};
 
 module.exports.post = async (path, body) => {
   try {
@@ -47,4 +57,23 @@ module.exports.login = (details) => {
 
 module.exports.signup = (details) => {
   return this.post('/auth/signup/enc', details);
+};
+
+module.exports.forgotPassword = (details) => {
+  return this.post('/auth/forgot/password', details);
+};
+
+module.exports.validateResetPasswordToken = (token) => {
+  return this.get(`/auth/reset/password/${token}`);
+};
+
+module.exports.resetPassword = (details, token) => {
+  return this.post(`/auth/reset/password/${token}`, details);
+};
+
+module.exports.resetPasswordById = (details) => {
+  return this.post('/auth/reset/password/user', details);
+};
+module.exports.requestNewAccessToken = (refreshToken) => {
+  return this.post('/auth/accessToken', {refreshToken});
 };
