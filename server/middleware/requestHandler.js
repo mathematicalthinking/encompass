@@ -303,6 +303,24 @@ const asyncWrapper = function(promise) {
   });
 };
 
+const handleError = (err, res) => {
+  if (err.response === undefined) {
+    return sendError.InternalError(null, res);
+  }
+  let status = err.response.status || 500;
+  let message = err.response.message || 'Internal Error';
+
+  return res.status(status).json({
+    "errors": [
+      {
+        "detail": message,
+        "status": status
+      }
+    ]
+  });
+
+};
+
 module.exports.sendResponse = sendResponse;
 module.exports.sendError = sendError;
 module.exports.buildCriteria = buildCriteria;
@@ -311,3 +329,4 @@ module.exports.generateApiSecret = generateApiSecret;
 module.exports.generateApiKey = generateApiKey;
 module.exports.isValidApiKey = isValidApiKey;
 module.exports.asyncWrapper = asyncWrapper;
+module.exports.handleError = handleError;
