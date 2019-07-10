@@ -23,7 +23,6 @@ const { extractBearerToken, setSsoCookie, setSsoRefreshCookie } = require('../..
 const { areObjectIdsEqual } = require('../../utils/mongoose');
 
 const ssoService = require('../../services/sso');
-const { accessCookie, refreshCookie } = require('../../constants/sso');
 
 const localLogin = async (req, res, next) => {
   try {
@@ -40,7 +39,7 @@ const localLogin = async (req, res, next) => {
 
     return res.json({message: 'success'});
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
@@ -76,7 +75,7 @@ try {
     }
   }
 
-  let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body);
+  let {message, accessToken, refreshToken, encUser, existingUser } = await ssoService.signup(req.body, reqUser);
 
   if (message) {
     if (existingUser && !isFromSignupForm) {
@@ -112,7 +111,7 @@ try {
   return res.json(encUser);
 }catch(err) {
   console.log('err signup', err);
-  return utils.sendError.InternalError(err, res);
+  utils.handleError(err, res);
 
 }
 
@@ -194,7 +193,7 @@ const forgot = async function(req, res, next) {
   }catch(err) {
     console.error(`Error auth/forgot: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
@@ -204,6 +203,7 @@ const validateResetToken = async function(req, res, next) {
     return utils.sendResponse(res, results);
 
   }catch(err) {
+    utils.handleError(err, res);
     return utils.sendError.InternalError(err, res);
   }
 };
@@ -220,11 +220,11 @@ const resetPasswordById = async function(req, res, next) {
       return utils.sendError.NotAuthorizedError('You are not authorized.', res);
     }
 
-    let results = await ssoService.resetPasswordById(req.body);
+    let results = await ssoService.resetPasswordById(req.body, reqUser);
     return utils.sendResponse(res, results);
 
     }catch(err) {
-      return utils.sendError.InternalError(err, res);
+      utils.handleError(err, res);
     }
   };
 
@@ -247,57 +247,30 @@ const resetPassword = async function(req, res, next) {
   }catch(err) {
     console.error(`Error resetPassword: ${err}`);
     console.trace();
-    return utils.sendError.InternalError(err, res);
+    utils.handleError(err, res);
   }
 };
 
 const confirmEmail = async function(req, res, next) {
   try {
-    const user = await User.findOne({ confirmEmailToken: req.params.token, confirmEmailExpires: { $gt: Date.now() } });
-    if (!user) {
-      return utils.sendResponse(res, {
-        isValid: false,
-        info: 'Confirm email token is invalid or has expired.'
-      });
-    }
+      let results = await ssoService.confirmEmail(req.params.token);
 
-      user.isEmailConfirmed = true;
-      user.confirmEmailToken = undefined;
-      user.confirmEmailExpires = undefined;
-
-      const savedUser = await user.save();
-
-      const data = {
-        isValid: true,
-        isEmailConfirmed: savedUser.isEmailConfirmed
-      };
-      return utils.sendResponse(res, data);
+      return utils.sendResponse(res, results);
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    console.log('err conf em: ', err.message);
+    utils.handleError(err, res);
   }
 };
 
 const resendConfirmationEmail = async function(req, res, next) {
-  const user = userAuth.getUser(req);
-  if (!user) {
-    return utils.sendError.InvalidCredentialsError(null, res);
-  }
-
   try {
-    let userRec = await models.User.findById(user._id);
-    const token = await getResetToken(20);
-
-    userRec.confirmEmailToken = token;
-    userRec.confirmEmailExpires = Date.now() + 86400000; // 1 day
-    let savedUser = await userRec.save();
-    await sendEmailSMTP(savedUser.email, req.headers.host, 'confirmEmailAddress', token, savedUser);
-    return utils.sendResponse(res, {
-     isSuccess: true,
-     info: `Email has been sent to ${userRec.email} with instructions for email confirmation.`
-   });
+    let reqUser = userAuth.getUser(req);
+    let results = await ssoService.resendConfirmEmail(reqUser);
+    return utils.sendResponse(res, results);
 
   }catch(err) {
-    return utils.sendError.InternalError(err, res);
+    console.log('err resend conf: ', err.message);
+    utils.handleError(err, res);
   }
 };
 
