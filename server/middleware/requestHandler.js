@@ -8,6 +8,7 @@
 //REQUIRE MODULES
 const crypto = require('crypto');
 const _ = require('underscore');
+const { isNonEmptyObject } = require('../utils/objects');
 
 //REQUIRE FILES
 
@@ -304,11 +305,25 @@ const asyncWrapper = function(promise) {
 };
 
 const handleError = (err, res) => {
-  if (err.response === undefined) {
-    return sendError.InternalError(null, res);
+  let status;
+  let message;
+
+  let jwtErrorNames = ['TokenExpiredError', 'JsonWebTokenError', 'NotBeforeError'];
+
+
+  let isJwtError = typeof err.name === 'string' && jwtErrorNames.includes(err.name);
+  let isAxiosError = isNonEmptyObject(err.response);
+
+  if (isJwtError) {
+    status = 401;
+    message = 'Invalid or expired credentials';
+  } else if (isAxiosError) {
+    status = err.response.status || 500;
+    message = err.response.message || 'Internal Error';
+  } else {
+    status = 500;
+    message = 'Internal Error';
   }
-  let status = err.response.status || 500;
-  let message = err.response.message || 'Internal Error';
 
   return res.status(status).json({
     "errors": [
