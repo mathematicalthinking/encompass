@@ -67,7 +67,11 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     if (Ember.isEmpty(this.get('password'))) {
       return false;
     }
-    return this.get('password').length > 3;
+    let length = this.get('password').length;
+    let min = 10;
+    let max = 72;
+
+    return length >= min &&  length <= max;
   }.property('password'),
 
   isPasswordInvalid: Ember.computed('isPasswordValid', 'isPasswordDirty', function() {
@@ -262,7 +266,7 @@ Encompass.SignUpComponent = Ember.Component.extend(Encompass.ErrorHandlingMixin,
     usernameValidate() {
       var username = this.get('username');
       if (username) {
-        var usernamePattern = new RegExp(/^[a-z0-9.\-_@]{3,64}$/);
+        var usernamePattern = new RegExp(/^[a-z0-9_]{3,30}$/);
         var usernameTest = usernamePattern.test(username);
 
         if (usernameTest === false) {
