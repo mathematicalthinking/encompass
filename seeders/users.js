@@ -1403,7 +1403,7 @@ module.exports = [
     "username" : "jl_picard",
     "firstName" : "jean-luc",
     "lastName" : "picard",
-    "email" : null,
+    "email" : "vmtmath@gmail.com",
     "createdAt" : ISODate("2019-06-21T17:08:26.423Z"),
     "updatedAt" : ISODate("2019-06-21T17:08:26.667Z"),
     "isTrashed" : false,
