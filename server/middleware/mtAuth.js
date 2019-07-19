@@ -2,7 +2,7 @@ const { User } = require('../datasource/schemas/');
 const { isValidMongoId} = require('../utils/mongoose');
 const ssoService = require('../services/sso');
 const { accessCookie, refreshCookie,} = require('../constants/sso');
-const { verifyJWT } = require('../utils/jwt');
+const { verifyJwt } = require('../utils/jwt');
 
 const secret = process.env.MT_USER_JWT_SECRET;
 
@@ -50,22 +50,22 @@ const clearRefreshCookie = (res) => {
 
 };
 
-const resolveAccessToken = async (token) => {
-  if (typeof token !== 'string') {
+const resolveAccessToken = (token) => {
+  try {
+    if (typeof token !== 'string') {
+      return null;
+    }
+    return verifyJwt(token, secret);
+
+  }catch(err) {
+    // invalid access token
     return null;
   }
-
-  let [accessTokenErr, verifiedAccessToken] = await verifyJWT(token, secret);
-
-  return verifiedAccessToken;
-
 };
 
 const getMtUser = async (req, res) => {
   try {
-    console.log('getmt user');
     let verifiedAccessToken = await resolveAccessToken(req.cookies[accessCookie.name]);
-    let accessTokenErr;
 
     if (verifiedAccessToken !== null) {
       return verifiedAccessToken;
@@ -81,12 +81,7 @@ const getMtUser = async (req, res) => {
     // request new accessToken with refreshToken
     let { accessToken } = await ssoService.requestNewAccessToken(currentRefreshToken);
 
-    [ accessTokenErr, verifiedAccessToken] = await verifyJWT(accessToken, secret);
-
-    if (accessTokenErr) {
-      // should never happen
-      return null;
-    }
+    verifiedAccessToken = await verifyJwt(accessToken, secret);
 
     console.log('received new access token: ', verifiedAccessToken);
 
@@ -96,9 +91,7 @@ const getMtUser = async (req, res) => {
   }catch(err) {
     console.error(`Error getMtUser: ${err}`);
     return null;
-
   }
-
 };
 
 const prepareMtUser = async (req, res, next) => {

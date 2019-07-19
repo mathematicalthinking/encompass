@@ -7,7 +7,6 @@
 //REQUIRE MODULES
 
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 const models = require('../../datasource/schemas');
@@ -15,6 +14,7 @@ const User = models.User;
 const userAuth = require('../../middleware/userAuth');
 const emails = require('../../datasource/email_templates');
 const utils = require('../../middleware/requestHandler');
+const { verifyJwt } = require('../../utils/jwt');
 
 const { clearAccessCookie, clearRefreshCookie } = require('../../middleware/mtAuth');
 
@@ -31,7 +31,9 @@ const localLogin = async (req, res, next) => {
       return res.json({message});
     }
 
-    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
+    // do we need to verify the accessToken
+    // should always be valid coming from the sso server
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
     setSsoCookie(res, accessToken);
     setSsoRefreshCookie(res, refreshToken);
@@ -103,7 +105,7 @@ try {
 
   if (typeof accessToken === 'string') {
     // accessToken will be undefined if user was created by an already logged in user
-    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
     setSsoCookie(res, accessToken);
     setSsoRefreshCookie(res, refreshToken);
@@ -204,7 +206,6 @@ const validateResetToken = async function(req, res, next) {
 
   }catch(err) {
     utils.handleError(err, res);
-    return utils.sendError.InternalError(err, res);
   }
 };
 
@@ -238,7 +239,7 @@ const resetPassword = async function(req, res, next) {
       res.json(message);
       return;
     }
-    await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
+    // await jwt.verify(accessToken, process.env.MT_USER_JWT_SECRET);
 
     setSsoCookie(res, accessToken);
     setSsoRefreshCookie(res, refreshToken );
@@ -278,14 +279,14 @@ const insertNewMtUser = async (req, res, next) => {
   try {
     let authToken = extractBearerToken(req);
 
-    await jwt.verify(authToken, process.env.MT_USER_JWT_SECRET);
+    await verifyJwt(authToken, process.env.MT_USER_JWT_SECRET);
 
+    // valid token
     let newUser = await User.create(req.body);
     return utils.sendResponse(res, newUser);
   }catch(err) {
-    // invalid token
     console.log('Error insertNewMtUser: ', err);
-    return utils.sendError.InvalidCredentialsError('Unauthorized request', res);
+    utils.handleError(err, res);
   }
 };
 
