@@ -290,6 +290,21 @@ const insertNewMtUser = async (req, res, next) => {
   }
 };
 
+const ssoUpdateUser = async(req, res, next) => {
+  try {
+    let authToken = extractBearerToken(req);
+    await verifyJwt(
+     authToken,
+     process.env.MT_USER_JWT_SECRET
+   );
+   await User.findByIdAndUpdate(req.params.id, {$set: req.body});
+   return res.json({isSuccess: true});
+  }catch(err) {
+    utils.handleError(err, res);
+  }
+
+};
+
 module.exports.logout = logout;
 module.exports.localLogin = localLogin;
 module.exports.localSignup = localSignup;
@@ -303,3 +318,4 @@ module.exports.sendEmailSMTP = sendEmailSMTP;
 module.exports.resendConfirmationEmail = resendConfirmationEmail;
 module.exports.sendEmailsToAdmins = sendEmailsToAdmins;
 module.exports.insertNewMtUser = insertNewMtUser;
+module.exports.ssoUpdateUser = ssoUpdateUser;

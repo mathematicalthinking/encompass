@@ -153,6 +153,7 @@ server.get('/auth/confirm/:token', auth.confirmEmail);
 server.get('/auth/resend/confirm', auth.resendConfirmationEmail);
 
 server.post('/auth/newMtUser', auth.insertNewMtUser);
+server.put('/auth/sso/user/:id', auth.ssoUpdateUser);
 
 //API CALLS
 //ALL GET REQUESTS
