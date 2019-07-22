@@ -30,11 +30,11 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend(
         return;
       }
 
-      const id = this.user.id;
+      const ssoId = this.get('user.ssoId');
 
       const resetPasswordData = {
         password,
-        id
+        ssoId
        };
       const that = this;
 
@@ -43,7 +43,7 @@ Encompass.ResetPasswordUserComponent = Ember.Component.extend(
         data: resetPasswordData
       })
         .then((res) => {
-          if (res._id && res._id === id) {
+          if (res._id && res._id === ssoId) {
             that.get('handleResetSuccess')(res);
             this.get('alert').showToast('success', 'Password Reset', 'bottom-end', 3000, false, null);
           } else {
