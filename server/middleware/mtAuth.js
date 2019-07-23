@@ -50,13 +50,14 @@ const clearRefreshCookie = (res) => {
 
 };
 
-const resolveAccessToken = (token) => {
+const resolveAccessToken = async (token) => {
   try {
     if (typeof token !== 'string') {
       return null;
     }
-    return verifyJwt(token, secret);
+    let verifiedToken = await verifyJwt(token, secret);
 
+    return verifiedToken;
   }catch(err) {
     // invalid access token
     return null;
