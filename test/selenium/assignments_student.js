@@ -111,7 +111,7 @@ describe('Assignments as Student', async function () {
               await helpers.findAndClickElement(driver, newAnswerSelectors.createBtn);
               await driver.sleep(500);
               await helpers.waitForSelector(driver, 'div.error-box');
-
+              await driver.sleep(2000);
               let errors = await helpers.getWebElements(driver, 'div.error-box');
               expect(errors).to.have.lengthOf(2);
 

@@ -26,7 +26,7 @@ const admin = {
       _id: '5b4e4b48808c7eebc9f9e827',
       username: 'ssmith',
     },
-    accessibleUserCount: 44,
+    accessibleUserCount: 53,
   },
   submissions: {
     accessibleSubmissionCount: 62,

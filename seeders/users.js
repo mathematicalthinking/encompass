@@ -1352,7 +1352,6 @@ module.exports = [
     "lastName" : "Baker",
     "history" : [],
     "notifications" : [
-        ObjectId("5d08fe0261d1f2a863c33ad2"),
         ObjectId("5d1a4190a9ca1828c9f02b3f")
     ],
     "hiddenWorkspaces" : [],
